@@ -10,10 +10,118 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
         self.project_id = project_id
 
-    def group_projects_list_request(self, per_page: int, page: int, group_id: int) -> dict:
+    def group_projects_list_request(self, params: dict | None, suffix_param: str | None) -> dict:
         headers = self._headers
-        suffix = f'/groups/{group_id}/projects'
-        params = assign_params(per_page=per_page, page=page)
+        suffix = f'/groups/{suffix_param}/projects'
+        response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202])
+        return response
+
+    def get_project_list_request(self, params: dict | None, suffix_param: str | None) -> dict:
+        headers = self._headers
+        suffix = '/projects'
+        response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202])
+        return response
+
+    def issue_list_request(self, params: dict | None, suffix_param: str | None) -> dict:
+        headers = self._headers
+        suffix = f'/projects/{self.project_id}/issues'
+        response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202])
+        return response
+
+    def commit_list_request(self, per_page: int, page: int,
+                            ref_name: str | None, created_before: str | None, created_after: str | None,
+                            path: str | None, with_stats: str | None, first_parent: str | None,
+                            order: str | None, all: str | None) -> dict:
+        headers = self._headers
+        suffix = f'/projects/{self.project_id}/repository/commits'
+        params = assign_params(ref_name=ref_name,
+                               created_before=created_before, created_after=created_after,
+                               path=path, all=all,
+                               with_stats=with_stats, first_parent=first_parent, order=order,
+                               per_page=per_page, page=page)
+        response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202], resp_type='json')
+        return response
+
+    def get_raw_file_request(self, file_path: str, ref: str) -> dict:
+        headers = self._headers
+        suffix = f'/projects/{self.project_id}/repository/files/{file_path}/raw'
+        params = {'ref': ref}
+        response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202], resp_type='text')
+        return response
+
+    def branch_list_request(self, per_page: int, page: int, search: str | None) -> dict:
+        headers = self._headers
+        suffix = f'/projects/{self.project_id}/repository/branches'
+        params = assign_params(search=search, per_page=per_page, page=page)
+        response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202], resp_type='json')
+        return response
+
+    def group_list_request(self, per_page: int, page: int, skip_groups: str | None,
+                           all_available: str | None, search: str | None, order_by: str | None,
+                           sort: str | None, owned: str | None, min_access_level: str | None,
+                           top_level_only: str | None) -> dict:
+        headers = self._headers
+        suffix = '/groups'
+        params = assign_params(skip_groups=skip_groups, all_available=all_available,
+                               search=search, order_by=order_by, sort=sort, owned=owned,
+                               min_access_level=min_access_level, top_level_only=top_level_only,
+                               per_page=per_page, page=page)
+        response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202], resp_type='json')
+        return response
+
+    def issue_note_list_request(self, per_page: int, page: int, issue_iid: str | None,
+                                sort: str | None, order_by: str | None) -> dict:
+        headers = self._headers
+        suffix = f'/projects/{self.project_id}/issues/{issue_iid}/notes'
+        params = assign_params(per_page=per_page, page=page, sort=sort, order_by=order_by)
+        response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202])
+        return response
+
+    def merge_request_list_request(self, per_page: int, page: int, state: str | None, order_by: str | None,
+                                   sort: str | None, milestone: str | None, labels: str | None, created_after: str | None,
+                                   created_before: str | None, updated_after: str | None, updated_before: str | None,
+                                   scope: str | None, author_id: str | None, author_username: str | None, reviewer_id: str | None,
+                                   assignee_id: str | None, reviewer_username: str | None, target_branch: str | None,
+                                   source_branch: str | None, search: str | None) -> dict:
+        headers = self._headers
+        params = assign_params(state=state, order_by=order_by,
+                               sort=sort, milestone=milestone, labels=labels,
+                               created_after=created_after, created_before=created_before,
+                               updated_after=updated_after, updated_before=updated_before,
+                               scope=scope, author_id=author_id,
+                               author_username=author_username, assignee_id=assignee_id,
+                               reviewer_id=reviewer_id, reviewer_username=reviewer_username,
+                               source_branch=source_branch, target_branch=target_branch,
+                               search=search, per_page=per_page, page=page)
+        suffix = f'/projects/{self.project_id}/merge_requests'
+        response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202], resp_type='json')
+        return response
+
+    def merge_request_note_list_request(self, per_page: int, page: int, merge_request_iid: str | None,
+                                        sort: str | None, order_by: str | None) -> dict:
+        headers = self._headers
+        params = assign_params(sort=sort, per_page=per_page, page=page, order_by=order_by)
+        suffix = f'/projects/{self.project_id}/merge_requests/{merge_request_iid}/notes'
+        response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202])
+        return response
+
+    def group_member_list_request(self, group_id: int | Any) -> dict:
+        headers = self._headers
+        suffix = f'/groups/{group_id}/members'
+        response = self._http_request('GET', suffix, headers=headers, ok_codes=[200, 202])
+        return response
+
+    def codes_search_request(self, per_page: int, page: int, search: str | Any) -> dict:
+        headers = self._headers
+        params = assign_params(search=search, scope='blobs', page=page, per_page=per_page)
+        suffix = f'/projects/{self.project_id}/search'
+        response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202])
+        return response
+
+    def project_user_list_request(self, per_page: int, page: int, search: str | Any) -> dict:
+        headers = self._headers
+        params = assign_params(search=search, page=page, per_page=per_page)
+        suffix = f'/projects/{self.project_id}/users'
         response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202])
         return response
 
@@ -48,49 +156,6 @@ class Client(BaseClient):
         headers = self._headers
         response = self._http_request('DELETE', f'/projects/{self.project_id}/repository/merged_branches', headers=headers,
                                       ok_codes=[200, 202, 204])
-        return response
-
-    def get_raw_file_request(self, file_path: str, ref: str) -> dict:
-        headers = self._headers
-        suffix = f'/projects/{self.project_id}/repository/files/{file_path}/raw'
-        params = {'ref': ref}
-        response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202], resp_type='text')
-        return response
-
-    def get_project_list_request(self, per_page: int, page: int, membership: str | None,
-                                 order_by: str | None, owned: str | None, search: str | None,
-                                 sort: str | None, visibility: str | None, with_issues_enabled: str | None,
-                                 with_merge_requests_enabled: str | None) -> dict:
-        headers = self._headers
-        suffix = '/projects'
-        params = assign_params(membership=membership, order_by=order_by,
-                               owned=owned, search=search, sort=sort,
-                               visibility=visibility, with_issues_enabled=with_issues_enabled,
-                               with_merge_requests_enabled=with_merge_requests_enabled,
-                               per_page=per_page, page=page)
-
-        response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202])
-        return response
-
-    def issue_list_request(self, per_page: int, page: int, assignee_id: str | None, assignee_username: str | None,
-                           author_id: str | None, author_username: str | None, confidential: str | None,
-                           created_after: str | None, created_before: str | None, due_date: str | None,
-                           epic_id: str | None, issue_type: str | None, content: str | None, labels: str | None,
-                           milestone: str | None, order_by: str | None, scope: str | None, search: str | None,
-                           sort: str | None, state: str | None, updated_after: str | None,
-                           updated_before: str | None) -> dict:
-        headers = self._headers
-        suffix = f'/projects/{self.project_id}/issues'
-        params = assign_params(assignee_id=assignee_id, assignee_username=assignee_username,
-                               author_id=author_id, author_username=author_username,
-                               confidential=confidential, created_after=created_after,
-                               created_before=created_before, due_date=due_date,
-                               epic_id=epic_id, issue_type=issue_type, content=content,
-                               labels=labels, milestone=milestone, order_by=order_by,
-                               scope=scope, search=search, sort=sort, state=state,
-                               updated_after=updated_after, updated_before=updated_before,
-                               per_page=per_page, page=page)
-        response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202])
         return response
 
     def version_get_request(self) -> dict:
@@ -128,44 +193,10 @@ class Client(BaseClient):
         response = self._http_request('GET', suffix, headers=headers, ok_codes=[200, 202], resp_type='json')
         return response
 
-    def commit_list_request(self, per_page: int, page: int,
-                            ref_name: str | None, created_before: str | None, created_after: str | None,
-                            path: str | None, with_stats: str | None, first_parent: str | None,
-                            order: str | None, all: str | None) -> dict:
-        headers = self._headers
-        suffix = f'/projects/{self.project_id}/repository/commits'
-        params = assign_params(ref_name=ref_name,
-                               created_before=created_before, created_after=created_after,
-                               path=path, all=all,
-                               with_stats=with_stats, first_parent=first_parent, order=order,
-                               per_page=per_page, page=page)
-        response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202], resp_type='json')
-        return response
-
     def branch_single_request(self, branch_name: str) -> dict:
         headers = self._headers
         suffix = f'/projects/{self.project_id}/repository/branches/{branch_name}'
         response = self._http_request('GET', suffix, headers=headers, ok_codes=[200, 202], resp_type='json')
-        return response
-
-    def branch_list_request(self, per_page: int, page: int, search: str | None) -> dict:
-        headers = self._headers
-        suffix = f'/projects/{self.project_id}/repository/branches'
-        params = assign_params(search=search, per_page=per_page, page=page)
-        response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202], resp_type='json')
-        return response
-
-    def group_list_request(self, per_page: int, page: int, skip_groups: str | None,
-                           all_available: str | None, search: str | None, order_by: str | None,
-                           sort: str | None, owned: str | None, min_access_level: str | None,
-                           top_level_only: str | None) -> dict:
-        headers = self._headers
-        suffix = '/groups'
-        params = assign_params(skip_groups=skip_groups, all_available=all_available,
-                               search=search, order_by=order_by, sort=sort, owned=owned,
-                               min_access_level=min_access_level, top_level_only=top_level_only,
-                               per_page=per_page, page=page)
-        response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202], resp_type='json')
         return response
 
     def file_update_request(self, file_path: str, branch: str | None, start_branch: str | None, encoding: str | None,
@@ -208,34 +239,6 @@ class Client(BaseClient):
         suffix = f'/projects/{self.project_id}/issues/{issue_iid}/notes/{note_id}'
         data = assign_params(body=body)
         response = self._http_request('PUT', suffix, headers=headers, json_data=data, ok_codes=[200, 202])
-        return response
-
-    def issue_note_list_request(self, per_page: int, page: int, issue_iid: str | None,
-                                sort: str | None, order_by: str | None) -> dict:
-        headers = self._headers
-        suffix = f'/projects/{self.project_id}/issues/{issue_iid}/notes'
-        params = assign_params(per_page=per_page, page=page, sort=sort, order_by=order_by)
-        response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202])
-        return response
-
-    def merge_request_list_request(self, per_page: int, page: int, state: str | None, order_by: str | None,
-                                   sort: str | None, milestone: str | None, labels: str | None, created_after: str | None,
-                                   created_before: str | None, updated_after: str | None, updated_before: str | None,
-                                   scope: str | None, author_id: str | None, author_username: str | None, reviewer_id: str | None,
-                                   assignee_id: str | None, reviewer_username: str | None, target_branch: str | None,
-                                   source_branch: str | None, search: str | None) -> dict:
-        headers = self._headers
-        params = assign_params(state=state, order_by=order_by,
-                               sort=sort, milestone=milestone, labels=labels,
-                               created_after=created_after, created_before=created_before,
-                               updated_after=updated_after, updated_before=updated_before,
-                               scope=scope, author_id=author_id,
-                               author_username=author_username, assignee_id=assignee_id,
-                               reviewer_id=reviewer_id, reviewer_username=reviewer_username,
-                               source_branch=source_branch, target_branch=target_branch,
-                               search=search, per_page=per_page, page=page)
-        suffix = f'/projects/{self.project_id}/merge_requests'
-        response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202], resp_type='json')
         return response
 
     def merge_request_create_request(self, source_branch: str | None, target_branch: str | None,
@@ -285,14 +288,6 @@ class Client(BaseClient):
         response = self._http_request('PUT', suffix, headers=headers, json_data=data, params=params, ok_codes=[200, 202])
         return response
 
-    def merge_request_note_list_request(self, per_page: int, page: int, merge_request_iid: str | None,
-                                        sort: str | None, order_by: str | None) -> dict:
-        headers = self._headers
-        params = assign_params(sort=sort, per_page=per_page, page=page, order_by=order_by)
-        suffix = f'/projects/{self.project_id}/merge_requests/{merge_request_iid}/notes'
-        response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202])
-        return response
-
     def merge_request_note_create_request(self, merge_request_iid: str | Any, body: str | Any) -> dict:
         headers = self._headers
         suffix = f'/projects/{self.project_id}/merge_requests/{merge_request_iid}/notes'
@@ -311,26 +306,6 @@ class Client(BaseClient):
         headers = self._headers
         suffix = f'/projects/{self.project_id}/merge_requests/{merge_request_iid}/notes/{note_id}'
         response = self._http_request('DELETE', suffix, headers=headers, ok_codes=[200, 202, 204], resp_type='text')
-        return response
-
-    def group_member_list_request(self, group_id: int | Any) -> dict:
-        headers = self._headers
-        suffix = f'/groups/{group_id}/members'
-        response = self._http_request('GET', suffix, headers=headers, ok_codes=[200, 202])
-        return response
-
-    def codes_search_request(self, per_page: int, page: int, search: str | Any) -> dict:
-        headers = self._headers
-        params = assign_params(search=search, scope='blobs', page=page, per_page=per_page)
-        suffix = f'/projects/{self.project_id}/search'
-        response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202])
-        return response
-
-    def project_user_list_request(self, per_page: int, page: int, search: str | Any) -> dict:
-        headers = self._headers
-        params = assign_params(search=search, page=page, per_page=per_page)
-        suffix = f'/projects/{self.project_id}/users'
-        response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202])
         return response
 
 
@@ -355,14 +330,10 @@ def check_args_for_update(args: dict, optinal_params: list) -> dict:
     return params
 
 
-def validate_pagination_values(args) -> tuple[int, int, int]:
-    per_page = arg_to_number(args.get('per_page'))
-    if not per_page:
-        per_page = 50
-    page_number = arg_to_number(args.get('page'))
+def validate_pagination_values(limit: int | None, page_number: int | None) -> tuple[int, int, int]:
+    per_page = 50
     if not page_number:
         page_number = 1
-    limit = arg_to_number(args.get('limit'))
     if not limit:
         limit = 50
     if limit < 0 or page_number < 0:
@@ -375,6 +346,29 @@ def validate_pagination_values(args) -> tuple[int, int, int]:
         per_page = 100
 
     return limit, per_page, page_number
+
+
+def response_according_pagination(client_function, limit: int | None, page_number: int | None,
+                                  params: dict, suffix_id: str | None):
+    '''
+    This function gets results accoring to the pagination values.
+    input: The paramters for the client function,suffix_id , and the name of the client function.
+    output: list(representing the pages) of list of raw dictonary results.
+    '''
+    limit, per_page, page_number = validate_pagination_values(limit, page_number)
+    params.update({'per_page': per_page})
+    params.update({'page': page_number})
+    items_count_total = 0
+    response: List[Dict[str, Any]] = []
+    while items_count_total < limit:
+        response_temp = client_function(params, suffix_id)
+        if not response_temp:
+            break
+        response.extend(response_temp)
+        items_count_total += len(response_temp)
+        params['per_page'] = 50 if (limit - items_count_total >= 50) else limit - items_count_total
+        params['page'] += 1
+    return response
 
 
 ''' COMMAND FUNCTIONS '''
@@ -411,18 +405,11 @@ def group_project_list_command(client: Client, args: Dict[str, Any]) -> CommandR
         (CommandResults).
     """
     response_to_hr, headers, human_readable = [], ['Id', 'Name', 'Description', 'Path'], ''
-    per_page, limit, page = validate_pagination_values(args)
-    items_count_total = 0
+    page_number = arg_to_number(args.get('page'))
+    limit = arg_to_number(args.get('limit'))
     group_id = args.get('group_id', '')
-    response: List[Dict[str, Any]] = []
-    while items_count_total < limit:
-        response_temp = client.group_projects_list_request(per_page, page, group_id)
-        if not response_temp:
-            break
-        response.extend(response_temp)
-        items_count_total += len(response_temp)
-        page += 1
-
+    params: Dict[str, Any] = {}
+    response = response_according_pagination(client.group_projects_list_request, limit, page_number, params, group_id)
     for project in response:
         response_to_hr.append({'Id': project.get('id'),
                                'Name': project.get('name'),
@@ -448,26 +435,13 @@ def get_project_list_command(client: Client, args: Dict[str, Any]) -> CommandRes
         (CommandResults).
     """
     response_to_hr, headers, human_readable = [], ['Id', 'Name', 'Description', 'Path'], ''
-    per_page, limit, page = validate_pagination_values(args)
-    items_count_total = 0
-    membership = args.get('membership')
-    order_by = args.get('order_by')
-    owned = args.get('owned')
-    search = args.get('search')
-    sort = args.get('sort')
-    visibility = args.get('visibility')
-    with_issues_enabled = args.get('with_issues_enabled')
-    with_merge_requests_enabled = args.get('with_merge_requests_enabled')
-    response: List[Dict[str, Any]] = []
-    while items_count_total < limit:
-        response_temp = client.get_project_list_request(per_page, page, membership, order_by, owned, search,
-                                                        sort, visibility, with_issues_enabled, with_merge_requests_enabled)
-        if not response_temp:
-            break
-        response.extend(response_temp)
-        items_count_total += len(response_temp)
-        page += 1
-
+    page_number = arg_to_number(args.get('page'))
+    limit = arg_to_number(args.get('limit'))
+    params = assign_params(membership=args.get('membership'), order_by=args.get('order_by'),
+                           owned=args.get('owned'), search=args.get('search'), sort=args.get('sort'),
+                           visibility=args.get('visibility'), with_issues_enabled=args.get('with_issues_enabled'),
+                           with_merge_requests_enabled=args.get('with_merge_requests_enabled'))
+    response = response_according_pagination(client.get_project_list_request, limit, page_number, params, None)
     for project in response:
         response_to_hr.append({'Id': project.get('id'),
                                'Name': project.get('name'),
@@ -494,41 +468,18 @@ def issue_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     response_to_hr, human_readable = [], ''
     headers = ['Id', 'Issue_id', 'Title', 'CreatedAt', 'CreatedBy', 'UpdatedAt', 'Milstone', 'State', ' Assignee']
-    per_page, limit, page = validate_pagination_values(args)
-    items_count_total = 0
-    assignee_id = args.get('assignee_id')
-    assignee_username = args.get('assignee_username')
-    author_id = args.get('author_id')
-    author_username = args.get('author_username')
-    confidential = args.get('confidential')
-    created_after = args.get('created_after')
-    created_before = args.get('created_before')
-    due_date = args.get('due_date')
-    epic_id = args.get('epic_id')
-    issue_type = args.get('issue_type')
-    content = args.get('content')
-    labels = args.get('labels')
-    milestone = args.get('milestone')
-    order_by = args.get('order_by')
-    scope = args.get('scope')
-    search = args.get('search')
-    sort = args.get('sort')
-    state = args.get('state')
-    updated_after = args.get('updated_after')
-    updated_before = args.get('updated_before')
-    response: List[Dict[str, Any]] = []
-    while items_count_total < limit:
-        response_temp = client.issue_list_request(per_page, page, assignee_id, assignee_username,
-                                                  author_id, author_username, confidential,
-                                                  created_after, created_before, due_date,
-                                                  epic_id, issue_type, content, labels, milestone,
-                                                  order_by, scope, search, sort, state,
-                                                  updated_after, updated_before)
-        if not response_temp:
-            break
-        response.extend(response_temp)
-        items_count_total += len(response_temp)
-        page += 1
+    page_number = arg_to_number(args.get('page'))
+    limit = arg_to_number(args.get('limit'))
+    params = assign_params(assignee_id=args.get('assignee_id'), assignee_username=args.get('assignee_username'),
+                           author_id=args.get('author_id'), author_username=args.get('author_username'),
+                           confidential=args.get('confidential'), created_after=args.get('created_after'),
+                           created_before=args.get('created_before'), due_date=args.get('due_date'),
+                           epic_id=args.get('epic_id'), issue_type=args.get('issue_type'), content=args.get('content'),
+                           labels=args.get('labels'), milestone=args.get('milestone'), order_by=args.get('order_by'),
+                           scope=args.get('scope'), search=args.get('search'), sort=args.get('sort'),
+                           state=args.get('state'), updated_after=args.get('updated_after'),
+                           updated_before=args.get('updated_before'))
+    response = response_according_pagination(client.issue_list_request, limit, page_number, params, None)
 
     for issue in response:
         issue_details = {'Id': issue.get('id'),
@@ -537,8 +488,7 @@ def issue_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                          'CreatedAt': issue.get('created_at'),
                          'UpdateAt': issue.get('update_at'),
                          'State': issue.get('state'),
-                         'CreatedBy': issue.get('author', {}).get('created_by')
-                         }
+                         'CreatedBy': issue.get('author', {}).get('created_by')}
         if issue.get('assignee'):
             issue_details['Assignee'] = issue.get('assignee', {}).get('name')
         if issue.get('milestone'):
@@ -935,7 +885,9 @@ def commit_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         response = [client.commit_single_request(commit_id)]
     else:
         response_title = 'List Commits'
-        per_page, limit, page = validate_pagination_values(args)
+        page_number = arg_to_number(args.get('page'))
+        limit = arg_to_number(args.get('limit'))
+        limit, per_page, page_number = validate_pagination_values(limit, page_number)
         items_count_total, response = 0, []
         ref_name = args.get('ref_name')
         created_before = args.get('created_before')
@@ -946,13 +898,13 @@ def commit_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         order = args.get('order')
         all_ = args.get('all')
         while items_count_total < limit:
-            response_temp = client.commit_list_request(per_page, page, ref_name, created_before,
+            response_temp = client.commit_list_request(per_page, page_number, ref_name, created_before,
                                                        created_after, path, with_stats, first_parent, order, all_)
             if not response_temp:
                 break
             response.extend(response_temp)
             items_count_total += len(response_temp)
-            page += 1
+            page_number += 1
     for commit in response:
         response_to_hr.append({'Title': commit.get('name', ''),
                                'Message': commit.get('message', ''),
@@ -987,16 +939,18 @@ def branch_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     else:
         response_title = 'List Branches'
-        per_page, limit, page = validate_pagination_values(args)
+        page_number = arg_to_number(args.get('page'))
+        limit = arg_to_number(args.get('limit'))
+        limit, per_page, page_number = validate_pagination_values(limit, page_number)
         items_count_total, response = 0, []
         search = args.get('search')
         while items_count_total < limit:
-            response_temp = client.branch_list_request(per_page, page, search)
+            response_temp = client.branch_list_request(per_page, page_number, search)
             if not response_temp:
                 break
             response.extend(response_temp)
             items_count_total += len(response_temp)
-            page += 1
+            page_number += 1
 
     for branch in response:
         response_to_hr.append({'Title': branch.get('name'),
@@ -1026,7 +980,9 @@ def group_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     response_to_hr, human_readable, response_title = [], '', 'List Group'
     headers = ['Id', 'Name', 'Path', 'Description', 'CreatedAt', 'Visibility']
-    per_page, limit, page = validate_pagination_values(args)
+    page_number = arg_to_number(args.get('page'))
+    limit = arg_to_number(args.get('limit'))
+    limit, per_page, page_number = validate_pagination_values(limit, page_number)
     items_count_total = 0
     response: List[Dict[str, Any]] = []
     skip_groups = args.get('skip_groups')
@@ -1038,13 +994,14 @@ def group_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     min_access_level = args.get('min_access_level')
     top_level_only = args.get('top_level_only')
     while items_count_total < limit:
-        response_temp = client.group_list_request(per_page, page, skip_groups, all_available, search, order_by,
+        response_temp = client.group_list_request(per_page, page_number, skip_groups, all_available, search, order_by,
                                                   sort, owned, min_access_level, top_level_only)
         if not response_temp:
             break
         response.extend(response_temp)
         items_count_total += len(response_temp)
-        page += 1
+        page_number += 1
+
     for group in response:
         response_to_hr.append({'Id': group.get('id'),
                                'Name': group.get('name'),
@@ -1126,8 +1083,6 @@ def issue_note_update_command(client: Client, args: Dict[str, Any]) -> CommandRe
     issue_iid = args.get('issue_iid')
     note_id = args.get('note_id')
     body = args.get('body')
-    if not issue_iid or not note_id or not body:
-        raise DemistoException('You must specify the "issue_iid" and the "note_id" and the updated body of the file.')
     response = client.issue_note_update_request(issue_iid, note_id, body)
     human_readable_str = 'Issue note updated was updated successfully.'
     return CommandResults(
@@ -1150,19 +1105,21 @@ def issue_note_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
     """
     response_to_hr = []
     headers = ['Id', 'Author', 'Text', 'CreatedAt', 'UpdatedAt']
-    per_page, limit, page = validate_pagination_values(args)
+    page_number = arg_to_number(args.get('page'))
+    limit = arg_to_number(args.get('limit'))
+    limit, per_page, page_number = validate_pagination_values(limit, page_number)
     items_count_total = 0
     response: List[Dict[str, Any]] = []
     issue_iid = args.get('issue_iid')
     sort = args.get('sort')
     order_by = args.get('order_by')
     while items_count_total < limit:
-        response_temp = client.issue_note_list_request(per_page, page, issue_iid, sort, order_by)
+        response_temp = client.issue_note_list_request(per_page, page_number, issue_iid, sort, order_by)
         if not response_temp:
             break
         response.extend(response_temp)
         items_count_total += len(response_temp)
-        page += 1
+        page_number += 1
 
     for issue_note in response:
         issue_note_edit = {'Id': issue_note.get('id'),
@@ -1193,7 +1150,9 @@ def merge_request_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     """
     response_to_hr = []
     headers = ['Iid', 'Title', 'CreatedAt', 'CreatedBy', 'UpdatedAt', 'Status', 'MergeBy', 'MergedAt', 'Reviewers']
-    per_page, limit, page = validate_pagination_values(args)
+    page_number = arg_to_number(args.get('page'))
+    limit = arg_to_number(args.get('limit'))
+    limit, per_page, page_number = validate_pagination_values(limit, page_number)
     items_count_total = 0
     response: List[Dict[str, Any]] = []
     state = args.get('state')
@@ -1215,7 +1174,7 @@ def merge_request_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     target_branch = args.get('target_branch')
     search = args.get('search')
     while items_count_total < limit:
-        response_temp = client.merge_request_list_request(per_page, page, state, order_by, sort, milestone, labels,
+        response_temp = client.merge_request_list_request(per_page, page_number, state, order_by, sort, milestone, labels,
                                                           created_after, created_before, updated_after,
                                                           updated_before, scope, author_id, author_username, reviewer_id,
                                                           assignee_id, reviewer_username, target_branch, source_branch, search)
@@ -1223,7 +1182,7 @@ def merge_request_list_command(client: Client, args: Dict[str, Any]) -> CommandR
             break
         response.extend(response_temp)
         items_count_total += len(response_temp)
-        page += 1
+        page_number += 1
     for merge_request in response:
         merge_request_edit = {'Iid': merge_request.get('iid', ''),
                               'Title': merge_request.get('Title', ''),
@@ -1346,19 +1305,21 @@ def merge_request_note_list_command(client: Client, args: Dict[str, Any]) -> Com
         raise DemistoException('You must specify the "merge_request_iid"')
     response_to_hr = []
     headers = ['Id', 'Author', 'Text', 'CreatedAt', 'UpdatedAt']
-    per_page, limit, page = validate_pagination_values(args)
+    page_number = arg_to_number(args.get('page'))
+    limit = arg_to_number(args.get('limit'))
+    limit, per_page, page_number = validate_pagination_values(limit, page_number)
     items_count_total = 0
     response: List[Dict[str, Any]] = []
     merge_request_iid = args.get('merge_request_iid')
     sort = args.get('sort')
     order_by = args.get('order_by')
     while items_count_total < limit:
-        response_temp = client.merge_request_note_list_request(per_page, page, merge_request_iid, sort, order_by)
+        response_temp = client.merge_request_note_list_request(per_page, page_number, merge_request_iid, sort, order_by)
         if not response_temp:
             break
         response.extend(response_temp)
         items_count_total += len(response_temp)
-        page += 1
+        page_number += 1
 
     for merge_request_note in response:
         merge_request_note_edit = {'Id': merge_request_note.get('id', ''),
@@ -1482,16 +1443,18 @@ def code_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         (CommandResults).
     """
     search = args.get('search')
-    per_page, limit, page = validate_pagination_values(args)
+    page_number = arg_to_number(args.get('page'))
+    limit = arg_to_number(args.get('limit'))
+    limit, per_page, page_number = validate_pagination_values(limit, page_number)
     items_count_total = 0
     response: List[Dict[str, Any]] = []
     while items_count_total < limit:
-        response_temp = client.codes_search_request(per_page, page, search)
+        response_temp = client.codes_search_request(per_page, page_number, search)
         if not response_temp:
             break
         response.extend(response_temp)
         items_count_total += len(response_temp)
-        page += 1
+        page_number += 1
     return CommandResults(
         outputs_prefix='GitLab.Code',
         outputs=response,
@@ -1511,16 +1474,18 @@ def project_user_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
     search = args.get('search')
     headers = ['Id', 'UserName', 'Name', 'State', 'WebLink']
     response_to_hr = []
-    per_page, limit, page = validate_pagination_values(args)
+    page_number = arg_to_number(args.get('page'))
+    limit = arg_to_number(args.get('limit'))
+    limit, per_page, page_number = validate_pagination_values(limit, page_number)
     items_count_total = 0
     response: List[Dict[str, Any]] = []
     while items_count_total < limit:
-        response_temp = client.project_user_list_request(per_page, page, search)
+        response_temp = client.project_user_list_request(per_page, page_number, search)
         if not response_temp:
             break
         response.extend(response_temp)
         items_count_total += len(response_temp)
-        page += 1
+        page_number += 1
 
     for user in response:
         response_to_hr.append({'Id': user.get('id', ''),

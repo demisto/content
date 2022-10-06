@@ -88,7 +88,7 @@ script:
     description: This allows you to create a single file. File path or entry_id must be specified.
     arguments:
     - name: entry_id
-      description: Entry id of the file.if the user uploaded a file, he can provide the entry id. If he did, we need to read the content from the file and set the value in the file_content argument.
+      description: Entry id of the file.
       required: false
       isArray: false
     - name: file_path
@@ -3291,7 +3291,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.7.35188
 fromversion: 6.5.0
 tests:
 - GitLab-Test
