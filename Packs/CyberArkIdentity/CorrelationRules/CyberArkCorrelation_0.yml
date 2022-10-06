@@ -1,37 +1,37 @@
-- alert_category: CREDENTIAL_ACCESS
-  alert_description: This correlation rule will trigger in an event in which 4 or
+alert_category: CREDENTIAL_ACCESS
+alert_description: This correlation rule will trigger in an event in which 4 or
     more Failed Logins events occurred from a single user during a 10 minutes timeframe.
-  alert_fields:
-    actor_image: null
-    actor_path: null
-    cmd: null
-    domain: null
-    hash: null
-    hostname: null
-    local_ip: null
-    remote_ip: null
-    remote_port: null
-    username: null
-  alert_name: CyberArk Failed Logins
-  crontab: '*/10 * * * *'
-  dataset: alerts
-  description: This correlation rule will trigger in an event in which 4 or more Failed
+alert_fields:
+  actor_image: null
+  actor_path: null
+  cmd: null
+  domain: null
+  hash: null
+  hostname: null
+  local_ip: null
+  remote_ip: null
+  remote_port: null
+  username: null
+alert_name: CyberArk Failed Logins
+crontab: '*/10 * * * *'
+dataset: alerts
+description: This correlation rule will trigger in an event in which 4 or more Failed
     Logins events occurred from a single user during a 10 minutes timeframe.
-  drilldown_query_timeframe: ALERT
-  execution_mode: SCHEDULED
-  global_rule_id: 1df10e5d-74ff-4785-be2c-5d1e7e863109
-  investigation_query_link: "dataset=cyberark_identity_raw \r\n|filter UserGuid=$UserGuid\r\
+drilldown_query_timeframe: ALERT
+execution_mode: SCHEDULED
+global_rule_id: 1df10e5d-74ff-4785-be2c-5d1e7e863109
+investigation_query_link: "dataset=cyberark_identity_raw \r\n|filter UserGuid=$UserGuid\r\
     \n|filter UserName !=null\r\n|fields _time ,UserName, FromIPAddress"
-  mapping_strategy: CUSTOM
-  mitre_defs: {}
-  name: CyberArk Failed Logins
-  search_window: 10 minutes
-  severity: SEV_030_MEDIUM
-  suppression_duration: null
-  suppression_enabled: false
-  suppression_fields: null
-  user_defined_category: null
-  user_defined_severity: null
-  xql_query: "dataset=cyberark_identity_raw \r\n|filter EventType=\"Cloud.Core.LoginFail\"\
-    \r\n|comp count(EventType) as `Failed Logins` by UserGuid\r\n|filter  `Failed\
-    \ Logins` >=4 "
+mapping_strategy: CUSTOM
+mitre_defs: {}
+name: CyberArk Failed Logins
+search_window: 10 minutes
+severity: SEV_030_MEDIUM
+suppression_duration: null
+suppression_enabled: false
+suppression_fields: null
+user_defined_category: null
+user_defined_severity: null
+xql_query: "dataset=cyberark_identity_raw \r\n|filter EventType=\"Cloud.Core.LoginFail\"\
+  \r\n|comp count(EventType) as `Failed Logins` by UserGuid\r\n|filter  `Failed\
+  \ Logins` >=4 "
