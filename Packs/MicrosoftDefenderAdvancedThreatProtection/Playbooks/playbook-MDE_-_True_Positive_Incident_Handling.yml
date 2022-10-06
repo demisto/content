@@ -74,33 +74,13 @@ inputs:
   playbookInputQuery:
   required: false
   value:
-    complex:
-      root: File
-      accessor: SHA256
-      transformers:
-      - operator: append
-        args:
-          item:
-            value:
-              simple: incident.filesha256
-            iscontext: true
-      - operator: uniq
+    simple: ${incident.filesha256}
 - description: Enter the File SHA1 you want to remove from your protected endpoints.
   key: FileSha1
   playbookInputQuery:
   required: false
   value:
-    complex:
-      root: File
-      accessor: SHA1
-      transformers:
-      - operator: append
-        args:
-          item:
-            value:
-              simple: incident.filesha1
-            iscontext: true
-      - operator: uniq
+    simple: ${incident.filesha1}
 - key: ManuallyChooseIOCForHunting
   value:
     simple: "True"
@@ -108,10 +88,9 @@ inputs:
   description: |-
     This input will provide you the ability to select IOCs to be hunted using the Threat Hunting - generic playbook.
     If false, it will hunt for all IOCs detected in the incident.
+    Note: You can also insert "No Threat Hunting" to skiping the Threat Hunting stage.
   playbookInputQuery:
 - key: IP
-  description: |-
-    IP information to be hunt on
   value:
     complex:
       root: IP
@@ -124,6 +103,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
+  description: IP information to be hunt on
   playbookInputQuery:
 - key: MD5
   value:
@@ -138,10 +118,9 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: "MD5 file information to be hunt upon"
+  description: MD5 file information to be hunt upon
   playbookInputQuery:
 - key: URL_or_Domain
-  description: "URL or Domain information to be hunt upon"
   value:
     complex:
       root: Domain.Name
@@ -159,6 +138,9 @@ inputs:
               simple: URL.Data
             iscontext: true
       - operator: uniq
+  required: false
+  description: URL or Domain information to be hunt upon
+  playbookInputQuery:
 name: MDE - True Positive Incident Handling
 outputs: []
 starttaskid: '0'
@@ -1073,7 +1055,7 @@ tasks:
         This script wraps the generic create-record command in ServiceNow.
         You can add fields that you want to create the record with as script arguments or in the
         code.
-      scriptName: ServiceNowCreateIncident
+      script: ServiceNowCreateIncident
       type: regular
       iscommand: false
       brand: ""
@@ -1555,10 +1537,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "107":
     id: "107"
-    taskid: 43b90bfd-2a17-498c-8204-7b1bac29b35e
+    taskid: 416293fa-221b-42bb-80f0-2e26dfda43f2
     type: playbook
     task:
-      id: 43b90bfd-2a17-498c-8204-7b1bac29b35e
+      id: 416293fa-221b-42bb-80f0-2e26dfda43f2
       version: -1
       name: Threat Hunting - Generic
       description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: - Splunk\n- Qradar\n- Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
@@ -1574,55 +1556,11 @@ tasks:
         complex:
           root: inputs.IP
           transformers:
-          - operator: If-Then-Else
-            args:
-              condition:
-                value:
-                  simple: rhs==lhs
-              else:
-                value:
-                  simple: Specify IOCs to hunt upon.Answers.0
-                iscontext: true
-              equals: {}
-              lhs:
-                value:
-                  simple: "False"
-              options: {}
-              rhs:
-                value:
-                  simple: inputs.ManuallyChooseIOCForHunting
-                iscontext: true
-              then:
-                value:
-                  simple: inputs.IP
-                iscontext: true
           - operator: uniq
       MD5:
         complex:
           root: inputs.MD5
           transformers:
-          - operator: If-Then-Else
-            args:
-              condition:
-                value:
-                  simple: rhs==lhs
-              else:
-                value:
-                  simple: Specify IOCs to hunt upon.Answers.3
-                iscontext: true
-              equals: {}
-              lhs:
-                value:
-                  simple: "False"
-              options: {}
-              rhs:
-                value:
-                  simple: inputs.ManuallyChooseIOCForHunting
-                iscontext: true
-              then:
-                value:
-                  simple: inputs.MD5
-                iscontext: true
           - operator: uniq
       QRadarTimeFrame:
         simple: LAST 7 DAYS
@@ -1630,54 +1568,11 @@ tasks:
         complex:
           root: inputs.FileSha1
           transformers:
-          - operator: If-Then-Else
-            args:
-              condition:
-                value:
-                  simple: rhs==lhs
-              else:
-                value:
-                  simple: Specify IOCs to hunt upon.Answers.2
-                iscontext: true
-              equals: {}
-              lhs:
-                value:
-                  simple: "False"
-              options: {}
-              rhs:
-                value:
-                  simple: inputs.ManuallyChooseIOCForHunting
-                iscontext: true
-              then:
-                value:
-                  simple: inputs.FileSha1
-                iscontext: true
           - operator: uniq
       SHA256:
         complex:
           root: inputs.FileSha256
           transformers:
-          - operator: If-Then-Else
-            args:
-              condition:
-                value:
-                  simple: rhs==lhs
-              else:
-                value:
-                  simple: Specify IOCs to hunt upon.Answers.1
-                iscontext: true
-              equals: {}
-              lhs:
-                value:
-                  simple: "false"
-              options: {}
-              rhs:
-                value:
-                  simple: inputs.ManuallyChooseIOCForHunting
-                iscontext: true
-              then:
-                value:
-                  simple: inputs.FileSha256
           - operator: uniq
       SplunkEarliestTime:
         simple: -7d@d
@@ -1687,28 +1582,6 @@ tasks:
         complex:
           root: inputs.URL_or_Domain
           transformers:
-          - operator: If-Then-Else
-            args:
-              condition:
-                value:
-                  simple: rhs==lhs
-              else:
-                value:
-                  simple: Specify IOCs to hunt upon.Answers.4
-                iscontext: true
-              equals: {}
-              lhs:
-                value:
-                  simple: "False"
-              options: {}
-              rhs:
-                value:
-                  simple: inputs.ManuallyChooseIOCForHunting
-                iscontext: true
-              then:
-                value:
-                  simple: inputs.URL_or_Domain
-                iscontext: true
           - operator: uniq
     separatecontext: true
     continueonerrortype: ""
@@ -1720,7 +1593,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1770,
+          "x": -1990,
           "y": 420
         }
       }
@@ -1733,10 +1606,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "108":
     id: "108"
-    taskid: 94aa6066-52bd-4ef8-8b40-bbb1590dd813
+    taskid: 508b2345-b411-4a43-8612-751ecd0cb67f
     type: condition
     task:
-      id: 94aa6066-52bd-4ef8-8b40-bbb1590dd813
+      id: 508b2345-b411-4a43-8612-751ecd0cb67f
       version: -1
       name: Should the analyst choose the indicators to hunt?
       description: Should the analyst choose the indicators to hunt?
@@ -1746,6 +1619,8 @@ tasks:
     nexttasks:
       '#default#':
       - "107"
+      No Hunting:
+      - "111"
       "yes":
       - "109"
     separatecontext: false
@@ -1760,6 +1635,17 @@ tasks:
           right:
             value:
               simple: "True"
+          ignorecase: true
+    - label: No Hunting
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: inputs.ManuallyChooseIOCForHunting
+            iscontext: true
+          right:
+            value:
+              simple: No Threat Hunting
           ignorecase: true
     continueonerrortype: ""
     view: |-
@@ -1790,13 +1676,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "107"
+      - "115"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -2000,
+          "x": -2390,
           "y": 250
         }
       }
@@ -2016,7 +1902,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2000,
+          "x": -2190,
           "y": 760
         }
       }
@@ -2053,7 +1939,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2000,
+          "x": -2190,
           "y": 910
         }
       }
@@ -2109,8 +1995,62 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1770,
-          "y": 580
+          "x": -1990,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "115":
+    id: "115"
+    taskid: ec74ebda-f078-4368-8445-b8a73fb013e1
+    type: playbook
+    task:
+      id: ec74ebda-f078-4368-8445-b8a73fb013e1
+      version: -1
+      name: Threat Hunting - Generic
+      description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: - Splunk\n- Qradar\n- Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
+      playbookName: Threat Hunting - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "114"
+    scriptarguments:
+      IPAddress:
+        simple: ${Specify IOCs to hunt upon.Answers.0}
+      MD5:
+        simple: ${Specify IOCs to hunt upon.Answers.3}
+      QRadarTimeFrame:
+        simple: LAST 7 DAYS
+      SHA1:
+        simple: ${Specify IOCs to hunt upon.Answers.2}
+      SHA256:
+        simple: ${Specify IOCs to hunt upon.Answers.1}
+      SplunkEarliestTime:
+        simple: -7d@d
+      SplunkLatestTime:
+        simple: now
+      URLDomain:
+        simple: ${Specify IOCs to hunt upon.Answers.4}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -2390,
+          "y": 420
         }
       }
     note: false
