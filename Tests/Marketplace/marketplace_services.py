@@ -3359,7 +3359,7 @@ class Pack(object):
             for image_path in pack_preview_images:
                 image_folder = os.path.dirname(image_path).split('/')[-1] or ''
                 image_name = os.path.basename(image_path)
-                image_storage_path = os.path.join(pack_storage_root_path,image_folder ,image_name)
+                image_storage_path = os.path.join(pack_storage_root_path, image_folder, image_name)
                 pack_image_blob = storage_bucket.blob(image_storage_path)
                 with open(image_path, "rb") as image_file:
                     pack_image_blob.upload_from_file(image_file)
@@ -3376,7 +3376,7 @@ class Pack(object):
             bool: True if the file is an integration image or False otherwise
         """
         return all([
-            file_path.startswith(os.path.join(PACKS_FOLDER, self._pack_name)),
+            file_path.startswith(os.path.join(PACKS_FOLDER, self.name)),
             file_path.endswith('.png'),
             '_image' in os.path.basename(file_path.lower()),
             (PackFolders.XSIAM_DASHBOARDS.value in file_path or PackFolders.XSIAM_REPORTS.value in file_path)
@@ -3387,12 +3387,9 @@ class Pack(object):
         try:
             prefixes = ['xsiamdashboard', 'xsiamreport']
             file_name = file_name.replace('external-', '')
-            logging.info(f"yuval file name 1 {file_name}")
             for prefix in prefixes:
                 file_name = file_name.replace(f'{prefix}-', '')
-                logging.info(f"yuval file name 2 {file_name}")
             image_file_name = file_name.split('.')[0] + '_image.png'
-            logging.info(f"yuval file name 1 {image_file_name}")
             return image_file_name
         except Exception as e:
             logging.warning(f'could not conclude preview image path. Skipping {file_name}. Additional info: {e}')
