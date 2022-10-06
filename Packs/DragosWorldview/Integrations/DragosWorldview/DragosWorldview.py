@@ -29,7 +29,7 @@ class Client(BaseClient):
             timeout=60,
         )
 
-    def api_request(self, suffix: str, response_type: Exchange2016_Compliancestr = 'json'):
+    def api_request(self, suffix: str, response_type: str = 'json'):
         return self._http_request(
             method="get",
             url_suffix=suffix,
