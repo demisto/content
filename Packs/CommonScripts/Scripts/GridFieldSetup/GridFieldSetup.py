@@ -6,7 +6,7 @@ from typing import Dict, Any
 import traceback
 
 
-def grid_field_setup(keys: str, vals: dict) -> list[str]:
+def grid_field_setup(keys: Optional[Any], vals: dict) -> List[Dict[str, Any]]:
     """Returns a list of dictionaries based on the key/values provided.
     :type keys: ``str``
     :type vals: ``dict``
@@ -14,7 +14,8 @@ def grid_field_setup(keys: str, vals: dict) -> list[str]:
     :param vals: dictionary of the value assigned to keys
     :return: list of dictionaries
     """
-    key_list = keys.split(',')
+    if keys:
+        key_list = keys.split(',')
     num_entries = len(key_list)
     res_list = []
     temp = {}
