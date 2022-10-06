@@ -25,8 +25,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Manage credentials for applications, databases, CI/CD tools, and services
-  without causing friction in the development process.
+description: Manage credentials for applications, databases, CI/CD tools, and services without causing friction in the development process.
 display: DelineaDSV
 name: DelineaDSV
 script:
@@ -46,7 +45,7 @@ script:
     - contextPath: secret
       description: Received JSON object secret
       type: String
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.7.35188
   feed: false
   isfetch: false
   longRunning: false
