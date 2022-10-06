@@ -191,6 +191,3 @@ class Graph:
             self.implemented_scripts_to_tests = {item: tests for item,
                                                  tests in scripts_to_tests.items()}
             logger.info('after query objects')
-
-
-Graph('xsoar')
