@@ -33,6 +33,8 @@ def compare_indexes(index_id_set_path: Path, index_graph_path: Path, output_path
     with index_id_set_path.open() as f1, index_graph_path.open() as f2:
         index_id_set = json.load(f1)
         index_graph = json.load(f2)
+        index_id_set.pop('modified', None)
+        index_graph.pop('modified', None)
         sort_dict(index_id_set)
         sort_dict(index_graph)
         diff_list = list(dictdiffer.diff(index_id_set, index_graph))

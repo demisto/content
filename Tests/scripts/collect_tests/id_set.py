@@ -4,7 +4,7 @@ from typing import Iterable, Optional
 
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
-from demisto_sdk.commands.content_graph.common import ContentType
+from demisto_sdk.commands.content_graph.common import ContentType, Relationship
 from demisto_sdk.commands.content_graph.objects.content_item import ContentItem
 
 
@@ -164,7 +164,6 @@ class IdSet(DictFileBased):
 class Graph:
     def __init__(self, marketplace: MarketplaceVersions) -> None:
         with Neo4jContentGraphInterface() as content_graph_interface:
-            logger.info('before query graph')
             integrations = content_graph_interface.search_nodes(marketplace=marketplace,
                                                                 content_type=ContentType.INTEGRATION)
             scripts = content_graph_interface.search_nodes(marketplace=marketplace,
@@ -172,19 +171,24 @@ class Graph:
             test_playbooks = content_graph_interface.search_nodes(marketplace=marketplace,
                                                                   content_type=ContentType.TEST_PLAYBOOK)
             # maps content_items to test playbook where they are used recursively
-            scripts_to_tests = content_graph_interface.get_all_content_item_tests(marketplace=marketplace,
-                                                                                  content_type=ContentType.SCRIPT)
+            scripts_to_tests = content_graph_interface.get_relationship_between_items(marketplace=marketplace,
+                                                                                      relationship_type=Relationship.USES,
+                                                                                      content_type_from=ContentType.SCRIPT,
+                                                                                      content_type_to=ContentType.TEST_PLAYBOOK,
+                                                                                      recursive=True,)
 
-            playbook_to_tests = content_graph_interface.get_all_content_item_tests(marketplace=marketplace,
-                                                                                   content_type=ContentType.PLAYBOOK)
+            playbook_to_tests = content_graph_interface.get_relationship_between_items(marketplace=marketplace,
+                                                                                       relationship_type=Relationship.USES,
+                                                                                       content_type_from=ContentType.PLAYBOOK,
+                                                                                       content_type_to=ContentType.TEST_PLAYBOOK,
+                                                                                       recursive=True,
+                                                                                       )
 
-            logger.info('after query graph')
             self.id_to_integration = {integration.object_id: IdSetItem.from_model(integration) for integration in integrations}
             self.id_to_script = {script.object_id: IdSetItem.from_model(script) for script in scripts}
             self.id_to_test_playbook = {
                 test_playbook.object_id: IdSetItem.from_model(test_playbook) for test_playbook in test_playbooks}
-            self.implemented_playbooks_to_tests = {item: [IdSetItem.from_model(test) for test in tests]
-                                                   for item, tests in playbook_to_tests.items()}
-            self.implemented_scripts_to_tests = {item: tests for item,
-                                                 tests in scripts_to_tests.items()}
-            logger.info('after query objects')
+            self.implemented_playbooks_to_tests = {item.object_id: [IdSetItem.from_model(test) for test in tests]
+                                                   for item, _, tests in playbook_to_tests}
+            self.implemented_scripts_to_tests = {item.object_id: [IdSetItem.from_model(test) for test in tests]
+                                                 for item, _, tests in scripts_to_tests}
