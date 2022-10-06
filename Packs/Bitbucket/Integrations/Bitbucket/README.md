@@ -245,9 +245,7 @@ Returns a list of the open branches.
 | Bitbucket.Branch.target.parents.links | String | The links associated with the parents of the command | 
 | Bitbucket.Branch.target.repository.type | String | The repository type. | 
 | Bitbucket.Branch.target.repository.full_name | String | The full name of the repository. | 
-| Bitbucket.Branch.target.repository.links.self.href | String | The api request to the repository | 
-| Bitbucket.Branch.target.repository.links.html.href | String | A link to the repository. | 
-| Bitbucket.Branch.target.repository.links.avatar.href | String | A link to the repository image | 
+| Bitbucket.Branch.target.repository.links | String | Links with information about the relevant repository. | 
 | Bitbucket.Branch.target.repository.name | String | The name of the repository | 
 | Bitbucket.Branch.target.repository.uuid | String | The repository unique id. | 
 | Bitbucket.Branch.links | String | Links with information about the branch. |
