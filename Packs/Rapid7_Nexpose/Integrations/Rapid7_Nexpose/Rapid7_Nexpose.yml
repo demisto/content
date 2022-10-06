@@ -1816,6 +1816,34 @@ script:
     description: Update an existing site scan schedule.
     execution: false
     name: nexpose-update-scan-schedule
+  - arguments:
+    - default: false
+      description: The ID of the vulnerability exception to update.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: An expiration date for the vulnerability exception formatted in ISO 8601 format.
+        Required if `status` is not used.
+      isArray: false
+      name: expiration
+      required: false
+      secret: false
+    - default: false
+      description: A status to update the vulnerability exception to. Required if `expiration` is not used.
+      isArray: false
+      name: status
+      required: false
+      predefined:
+        - Recall
+        - Approve
+        - Reject
+      secret: false
+    deprecated: false
+    description: Update a vulnerability exception.
+    execution: false
+    name: nexpose-update-vulnerability-exception
   isfetch: false
   runonce: false
   script: '-'

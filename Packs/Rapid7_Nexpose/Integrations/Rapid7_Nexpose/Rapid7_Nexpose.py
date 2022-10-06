@@ -61,11 +61,18 @@ class SiteImportance(Enum):
 
 
 class VulnerabilityExceptionState(Enum):
-    """An Enum of possible vulnerability exception scope type values."""
+    """An Enum of possible vulnerability exception state values."""
     DELETED = 1
     EXPIRED = 2
     APPROVED = 3
     REJECTED = 4
+
+
+class VulnerabilityExceptionStatus(Enum):
+    """An Enum of possible vulnerability exception status values."""
+    RECALL = 1
+    APPROVE = 2
+    REJECT = 3
 
 
 class VulnerabilityExceptionScopeType(Enum):
@@ -1181,6 +1188,51 @@ class Client(BaseClient):
             url_suffix=f"/sites/{site_id}/scan_schedules/{scan_schedule_id}",
             method="PUT",
             json_data=post_data,
+            resp_type="json",
+        )
+
+    def update_vulnerability_exception_status(self, vulnerability_exception_id: str, status: str) -> dict:
+        """
+        | Update the status of a vulnerability exception.
+        |
+        | For more information see:
+            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/updateVulnerabilityExceptionStatus
+
+        Args:
+            vulnerability_exception_id (str): ID of the vulnerability exception to update.
+            status (str): Status to set the vulnerability exception to. Can be either "recall", "approve", or "reject".
+
+        Returns:
+            dict: API response with information about the updated vulnerability exception.
+        """
+        return self._http_request(
+            url_suffix=f"/vulnerability_exceptions/{vulnerability_exception_id}/{status}",
+            method="POST",
+            resp_type="json",
+        )
+
+    def update_vulnerability_exception_expiration(self, vulnerability_exception_id: str, expiration_date: str) -> dict:
+        """
+        | Update the expiration date for a vulnerability exception.
+        |
+        | For more information see:
+            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getVulnerabilityExceptionExpiration
+
+        Args:
+            vulnerability_exception_id (str): ID of the vulnerability exception to update.
+            expiration_date (str): The new expiration date for the vulnerability exception.
+
+        Returns:
+            dict: API response with information about the updated vulnerability exception.
+        """
+        headers = self._headers.copy()
+        headers.update({"Content-Type": "text/plain"})
+
+        return self._http_request(
+            url_suffix=f"/vulnerability_exceptions/{vulnerability_exception_id}/expires",
+            method="PUT",
+            headers=headers,
+            data=expiration_date.encode("utf-8"),  # type: ignore
             resp_type="json",
         )
 
@@ -3331,6 +3383,47 @@ def update_scan_schedule_command(client: Client, site: Site, scan_schedule_id: i
     return CommandResults(readable_output=f"Scan schedule {scan_schedule_id} has been updated.")
 
 
+def update_vulnerability_exception_command(client: Client, vulnerability_exception_id: str,
+                                           expiration_date: Optional[str] = None,
+                                           status: Optional[VulnerabilityExceptionStatus] = None) -> CommandResults:
+    """
+    Update a vulnerability exception.
+
+    Args:
+        client (Client): Client to use for API requests.
+        vulnerability_exception_id (str): ID of the vulnerability exception to update.
+        expiration_date (str, optional): Expiration date to set for the vulnerability exception,
+            formatted in ISO 8601 format.
+        status (VulnerabilityExceptionStatus, optional): Status to set for the vulnerability exception.
+    """
+    if not expiration_date and not status:
+        raise ValueError("Either expiration or status must be set.")
+
+    responses = []
+    if expiration_date:
+        responses.append(
+            client.update_vulnerability_exception_expiration(
+                vulnerability_exception_id=vulnerability_exception_id,
+                expiration_date=expiration_date
+            )
+        )
+
+    if status:
+        responses.append(
+            client.update_vulnerability_exception_status(
+                vulnerability_exception_id=vulnerability_exception_id,
+                status=status.name.lower()
+            )
+        )
+
+    if len(responses) == 1:
+        responses = responses[0]
+
+    return CommandResults(
+        readable_output=f"Successfully updated vulnerability exception {vulnerability_exception_id}.",
+        raw_response=responses)
+
+
 def main():
     try:
         args = demisto.args()
@@ -3592,6 +3685,18 @@ def main():
                 date_of_month=arg_to_number(args.get("date_of_month")),
                 scan_name=args.get("scan_name"),
                 scan_template_id=args.get("scan_template_id"))
+        elif command == "nexpose-update-vulnerability-exception":
+            status = args.get("status")
+
+            if status is not None:
+                status = VulnerabilityExceptionStatus(status.upper())
+
+            results = update_vulnerability_exception_command(
+                client=client,
+                vulnerability_exception_id=args["id"],
+                expiration_date=args.get("expiration"),
+                status=status,
+            )
         elif command == "nexpose-search-assets":
             sites: list[Site] = []
 
