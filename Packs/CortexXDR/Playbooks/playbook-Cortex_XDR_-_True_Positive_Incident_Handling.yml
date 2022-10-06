@@ -105,19 +105,19 @@ inputs:
   description: "URL or Domain information to be hunt upon"
   value:
     complex:
-      root: Domain
+      root: Domain.Name
       filters:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Domain
+              simple: Domain.Name
             iscontext: true
       transformers:
       - operator: append
         args:
           item:
             value:
-              simple: URL
+              simple: URL.Data
             iscontext: true
       - operator: uniq
 - key: FileSha1
