@@ -819,6 +819,46 @@ def search_eql_command(args, proxies):
     )
 
 
+def create_api_key():
+    body = {
+        "name": "my-api-key",
+        "expiration": "1d",
+        "role_descriptors": {
+            "role-a": {
+                "cluster": ["all"],
+                "index": [
+                    {
+                        "names": ["index-a*"],
+                        "privileges": ["read"]
+                    }
+                ]
+            },
+            "role-b": {
+                "cluster": ["all"],
+                "index": [
+                    {
+                        "names": ["index-b*"],
+                        "privileges": ["all"]
+                    }
+                ]
+            }
+        },
+        "metadata": {
+            "application": "my-application",
+            "environment": {
+                "level": 1,
+                "trusted": True,
+                "tags": ["dev", "staging"]
+            }
+        }
+    }
+    headers = {
+        'Content-Type': "application/json"
+    }
+    res = requests.post(SERVER + '/_security/api_key', auth=(USERNAME, PASSWORD), verify=INSECURE, json=body, headers=headers)
+    return CommandResults(readable_output=res.json())
+
+
 def main():
     proxies = handle_proxy()
     proxies = proxies if proxies else None
@@ -834,6 +874,8 @@ def main():
             get_mapping_fields_command()
         elif demisto.command() == 'es-eql-search':
             return_results(search_eql_command(demisto.args(), proxies))
+        elif demisto.command() == 'es-create-api-key':
+            return_results(create_api_key())
     except Exception as e:
         if 'The client noticed that the server is not a supported distribution of Elasticsearch' in str(e):
             return_error('Failed executing {}. Seems that the client does not support the server\'s distribution, '
