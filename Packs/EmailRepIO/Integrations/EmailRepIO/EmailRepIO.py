@@ -82,7 +82,7 @@ def email_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     if len(emails) == 0 or emails is None:
         raise ValueError('Email(s) not specified')
 
-    emails_result = []
+    emails_results = []
 
     for email in emails:
         email_data = client.get_email_address_reputation(email)
@@ -127,9 +127,9 @@ def email_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
             outputs=email_data,
             indicator=account_context
         )
-        emails_result.append(result)
+        emails_results.append(result)
 
-    return emails_result
+    return emails_results
 
 
 def email_reputation_command(client: Client, args: Dict[str, Any]) -> CommandResults:

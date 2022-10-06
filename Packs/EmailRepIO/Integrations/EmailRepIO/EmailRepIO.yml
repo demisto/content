@@ -14,11 +14,11 @@ configuration:
   required: false
   type: 4
   hidden: true
-- additionalinfo: Mandatory for the emailrepio-email-address-report command
-  display: ""
+- display: ""
   name: credentials
   required: false
   type: 9
+  additionalinfo: Mandatory for the emailrepio-email-address-report command
   displaypassword: API Key
   hiddenusername: true
 - display: Trust any certificate (not secure)
@@ -281,7 +281,7 @@ script:
     description: Reports a malicious email address to EmailRepIO.  You tag the type of malicious activity associated with the email address. The date of the malicious activity defaults to the current time unless otherwise specified.
     execution: false
     name: emailrepio-email-address-report
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.7.35188
   feed: false
   isfetch: false
   longRunning: false
