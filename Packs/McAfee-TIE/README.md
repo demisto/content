@@ -1,5 +1,5 @@
 
-McAfee TIE collects local intelligence from various internal and external security solutions and shares this information in your security system enabling you to act accordingly.
+Use the McAfee Threat Intelligence Exchange (TIE) integration to get file reputations and the systems that reference the files.
 
 ## What does this content pack do?
 - Retrieves threat intelligence data about files from global, and local sources.
