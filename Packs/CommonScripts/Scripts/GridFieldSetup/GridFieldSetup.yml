@@ -1,0 +1,40 @@
+args:
+- default: true
+  defaultValue: GridFieldSetup
+  description: context path to store the temporary list of dictionaries reference in !setGridField command.
+  name: context_path
+  required: true
+- description: columns for the grid field in comma separated format
+  name: keys
+  required: true
+- description: value for 1st key (can be string or context path)
+  name: val1
+  required: true
+- description: value for 2nd key (can be string or context path)
+  name: val2
+- description: value for 3rd key (can be string or context path)
+  name: val3
+- description: value for 4th key (can be string or context path)
+  name: val4
+- description: value for 5th key (can be string or context path)
+  name: val5
+comment: |-
+  Automation used to setup temporary context to be used then by the !setGridField command.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+  `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" context_path=temp`
+commonfields:
+  id: GridFieldSetup
+  version: -1
+dockerimage: demisto/python3:3.10.7.35188
+enabled: true
+name: GridFieldSetup
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
