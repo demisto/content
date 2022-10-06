@@ -15,11 +15,12 @@ args:
   required: false
   secret: false
 - default: false
-  description: Rest API instance to use.
+  description: Rest API instance to use. (Deprecated)
   isArray: false
   name: rest_api_instance
   required: false
   secret: false
+  deprecated: true
 comment: |-
   Gets failed tasks details for incidents based on a query. Limited to 1000 incidents.
 
@@ -40,7 +41,4 @@ dockerimage: demisto/python3:3.10.6.33415
 runonce: false
 tests:
 - No tests
-dependson:
-  must:
-  - demisto-api-post
 fromversion: 6.0.0
