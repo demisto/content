@@ -2,7 +2,7 @@ import json
 import os
 import sys
 from abc import ABC, abstractmethod
-from argparse import ArgumentParser, BooleanOptionalAction
+from argparse import ArgumentParser
 from enum import Enum
 from pathlib import Path
 from typing import Iterable, Optional, Sequence

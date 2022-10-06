@@ -43,11 +43,8 @@ class IdSetItem(DictBased):
 
     @classmethod
     def from_model(cls, model: ContentItem):
-        dict_ = model.dict()
-        dict_['pack'] = cls._calculate_pack_path(model.path).name
-        dict_['file_path'] = str(model.path)
         return cls(id_=model.object_id,
-                   dict_=dict_,
+                   dict_=model.to_id_set_entity(),
                    )
 
     @property
