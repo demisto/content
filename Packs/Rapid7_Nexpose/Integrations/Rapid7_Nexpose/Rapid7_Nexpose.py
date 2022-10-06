@@ -446,6 +446,26 @@ class Client(BaseClient):
             resp_type="json",
         )
 
+    def delete_vulnerability_exception(self, vulnerability_exception_id: str) -> dict:
+        """
+        | Delete a vulnerability exception.
+        |
+        | For more information see:
+            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/removeVulnerabilityException
+
+        Args:
+            vulnerability_exception_id (str): ID of the vulnerability exception to delete.
+
+        Returns:
+            dict: API response with information about the deleted vulnerability exception.
+        """
+
+        return self._http_request(
+            url_suffix=f"/vulnerability_exceptions/{vulnerability_exception_id}",
+            method="DELETE",
+            resp_type="json",
+        )
+
     def download_report(self, report_id: str, instance_id: str) -> bytes:
         """
         | Download a report.
@@ -1999,6 +2019,41 @@ def create_sites_report_command(client: Client, sites: list[Site],
     )
 
 
+def create_vulnerability_exception_command(client: Client, vulnerability_id: str,
+                                           scope_type: VulnerabilityExceptionScopeType,
+                                           state: VulnerabilityExceptionState, reason: VulnerabilityExceptionReason,
+                                           expires: Optional[str] = None,
+                                           comment: Optional[str] = None) -> CommandResults:
+    """
+    Create a vulnerability exception.
+
+    Args:
+        client (Client): Client to use for API requests.
+        vulnerability_id (str): ID of the vulnerability to create the exception for.
+        scope_type (VulnerabilityExceptionScopeType): The type of the exception scope.
+        state (VulnerabilityExceptionState): The state of the vulnerability exception.
+        reason (VulnerabilityExceptionReason): The reason the vulnerability exception was submitted.
+        expires (str | None, optional): The date and time the vulnerability exception is set to expire.
+        comment (str | None, optional): A comment from the submitter as to why the exception was submitted.
+    """
+    response_data = client.create_vulnerability_exception(
+        vulnerability_id=vulnerability_id,
+        scope_type=scope_type.name.lower().replace("_", " ").title(),
+        state=state.name.lower().replace("_", " ").title(),
+        reason=reason.name.lower().replace("_", " ").title(),
+        expires=expires,
+        comment=comment,
+    )
+
+    return CommandResults(
+        readable_output=f"New vulnerability exception has been created with ID {str(response_data['id'])}.",
+        outputs_prefix="Nexpose.VulnerabilityException",
+        outputs_key_field="id",
+        outputs={"id": response_data["id"]},
+        raw_response=response_data,
+    )
+
+
 def delete_scheduled_scan_command(client: Client, site: Site, scheduled_scan_id: str) -> CommandResults:
     """
     Delete a scheduled scan.
@@ -2036,39 +2091,18 @@ def delete_site_command(client: Client, site: Site) -> CommandResults:
     )
 
 
-def create_vulnerability_exception_command(client: Client, vulnerability_id: str,
-                                           scope_type: VulnerabilityExceptionScopeType,
-                                           state: VulnerabilityExceptionState, reason: VulnerabilityExceptionReason,
-                                           expires: Optional[str] = None,
-                                           comment: Optional[str] = None) -> CommandResults:
+def delete_vulnerability_exception_command(client: Client, vulnerability_exception_id: str) -> CommandResults:
     """
-    Create a vulnerability exception.
+    Delete a vulnerability exception.
 
     Args:
         client (Client): Client to use for API requests.
-        vulnerability_id (str): ID of the vulnerability to create the exception for.
-        scope_type (VulnerabilityExceptionScopeType): The type of the exception scope.
-        state (VulnerabilityExceptionState): The state of the vulnerability exception.
-        reason (VulnerabilityExceptionReason): The reason the vulnerability exception was submitted.
-        expires (str | None, optional): The date and time the vulnerability exception is set to expire.
-        comment (str | None, optional): A comment from the submitter as to why the exception was submitted.
+        vulnerability_exception_id (str): ID of the vulnerability exception to delete.
     """
-    response_data = client.create_vulnerability_exception(
-        vulnerability_id=vulnerability_id,
-        scope_type=scope_type.name.lower().replace("_", " ").title(),
-        state=state.name.lower().replace("_", " ").title(),
-        reason=reason.name.lower().replace("_", " ").title(),
-        expires=expires,
-        comment=comment,
-    )
+    client.delete_vulnerability_exception(vulnerability_exception_id)
 
     return CommandResults(
-        readable_output=f"New vulnerability exception has been created with ID {str(response_data['id'])}.",
-        outputs_prefix="Nexpose.VulnerabilityException",
-        outputs_key_field="id",
-        outputs={"id": response_data["id"]},
-        raw_response=response_data,
-    )
+        readable_output=f"Vulnerability exception with ID {vulnerability_exception_id} has been deleted.")
 
 
 def download_report_command(client: Client, report_id: str, instance_id: str,
@@ -3419,6 +3453,11 @@ def main():
                     client=client,
                 ),
                 scheduled_scan_id=args["schedule_id"],
+            )
+        elif command == "nexpose-delete-vulnerability-exception":
+            results = delete_vulnerability_exception_command(
+                client=client,
+                vulnerability_exception_id=args["id"],
             )
         elif command == "nexpose-delete-site":
             results = delete_site_command(

@@ -638,6 +638,17 @@ script:
     name: nexpose-delete-site
   - arguments:
     - default: false
+      description: The ID of the vulnerability exception to delete.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a vulnerability exception.
+    execution: false
+    name: nexpose-delete-vulnerability-exception
+  - arguments:
+    - default: false
       description: The number of records to retrieve in each API call when pagination is used.
       isArray: false
       name: page_size
