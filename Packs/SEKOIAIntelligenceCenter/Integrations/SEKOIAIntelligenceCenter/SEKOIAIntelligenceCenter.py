@@ -52,7 +52,7 @@ class Client(BaseClient):
 
     def get_validate_resource(self) -> str:
         """
-        Validate the API Key againt SEKOIA.IO API
+        Validate the API Key against SEKOIA.IO API
         """
         response = self._http_request(
             method="GET",

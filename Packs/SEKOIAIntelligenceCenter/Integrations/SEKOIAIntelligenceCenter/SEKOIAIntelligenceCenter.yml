@@ -522,8 +522,8 @@ script:
     - contextPath: SEKOIAIntelligenceCenter.has_more
       description: Is more information available
       type: Boolean
-    - contextPath: IP.Address
-      description: IP address
+    - contextPath: URL.Data
+      description: The URL
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -704,8 +704,8 @@ script:
     - contextPath: SEKOIAIntelligenceCenter.has_more
       description: Is more information available
       type: Boolean
-    - contextPath: IP.Address
-      description: IP address
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -884,8 +884,14 @@ script:
     - contextPath: SEKOIAIntelligenceCenter.has_more
       description: Is more information available
       type: Boolean
-    - contextPath: IP.Address
-      description: IP address
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -1253,6 +1259,12 @@ script:
       type: Boolean
     - contextPath: IP.Address
       description: IP address
+      type: String
+    - contextPath: URL.Data
+      description: The URL
+      type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator name.
