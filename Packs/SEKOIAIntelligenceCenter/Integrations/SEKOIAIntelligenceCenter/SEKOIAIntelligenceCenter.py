@@ -147,7 +147,7 @@ def get_reputation_score(indicator_types: list[str]) -> int:
     return Common.DBotScore.NONE
 
 
-def extract_indicator_from_pattern(pattern_str: str) -> str:
+def extract_indicator_from_pattern(pattern_str: str) -> str | None:
     """
     Extract indicator from STIX indicator pattern.
     i.e.
@@ -159,9 +159,7 @@ def extract_indicator_from_pattern(pattern_str: str) -> str:
 
     # item looks like [(['value'], '=', "'198.51.100.1/32'")]
     item = next(iter(data.comparisons.values()))
-    if item[0][1] in ["=", "MATCHES"]:
-        return item[0][2].strip("'")
-    return pattern_str
+    return item[0][2].strip("'")
 
 
 def extract_file_indicator_hashes(pattern_str: str) -> dict:
@@ -666,7 +664,7 @@ def reputation_command(
     ic_type = REPUTATION_MAPPING.get(indicator_type)
 
     if not ic_type:
-        return demisto.error(f"Type {indicator_type=} not a valid type")
+        raise ValueError(f"Type {indicator_type=} is not a valid type")
 
     for indicator in indicators:
         args = {"value": indicator, "type": ic_type}

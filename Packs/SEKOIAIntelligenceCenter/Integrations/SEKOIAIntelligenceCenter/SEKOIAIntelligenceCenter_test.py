@@ -372,3 +372,38 @@ def test_wrong_ip(client):
 )
 def test_ip_version(client, input, output):
     assert SEKOIAIntelligenceCenter.ip_version(input) == output
+
+
+@pytest.mark.parametrize(
+    "input, command",
+    [
+        ("eicar@sekoia.io", "email"),
+        ("eicar.sekoia.io", "domain"),
+        ("http://truesec.pro/", "url"),
+        ("90b6a021b4f2e478204998ea4c5f32155a7348be4afb620999fa708b4a9a30ab", "file"),
+    ],
+)
+def test_reputation_command(client, input, command, requests_mock):
+
+    mock_response = util_load_json("test_data/indicator_context_ip.json")
+    requests_mock.get(
+        MOCK_URL + "/v2/inthreat/indicators/context",
+        json=mock_response,
+    )
+    args = {command: input}
+    command_results = SEKOIAIntelligenceCenter.reputation_command(
+        client=client, args=args, indicator_type=command
+    )
+
+    for result in command_results:
+        assert result.outputs != []
+        assert result.to_context != []
+
+
+def test_reputation_command_wrong_type(client):
+    indicator_type = "wrong-type"
+    args = {indicator_type: "1.1.1.1"}
+    with pytest.raises(ValueError):
+        SEKOIAIntelligenceCenter.reputation_command(
+            client=client, args=args, indicator_type=indicator_type
+        )
