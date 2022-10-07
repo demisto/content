@@ -117,36 +117,36 @@ if customPlaybooks is not None:
             multiTasksDetected.append(customPlaybook["name"])
 
 
-res = []
-if copyDetected:
-    res.append({"category": "Playbooks", "severity": "Low",
-                "description": f"{DESCRIPTION[0]}".format(", ".join(copyDetected)),
-                "resolution": f"{RESOLUTION[0]}"
-                })
+    res = []
+    if copyDetected:
+        res.append({"category": "Playbooks", "severity": "Low",
+                    "description": f"{DESCRIPTION[0]}".format(", ".join(copyDetected)),
+                    "resolution": f"{RESOLUTION[0]}"
+                    })
 
-if sleepDetected:
-    res.append({"category": "Playbooks", "severity": "Low",
-                "description": f"{DESCRIPTION[1]}".format(", ".join(sleepDetected)),
-                "resolution": f"{RESOLUTION[1]}"
-                })
+    if sleepDetected:
+        res.append({"category": "Playbooks", "severity": "Low",
+                    "description": f"{DESCRIPTION[1]}".format(", ".join(sleepDetected)),
+                    "resolution": f"{RESOLUTION[1]}"
+                    })
 
-if multiSetIncidentDetected:
-    res.append({"category": "Playbooks", "severity": "Low",
-                "description": f"{DESCRIPTION[2]}".format(", ".join(multiSetIncidentDetected)),
-                "resolution": f"{RESOLUTION[2]}"
-                })
+    if multiSetIncidentDetected:
+        res.append({"category": "Playbooks", "severity": "Low",
+                    "description": f"{DESCRIPTION[2]}".format(", ".join(multiSetIncidentDetected)),
+                    "resolution": f"{RESOLUTION[2]}"
+                    })
 
-if emailAskUserDetected:
-    res.append({"category": "Playbooks", "severity": "Low",
-                "description": f"{DESCRIPTION[3]}".format(", ".join(emailAskUserDetected)),
-                "resolution": f"{RESOLUTION[3]}"
-                })
+    if emailAskUserDetected:
+        res.append({"category": "Playbooks", "severity": "Low",
+                    "description": f"{DESCRIPTION[3]}".format(", ".join(emailAskUserDetected)),
+                    "resolution": f"{RESOLUTION[3]}"
+                    })
 
-if multiTasksDetected:
-    res.append({"category": "Playbooks", "severity": "Low",
-                "description": f"{DESCRIPTION[4]}".format(", ".join(multiTasksDetected)),
-                "resolution": f"{RESOLUTION[4]}"
-                })
+    if multiTasksDetected:
+        res.append({"category": "Playbooks", "severity": "Low",
+                    "description": f"{DESCRIPTION[4]}".format(", ".join(multiTasksDetected)),
+                    "resolution": f"{RESOLUTION[4]}"
+                    })
 
 
 findTopUsedPLaybooks(account_name)
