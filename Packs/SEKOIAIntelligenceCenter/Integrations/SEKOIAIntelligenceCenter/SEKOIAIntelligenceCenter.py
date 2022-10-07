@@ -17,6 +17,10 @@ DOC_MAPPING = {
     "GetIndicator": "https://docs.sekoia.io/develop/rest_api/intelligence_center/intelligence/#tag/Indicators/operation/get_indicator",  # noqa
     "GetIndicatorContext": "https://docs.sekoia.io/develop/rest_api/intelligence_center/intelligence/#tag/Indicators/operation/get_indicator_context",  # noqa
     "ip": "https://docs.sekoia.io/develop/rest_api/intelligence_center/intelligence/#tag/Indicators/operation/get_indicator_context",  # noqa
+    "url": "https://docs.sekoia.io/develop/rest_api/intelligence_center/intelligence/#tag/Indicators/operation/get_indicator_context",  # noqa
+    "domain": "https://docs.sekoia.io/develop/rest_api/intelligence_center/intelligence/#tag/Indicators/operation/get_indicator_context",  # noqa
+    "file": "https://docs.sekoia.io/develop/rest_api/intelligence_center/intelligence/#tag/Indicators/operation/get_indicator_context",  # noqa
+    "email": "https://docs.sekoia.io/develop/rest_api/intelligence_center/intelligence/#tag/Indicators/operation/get_indicator_context",  # noqa
 }
 
 DBOTSCORE_MAPPING = {
@@ -26,6 +30,14 @@ DBOTSCORE_MAPPING = {
     "anonymization": Common.DBotScore.SUSPICIOUS,
     "malicious-activity": Common.DBotScore.SUSPICIOUS,
     "benign": Common.DBotScore.GOOD,
+}
+
+REPUTATION_MAPPING = {
+    "domain": "domain-name",
+    "url": "url",
+    "ip": "ip",
+    "file": "file",
+    "email": "email-addr",
 }
 
 INTEGRATION_NAME = "SEKOIAIntelligenceCenter"
@@ -642,6 +654,26 @@ def ip_command(client: Client, args: dict[str, str]) -> list[CommandResults]:
     return results
 
 
+def reputation_command(
+    client: Client, args: dict[str, str], indicator_type
+) -> list[CommandResults]:
+    """ip command: Returns IP reputation for a list of IPs
+
+    This command is a wrapper around the `get_indicator_context_command`
+    """
+    indicators = argToList(args[indicator_type])
+    results: list[CommandResults] = list()
+    ic_type = REPUTATION_MAPPING.get(indicator_type)
+
+    if not ic_type:
+        return demisto.error(f"Type {indicator_type=} not a valid type")
+
+    for indicator in indicators:
+        args = {"value": indicator, "type": ic_type}
+        results += get_indicator_context_command(client=client, args=args)
+    return results
+
+
 """ MAIN FUNCTION """
 
 
@@ -687,11 +719,18 @@ def main() -> None:
         elif demisto.command() == "ip":
             return_results(ip_command(client, demisto.args()))
 
+        elif demisto.command() in ["url", "domain", "file", "email"]:
+            return_results(
+                reputation_command(
+                    client, demisto.args(), indicator_type=demisto.command()
+                )
+            )
+
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(
-            f"Failed to execute {demisto.command()} command. "
+            f"Failed to execute {demisto.command()=} {demisto.args()=}. "
             f"\nError:\n{str(e)} please consult endpoint documentation {DOC_MAPPING.get(demisto.command())}"
         )
 
