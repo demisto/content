@@ -92,8 +92,8 @@ sleepDetected = []
 multiSetIncidentDetected = []
 multiTasksDetected = []
 emailAskUserDetected = []
-if customPlaybooks is not None:
 
+if customPlaybooks is not None:
     for builtinPlaybook in builtinPlaybooks:
         builtinPlaybooksNames.append(builtinPlaybook["name"])
 
