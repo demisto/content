@@ -19,7 +19,7 @@ class Client(BaseClient):
         """
         super().__init__(base_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
-    def getexternalservices_request(self, search_params):
+    def getexternalservices_request(self, search_params: list[dict]) -> Dict[str, Any]:
         """Get a list of all your external services using the '/assets/get_external_services/' endpoint.
 
         Args:
@@ -36,7 +36,7 @@ class Client(BaseClient):
 
         return response
 
-    def getexternalservice_request(self, service_id_list):
+    def getexternalservice_request(self, service_id_list: list[str]) -> Dict[str, Any]:
         """Get service details using the '/assets/get_external_service/' endpoint.
 
         Args:
@@ -53,7 +53,7 @@ class Client(BaseClient):
 
         return response
 
-    def getexternalipaddressranges_request(self):
+    def getexternalipaddressranges_request(self) -> Dict[str, Any]:
         """Get a list of all your internet exposure IP ranges using the '/assets/get_external_ip_address_ranges/' endpoint.
 
         Returns:
@@ -67,7 +67,7 @@ class Client(BaseClient):
 
         return response
 
-    def getexternalipaddressrange_request(self, range_id_list):
+    def getexternalipaddressrange_request(self, range_id_list: list[str]) -> Dict[str, Any]:
         """Get external IP address range details using the '/assets/get_external_ip_address_range/' endpoint.
 
         Args:
@@ -84,7 +84,7 @@ class Client(BaseClient):
 
         return response
 
-    def getassetsinternetexposure_request(self, search_params):
+    def getassetsinternetexposure_request(self, search_params: list[dict]) -> Dict[str, Any]:
         """Get a list of all your internet exposure assets using the '/assets/get_assets_internet_exposure/' endpoint.
 
         Args:
@@ -101,7 +101,7 @@ class Client(BaseClient):
 
         return response
 
-    def getassetinternetexposure_request(self, asm_id_list):
+    def getassetinternetexposure_request(self, asm_id_list: list[str]) -> Dict[str, Any]:
         """Get internet exposure asset details using the '/assets/get_asset_internet_exposure/' endpoint.
 
         Args:
