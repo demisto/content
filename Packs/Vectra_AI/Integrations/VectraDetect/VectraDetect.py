@@ -66,6 +66,7 @@ OUTCOME_CATEGORIES = {
     'malicious_true_positive': 'Malicious True Positive',
     'false_positive': 'False Positive'
 }
+ASSIGNMENT_ENTITY_TYPES = ('account', 'host')
 
 
 ''' GLOBALS '''
@@ -579,6 +580,74 @@ class Client(BaseClient):
             url_suffix=API_ENDPOINT_OUTCOMES,
             json_data=json_payload
         )
+
+    def update_assignment(self, assignee_id: str, assignment_id: str = None, account_id: str = None, host_id: str = None):
+        """
+        Creates or updates an assignment
+
+        - params:
+            - assignee_id: The Vectra User ID who want to assign to
+            - assignment_id: The existing assignment ID associated with the targeted Entity, if there is any
+            - assignee_id: The Vectra User ID who want to assign to
+            - account_id: The Account ID
+            - host_id: The Host ID
+        - returns:
+            Vectra API call result
+        """
+        # Test Assignee ID
+        try:
+            validate_argument('min_id', assignee_id)
+        except ValueError:
+            raise ValueError('"assignee_id" value is invalid')
+
+        if assignment_id:  # Reassign an existing assignment
+            url_addon = f'/{assignment_id}'
+
+            json_payload = {
+                'assign_to_user_id': assignee_id,
+            }
+
+            return self._http_request(
+                method='PUT',
+                url_suffix=f'{API_ENDPOINT_ASSIGNMENT}{url_addon}',
+                json_data=json_payload
+            )
+        elif account_id:
+            # Test Entity ID
+            try:
+                validate_argument('min_id', account_id)
+            except ValueError:
+                raise ValueError('"account_id" value is invalid')
+
+            json_payload = {
+                'assign_to_user_id': assignee_id,
+                'assign_account_id': account_id
+            }
+
+            # Execute request
+            return self._http_request(
+                method='POST',
+                url_suffix=API_ENDPOINT_ASSIGNMENT,
+                json_data=json_payload
+            )
+        elif host_id:
+            # Test Entity ID
+            try:
+                validate_argument('min_id', host_id)
+            except ValueError:
+                raise ValueError('"host_id" value is invalid')
+
+            json_payload = {
+                'assign_to_user_id': assignee_id,
+                'assign_host_id': host_id
+            }
+
+            # Execute request
+            return self._http_request(
+                method='POST',
+                url_suffix=API_ENDPOINT_ASSIGNMENT,
+                json_data=json_payload
+            )
 
 
 # ####                 #### #
@@ -2040,6 +2109,54 @@ def vectra_get_assignment_by_id_command(client: Client, id: str) -> CommandResul
     )
 
     return command_result
+
+
+def vectra_assignment_assign_command(client: Client, assignee_id: str = None,
+                                     account_id: str = None, host_id: str = None,
+                                     assignment_id: str = None) -> CommandResults:
+    """
+    Assign or reassign an Account/Host
+
+    - params:
+        - client: Vectra Client
+        - assignee_id: The Vectra User ID who want to assign to
+        - account_id: The Account ID
+        - host_id: The Host ID
+        - assignment_id: The existing assignment ID associated with the targeted Entity, if there is any
+    - returns
+        CommandResults to be used in War Room
+    """
+    # Check args
+    if not assignee_id:
+        raise VectraException('"assignee_id" not specified')
+
+    if ((assignment_id is None) and (account_id is None) and (host_id is None)) \
+       or (account_id and host_id) \
+       or (assignment_id and (account_id or host_id)):
+        raise VectraException('You must specify one of "assignment_id", "account_id" or "host_id"')
+    if assignment_id is None:
+        api_response = client.update_assignment(assignee_id=assignee_id, account_id=account_id, host_id=host_id)
+    else:
+        api_response = client.update_assignment(assignee_id=assignee_id, assignment_id=assignment_id)
+
+    # 40x API error will be raised by the Client class
+    obtained_assignment = api_response.get('assignment')
+    assignment_data = extract_assignment_data(obtained_assignment)
+
+    readable_output = tableToMarkdown(
+        name='Assignment details table',
+        t=assignment_data
+    )
+
+    command_result = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Vectra.Assignment',
+        outputs_key_field='ID',
+        outputs=assignment_data,
+        raw_response=api_response
+    )
+
+    return command_result
 def vectra_get_outcome_by_id_command(client: Client, id: str) -> CommandResults:
     """
     Gets Outcome details using its ID
@@ -2331,6 +2448,8 @@ def main() -> None:  # pragma: no cover
         # ## Assignments / Assignment outcomes commands
         elif command == 'vectra-assignment-describe':
             return_results(vectra_get_assignment_by_id_command(client, **kwargs))
+        elif command == 'vectra-assignment-assign':
+            return_results(vectra_assignment_assign_command(client, **kwargs))
         elif command == 'vectra-outcome-describe':
             return_results(vectra_get_outcome_by_id_command(client, **kwargs))
         elif command == 'vectra-outcome-create':

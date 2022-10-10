@@ -683,6 +683,20 @@ script:
       description: Assignment ID you want to get details on
     outputs: *assignmentOutput
 
+  - name: vectra-assignment-assign
+    description: Assigns an Account/Host entity to a Vectra User for investigation
+      If an assignment already exists on this entity, it will be reassigned
+    execution: true     # This command is harmful
+    arguments:
+    - name: assignee_id
+      description: Assignee's ID (Vectra User ID)
+    - name: assignment_id
+      description: Assignment ID if an assignment already exists for the given entity
+    - name: account_id
+      description: Account ID
+    - name: host_id
+      description: Host ID
+
   ######
   ### Vectra Users
   #
