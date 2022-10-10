@@ -226,6 +226,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: "Determines if you should add the asset into CMDB (manual task)."
     nexttasks:
       "No":
       - "7"
