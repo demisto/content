@@ -1,5 +1,5 @@
-id: a95832b3-e4a0-4d33-85b0-7969d6e36248
-version: 24
+id: ServiceNow CMDB Search
+version: -1
 contentitemexportablefields:
   contentitemfields:
     packID: ""
@@ -9,7 +9,7 @@ contentitemexportablefields:
     toServerVersion: ""
     definitionid: ""
 vcShouldKeepItemLegacyProdMachine: false
-name: ServiceNow CMDB Search_copy
+name: ServiceNow CMDB Search
 description: |
   Subplaybook for finding CI records in ServiceNow CMDB.
 starttaskid: "0"
