@@ -17,14 +17,14 @@ This integration was integrated and tested with version 1.2.0 of Cortex Attack S
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### asm-getexternalservices
+### asm-get-external-services
 ***
 Get a list of all your external services filtered by business units, externally detected providers, domain, externally inferred CVEs, active classifications, inactive classifications, service name, service type, protocol, IP address, is active, and discovery type. Maximum result limit is 100 assets.
 
 
 #### Base Command
 
-`asm-getexternalservices`
+`asm-get-external-services`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -55,7 +55,7 @@ Get a list of all your external services filtered by business units, externally 
 | ASM.GetExternalServices.externally_inferred_vulnerability_score | Unknown | External service vulnerability score | 
 
 #### Command example
-```!asm-getexternalservices domain=acme.com is_active=yes discovery_type=directly_discovery```
+```!asm-get-external-services domain=acme.com is_active=yes discovery_type=directly_discovery```
 #### Context Example
 ```json
 {
@@ -183,14 +183,14 @@ Get a list of all your external services filtered by business units, externally 
 >| HttpServer,<br/>ServerSoftware | Acme,<br/>VanDelay Industries | DirectlyDiscovered | web.acme.com | Amazon Web Services | 1659396480000 | 99.84.160.84,<br/>13.33.65.97,<br/>54.192.81.65,<br/>54.192.81.3,<br/>18.160.249.104,<br/>108.157.142.85,<br/>52.84.125.93,<br/>99.84.160.95,<br/>54.192.81.76,<br/>108.138.167.71,<br/>52.84.125.6,<br/>13.33.65.121,<br/>108.157.142.68,<br/>54.230.202.60,<br/>52.84.125.119,<br/>52.84.125.49,<br/>108.138.167.111,<br/>18.160.249.6,<br/>54.192.81.102,<br/>54.230.202.65,<br/>18.160.249.8,<br/>54.230.202.79,<br/>99.84.160.62,<br/>13.33.65.75,<br/>13.33.65.13,<br/>108.138.167.39,<br/>18.160.249.23,<br/>99.84.160.35 | Active | 1663029060000 | 80 | TCP | 32c85ab1-fc98-3061-a813-2fe5daf7e7c5 | HTTP Server at web.acme.com:80 | HttpServer |
 
 
-### asm-getexternalservice
+### asm-get-external-service
 ***
 Get service details according to the service ID.
 
 
 #### Base Command
 
-`asm-getexternalservice`
+`asm-get-external-service`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -219,7 +219,7 @@ Get service details according to the service ID.
 | ASM.GetExternalService.details | String | Additional details | 
 
 #### Command example
-```!asm-getexternalservice service_id=94232f8a-f001-3292-aa65-63fa9d981427```
+```!asm-get-external-service service_id=94232f8a-f001-3292-aa65-63fa9d981427```
 #### Context Example
 ```json
 {
@@ -568,14 +568,14 @@ Get service details according to the service ID.
 >| SSHWeakMACAlgorithmsEnabled,<br/>SshServer,<br/>OpenSSH | Acme | serviceKey: 52.22.120.51:22<br/>serviceKeyType: IP<br/>businessUnits: {'name': 'Acme'}<br/>providerDetails: {'name': 'AWS', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000}<br/>certificates: <br/>domains: <br/>ips: {'ip': 873887795, 'protocol': 'TCP', 'provider': 'AWS', 'geolocation': {'latitude': 39.0438, 'longitude': -77.4879, 'countryCode': 'US', 'city': 'ASHBURN', 'regionCode': 'VA', 'timeZone': None}, 'activityStatus': 'Active', 'lastObserved': 1663026500000, 'firstObserved': 1662774169000}<br/>classifications: {'name': 'SshServer', 'activityStatus': 'Active', 'values': [{'jsonValue': '{"version":"2.0","serverVersion":"OpenSSH_7.6p1","extraInfo":"Ubuntu-4ubuntu0.7"}', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000}], 'firstObserved': 1662774120000, 'lastObserved': 1663026480000},<br/>{'name': 'SSHWeakMACAlgorithmsEnabled', 'activityStatus': 'Active', 'values': [{'jsonValue': '{}', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000}], 'firstObserved': 1662774120000, 'lastObserved': 1663026480000},<br/>{'name': 'OpenSSH', 'activityStatus': 'Active', 'values': [{'jsonValue': '{"version":"7.6"}', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000}], 'firstObserved': 1662774120000, 'lastObserved': 1663026480000}<br/>tlsVersions: <br/>inferredCvesObserved: {'inferredCve': {'cveId': 'CVE-2020-15778', 'cvssScoreV2': 6.8, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 7.8, 'cveSeverityV3': 'HIGH', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2021-41617', 'cvssScoreV2': 4.4, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 7.0, 'cveSeverityV3': 'HIGH', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2019-6110', 'cvssScoreV2': 4.0, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 6.8, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2019-6109', 'cvssScoreV2': 4.0, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 6.8, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2020-14145', 'cvssScoreV2': 4.3, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 5.9, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2019-6111', 'cvssScoreV2': 5.8, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 5.9, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2018-20685', 'cvssScoreV2': 2.6, 'cveSeverityV2': 'LOW', 'cvssScoreV3': 5.3, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2018-15919', 'cvssScoreV2': 5.0, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 5.3, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2016-20012', 'cvssScoreV2': 4.3, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 5.3, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2018-15473', 'cvssScoreV2': 5.0, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 5.3, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2021-36368', 'cvssScoreV2': 2.6, 'cveSeverityV2': 'LOW', 'cvssScoreV3': 3.7, 'cveSeverityV3': 'LOW', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000}<br/>enrichedObservationSource: CLOUD<br/>ip_ranges: {} | ColocatedOnIp | Amazon Web Services | CVE-2020-15778,<br/>CVE-2021-41617,<br/>CVE-2019-6110,<br/>CVE-2019-6109,<br/>CVE-2020-14145,<br/>CVE-2019-6111,<br/>CVE-2018-20685,<br/>CVE-2018-15919,<br/>CVE-2016-20012,<br/>CVE-2018-15473,<br/>CVE-2021-36368 | 7.8 | 1662774120000 | 52.22.120.51 | Active | 1663026480000 | 22 | TCP | 94232f8a-f001-3292-aa65-63fa9d981427 | SSH Server at 52.22.120.51:22 | SshServer |
 
 
-### asm-getexternalipaddressranges
+### asm-get-external-ip-address-ranges
 ***
 Get a list of all your Internet exposure filtered by business units and organization handles. Maximum result limit is 100 ranges.
 
 
 #### Base Command
 
-`asm-getexternalipaddressranges`
+`asm-get-external-ip-address-ranges`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -596,7 +596,7 @@ Get a list of all your Internet exposure filtered by business units and organiza
 | ASM.GetExternalIpAddressRanges.organization_handles | String | External IP address range associated organization handles | 
 
 #### Command example
-```!asm-getexternalipaddressranges```
+```!asm-get-external-ip-address-ranges```
 #### Context Example
 ```json
 {
@@ -649,14 +649,14 @@ Get a list of all your Internet exposure filtered by business units and organiza
 >| 0 | VanDelay Industries | 1663031000144 | 217.206.176.80 | 16 | 217.206.176.95 | AR17615-RIPE,<br/>EASYNET-UK-MNT,<br/>JW372-RIPE,<br/>EH92-RIPE | 6ef4638e-7788-3ef5-98a5-ad5b7f4e02f5 |
 
 
-### asm-getexternalipaddressrange
+### asm-get-external-ip-address-range
 ***
 Get external IP address range details according to the range IDs.
 
 
 #### Base Command
 
-`asm-getexternalipaddressrange`
+`asm-get-external-ip-address-range`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -679,7 +679,7 @@ Get external IP address range details according to the range IDs.
 | ASM.GetExternalIpAddressRange.details | String | Additional information | 
 
 #### Command example
-```!asm-getexternalipaddressrange range_id=4da29b7f-3086-3b52-981b-aa8ee5da1e60```
+```!asm-get-external-ip-address-range range_id=4da29b7f-3086-3b52-981b-aa8ee5da1e60```
 #### Context Example
 ```json
 {
@@ -775,14 +775,14 @@ Get external IP address range details according to the range IDs.
 >| 0 | VanDelay Industries | 1663031000145 | networkRecords: {'handle': '220.241.52.192 - 220.241.52.255', 'firstIp': '220.241.52.192', 'lastIp': '220.241.52.255', 'name': 'SEARS-HK', 'whoIsServer': 'whois.apnic.net', 'lastChanged': 1663030241931, 'organizationRecords': [{'handle': 'MAINT-HK-PCCW-BIA-CS', 'dateAdded': 1663029346957, 'address': '', 'email': 'noc@acme.com', 'phone': '', 'org': '', 'formattedName': '', 'kind': 'group', 'roles': ['registrant'], 'lastChanged': None, 'firstRegistered': None, 'remarks': ''}, {'handle': 'BNA2-AP', 'dateAdded': 1663029346957, 'address': "27/F, PCCW Tower, Taikoo Place,\n979 King's Road, Quarry Bay, HK          ", 'email': 'cs@acme.com', 'phone': '+852-2888-6932', 'org': '', 'formattedName': 'BIZ NETVIGATOR ADMINISTRATORS', 'kind': 'group', 'roles': ['administrative'], 'lastChanged': 1514892767000, 'firstRegistered': 1220514857000, 'remarks': ''}, {'handle': 'TA66-AP', 'dateAdded': 1663029346957, 'address': 'HKT Limited\nPO Box 9896 GPO          ', 'email': 'noc@acme.com', 'phone': '+852-2883-5151', 'org': '', 'formattedName': 'TECHNICAL ADMINISTRATORS', 'kind': 'group', 'roles': ['technical'], 'lastChanged': 1468555410000, 'firstRegistered': 1220514856000, 'remarks': ''}], 'remarks': 'Sears Holdings Global Sourcing Ltd'} | 220.241.52.192 | 64 | 220.241.52.255 | MAINT-HK-PCCW-BIA-CS,<br/>BNA2-AP,<br/>TA66-AP | 4da29b7f-3086-3b52-981b-aa8ee5da1e60 |
 
 
-### asm-getassetsinternetexposure
+### asm-get-assets-internet-exposure
 ***
 Get a list of all your Internet exposure filtered by ip address, domain, type, and/or if there is an active external service. Maximum result limit is 100 assets.
 
 
 #### Base Command
 
-`asm-getassetsinternetexposure`
+`asm-get-assets-internet-exposure`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -816,7 +816,7 @@ Get a list of all your Internet exposure filtered by ip address, domain, type, a
 | ASM.GetAssetsInternetExposure.ips | String | IP addresses associated wih the internet exposure | 
 
 #### Command example
-```!asm-getassetsinternetexposure name="acme.com" type=certificate has_active_external_services=no```
+```!asm-get-assets-internet-exposure name="acme.com" type=certificate has_active_external_services=no```
 #### Context Example
 ```json
 {
@@ -920,14 +920,14 @@ Get a list of all your Internet exposure filtered by ip address, domain, type, a
 >| 78a11e94-58a9-329c-99ca-e527d2db6cfb | CERTIFICATE | Acme,<br/>VanDelay Industries | SHA256withRSA | LongExpiration,<br/>Wildcard,<br/>Expired | DigiCert | false | false | NA | *.digital-prod.acme.com | XPANSE |
 
 
-### asm-getassetinternetexposure
+### asm-get-asset-internet-exposure
 ***
 Get Internet exposure asset details according to the asset ID.
 
 
 #### Base Command
 
-`asm-getassetinternetexposure`
+`asm-get-asset-internet-exposure`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -955,7 +955,7 @@ Get Internet exposure asset details according to the asset ID.
 | ASM.GetAssetInternetExposure.externally_inferred_vulnerability_score | Unknown | Asset vulnerability score | 
 
 #### Command example
-```!asm-getassetinternetexposure asm_id=3c176460-8735-333c-b618-8262e2fb660c```
+```!asm-get-asset-internet-exposure asm_id=3c176460-8735-333c-b618-8262e2fb660c```
 #### Context Example
 ```json
 {

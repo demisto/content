@@ -74,8 +74,8 @@ tasks:
     task:
       id: f1307474-3248-4246-8468-05cdea25705e
       version: -1
-      name: asm-getexternalservices
-      script: Cortex Attack Surface Management|||asm-getexternalservices
+      name: asm-get-external-services
+      script: Cortex Attack Surface Management|||asm-get-external-services
       type: regular
       iscommand: true
       brand: Cortex Attack Surface Management
@@ -208,8 +208,8 @@ tasks:
     task:
       id: 195d6c10-159a-4a0d-8dbc-d7312c722a18
       version: -1
-      name: asm-getexternalservice
-      script: Cortex Attack Surface Management|||asm-getexternalservice
+      name: asm-get-external-service
+      script: Cortex Attack Surface Management|||asm-get-external-service
       type: regular
       iscommand: true
       brand: ""
@@ -282,8 +282,8 @@ tasks:
     task:
       id: 5ae254da-ff48-407f-8dfd-c9dfdc0f2c57
       version: -1
-      name: asm-getexternalipaddressranges
-      script: Cortex Attack Surface Management|||asm-getexternalipaddressranges
+      name: asm-get-external-ip-address-ranges
+      script: Cortex Attack Surface Management|||asm-get-external-ip-address-ranges
       type: regular
       iscommand: true
       brand: ""
@@ -386,8 +386,8 @@ tasks:
     task:
       id: ac835050-d067-4aeb-8f66-9fcb9fbc800f
       version: -1
-      name: asm-getexternalipaddressrange
-      script: Cortex Attack Surface Management|||asm-getexternalipaddressrange
+      name: asm-get-external-ip-address-range
+      script: Cortex Attack Surface Management|||asm-get-external-ip-address-range
       type: regular
       iscommand: true
       brand: ""
@@ -498,8 +498,8 @@ tasks:
     task:
       id: 21288f85-551e-4b2c-8829-ef5de5e69558
       version: -1
-      name: asm-getassetsinternetexposure
-      script: Cortex Attack Surface Management|||asm-getassetsinternetexposure
+      name: asm-get-assets-internet-exposure
+      script: Cortex Attack Surface Management|||asm-get-assets-internet-exposure
       type: regular
       iscommand: true
       brand: Cortex Attack Surface Management
@@ -567,8 +567,8 @@ tasks:
     task:
       id: ac59e488-6ff6-4a00-812e-6eb8d0231d60
       version: -1
-      name: asm-getassetinternetexposure
-      script: Cortex Attack Surface Management|||asm-getassetinternetexposure
+      name: asm-get-asset-internet-exposure
+      script: Cortex Attack Surface Management|||asm-get-asset-internet-exposure
       type: regular
       iscommand: true
       brand: ""

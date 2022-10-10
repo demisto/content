@@ -19,7 +19,7 @@ class Client(BaseClient):
         """
         super().__init__(base_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
-    def getexternalservices_request(self, search_params: list[dict]) -> Dict[str, Any]:
+    def get_external_services_request(self, search_params: list[dict]) -> Dict[str, Any]:
         """Get a list of all your external services using the '/assets/get_external_services/' endpoint.
 
         Args:
@@ -36,7 +36,7 @@ class Client(BaseClient):
 
         return response
 
-    def getexternalservice_request(self, service_id_list: list[str]) -> Dict[str, Any]:
+    def get_external_service_request(self, service_id_list: list[str]) -> Dict[str, Any]:
         """Get service details using the '/assets/get_external_service/' endpoint.
 
         Args:
@@ -53,7 +53,7 @@ class Client(BaseClient):
 
         return response
 
-    def getexternalipaddressranges_request(self) -> Dict[str, Any]:
+    def get_external_ip_address_ranges_request(self) -> Dict[str, Any]:
         """Get a list of all your internet exposure IP ranges using the '/assets/get_external_ip_address_ranges/' endpoint.
 
         Returns:
@@ -67,7 +67,7 @@ class Client(BaseClient):
 
         return response
 
-    def getexternalipaddressrange_request(self, range_id_list: list[str]) -> Dict[str, Any]:
+    def get_external_ip_address_range_request(self, range_id_list: list[str]) -> Dict[str, Any]:
         """Get external IP address range details using the '/assets/get_external_ip_address_range/' endpoint.
 
         Args:
@@ -84,7 +84,7 @@ class Client(BaseClient):
 
         return response
 
-    def getassetsinternetexposure_request(self, search_params: list[dict]) -> Dict[str, Any]:
+    def get_assets_internet_exposure_request(self, search_params: list[dict]) -> Dict[str, Any]:
         """Get a list of all your internet exposure assets using the '/assets/get_assets_internet_exposure/' endpoint.
 
         Args:
@@ -101,7 +101,7 @@ class Client(BaseClient):
 
         return response
 
-    def getassetinternetexposure_request(self, asm_id_list: list[str]) -> Dict[str, Any]:
+    def get_asset_internet_exposure_request(self, asm_id_list: list[str]) -> Dict[str, Any]:
         """Get internet exposure asset details using the '/assets/get_asset_internet_exposure/' endpoint.
 
         Args:
@@ -119,9 +119,9 @@ class Client(BaseClient):
         return response
 
 
-def getexternalservices_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_external_services_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
-    asm-getexternalservices command: Returns list of external services.
+    asm-get-external-services command: Returns list of external services.
 
     Args:
         client (Client): CortexAttackSurfaceManagment client to use.
@@ -149,7 +149,7 @@ def getexternalservices_command(client: Client, args: Dict[str, Any]) -> Command
     if discovery_type:
         search_params.append({"field": "discovery_type", "operator": "in", "value": [discovery_type]})
 
-    response = client.getexternalservices_request(search_params)
+    response = client.get_external_services_request(search_params)
     parsed = response.get('reply', {}).get('external_services')
     markdown = tableToMarkdown('External Services', parsed, removeNull=True)
     command_results = CommandResults(
@@ -163,9 +163,9 @@ def getexternalservices_command(client: Client, args: Dict[str, Any]) -> Command
     return command_results
 
 
-def getexternalservice_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_external_service_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
-    asm-getexternalservice command: Returns details of single external service.
+    asm-get-external-service command: Returns details of single external service.
     Returns error if more than one service_id was provided in comma separated format.
 
     Args:
@@ -183,7 +183,7 @@ def getexternalservice_command(client: Client, args: Dict[str, Any]) -> CommandR
     if len(service_id_list) > 1:
         raise ValueError("This command only supports one service_id at this time")
 
-    response = client.getexternalservice_request(service_id_list)
+    response = client.get_external_service_request(service_id_list)
     parsed = response.get('reply', {}).get('details')
     markdown = tableToMarkdown('External Service', parsed, removeNull=True)
     command_results = CommandResults(
@@ -197,9 +197,9 @@ def getexternalservice_command(client: Client, args: Dict[str, Any]) -> CommandR
     return command_results
 
 
-def getexternalipaddressranges_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_external_ip_address_ranges_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
-    asm-getexternalipaddressranges command: Returns list of external ip ranges.
+    asm-get-external-ip-address-ranges command: Returns list of external ip ranges.
 
     Args:
         client (Client): CortexAttackSurfaceManagment client to use.
@@ -209,7 +209,7 @@ def getexternalipaddressranges_command(client: Client, args: Dict[str, Any]) -> 
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
         that contains external IP address ranges.
     """
-    response = client.getexternalipaddressranges_request()
+    response = client.get_external_ip_address_ranges_request()
     parsed = response.get('reply', {}).get('external_ip_address_ranges')
     markdown = tableToMarkdown('External IP Address Ranges', parsed)
     command_results = CommandResults(
@@ -223,9 +223,9 @@ def getexternalipaddressranges_command(client: Client, args: Dict[str, Any]) -> 
     return command_results
 
 
-def getexternalipaddressrange_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_external_ip_address_range_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
-    asm-getexternalipaddressrange command: Returns details of single external ip range.
+    asm-get-external-ip-address-range command: Returns details of single external ip range.
     Returns error if more than one range_id was provided in comma separated format.
 
     Args:
@@ -243,7 +243,7 @@ def getexternalipaddressrange_command(client: Client, args: Dict[str, Any]) -> C
     if len(range_id_list) > 1:
         raise ValueError("This command only supports one range_id at this time")
 
-    response = client.getexternalipaddressrange_request(range_id_list)
+    response = client.get_external_ip_address_range_request(range_id_list)
     parsed = response.get('reply', {}).get('details')
     markdown = tableToMarkdown('External IP Address Range', parsed, removeNull=True)
     command_results = CommandResults(
@@ -257,9 +257,9 @@ def getexternalipaddressrange_command(client: Client, args: Dict[str, Any]) -> C
     return command_results
 
 
-def getassetsinternetexposure_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_assets_internet_exposure_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
-    asm-getassetsinternetexposure command: Returns list of external internet exposures.
+    asm-get-assets-internet-exposure command: Returns list of external internet exposures.
 
     Args:
         client (Client): CortexAttackSurfaceManagment client to use.
@@ -288,7 +288,7 @@ def getassetsinternetexposure_command(client: Client, args: Dict[str, Any]) -> C
     if has_active_external_services:
         search_params.append({"field": "has_active_external_services", "operator": "in", "value": [has_active_external_services]})
 
-    response = client.getassetsinternetexposure_request(search_params)
+    response = client.get_assets_internet_exposure_request(search_params)
     parsed = response.get('reply', {}).get('assets_internet_exposure')
     markdown = tableToMarkdown('Asset Internet Exposures', parsed, removeNull=True)
     command_results = CommandResults(
@@ -302,9 +302,9 @@ def getassetsinternetexposure_command(client: Client, args: Dict[str, Any]) -> C
     return command_results
 
 
-def getassetinternetexposure_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_asset_internet_exposure_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
-    asm-getassetinternetexposure_command command: Returns details of single external internet exposure.
+    asm-get-asset-internet-exposure command: Returns details of single external internet exposure.
     Returns error if more than one asm_id was provided in comma separated format.
 
     Args:
@@ -322,7 +322,7 @@ def getassetinternetexposure_command(client: Client, args: Dict[str, Any]) -> Co
     if len(asm_id_list) > 1:
         raise ValueError("This command only supports one asm_id at this time")
 
-    response = client.getassetinternetexposure_request(asm_id_list)
+    response = client.get_asset_internet_exposure_request(asm_id_list)
     parsed = response.get('reply', {}).get('details')
     markdown = tableToMarkdown('Asset Internet Exposure', parsed, removeNull=True)
     command_results = CommandResults(
@@ -350,7 +350,7 @@ def test_module(client: Client) -> None:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
     try:
-        client.getexternalservices_request([])
+        client.get_external_services_request([])
     except DemistoException as e:
         if 'Forbidden' in str(e):
             raise DemistoException('Authorization Error: make sure API Key is correctly set')
@@ -394,12 +394,12 @@ def main() -> None:
             auth=None)
 
         commands = {
-            'asm-getexternalservices': getexternalservices_command,
-            'asm-getexternalservice': getexternalservice_command,
-            'asm-getexternalipaddressranges': getexternalipaddressranges_command,
-            'asm-getexternalipaddressrange': getexternalipaddressrange_command,
-            'asm-getassetsinternetexposure': getassetsinternetexposure_command,
-            'asm-getassetinternetexposure': getassetinternetexposure_command
+            'asm-get-external-services': get_external_services_command,
+            'asm-get-external-service': get_external_service_command,
+            'asm-get-external-ip-address-ranges': get_external_ip_address_ranges_command,
+            'asm-get-external-ip-address-range': get_external_ip_address_range_command,
+            'asm-get-assets-internet-exposure': get_assets_internet_exposure_command,
+            'asm-get-asset-internet-exposure': get_asset_internet_exposure_command
         }
 
         if command == 'test-module':

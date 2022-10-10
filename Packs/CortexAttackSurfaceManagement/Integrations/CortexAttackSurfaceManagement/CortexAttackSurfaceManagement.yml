@@ -46,7 +46,7 @@ script:
       - directly_discovery
       - unknown
     description: Get a list of all your external services filtered by business units, externally detected providers, domain, externally inferred CVEs, active classifications, inactive classifications, service name, service type, protocol, IP address, is active, and discovery type. Maximum result limit is 100 assets.
-    name: asm-getexternalservices
+    name: asm-get-external-services
     outputs:
     - contextPath: ASM.GetExternalServices.service_id
       description: External service UUID
@@ -95,7 +95,7 @@ script:
       name: service_id
       required: true
     description: Get service details according to the service ID.
-    name: asm-getexternalservice
+    name: asm-get-external-service
     outputs:
     - contextPath: ASM.GetExternalService.service_id
       description: External service UUID
@@ -144,7 +144,7 @@ script:
       type: String
   - arguments: []
     description: Get a list of all your Internet exposure filtered by business units and organization handles. Maximum result limit is 100 ranges.
-    name: asm-getexternalipaddressranges
+    name: asm-get-external-ip-address-ranges
     outputs:
     - contextPath: ASM.GetExternalIpAddressRanges.range_id
       description: External IP address range UUID
@@ -175,7 +175,7 @@ script:
       name: range_id
       required: true
     description: Get external IP address range details according to the range IDs.
-    name: asm-getexternalipaddressrange
+    name: asm-get-external-ip-address-range
     outputs:
     - contextPath: ASM.GetExternalIpAddressRange.range_id
       description: External IP address range UUID
@@ -225,7 +225,7 @@ script:
       - "yes"
       - "no"
     description: Get a list of all your Internet exposure filtered by ip address, domain, type, and/or if there is an active external service. Maximum result limit is 100 assets.
-    name: asm-getassetsinternetexposure
+    name: asm-get-assets-internet-exposure
     outputs:
     - contextPath: ASM.GetAssetsInternetExposure.asm_ids
       description: Attack surface managment UUID
@@ -283,7 +283,7 @@ script:
       name: asm_id
       required: true
     description: Get Internet exposure asset details according to the asset ID.
-    name: asm-getassetinternetexposure
+    name: asm-get-asset-internet-exposure
     outputs:
     - contextPath: ASM.GetAssetInternetExposure.asm_ids
       description: Attack surface managment UUID
