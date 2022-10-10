@@ -1193,6 +1193,51 @@ def test_vectra_get_outcome_by_id_command(requests_mock, id, expected_outputs, e
 
 
 @pytest.mark.parametrize(
+    "category,title,expected_outputs,expected_readable,exception",
+    [
+        pytest.param(None, "Dummy-Title", None, None,
+                     pytest.raises(VectraException, match='"category" not specified'),
+                     id="none-category_exception"),
+        pytest.param('', "Dummy-Title", None, None,
+                     pytest.raises(VectraException, match='"category" not specified'),
+                     id="empty-category_exception"),
+        pytest.param("False Positive", None, None, None,
+                     pytest.raises(VectraException, match='"title" not specified'),
+                     id="none-title_exception"),
+        pytest.param("Wrong Category", "Dummy-Title", None, None,
+                     pytest.raises(ValueError, match='"category" value is invalid'),
+                     id="wrong-category_exception"),
+        pytest.param("False Positive", '', None, None,
+                     pytest.raises(VectraException, match='"title" not specified'),
+                     id="empty-title_exception"),
+        pytest.param('Benign True Positive', 'Vectra Outcome Test True Positive',
+                     load_test_data('single_outcome_extracted.json'), None,
+                     does_not_raise(),
+                     id="valid_no-exception"),
+    ]
+)
+def test_vectra_outcome_create_command(requests_mock, category, title, expected_outputs, expected_readable, exception):
+    """
+    Tests vectra_outcome_create_command command function.
+    """
+    from VectraDetect import Client, vectra_outcome_create_command
+
+    # Test post
+    requests_mock.post(f'{API_URL}{API_ENDPOINT_OUTCOMES}',
+                       json=load_test_data('single_outcome.json'))
+
+    client = Client(
+        base_url=f'{API_URL}', headers={}
+    )
+
+    with exception:
+        result = vectra_outcome_create_command(client=client, category=category, title=title)
+        assert result.outputs == expected_outputs
+        if expected_outputs is None:
+            assert result.readable_output == expected_readable
+
+
+@pytest.mark.parametrize(
     "id,expected_outputs,expected_readable,exception",
     [
         pytest.param(None, None, None,

@@ -123,6 +123,7 @@ script:
     # Get detection PCAP
     # Add tags to an account / host / detection
     # Remove tags to an account / host / detection
+    # Create an assignment outcome
 
   - name: vectra-search-accounts
     description: Returns a list of Account objects.
@@ -655,6 +656,20 @@ script:
       description: Outcome ID you want to get details on
     outputs: *outcomeOutput
 
+  - name: vectra-outcome-create
+    description: Creates a new assignment outcome
+    execution: true    # This command is harmful
+    arguments:
+    - name: title
+      description: Outcome title (will be visible in the UI)
+    - name: category
+      description: Outcome category (one of the 3)
+      auto: PREDEFINED
+      predefined:
+      - Benign True Positive
+      - Malicious True Positive
+      - False Positive
+    outputs: *outcomeOutput
 
   ######
   ### Assignment

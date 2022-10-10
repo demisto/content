@@ -551,6 +551,35 @@ class Client(BaseClient):
             json_data=json_payload
         )
 
+    def create_outcome(self, category: str, title: str):
+        """
+        Creates a new Outcome
+
+        - params:
+            - category: The Outcome category (one of "BTP,MTP,FP" in human readable format)
+            - title: A custom title for this new outcome
+        - returns:
+            Vectra API call result
+        """
+        raw_category = convert_outcome_category_text2raw(category)
+        if raw_category is None:
+            raise ValueError('"category" value is invalid')
+        raw_title = title.strip()
+        if raw_title == '':
+            raise ValueError('"title" cannot be empty')
+
+        json_payload = {
+            'title': raw_title,
+            'category': raw_category
+        }
+
+        # Execute request
+        return self._http_request(
+            method='POST',
+            url_suffix=API_ENDPOINT_OUTCOMES,
+            json_data=json_payload
+        )
+
 
 # ####                 #### #
 # ##  HELPER FUNCTIONS   ## #
@@ -2050,6 +2079,44 @@ def vectra_get_outcome_by_id_command(client: Client, id: str) -> CommandResults:
     return command_result
 
 
+def vectra_outcome_create_command(client: Client, category: str, title: str) -> CommandResults:
+    """
+    Creates a new Outcome
+
+    - params:
+        - client: Vectra Client
+        - category: The Outcome category (one of "BTP,MTP,FP")
+        - title: A custom title for this new outcome
+    - returns
+        CommandResults to be used in War Room
+    """
+    # Check args
+    if not category:
+        raise VectraException('"category" not specified')
+    if not title:
+        raise VectraException('"title" not specified')
+
+    api_response = client.create_outcome(category=category, title=title)
+
+    # 40x API error will be raised by the Client class
+    outcome_data = extract_outcome_data(api_response)
+
+    readable_output = tableToMarkdown(
+        name='Newly created Outcome details table',
+        t=outcome_data
+    )
+
+    command_result = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Vectra.Outcome',
+        outputs_key_field='ID',
+        outputs=outcome_data,
+        raw_response=api_response
+    )
+
+    return command_result
+
+
 def vectra_get_user_by_id_command(client: Client, id: str) -> CommandResults:
     """
     Gets Vectre User details using its ID
@@ -2266,6 +2333,8 @@ def main() -> None:  # pragma: no cover
             return_results(vectra_get_assignment_by_id_command(client, **kwargs))
         elif command == 'vectra-outcome-describe':
             return_results(vectra_get_outcome_by_id_command(client, **kwargs))
+        elif command == 'vectra-outcome-create':
+            return_results(vectra_outcome_create_command(client, **kwargs))
         elif command == 'vectra-user-describe':
             return_results(vectra_get_user_by_id_command(client, **kwargs))
 
