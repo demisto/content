@@ -28,6 +28,7 @@ API_URL = f'{SERVER_URL}{API_VERSION_URI}'
 API_SEARCH_ENDPOINT_ACCOUNTS = '/search/accounts'
 API_SEARCH_ENDPOINT_DETECTIONS = '/search/detections'
 API_SEARCH_ENDPOINT_HOSTS = '/search/hosts'
+API_ENDPOINT_ASSIGNMENTS = '/assignments'
 API_ENDPOINT_DETECTIONS = '/detections'
 API_ENDPOINT_OUTCOMES = '/assignment_outcomes'
 API_ENDPOINT_USERS = '/users'
@@ -221,6 +222,43 @@ def test_validate_min_max(min_type, min_value, max_type, max_value, expected):
 
 
 @pytest.mark.parametrize(
+    "input_list,expected,exception",
+    [
+        pytest.param(None, None,
+                     does_not_raise(),
+                     id="none_no-exception"),
+        pytest.param('', None,
+                     does_not_raise(),
+                     id="empty_no-exception"),
+        pytest.param('1', {1},
+                     does_not_raise(),
+                     id="single-element_no-exception"),
+        pytest.param('1,2,3', {1, 2, 3},
+                     does_not_raise(),
+                     id="multiple-elements_no-exception"),
+        pytest.param('1 , 2, 3', {1, 2, 3},
+                     does_not_raise(),
+                     id="with-spaces_no-exception"),
+        pytest.param('1 , 2, 3', {1, 2, 3},
+                     does_not_raise(),
+                     id="with-spaces_no-exception"),
+        pytest.param('1 , 2, , 3', {1, 2, 3},
+                     does_not_raise(),
+                     id="with-empty-element_no-exception"),
+    ]
+)
+def test_sanitize_str_ids_list_to_set(input_list, expected, exception):
+    """
+    Tests sanitize_str_ids_list_to_set helper function.
+    """
+
+    from VectraDetect import sanitize_str_ids_list_to_set
+
+    with exception:
+        assert sanitize_str_ids_list_to_set(input_list) == expected
+
+
+@pytest.mark.parametrize(
     "object_type,params,expected",
     [
         pytest.param('account', {'min_id': '12'},
@@ -377,6 +415,23 @@ def test_extract_host_data(api_entry, expected):
     from VectraDetect import extract_host_data
 
     assert extract_host_data(api_entry) == expected
+
+
+@pytest.mark.parametrize(
+    "api_entry,expected",
+    [
+        pytest.param(load_test_data('single_assignment.json'),
+                     load_test_data('single_assignment_extracted.json'),
+                     id="assignment_ok")
+    ]
+)
+def test_extract_assignment_data(api_entry, expected):
+    """
+    Tests extract_assignment_data helper function
+    """
+    from VectraDetect import extract_assignment_data
+
+    assert extract_assignment_data(api_entry) == expected
 
 
 @pytest.mark.parametrize(
@@ -682,7 +737,37 @@ def test_vectra_search_hosts_command(requests_mock, query_args, expected_outputs
             assert result.readable_output == expected_readable
 
 
-# Test only the exceptions for now
+@pytest.mark.parametrize(
+    "query_args,expected_outputs,expected_readable,exception",
+    [
+        pytest.param({}, [load_test_data('single_assignment_extracted.json')], None,
+                     does_not_raise(),
+                     id="full-pull")
+    ]
+)
+def test_vectra_search_assignments_command(requests_mock, query_args, expected_outputs, expected_readable, exception):
+    """
+    Tests vectra_search_assignments_command command function.
+    """
+    from VectraDetect import Client, vectra_search_assignments_command
+
+    # Specific answers
+    requests_mock.get(f'{API_URL}{API_ENDPOINT_ASSIGNMENTS}'
+                      f'?resolved=false',
+                      complete_qs=True,
+                      json={'count': 1, 'results': [load_test_data('single_assignment.json')]})
+
+    client = Client(
+        base_url=f'{API_URL}', headers={}
+    )
+
+    with exception:
+        result = vectra_search_assignments_command(client=client, **query_args)
+        assert result.outputs == expected_outputs
+        if expected_outputs is None:
+            assert result.readable_output == expected_readable
+
+
 @pytest.mark.parametrize(
     "query_args,expected_outputs,expected_readable,exception",
     [
@@ -1027,6 +1112,43 @@ def test_mark_detection_as_fixed_command(requests_mock, id, fixed, expected_outp
 
     with exception:
         result = mark_detection_as_fixed_command(client=client, id=id, fixed=fixed)
+        assert result.outputs == expected_outputs
+        if expected_outputs is None:
+            assert result.readable_output == expected_readable
+
+
+@pytest.mark.parametrize(
+    "id,expected_outputs,expected_readable,exception",
+    [
+        pytest.param(None, None, None,
+                     pytest.raises(VectraException, match='"id" not specified'),
+                     id="none-id_exception"),
+        pytest.param('25', load_test_data('single_assignment_extracted.json'), None,
+                     does_not_raise(),
+                     id="valid-id_no-exception"),
+    ]
+)
+def test_vectra_get_assignment_by_id_command(requests_mock, id, expected_outputs, expected_readable, exception):
+    """
+    Tests vectra_get_assignment_by_id_command command function.
+    """
+    from VectraDetect import Client, vectra_get_assignment_by_id_command
+
+    # Default answer
+    requests_mock.get(f'{API_URL}{API_ENDPOINT_ASSIGNMENTS}',
+                      json={})
+    # Specific answers
+    requests_mock.get(f'{API_URL}{API_ENDPOINT_ASSIGNMENTS}'
+                      f'/25',
+                      complete_qs=True,
+                      json={'assignment': load_test_data('single_assignment.json')})
+
+    client = Client(
+        base_url=f'{API_URL}', headers={}
+    )
+
+    with exception:
+        result = vectra_get_assignment_by_id_command(client=client, id=id)
         assert result.outputs == expected_outputs
         if expected_outputs is None:
             assert result.readable_output == expected_readable

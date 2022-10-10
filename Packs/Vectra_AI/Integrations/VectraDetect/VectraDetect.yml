@@ -118,8 +118,8 @@ script:
   isfetch: true
   runonce: false
   commands:
-    # Search Accounts / Hosts / Detections
-    # Describe single account / host / detection by ID
+    # Search Accounts / Hosts / Detections / Users / Outcomes (Assignment outcomes) / Assignments
+    # Describe single account / host / detection / outcome / assignment by ID
     # Get detection PCAP
     # Add tags to an account / host / detection
     # Remove tags to an account / host / detection
@@ -396,6 +396,62 @@ script:
       type: String
       description: Detection URL to pivot to Vectra UI
 
+  - name: vectra-search-assignments
+    description: Return a list of assignments.
+      By default already resolved assignment are not returned.
+    execution: false   # This command is not harmful
+    arguments:
+    - name: account_ids
+      description: Filters by accounts IDs
+      isArray: true
+    - name: assignee_ids
+      description: Filters by assignees IDs
+      isArray: true
+    - name: host_ids
+      description: Filters by hosts IDs
+      isArray: true
+    - name: outcome_ids
+      description: Filters by outcomes IDs
+      isArray: true
+    - name: resolved
+      description: Filters by resolution state
+    outputs:  &assignmentOutput
+    - contextPath: Vectra.Assignment.AccountID
+      type: Number
+      description: Account ID this assignment is linked to
+    - contextPath: Vectra.Assignment.AssignedBy
+      type: String
+      description: Who lastly assigned this assignment
+    - contextPath: Vectra.Assignment.AssignedDate
+      type: String
+      description: When this assignment was lastly assigned
+    - contextPath: Vectra.Assignment.AssignedTo
+      type: String
+      description: To who this assignment is assigned
+    - contextPath: Vectra.Assignment.HostID
+      type: String
+      description: Host ID this assignment is linked to
+    - contextPath: Vectra.Assignment.ID
+      type: Number
+      description: Assignment ID (unique)
+    - contextPath: Vectra.Assignment.IsResolved
+      type: Boolean
+      description: Is this assignment resolved
+    - contextPath: Vectra.Assignment.OutcomeCategory
+      type: String
+      description: Assignment Outcome category
+    - contextPath: Vectra.Assignment.OutcomeTitle
+      type: String
+      description: Assignment Outcome title
+    - contextPath: Vectra.Assignment.TriagedDetections
+      type: String
+      description: List of Detection that have been triaged with the resolution
+    - contextPath: Vectra.Assignment.ResolvedBy
+      type: String
+      description: Who resolved this assignment
+    - contextPath: Vectra.Assignment.ResolvedDate
+      type: string
+      description: When this assignment was resolved
 
   - name: vectra-search-users
     description: Returns a list of Vectra Users.
@@ -599,6 +655,18 @@ script:
       description: Outcome ID you want to get details on
     outputs: *outcomeOutput
 
+
+  ######
+  ### Assignment
+  #
+  - name: vectra-assignment-describe
+    description: Returns a single assignment details
+    execution: false    # This command is not harmful
+    arguments:
+    - name: id
+      default: true
+      description: Assignment ID you want to get details on
+    outputs: *assignmentOutput
 
   ######
   ### Vectra Users
