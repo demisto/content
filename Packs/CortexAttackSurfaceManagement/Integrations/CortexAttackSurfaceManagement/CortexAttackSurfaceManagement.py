@@ -1,6 +1,9 @@
+import urllib3
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from typing import Dict, Any
+
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -181,7 +184,7 @@ def getexternalservice_command(client: Client, args: Dict[str, Any]) -> CommandR
         return_error("This command only supports one service_id at this time")
 
     response = client.getexternalservice_request(service_id_list)
-    parsed = response.get('reply',{}).get('details')
+    parsed = response.get('reply', {}).get('details')
     markdown = tableToMarkdown('External Service', parsed, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='ASM.GetExternalService',
@@ -194,19 +197,20 @@ def getexternalservice_command(client: Client, args: Dict[str, Any]) -> CommandR
     return command_results
 
 
-def getexternalipaddressranges_command(client: Client) -> CommandResults:
+def getexternalipaddressranges_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     asm-getexternalipaddressranges command: Returns list of external ip ranges.
 
     Args:
         client (Client): CortexAttackSurfaceManagment client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()`` (not used in this function).
 
     Returns:
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
         that contains external IP address ranges.
     """
     response = client.getexternalipaddressranges_request()
-    parsed = response.get('reply',{}).get('external_ip_address_ranges')
+    parsed = response.get('reply', {}).get('external_ip_address_ranges')
     markdown = tableToMarkdown('External IP Address Ranges', parsed)
     command_results = CommandResults(
         outputs_prefix='ASM.GetExternalIpAddressRanges',
@@ -366,7 +370,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        creds = params.get('credentials' {})
+        creds = params.get('credentials', {})
         api = creds.get('password', '')
         auth_id = creds.get('identifier', '')
         headers = {
@@ -391,7 +395,7 @@ def main() -> None:
             'asm-getexternalipaddressranges': getexternalipaddressranges_command,
             'asm-getexternalipaddressrange': getexternalipaddressrange_command,
             'asm-getassetsinternetexposure': getassetsinternetexposure_command,
-            'asm-getassetinternetexposure': getassetinternetexposure_command,
+            'asm-getassetinternetexposure': getassetinternetexposure_command
         }
 
         if command == 'test-module':

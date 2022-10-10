@@ -2,6 +2,7 @@
 Tests module for Cortex Attack Surface Management integration.
 """
 
+
 def test_getexternalservices_command(requests_mock):
     """Tests asm-getexternalservices_command command function.
 
