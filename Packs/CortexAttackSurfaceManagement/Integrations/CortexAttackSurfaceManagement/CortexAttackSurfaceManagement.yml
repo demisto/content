@@ -1,4 +1,4 @@
-category: Utilities
+category: Vulnerability Management
 commonfields:
   id: Cortex Attack Surface Management
   version: -1
@@ -37,7 +37,7 @@ script:
       - colocated_on_ip
       - directly_discovery
       - unknown
-    description: Get a list of all your external services filtered by business units, externally detected providers, domain, externally inferred CVEs, acve classificaons, inacve classificaons, service name, service type, protocol, IP address, is acve, and discovery type. Maximum result limit is 100 assets.
+    description: Get a list of all your external services filtered by business units, externally detected providers, domain, externally inferred CVEs, active classifications, inactive classifications, service name, service type, protocol, IP address, is active, and discovery type. Maximum result limit is 100 assets.
     name: asm-getexternalservices
     outputs:
     - contextPath: ASM.GetExternalServices.service_id
@@ -83,7 +83,7 @@ script:
       description: External service vulnerability score
       type: Unknown
   - arguments:
-    - description: A string represenng the service ID you want get details for.
+    - description: A string representing the service ID you want get details for.
       name: service_id
       required: true
     description: Get service details according to the service ID.
@@ -253,7 +253,7 @@ script:
       description: is the asset domain resolvable
       type: Boolean
     - contextPath: ASM.GetAssetsInternetExposure.operation_system
-      description: The operang system reported by the source for this asset
+      description: The operating system reported by the source for this asset
       type: Unknown
     - contextPath: ASM.GetAssetsInternetExposure.agent_id
       description: If there is an endpoint installed on this asset, this is the endpoint ID
@@ -319,7 +319,7 @@ script:
     - contextPath: ASM.GetAssetInternetExposure.externally_inferred_vulnerability_score
       description: Asset vulnerability score
       type: Unknown
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.7.35188
   runonce: false
   script: ''
   subtype: python3

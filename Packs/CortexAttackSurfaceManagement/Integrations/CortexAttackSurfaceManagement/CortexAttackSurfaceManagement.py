@@ -1,5 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from typing import Dict, Any
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 
 class Client(BaseClient):
@@ -165,7 +168,7 @@ def getexternalservice_command(client: Client, args: Dict[str, Any]) -> CommandR
     Args:
         client (Client): CortexAttackSurfaceManagment client to use.
         args (dict): all command arguments, usually passed from ``demisto.args()``.
-            ``args['service_id']`` A string represenng the service ID you want get details for.
+            ``args['service_id']`` A string representing the service ID you want get details for.
 
     Returns:
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
@@ -363,7 +366,6 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
         creds = params.get('credentials' {})
         api = creds.get('password', '')
         auth_id = creds.get('identifier', '')
