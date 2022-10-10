@@ -181,7 +181,7 @@ def getexternalservice_command(client: Client, args: Dict[str, Any]) -> CommandR
     service_id = str(args.get('service_id'))
     service_id_list = service_id.split(",")
     if len(service_id_list) > 1:
-        return_error("This command only supports one service_id at this time")
+        raise ValueError("This command only supports one service_id at this time")
 
     response = client.getexternalservice_request(service_id_list)
     parsed = response.get('reply', {}).get('details')
@@ -241,7 +241,7 @@ def getexternalipaddressrange_command(client: Client, args: Dict[str, Any]) -> C
     range_id = str(args.get('range_id'))
     range_id_list = range_id.split(",")
     if len(range_id_list) > 1:
-        return_error("This command only supports one range_id at this time")
+        raise ValueError("This command only supports one range_id at this time")
 
     response = client.getexternalipaddressrange_request(range_id_list)
     parsed = response.get('reply', {}).get('details')
@@ -320,7 +320,7 @@ def getassetinternetexposure_command(client: Client, args: Dict[str, Any]) -> Co
     asm_id = str(args.get('asm_id'))
     asm_id_list = asm_id.split(",")
     if len(asm_id_list) > 1:
-        return_error("This command only supports one asm_id at this time")
+        raise ValueError("This command only supports one asm_id at this time")
 
     response = client.getassetinternetexposure_request(asm_id_list)
     parsed = response.get('reply', {}).get('details')
