@@ -1,0 +1,57 @@
+{
+   "response":{
+      "@status":"success",
+      "@code":"19",
+      "result":{
+         "@total-count":"2",
+         "@count":"2",
+         "entry":[
+            {
+               "@name":"test-1",
+               "@loc":"Lab-Devices",
+               "type":{
+                  "domain":{
+                     "recurring":{
+                        "hourly":"None"
+                     },
+                     "url":"http://test.com"
+                  }
+               }
+            },
+            {
+               "@name":"test-2",
+               "@admin":"admin",
+               "@dirtyId":"3136",
+               "@time":"2022/09/19 01:00:49",
+               "@loc":"Lab-Devices",
+               "type":{
+                  "@admin":"admin",
+                  "@dirtyId":"3136",
+                  "@time":"2022/09/19 01:00:49",
+                  "ip":{
+                     "@admin":"admin",
+                     "@dirtyId":"3136",
+                     "@time":"2022/09/19 01:00:49",
+                     "recurring":{
+                        "@admin":"admin",
+                        "@dirtyId":"3136",
+                        "@time":"2022/09/19 01:00:49",
+                        "five-minute":{
+                           "@admin":"admin",
+                           "@dirtyId":"3136",
+                           "@time":"2022/09/19 01:00:49"
+                        }
+                     },
+                     "url":{
+                        "@admin":"admin",
+                        "@dirtyId":"3136",
+                        "@time":"2022/09/19 01:00:49",
+                        "#text":"http://test1.com"
+                     }
+                  }
+               }
+            }
+         ]
+      }
+   }
+}
