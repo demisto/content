@@ -30,6 +30,7 @@ API_SEARCH_ENDPOINT_DETECTIONS = '/search/detections'
 API_SEARCH_ENDPOINT_HOSTS = '/search/hosts'
 API_ENDPOINT_DETECTIONS = '/detections'
 API_ENDPOINT_OUTCOMES = '/assignment_outcomes'
+API_ENDPOINT_USERS = '/users'
 API_TAGGING = '/tagging'
 
 
@@ -714,6 +715,36 @@ def test_vectra_search_outcomes_command(requests_mock, query_args, expected_outp
 
 
 @pytest.mark.parametrize(
+    "query_args,expected_outputs,expected_readable,exception",
+    [
+        pytest.param({}, [load_test_data('single_user_extracted.json')], None,
+                     does_not_raise(),
+                     id="full-pull")
+    ]
+)
+def test_vectra_search_users_command(requests_mock, query_args, expected_outputs, expected_readable, exception):
+    """
+    Tests vectra_search_users_command command function.
+    """
+    from VectraDetect import Client, vectra_search_users_command
+
+    # Specific answers
+    requests_mock.get(f'{API_URL}{API_ENDPOINT_USERS}',
+                      complete_qs=True,
+                      json={'count': 1, 'results': [load_test_data('single_user.json')]})
+
+    client = Client(
+        base_url=f'{API_URL}', headers={}
+    )
+
+    with exception:
+        result = vectra_search_users_command(client=client, **query_args)
+        assert result.outputs == expected_outputs
+        if expected_outputs is None:
+            assert result.readable_output == expected_readable
+
+
+@pytest.mark.parametrize(
     "id,expected_outputs,expected_readable,exception",
     [
         pytest.param(None, None, None,
@@ -1034,6 +1065,43 @@ def test_vectra_get_outcome_by_id_command(requests_mock, id, expected_outputs, e
 
     with exception:
         result = vectra_get_outcome_by_id_command(client=client, id=id)
+        assert result.outputs == expected_outputs
+        if expected_outputs is None:
+            assert result.readable_output == expected_readable
+
+
+@pytest.mark.parametrize(
+    "id,expected_outputs,expected_readable,exception",
+    [
+        pytest.param(None, None, None,
+                     pytest.raises(VectraException, match='"id" not specified'),
+                     id="no-id_exception"),
+        pytest.param('123', load_test_data('single_user_extracted.json'), None,
+                     does_not_raise(),
+                     id="valid-id_no-exception"),
+    ]
+)
+def test_vectra_get_user_by_id_command(requests_mock, id, expected_outputs, expected_readable, exception):
+    """
+    Tests vectra_get_user_by_id_command command function.
+    """
+    from VectraDetect import Client, vectra_get_user_by_id_command
+
+    # Default answer
+    requests_mock.get(f'{API_URL}{API_ENDPOINT_USERS}',
+                      json={})
+    # Specific answers
+    requests_mock.get(f'{API_URL}{API_ENDPOINT_USERS}'
+                      f'/123',
+                      complete_qs=True,
+                      json=load_test_data('single_user.json'))
+
+    client = Client(
+        base_url=f'{API_URL}', headers={}
+    )
+
+    with exception:
+        result = vectra_get_user_by_id_command(client=client, id=id)
         assert result.outputs == expected_outputs
         if expected_outputs is None:
             assert result.readable_output == expected_readable

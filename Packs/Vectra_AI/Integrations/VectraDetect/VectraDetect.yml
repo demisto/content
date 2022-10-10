@@ -396,6 +396,45 @@ script:
       type: String
       description: Detection URL to pivot to Vectra UI
 
+
+  - name: vectra-search-users
+    description: Returns a list of Vectra Users.
+      All search attributes will be cummulative.
+    execution: false   # This command is not harmful
+    arguments:
+    - name: username
+      description: Filters by user name
+      default: true
+    - name: role
+      description: Filters by user role
+    - name: type
+      description: Filters by type ('Local', 'SAML', ...)
+      auto: PREDEFINED
+      predefined:
+      - local
+      - SAML
+    - name: last_login_datetime
+      description: Filters for Users that logged in since the given datetime
+    outputs:  &userOutput
+    - contextPath: Vectra.User.Email
+      type: String
+      description: User's email address
+    - contextPath: Vectra.User.ID
+      type: Number
+      description: User ID (unique)
+    - contextPath: Vectra.User.Role
+      type: String
+      description: User's role
+    - contextPath: Vectra.User.Type
+      type: String
+      description: User type ('Local', 'SAML', ...)
+    - contextPath: Vectra.User.Username
+      type: String
+      description: Username
+    - contextPath: Vectra.User.LastLoginDate
+      type: String
+      description: User's last login datetime
+
   - name: vectra-search-outcomes
     description: Returns a list of assignment outcomes.
     outputs:  &outcomeOutput
@@ -560,6 +599,18 @@ script:
       description: Outcome ID you want to get details on
     outputs: *outcomeOutput
 
+
+  ######
+  ### Vectra Users
+  #
+  - name: vectra-user-describe
+    description: Returns a single Vectra User details
+    execution: false    # This command is not harmful
+    arguments:
+    - name: id
+      default: true
+      description: User ID you want to get details on
+    outputs: *userOutput
 
 tests:
 - No tests - Not dev yet

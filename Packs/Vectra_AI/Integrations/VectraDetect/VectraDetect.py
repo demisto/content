@@ -36,6 +36,7 @@ API_ENDPOINT_ACCOUNTS = '/accounts'
 API_ENDPOINT_OUTCOMES = '/assignment_outcomes'
 API_ENDPOINT_DETECTIONS = '/detections'
 API_ENDPOINT_HOSTS = '/hosts'
+API_ENDPOINT_USERS = '/users'
 
 API_SEARCH_ENDPOINT_ACCOUNTS = '/search/accounts'
 API_SEARCH_ENDPOINT_DETECTIONS = '/search/detections'
@@ -336,17 +337,47 @@ class Client(BaseClient):
             url_suffix=f'{API_ENDPOINT_OUTCOMES}{url_addon}'
         )
 
+    def search_users(self,
+                     id=None,
+                     last_login_datetime=None,
+                     role=None,
+                     type=None,
+                     username=None) -> Dict[str, Any]:
+        """
+        Gets Vectra Users using the 'assignment_outcomes' API endpoint
+
+        :return: dict containing all User details
+        :rtype: ``Dict[str, Any]``
+        """
         # Default params
-        # Outcomes endpoint doesn't support pagination
+        # Users endpoint doesn't support pagination
         query_params: Dict[str, Any] = {}
 
         url_addon = f'/{id}' if id else ''
+
+        # If id is specified, do not use other params
+        if not id:
+            # Test user name
+            if username:
+                query_params['username'] = username
+
+            # Test user role
+            if role:
+                query_params['role'] = role
+
+            # Test user type
+            if type:
+                query_params['account_type'] = type
+
+            # Test last login datetime
+            if last_login_datetime and convert_date(last_login_datetime) is not None:
+                query_params['last_login_gte'] = last_login_datetime
 
         # Execute request
         return self._http_request(
             method='GET',
             params=query_params,
-            url_suffix=f'{API_ASSIGNMENT_OUTCOME}{url_addon}'
+            url_suffix=f'{API_ENDPOINT_USERS}{url_addon}'
         )
 
     def get_pcap_by_detection_id(self, id: str):
@@ -851,6 +882,25 @@ def extract_outcome_data(outcome: Dict[str, Any]) -> Dict[str, Any]:
         'ID'                     : outcome.get('id'),                                           # noqa: E203
         'IsBuiltIn'              : outcome.get('builtin'),                                      # noqa: E203
         'Title'                  : outcome.get('title')                                         # noqa: E203
+    }
+
+
+def extract_user_data(user: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Extracts useful information from Vectra User object renaming attributes on the fly.
+
+    - params:
+        - user: The Vectra User object
+    - returns:
+        The User extracted data
+    """
+    return {
+        'Email'         : user.get('email'),                    # noqa: E203
+        'ID'            : user.get('id'),                       # noqa: E203
+        'Role'          : user.get('role'),                     # noqa: E203
+        'Type'          : user.get('account_type'),             # noqa: E203
+        'Username'      : user.get('username'),                 # noqa: E203
+        'LastLoginDate' : convert_date(user.get('last_login'))  # noqa: E203
     }
 
 
@@ -1498,6 +1548,53 @@ def vectra_search_outcomes_command(client: Client, **kwargs) -> CommandResults:
     return command_result
 
 
+def vectra_search_users_command(client: Client, **kwargs) -> CommandResults:
+    """
+    Returns several Vectra Users objects maching the search criterias passed as arguments
+
+    - params:
+        - client: Vectra Client
+        - kwargs: The different possible search query arguments
+    - returns
+        CommandResults to be used in War Room
+    """
+    api_response = client.search_users(**kwargs)
+
+    count = api_response.get('count')
+    if count is None:
+        raise VectraException('API issue')
+
+    users_data = list()
+    if count == 0:
+        readable_output = 'Cannot find any Vectra Users.'
+    else:
+        if api_response.get('results') is None:
+            raise VectraException('API issue')
+
+        api_results = api_response.get('results', [])
+
+        for assignment in api_results:
+            users_data.append(extract_user_data(assignment))
+
+        readable_output_keys = ['ID', 'Role', 'Type', 'Username', 'LastLoginDate']
+        readable_output = tableToMarkdown(
+            name=f'Vectra Users table (Showing max {MAX_RESULTS} entries)',
+            t=users_data,
+            headers=readable_output_keys,
+            date_fields=['LastLoginDate']
+        )
+
+    command_result = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Vectra.User',
+        outputs_key_field='ID',
+        outputs=users_data,
+        raw_response=api_response
+    )
+
+    return command_result
+
+
 def vectra_get_account_by_id_command(client: Client, id: str) -> CommandResults:
     """
     Gets Account details using its ID
@@ -1743,6 +1840,46 @@ def vectra_get_outcome_by_id_command(client: Client, id: str) -> CommandResults:
     return command_result
 
 
+def vectra_get_user_by_id_command(client: Client, id: str) -> CommandResults:
+    """
+    Gets Vectre User details using its ID
+
+    - params:
+        - client: Vectra Client
+        - id: The User ID
+    - returns
+        CommandResults to be used in War Room
+    """
+    # Check args
+    if not id:
+        raise VectraException('"id" not specified')
+
+    api_response = client.search_users(id=id)
+
+    user_data = None
+    obtained_id = api_response.get('id')
+    if obtained_id is None:
+        readable_output = f'Cannot find Vectra User with ID "{id}".'
+    else:
+        user_data = extract_user_data(api_response)
+
+        readable_output = tableToMarkdown(
+            name=f'Vectra User ID {id} details table',
+            t=user_data,
+            date_fields=['LastLoginDate']
+        )
+
+    command_result = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Vectra.User',
+        outputs_key_field='ID',
+        outputs=user_data,
+        raw_response=api_response
+    )
+
+    return command_result
+
+
 def add_tags_command(client: Client, type: str, id: str, tags: str) -> CommandResults:
     """
     Adds several tags to an account/host/detection
@@ -1881,6 +2018,9 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'vectra-search-outcomes':
             return_results(vectra_search_outcomes_command(client, **kwargs))
+        elif command == 'vectra-search-users':
+            return_results(vectra_search_users_command(client, **kwargs))
+
         # ## Accounts centric commands
         elif command == 'vectra-account-describe':
             return_results(vectra_get_account_by_id_command(client, **kwargs))
@@ -1911,6 +2051,9 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'vectra-outcome-describe':
             return_results(vectra_get_outcome_by_id_command(client, **kwargs))
+        elif command == 'vectra-user-describe':
+            return_results(vectra_get_user_by_id_command(client, **kwargs))
+
         else:
             raise NotImplementedError()
 
