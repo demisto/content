@@ -1522,7 +1522,7 @@ def vectra_search_accounts_command(client: Client, **kwargs) -> CommandResults:
 
     accounts_data = list()
     if count == 0:
-        readable_output = 'Cannot find any Detection.'
+        readable_output = 'Cannot find any Account.'
     else:
         if api_response.get('results') is None:
             raise VectraException('API issue')
