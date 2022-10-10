@@ -378,15 +378,19 @@ def main() -> None:
             'x-xdr-auth-id': f'{auth_id}',
             'Content-Type': 'application/json'
         }
+
+        proxy = params.get('proxy', False)
+        verify_certificate = not params.get('insecure', False)
+
         url_suffix = "/public_api/v1"
         url = params.get('url', '')
         add_sensitive_log_strs(api)
         base_url = urljoin(url, url_suffix)
         client = Client(
             base_url=base_url,
-            verify=True,
+            verify=verify_certificate,
             headers=headers,
-            proxy=False,
+            proxy=proxy,
             auth=None)
 
         commands = {
