@@ -1,14 +1,5 @@
 id: ServiceNow CMDB Search
 version: -1
-contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: ServiceNow
-    itemVersion: 2.3.24
-    fromServerVersion: 6.0.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
 name: ServiceNow CMDB Search
 description: |
   Subplaybook for finding CI records in ServiceNow CMDB.
@@ -24,11 +15,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "14"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -41,6 +32,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "4":
@@ -65,7 +57,6 @@ tasks:
       query:
         simple: ${inputs.SearchQueryField}=${inputs.SearchQueryValue}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -78,6 +69,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "5":
@@ -104,7 +96,6 @@ tasks:
           root: ServiceNowCMDB.Records
           accessor: sys_id
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -117,6 +108,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "6":
@@ -143,7 +135,6 @@ tasks:
           root: ServiceNowCMDB.Record.Attributes.cmdb_ci
           accessor: value
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -156,6 +147,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "7":
@@ -169,8 +161,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -183,6 +175,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "8":
@@ -193,8 +186,7 @@ tasks:
       id: d9396b1e-671e-4684-8177-8d10a6c2709d
       version: -1
       name: Do records exist?
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -208,7 +200,6 @@ tasks:
       value:
         simple: ${ServiceNowCMDB.Records}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -221,6 +212,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "9":
@@ -240,7 +232,6 @@ tasks:
       "Yes":
       - "10"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -254,13 +245,13 @@ tasks:
     message:
       to:
         simple: Analyst
-      subject: null
+      subject:
       body:
         simple: Do you want to add this asset in the CMDB?
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -272,6 +263,7 @@ tasks:
       - "Yes"
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "10":
@@ -290,7 +282,6 @@ tasks:
       '#none#':
       - "7"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -303,6 +294,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "13":
@@ -329,7 +321,6 @@ tasks:
           root: ${ServiceNowCMDB.Record
           accessor: Attributes}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -346,6 +337,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "14":
@@ -356,8 +348,7 @@ tasks:
       id: 2c408998-b0a1-4ea0-85cc-1eea917159cc
       version: -1
       name: Is ServiceNow CMDB enabled?
-      description: Determines if the ServiceNow CMDB integration instance is configured
-        to continue with scanning.
+      description: Determines if the ServiceNow CMDB integration instance is configured to continue with playbook.
       type: condition
       iscommand: false
       brand: ""
@@ -418,8 +409,7 @@ tasks:
       id: 595fef6d-8bc5-4cd4-8713-bb70d6892ea2
       version: -1
       name: Was bypass input set to "true"?
-      description: Determines if the ${inputs.BypassAddRecord} input was set to "true"
-        in order to bypass the "Add asset to CMDB".
+      description: Determines if the ${inputs.BypassAddRecord} input was set to "true" in order to bypass the "Add asset to CMDB".
       type: condition
       iscommand: false
       brand: ""
@@ -477,30 +467,32 @@ inputs:
     simple: cmdb_ci_network_adapter
   required: false
   description: The CMDB CI class to perform the search on (Defaults to cmdb_ci_network_adapter).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SearchQueryField
   value:
     simple: ip_address
   required: false
   description: The CI field used to perform the query (Defaults to ip_address).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SearchQueryValue
   value: {}
   required: true
   description: The value used to perform the query.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: BypassAddRecord
   value:
     simple: "false"
   required: false
-  description: Value to determine if the "add asset to CMDB" branch should be skipped
-    in order to prevent direction to manual task.  By default this is set to "false"
-    but a "true" value will bypass.
-  playbookInputQuery: null
+  description: Value to determine if the "add asset to CMDB" branch should be skipped in order to prevent direction to manual task.  By default this is set to "false" but a "true" value will bypass.
+  playbookInputQuery:
 outputs:
 - contextPath: ServiceNowCMDB.Record
   description: Discovered CI records
   type: unknown
 - contextPath: ServiceNowCMDB.Records
   description: A list of all the records that were found in the CMDB table.
-sourceplaybookid: ServiceNow CMDB Search
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+contentitemexportablefields:
+  contentitemfields: {}
