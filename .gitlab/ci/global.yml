@@ -201,6 +201,8 @@
     - .default-job-settings
   script:
     - section_start "Test Infrastructure"
+    - demisto-sdk lint -vvv -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam
+
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
     - python3 -m pytest ./Tests/Marketplace/Tests/ -v
     - python3 -m pytest ./Tests/tests -v
@@ -211,7 +213,6 @@
         ./Tests/scripts/sdk_pylint_check.sh
       fi
     - section_end "Test Infrastructure"
-    - demisto-sdk lint -vvv -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam
 
     - section_start "Create id set"
     - *create-id-set
