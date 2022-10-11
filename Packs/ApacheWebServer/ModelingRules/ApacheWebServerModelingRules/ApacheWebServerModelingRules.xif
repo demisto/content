@@ -38,7 +38,7 @@ filter _raw_log contains "GET" or _raw_log contains "HEAD" or _raw_log contains 
 | alter XDM.Network.Source.user.username =username
 | alter XDM.Network.http.url = requested_line
 | alter XDM.Network.http.response_code = response_code 
-//| alter XDM.Network.http.user_agent= User_agent
+| alter XDM.Network.http.user_agent= User_agent
 | alter XDM.Network.http.referrer =Referrer
 | alter XDM.Network.Destination.bytes=to_number(bytes_size)
 | alter XDM.Network.Source.ipv4 =sourceip;
