@@ -873,7 +873,7 @@ def get_file_indicator(file_hash: str, hash_type: str, response: Dict[str, Any])
         indicator=file_hash,
         indicator_type=DBotScoreType.FILE,
         integration_name='CheckPointSandBlast',
-        reliability=DBotScoreReliability.C,
+        reliability=demisto.params().get('integrationReliability'),
         score=get_dbotscore(response),
     )
 
