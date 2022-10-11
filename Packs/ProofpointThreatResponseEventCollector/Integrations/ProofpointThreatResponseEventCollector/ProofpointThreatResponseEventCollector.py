@@ -393,31 +393,48 @@ def main():  # pragma: no cover
 
         elif command in ('proofpoint-trap-get-events', 'fetch-events'):
 
+            # if command == 'proofpoint-trap-get-events':
+            #     should_push_events = argToBoolean(args.pop('should_push_events'))
+            #     events, human_readable, raw_response = list_incidents_command(client, args)
+            #     results = CommandResults(raw_response=raw_response, readable_output=human_readable)
+            #     return_results(results)
+            #
+            # else:  # command == 'fetch-events':
+            #     should_push_events = True
+            #     last_run = demisto.getLastRun()
+            #     events, last_run = fetch_events_command(
+            #         client,
+            #         first_fetch,
+            #         last_run,
+            #         fetch_limit,
+            #         fetch_delta,
+            #         incidents_states,
+            #     )
+            #     demisto.setLastRun(last_run)
+            #
+            # if should_push_events:
+            #     send_events_to_xsiam(
+            #         events,
+            #         VENDOR,
+            #         PRODUCT
+            #     )
             if command == 'proofpoint-trap-get-events':
-                should_push_events = argToBoolean(args.pop('should_push_events'))
-                events, human_readable, raw_response = list_incidents_command(client, args)
-                results = CommandResults(raw_response=raw_response, readable_output=human_readable)
-                return_results(results)
-
-            else:  # command == 'fetch-events':
-                should_push_events = True
-                last_run = demisto.getLastRun()
+                first_fetch, _ = parse_date_range('2 years',
+                                                  date_format=TIME_FORMAT)
+                incidents_states = 'open'
                 events, last_run = fetch_events_command(
                     client,
                     first_fetch,
-                    last_run,
+                    {},
                     fetch_limit,
                     fetch_delta,
                     incidents_states,
                 )
-                demisto.setLastRun(last_run)
+                results = CommandResults(raw_response=events, readable_output='hi')
+                return_results(results)
 
-            if should_push_events:
-                send_events_to_xsiam(
-                    events,
-                    VENDOR,
-                    PRODUCT
-                )
+            else:  # command == 'fetch-events':
+                pass
 
     # Log exceptions and return errors
     except Exception as e:
