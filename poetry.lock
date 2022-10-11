@@ -489,7 +489,7 @@ klara = "^0.6.3"
 MarkupSafe = "^2.1.1"
 mergedeep = "^1.3.4"
 mypy = "^0.982"
-neo4j = "^4.4.5"
+neo4j = "^5.0.0"
 networkx = "^2.7.1"
 nltk = "^3.7"
 ordered-set = "^4.1.0"
@@ -534,13 +534,13 @@ wcmatch = "^8.3"
 yamlordereddictloader = "^0.4.0"
 
 [package.extras]
-build = ["gsutil (==5.14)"]
+build = ["gsutil (==5.8)"]
 
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "e239b699bf186c8c6f50cea4b97977ca797dac3a"
-resolved_reference = "e239b699bf186c8c6f50cea4b97977ca797dac3a"
+reference = "d995f14b8f928d253f082cdba9ccd89ce3e86390"
+resolved_reference = "d995f14b8f928d253f082cdba9ccd89ce3e86390"
 
 [[package]]
 name = "Deprecated"
@@ -1250,11 +1250,11 @@ python-versions = "*"
 
 [[package]]
 name = "neo4j"
-version = "4.4.8"
+version = "5.0.1"
 description = "Neo4j Bolt driver for Python"
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 
 [package.dependencies]
 pytz = "*"
@@ -1437,7 +1437,7 @@ python-versions = "*"
 
 [[package]]
 name = "pipenv"
-version = "2022.10.10"
+version = "2022.10.11"
 description = "Python Development Workflow for Humans."
 category = "main"
 optional = false
@@ -2552,7 +2552,7 @@ build = ["google-cloud-bigquery"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "ecc7ea82bc2eff5b1da4e1cd7cf714eceb01da365dc9954ea26800f760ad5137"
+content-hash = "fa7b3c9719791df35b2b72643209f0b3dd70df9ea7ebe63be95d97392671193a"
 
 [metadata.files]
 aiohttp = [
@@ -3493,7 +3493,7 @@ mypy-extensions = [
     {file = "mypy_extensions-0.4.3.tar.gz", hash = "sha256:2d82818f5bb3e369420cb3c4060a7970edba416647068eb4c5343488a6c604a8"},
 ]
 neo4j = [
-    {file = "neo4j-4.4.8.tar.gz", hash = "sha256:504076a11a7fcf98a348f1f7cb677104ccf85365ef1fe84a4f1fd330659104ae"},
+    {file = "neo4j-5.0.1.tar.gz", hash = "sha256:2330d1b8295b6afb39f23a001f5b0aecae6ca5895cc5b7af3413e326bbd1979c"},
 ]
 nest-asyncio = [
     {file = "nest_asyncio-1.5.6-py3-none-any.whl", hash = "sha256:b9a953fb40dceaa587d109609098db21900182b16440652454a146cffb06e8b8"},
@@ -3596,8 +3596,8 @@ pickleshare = [
     {file = "pickleshare-0.7.5.tar.gz", hash = "sha256:87683d47965c1da65cdacaf31c8441d12b8044cdec9aca500cd78fc2c683afca"},
 ]
 pipenv = [
-    {file = "pipenv-2022.10.10-py2.py3-none-any.whl", hash = "sha256:a1aebda494024328631e8e258572d4250bffc426dff0dfaa6599f138e8823f81"},
-    {file = "pipenv-2022.10.10.tar.gz", hash = "sha256:29019b7991b37bb6d3e574ef1a8dc40ed7c783fa8067445e3f247119322b5c3a"},
+    {file = "pipenv-2022.10.11-py2.py3-none-any.whl", hash = "sha256:3c5d0203ed56a34d09fa5ffe34f52676565651a13cd031dfdec736d291371d0e"},
+    {file = "pipenv-2022.10.11.tar.gz", hash = "sha256:8729c4b64168873df6db0c903659c83f223d5bf0c92ac26039b5ef1fbbe7ec30"},
 ]
 pkgutil_resolve_name = [
     {file = "pkgutil_resolve_name-1.3.10-py3-none-any.whl", hash = "sha256:ca27cc078d25c5ad71a9de0a7a330146c4e014c2462d9af19c6b828280649c5e"},
