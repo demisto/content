@@ -1,116 +1,62 @@
 {
-    "get_group_projects": {
-    "project1":{
-        "id": 39883963,
-                "web_url": "https://gitlab.com/demgroup/groupproject1",
-                "name": "GroupProject1",
-                "path": "groupproject1",
-                "description": "",
-                "visibility": "private",
-                "share_with_group_lock": false,
-                "require_two_factor_authentication": false,
-                "two_factor_grace_period": 48,
-                "project_creation_level": "developer",
-                "auto_devops_enabled": null,
-                "subgroup_creation_level": "maintainer",
-                "emails_disabled": null,
-                "mentions_disabled": null,
-                "lfs_enabled": true,
-                "default_branch_protection": 2,
-                "avatar_url": null,
-                "request_access_enabled": true,
-                "full_name": "demistoTest",
-                "full_path": "demgroup",
-                "created_at": "2022-10-02T11:30:31.219Z",
-                "parent_id": null,
-                "ldap_cn": null,
-                "ldap_access": null
-
-
-    },
-    "project2":{
-        "id": 39882308,
-        "web_url": "https://gitlab.com/demgroup/gitlabtestgroup",
-        "name": "nameTest",
-        "path": "demistotest2",
-        "description": "",
-        "visibility": "private",
-        "share_with_group_lock": false,
-        "require_two_factor_authentication": false,
-        "two_factor_grace_period": 48,
-        "project_creation_level": "developer",
-        "auto_devops_enabled": null,
-        "subgroup_creation_level": "maintainer",
-        "emails_disabled": null,
-        "mentions_disabled": null,
-        "lfs_enabled": true,
-        "default_branch_protection": 2,
-        "avatar_url": null,
-        "request_access_enabled": true,
-        "full_name": "demgroup",
-        "created_at": "2022-10-02T08:44:56.546Z",
-        "parent_id": null,
-        "ldap_cn": null,
-        "ldap_access": null
-    },
-    "results": [
+    "get_branches":[
         {
-            "id": 39883963,
-            "web_url": "https://gitlab.com/demgroup/groupproject1",
-            "name": "GroupProject1",
-            "path": "groupproject1",
-            "description": "",
-            "visibility": "private",
-            "share_with_group_lock": false,
-            "require_two_factor_authentication": false,
-            "two_factor_grace_period": 48,
-            "project_creation_level": "developer",
-            "auto_devops_enabled": null,
-            "subgroup_creation_level": "maintainer",
-            "emails_disabled": null,
-            "mentions_disabled": null,
-            "lfs_enabled": true,
-            "default_branch_protection": 2,
-            "avatar_url": null,
-            "request_access_enabled": true,
-            "full_name": "demistoTest",
-            "full_path": "demgroup",
-            "created_at": "2022-10-02T11:30:31.219Z",
-            "parent_id": null,
-            "ldap_cn": null,
-            "ldap_access": null
-    
-    
+            "name": "1-test",
+            "commit": {
+                "short_id": "f9d0bf17",
+                "created_at": "2022-07-27T13:09:50.000+00:00",
+                "title": "test1"
+            },
+            "merged": false,
+            "protected": false,
+            "developers_can_push": false,
+            "developers_can_merge": false
         },
         {
-            "id": 39882308,
-            "web_url": "https://gitlab.com/demgroup/gitlabtestgroup",
-            "name": "nameTest",
-            "path": "demistotest2",
-            "description": "",
-            "visibility": "private",
-            "share_with_group_lock": false,
-            "require_two_factor_authentication": false,
-            "two_factor_grace_period": 48,
-            "project_creation_level": "developer",
-            "auto_devops_enabled": null,
-            "subgroup_creation_level": "maintainer",
-            "emails_disabled": null,
-            "mentions_disabled": null,
-            "lfs_enabled": true,
-            "default_branch_protection": 2,
-            "avatar_url": null,
-            "request_access_enabled": true,
-            "full_name": "demgroup",
-            "created_at": "2022-10-02T08:44:56.546Z",
-            "parent_id": null,
-            "ldap_cn": null,
-            "ldap_access": null
+            "name": "2-test",
+            "commit": {
+                "short_id": "d9177263",
+                "created_at": "2022-07-18T12:19:47.000+00:00",
+                "parent_ids": null,
+                "title": "test2"
+            },
+            "merged": false,
+            "protected": false,
+            "developers_can_push": false,
+            "developers_can_merge": false
         }
-                ]
-    
+    ],
+    "get_branches_single":        
+    {
+        "name": "1-test",
+        "commit": {
+            "short_id": "f9d0bf17",
+            "created_at": "2022-07-27T13:09:50.000+00:00",
+            "title": "test1"
+        },
+        "merged": false,
+        "protected": false,
+        "developers_can_push": false,
+        "developers_can_merge": false
     },
-
+    "get_group_project":
+    [
+        {
+            "id": 1,
+            "description": "test1",
+            "name": "ProjectTest1",
+            "path": "learn-gitlab1",
+            "path_with_namespace": "demistotest1/learn-gitlab",
+            "created_at": "2022-07-18T12:19:47.553Z"
+        },
+        {
+            "id": 2,
+            "description": "test2",
+            "name": "ProjectTest2",
+            "path": "learn-gitlab2",
+            "created_at": "2022-07-18T12:19:47.553Z"
+        }
+    ],
     "get_version": 
         {
             "version": "15.5.0-pre",
@@ -129,6 +75,25 @@
         "path": "leiningen"
 
     }
+    ],
+    "get_project_list":
+    [
+        {
+            "id": 1,
+            "description": "description1",
+            "name": "LearnGitLab1",
+            "path": "/learn-gitlab1",
+            "path_with_namespace": "demistotest1/learn-gitlab",
+            "created_at": "2022-07-18T12:19:47.553Z"
+        }
+        ,
+        {
+            "id": 2,
+            "description": "description2",
+            "name": "LearnGitLab2",
+            "name_with_namespace": "demistoTest / demistoTest",
+            "path": "/learn-gitlab2"
+        }
     ],
     "issue_list":
         [
@@ -1161,8 +1126,6 @@
         "state": "opened",
         "created_at": "'2022-10-06T14:45:38.004Z'",
         "updated_at": "'2022-10-06T14:45:38.004Z'",
-        "milestone": null,
-        "assignee": null,
         "author": {
             "name": "name"
         }

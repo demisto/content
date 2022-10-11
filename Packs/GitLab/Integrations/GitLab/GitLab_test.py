@@ -2,35 +2,11 @@ import io
 import json
 import pytest
 
-RESPONSE_DETAILS_GET_PUT = [
-    (200, 'GitLab.', "The opretion was successfull"),
-    (202, 'GitLab.', "The opretion was successfull"),
-    (404, '{"message": "404"}', ' not found.'),
-    (400, '{"message": "400"}', ' bad request.')
-]
-
-RESPONSE_DETAILS_POST = [
-    (201, "The opretion was successfull"),
-    (404, '{"message": "404"}', ' not found.'),
-    (400, '{"message": "400"}', ' bad request.')
-]
-
-RESPONSE_DETAILS_DELETE = [
-    (200, 'GitLab.', "The opretion was successfull"),
-    (202, 'GitLab.', "The opretion was successfull"),
-    (204, 'GitLab.', "The opretion was successfull"),
-    (404, '{"message": "404"}', ' not found.'),
-    (400, '{"message": "400"}', ' bad request.')
-]
-
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
-
-test_data = {'group_id': '55694272',
-             'raw_file': '.gitlab-ci.yml'}
 
 ARGS_CASES = [
     (2, -1, False,  # The page_size value must be equal to 1 or bigger.
@@ -74,13 +50,197 @@ def test_check_args(limit, page_number, isGoodCase, expected_results):
         assert str(e.value) == expected_results['error']
 
 
-'''
-CREATE_ISSUE_NOTE_CASES = [
-    ({'issue_iid': 15, 'body': 'issue_iid_not_exist_case'}, False,  # the issue_iid does note exist
-     {"message": "404 Not found"}, {"message": "404 Not found"}),
-    ({'issue_iid': 4, 'body': 'good'}, True,  # good case
-     {"id": 14, "body": "good", "noteable_iid": 4}, {'Issue note created successfully'})
+ARGS_CHECK_LIMIT_GROUP_PROJECT = [
+    ({'group_id': '39882308', 'limit': '2'},  # params
+     'results',  # client result section from commands_test_data.jason
+     2  # excpeted
+     ),
+    ({'group_id': '39882308', 'limit': '1'},  # params
+     'project1',  # client result section from commands_test_data.jason
+     1  # excpeted
+     )
 ]
+
+
+def test_create_issue_command(mocker):
+    """
+    Given:
+        All relevant arguments for the command
+    When:
+        Running the add_issue_to_project_board_command function.
+    Then:
+        Assert the message returned is as expected.
+    """
+    from GitLab import Client, create_issue_command
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    params = {'title': 'title_test', 'description': 'desc_test', 'labels': 'label1'}
+    expected_result = {'iid': 114, 'title': 'title_test', 'description': 'desc_test',
+                       'state': 'opened', 'created_at': "'2022-10-06T14:45:38.004Z'",
+                       'updated_at': "'2022-10-06T14:45:38.004Z'", 'author': {'name': 'name'}}
+    expected_hr = '### Created Issue\n' \
+                  '|Iid|Title|CreatedAt|CreatedBy|UpdatedAt|State|\n' \
+                  '|---|---|---|---|---|---|\n' \
+                  '| 114 | title_test | \'2022-10-06T14:45:38.004Z\' | name | \'2022-10-06T14:45:38.004Z\' | opened |\n'
+
+    ret_value = util_load_json('test_data/commands_test_data.json').get('issue_create')
+    mocker.patch.object(Client, 'create_issue_request', return_value=ret_value)
+    result = create_issue_command(client, params)
+    assert result.raw_response == expected_result
+    assert result.readable_output == expected_hr
+
+
+def test_get_version_command(mocker):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - running a get_version_command
+    Then:
+        - check if the results of version and reversion returns are valid.
+    """
+    from GitLab import Client, version_get_command
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    response_version = util_load_json('test_data/commands_test_data.json').get('get_version')
+    mocker.patch.object(Client, 'version_get_request', return_value=response_version)
+    result = version_get_command(client, {})
+    expected_raw_result = {'version': '15.5.0-pre', 'revision': '6146b2240b0'}
+    expected_hr = 'GitLab version 15.5.0-pre\n reversion: 6146b2240b0 '
+    assert result.raw_response == expected_raw_result
+    assert result.readable_output == expected_hr
+
+
+def test_group_project_list_command(mocker):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - running a group_project_list_command
+    Then:
+        - The http request is called with the right arguments, and returns the right command result
+    """
+    from GitLab import Client, group_project_list_command
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    args = {'group_id': 112, 'limit': 2}
+    response_client = util_load_json('test_data/commands_test_data.json').get('get_group_project')
+    mocker.patch.object(Client, 'group_projects_list_request', return_value=response_client)
+    result = group_project_list_command(client, args)
+    expected_hr = '### List Group Projects\n' \
+                  '|Id|Name|Description|Path|\n' \
+                  '|---|---|---|---|\n' \
+                  '| 1 | ProjectTest1 | test1 | learn-gitlab1 |\n' \
+                  '| 2 | ProjectTest2 | test2 | learn-gitlab2 |\n'
+    assert result.readable_output == expected_hr
+    assert result.raw_response == response_client
+
+
+def test_get_project_list_command(mocker):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - running a get_project_list_command
+    Then:
+        - The http request is called with the right arguments, and returns the right command result
+    """
+    from GitLab import Client, get_project_list_command
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    args = {'limit': 2}
+    response_client = util_load_json('test_data/commands_test_data.json').get('get_project_list')
+    mocker.patch.object(Client, 'get_project_list_request', return_value=response_client)
+    result = get_project_list_command(client, args)
+    expected_hr = '### List Projects\n' \
+                  '|Id|Name|Description|Path|\n' \
+                  '|---|---|---|---|\n' \
+                  '| 1 | LearnGitLab1 | description1 | /learn-gitlab1 |\n' \
+                  '| 2 | LearnGitLab2 | description2 | /learn-gitlab2 |\n'
+    assert result.readable_output == expected_hr
+    assert result.raw_response == response_client
+
+
+ARGS_BRANCHES = [
+    ({'branch_name': '1-test', 'limit': '1'},  # args single branch
+     'branch_single_request',
+     'get_branches_single',  # result from json
+     '### Branch details\n' \
+     '|Title|CommitShortId|CommitTitle|CreatedAt|IsMerge|IsProtected|\n' \
+     '|---|---|---|---|\n' \
+     '| 1-test | f9d0bf17 | test1 | \'2022-07-27T13:09:50.000+00:00\' | false | false |\n'
+     ),
+    ({'limit': '2'},  # args list
+     'branch_list_request',
+     'get_branches',
+     '### List Branches\n' \
+     '|Title|CommitShortId|CommitTitle|CreatedAt|IsMerge|IsProtected|\n' \
+     '|---|---|---|---|\n' \
+     '| 1-test | f9d0bf17 | test1 | \'2022-07-27T13:09:50.000+00:00\' | false | false |\n' \
+     '| 2-test | d9177263 | test2 | \'2022-07-18T12:19:47.000+00:00\' | false | false |\n'
+     )
+]
+
+'''
+@pytest.mark.parametrize('args, client_function, result_key_json, expected_results', ARGS_BRANCHES)
+def test_branch_list_command(mocker, args, client_function, result_key_json, expected_results):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - running a branch_list_command
+    Then:
+        - The http request is called with the right arguments, and returns the right command result
+    """
+    from GitLab import Client, branch_list_command
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    response_client = util_load_json('test_data/commands_test_data.json').get(result_key_json)
+    mocker.patch.object(Client, client_function, return_value=response_client)
+    result = branch_list_command(client, args)
+    assert result.readable_output == expected_results
+    assert result.raw_response == response_client
+
+
+
+@pytest.mark.parametrize('args, client_result_jason_name,total_results ', ARGS_CHECK_LIMIT_GROUP_PROJECT)
+def test_group_project_list_command_limit(requests_mock,args, client_result_jason_name, total_results):
+    """
+    Given:
+        - A http response
+    When:
+        - running a group project command
+    Then:
+        - check if the results returns are valid according to differnt valid limit
+    """
+    from GitLab import Client, group_project_list_command
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    response_json = util_load_json('test_data/commands_test_data.json').get('get_group_projects').get(client_result_jason_name)
+    print('ok')
+    requests_mock.patch.object(Client, 'group_projects_list_request', return_value=response_json)
+    results = group_project_list_command(client, args)
+    assert len(results) == total_results
+
+
 
 
 @pytest.mark.parametrize('params,is_good_case, client_return_result, expected_results', CREATE_ISSUE_NOTE_CASES)
@@ -95,62 +255,6 @@ def test_issue_note_create(mocker, params, is_good_case, client_return_result, e
     result = issue_note_create_command(client, params)
     assert result == expected_results
 
-
-def test_get_version_command(requests_mock):
-    """
-    Given:
-        - A http response
-    When:
-        - running a get_version_command
-    Then:
-        - check if the results of version and reversion returns are valid.
-    """
-    from GitLab import Client, version_get_command
-    client = Client()
-    response_version = util_load_json('test_data/commands_test_data.json').get('get_version')
-    requests_mock.get('https://gitlab.com/api/v4/version', json=response_version)
-    results = version_get_command(client)
-    assert len(results) == 2
-    assert results['version'] == response_version['version']
-    assert results['reversion'] == response_version['reversion']
-
-
-def test_group_project_list_command_limit(requests_mock):
-    """
-    Given:
-        - A http response
-    When:
-        - running a group project command
-    Then:
-        - check if the results returns are valid according to differnt valid limit
-    """
-    from GitLab import Client, group_project_list_command
-    client = Client(project_id='39823965',
-                    base_url='https://gitlab.com/api/v4',
-                    verify=False,
-                    proxy=False)
-    args_limit_2 = {
-        'group_id': '39882308',
-        'limit': '2'
-    }
-    args_limit_1 = {
-        'group_id': '37904896',
-        'limit': '1'
-    }
-    response_json = util_load_json('test_data/commands_test_data.json').get('get_paged_results').get('results')
-    response_project1 = util_load_json('test_data/commands_test_data.json').get('get_paged_results').get('project1')
-    requests_mock.get('https://gitlab.com/api/v4/groups/:id/projects?id=55694272', json=response_json)
-    res = util_load_json('test_data/commands_test_data.json').get('get_paged_results').get('results')
-    requests_mock.patch.object(Client, 'get_full_url', return_value=response_json)
-    results = group_project_list_command(client, args_limit_2)
-    assert len(results) == 2
-    assert results == res
-    requests_mock.get('https://gitlab.com/api/v4/groups/:id/projects?id=55694272', json=response_project1)
-    res = util_load_json('test_data/commands_test_data.json').get('get_paged_results').get('results')
-    requests_mock.patch.object(Client, 'get_full_url', return_value=response_project1)
-    results = group_project_list_command(client, args_limit_1)
-    assert len(results) == 2
-    assert results == res
 
 
 def test_group_project_list_command_page(requests_mock):
@@ -267,33 +371,5 @@ def test_project_list_command_page(requests_mock):
     assert results == res
 
 
-def test_create_issue_command(mocker):
-    """
-    Given:
-        'title': the new title for the issue.
-        'description': description for the issue.
-        'labels': labels for the issue.
-    When:
-        Running the add_issue_to_project_board_command function.
-    Then:
-        Assert the message returned is as expected.
-    """
-    from GitLab import Client, create_issue_command
-    client = Client(project_id=1234,
-                    base_url="base_url",
-                    verify=False,
-                    proxy=False,
-                    headers={'PRIVATE-TOKEN': 'api_key'})
-    params = {'title': 'title_test', 'description': 'desc_test', 'labels': 'label1'}
-    expected_results = {'Iid': 114,
-                        'Title': 'title_test',
-                        'CreatedAt': '2022-10-06T14:45:38.004Z',
-                        'CreatedBy': 'name',
-                        'UpdatedAt': '2022-10-06T14:45:38.004Z',
-                        'State': 'opened'}
 
-    ret_value = util_load_json('test_data/commands_test_data.json').get('issue_create')
-    mocker.patch.object(Client, 'create_issue_request', return_value=ret_value)
-    result = create_issue_command(client, params)
-    assert type(result.readable_output) == dict
 '''

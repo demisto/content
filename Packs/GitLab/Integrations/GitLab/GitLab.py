@@ -324,7 +324,7 @@ def response_according_pagination(client_function: Any, limit: int, page_number:
         response.extend(response_temp)
         items_count_total += len(response_temp)
         params['per_page'] = 50 if (limit - items_count_total >= 50) else limit - items_count_total
-        params['page'] += 1
+        params['page'] = params['page'] + 1
     return response
 
 
@@ -893,6 +893,7 @@ def branch_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         response_to_hr.append({'Title': branch.get('name'),
                                'IsMerge': branch.get('merged'),
                                'IsProtected': branch.get('protected'),
+                               'CreatedAt': branch.get('commit', {}).get('created_at', ''),
                                'CommitShortId': branch.get('commit', {}).get('short_id', ''),
                                'CommitTitle': branch.get('commit', {}).get('title', '')})
 
