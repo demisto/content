@@ -183,7 +183,7 @@ def get_events_command(
     return 'No events were found.'
 
 
-def fetch_events_from_saas_security(client: Client, max_fetch: Optional[int] = None) -> Generator[Dict]:
+def fetch_events_from_saas_security(client: Client, max_fetch: Optional[int] = None) -> Generator[Dict, None, None]:
     """
     Fetches events from the saas-security queue.
 
@@ -240,11 +240,12 @@ def main() -> None:
         if command == 'test-module':
             return_results(test_module(client=client))
         elif command == 'fetch-events':
-            send_events_to_xsiam(
-                events=fetch_events_from_saas_security(client=client, max_fetch=max_fetch),
-                vendor=VENDOR,
-                product=PRODUCT
-            )
+            for fetched_events in fetch_events_from_saas_security(client=client, max_fetch=max_fetch):
+                send_events_to_xsiam(
+                    events=fetched_events,
+                    vendor=VENDOR,
+                    product=PRODUCT
+                )
         elif command == 'saas-security-get-events':
             return_results(get_events_command(
                 client=client, args=args, max_fetch=max_fetch)
