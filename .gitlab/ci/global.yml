@@ -201,7 +201,7 @@
     - .default-job-settings
   script:
     - section_start "Test Infrastructure"
-    - demisto-sdk lint -vvv -p 8 -g -v --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam
+    - demisto-sdk lint -i ./Packs/Zendesk/Integrations/Zendesk/Zendesk.yml
 
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
     - python3 -m pytest ./Tests/Marketplace/Tests/ -v
