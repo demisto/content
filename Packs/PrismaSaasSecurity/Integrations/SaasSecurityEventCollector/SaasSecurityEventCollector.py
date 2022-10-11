@@ -210,6 +210,7 @@ def fetch_events_from_saas_security(client: Client, max_fetch: Optional[int] = N
         events.extend(fetched_events)
         if max_fetch:
             under_max_fetch = len(events) < max_fetch
+        fetch_num += 1
 
     demisto.debug(f'fetched total events: {len(events)=}, {events=}')
 
