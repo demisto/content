@@ -3209,7 +3209,7 @@ def test_search_device_command(requests_mock):
         status_code=200,
     )
     requests_mock.get(
-        f'{SERVER_URL}/devices/entities/devices/v1?ids=meta&ids=resources&ids=errors',
+        f'{SERVER_URL}/devices/entities/devices/v2?ids=meta&ids=resources&ids=errors',
         json=test_data2,
         status_code=200,
     )
@@ -3278,7 +3278,7 @@ def test_get_endpint_command(requests_mock, mocker):
         status_code=200,
     )
     requests_mock.get(
-        f'{SERVER_URL}/devices/entities/devices/v1?ids=meta&ids=resources&ids=errors',
+        f'{SERVER_URL}/devices/entities/devices/v2?ids=meta&ids=resources&ids=errors',
         json=test_data2,
         status_code=200,
     )
@@ -3289,7 +3289,7 @@ def test_get_endpint_command(requests_mock, mocker):
     result = outputs[0].to_context()
     context = result.get('EntryContext')
 
-    assert context['Endpoint(val.ID && val.ID == obj.ID)'] == [endpoint_context]
+    assert context['Endpoint(val.ID && val.ID == obj.ID && val.Vendor == obj.Vendor)'] == [endpoint_context]
 
 
 def test_create_hostgroup_invalid(requests_mock, mocker):
@@ -3656,9 +3656,9 @@ def test_rtr_kill_process_command(mocker):
 
 
 @pytest.mark.parametrize('operating_system, expected_result', [
-    ("Windows", 'rm test.txt --force'),
-    ("Linux", 'rm test.txt -r -d'),
-    ("Mac", 'rm test.txt -r -d'),
+    ("Windows", "rm 'test.txt' --force"),
+    ("Linux", "rm 'test.txt' -r -d"),
+    ("Mac", "rm 'test.txt' -r -d"),
     ("bla", ""),
 ])
 def test_match_remove_command_for_os(operating_system, expected_result):

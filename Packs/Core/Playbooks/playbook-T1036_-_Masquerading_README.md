@@ -1,4 +1,4 @@
-This playbook handles masquerading alerts based on MITRE T1036 technique.
+This playbook handles masquerading alerts based on the MITRE T1036 technique.
 An attacker might leverage Microsoft Windows well-known image names to run malicious processes without being caught.
 
 **Attacker's Goals:**
@@ -22,7 +22,7 @@ The playbook's first response action is a containment plan which is based on the
 * Auto file quarantine
 * Manual endpoint isolation
 
-When the playbook proceeds, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes containment and eradication, is executed.
+When the playbook executes, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes containment and eradication, is executed.
 
 This phase will execute the following containment actions:
 
@@ -95,11 +95,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 * Endpoint Investigation Plan
-* Containment Plan
 * Eradication Plan
+* Containment Plan
+* Recovery Plan
 * Enrichment for Verdict
 * Handle False Positive Alerts
-* Recovery Plan
 
 ### Integrations
 This playbook does not use any integrations.
@@ -108,18 +108,18 @@ This playbook does not use any integrations.
 This playbook does not use any scripts.
 
 ### Commands
-* closeInvestigation
+closeInvestigation
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| FileRemediation | Can be 'Quarantine' or 'Delete'. | Quarantine | Required |
-| AutoCloseAlert | Whether to close the alert automatically or manually, after an analyst's review. | false | Optional |
-| AutoRecovery | Whether to execute the Recovery playbook. | false | Optional |
-| AutoContainment | Whether to execute automatically or manually the containment plan tasks:<br/>\* Block indicators<br/>\* Quarantine file<br/>\* Disable user |  | Optional |
-| HostAutoContainment | Whether to execute endpoint isolation automatically or manually based on the Endpoint Investigation findings. | true | Optional |
+| FileRemediation | Should be either 'Quarantine' or 'Delete'. | Quarantine | Required |
+| AutoCloseAlert | Whether to close the alert automatically or manually, after an analyst's review. | False | Optional |
+| AutoRecovery | Whether to execute the Recovery playbook. | False | Optional |
+| AutoContainment | Setting this input will impact both Containment Plan sub-playbooks. Without setting this input, the default values are True for the first occurrence and False for the second.<br/>Whether to execute automatically or manually the containment plan tasks:<br/>\* Isolate endpoint<br/>\* Block indicators<br/>\* Quarantine file<br/>\* Disable user |  | Optional |
+| AutoEradication | Whether to execute automatically or manually the eradication plan tasks:<br/>\* Terminate process<br/>\* Delete file<br/>\* Reset the user's password | False | Optional |
 
 ## Playbook Outputs
 ---
@@ -127,4 +127,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![T1036 - Masquerading](https://raw.githubusercontent.com/demisto/content/ba4622179f4735092080583d69c275f19265330c/Packs/Core/doc_files/T1036_-_Masquerading.png)
+![T1036 - Masquerading](../doc_files/T1036_-_Masquerading.png)
