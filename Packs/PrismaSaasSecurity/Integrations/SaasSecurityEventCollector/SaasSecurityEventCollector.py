@@ -156,17 +156,21 @@ def test_module(client: Client):
 
 
 def get_events_command(
-        client: Client, args: Dict, max_fetch: Optional[int], vendor=VENDOR,
-        product=PRODUCT) -> Union[str, CommandResults]:
+    client: Client, args: Dict, max_fetch: Optional[int], vendor=VENDOR, product=PRODUCT
+) -> Union[str, CommandResults]:
     """
     Fetches events from the saas-security queue and return them to the war-room.
     in case should_push_events is set to True, they will be also sent to XSIAM.
     """
     should_push_events = argToBoolean(args.get('should_push_events'))
+    all_events = []
 
-    if events := fetch_events_from_saas_security(client=client, max_fetch=max_fetch):
+    for events in fetch_events_from_saas_security(client=client, max_fetch=max_fetch):
         if should_push_events:
             send_events_to_xsiam(events=events, vendor=vendor, product=product)
+        all_events.extend(events)
+
+    if all_events:
         return CommandResults(
             readable_output=tableToMarkdown(
                 'SaaS Security Logs',
