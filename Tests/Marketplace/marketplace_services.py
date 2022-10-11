@@ -2206,7 +2206,6 @@ class Pack(object):
 
                     elif current_directory == PackFolders.XSIAM_DASHBOARDS.value:
                         preview = self.get_preview_image_gcp_path(pack_file_name, PackFolders.XSIAM_DASHBOARDS.value)
-                        logging.info(f"preview is {preview}")
                         dashboard = {
                             'id': content_item.get('dashboards_data', [{}])[0].get('global_id', ''),
                             'name': content_item.get('dashboards_data', [{}])[0].get('name', ''),
@@ -3321,7 +3320,7 @@ class Pack(object):
 
         return versions_dict
 
-    def get_preview_image_gcp_path(self, pack_file_name: str, folder_name) -> Optional[str]:
+    def get_preview_image_gcp_path(self, pack_file_name: str, folder_name: str) -> Optional[str]:
         preview_image_name = self.find_preview_image_path(pack_file_name)
         try:
             preview_image_path = os.path.join(self.path, folder_name, preview_image_name)  # disable-secrets-detection
@@ -3330,10 +3329,9 @@ class Pack(object):
                     self._current_version = ''
                 return urllib.parse.quote(os.path.join(GCPConfig.CONTENT_PACKS_PATH, self.name,
                                                        self.current_version, folder_name, preview_image_name))
-            return None
         except Exception:
             logging.exception(f"Failed uploading {self.name} pack preview image.")
-            return None
+        return None
 
     def upload_preview_images(self, storage_bucket, storage_base_path, diff_files_list):
         """ Uploads pack preview images to gcs.
@@ -3343,36 +3341,30 @@ class Pack(object):
             diff_files_list (list): The list of all modified/added files found in the diff
         Returns:
             bool: whether the operation succeeded.
-            list: list of dictionaries with uploaded pack integration images.
         """
-        pack_preview_images = []
         pack_storage_root_path = os.path.join(storage_base_path, self.name, self.current_version)
-        logging.info(f"{pack_storage_root_path} pack_storage_root_path")
 
         try:
             for file in diff_files_list:
                 if self.is_preview_image(file.a_path):
                     logging.info(f"adding preview image {file.a_path} to pack preview images")
-                    pack_preview_images.append(file.a_path)
-
-            for image_path in pack_preview_images:
-                image_folder = os.path.dirname(image_path).split('/')[-1] or ''
-                image_name = os.path.basename(image_path)
-                image_storage_path = os.path.join(pack_storage_root_path, image_folder, image_name)
-                pack_image_blob = storage_bucket.blob(image_storage_path)
-                with open(image_path, "rb") as image_file:
-                    pack_image_blob.upload_from_file(image_file)
+                    image_folder = os.path.dirname(file.a_path).split('/')[-1] or ''
+                    image_name = os.path.basename(file.a_path)
+                    image_storage_path = os.path.join(pack_storage_root_path, image_folder, image_name)
+                    pack_image_blob = storage_bucket.blob(image_storage_path)
+                    with open(file.a_path, "rb") as image_file:
+                        pack_image_blob.upload_from_file(image_file)
             return True
         except Exception as e:
             logging.exception(f"Failed uploading {self.name} pack preview image. Additional info: {e}")
             return False
 
-    def is_preview_image(self, file_path):
-        """ Indicates whether a file_path is an integration image or not
+    def is_preview_image(self, file_path: str) -> bool:
+        """ Indicates whether a file_path is a preview image or not
         Args:
             file_path (str): The file path
         Returns:
-            bool: True if the file is an integration image or False otherwise
+            bool: True if the file is a preview image or False otherwise
         """
         return all([
             file_path.startswith(os.path.join(PACKS_FOLDER, self.name)),
@@ -3382,16 +3374,13 @@ class Pack(object):
         ])
 
     @staticmethod
-    def find_preview_image_path(file_name):
-        try:
-            prefixes = ['xsiamdashboard', 'xsiamreport']
-            file_name = file_name.replace('external-', '')
-            for prefix in prefixes:
-                file_name = file_name.replace(f'{prefix}-', '')
-            image_file_name = file_name.split('.')[0] + '_image.png'
-            return image_file_name
-        except Exception as e:
-            logging.warning(f'could not conclude preview image path. Skipping {file_name}. Additional info: {e}')
+    def find_preview_image_path(file_name: str) -> str:
+        prefixes = ['xsiamdashboard', 'xsiamreport']
+        file_name = file_name.replace('external-', '')
+        for prefix in prefixes:
+            file_name = file_name.replace(f'{prefix}-', '')
+        image_file_name = os.path.splitext(file_name)[0] + '_image.png'
+        return image_file_name
 
 
 # HELPER FUNCTIONS
