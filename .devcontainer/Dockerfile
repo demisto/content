@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install dos2unix -y \
 ENV USERNAME demisto
 ENV HOME /home/$USERNAME
 ENV NODE_EXTRA_CA_CERTS /usr/local/share/ca-certificates/certs.crt
-ENV PATH $PATH:$HOME/.local/bin:/root/.local/bin
+ENV PATH $PATH:$HOME/.local/bin:/root/.local/bin:/usr/local/share/nvm/current/bin
 
 # This is a workaround for VSCode devcontainer features in self signed certificate
 
@@ -21,7 +21,7 @@ ADD https://raw.githubusercontent.com/devcontainers/features/main/src/docker-in-
 ADD https://raw.githubusercontent.com/devcontainers/features/main/src/node/install.sh /install-node.sh
 ADD https://raw.githubusercontent.com/devcontainers/features/main/src/powershell/install.sh /install-powershell.sh
 
-RUN UID="4000" bash install-common.sh 
+RUN UID="1000" GID="1000" bash install-common.sh 
 RUN VERSION="os-provided" bash install-git.sh
 RUN VERSION="latest" bash install-dind.sh
 RUN VERSION="latest" bash install-node.sh
