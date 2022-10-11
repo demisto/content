@@ -426,7 +426,7 @@ def test_search_group_members(mocker):
         'ActiveDirectory.Groups(obj.dn ==dn)': {'dn': 'dn', 'members': [{'dn': 'dn', 'category': 'group'}]},
         'ActiveDirectory.Groups(obj.dn == val.dn)': [{'dn': 'dn', 'memberOf': ['memberOf'], 'name': ['name']}],
         'Group': [{'Type': 'AD', 'ID': 'dn', 'Name': ['name'], 'Groups': ['memberOf']}],
-        'ActiveDirectory(obj.GroupsPageCookie)': {"GroupsPageCookie": base64.b64encode(b'<cookie>').decode('utf-8')}}
+        'ActiveDirectory(true)': {"GroupsPageCookie": base64.b64encode(b'<cookie>').decode('utf-8')}}
 
     expected_results = {'ContentsFormat': 'json', 'Type': 1,
                         'Contents': [{'dn': 'dn', 'attributes': {'memberOf': ['memberOf'], 'name': ['name']}}],
@@ -531,7 +531,7 @@ def test_search_attributes_to_exclude(mocker):
                                          'Account(obj.ID == val.ID)':
                                              [{'Type': 'AD', 'ID': 'dn', 'Email': None, 'Username': None,
                                                'DisplayName': None, 'Managr': None, 'Manager': None, 'Groups': None}],
-                                         'ActiveDirectory(obj.UsersPageCookie)':
+                                         'ActiveDirectory(true)':
                                              {"UsersPageCookie": base64.b64encode(b'<cookie>').decode('utf-8')}}}
 
     expected_results = f'demisto results: {json.dumps(expected_results, indent=4, sort_keys=True)}'
