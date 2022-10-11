@@ -183,7 +183,7 @@ def get_events_command(
     return 'No events were found.'
 
 
-def fetch_events_from_saas_security(client: Client, max_fetch: Optional[int] = None) -> Generator[Dict, None, None]:
+def fetch_events_from_saas_security(client: Client, max_fetch: Optional[int] = None) -> Generator[List, None, None]:
     """
     Fetches events from the saas-security queue.
 
