@@ -1122,7 +1122,7 @@ def main():
             pack.cleanup()
             continue
 
-        # upload author, preview and integration images
+        # upload author and integration images
         if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list,
                                   override_all_packs):
             continue
@@ -1185,17 +1185,18 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, exists_in_index = pack.check_if_exists_in_index(index_folder_path)
-        if not task_status:
-            pack.status = PackStatus.FAILED_SEARCHING_PACK_IN_INDEX.name
-            pack.cleanup()
-            continue
-
+        # uploading preview images. The path contains pack version
         task_status = pack.upload_preview_images(storage_bucket, storage_base_path, diff_files_list)
         if not task_status:
             pack._status = PackStatus.FAILED_PREVIEW_IMAGES_UPLOAD.name
             pack.cleanup()
             return False
+
+        task_status, exists_in_index = pack.check_if_exists_in_index(index_folder_path)
+        if not task_status:
+            pack.status = PackStatus.FAILED_SEARCHING_PACK_IN_INDEX.name
+            pack.cleanup()
+            continue
 
         task_status = pack.prepare_for_index_upload()
         if not task_status:
