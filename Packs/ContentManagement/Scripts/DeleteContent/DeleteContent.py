@@ -157,7 +157,7 @@ class IncidentFieldAPI(EntityAPI):  # checked and works
 
 
 class PreProcessingRuleAPI(EntityAPI):  # checked and works
-    name = 'preprocess rule'
+    name = 'pre-process-rule'
 
     def search_specific_id(self, specific_id: str):
         return execute_command('demisto-api-get',

@@ -13,7 +13,7 @@ XSOAR_IDS_FULL_STATE = {
     'playbook': ['playbook1', 'playbook2'],
     'integration': ['integration1', 'integration2'],
     'incidentfield': ['incidentfield1', 'incidentfield2'],
-    'preprocess rule': ['preprocess rule1', 'preprocess rule2'],
+    'pre-process-rule': ['pre-process-rule1', 'pre-process-rule2'],
     'widget': ['widget1', 'widget2'],
     'dashboard': ['dashboard1', 'dashboard2'],
     'report': ['report1', 'report2'],
@@ -220,7 +220,7 @@ class MockIntegrationResponses(MockEntityResponses):
 
 
 class MockPreprocessRuleResponses(MockEntityResponses):
-    entity_name = 'preprocess rule'
+    entity_name = 'pre-process-rule'
 
     def search_response(self, command_name, command_args):
         command_uri = command_args.get('uri')
@@ -442,7 +442,7 @@ def mock_demisto_responses(command_name, command_args, xsoar_ids_state):
                                                   'playbook': ['playbook1'],
                                                   'integration': ['integration1'],
                                                   'incidentfield': ['incidentfield1'],
-                                                  'preprocess rule': ['preprocess rule1'],
+                                                  'pre-process-rule': ['pre-process-rule1'],
                                                   'widget': ['widget1'],
                                                   'dashboard': ['dashboard1'],
                                                   'report': ['report1'],
@@ -454,7 +454,7 @@ def mock_demisto_responses(command_name, command_args, xsoar_ids_state):
             'not_deleted': {},
             'successfully_deleted': {'job': ['job1'], 'list': ['list1'], 'pack': ['installed_pack_id1'],
                                      'script': ['script1'], 'playbook': ['playbook1'], 'integration': ['integration1'],
-                                     'incidentfield': ['incidentfield1'], 'preprocess rule': ['preprocess rule1'],
+                                     'incidentfield': ['incidentfield1'], 'pre-process-rule': ['pre-process-rule1'],
                                      'widget': ['widget1'], 'dashboard': ['dashboard1'], 'report': ['report1'],
                                      'incidenttype': ['incidenttype1'], 'classifier': ['classifier1'],
                                      'reputation': ['reputation1'], 'layout': ['layout1']},
@@ -467,7 +467,7 @@ def mock_demisto_responses(command_name, command_args, xsoar_ids_state):
                                                   'playbook': ['playbook1'],
                                                   'integration': ['integration1'],
                                                   'incidentfield': ['incidentfield1'],
-                                                  'preprocess rule': ['preprocess rule1'],
+                                                  'pre-process-rule': ['pre-process-rule1'],
                                                   'widget': ['widget1'],
                                                   'dashboard': ['dashboard1'],
                                                   'report': ['report1'],
@@ -477,14 +477,14 @@ def mock_demisto_responses(command_name, command_args, xsoar_ids_state):
                                                   'layout': ['layout1']}}, XSOAR_IDS_FULL_STATE, {
             'not_deleted': {'job': ['job1'], 'list': ['list1'], 'script': ['script1', 'CommonUserServer'],
                             'playbook': ['playbook1'], 'integration': ['integration1'],
-                            'incidentfield': ['incidentfield1'], 'preprocess rule': ['preprocess rule1'],
+                            'incidentfield': ['incidentfield1'], 'pre-process-rule': ['pre-process-rule1'],
                             'widget': ['widget1'], 'dashboard': ['dashboard1'], 'report': ['report1'],
                             'incidenttype': ['incidenttype1'], 'classifier': ['classifier1'],
                             'reputation': ['reputation1'], 'layout': ['layout1']},
             'successfully_deleted': {  # packs can only be deleted when included.
                 'job': ['job2'], 'list': ['list2'], 'playbook': ['playbook2'], 'script': ['script2'],
                 'integration': ['integration2'], 'incidentfield': ['incidentfield2'],
-                'preprocess rule': ['preprocess rule2'], 'widget': ['widget2'],
+                'pre-process-rule': ['pre-process-rule2'], 'widget': ['widget2'],
                 'dashboard': ['dashboard2'], 'report': ['report2'], 'incidenttype': ['incidenttype2'],
                 'classifier': ['classifier2'], 'reputation': ['reputation2'], 'layout': ['layout2']},
             'status': 'Completed'}, id='dont delete excluded ids'),
@@ -496,7 +496,7 @@ def mock_demisto_responses(command_name, command_args, xsoar_ids_state):
                                                   'playbook': ['playbook3'],
                                                   'integration': ['integration3'],
                                                   'incidentfield': ['incidentfield3'],
-                                                  'preprocess rule': ['preprocess rule3'],
+                                                  'pre-process-rule': ['pre-process-rule3'],
                                                   'widget': ['widget3'],
                                                   'dashboard': ['dashboard3'],
                                                   'report': ['report3'],
@@ -509,7 +509,7 @@ def mock_demisto_responses(command_name, command_args, xsoar_ids_state):
                                      'script': ['script1', 'script2'], 'playbook': ['playbook1', 'playbook2'],
                                      'integration': ['integration1', 'integration2'],
                                      'incidentfield': ['incidentfield1', 'incidentfield2'],
-                                     'preprocess rule': ['preprocess rule1', 'preprocess rule2'],
+                                     'pre-process-rule': ['pre-process-rule1', 'pre-process-rule2'],
                                      'widget': ['widget1', 'widget2'], 'dashboard': ['dashboard1', 'dashboard2'],
                                      'report': ['report1', 'report2'],
                                      'incidenttype': ['incidenttype1', 'incidenttype2'],
@@ -525,7 +525,7 @@ def mock_demisto_responses(command_name, command_args, xsoar_ids_state):
                                                   'playbook': ['playbook3'],
                                                   'integration': ['integration3'],
                                                   'incidentfield': ['incidentfield3'],
-                                                  'preprocess rule': ['preprocess rule3'],
+                                                  'pre-process-rule': ['pre-process-rule3'],
                                                   'widget': ['widget3'],
                                                   'dashboard': ['dashboard3'],
                                                   'report': ['report3'],
@@ -535,7 +535,7 @@ def mock_demisto_responses(command_name, command_args, xsoar_ids_state):
                                                   'layout': ['layout3']}}, XSOAR_IDS_FULL_STATE, {
             'not_deleted': {'job': ['job3'], 'pack': ['installed_pack3'], 'list': ['list3'],
                             'script': ['script3'], 'playbook': ['playbook3'], 'integration': ['integration3'],
-                            'incidentfield': ['incidentfield3'], 'preprocess rule': ['preprocess rule3'],
+                            'incidentfield': ['incidentfield3'], 'pre-process-rule': ['pre-process-rule3'],
                             'widget': ['widget3'], 'dashboard': ['dashboard3'], 'report': ['report3'],
                             'incidenttype': ['incidenttype3'], 'classifier': ['classifier3'],
                             'reputation': ['reputation3'],
