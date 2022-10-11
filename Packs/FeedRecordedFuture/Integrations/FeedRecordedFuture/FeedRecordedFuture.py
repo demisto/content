@@ -9,7 +9,6 @@ import requests
 import traceback
 import urllib.parse
 from typing import Tuple, Optional, List, Dict
-from sys import getsizeof
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -376,12 +375,12 @@ def print_batch_stats(indicators):
     if not indicators:
         demisto.debug('No indicators to ingest in this batch')
         return
-    min_size = getsizeof(indicators[0])
-    max_size = getsizeof(indicators[0])
-    total_size = getsizeof(indicators[0])
+    min_size = get_size_of_object(indicators[0])
+    max_size = get_size_of_object(indicators[0])
+    total_size = get_size_of_object(indicators[0])
     max_record = indicators[0]
     for ind in indicators:
-        curr_ind_size = getsizeof(ind)
+        curr_ind_size = get_size_of_object(ind)
         min_size = curr_ind_size if min_size > curr_ind_size else min_size
         max_size = curr_ind_size if max_size < curr_ind_size else max_size
         total_size += curr_ind_size
