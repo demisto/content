@@ -3253,7 +3253,7 @@ script:
   - name: gitlab-project-user-list
     description: Get the users list of a project.
     arguments:
-    - name: Get the users list of a project.
+    - name: search
       description: The search query.
       required: false
       isArray: true

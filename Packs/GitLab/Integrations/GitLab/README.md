@@ -1,19 +1,45 @@
-Integration to GitLab API
-This integration was integrated and tested with version 15.4 of GitLab
+## Overview
+[GitLab] GitLab is The DevOps platform that empowers organizations to maximize the overall return on software development by delivering software faster and efficiently, while strengthening security and compliance.
 
+## Use Cases
+This integration enables you to:
+- Create, close, or update a GitLab issue.
+- Get a list of all GitLab issues you have access to.
+- Create, close, update and delete a GitLab issue note.
+- Get a list of all the notes related to an issue.
+- Create, delete and search a branch in GitLab.
+- Get a list of all GitLab branchs in your project.
+- Get a list of the projects' commits.
+- Create, update a GitLab merge requests or get a list of all the merge requests.
+- Create, close, update and delete a merge request's note.
+- Create, upload ,delete and update a file in the GitLab project.
+- Get a list of files in the GitLab project.
+- Get the contents and deatils of a file in GitLab.
+- Search for code in the GitLab project.
+
+#### Create a Personal Access Token 
+Personal access tokens (PATs) are an alternative to using passwords for authentication to GitLab when using the GitLab API. 
+To generate a new token:
+1. Navigate to the upper-right corner of any page and click your **profile photo**. 
+2. In the left sidebar, click **Preferences**. 
+3. In the left sidebar, click **Access tokens**.
+4. Give your token a descriptive name. 
+5. To give your token an expiration, select the **Expiration drop-down** menu, then click a default or use the calendar picker. 
+6. Select the **scopes**, or **permissions**, you want to grant this token. The minimum is read-only on repo.
+7. Click **Create personal access token** and copy the api key generated.
 ## Configure GitLab on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for GitLab.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | True |
-    | API Key | True |
-    | Project ID | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Server URL (e.g. https://gitlab.com/api/v4) |  | False |
+    | API Key | The API Key to use for connection | True |
+    | Project ID |  | True |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -21,7 +47,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### gitlab-version-get
 ***
-Retrieve version information for this GitLab instance. Responds 200 OK for authenticated users.
+Retrieve version information for this GitLab instance.
 
 
 #### Base Command
@@ -45,8 +71,8 @@ There are no input arguments for this command.
 {
     "GitLab": {
         "Version": {
-            "revision": "0596e810725",
-            "version": "15.4.0-pre"
+            "revision": "4cfc3f317b2",
+            "version": "15.5.0-pre"
         }
     }
 }
@@ -54,9 +80,8 @@ There are no input arguments for this command.
 
 #### Human Readable Output
 
->GitLab Version 
-> version: 15.4.0-pre
-> reversion: 0596e810725 
+>GitLab version 15.5.0-pre
+> reversion: 4cfc3f317b2 
 
 ### gitlab-file-get
 ***
@@ -102,15 +127,14 @@ This allows you to create a single file. File path or entry_id must be specified
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entry_id | Entry id of the file.if the user uploaded a file, he can provide the entry id. If he did, we need to read the content from the file and set the value in the file_content argument. | Optional | 
-| file_path | The file path. | Optional | 
+| entry_id | Entry id of the file. | Optional | 
+| file_path | URL-encoded full path to new file. | Optional | 
 | file_content | The file's content. | Optional | 
-| branch | URL-encoded full path to new file. | Required | 
+| branch | Name of the new branch to create. The commit is added to this branch. | Required | 
 | author_email | The commit author's email address. | Optional | 
 | author_name | The commit author's name. | Optional | 
-| file_content | The file's content. | Optional | 
 | commit_message | The commit message. | Required | 
-| execute_filemode | Enables or disables the execute flag on the file. Can be true or false. | Optional | 
+| execute_filemode | Enables or disables the execute flag on the file. Can be true or false. Possible values are: true, false. | Optional | 
 
 
 #### Context Output
@@ -120,9 +144,11 @@ This allows you to create a single file. File path or entry_id must be specified
 | GitLab.File.file_path | String | URL-encoded full path of the new file. | 
 | GitLab.File.branch | String | Name of the new branch to create. | 
 
-### gitlab-file-update
-***
-Editing existing file in repository.
+#### Command Example
+`!gitlab-file-create file_path=path branch=main entry_id=.gitlab-ci.yml author_email=email@google.com author_name=authorName file_content='cfgdfr' commit_message=addFile execute_filemode=True`
+
+#### Human Readable Output
+> File created successfully.
 
 
 #### Base Command
@@ -138,11 +164,11 @@ Editing existing file in repository.
 | encoding | Change encoding to base64. Default is text. Possible values are: text, base64. Default is text. | Optional | 
 | author_email | The commit author email address. | Optional | 
 | author_name | The commit author name address. | Optional | 
-| entry_id | The ID or URL-encoded path of the project owned by the authenticated user. | Required | 
+| entry_id | Entry id of the file.if the user uploaded a file, he can provide the entry id. If he did, we need to read the content from the file and set the value in the file_content argument. | Optional | 
 | file_content | The file content. | Required | 
 | commit_message | The commit message. | Required | 
 | last_commit_id | Last known file commit ID. | Optional | 
-| execute_filemode | Enables or disables the execute flag on the file. Can be true or false. | Optional | 
+| execute_filemode | Enables or disables the execute flag on the file. Can be true or false. Possible values are: true, false. | Optional | 
 
 
 #### Context Output
@@ -151,6 +177,12 @@ Editing existing file in repository.
 | --- | --- | --- |
 | GitLab.File.file_path | String | The file path. | 
 | GitLab.File.branch | String | The name of the branch. | 
+
+#### Command Example
+`!gitlab-file-update file_path=./gitlabca branch=thisbranch start_branch=main encoding=base64 author_email=author@email.com author_name=name entry_id=.gitlab-ci.yml file_content="contant of file" commit_message=commit last_commit_id=5 execute_filemode=True`
+
+#### Human Readable Output
+> File updated successfully.
 
 ### gitlab-file-delete
 ***
@@ -166,11 +198,19 @@ Editing existing file in repository.
 | --- | --- | --- |
 | file_path | URL-encoded full path of the file. | Required | 
 | branch | Name of the new branch to delete. | Required | 
+| commit_message | The commit message. | Required | 
 
 
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+`!gitlab-file-delete branch=main file file_path=./gitlabca commit_message=deleteFile`
+
+#### Human Readable Output
+> File deleted successfully.
+
 ### gitlab-issue-list
 ***
 Get a list of a project's issues.
@@ -183,16 +223,16 @@ Get a list of a project's issues.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| assignee_id | Return issues assigned to the given user id. | Optional | 
+| assignee_id | Return issues assigned to the given user id. The command gitlab-project-user-list gives a list of all relevent users. | Optional | 
 | assignee_username | Return issues assigned to the given username. | Optional | 
 | author_id | Return issues created by the given user id. | Optional | 
 | author_username | Return issues created by the given username. | Optional | 
 | confidential | Filter confidential or public issues. | Optional | 
-| created_after | Return issues created on or after the given time. | Optional | 
-| created_before | Return issues created on or before the given time. | Optional | 
+| created_after | Return issues created on or after the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z). | Optional | 
+| created_before | Return issues created on or before the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z). | Optional | 
 | due_date | Return issues that have no due date, are overdue, or whose due date is this week, this month, or between two weeks ago and next month. Possible values are: 0 (no due date), any, today, tomorrow, overdue, week, month, next_month_and_previous_two_weeks. | Optional | 
 | epic_id | Return issues associated with the given epic ID. None returns issues that are not associated with an epic. | Optional | 
-| issue_type | Filter to a given type of issue. One of issue, incident, or test_case. | Optional | 
+| issue_type | Filter to a given type of issue. One of issue, incident, or test_case. Possible values are: issue, incident, test_case. | Optional | 
 | labels | Comma-separated list of label names, issues must have all labels to be returned. None lists all issues with no labels. | Optional | 
 | milestone | The milestone title. None lists all issues with no milestone. Any lists all issues that have an assigned milestone. | Optional | 
 | order_by | Return issues ordered by created_at, updated_at, priority, due_date, relative_position, label_priority, milestone_due, popularity, weight fields. Default is created_at. Possible values are: created_at, updated_at, priority, due_date, relative_position, label_priority, milestone_due, popularity, weight. Default is created_at. | Optional | 
@@ -202,8 +242,8 @@ Get a list of a project's issues.
 | state | Return all issues or just those that are opened or closed. Possible values are: opened, closed. | Optional | 
 | updated_after | Return issues updated on or after the given time. | Optional | 
 | updated_before | Return issues updated on or before the given time. | Optional | 
-| limit | Maximum number of results to return. | Optional | 
-| page | The number of page to retrieve results from. | Optional | 
+| limit | Maximum number of results to return. Default is 50. | Optional | 
+| page | The number of page to retrieve results from. Default is 1. | Optional | 
 
 
 #### Context Output
@@ -219,10 +259,18 @@ Get a list of a project's issues.
 | GitLab.Issue.state | String | The state of the issue\(closed or opened\). | 
 | GitLab.Issue.assignee.name | String | The name of the assignee. | 
 
+#### Command Example
+`!gitlab-issue-list limit=1 page=1 assignee_id=1 assignee_username=Assignusername author_id=4 author_username=usernameAuthoe confidential=False created_after=2000-09-15T17:22:42.246Z created_before=2022-09-15T17:22:42.246Z due_date=2023-09-15T17:22:42.246Z epic_id=1 issue_type=Issue labels=label2 milestone=PR order_by=Weight`
+
+#### Human Readable Output
+## List Issues:
+|Issue_iid|Title|CreatedAt|CreatedBy|UpdatedAt|State|Assignee|
+|---|---|---|---|
+|4|iisueExample|2000-09-15T17:22:42.246Z|demo-user|2000-09-15T17:23:42.246Z|Open|demoAssignee|
+
 ### gitlab-issue-update
 ***
 Updates an existing project issue. This call is also used to mark an issue as closed. The iid can be taken from gitlab-issue-list.
-
 
 #### Base Command
 
@@ -233,14 +281,14 @@ Updates an existing project issue. This call is also used to mark an issue as cl
 | --- | --- | --- |
 | issue_iid | The internal ID of a project's issue. | Required | 
 | add_labels | Comma-separated label names to add to an issue. | Optional | 
-| assignee_ids | The ID of the users to assign the issue to. Set to 0 or provide an empty value to unassign all assignees. | Optional | 
+| assignee_ids | The ID of the users to assign the issue to.  The command gitlab-project-user-list gives a list of all relevent users. | Optional | 
 | confidential | Updates an issue to be confidential. | Optional | 
-| description | The description of an issue. Limited to 1,048,576 characters. | Optional | 
+| description | The description of an issue. | Optional | 
 | discussion_locked | Flag indicating if the issue's discussion is locked. If the discussion is locked only project members can add or edit comments. | Optional | 
 | due_date | The due date. Date time string in the format YYYY-MM-DD, for example 2016-03-11. | Optional | 
 | epic_id | ID of the epic to add the issue to. Valid values are greater than or equal to 0. | Optional | 
 | epic_iid | IID of the epic to add the issue to. Valid values are greater than or equal to 0. | Optional | 
-| issue_type | Updates the type of issue. One of issue, incident, or test_case. | Optional | 
+| issue_type | Updates the type of issue. One of issue, incident, or test_case. Possible values are: issue, incident, test_case. | Optional | 
 | milestone_id | The global ID of a milestone to assign the issue to. Set to 0 or provide an empty value to unassign a milestone. | Optional | 
 | remove_labels | Comma-separated label names to remove from an issue. | Optional | 
 | state_event | The state event of an issue. Set close to close the issue and reopen to reopen it. | Optional | 
@@ -301,6 +349,15 @@ Updates an existing project issue. This call is also used to mark an issue as cl
 | GitLab.Issue.task_completion_status.count | Number | Dictionray of completion status. | 
 | GitLab.Issue.task_completion_status.completed_count | Number | dictionary of status. | 
 
+#### Command Example
+`!gitlab-issue-update issue_iid=20 add_labels=label3 assignee_ids=2 confidential=False description=UpdateDesc discussion_locked=False due_date=2022-09-15T17:22:42.246Z epic_id=1 epic_iid=2 issue_type=Issue milestone_id=16 remove_labels=label1 state_event=Close title=updateTitle`
+
+#### Human Readable Output
+## Update Issue:
+|Iid|Title|CreatedAt|CreatedBy|UpdatedAt|Milstone|State|Assignee|
+|---|---|---|---|
+|4|iisueExample|2000-09-15T17:22:42.246Z|demo-user|2000-09-15T17:23:42.246Z|16|Open|demoAssignee|
+
 ### gitlab-commit-list
 ***
 Get a list of repository commits in a project.
@@ -315,16 +372,24 @@ Get a list of repository commits in a project.
 | --- | --- | --- |
 | commit_id | If the user provided a value, a specific commit will be retrieved. otherwise, all the commits will be retrieved(sha). | Optional | 
 | ref_name | The name of a repository branch, tag or revision range, or if not given the default branch. | Optional | 
-| created_before | Only commits before or on this date are returned (until). | Optional | 
-| created_after | Only commits after or on this date are returned(since). | Optional | 
+| created_before | Only commits before or on this date are returned (until). Expected in ISO 8601 format (2019-03-15T08:00:00Z). | Optional | 
+| created_after | Only commits after or on this date are returned(since). Expected in ISO 8601 format (2019-03-15T08:00:00Z). | Optional | 
 | path | The file path. | Optional | 
 | all | Retrieve every commit from the repository. | Optional | 
 | with_stats | Stats about each commit are added to the response. | Optional | 
 | first_parent | Follow only the first parent commit upon seeing a merge commit. | Optional | 
 | order | List commits in order. Possible values- default, topo. Defaults to default, the commits are shown in reverse chronological order. Possible values are: default, topo. | Optional | 
-| limit | Total commits to show. | Optional | 
-| page | Present commits from page. | Optional | 
+| limit | Total commits to show. Default is 50. | Optional | 
+| page | Present commits from page. Default is 1. | Optional | 
 
+#### Command Example
+`!gitlab-commit-list limit=1 page=1 commit_id=c156b66b ref_name=main created_before=2022-09-15T17:22:42.246Z created_after=2000-09-15T17:22:42.246Z path=./ all=True with_stats=True first_parent=True order=Default`
+
+#### Human Readable Output
+## List Commits:
+|Title|Message|ShortId|Author|CreatedAt|
+|---|---|---|---|
+|commitExample|this is example|c156b66b|demo-user|2000-09-15T17:22:42.246Z|
 
 #### Context Output
 
@@ -344,61 +409,6 @@ Get a list of repository commits in a project.
 | GitLab.Commit.parent_ids | String | The commit's parent ids. | 
 | GitLab.Commit.web_url | String | The commit's web url. | 
 
-#### Command example
-```!gitlab-commit-list limit=1 page=1 commit_id=c156b66b ref_name=main created_before=2022-09-15T17:22:42.246Z created_after=2000-09-15T17:22:42.246Z path=./ all=True with_stats=True first_parent=True order=Default```
-#### Context Example
-```json
-{
-    "GitLab": {
-        "Commit": {
-            "author_email": "name@email.com",
-            "author_name": "dummy data",
-            "authored_date": "2022-09-07T14:48:41.000+00:00",
-            "committed_date": "2022-09-07T14:48:41.000+00:00",
-            "committer_email": "dummy@email.com",
-            "committer_name": "dummy data",
-            "created_at": "2022-09-07T14:48:41.000+00:00",
-            "id": "a123",
-            "last_pipeline": {
-                "created_at": "2022-09-15T11:03:09.559Z",
-                "id": 641050082,
-                "iid": 49,
-                "project_id": 1,
-                "ref": "branchToPlaybook",
-                "sha": "c156b66b85372639eecd644062f9c664d959e887",
-                "source": "push",
-                "status": "failed",
-                "updated_at": "2022-09-15T11:03:09.559Z",
-                "web_url": "https://gitlab.com/dummydata1/dummydata/-/pipelines/641050082"
-            },
-            "message": "defs",
-            "parent_ids": [
-                "1"
-            ],
-            "project_id": 1,
-            "short_id": "c156b66b",
-            "stats": {
-                "additions": 1,
-                "deletions": 0,
-                "total": 1
-            },
-            "status": "failed",
-            "title": "defs",
-            "trailers": {},
-            "web_url": "https://gitlab.com/demo/commit/c156"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Commit details of:
-> c156b66b
->|Message|ShortId|Author|CreatedAt|
->|---|---|---|---|
->| defs | c156b66b | dummy data | 2022-09-07T14:48:41.000+00:00 |
-
 
 ### gitlab-merge-request-list
 ***
@@ -417,21 +427,21 @@ Get all merge requests for this project.
 | sort | Return requests sorted in asc or desc order. Default is desc. Possible values are: asc, desc. Default is desc. | Optional | 
 | milestone | Return merge requests for a specific milestone. None returns merge requests with no milestone. Any returns merge requests that have an assigned milestone. | Optional | 
 | labels | Return merge requests matching a comma-separated list of labels. None lists all merge requests with no labels. Any lists all merge requests with at least one label. Predefined names are case-insensitive. | Optional | 
-| created_after | Return merge requests created on or after the given time. Expected in ISO 8601 format. | Optional | 
-| created_before | Return merge requests created on or before the given time. Expected in ISO 8601 format. | Optional | 
-| updated_after | Return merge requests updated on or after the given time. Expected in ISO 8601 format. | Optional | 
-| updated_before | Return merge requests updated on or before the given time. Expected in ISO 8601 format. | Optional | 
+| created_after | Return merge requests created on or after the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z). | Optional | 
+| created_before | Return merge requests created on or before the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z). | Optional | 
+| updated_after | Return merge requests updated on or after the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z). | Optional | 
+| updated_before | Return merge requests updated on or before the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z). | Optional | 
 | scope | Return merge requests for the given scope- created_by_me, assigned_to_me, or all. Possible values are: created_by_me, assigned_to_me, all. | Optional | 
 | author_id | Returns merge requests created by the given user id. Mutually exclusive with author_username. | Optional | 
 | author_username | Returns merge requests created by the given username. Mutually exclusive with author_id. | Optional | 
-| assignee_id | Returns merge requests assigned to the given user id. None returns unassigned merge requests. Any returns merge requests with an assignee. | Optional | 
-| reviewer_id | Returns merge requests which have the user as a reviewer with the given user id. | Optional | 
-| reviewer_username | Returns merge requests which have the user as a reviewer with the given username. None returns merge requests with no reviewers. Any returns merge requests with any reviewer. Mutually exclusive with reviewer_id. | Optional | 
+| assignee_id | Returns merge requests assigned to the given user id.  The command gitlab-project-user-list gives a list of all relevent users. | Optional | 
+| reviewer_id | Returns merge requests which have the user as a reviewer with the given user id.  The command gitlab-project-user-list gives a list of all relevent users. | Optional | 
+| reviewer_username | Returns merge requests which have the user as a reviewer with the given username.  The command gitlab-project-user-list gives a list of all relevent users. | Optional | 
 | source_branch | Return merge requests with the given source branch. | Optional | 
 | target_branch | Return merge requests with the given target branch. | Optional | 
 | search | Search merge requests against their title and description. | Optional | 
-| limit | Total merge requests to show. | Optional | 
-| page | Present merge requests from page. | Optional | 
+| limit | Total merge requests to show. Default is 50. | Optional | 
+| page | Present merge requests from page. Default is 1. | Optional | 
 
 
 #### Context Output
@@ -448,6 +458,15 @@ Get all merge requests for this project.
 | GitLab.MergeRequest.merged_at | Unknown | When the merge request was merged. | 
 | GitLab.MergeRequest.reviewers | Number | The reviewer of the merge requests. | 
 
+#### Command Example
+`!gitlab-merge-request-list limit=1 page=1 state=Opened order_by=title sort=asc milestone=Any labels=label1 created_before=2022-11-15T17:22:42.246Z created_after=2000-09-15T17:22:42.246Z updated_after=2000-09-15T17:22:42.246Z updated_before=2022-09-15T17:22:42.246Z scope=All author_id=1 author_username=usernameAuthor assignee_id=1 reviewer_id=6 reviewer_username=username source_branch=sourceBranceName target_branch=main search=gitlab`
+
+#### Human Readable Output
+## List Merge requests :
+|Iid|Title|CreatedAt|CreatedBy|UpdatedAt|Status|MergeBy|MergedAt|Reviewers|
+|---|---|---|---|
+|444|MergeExample|2022-10-15T17:22:42.246Z|demo-user|2022-11-15T17:23:42.246Z|Open|demoMerge|2022-10-15T17:22:42.246Z|demoReviewer|
+
 ### gitlab-merge-request-create
 ***
 Creates a new merge request.
@@ -463,8 +482,8 @@ Creates a new merge request.
 | source_branch | The merge request source branch. | Required | 
 | target_branch | The merge request target branch. | Required | 
 | title | The merge request title. | Required | 
-| assignee_ids | The ID of the users to assign the MR to. Set to 0 or provide an empty value to unassign all assignees. | Optional | 
-| reviewer_ids | The ID of the users added as a reviewer to the MR. If set to 0 or left empty, no reviewers are added. | Optional | 
+| assignee_ids | The ID of the users to assign the MR to.  The command gitlab-project-user-list gives a list of all relevent users. | Optional | 
+| reviewer_ids | The ID of the users added as a reviewer to the MR.  The command gitlab-project-user-list gives a list of all relevent users. | Optional | 
 | description | description of MR. Limited to 1,048,576 characters. | Optional | 
 | target_project_id | The target project (numeric ID). | Optional | 
 | labels | The global ID of a milestone. | Optional | 
@@ -557,6 +576,12 @@ Creates a new merge request.
 | GitLab.MergeRequest.merge_error | Unknown | If exist, the error of the merge. | 
 | GitLab.MergeRequest.user.can_merge | Boolean | If the user can merge. | 
 
+#### Command Example
+`!gitlab-merge-request-create  source_branch=NewName target_branch=main title=titleName assignee_ids=1 reviewer_ids2 description=description target_project_id=3320 labels=label1 milestone_id=1 remove_source_branch=False allow_collaboration=False allow_maintainer_to_push=False approvals_before_merge=2 squash=False`
+
+#### Human Readable Output
+## Merge request created successfully.
+
 ### gitlab-merge-request-update
 ***
 Updates an existing merge request. You can change the target branch, title, or even close the MR.
@@ -572,8 +597,8 @@ Updates an existing merge request. You can change the target branch, title, or e
 | merge_request_id | The ID of a merge request. Can be taken from gitlab-merge-request-list. | Required | 
 | target_branch | The target branch. | Required | 
 | title | Title of MR. | Required | 
-| assignee_ids | The ID of the users to assign the MR to. Set to 0 or provide an empty value to unassign all assignees. | Optional | 
-| reviewer_ids | The ID of the users set as a reviewer to the MR. Set the value to 0 or provide an empty value to unset all reviewers. | Optional | 
+| assignee_ids | The ID of the users to assign the MR to.  The command gitlab-project-user-list gives a list of all relevent users. | Optional | 
+| reviewer_ids | The ID of the users set as a reviewer to the MR. The command gitlab-project-user-list gives a list of all relevent users. | Optional | 
 | description | description of MR. Limited to 1,048,576 characters. | Optional | 
 | target_project_id | The target project id. | Optional | 
 | labels | Comma-separated label names for a merge request. Set to an empty string to unassign all labels. | Optional | 
@@ -694,6 +719,12 @@ Updates an existing merge request. You can change the target branch, title, or e
 | GitLab.MergeRequest.task_completion_status.count | Integer | The number of task completion. | 
 | GitLab.MergeRequest.task_completion_status.completed_count | Integer | The number of task completed completion. | 
 
+#### Command Example
+`!gitlab-merge-request-update merge_request_id target_branch=NewName title=newTitle assignee_ids=1 reviewer_ids=2 description=UpdateDesc target_project_id=3003 add_labels=label2 remove_labels=label1 milestone_id=1 state_event=Close remove_source_branch=True squash=True discussion_locked=True allow_collaboration=True allow_maintainer_to_push=True`
+
+#### Human Readable Output
+## Merge request updated successfully.
+
 ### gitlab-issue-note-create
 ***
 Creates a new note to a single project issue.
@@ -744,26 +775,26 @@ Creates a new note to a single project issue.
         "IssueNote": {
             "attachment": null,
             "author": {
-                "avatar_url": "https://secure.gravatar.com/avatar",
-                "id": 1,
-                "name": "dummy data",
+                "avatar_url": "https://secure.gravatar.com/avatar/9c7fbddb174ff5468dd993fb6f83b59a?s=80&d=identicon",
+                "id": 12665296,
+                "name": "Test Account",
                 "state": "active",
-                "username": "dummy data",
-                "web_url": "https://gitlab.com/dummy_data"
+                "username": "test9308",
+                "web_url": "https://gitlab.com/test9308"
             },
             "body": "body",
             "commands_changes": {},
             "confidential": true,
-            "created_at": "2022-09-16T05:33:53.279Z",
-            "id": 1,
+            "created_at": "2022-10-11T09:35:02.558Z",
+            "id": 1131185222,
             "internal": true,
-            "noteable_id": 1,
+            "noteable_id": 116016614,
             "noteable_iid": 4,
             "noteable_type": "Issue",
             "resolvable": false,
             "system": false,
             "type": null,
-            "updated_at": "2022-09-16T05:33:53.279Z"
+            "updated_at": "2022-10-11T09:35:02.558Z"
         }
     }
 }
@@ -795,11 +826,11 @@ Deletes an existing note of an issue.
 | --- | --- | --- |
 | GitLab.IssueNote.message | String | issue note message | 
 
-#### Command example
-```!gitlab-issue-note-delete issue_iid=4 note_id=1045951925```
-#### Human Readable Output
+#### Command Example
+`!gitlab-issue-note-delete issue_iid=4 note_id=1045951925`
 
->Issue note deleted successfully
+#### Human Readable Output
+## Issue note deleted successfully
 
 ### gitlab-issue-note-update
 ***
@@ -842,6 +873,12 @@ Modify existing note of an issue.
 | GitLab.IssueNote.internal | Boolean | If the thread is internal. | 
 | GitLab.IssueNote.noteable_iid | Number | The notable internal ID. | 
 
+#### Command Example
+`!gitlab-issue-note-update issue_iid=4 note_id=1045951925 body=UpdatedBody`
+
+#### Human Readable Output
+## Issue note updated was updated successfully.
+
 ### gitlab-issue-note-list
 ***
 Gets a list of all notes for a single issue.
@@ -858,7 +895,7 @@ Gets a list of all notes for a single issue.
 | order_by | Return issue noted ordered by created_at, updated_at fields. Possible values are: created_at, updated_at. Default is created_at. | Optional | 
 | sort | Return issue noted ordered by created_at, updated_at fields. Possible values are: desc, asc. Default is desc. | Optional | 
 | limit | Maximum number of results to return. Default is 50. | Optional | 
-| page | The page number of the results to retrieve. Minimum value is 0. | Optional | 
+| page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
 
 
 #### Context Output
@@ -885,6 +922,15 @@ Gets a list of all notes for a single issue.
 | GitLab.IssueNote.internal | Boolean | If the thread is internal. | 
 | GitLab.IssueNote.noteable_iid | Number | The notable internal ID. | 
 
+#### Command Example
+`!gitlab-issue-note-list limit=1 page=1`
+
+#### Human Readable Output
+## List Issue notes:
+|Id|Author|Text|CreatedAt|UpdatedAt|
+|---|---|---|---|
+|4|authorExample|text example|2000-09-15T17:22:42.246Z|2000-09-15T17:23:42.246Z|
+
 ### gitlab-merge-request-note-list
 ***
 Gets a list of all notes for a single merge request.
@@ -900,8 +946,8 @@ Gets a list of all notes for a single merge request.
 | merge_request_iid | The IID of a project merge request. | Required | 
 | sort | Return merge request notes sorted in asc or desc order. Default is desc. Possible values are: desc, asc. Default is desc. | Optional | 
 | order_by | Return merge request notes ordered by created_at or updated_at fields. Default is created_at. Possible values are: created_at, updated_at. Default is created_at. | Optional | 
-| limit | Total merge requests to show. | Optional | 
-| page | Present merge requests from page. | Optional | 
+| limit | Total merge requests to show. Default is 50. | Optional | 
+| page | Present merge requests from page. Default is 1. | Optional | 
 
 
 #### Context Output
@@ -930,45 +976,11 @@ Gets a list of all notes for a single merge request.
 
 #### Command example
 ```!gitlab-merge-request-note-list limit=1 page=1 merge_request_iid=5 sort=asc order_by=created_at```
-#### Context Example
-```json
-{
-    "GitLab": {
-        "MergeRequestNote": {
-            "attachment": null,
-            "author": {
-                "avatar_url": "https://secure.gravatar.com/avatar/dummey_url?s=80&d=identicon",
-                "id": 1,
-                "name": "dummy data",
-                "state": "active",
-                "username": "dummy data",
-                "web_url": "https://gitlab.com/dummy_data"
-            },
-            "body": "assigned to @dummy data",
-            "commands_changes": {},
-            "confidential": false,
-            "created_at": "2022-08-25T08:46:53.559Z",
-            "id": 1,
-            "internal": false,
-            "noteable_id": 1,
-            "noteable_iid": 5,
-            "noteable_type": "MergeRequest",
-            "resolvable": false,
-            "system": true,
-            "type": null,
-            "updated_at": "2022-08-25T08:46:53.562Z"
-        }
-    }
-}
-```
-
 #### Human Readable Output
-
 >### List Merge Issue Notes
->|Id|Text|CreatedAt|UpdatedAt|
->|---|---|---|---|
->| 1077673050 | assigned to @dummy data | 2022-08-25T08:46:53.559Z | 2022-08-25T08:46:53.562Z |
-
+|Id|Author|Text|CreatedAt|UpdatedAt|
+|---|---|---|---|
+|41|demoAuthor|example|2000-09-15T17:22:42.246Z|2000-09-15T17:23:42.246Z|
 
 ### gitlab-merge-request-note-create
 ***
@@ -1019,26 +1031,26 @@ Creates a new note for a single merge request.
         "MergeRequestNote": {
             "attachment": null,
             "author": {
-                "avatar_url": "https://secure.gravatar.com/avatar/dummey_url?s=80&d=identicon",
-                "id": 1,
-                "name": "dummy data",
+                "avatar_url": "https://secure.gravatar.com/avatar/9c7fbddb174ff5468dd993fb6f83b59a?s=80&d=identicon",
+                "id": 12665296,
+                "name": "Test Account",
                 "state": "active",
-                "username": "dummy data",
-                "web_url": "https://gitlab.com/dummy_data"
+                "username": "test9308",
+                "web_url": "https://gitlab.com/test9308"
             },
             "body": "body",
             "commands_changes": {},
             "confidential": false,
-            "created_at": "2022-09-16T05:33:59.108Z",
-            "id": 1,
+            "created_at": "2022-10-11T09:35:10.685Z",
+            "id": 1131185415,
             "internal": false,
-            "noteable_id": 1,
+            "noteable_id": 180503976,
             "noteable_iid": 5,
             "noteable_type": "MergeRequest",
             "resolvable": false,
             "system": false,
             "type": null,
-            "updated_at": "2022-09-16T05:33:59.108Z"
+            "updated_at": "2022-10-11T09:35:10.685Z"
         }
     }
 }
@@ -1089,6 +1101,12 @@ Modify existing note of a merge request.
 | GitLab.MergeRequestNote.internal | Boolean | If the merge request is internal. | 
 | GitLab.MergeRequestNote.noteable_iid | Number | The merge request's noteable IID. | 
 
+#### Command Example
+`!gitlab-merge-request-note-update merge_request_iid=5 body=UpdatedBody note_id=1100241092`
+
+#### Human Readable Output
+> Merge request note was updated successfully.
+
 ### gitlab-merge-request-note-delete
 ***
 Deletes an existing note of a merge request.
@@ -1107,6 +1125,13 @@ Deletes an existing note of a merge request.
 
 #### Context Output
 
+There is no context output for this command.
+
+#### Command Example
+`!gitlab-merge-request-note-delete merge_request_iid=5 note_id=1100241092`
+
+#### Human Readable Output
+> Merge request note was deleted successfully.
 
 ### gitlab-issue-create
 ***
@@ -1181,34 +1206,34 @@ Create an issue.
     "GitLab": {
         "Issue": {
             "_links": {
-                "award_emoji": "https://gitlab.com/api/v4/projects/1/issues/109/award_emoji",
+                "award_emoji": "https://gitlab.com/api/v4/projects/39823965/issues/21/award_emoji",
                 "closed_as_duplicate_of": null,
-                "notes": "https://gitlab.com/api/v4/projects/dummy_project_id/issues/109/notes",
-                "project": "https://gitlab.com/api/v4/projects/dummy_project_id",
-                "self": "https://gitlab.com/api/v4/projects/dummy_project_id/issues/109"
+                "notes": "https://gitlab.com/api/v4/projects/39823965/issues/21/notes",
+                "project": "https://gitlab.com/api/v4/projects/39823965",
+                "self": "https://gitlab.com/api/v4/projects/39823965/issues/21"
             },
             "assignee": null,
             "assignees": [],
             "author": {
-                "avatar_url": "https://secure.gravatar.com/avatar/dummey_url?s=80&d=identicon",
-                "id": 1,
-                "name": "dummy data",
+                "avatar_url": "https://secure.gravatar.com/avatar/9c7fbddb174ff5468dd993fb6f83b59a?s=80&d=identicon",
+                "id": 12665296,
+                "name": "Test Account",
                 "state": "active",
-                "username": "dummy data",
-                "web_url": "https://gitlab.com/dummy_data"
+                "username": "test9308",
+                "web_url": "https://gitlab.com/test9308"
             },
             "blocking_issues_count": 0,
             "closed_at": null,
             "closed_by": null,
             "confidential": false,
-            "created_at": "2022-09-16T05:33:45.672Z",
+            "created_at": "2022-10-11T09:34:55.292Z",
             "description": "issueDescription",
             "discussion_locked": null,
             "downvotes": 0,
             "due_date": null,
             "has_tasks": false,
-            "id": 1,
-            "iid": 109,
+            "id": 116652264,
+            "iid": 21,
             "issue_type": "issue",
             "labels": [
                 "label1",
@@ -1217,11 +1242,11 @@ Create an issue.
             "merge_requests_count": 0,
             "milestone": null,
             "moved_to_id": null,
-            "project_id": 1,
+            "project_id": 39823965,
             "references": {
-                "full": "dummydata1/dummydata#109",
-                "relative": "#109",
-                "short": "#109"
+                "full": "test9308/gitlabtest#21",
+                "relative": "#21",
+                "short": "#21"
             },
             "service_desk_reply_to": null,
             "severity": "UNKNOWN",
@@ -1239,10 +1264,10 @@ Create an issue.
             },
             "title": "issueTitle",
             "type": "ISSUE",
-            "updated_at": "2022-09-16T05:33:45.672Z",
+            "updated_at": "2022-10-11T09:34:55.292Z",
             "upvotes": 0,
             "user_notes_count": 0,
-            "web_url": "https://gitlab.com/dummydata1/dummydata/-/issues/109"
+            "web_url": "https://gitlab.com/test9308/gitlabtest/-/issues/21"
         }
     }
 }
@@ -1250,10 +1275,10 @@ Create an issue.
 
 #### Human Readable Output
 
->### Create Issue
->|Iid|Title|CreatedAt|CreatedBy|UpdatedAt|Milstone|State|Assignee|
->|---|---|---|---|---|---|---|---|
->| 109 | issueTitle | 2022-09-16T05:33:45.672Z |   | 2022-09-16T05:33:45.672Z |   | opened |   |
+>### Created Issue
+>|Iid|Title|CreatedAt|CreatedBy|UpdatedAt|State|
+>|---|---|---|---|---|---|
+>| 21 | issueTitle | 2022-10-11T09:34:55.292Z | Test Account | 2022-10-11T09:34:55.292Z | opened |
 
 
 ### gitlab-project-list
@@ -1395,6 +1420,15 @@ Get a list of all visible projects across GitLab for the authenticated user. Whe
 | GitLab.Project.permissions.group_access.notification_level | Number | The notification level of the group\(permissions\). | 
 | GitLab.Project.permissions.project_access | Unknown | The project access\(permissions\). | 
 
+#### Command Example
+`!gitlab-project-list limit=1 page=1 membership=True order_by=Name owned=True sort=desc visibillity=public with_issues_enabled=True with_merge_requests_enabled=True`
+
+#### Human Readable Output
+## List Projects:
+|Id|Name|Description|Path|
+|---|---|---|---|
+|11209|first-project-01|this is the first project|first-project-repository|
+
 ### gitlab-group-project-list
 ***
 Get the list of projects of a given group.
@@ -1408,8 +1442,8 @@ Get the list of projects of a given group.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | group_id | Group ID from which to retrieve the projects. | Required | 
-| limit | Total number of projects for display. | Optional | 
-| page | Dispaly projects from this page number. | Optional | 
+| limit | Total number of projects for display. Default is 50. | Optional | 
+| page | Dispaly projects from this page number. Default is 1. | Optional | 
 
 
 #### Context Output
@@ -1523,9 +1557,18 @@ Get the list of projects of a given group.
 | GitLab.GroupProject.requirements_access_level | String | The requirements access level. | 
 | GitLab.GroupProject.security_and_compliance_enabled | Boolean | If the security and compliance is enabled. | 
 
+#### Command Example 
+`!gitlab-group-project-list limit=1 page=1 group_id=1`
+
+#### Human Readable Output
+## List of the group projects
+|Id|Name|Description|Path|
+|--- |--- |--- |--- |--- |
+|1|GroupProjectExample|this is a group project example|groupproject1|
+
 ### gitlab-raw-file-get
 ***
-Get raw file.
+Get file the file in a raw format.
 
 
 #### Base Command
@@ -1546,6 +1589,10 @@ Get raw file.
 | GitLab.File.ref | String | The branch the file's content was taken from. | 
 | GitLab.File.path | String | The file path. | 
 | GitLab.File.content | String | The file content. | 
+
+#### Command Example
+
+```!gitlab-raw-file-get file_path=./gitlabca ref=main```
 
 ### gitlab-branch-create
 ***
@@ -1587,6 +1634,52 @@ Creates a new branch in the repository.
 | GitLab.Branch.can_push | Boolean | If push is possible. | 
 | GitLab.Branch.web_url | String | The branch's web url. | 
 
+#### Command example
+```!gitlab-branch-create  branch=newBranch ref=main```
+#### Context Example
+```json
+{
+    "GitLab": {
+        "Branch": {
+            "can_push": true,
+            "commit": {
+                "author_email": "test@demistodev.com",
+                "author_name": "Test Account",
+                "authored_date": "2022-10-02T10:01:15.000+00:00",
+                "committed_date": "2022-10-02T10:01:15.000+00:00",
+                "committer_email": "test@demistodev.com",
+                "committer_name": "Test Account",
+                "created_at": "2022-10-02T10:01:15.000+00:00",
+                "id": "eadec97163297620df38f9cbc906eff7fa04eb18",
+                "message": "Update CheckRawFileCommand_main",
+                "parent_ids": [
+                    "c4a4c5d80f9cce20108bf5325b88ec73698f92c8"
+                ],
+                "short_id": "eadec971",
+                "title": "Update CheckRawFileCommand_main",
+                "trailers": {},
+                "web_url": "https://gitlab.com/test9308/gitlabtest/-/commit/eadec97163297620df38f9cbc906eff7fa04eb18"
+            },
+            "default": false,
+            "developers_can_merge": false,
+            "developers_can_push": false,
+            "merged": false,
+            "name": "newBranch",
+            "protected": false,
+            "web_url": "https://gitlab.com/test9308/gitlabtest/-/tree/newBranch"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Create Branch
+>|Title|CommitShortId|CommitTitle|CreatedAt|IsMerge|IsProtected|
+>|---|---|---|---|---|---|
+>| newBranch | eadec971 | Update CheckRawFileCommand_main | 2022-10-02T10:01:15.000+00:00 | false | false |
+
+
 ### gitlab-branch-delete
 ***
 Deletes a branch from the repository.
@@ -1605,6 +1698,14 @@ Deletes a branch from the repository.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+```!gitlab-branch-delete branch=new-branch-example```
+
+#### Human Readable Output
+Branch deleted successfully
+
 ### gitlab-merged-branch-delete
 ***
 Deletes all branches that are merged into the project's default branch.
@@ -1625,16 +1726,13 @@ There is no context output for this command.
 #### Context Example
 ```json
 {
-    "GitLab": {
-        "message": "202 Accepted"
-    }
+    "message": "202 Accepted"
 }
 ```
 
 #### Human Readable Output
 
->Deleation Result:
-> {'message': '202 Accepted'}
+>Merged branches Deleted successfully
 
 ### gitlab-branch-list
 ***
@@ -1650,8 +1748,8 @@ Get a list of repository branches from a project, sorted by name alphabetically.
 | --- | --- | --- |
 | branch_name | optional Url parameter, if the user provided a value a single branch will be returned. | Optional | 
 | search | Return list of branches containing the search string. You can use ^term and term$ to find branches that begin and end with term respectively. | Optional | 
-| limit | Maximum number of results to return. | Optional | 
-| page | The number of results on the page. | Optional | 
+| limit | Maximum number of results to return. Default is 50. | Optional | 
+| page | The number of results on the page. Default is 1. | Optional | 
 
 
 #### Context Output
@@ -1678,6 +1776,15 @@ Get a list of repository branches from a project, sorted by name alphabetically.
 | GitLab.Branch.commit.message | String | The branch commit's message. | 
 | GitLab.Branch.commit.parent_ids | String | The branch commit's parent ids. | 
 
+#### Command Example
+`!gitlab-branch-list limit=1 page=1 branch_name=branchName search=searchString`
+
+#### Human Readable Output
+## Branch details:
+|Title|CommitShortId|CommitTitle|CreatedAt|IsMerge|IsProtected|
+|---|---|---|---|
+|branchName|c1123|CommitTitle|2000-09-15T17:22:42.246Z|true|false|
+
 ### gitlab-group-list
 ***
 Get a list of visible groups for the authenticated user. When accessed without authentication, only public groups are returned. By default, this request returns 20 results at a time because the API results are paginated
@@ -1698,8 +1805,8 @@ Get a list of visible groups for the authenticated user. When accessed without a
 | owned | Limit to groups explicitly owned by the current user. | Optional | 
 | min_access_level | Limit to groups where current user has at least this access level. | Optional | 
 | top_level_only | Limit to top level groups, excluding all subgroups. | Optional | 
-| limit | Maximum number of results to return. | Optional | 
-| page | The number of results on the page. | Optional | 
+| limit | Maximum number of results to return. Default is 50. | Optional | 
+| page | The number of results on the page. Default is 1. | Optional | 
 
 
 #### Context Output
@@ -1729,6 +1836,15 @@ Get a list of visible groups for the authenticated user. When accessed without a
 | GitLab.Group.file_template_project_id | Number | The group's file template project id. | 
 | GitLab.Group.parent_id | Unknown | The group's parent id. | 
 | GitLab.Group.created_at | Date | The group's creation time. | 
+
+#### Command Example
+`!gitlab-group-list limit=1 page=1 skip_groups=1,2 all_available=False search=string order_by=Name sort=asc owned=True min_access_level=1 top_level_only=False`
+
+#### Human Readable Output
+## List Groups:
+|Id|Name|Path|Description|CreatedAt|Visibility|
+|---|---|---|---|
+|4|groupExample|demgroup|example description|2000-09-15T17:22:42.246Z|private|
 
 ### gitlab-group-member-list
 ***
@@ -1769,6 +1885,15 @@ Gets a list of group or project members viewable by the authenticated user.
 | GitLab.Group.group_saml_identity.saml_provider_id | Number | The group saml identity provider id. | 
 | GitLab.Group.email | String | The group member email. | 
 
+#### Command Example
+`!gitlab-group-member-list group_id=1130`
+
+#### Human Readable Output
+## List Group Members:
+|Id|Name|UserName|MembershipState|ExpiresAt|
+|---|---|---|---|
+|4|demo|demgroup|Active|2000-09-15T17:22:42.246Z|
+
 ### gitlab-code-search
 ***
 Using Scope blobs. Blobs searches are performed on both filenames and contents.
@@ -1782,6 +1907,8 @@ Using Scope blobs. Blobs searches are performed on both filenames and contents.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | search | The search query. | Required | 
+| limit | Maximum number of results to return. Default is 50. | Optional | 
+| page | The number of results on the page. Default is 1. | Optional | 
 
 
 #### Context Output
@@ -1797,5 +1924,49 @@ Using Scope blobs. Blobs searches are performed on both filenames and contents.
 | GitLab.Code.startline | Number | The line which the search code begin. | 
 | GitLab.Code.project_id | Number | The project's id. | 
 
-### limitation
- Description is limited to 1,048,576 characters.
+
+#### Command Example
+`!gitlab-code-search search=testSearch limit=1 page=1`
+
+#### Human Readable Output
+## Results:
+|basename|data|filename|id|path|project_id
+|---|---|---|---|
+|README|testSearch|exampleCode|123|README.md|5531|
+
+### gitlab-project-user-list
+***
+Get the users list of a project.
+
+
+#### Base Command
+
+`gitlab-project-user-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| Get the users list of a project. | The search query. | Optional | 
+| limit | Maximum number of results to return. Default is 50. | Optional | 
+| page | The number of results on the page. Default is 1. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitLab.User.id | Number | The user's Id. | 
+| GitLab.User.username | String | The user's username. | 
+| GitLab.User.name | String | The user's name. | 
+| GitLab.User.state | String | The user's state. | 
+| GitLab.User.avatar_url | String | The user's avatar url. | 
+| GitLab.User.web_url | String | The user's web url. |
+
+#### Command Example
+`!gitlab-project-user-list search=DemoName  limit=1 page=1`
+
+#### Human Readable Output
+## List Users :
+|Id|UserName|Name|State|WebLink|
+|---|---|---|---|
+|123|demoExample|demo user|active|WebLink/demoExample|

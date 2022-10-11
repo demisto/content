@@ -152,7 +152,7 @@ class Client(BaseClient):
         response = self._http_request('POST', suffix, headers=headers, data=body, params=params, ok_codes=[201])
         return response
 
-    def commit_single_request(self, commit_id) -> dict:
+    def commit_single_request(self, commit_id: str) -> dict:
         headers = self._headers
         suffix = f'/projects/{self.project_id}/repository/commits/{commit_id}'
         response = self._http_request('GET', suffix, headers=headers, ok_codes=[200, 202], resp_type='json')
@@ -305,7 +305,7 @@ def validate_pagination_values(limit: int, page_number: int) -> tuple[int, int, 
     return limit, per_page, page_number
 
 
-def response_according_pagination(client_function, limit: int, page_number: int,
+def response_according_pagination(client_function: Any, limit: int, page_number: int,
                                   params: dict, suffix_id: str | None):
     '''
     This function gets results accoring to the pagination values.
@@ -424,7 +424,7 @@ def issue_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         (CommandResults).
     """
     response_to_hr, human_readable = [], ''
-    headers = ['Id', 'Issue_id', 'Title', 'CreatedAt', 'CreatedBy', 'UpdatedAt', 'Milstone', 'State', ' Assignee']
+    headers = ['Issue_iid', 'Title', 'CreatedAt', 'CreatedBy', 'UpdatedAt', 'Milstone', 'State', ' Assignee']
     page_number = arg_to_number(args.get('page')) or 1
     limit = arg_to_number(args.get('limit')) or 50
     params = assign_params(assignee_id=args.get('assignee_id'), assignee_username=args.get('assignee_username'),
@@ -439,8 +439,7 @@ def issue_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     response = response_according_pagination(client.issue_list_request, limit, page_number, params, None)
 
     for issue in response:
-        issue_details = {'Id': issue.get('id'),
-                         'Issue_id': issue.get('iid'),
+        issue_details = {'Issue_iid': issue.get('iid'),
                          'Title': issue.get('title'),
                          'CreatedAt': issue.get('created_at'),
                          'UpdateAt': issue.get('update_at'),
@@ -743,7 +742,7 @@ def file_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         file_content = bytes(file_content, encoding='utf8')
     response = client.file_create_request(file_path, branch, commit_msg, author_email, author_name,
                                           file_content, execute_filemode)
-    human_readable_string = 'File created successfully'
+    human_readable_string = 'File created successfully.'
     return CommandResults(
         outputs_prefix='GitLab.File',
         outputs_key_field='path',
@@ -789,7 +788,7 @@ def file_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     response = client.file_update_request(file_path, branch, start_branch, encoding, author_email, author_name, commit_message,
                                           last_commit_id, execute_filemode, file_content)
 
-    human_readable_str = 'File updated successfully'
+    human_readable_str = 'File updated successfully.'
     return CommandResults(
         outputs_prefix='GitLab.File',
         outputs_key_field='path',
@@ -916,7 +915,7 @@ def group_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     Returns:
         (CommandResults).
     """
-    response_to_hr, human_readable, response_title = [], '', 'List Group'
+    response_to_hr, human_readable, response_title = [], '', 'List Groups'
     headers = ['Id', 'Name', 'Path', 'Description', 'CreatedAt', 'Visibility']
     page_number = arg_to_number(args.get('page')) or 1
     limit = arg_to_number(args.get('limit')) or 50
@@ -1131,8 +1130,7 @@ def merge_request_create_command(client: Client, args: Dict[str, Any]) -> Comman
                                                    reviewer_ids, description, target_project_id, labels,
                                                    milestone_id, remove_source_branch, allow_collaboration,
                                                    allow_maintainer_to_push, approvals_before_merge, squash)
-    merge_request_iid = response.get('iid')
-    human_readable_str = f'Merge request created successfully with merge_request_iid:\n{merge_request_iid}'
+    human_readable_str = 'Merge request created successfully.'
     return CommandResults(
         outputs_prefix='GitLab.MergeRequest',
         readable_output=human_readable_str,
@@ -1307,7 +1305,7 @@ def group_member_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
                              'MembershipState': group_member.get('membership_state', ''),
                              'ExpiresAt': group_member.get('expires_at', '')}
         response_to_hr.append(group_member_edit)
-    human_readable = tableToMarkdown('List Group Member', response_to_hr, removeNull=True, headers=headers)
+    human_readable = tableToMarkdown('List Group Members', response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
         outputs_prefix='GitLab.GroupMember',
         outputs_key_field='id',
