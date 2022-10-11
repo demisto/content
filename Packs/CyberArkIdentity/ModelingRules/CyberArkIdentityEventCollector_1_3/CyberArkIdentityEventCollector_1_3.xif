@@ -9,10 +9,7 @@ filter
     xdm.event.outcome_reason = MfaReason,
     xdm.target.application.name = coalesce(ProfileName, ApplicationName, AppName),
 	xdm.auth.auth_method = AuthMethod;
-
-filter
     alter
-    _collection_timestamp = to_timestamp(to_integer(arrayindex(regextract(WhenLogged, "[0-9]+"), 0)), "MILLIS"),
     _time = to_timestamp(to_integer(arrayindex(regextract(WhenOccurred, "[0-9]+"), 0)), "MILLIS"),
     xdm.target.resource.name = coalesce(ObjectName, Role, Alias, ProfileName, TargetUser, DSName, ImpersonateTargetName, Cname, AffectedTenant, OU, DeviceName, ApplicationName, AppName, EntityName),
     xdm.target.resource.type = coalesce(ObjectType, Type, DSType, LicenseType, NewLicenseType, ApplicationType, EntityType),
