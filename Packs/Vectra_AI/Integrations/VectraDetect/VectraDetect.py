@@ -600,12 +600,18 @@ class Client(BaseClient):
         except ValueError:
             raise ValueError('"assignee_id" value is invalid')
 
-        if assignment_id:  # Reassign an existing assignment
-            url_addon = f'/{assignment_id}'
+        json_payload = {
+            'assign_to_user_id': assignee_id,
+        }
 
-            json_payload = {
-                'assign_to_user_id': assignee_id,
-            }
+        if assignment_id:  # Reassign an existing assignment
+            # Test Assignment ID
+            try:
+                validate_argument('min_id', assignment_id)
+            except ValueError:
+                raise ValueError('"assignment_id" value is invalid')
+
+            url_addon = f'/{assignment_id}'
 
             return self._http_request(
                 method='PUT',
@@ -619,10 +625,9 @@ class Client(BaseClient):
             except ValueError:
                 raise ValueError('"account_id" value is invalid')
 
-            json_payload = {
-                'assign_to_user_id': assignee_id,
+            json_payload.update({
                 'assign_account_id': account_id
-            }
+            })
 
             # Execute request
             return self._http_request(
@@ -637,10 +642,9 @@ class Client(BaseClient):
             except ValueError:
                 raise ValueError('"host_id" value is invalid')
 
-            json_payload = {
-                'assign_to_user_id': assignee_id,
+            json_payload.update({
                 'assign_host_id': host_id
-            }
+            })
 
             # Execute request
             return self._http_request(

@@ -684,7 +684,7 @@ script:
     outputs: *assignmentOutput
 
   - name: vectra-assignment-assign
-    description: Assigns an Account/Host entity to a Vectra User for investigation
+    description: Assigns an Account/Host entity to a Vectra User for investigation.
       If an assignment already exists on this entity, it will be reassigned
     execution: true     # This command is harmful
     arguments:
@@ -696,6 +696,7 @@ script:
       description: Account ID
     - name: host_id
       description: Host ID
+    outputs: *assignmentOutput
 
   - name: vectra-assignment-resolve
     description: Resolves an assignment by selecting resolution scheme.
