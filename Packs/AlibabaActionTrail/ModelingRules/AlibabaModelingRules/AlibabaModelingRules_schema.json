@@ -4,6 +4,10 @@
           "type": "string",
           "is_array": false
       },
+      "event_acsregion": {
+          "type": "string",
+          "is_array": false
+      },
       "event_eventid": {
           "type": "string",
           "is_array": false

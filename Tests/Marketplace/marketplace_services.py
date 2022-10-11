@@ -1961,11 +1961,6 @@ class Pack(object):
 
                 folder_collected_items = []
                 for pack_file_name in pack_files_names:
-                    if "AlibabaModeling" in pack_file_name:
-                        logging.info('here for alibaba')
-                    if pack_file_name.startswith('external-'):
-                        logging.info(f'starting analayzing for {pack_file_name=}')
-
                     if not pack_file_name.endswith(('.json', '.yml')):
                         continue
 
