@@ -1154,6 +1154,74 @@ def test_vectra_get_assignment_by_id_command(requests_mock, id, expected_outputs
             assert result.readable_output == expected_readable
 
 
+# Test only the exceptions for now
+@pytest.mark.parametrize(
+    "assignment_id,outcome_id,note,detections_filter,filter_rule_name,detections_list,"
+    "expected_outputs,expected_readable,exception",
+    [
+        pytest.param(None, None, None, None, None, None,
+                     None, None,
+                     pytest.raises(VectraException, match='"assignment_id" not specified'),
+                     id="none-assignment-id_exception"),
+        pytest.param('1', None, None, None, None, None,
+                     None, None,
+                     pytest.raises(VectraException, match='"outcome_id" not specified'),
+                     id="none-outcome-id_exception"),
+        pytest.param('1', '2', None, 'Filter Rule', None, None,
+                     None, None,
+                     pytest.raises(VectraException, match='"filter_rule_name" not specified'),
+                     id="none-filter-rule-name_exception"),
+        pytest.param('1', '2', None, 'Filter Rule', 'Dummy Name', None,
+                     None, None,
+                     pytest.raises(VectraException, match='"detections_list" not specified'),
+                     id="none-detections-list_exception"),
+        pytest.param('text-id', '2', None, None, None, None,
+                     None, None,
+                     pytest.raises(ValueError, match='"assignment_id" value is invalid'),
+                     id="text-assignment-id_exception"),
+        pytest.param('1', 'text-id', None, None, None, None,
+                     None, None,
+                     pytest.raises(ValueError, match='"outcome_id" value is invalid'),
+                     id="text-outcome-id_exception"),
+        pytest.param('1', '2', None, 'Filter Rule', 'Dummy Name', ',',
+                     None, None,
+                     pytest.raises(ValueError, match='"detections_list" value is invalid'),
+                     id="wrong-detections-list_exception"),
+        pytest.param('25', '4', None, 'Filter Rule', "Test-Triage", "2201, 2202, 2203",
+                     load_test_data('single_assignment_extracted.json'), None,
+                     does_not_raise(),
+                     id="assignment-resolution_ok"),
+    ]
+)
+def test_vectra_assignment_resolve_command(requests_mock,
+                                           assignment_id, outcome_id, note,
+                                           detections_filter, filter_rule_name, detections_list,
+                                           expected_outputs, expected_readable, exception):
+    """
+    Tests vectra_assignment_resolve_command command function.
+    """
+    from VectraDetect import Client, vectra_assignment_resolve_command
+
+    # Default answer, useless to check XSOAR inner exceptions (none API call raised)
+    # Need to create inner checks based on post query body to have a better coverage
+    requests_mock.put(f'{API_URL}{API_ENDPOINT_ASSIGNMENTS}'
+                      '/25/resolve',
+                      complete_qs=True,
+                      json={'assignment': load_test_data('single_assignment.json')})
+
+    client = Client(
+        base_url=f'{API_URL}', headers={}
+    )
+
+    with exception:
+        result = vectra_assignment_resolve_command(client=client, assignment_id=assignment_id, outcome_id=outcome_id, note=note,
+                                                   detections_filter=detections_filter, filter_rule_name=filter_rule_name,
+                                                   detections_list=detections_list)
+        assert result.outputs == expected_outputs
+        if expected_outputs is None:
+            assert result.readable_output == expected_readable
+
+
 @pytest.mark.parametrize(
     "id,expected_outputs,expected_readable,exception",
     [

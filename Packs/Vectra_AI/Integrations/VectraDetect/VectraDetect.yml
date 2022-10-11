@@ -697,6 +697,30 @@ script:
     - name: host_id
       description: Host ID
 
+  - name: vectra-assignment-resolve
+    description: Resolves an assignment by selecting resolution scheme.
+      Could be 'resolving only' or 'resolving by filtering detections'
+    execution: true     # This command is harmful
+    arguments:
+    - name: assignment_id
+      description: Assignment's ID
+    - name: outcome_id
+      description: Assignment Outcome's ID
+    - name: note
+      description: A note to add to this resolution
+    - name: detections_filter
+      description: Do you want to filter detections when resolving this assignment ? [Default is None]
+      auto: PREDEFINED
+      predefined:
+      - None
+      - Filter Rule
+    - name: filter_rule_name
+      description: Filter rule's name (when using filter_detections="Filter Rule")
+    - name: detections_list
+      description: Detection IDs list you want to filter
+      isArray: true
+    outputs: *assignmentOutput
+
   ######
   ### Vectra Users
   #

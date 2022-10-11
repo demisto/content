@@ -649,6 +649,54 @@ class Client(BaseClient):
                 json_data=json_payload
             )
 
+    def resolve_assignment(self, assignment_id: str, outcome_id: str, note: str = None,
+                           rule_name: str = None, detections_list: str = None):
+        """
+        Creates or updates an assignment
+
+        - params:
+            - assignee_id: The Vectra User ID who want to assign to
+            - assignment_id: The existing assignment ID associated with the targeted Entity, if there is any
+            - assignee_id: The Vectra User ID who want to assign to
+            - account_id: The Account ID
+            - host_id: The Host ID
+        - returns:
+            Vectra API call result
+        """
+        # Test assignment ID
+        try:
+            validate_argument('min_id', assignment_id)
+        except ValueError:
+            raise ValueError('"assignment_id" value is invalid')
+
+        # Test outcome ID
+        try:
+            validate_argument('min_id', outcome_id)
+        except ValueError:
+            raise ValueError('"outcome_id" value is invalid')
+
+        json_payload: Dict[str, Any] = {
+            'outcome': outcome_id,
+            'note': note,
+        }
+
+        if rule_name:
+            detection_ids_set = sanitize_str_ids_list_to_set(detections_list)
+            if detection_ids_set is None:
+                raise ValueError('"detections_list" value is invalid')
+
+            json_payload.update({
+                'triage_as': rule_name,
+                'detection_ids': list(detection_ids_set)
+            })
+
+        # Execute request
+        return self._http_request(
+            method='PUT',
+            url_suffix=f'{API_ENDPOINT_ASSIGNMENT}/{assignment_id}/resolve',
+            json_data=json_payload
+        )
+
 
 # ####                 #### #
 # ##  HELPER FUNCTIONS   ## #
@@ -845,7 +893,7 @@ def validate_min_max(min_label: str = None, min_value: str = None, max_label: st
     return True
 
 
-def sanitize_str_ids_list_to_set(list: str) -> Optional[Set[int]]:
+def sanitize_str_ids_list_to_set(list: Optional[str]) -> Optional[Set[int]]:
     """
     Sanitize the given list to ensure all IDs are valid
 
@@ -2157,6 +2205,60 @@ def vectra_assignment_assign_command(client: Client, assignee_id: str = None,
     )
 
     return command_result
+
+
+def vectra_assignment_resolve_command(client: Client,
+                                      assignment_id: str = None, outcome_id: str = None, note: str = None,
+                                      detections_filter: str = None, filter_rule_name: str = None, detections_list: str = None):
+    """
+    Resolve an existing assignment
+
+    - params:
+        - client: Vectra Client
+        - assignment_id: Assignment ID
+        - outcome_id: The Outcome ID
+        - detections_filter: Filter mode to use ('None' or 'Filter Rule') [Default: None]
+        - filter_rule_name: Filter rule name (when detections_filter equals 'Filter Rule')
+        - detections_list: List of the Detections to filter
+    - returns
+        CommandResults to be used in War Room
+    """
+    # Check args
+    if not assignment_id:
+        raise VectraException('"assignment_id" not specified')
+    if not outcome_id:
+        raise VectraException('"outcome_id" not specified')
+
+    if detections_filter == 'Filter Rule':
+        if not filter_rule_name:
+            raise VectraException('"filter_rule_name" not specified')
+        if not detections_list:
+            raise VectraException('"detections_list" not specified')
+        api_response = client.resolve_assignment(assignment_id=assignment_id, outcome_id=outcome_id, note=note,
+                                                 rule_name=filter_rule_name, detections_list=detections_list)
+    else:
+        api_response = client.resolve_assignment(assignment_id=assignment_id, outcome_id=outcome_id, note=note)
+
+    # 40x API error will be raised by the Client class
+    obtained_assignment = api_response.get('assignment')
+    assignment_data = extract_assignment_data(obtained_assignment)
+
+    readable_output = tableToMarkdown(
+        name='Assignment details table',
+        t=assignment_data
+    )
+
+    command_result = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Vectra.Assignment',
+        outputs_key_field='ID',
+        outputs=assignment_data,
+        raw_response=api_response
+    )
+
+    return command_result
+
+
 def vectra_get_outcome_by_id_command(client: Client, id: str) -> CommandResults:
     """
     Gets Outcome details using its ID
@@ -2450,6 +2552,8 @@ def main() -> None:  # pragma: no cover
             return_results(vectra_get_assignment_by_id_command(client, **kwargs))
         elif command == 'vectra-assignment-assign':
             return_results(vectra_assignment_assign_command(client, **kwargs))
+        elif command == 'vectra-assignment-resolve':
+            return_results(vectra_assignment_resolve_command(client, **kwargs))
         elif command == 'vectra-outcome-describe':
             return_results(vectra_get_outcome_by_id_command(client, **kwargs))
         elif command == 'vectra-outcome-create':
