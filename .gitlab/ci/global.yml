@@ -201,7 +201,7 @@
     - .default-job-settings
   script:
     - section_start "Test Infrastructure"
-    - demisto-sdk lint -i ./Packs/Zendesk/Integrations/Zendeskv2/Zendeskv2.yml
+    - demisto-sdk lint -vvv -p 8 -i ./Packs/Zendesk/Integrations/Zendeskv2/Zendeskv2.yml
 
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
     - python3 -m pytest ./Tests/Marketplace/Tests/ -v
