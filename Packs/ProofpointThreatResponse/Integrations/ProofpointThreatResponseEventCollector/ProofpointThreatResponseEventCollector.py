@@ -67,6 +67,7 @@ def create_incidents_human_readable(human_readable_message, incidents_list):
             'Created At': incident.get('created_at'),
             'ID': incident.get('id'),
             'Type': incident.get('type'),
+            'State': incident.get('state'),
             'Summary': incident.get('summary'),
             'Score': incident.get('score'),
             'Event Count': incident.get('event_count'),
