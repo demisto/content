@@ -274,7 +274,6 @@ def get_html_report_by_id():
     sample_id = demisto.getArg('id')
 
     r = req('GET', SUB_API + 'samples/' + sample_id + '/report.html')
-    demisto.debug(f'api response:\n{r.content=}')
 
     ec = {'ThreatGrid.Sample.Id': sample_id}
     demisto.results([
