@@ -1025,7 +1025,7 @@ This is visible
                                                                   modified_files_data=modified_data)
 
         assert version_changelog[
-                   'releaseNotes'] == "#### Integrations\n##### Integration Display Name\n- Fixed an issue"
+            'releaseNotes'] == "#### Integrations\n##### Integration Display Name\n- Fixed an issue"
 
     def test_create_filtered_changelog_entry_modified_same_entities(self, dummy_pack: Pack):
         """
