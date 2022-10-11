@@ -20,6 +20,7 @@ graph-create-instances:
     - !reference [.download-demisto-conf]
     # - !reference [.create-id-set-xsoar]
     - !reference [.create-release-notes-and-common-docs]
+    - mkdir -p $ARTIFACTS_FOLDER/logs
     - section_start "Create content graph" --collapsed
     - neo4j-admin --version
     - demisto-sdk create-content-graph -o $ARTIFACTS_FOLDER/content-graph.dump
@@ -95,6 +96,7 @@ graph-prepare-testing-bucket-mpv2:
     - !reference [.download-demisto-conf]
     # - !reference [.create-id-set-mp-v2]
     - !reference [.create-release-notes-and-common-docs]
+    - mkdir -p $ARTIFACTS_FOLDER/logs
 
     - section_start "Create content graph" --collapsed
     - demisto-sdk create-content-graph -o $ARTIFACTS_FOLDER/content-graph.dump
@@ -117,6 +119,7 @@ graph-prepare-testing-bucket-mpv2:
     # - section_end "Calculate Packs Dependencies"
 
     - section_start "Replace Cortex XSOAR" --collapsed
+
     - pushd "$ARTIFACTS_FOLDER"
     - find content_packs -type f -not \( -path "*/ReleaseNotes/*" \) -exec sed -i -e 's/Cortex XSOAR/'"$PRODUCT_NAME"'/gI' {} \;
     - pushd content_packs; zip -r ../content_packs.zip *; popd
