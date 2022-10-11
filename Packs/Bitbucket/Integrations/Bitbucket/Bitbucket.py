@@ -342,7 +342,7 @@ class Client(BaseClient):
             If there isn't a comment_id than gets all the comments on a specific pull request.
         Args:
             repo: str - The repository the user entered, if he did.
-            pr_id: str - an id to a specific pull request to add a comment to.
+            pr_id: str - an id to a specific pull request in order to return the list of its comments.
             page: int - The specific result's page.
             page_size: int - The number of wanted results in a results page.
             comment_id: str - an id to a specific comment, in order to get info about it.
@@ -363,7 +363,7 @@ class Client(BaseClient):
         """ Updates a specific comment in a pull request.
         Args:
             repo: str - The repository the user entered, if he did.
-            pr_id: str - an id to a specific pull.
+            pr_id: str - an id to a specific pull request.
             body: Dict - a dictionary with the updated content of the comment.
             comment_id: str - an id to a specific comment to update.
         Returns:
@@ -403,7 +403,7 @@ class Client(BaseClient):
 def get_exception_message(e: DemistoException) -> Dict:
     """ extract the dictionary with the message about the exception.
         Args:
-            e: str - the exception string.
+            e: DemistoException - the exception string.
         Returns:
             A json object containing the error message.
     """
@@ -870,7 +870,7 @@ def issue_list_command(client: Client, args: Dict) -> CommandResults:
             args: Demisto args.
         Returns:
             A CommandResult object with the array of issues as output.
-        """
+    """
     repo = args.get('repo', client.repository)
     issue_id = args.get('issue_id', None)
     limit = arg_to_number(args.get('limit', 50)) or 50
@@ -914,7 +914,7 @@ def issue_list_command(client: Client, args: Dict) -> CommandResults:
 
 
 def issue_update_command(client: Client, args: Dict) -> CommandResults:
-    """ Updates issues from Bitbucket. If a certain argument isn't given, don't update it on the issue
+    """ Updates an issue from Bitbucket. If a certain argument isn't given, don't update it on the issue.
     Args:
         client: A Bitbucket client.
         args: Demisto args.
@@ -957,7 +957,7 @@ def issue_update_command(client: Client, args: Dict) -> CommandResults:
 
 
 def pull_request_create_command(client: Client, args: Dict) -> CommandResults:
-    """ Updates issues from Bitbucket. If a certain argument isn't given, don't update it on the issue
+    """ Creates a pull request in Bitbucket.
     Args:
         client: A Bitbucket client.
         args: Demisto args.
@@ -982,7 +982,7 @@ def pull_request_create_command(client: Client, args: Dict) -> CommandResults:
 
 
 def pull_request_update_command(client: Client, args: Dict) -> CommandResults:
-    """ Updates issues from Bitbucket. If a certain argument isn't given, don't update it on the issue
+    """ Updates a pull request from Bitbucket. If a certain argument isn't given, don't update it on the issue.
     Args:
         client: A Bitbucket client.
         args: Demisto args.
@@ -1067,9 +1067,7 @@ def issue_comment_create_command(client: Client, args: Dict) -> CommandResults:
         client: A Bitbucket client.
         args: Demisto args.
     Returns:
-        A CommandResult object with a dictionary contains information about .
-        If a state is provided than the list will contain only PR with the wanted status.
-        If a state is not provided, by default a list of the open pull requests will return.
+        A CommandResult object with a success message and information about the newly created comment.
     """
     repo = args.get('repo', client.repository)
     issue_id = args.get('issue_id', '')
@@ -1128,12 +1126,14 @@ def issue_comment_update_command(client: Client, args: Dict) -> CommandResults:
 
 
 def issue_comment_list_command(client: Client, args: Dict) -> CommandResults:
-    """ Returns a list of comments.
+    """ Returns a list of comments, or a single comment if a commit_id is given, on a
+        specific issue.
     Args:
         client: A Bitbucket client.
         args: Demisto args.
     Returns:
-        A CommandResult object with a list of the comments or a single comment on a specific issue.
+        A CommandResult object with a list of the comments, or a single comment if a commit_id is given on a
+        specific issue.
     """
     repo = args.get('repo', client.repository)
     issue_id = args.get('issue_id', '')
@@ -1200,12 +1200,14 @@ def pull_request_comment_create_command(client: Client, args: Dict) -> CommandRe
 
 
 def pull_request_comment_list_command(client: Client, args: Dict) -> CommandResults:
-    """ Returns a list of pull request comments.
+    """ Returns a list of comments of a specific pull request, or a single comment on a specific pull
+        request, if a comment_id is given.
     Args:
         client: A Bitbucket client.
         args: Demisto args.
     Returns:
-        A CommandResult object with a list of the comments or a single comment on a specific issue.
+        A CommandResult object with a list of the comments of a pull request or a single comment on a specific pull
+        request, if a comment_id is given.
     """
     repo = args.get('repo', client.repository)
     pr_id = args.get('pull_request_id', '')
