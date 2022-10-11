@@ -23,10 +23,10 @@ graph-create-instances:
     - section_start "Create content graph"
     - neo4j-admin --version
     - demisto-sdk create-content-graph -o $ARTIFACTS_FOLDER/content-graph.dump
-    - section_end "Create content graph"
+    - section_end "Create content graph" --collapsed
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
-    - demisto-sdk create-content-artifacts-v2 -o $ARTIFACTS_FOLDER --marketplace "xsoar"
+    - demisto-sdk create-content-artifacts-v2 -o $ARTIFACTS_FOLDER --marketplace "xsoar" --dependencies
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
     # - successful_feature_branch_build=$(gsutil ls "gs://xsoar-ci-artifacts/content/$FEATURE_BRANCH_NAME/*" | tail -n 1 | grep -o -E "content/$FEATURE_BRANCH_NAME/[0-9]*")
     # - echo $successful_feature_branch_build
@@ -46,7 +46,7 @@ graph-create-instances:
     #   fi
     # - section_end "Collect Tests and Content Packs"
 
-    - section_start "Collect Tests V2"
+    - section_start "Collect Tests V2" --collapsed
     - |
       if [ -n "${INSTANCE_TESTS}" ]; then
         echo "Skipping - not running in INSTANCE_TESTS build"
@@ -56,11 +56,11 @@ graph-create-instances:
       fi
     - cp $ARTIFACTS_FOLDER/content_packs_to_install.txt $ARTIFACTS_FOLDER/content_packs_to_install-graph.txt
     - section_end "Collect Tests V2"
-    - section_start "Calculate Packs Dependencies" --collapsed
-    - demisto-sdk find-dependencies-v2 --marketplace "xsoar" --output-path $ARTIFACTS_FOLDER/packs_dependencies.json
-    - section_end "Calculate Packs Dependencies"
+    # - section_start "Calculate Packs Dependencies" --collapsed
+    # - demisto-sdk find-dependencies-v2 --marketplace "xsoar" --output-path $ARTIFACTS_FOLDER/packs_dependencies.json
+    # - section_end "Calculate Packs Dependencies"
     
-    - section_start "Prepare Content Packs for Testing"
+    - section_start "Prepare Content Packs for Testing" --collapsed
     - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET" "$STORAGE_BASE_PATH"
     - section_end "Prepare Content Packs for Testing"
 
@@ -96,13 +96,13 @@ graph-prepare-testing-bucket-mpv2:
     # - !reference [.create-id-set-mp-v2]
     - !reference [.create-release-notes-and-common-docs]
 
-    - section_start "Create content graph"
+    - section_start "Create content graph" --collapsed
     - demisto-sdk create-content-graph -o $ARTIFACTS_FOLDER/content-graph.dump
     - section_end "Create content graph"
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
     # - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "xsoar" -fbi -idp ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
-    - demisto-sdk create-content-artifacts-v2 -o $ARTIFACTS_FOLDER --marketplace "marketplacev2" --no-zip
+    - demisto-sdk create-content-artifacts-v2 -o $ARTIFACTS_FOLDER --marketplace "marketplacev2" --no-zip --dependencies
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
 
     # - section_start "Create Content Artifacts and Update Conf" --collapsed
@@ -112,9 +112,10 @@ graph-prepare-testing-bucket-mpv2:
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - section_end "Create Content Artifacts and Update Conf"
 
-    - section_start "Calculate Packs Dependencies" --collapsed
-    - demisto-sdk find-dependencies-v2 --marketplace "marketplacev2" -o $ARTIFACTS_FOLDER/packs_dependencies.json
-    
+    # - section_start "Calculate Packs Dependencies" --collapsed
+    # - demisto-sdk find-dependencies-v2 --marketplace "marketplacev2" -o $ARTIFACTS_FOLDER/packs_dependencies.json
+    # - section_end "Calculate Packs Dependencies"
+
     - section_start "Replace Cortex XSOAR" --collapsed
     - pushd "$ARTIFACTS_FOLDER"
     - find content_packs -type f -not \( -path "*/ReleaseNotes/*" \) -exec sed -i -e 's/Cortex XSOAR/'"$PRODUCT_NAME"'/gI' {} \;
@@ -123,8 +124,7 @@ graph-prepare-testing-bucket-mpv2:
     - popd
     - section_end "Replace Cortex XSOAR"
 
-    - section_end "Calculate Packs Dependencies"
-    - section_start "Collect Tests V2"
+    - section_start "Collect Tests V2" --collapsed
     - |
       if [ -n "${INSTANCE_TESTS}" ]; then
         echo "Skipping - not running in INSTANCE_TESTS build"
@@ -135,7 +135,7 @@ graph-prepare-testing-bucket-mpv2:
     - cp $ARTIFACTS_FOLDER/content_packs_to_install.txt $ARTIFACTS_FOLDER/content_packs_to_install-graph.txt
     - section_end "Collect Tests V2"
 
-    - section_start "Prepare Content Packs for Testing"
+    - section_start "Prepare Content Packs for Testing" --collapsed
     - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_V2_BUCKET" "$STORAGE_BASE_PATH" "marketplacev2"
     - section_end "Prepare Content Packs for Testing"
 
