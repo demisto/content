@@ -1,5 +1,5 @@
 import copy
-
+from datetime import timedelta
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
@@ -220,7 +220,7 @@ def get_incidents_batch_by_time_request(client, params):
     fetch_limit = arg_to_number(params.get('fetch_limit', '100'))
     last_fetched_id = arg_to_number(params.get('last_fetched_id', '0'))
 
-    current_time = datetime.now()
+    current_time = datetime.now() + timedelta(days=1)
 
     time_delta = get_time_delta(fetch_delta)
 
