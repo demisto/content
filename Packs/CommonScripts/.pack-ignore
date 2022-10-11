@@ -90,3 +90,8 @@ FPs
 GetIndicatorDBotScore
 SetDateField
 stringify
+Okta
+MicrosoftGraphUser
+SailPointIdentityIQ
+ActiveDirectoryQuery
+GenericPolling
