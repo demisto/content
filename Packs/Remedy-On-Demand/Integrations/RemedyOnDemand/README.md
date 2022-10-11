@@ -128,14 +128,22 @@ Fetch all incidents
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Ticket.ID | string | Ticket ID | 
-| Ticket.Submitter | string | Ticket submitter | 
-| Ticket.Status | string | Ticket status | 
-| Ticket.Description | string | Ticket description | 
-| Ticket.Source | string | Ticket reported source | 
-| Ticket.Impact | string | TicketiImpact | 
-| Ticket.Urgency | string | Ticket urgency | 
-| Ticket.Type | string | Ticket service type | 
+| Ticket.Assignee | string | Ticket assignee |
+| Ticket.Description | string | Ticket description |
+| Ticket.Email | string | Ticket email |
+| Ticket.EntryID | string | Ticket entry ID | 
+| Ticket.ID | string | Ticket request ID |
+| Ticket.Impact | string | Ticket impact |
+| Ticket.IncidentNumber | string | Ticket number |
+| Ticket.ModifiedDate | string | Ticket modified date |
+| Ticket.Priority | string | Ticket priority |
+| Ticket.RequestID | string | Ticket request ID |
+| Ticket.ServiceType | string | Ticket service type |
+| Ticket.Source | string | Ticket reported source |
+| Ticket.Status | string | Ticket reported status |
+| Ticket.Submitter | string | Ticket submitter |
+| Ticket.Type | string | Ticket service type |
+| Ticket.Urgency | string | Ticket urgency |
 
 
 #### Command Example
