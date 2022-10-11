@@ -135,7 +135,7 @@
             {
                 "id": 116016439,
                 "iid": 1,
-                "project_id": 39823965,
+                "project_id": 1234,
                 "title": "try",
                 "description": "demo",
                 "state": "opened",
@@ -196,7 +196,7 @@
             {
                 "id": 116016545,
                 "iid": 2,
-                "project_id": 39823965,
+                "project_id": 1234,
                 "title": "AnotherOne",
                 "description": "issue2",
                 "state": "opened",
@@ -257,7 +257,7 @@
             {
                 "id": 116016600,
                 "iid": 3,
-                "project_id": 39823965,
+                "project_id": 1234,
                 "title": "Tester3",
                 "description": "issue3",
                 "state": "opened",
@@ -318,7 +318,7 @@
             {
                 "id": 116016614,
                 "iid": 4,
-                "project_id": 39823965,
+                "project_id": 1234,
                 "title": "whatnu",
                 "description": "Pica",
                 "state": "opened",
@@ -381,7 +381,7 @@
             {
                 "id": 116130973,
                 "iid": 5,
-                "project_id": 39823965,
+                "project_id": 1234,
                 "title": "whatnu",
                 "description": "Pica",
                 "state": "opened",
@@ -444,7 +444,7 @@
             {
                 "id": 116132096,
                 "iid": 6,
-                "project_id": 39823965,
+                "project_id": 1234,
                 "title": "whatnu",
                 "description": "Pica",
                 "state": "opened",
@@ -507,7 +507,7 @@
             {
                 "id": 116132144,
                 "iid": 7,
-                "project_id": 39823965,
+                "project_id": 1234,
                 "title": "whatnu",
                 "description": "Pica",
                 "state": "opened",
@@ -804,7 +804,7 @@
             {
                 "id": 180503976,
                 "iid": 5,
-                "project_id": 39823965,
+                "project_id": 1234,
                 "title": "t",
                 "description": null,
                 "state": "opened",
@@ -870,7 +870,7 @@
             {
                 "id": 180503904,
                 "iid": 4,
-                "project_id": 39823965,
+                "project_id": 1234,
                 "title": "title update",
                 "description": "descc",
                 "state": "opened",
@@ -939,7 +939,7 @@
             {
                 "id": 180503824,
                 "iid": 3,
-                "project_id": 39823965,
+                "project_id": 1234,
                 "title": "title update",
                 "description": "descc",
                 "state": "opened",
@@ -1008,7 +1008,7 @@
             {
                 "id": 180502010,
                 "iid": 2,
-                "project_id": 39823965,
+                "project_id": 1234,
                 "title": "title update",
                 "description": "descc",
                 "state": "opened",
@@ -1077,7 +1077,7 @@
             {
                 "id": 180501799,
                 "iid": 1,
-                "project_id": 39823965,
+                "project_id": 1234,
                 "title": "Test file commands for playbook",
                 "description": "",
                 "state": "opened",
@@ -1163,6 +1163,19 @@
             "avatar_url": "https://secure.gravatar.com/avatar/9c7fbddb174ff5468dd993fb6f83b59a?s=80&d=identicon",
             "web_url": "https://gitlab.com/test9308"
         },
-    "issue_create":{},
+    "issue_create":{
+        "id": 0,
+        "iid": 114,
+        "title": "title_test",
+        "description": "desc_test",
+        "state": "opened",
+        "created_at": "'2022-10-06T14:45:38.004Z'",
+        "updated_at": "'2022-10-06T14:45:38.004Z'",
+        "milestone": null,
+        "assignee": null,
+        "author": {
+            "name": "name"
+        }
+    },
     "issue_update":{}
 }

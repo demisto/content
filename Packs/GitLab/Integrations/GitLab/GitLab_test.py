@@ -1,13 +1,6 @@
 import io
 import json
-import requests
-import pytest
-from GitLab import Client
-
-
-BASE_URL = ''
-mock_client = Client(39823965, BASE_URL, verify=False, proxy=False, headers=dict())
-PROJECT_ID = '39823965'
+# import pytest
 
 RESPONSE_DETAILS_GET_PUT = [
     (200, 'GitLab.', "The opretion was successfull"),
@@ -36,57 +29,91 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-command_test_data = util_load_json('test_data/commands_test_data.json')
-
 test_data = {'group_id': '55694272',
              'raw_file': '.gitlab-ci.yml'}
 
-
-branch_create = {'branch_name': 'new_branch_name',
-                 'ref': 'main'
-                 }
-
-branch_delete = {'branch_name': 'new_branch_name',
-                 'ref': 'main'}
-
-pagination_dict = {'page': '1', 'per_page': '1', 'limit': '2'}
 
 ARGS_CASES = [
     (1, 0, 'The page value must be equal to 1 or bigger.'),
     (2, -1, 'The page_size value must be equal to 1 or bigger.'),
     (1, 1, 'valid values')
-
 ]
 
 
-@pytest.mark.parametrize('response_code,response_content,mocked_return,expected_result', RESPONSE_DETAILS_POST)
-def test_create_issue_command(mocker, requests_mock, response_code, response_content, mocked_return,
-                              expected_result):
+def test_create_issue_command(mocker):
     """
     Given:
         'title': the new title for the issue.
-        'description': description for the issue
+        'description': description for the issue.
+        'labels': labels for the issue.
     When:
         Running the add_issue_to_project_board_command function.
     Then:
         Assert the message returned is as expected.
     """
     from GitLab import Client, create_issue_command
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    params = {'title': 'title_test', 'description': 'desc_test', 'labels': 'label1'}
+    expected_results = {'Iid': 114,
+                        'Title': 'title_test',
+                        'CreatedAt': '2022-10-06T14:45:38.004Z',
+                        'UpdatedAt': '2022-10-06T14:45:38.004Z',
+                        'CreatedBy': 'name',
+                        'State': 'opened'}
+    ret_value = util_load_json('test_data/commands_test_data.json').get('issue_create')
+    mocker.patch.object(Client, 'create_issue_request', return_value=ret_value)
+    result = create_issue_command(client, params)
+    assert result == expected_results
+
+
+'''
+CREATE_ISSUE_NOTE_CASES = [
+    ({'issue_iid': 15, 'body': 'issue_iid_not_exist_case'}, False,  # the issue_iid does note exist
+     {"message": "404 Not found"}, {"message": "404 Not found"}),
+    ({'issue_iid': 4, 'body': 'good'}, True,  # good case
+     {"id": 14, "body": "good", "noteable_iid": 4}, {'Issue note created successfully'})
+]
+
+
+@pytest.mark.parametrize('params,is_good_case, client_return_result, expected_results', CREATE_ISSUE_NOTE_CASES)
+def test_issue_note_create(mocker, params, is_good_case, client_return_result, expected_results):
+    from GitLab import Client, issue_note_create_command
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    mocker.patch.object(Client, 'issue_note_create_request', return_value=client_return_result)
+    result = issue_note_create_command(client, params)
+    assert result == expected_results
+
+
+def test_get_version_command(requests_mock):
+    """
+    Given:
+        - A http response
+    When:
+        - running a get_version_command
+    Then:
+        - check if the results of version and reversion returns are valid.
+    """
+    from GitLab import Client, version_get_command
     client = Client()
-    args = {}
-    requests_mock.get(f'/projects/{PROJECT_ID}/issues', json='response_version')
-    mocker.patch.object('demisto', 'args', return_value={'column_id': 'column_id', 'issue_unique_id': '11111'})
-    requests_mock.post(f'{BASE_URL}/projects/columns/column_id/cards', status_code=response_code,
-                       content=response_content)
-    mocker_results = mocker.patch(mocked_return)
-    print(mocker_results.startswith('bbb'))
-    result = create_issue_command(client, args)
-    print(result)
-    assert mocker_results.call_args[0][0] == expected_result
+    response_version = util_load_json('test_data/commands_test_data.json').get('get_version')
+    requests_mock.get('https://gitlab.com/api/v4/version', json=response_version)
+    results = version_get_command(client)
+    assert len(results) == 2
+    assert results['version'] == response_version['version']
+    assert results['reversion'] == response_version['reversion']
 
 
-@pytest.mark.parametrize('page, page_size, limit, expected_results', ARGS_CASES)
-def test_check_args(page, page_size, expected_results):
+
+@pytest.mark.parametrize('page, limit, expected_results', ARGS_CASES)
+def test_check_args(page, limit, expected_results):
     """
         Given:
             - A command's arguments
@@ -101,32 +128,8 @@ def test_check_args(page, page_size, expected_results):
     from GitLab import validate_pagination_values
 
     with pytest.raises(Exception) as e:
-        validate_pagination_values(page, page_size)
+        validate_pagination_values(page, limit)
     assert e.value.args[0] == expected_results
-
-
-def test_valid_error_is_raised_when_empty_api_response_is_returned(mocker):
-    """
-    Given
-    - Empty api response and invalid status code returned from the api response.
-
-    When
-    - running 'test-module'.
-
-    Then
-    - ValueError is raised.
-    """
-    from GitLab import test_module
-    client = mock_client()
-    api_response = requests.Response()
-    api_response.status_code = 403
-    api_response._content = None
-
-    mocker.patch.object(client._client, 'get_access_token')
-    mocker.patch.object(client._client._session, 'request', return_value=api_response)
-
-    with pytest.raises(ValueError, match='[Forbidden 403]'):
-        test_module(client)
 
 
 def test_group_project_list_command_limit(requests_mock):
@@ -281,25 +284,6 @@ def test_project_list_command_page(requests_mock):
     assert results == res
 
 
-def test_get_version_command(requests_mock):
-    """
-    Given:
-        - A http response
-    When:
-        - running a get_version_command
-    Then:
-        - check if the results of version and reversion returns are valid.
-    """
-    from GitLab import Client, version_get_command
-    client = Client()
-    response_version = util_load_json('test_data/commands_test_data.json').get('get_version')
-    requests_mock.get('https://gitlab.com/api/v4/version', json=response_version)
-    results = version_get_command(client)
-    assert len(results) == 2
-    assert results['version'] == response_version['version']
-    assert results['reversion'] == response_version['reversion']
-
-
 def test_issue_update_command(request_mock):
     pass
 
@@ -334,3 +318,4 @@ def list_commits_command(request_mock):
 
 def list_branches_command(request_mock):
     pass
+'''
