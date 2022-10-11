@@ -24,9 +24,9 @@ filter _raw_log contains "system_logs" or _raw_log contains "ftpd_logs" or _raw_
     xdm.target.user.identifier = Session,
     xdm.target.file.filename = Filename,
     xdm.source.ipv4 = sourceip,
-    xdm.target.resource.value = location;
-    dm.target.resource.name = appliance,
-    xdm.event.id = event_id,
+    xdm.target.resource.value = location,
+    xdm.target.resource.name = appliance,
+    xdm.event.id = event_id;
 
 filter _raw_log contains "cli_logs" or _raw_log contains "Event: User logged out" or _raw_log contains "Event: User input was" or _raw_log contains "Event: Successful login" or _raw_log contains "Event: Permission denied" or _raw_log contains "Event: User visited the web page"
     or _raw_log contains "euqgui_logs: Info: login:" or _raw_log contains "euqgui_logs: Info: logout:"
