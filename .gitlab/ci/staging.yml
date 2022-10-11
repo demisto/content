@@ -20,7 +20,6 @@ graph-create-instances:
     - !reference [.download-demisto-conf]
     # - !reference [.create-id-set-xsoar]
     - !reference [.create-release-notes-and-common-docs]
-    - mkdir -p $ARTIFACTS_FOLDER/logs
     - section_start "Create content graph" --collapsed
     - neo4j-admin --version
     - demisto-sdk create-content-graph -o $ARTIFACTS_FOLDER/content-graph.dump
@@ -96,8 +95,7 @@ graph-prepare-testing-bucket-mpv2:
     - !reference [.download-demisto-conf]
     # - !reference [.create-id-set-mp-v2]
     - !reference [.create-release-notes-and-common-docs]
-    - mkdir -p $ARTIFACTS_FOLDER/logs
-
+    
     - section_start "Create content graph" --collapsed
     - demisto-sdk create-content-graph -o $ARTIFACTS_FOLDER/content-graph.dump
     - section_end "Create content graph"
