@@ -17,29 +17,50 @@ def parse_indicators_using_stix_parser(entry_id):
     return indicators
 
 
+def create_relationships_from_entity(indicator_relationships):
+    if not indicator_relationships:
+        return None
+    entity_relationships = list()
+    for relationship in indicator_relationships:
+        relationship_object = EntityRelationship(name=relationship.get('name'),
+                                                 entity_a=relationship.get('entityA'),
+                                                 entity_b=relationship.get('entityB'),
+                                                 entity_a_type=relationship.get('entityAType'),
+                                                 entity_b_type=relationship.get('entityBType'),
+                                                 relationship_type=relationship.get('type'))
+        entity_relationships.append(relationship_object)
+
+    return entity_relationships
+
+
 def create_indicators_loop(indicators):
     """ Create indicators using createNewIndicator automation
 
     :param indicators: parsed indicators
     :return: errors if exist
     """
+    results = list()
     errors = list()
     for indicator in indicators:
         indicator['type'] = indicator.get('indicator_type')
+        result = CommandResults(indicator=indicator,
+                                relationships=create_relationships_from_entity(indicator.get('relationships')))
+        results.append(result)
         res = demisto.executeCommand("createNewIndicator", indicator)
         if is_error(res[0]):
             errors.append(f'Error creating indicator - {(res[0]["Contents"])}')
     return_outputs(
         f"Create Indicators From STIX: {len(indicators) - len(errors)} indicators were created."
     )
-    return errors
+    return results, errors
 
 
-def main():     # pragma: no cover
+def main():  # pragma: no cover
     args = demisto.args()
     entry_id = args.get("entry_id", "")
     indicators = parse_indicators_using_stix_parser(entry_id)
-    errors = create_indicators_loop(indicators)
+    results, errors = create_indicators_loop(indicators)
+    return_results(results)
     if errors:
         return_error(json.dumps(errors, indent=4))
 
