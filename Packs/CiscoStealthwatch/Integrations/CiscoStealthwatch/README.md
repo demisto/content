@@ -1,5 +1,5 @@
 Scalable visibility and security analytics.
-This integration was integrated and tested with version 7.2.1 of Cisco Secure Network Analytics (Stealthwatch). Due to changes in the product API authentication, versions grater than 7.3.2 (including) are currently not supported.
+This integration was integrated and tested with version 7.2.1 of Cisco Secure Network Analytics (Stealthwatch). Due to changes in the product API, versions grater than 7.3.2 (including) are currently not supported.
 
 ## Configure Cisco Stealthwatch on Cortex XSOAR
 
