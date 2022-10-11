@@ -5,7 +5,7 @@ commonfields:
 beta: true
 name: Vectra_Detect
 display: Vectra Detect (Beta)
-description: This integration allows to create incidents based on Vectra Accounts/Hosts/Detections objects
+description: This integration allows to create incidents based on Vectra Accounts/Hosts/Detections objects.
 category: Network Security
 defaultclassifier: Vectra Detect
 defaultmapperin: Vectra Detect - Incoming Mapper
