@@ -19,7 +19,7 @@ filter
 | alter msg = coalesce(msg, msgLog)
 | alter ipV4 = arrayindex(regextract(_raw_log, "\b(?:\d{1,3}\.){3}\d{1,3}\b"), 0)
 | alter
-    xdm.target.resource.name = file,
+    xdm.target.file.filename = file,
     _time = parse_timestamp("%m-%d-%Y %H:%M:%S", timestamp),
     xdm.target.resource.name = component,
     xdm.session_context_id = thread_id,
