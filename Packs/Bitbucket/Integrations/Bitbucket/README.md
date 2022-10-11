@@ -1,5 +1,5 @@
-Bitbucket Cloud is a Git-based code and CI/CD tool optimized for teams using Jira
-This integration was integrated and tested with version 7.21.0 of Bitbucket
+Bitbucket Cloud is a Git-based code and CI/CD tool optimized for teams using Jira.
+This integration was integrated and tested with version xx of Bitbucket
 
 ## Configure Bitbucket on Cortex XSOAR
 
@@ -10,7 +10,7 @@ This integration was integrated and tested with version 7.21.0 of Bitbucket
     | **Parameter** | **Required** |
     | --- | --- |
     | Workspace | True |
-    | Server Url | True |
+    | Server URL | True |
     | User Name | True |
     | App Password | True |
     | Repository | False |
@@ -23,7 +23,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### bitbucket-project-list
 ***
-If a project_key is given, returns the requested project. Else, returns a list of the project in the workspace.
+If a project_key is given, returns the requested project. Else, returns a list of the projects in the workspace.
 
 
 #### Base Command
@@ -34,7 +34,7 @@ If a project_key is given, returns the requested project. Else, returns a list o
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_key | The "id" of the project. Must be uppercase. | Optional | 
-| limit | The maximum number of projects. The default value is 50. | Optional | 
+| limit | The maximum number of projects to return. The default value is 50. | Optional | 
 | page | The specific result page to display. | Optional | 
 
 
@@ -44,25 +44,25 @@ If a project_key is given, returns the requested project. Else, returns a list o
 | --- | --- | --- |
 | Bitbucket.Project.type | String | The type of the object. | 
 | Bitbucket.Project.owner.display_name | String | The project owner name. | 
-| Bitbucket.Project.owner.links | String | Links with information about the project owner. |
+| Bitbucket.Project.owner.links | String | Links with information about the project owner. | 
 | Bitbucket.Project.owner.type | String | The type of the project owner. | 
-| Bitbucket.Project.owner.uuid | String | The project owner universal unique id. | 
-| Bitbucket.Project.owner.account_id | String | The project owner account id. | 
+| Bitbucket.Project.owner.uuid | String | The project owner universal unique ID. | 
+| Bitbucket.Project.owner.account_id | String | The project owner account ID. | 
 | Bitbucket.Project.owner.nickname | String | The project owner nickname. | 
 | Bitbucket.Project.workspace.type | String | The type of the workspace. | 
-| Bitbucket.Project.workspace.uuid | String | The project workspace universal unique id. | 
+| Bitbucket.Project.workspace.uuid | String | The project workspace universal unique ID. | 
 | Bitbucket.Project.workspace.name | String | The name of the project workspace. | 
 | Bitbucket.Project.workspace.slug | String | The slug of the project workspace. | 
-| Bitbucket.Project.workspace.links | String | Links to information about the workspace. |
+| Bitbucket.Project.workspace.links | String | Links to information about the workspace. | 
 | Bitbucket.Project.key | String | The project key. | 
-| Bitbucket.Project.uuid | String | the project universal unique id. | 
-| Bitbucket.Project.is_private | Boolean | Is the project private or not. | 
+| Bitbucket.Project.uuid | String | The project universal unique ID. | 
+| Bitbucket.Project.is_private | Boolean | Whether the project is private. | 
 | Bitbucket.Project.name | String | The project name. | 
 | Bitbucket.Project.description | String | The project description. | 
-| Bitbucket.Project.links | String | Links to information about the project. |
+| Bitbucket.Project.links | String | Links to information about the project. | 
 | Bitbucket.Project.created_on | String | The date the project was created. | 
 | Bitbucket.Project.updated_on | String | The date the project was updated. | 
-| Bitbucket.Project.has_publicly_visible_repos | Boolean | Does the project has a publicly visible repositories or not. | 
+| Bitbucket.Project.has_publicly_visible_repos | Boolean | Whether the project has publicly visible repositories. | 
 
 #### Command example
 ```!bitbucket-project-list```
@@ -217,7 +217,7 @@ Returns a list of the open branches.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| repo | the repository name or slug. | Optional | 
+| repo | The repository name or slug. | Optional | 
 | limit | The maximum number of items in the list. The default value is 50. | Optional | 
 | page | The specific result page to display. | Optional | 
 
@@ -227,28 +227,28 @@ Returns a list of the open branches.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Bitbucket.Branch.name | String | The branch name. | 
-| Bitbucket.Branch.target.type | String | The type of the last action in the branch | 
+| Bitbucket.Branch.target.type | String | The type of the last action in the branch. | 
 | Bitbucket.Branch.target.hash | String | The hash of the last action in the branch. | 
 | Bitbucket.Branch.target.date | Date | The creation date of the last action in the branch. | 
 | Bitbucket.Branch.target.author.type | String | The type of the author of the last action. | 
 | Bitbucket.Branch.target.author.raw | String | The raw information about the author of the last action. | 
 | Bitbucket.Branch.target.author.user.display_name | String | The display name of the author of the last action. | 
-| Bitbucket.Branch.target.author.user.links | String | The links with the information about the author of the last action in the target branch. |
-| Bitbucket.Branch.target.author.user.type | String | The type of the user who made the last action in the branch. | 
-| Bitbucket.Branch.target.author.user.uuid | String | The unique user id of the user who made the last action in the branch. | 
-| Bitbucket.Branch.target.author.user.account_id | String | The account id of the user who made the last action in the branch. | 
+| Bitbucket.Branch.target.author.user.links | String | Links to information about the user. | 
+| Bitbucket.Branch.target.author.user.type | String | The user type of the user who made the last action in the branch. | 
+| Bitbucket.Branch.target.author.user.uuid | String | The unique user ID of the user who made the last action in the branch. | 
+| Bitbucket.Branch.target.author.user.account_id | String | The account ID of the user who made the last action in the branch. | 
 | Bitbucket.Branch.target.author.user.nickname | String | The nickname of the user who made the last action in the branch. | 
 | Bitbucket.Branch.target.message | String | The message assigned to the last action in the branch. | 
 | Bitbucket.Branch.target.links | String | The links associated with this command. | 
 | Bitbucket.Branch.target.parents.type | String | The type of the parent who created the branch. | 
 | Bitbucket.Branch.target.parents.hash | String | The hash of the parent who created the branch. | 
-| Bitbucket.Branch.target.parents.links | String | The links associated with the parents of the command | 
+| Bitbucket.Branch.target.parents.links | String | The links associated with the parents of the command. | 
 | Bitbucket.Branch.target.repository.type | String | The repository type. | 
 | Bitbucket.Branch.target.repository.full_name | String | The full name of the repository. | 
 | Bitbucket.Branch.target.repository.links | String | Links with information about the relevant repository. | 
 | Bitbucket.Branch.target.repository.name | String | The name of the repository | 
-| Bitbucket.Branch.target.repository.uuid | String | The repository unique id. | 
-| Bitbucket.Branch.links | String | Links with information about the branch. |
+| Bitbucket.Branch.target.repository.uuid | String | The repository unique ID. | 
+| Bitbucket.Branch.links | String | Links with information about the branch. | 
 | Bitbucket.Branch.type | String | The type of the branch. | 
 | Bitbucket.Branch.merge_strategies | String | The merge strategy of the branch. | 
 | Bitbucket.Branch.default_merge_strategy | String | The default merge strategy in the branch. | 
@@ -492,8 +492,8 @@ Returns the information of the requested branch.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| repo | The repository name, should be given here or in the instance arguments. | Optional | 
-| branch_name | The name of the wanted branch. | Required | 
+| repo | The repository name. Should be given here or in the instance arguments. | Optional | 
+| branch_name | The name of the branch for which to retrieve the information. | Required | 
 
 
 #### Context Output
@@ -509,22 +509,22 @@ Returns the information of the requested branch.
 | Bitbucket.Branch.target.author.user.display_name | String | The display name of the author of the last action in the branch. | 
 | Bitbucket.Branch.target.author.user.links | String | Links about the author of the last action in the branch. | 
 | Bitbucket.Branch.target.author.user.type | String | The user type of the author of the last action in the branch. | 
-| Bitbucket.Branch.target.author.user.uuid | String | The unique unique universal id of the author of the last action in the branch. | 
-| Bitbucket.Branch.target.author.user.account_id | String | The account id of the author of the last action in the branch. | 
+| Bitbucket.Branch.target.author.user.uuid | String | The unique universal ID of the author of the last action in the branch. | 
+| Bitbucket.Branch.target.author.user.account_id | String | The account ID of the author of the last action in the branch. | 
 | Bitbucket.Branch.target.author.user.nickname | String | The nickname of the author of the last action in the branch. | 
-| Bitbucket.Branch.target.message | String | The message associated with last action in the branch. | 
+| Bitbucket.Branch.target.message | String | The message associated with the last action in the branch. | 
 | Bitbucket.Branch.target.links | String | The links of the last action in the branch. | 
-| Bitbucket.Branch.target.parents.type | String | The type of the parents of last action in the branch. | 
-| Bitbucket.Branch.target.parents.hash | String | The hash of the parents of last action in the branch. | 
-| Bitbucket.Branch.target.parents.links | String | The link about the parents of the parent of last action in the branch. | 
+| Bitbucket.Branch.target.parents.type | String | The type of the parents of the last action in the branch. | 
+| Bitbucket.Branch.target.parents.hash | String | The hash of the parents of the last action in the branch. | 
+| Bitbucket.Branch.target.parents.links | String | The link associated with the parents of the last action in the branch. | 
 | Bitbucket.Branch.target.repository.type | String | The type of the branch repository. | 
 | Bitbucket.Branch.target.repository.full_name | String | The name of the branch repository. | 
 | Bitbucket.Branch.target.repository.links | String | Links with information about the branch repository. | 
-| Bitbucket.Branch.target.repository.name | String | the name of the repository. | 
-| Bitbucket.Branch.target.repository.uuid | String | The unique id of the repository. | 
+| Bitbucket.Branch.target.repository.name | String | The name of the repository. | 
+| Bitbucket.Branch.target.repository.uuid | String | The unique ID of the repository. | 
 | Bitbucket.Branch.links | String | Links with information about the branch. | 
-| Bitbucket.Branch.type | String | The type of the branch | 
-| Bitbucket.Branch.merge_strategies | String | The merge strategy of the branch | 
+| Bitbucket.Branch.type | String | The type of the branch. | 
+| Bitbucket.Branch.merge_strategies | String | The merge strategy of the branch. | 
 | Bitbucket.Branch.default_merge_strategy | String | The default merge strategy. | 
 
 #### Command example
@@ -677,20 +677,20 @@ Creates a new branch in Bitbucket.
 | Bitbucket.Branch.target.author.raw | String | The raw information about the author of the last action in the target branch. | 
 | Bitbucket.Branch.target.author.user.display_name | String | The display name of the author of the last action in the target branch. | 
 | Bitbucket.Branch.target.author.user.links | String | The links with the information about the author of the last action in the target branch. | 
-| Bitbucket.Branch.target.author.user.type | String | The user  type of the author of the last action in the target branch. | 
-| Bitbucket.Branch.target.author.user.uuid | String | The unique id of the author of the last action in the target branch. | 
-| Bitbucket.Branch.target.author.user.account_id | String | The account id of the author of the last action in the target branch. | 
+| Bitbucket.Branch.target.author.user.type | String | The user type of the author of the last action in the target branch. | 
+| Bitbucket.Branch.target.author.user.uuid | String | The unique ID of the author of the last action in the target branch. | 
+| Bitbucket.Branch.target.author.user.account_id | String | The account ID of the author of the last action in the target branch. | 
 | Bitbucket.Branch.target.author.user.nickname | String | The nickname of the author of the last action in the target branch. | 
 | Bitbucket.Branch.target.message | String | The message in the last action in the target branch. | 
 | Bitbucket.Branch.target.links | String | The links with the information about the target branch. | 
 | Bitbucket.Branch.target.parents.type | String | The type of the parent action of the last action in the target branch. | 
 | Bitbucket.Branch.target.parents.hash | String | The hash of the parent action of the last action in the target branch. | 
-| Bitbucket.Branch.target.parents.links | String | The links to the parent action information. | 
+| Bitbucket.Branch.target.parents.links | String | The links associated with the parents of the command. | 
 | Bitbucket.Branch.target.repository.type | String | The type of the repository of the target branch. | 
 | Bitbucket.Branch.target.repository.full_name | String | The full name of the repository of the target branch. | 
-| Bitbucket.Branch.target.repository.links | String | Links with information about the branch repository. | 
+| Bitbucket.Branch.target.repository.links | String | The links with the information about the repository of the target branch. | 
 | Bitbucket.Branch.target.repository.name | String | The name of the repository of the target branch. | 
-| Bitbucket.Branch.target.repository.uuid | String | The unique id of the repository of the target branch. | 
+| Bitbucket.Branch.target.repository.uuid | String | The unique ID of the repository of the target branch. | 
 | Bitbucket.Branch.links | String | The links with the information about the new branch. | 
 | Bitbucket.Branch.type | String | The type of the new branch. | 
 | Bitbucket.Branch.merge_strategies | String | The merge strategies of the new branch. | 
@@ -852,7 +852,7 @@ Creates a new commit in Bitbucket.
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
 | message | Commit a message with the file. | Required | 
-| branch | This branch will be associated with the commited file. | Required | 
+| branch | This branch will be associated with the committed file. | Required | 
 | file_name | The name of the file to commit. | Optional | 
 | file_content | The content of the file to commit. | Optional | 
 | entry_id | The entry_id of the file to commit. This is the EntryId from uploading a file to the War Room. | Optional | 
@@ -871,7 +871,7 @@ There is no context output for this command.
 
 ### bitbucket-commit-list
 ***
-Returns a list of the commit in accordance to the included and excluded branches.
+Returns a list of the commit in accordance with the included and excluded branches.
 
 
 #### Base Command
@@ -883,8 +883,8 @@ Returns a list of the commit in accordance to the included and excluded branches
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
 | file_path | Will limit the results to commits that affect that path. | Optional | 
-| excluded_branches | Should be comma separated. Will return only commits that are not in the excluded branches list. | Optional | 
-| included_branches | Should be comma separated. Will return only commits that are in the included branches list. | Optional | 
+| excluded_branches | A comma-separated list of branches to exclude from the commits that are returned. | Optional | 
+| included_branches | A comma-separated list of branches to include in the commits that are returned. | Optional | 
 | limit | The maximum number of items in the list. The default value is 50. | Optional | 
 | page | The specific result page to display. | Optional | 
 
@@ -900,27 +900,27 @@ Returns a list of the commit in accordance to the included and excluded branches
 | Bitbucket.Commit.author.raw | String | The raw information about the author, including the display name and user email. | 
 | Bitbucket.Commit.author.user.display_name | String | The display name of the author. | 
 | Bitbucket.Commit.author.user.links | String | Links with information about the author. | 
-| Bitbucket.Commit.author.user.type | String | The type of the user of the author. | 
+| Bitbucket.Commit.author.user.type | String | The user type of the author. | 
 | Bitbucket.Commit.author.user.uuid | String | The user unique key of the author. | 
-| Bitbucket.Commit.author.user.account_id | String | The user account id of the author. | 
+| Bitbucket.Commit.author.user.account_id | String | The user account ID of the author. | 
 | Bitbucket.Commit.author.user.nickname | String | The user nickname of the author. | 
-| Bitbucket.Commit.message | String | The commit message | 
+| Bitbucket.Commit.message | String | The commit message. | 
 | Bitbucket.Commit.summary.type | String | The type of the summary. | 
 | Bitbucket.Commit.summary.raw | String | The raw summary of the commit. | 
 | Bitbucket.Commit.summary.markup | String | The text styling type, such as markdown. | 
-| Bitbucket.Commit.summary.html | String | The summary in html format. | 
+| Bitbucket.Commit.summary.html | String | The summary in HTML format. | 
 | Bitbucket.Commit.links | String | Links with information about the commit. | 
 | Bitbucket.Commit.parents.type | String | The type of the commit parents. | 
-| Bitbucket.Commit.parents.hash | String | The hash of the commit parents | 
+| Bitbucket.Commit.parents.hash | String | The hash of the commit parents. | 
 | Bitbucket.Commit.parents.links | String | Links with information about the parents. | 
 | Bitbucket.Commit.repository.type | String | The type of the repository. | 
 | Bitbucket.Commit.repository.full_name | String | The full name of the repository. | 
 | Bitbucket.Commit.repository.links.self.href | String | Links with information about the repository. | 
 | Bitbucket.Commit.repository.name | String | The name of the repository. | 
-| Bitbucket.Commit.repository.uuid | String | The unique id of the repository | 
+| Bitbucket.Commit.repository.uuid | String | The unique ID of the repository. | 
 
 #### Command example
-```!bitbucket-commit-list```
+```!bitbucket-commit-list limit=2```
 #### Context Example
 ```json
 {
@@ -1196,7 +1196,7 @@ Returns the content of the given file, along with the option to download it.
 | File.Extension | String | The file extension. | 
 
 #### Command example
-```!bitbucket-raw-file-get file_path=README.md branch=master```
+```!bitbucket-raw-file-get file_path=new.txt branch=branch```
 #### Context Example
 ```json
 {
@@ -1228,7 +1228,7 @@ Returns the content of the given file, along with the option to download it.
 
 ### bitbucket-issue-create
 ***
-Creates an issue in Bitbucket. In order to perform this command, please create an issue tracker by clicking on the relevant repo -> Repository settings -> Issue tracker.
+Creates an issue in Bitbucket. To perform this command, create an issue tracker by clicking on the relevant repo > Repository settings > Issue tracker.
 
 ##### Required Permissions
 In order to perform this command, please create an issue tracker by clicking on the relevant repo -> Repository settings -> Issue tracker
@@ -1242,11 +1242,11 @@ In order to perform this command, please create an issue tracker by clicking on 
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
 | title | The title of the new issue. | Required | 
-| state | The state of the issues to create. Can be 'New', 'Open', 'Resolved', 'On Hold', 'Invalid', 'Duplicate', 'Wontfix' or 'Closed'. The default is 'New'. Possible values are: new, open, resolved, on hold, invalid, duplicate, wontfix, closed. Default is new. | Optional | 
-| type | The type of the issues to create. Can be 'Bug', 'Enhancement', 'Proposal', 'Task'. The default is 'Bug'. Possible values are: bug, enhancement, proposal, task. Default is bug. | Optional | 
-| priority | The priority of the issues to create. Can be 'Trivial', 'Minor', 'Major', 'Critical', 'Blocker'. The default is 'Major'. Possible values are: trivial, minor, major, critical, blocker. Default is major. | Optional | 
+| state | The state of the issues to create. Possible values are: new, open, resolved, on hold, invalid, duplicate, wontfix, closed. Default is new. | Optional | 
+| type | The type of the issues to create. Possible values are: bug, enhancement, proposal, task. Default is bug. | Optional | 
+| priority | The priority of the issues to create. Possible values are: trivial, minor, major, critical, blocker. Default is major. | Optional | 
 | content | The content of the issue to create. | Optional | 
-| assignee_id | The id of the assignee of the issue to create. In order to get the assignee_id, use the command '!bitbucket-workspace-member-list, and use the field AccountId. | Optional | 
+| assignee_id | The ID of the assignee of the issue to create. To get the assignee_id, use the !bitbucket-workspace-member-list command, and use the field AccountId. | Optional | 
 | assignee_user_name | The user name of the assignee of the issue to create. | Optional | 
 
 
@@ -1255,34 +1255,34 @@ In order to perform this command, please create an issue tracker by clicking on 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Bitbucket.Issue.type | String | The action type. | 
-| Bitbucket.Issue.id | Number | The id of the issue. | 
+| Bitbucket.Issue.id | Number | The ID of the issue. | 
 | Bitbucket.Issue.repository.type | String | The type of the repository. | 
 | Bitbucket.Issue.repository.full_name | String | The full name of the repository. | 
 | Bitbucket.Issue.repository.links | String | Links with information about the repository related to the issue. | 
 | Bitbucket.Issue.repository.name | String | The name of the repository. | 
-| Bitbucket.Issue.repository.uuid | String | The unique id of the repository. | 
-| Bitbucket.Issue.links.self.href | String | An api link to the issue. | 
+| Bitbucket.Issue.repository.uuid | String | The unique ID of the repository. | 
+| Bitbucket.Issue.links.self.href | String | An API link to the issue. | 
 | Bitbucket.Issue.title | String | The title of the issue | 
 | Bitbucket.Issue.content.type | String | The type of the content. | 
 | Bitbucket.Issue.content.raw | String | The content of the issue. | 
 | Bitbucket.Issue.content.markup | String | The type of markup \(like markdown\). | 
-| Bitbucket.Issue.content.html | String | The content of the issue in html format. | 
+| Bitbucket.Issue.content.html | String | The content of the issue in HTML format. | 
 | Bitbucket.Issue.reporter.display_name | String | The display name of the reporter of the issue. | 
 | Bitbucket.Issue.reporter.links | String | Links with information about the reporter. | 
 | Bitbucket.Issue.reporter.type | String | The type of the reporter. | 
-| Bitbucket.Issue.reporter.uuid | String | The unique id of the reporter | 
-| Bitbucket.Issue.reporter.account_id | String | The account id of the reporter. | 
+| Bitbucket.Issue.reporter.uuid | String | The unique ID of the reporter | 
+| Bitbucket.Issue.reporter.account_id | String | The account ID of the reporter. | 
 | Bitbucket.Issue.reporter.nickname | String | The nickname of the reporter. | 
 | Bitbucket.Issue.assignee.display_name | String | The display name of the assignee to the issue. | 
 | Bitbucket.Issue.assignee.links | String | Links with information about the assignee. | 
 | Bitbucket.Issue.assignee.type | String | The type of the assignee. | 
-| Bitbucket.Issue.assignee.uuid | String | The unique od of the assignee. | 
-| Bitbucket.Issue.assignee.account_id | String | The account id of the assignee. | 
+| Bitbucket.Issue.assignee.uuid | String | The unique ID of the assignee. | 
+| Bitbucket.Issue.assignee.account_id | String | The account ID of the assignee. | 
 | Bitbucket.Issue.assignee.nickname | String | The nickname of the assignee. | 
 | Bitbucket.Issue.created_on | String | The creation date of the issue. | 
 | Bitbucket.Issue.edited_on | Unknown | The edit date of the issue. | 
 | Bitbucket.Issue.updated_on | String | The update date of the issue. | 
-| Bitbucket.Issue.state | String | The state odf the issue. | 
+| Bitbucket.Issue.state | String | The state of the issue. | 
 | Bitbucket.Issue.kind | String | The kind of the issue. | 
 | Bitbucket.Issue.milestone | Unknown | The milestones in the issue. | 
 | Bitbucket.Issue.component | Unknown | The different components of the issue. | 
@@ -1370,7 +1370,7 @@ In order to perform this command, please create an issue tracker by clicking on 
 
 ### bitbucket-issue-list
 ***
-If an issue_id is given, returns the information about it. Else, returns a list of all the issues, according to the limit parameter.
+If an issue_id is given, returns the information about it. Otherwise, returns a list of all the issues, according to the limit parameter.
 
 
 #### Base Command
@@ -1381,8 +1381,8 @@ If an issue_id is given, returns the information about it. Else, returns a list 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
-| issue_id | The id of the wanted issue. In order to get the issue_id, use the command '!bitbucket-issue-list'. | Optional | 
-| limit | The maximum number of items in the list. the default value is 50. | Optional | 
+| issue_id | The ID of the requested issue. To get the issue_id, use the !bitbucket-issue-list command. | Optional | 
+| limit | The maximum number of items in the list. The default value is 50. | Optional | 
 | page | The specific result page to display. | Optional | 
 
 
@@ -1391,34 +1391,34 @@ If an issue_id is given, returns the information about it. Else, returns a list 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Bitbucket.Issue.type | String | The action type. | 
-| Bitbucket.Issue.id | Number | The id of the issue. | 
-| Bitbucket.Issue.repository.type | String | he type of the repository. | 
+| Bitbucket.Issue.id | Number | The ID of the issue. | 
+| Bitbucket.Issue.repository.type | String | The type of the repository. | 
 | Bitbucket.Issue.repository.full_name | String | The full name of the repository. | 
 | Bitbucket.Issue.repository.links | String | Links with information about the repository related to the issue. | 
 | Bitbucket.Issue.repository.name | String | The name of the repository. | 
-| Bitbucket.Issue.repository.uuid | String | The unique id of the repository. | 
-| Bitbucket.Issue.links | String | Links with information about the issue | 
+| Bitbucket.Issue.repository.uuid | String | The unique ID of the repository. | 
+| Bitbucket.Issue.links | String | Links with information about the issue. | 
 | Bitbucket.Issue.title | String | The title of the issue. | 
 | Bitbucket.Issue.content.type | String | The type of the content. | 
 | Bitbucket.Issue.content.raw | String | The content of the issue. | 
 | Bitbucket.Issue.content.markup | String | The type of markup \(like markdown\). | 
-| Bitbucket.Issue.content.html | String | The content of the issue in html format. | 
+| Bitbucket.Issue.content.html | String | The content of the issue in HTML format. | 
 | Bitbucket.Issue.reporter.display_name | String | The display name of the reporter of the issue. | 
 | Bitbucket.Issue.reporter.links | String | Links with information about the reporter. | 
 | Bitbucket.Issue.reporter.type | String | The type of the reporter. | 
-| Bitbucket.Issue.reporter.uuid | String | The unique id of the reporter | 
-| Bitbucket.Issue.reporter.account_id | String | The account id of the reporter. | 
+| Bitbucket.Issue.reporter.uuid | String | The unique ID of the reporter | 
+| Bitbucket.Issue.reporter.account_id | String | The account ID of the reporter. | 
 | Bitbucket.Issue.reporter.nickname | String | The nickname of the reporter. | 
 | Bitbucket.Issue.assignee.display_name | String | The display name of the assignee to the issue. | 
 | Bitbucket.Issue.assignee.links | String | Links with information about the assignee. | 
 | Bitbucket.Issue.assignee.type | String | The type of the assignee. | 
-| Bitbucket.Issue.assignee.uuid | String | The unique od of the assignee. | 
-| Bitbucket.Issue.assignee.account_id | String | The account id of the assignee. | 
+| Bitbucket.Issue.assignee.uuid | String | The unique ID of the assignee. | 
+| Bitbucket.Issue.assignee.account_id | String | The account ID of the assignee. | 
 | Bitbucket.Issue.assignee.nickname | String | The nickname of the assignee. | 
 | Bitbucket.Issue.created_on | String | The creation date of the issue. | 
 | Bitbucket.Issue.edited_on | Unknown | The edit date of the issue. | 
 | Bitbucket.Issue.updated_on | String | The update date of the issue. | 
-| Bitbucket.Issue.state | String | The state odf the issue. | 
+| Bitbucket.Issue.state | String | The state ID of the issue. | 
 | Bitbucket.Issue.kind | String | The kind of the issue. | 
 | Bitbucket.Issue.milestone | Unknown | The milestones in the issue. | 
 | Bitbucket.Issue.component | Unknown | The different components of the issue. | 
@@ -1428,7 +1428,7 @@ If an issue_id is given, returns the information about it. Else, returns a list 
 | Bitbucket.Issue.watches | Number | The watchers of the issue. | 
 
 #### Command example
-```!bitbucket-issue-list```
+```!bitbucket-issue-list limit=2```
 #### Context Example
 ```json
 {
@@ -1597,7 +1597,7 @@ If an issue_id is given, returns the information about it. Else, returns a list 
 
 #### Human Readable Output
 
->### List of the issues
+>### Issues List
 >|Id|Title|Type|Priority|Status|Votes|CreatedAt|UpdatedAt|
 >|---|---|---|---|---|---|---|---|
 >| 92 | a new issue | bug | major | new | 0 | 2022-09-18T08:00:00.000000+00:00 | 2022-09-18T08:00:00.000000+00:00 |
@@ -1606,7 +1606,7 @@ If an issue_id is given, returns the information about it. Else, returns a list 
 
 ### bitbucket-issue-update
 ***
-Updates an issue in Bitbucket. In order to perform this command, please create an issue tracker by clicking on the relevant repo -> Repository settings -> Issue tracker
+Updates an issue in Bitbucket. To perform this command, create an issue tracker by clicking on the relevant repo > Repository settings > Issue tracker.
 
 ##### Required Permissions
 In order to perform this command, please create an issue tracker by clicking on the relevant repo -> Repository settings -> Issue tracker.
@@ -1620,12 +1620,12 @@ In order to perform this command, please create an issue tracker by clicking on 
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
 | title | The title of the new issue. | Required | 
-| issue_id | The id of the issue to update. To get the issue_id, use the command '!bitbucket-issue-list'. | Required | 
-| state | The state of the issues to create. Can be 'New', 'Open', 'Resolved', 'On Hold', 'Invalid', 'Duplicate', 'Wontfix' or 'Closed'. Possible values are: new, open, resolved, on hold, invalid, duplicate, wontfix, closed. | Optional | 
-| type | The type of the issues to create. Can be 'Bug', 'Enhancement', 'Proposal', 'Task'. Possible values are: bug, enhancement, proposal, task. | Optional | 
-| priority | The priority of the issues to create. Can be 'Trivial', 'Minor', 'Major', 'Critical', 'Blocker'. Possible values are: trivial, minor, major, critical, blocker. | Optional | 
+| issue_id | The ID of the issue to update. To get the issue_id, use the !bitbucket-issue-list command. | Required | 
+| state | The state of the issues to create. Possible values are: new, open, resolved, on hold, invalid, duplicate, wontfix, closed. | Optional | 
+| type | The type of the issues to create. Possible values are: bug, enhancement, proposal, task. | Optional | 
+| priority | The priority of the issues to create. Possible values are: trivial, minor, major, critical, blocker. | Optional | 
 | content | The content of the issue to create. | Optional | 
-| assignee_id | The id of the assignee of the issue to create. In order to get the assignee_id, use the command '!bitbucket-workspace-member-list, and use the field AccountId. | Optional | 
+| assignee_id | The ID of the assignee of the issue to create. To get the assignee_id, use the !bitbucket-workspace-member-list command, and use the field AccountId. | Optional | 
 | assignee_user_name | The user name of the assignee of the issue to create. | Optional | 
 
 
@@ -1634,34 +1634,34 @@ In order to perform this command, please create an issue tracker by clicking on 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Bitbucket.Issue.type | String | The action type. | 
-| Bitbucket.Issue.id | Number | The id of the issue. | 
-| Bitbucket.Issue.repository.type | String | he type of the repository. | 
+| Bitbucket.Issue.id | Number | The ID of the issue. | 
+| Bitbucket.Issue.repository.type | String | The type of the repository. | 
 | Bitbucket.Issue.repository.full_name | String | The full name of the repository. | 
 | Bitbucket.Issue.repository.links | String | Links with information about the repository related to the issue. | 
 | Bitbucket.Issue.repository.name | String | The name of the repository. | 
-| Bitbucket.Issue.repository.uuid | String | The unique id of the repository. | 
-| Bitbucket.Issue.links | String | Links with information about the issue | 
+| Bitbucket.Issue.repository.uuid | String | The unique ID of the repository. | 
+| Bitbucket.Issue.links | String | Links with information about the issue. | 
 | Bitbucket.Issue.title | String | The title of the issue. | 
 | Bitbucket.Issue.content.type | String | The type of the content. | 
 | Bitbucket.Issue.content.raw | String | The content of the issue. | 
 | Bitbucket.Issue.content.markup | String | The type of markup \(like markdown\). | 
-| Bitbucket.Issue.content.html | String | The content of the issue in html format. | 
+| Bitbucket.Issue.content.html | String | The content of the issue in HTML format. | 
 | Bitbucket.Issue.reporter.display_name | String | The display name of the reporter of the issue. | 
 | Bitbucket.Issue.reporter.links | String | Links with information about the reporter. | 
 | Bitbucket.Issue.reporter.type | String | The type of the reporter. | 
-| Bitbucket.Issue.reporter.uuid | String | The unique id of the reporter | 
-| Bitbucket.Issue.reporter.account_id | String | The account id of the reporter. | 
+| Bitbucket.Issue.reporter.uuid | String | The unique ID of the reporter. | 
+| Bitbucket.Issue.reporter.account_id | String | The account ID of the reporter. | 
 | Bitbucket.Issue.reporter.nickname | String | The nickname of the reporter. | 
 | Bitbucket.Issue.assignee.display_name | String | The display name of the assignee to the issue. | 
 | Bitbucket.Issue.assignee.links | String | Links with information about the assignee. | 
 | Bitbucket.Issue.assignee.type | String | The type of the assignee. | 
-| Bitbucket.Issue.assignee.uuid | String | The unique od of the assignee. | 
-| Bitbucket.Issue.assignee.account_id | String | The account id of the assignee. | 
+| Bitbucket.Issue.assignee.uuid | String | The unique ID of the assignee. | 
+| Bitbucket.Issue.assignee.account_id | String | The account ID of the assignee. | 
 | Bitbucket.Issue.assignee.nickname | String | The nickname of the assignee. | 
 | Bitbucket.Issue.created_on | String | The creation date of the issue. | 
 | Bitbucket.Issue.edited_on | Unknown | The edit date of the issue. | 
 | Bitbucket.Issue.updated_on | String | The update date of the issue. | 
-| Bitbucket.Issue.state | String | The state odf the issue. | 
+| Bitbucket.Issue.state | String | The state ID of the issue. | 
 | Bitbucket.Issue.kind | String | The kind of the issue. | 
 | Bitbucket.Issue.milestone | Unknown | The milestones in the issue. | 
 | Bitbucket.Issue.component | Unknown | The different components of the issue. | 
@@ -1776,67 +1776,67 @@ Creates a pull request in Bitbucket.
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
 | title | The title of the new pull request. | Required | 
-| source_branch | The branch to merge. | Required | 
-| destination_branch | The branch to merge to. | Optional | 
-| reviewer_id | The account_id of the person to review the pull request. Cn be a comma separated list of account_id. In order to get the reviewer_id, use the command '!bitbucket-workspace-member-list, and use the field AccountId. | Optional | 
+| source_branch | The branch that contains the proposed changes. | Required | 
+| destination_branch | The branch that will contain the changes after the merge process. | Optional | 
+| reviewer_id | A comma-separated list of account_ids of the person to review the pull request. To get the reviewer_id, use the !bitbucket-workspace-member-list command, and use the field AccountId. | Optional | 
 | description | A description of the pull request. | Optional | 
-| close_source_branch | Should the source branch be closed after the pull request. Possible values are: yes, no. | Optional | 
+| close_source_branch | Whether the source branch should be closed after the pull request. Possible values are: yes, no. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Bitbucket.PullRequest.comment_count | Number | How many comments there are in the pull request. | 
-| Bitbucket.PullRequest.task_count | Number | How many tasks there are in the pull request. | 
+| Bitbucket.PullRequest.comment_count | Number | The number of comments there are in the pull request. | 
+| Bitbucket.PullRequest.task_count | Number | The number of tasks there are in the pull request. | 
 | Bitbucket.PullRequest.type | String | The type of the request. | 
-| Bitbucket.PullRequest.id | Number | The pull request id. | 
+| Bitbucket.PullRequest.id | Number | The pull request ID. | 
 | Bitbucket.PullRequest.title | String | The title of the pull request. | 
 | Bitbucket.PullRequest.description | String | The description of the pull request. | 
 | Bitbucket.PullRequest.rendered.title.type | String | The type of the title of the request. | 
 | Bitbucket.PullRequest.rendered.title.raw | String | The content of the rendered title. | 
 | Bitbucket.PullRequest.rendered.title.markup | String | The text styling type, such as markdown. | 
-| Bitbucket.PullRequest.rendered.title.html | String | The html format of the pull request title. | 
+| Bitbucket.PullRequest.rendered.title.html | String | The HTML format of the pull request title. | 
 | Bitbucket.PullRequest.rendered.description.type | String | The type of the pull request description | 
 | Bitbucket.PullRequest.rendered.description.raw | String | The content of the description of the pull request. | 
 | Bitbucket.PullRequest.rendered.description.markup | String | The text styling type, such as markdown. | 
-| Bitbucket.PullRequest.rendered.description.html | String | Html format of the description content. | 
+| Bitbucket.PullRequest.rendered.description.html | String | HTML format of the description content. | 
 | Bitbucket.PullRequest.state | String | The status of the pull request. | 
-| Bitbucket.PullRequest.merge_commit | Unknown | Is it a merge commit. | 
-| Bitbucket.PullRequest.close_source_branch | Boolean | Should the branch be closed after the merge. | 
-| Bitbucket.PullRequest.closed_by | Unknown | The user that closed the pull request. | 
+| Bitbucket.PullRequest.merge_commit | Unknown | Whether it is a merge commit. | 
+| Bitbucket.PullRequest.close_source_branch | Boolean | Whether the branch should be closed after the merge. | 
+| Bitbucket.PullRequest.closed_by | Unknown | The user who closed the pull request. | 
 | Bitbucket.PullRequest.author.display_name | String | The display name of the author of the pull request. | 
 | Bitbucket.PullRequest.author.links | String | Links with information about the author of the pull request. | 
 | Bitbucket.PullRequest.author.type | String | The type of the author | 
-| Bitbucket.PullRequest.author.uuid | String | The unique universal id of the author. | 
-| Bitbucket.PullRequest.author.account_id | String | The account id of the author of the pull request. | 
+| Bitbucket.PullRequest.author.uuid | String | The unique universal ID of the author. | 
+| Bitbucket.PullRequest.author.account_id | String | The account ID of the author of the pull request. | 
 | Bitbucket.PullRequest.author.nickname | String | The nickname of the author. | 
 | Bitbucket.PullRequest.reason | String | The reason to create the request. | 
 | Bitbucket.PullRequest.created_on | String | The creation date of the request. | 
 | Bitbucket.PullRequest.updated_on | String | The date of the last update of the pull request. | 
-| Bitbucket.PullRequest.destination.branch.name | String | The name of the destination branch, the branch to merge to. | 
+| Bitbucket.PullRequest.destination.branch.name | String | The name of the destination branch. This is the branch to merge to. | 
 | Bitbucket.PullRequest.destination.commit.type | String | The type of the commit. | 
 | Bitbucket.PullRequest.destination.commit.hash | String | The hash of the commit. | 
 | Bitbucket.PullRequest.destination.commit.links | String | Links with information about the commit. | 
 | Bitbucket.PullRequest.destination.repository.type | String | The type of the repository. | 
 | Bitbucket.PullRequest.destination.repository.full_name | String | The full name of the repository of the destination branch. | 
-| Bitbucket.PullRequest.destination.repository.links | String | Links with information about The repository of the destination branch. | 
+| Bitbucket.PullRequest.destination.repository.links | String | Links with information about the repository of the destination branch. | 
 | Bitbucket.PullRequest.destination.repository.name | String | The name of the repository. | 
-| Bitbucket.PullRequest.destination.repository.uuid | String | The unique id of the repository. | 
-| Bitbucket.PullRequest.source.branch.name | String | The name of the source branch, The branch with the changes that will be merged. | 
+| Bitbucket.PullRequest.destination.repository.uuid | String | The unique ID of the repository. | 
+| Bitbucket.PullRequest.source.branch.name | String | The name of the source branch. This is the branch with the changes that will be merged. | 
 | Bitbucket.PullRequest.source.commit.type | String | The type of the commit in the source branch. | 
 | Bitbucket.PullRequest.source.commit.hash | String | The hash of the commit in the source branch | 
-| Bitbucket.PullRequest.source.commit.links | String | Links with information about the commit in source branch. | 
+| Bitbucket.PullRequest.source.commit.links | String | Links with information about the commit in the source branch. | 
 | Bitbucket.PullRequest.source.repository.type | String | The type of the repository of the source branch. | 
 | Bitbucket.PullRequest.source.repository.full_name | String | The full name of the repository of the source branch. | 
 | Bitbucket.PullRequest.source.repository.links.self.href | String | Links with information about the repository of the source branch. | 
 | Bitbucket.PullRequest.source.repository.name | String | The name of the repository of the source branch. | 
-| Bitbucket.PullRequest.source.repository.uuid | String | The unique id of the repository of the source branch. | 
+| Bitbucket.PullRequest.source.repository.uuid | String | The unique ID of the repository of the source branch. | 
 | Bitbucket.PullRequest.links | String | Links to information about the pull request. | 
 | Bitbucket.PullRequest.summary.type | String | The type of the pull request. | 
 | Bitbucket.PullRequest.summary.raw | String | The description of the pull request. | 
 | Bitbucket.PullRequest.summary.markup | String | The text styling type, such as markdown. | 
-| Bitbucket.PullRequest.summary.html | String | The description of the pull request in html format. | 
+| Bitbucket.PullRequest.summary.html | String | The description of the pull request in HTML format. | 
 
 #### Command example
 ```!bitbucket-pull-request-create source_branch=test title="pull_request"```
@@ -2052,13 +2052,13 @@ Updates a pull request in Bitbucket.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
-| pull_request_id | The id of the pull request to update. In order to get the pull_request_id, use the command '!bitbucket-pull-request-list'. | Required | 
+| pull_request_id | The ID of the pull request to update. To get the pull_request_id, use the !bitbucket-pull-request-list command. | Required | 
 | title | The title of the new pull request. | Optional | 
-| source_branch | The branch to merge. | Optional | 
-| destination_branch | The branch to merge to. | Optional | 
-| reviewer_id | The id of the account of the person to review the pull request. In order to get the reviewer_id, use the command 'bitbucket-workspace-member-list, and use the field AccountId. | Optional | 
+| source_branch | The branch that contains the proposed changes. | Optional | 
+| destination_branch | The branch that will contain the changes after the merge process. | Optional | 
+| reviewer_id | The ID of the account of the person to review the pull request. To get the reviewer_id, use the bitbucket-workspace-member-list command, and use the field AccountId. | Optional | 
 | description | A description of the pull request. | Optional | 
-| close_source_branch | Should the source branch be closed after the pull request. | Optional | 
+| close_source_branch | Whether the source branch should be closed after the pull request. | Optional | 
 
 
 #### Context Output
@@ -2068,258 +2068,57 @@ Updates a pull request in Bitbucket.
 | Bitbucket.PullRequest.comment_count | Number | The number of comments in the pull request. | 
 | Bitbucket.PullRequest.task_count | Number | The number of tasks in the pull request. | 
 | Bitbucket.PullRequest.type | String | The type of the request. | 
-| Bitbucket.PullRequest.id | Number | The pull request id. | 
+| Bitbucket.PullRequest.id | Number | The pull request ID. | 
 | Bitbucket.PullRequest.title | String | The title of the pull request. | 
 | Bitbucket.PullRequest.description | String | The description of the pull request. | 
 | Bitbucket.PullRequest.rendered.title.type | String | The type of the title of the request. | 
 | Bitbucket.PullRequest.rendered.title.raw | String | The content of the rendered title. | 
 | Bitbucket.PullRequest.rendered.title.markup | String | The text styling type, such as markdown. | 
-| Bitbucket.PullRequest.rendered.title.html | String | The html format of the pull request title. | 
-| Bitbucket.PullRequest.rendered.description.type | String | The type of the pull request description | 
+| Bitbucket.PullRequest.rendered.title.html | String | The HTML format of the pull request title. | 
+| Bitbucket.PullRequest.rendered.description.type | String | The type of the pull request description. | 
 | Bitbucket.PullRequest.rendered.description.raw | String | The content of the description of the pull request. | 
 | Bitbucket.PullRequest.rendered.description.markup | String | The text styling type, such as markdown. | 
-| Bitbucket.PullRequest.rendered.description.html | String | Html format of the description content. | 
+| Bitbucket.PullRequest.rendered.description.html | String | HTML format of the description content. | 
 | Bitbucket.PullRequest.state | String | The status of the pull request. | 
-| Bitbucket.PullRequest.merge_commit | Unknown | Is it a merge commit. | 
-| Bitbucket.PullRequest.close_source_branch | Boolean | Should the branch be closed after the merge. | 
-| Bitbucket.PullRequest.closed_by | Unknown | The user that closed the pull request. | 
+| Bitbucket.PullRequest.merge_commit | Unknown | Whether it is a merge commit. | 
+| Bitbucket.PullRequest.close_source_branch | Boolean | Whether the branch should be closed after the merge. | 
+| Bitbucket.PullRequest.closed_by | Unknown | The user who closed the pull request. | 
 | Bitbucket.PullRequest.author.display_name | String | The display name of the author of the pull request. | 
 | Bitbucket.PullRequest.author.links | String | Links with information about the author of the pull request. | 
 | Bitbucket.PullRequest.author.type | String | The type of the author. | 
-| Bitbucket.PullRequest.author.uuid | String | The unique universal id of the author. | 
-| Bitbucket.PullRequest.author.account_id | String | The account id of the author of the pull request. | 
+| Bitbucket.PullRequest.author.uuid | String | The unique universal ID of the author. | 
+| Bitbucket.PullRequest.author.account_id | String | The account ID of the author of the pull request. | 
 | Bitbucket.PullRequest.author.nickname | String | The nickname of the author. | 
 | Bitbucket.PullRequest.reason | String | The reason to create the request. | 
 | Bitbucket.PullRequest.created_on | String | The creation date of the request. | 
 | Bitbucket.PullRequest.updated_on | String | The date of the last update of the pull request. | 
-| Bitbucket.PullRequest.destination.branch.name | String | The name of the destination branch, the branch to merge to. | 
+| Bitbucket.PullRequest.destination.branch.name | String | The name of the destination branch. This is the branch to merge to. | 
 | Bitbucket.PullRequest.destination.commit.type | String | The type of the commit. | 
 | Bitbucket.PullRequest.destination.commit.hash | String | The hash of the commit. | 
 | Bitbucket.PullRequest.destination.commit.links | String | Links with information about the commit. | 
 | Bitbucket.PullRequest.destination.repository.type | String | The type of the repository of the destination branch. | 
 | Bitbucket.PullRequest.destination.repository.full_name | String | The full name of the repository of the destination branch. | 
-| Bitbucket.PullRequest.destination.repository.links | String | Links with information about The repository of the destination branch. | 
+| Bitbucket.PullRequest.destination.repository.links | String | Links with information about the repository of the destination branch. | 
 | Bitbucket.PullRequest.destination.repository.name | String | The name of the repository of the destination branch. | 
-| Bitbucket.PullRequest.destination.repository.uuid | String | The unique id of the repository of the destination branch. | 
-| Bitbucket.PullRequest.source.branch.name | String | The name of the source branch, The branch with the changes that will be merged. | 
+| Bitbucket.PullRequest.destination.repository.uuid | String | The unique ID of the repository of the destination branch. | 
+| Bitbucket.PullRequest.source.branch.name | String | The name of the source branch. That is the branch with the changes that will be merged. | 
 | Bitbucket.PullRequest.source.commit.type | String | The type of the commit in the source branch. | 
 | Bitbucket.PullRequest.source.commit.hash | String | The hash of the commit in the source branch. | 
-| Bitbucket.PullRequest.source.commit.links | String | Links with information about the commit in source branch. | 
+| Bitbucket.PullRequest.source.commit.links | String | Links with information about the commit in the source branch. | 
 | Bitbucket.PullRequest.source.repository.type | String | The type of the repository of the source branch. | 
 | Bitbucket.PullRequest.source.repository.full_name | String | The full name of the repository of the source branch. | 
 | Bitbucket.PullRequest.source.repository.links | String | Links with information about the repository of the source branch. | 
 | Bitbucket.PullRequest.source.repository.name | String | The name of the repository of the source branch. | 
-| Bitbucket.PullRequest.source.repository.uuid | String | The unique id of the repository of the source branch. | 
+| Bitbucket.PullRequest.source.repository.uuid | String | The unique ID of the repository of the source branch. | 
 | Bitbucket.PullRequest.links | String | Links to information about the pull request. | 
 | Bitbucket.PullRequest.summary.type | String | The type of the pull request. | 
 | Bitbucket.PullRequest.summary.raw | String | The description of the pull request. | 
 | Bitbucket.PullRequest.summary.markup | String | The text styling type, such as markdown. | 
-| Bitbucket.PullRequest.summary.html | String | The description of the pull request in html format. | 
-
-#### Command example
-```!bitbucket-pull-request-update pull_request_id=8 description="updating description"```
-#### Context Example
-```json
-{
-    "Bitbucket": {
-        "PullRequest": {
-            "author": {
-                "account_id": "111111111111111111111111",
-                "display_name": "Some User",
-                "links": {
-                    "avatar": {
-                        "href": "https://secure.gravatar.com/avatar/?d=https%avatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials=.png"
-                    },
-                    "html": {
-                        "href": "https://bitbucket.org/%7B11111111-1111-1111-1111-111111111111%7D/"
-                    },
-                    "self": {
-                        "href": "https://api.bitbucket.org/2.0/users/%7B11111111-1111-1111-1111-111111111111%7D"
-                    }
-                },
-                "nickname": "Some User",
-                "type": "user",
-                "uuid": "{11111111-1111-1111-1111-111111111111}"
-            },
-            "close_source_branch": false,
-            "closed_by": null,
-            "comment_count": 12,
-            "created_on": "2022-09-12T09:00:00.000000+00:00",
-            "description": "updating description",
-            "destination": {
-                "branch": {
-                    "name": "master"
-                },
-                "commit": {
-                    "hash": "111111111111",
-                    "links": {
-                        "html": {
-                            "href": "https://bitbucket.org/workspace/start_repo/commits/111111111111"
-                        },
-                        "self": {
-                            "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/commit/111111111111"
-                        }
-                    },
-                    "type": "commit"
-                },
-                "repository": {
-                    "full_name": "workspace/start_repo",
-                    "links": {
-                        "avatar": {
-                            "href": "https://bytebucket.org/ravatar/%1111111111-1111-1111-1111-111111111111%11?ts=default"
-                        },
-                        "html": {
-                            "href": "https://bitbucket.org/workspace/start_repo"
-                        },
-                        "self": {
-                            "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo"
-                        }
-                    },
-                    "name": "start_repo",
-                    "type": "repository",
-                    "uuid": "{11111111-1111-1111-1111-111111111111}"
-                }
-            },
-            "id": 8,
-            "links": {
-                "activity": {
-                    "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/pullrequests/8/activity"
-                },
-                "approve": {
-                    "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/pullrequests/8/approve"
-                },
-                "comments": {
-                    "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/pullrequests/8/comments"
-                },
-                "commits": {
-                    "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/pullrequests/8/commits"
-                },
-                "decline": {
-                    "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/pullrequests/8/decline"
-                },
-                "diff": {
-                    "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/diff/workspace/start_repo:111111111111%111111111111?from_pullrequest_id=8&topic=true"
-                },
-                "diffstat": {
-                    "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/diffstat/workspace/start_repo:111111111111%111111111111?from_pullrequest_id=8&topic=true"
-                },
-                "html": {
-                    "href": "https://bitbucket.org/workspace/start_repo/pull-requests/8"
-                },
-                "merge": {
-                    "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/pullrequests/8/merge"
-                },
-                "request-changes": {
-                    "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/pullrequests/8/request-changes"
-                },
-                "self": {
-                    "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/pullrequests/8"
-                },
-                "statuses": {
-                    "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/pullrequests/8/statuses"
-                }
-            },
-            "merge_commit": null,
-            "participants": [
-                {
-                    "approved": false,
-                    "participated_on": "2022-09-15T12:00:00.000000+00:00",
-                    "role": "PARTICIPANT",
-                    "state": null,
-                    "type": "participant",
-                    "user": {
-                        "account_id": "111111111111111111111111",
-                        "display_name": "Some User",
-                        "links": {
-                            "avatar": {
-                                "href": "https://secure.gravatar.com/avatar/?d=httpsavatar-management--avatars.us-west-2.prod.public.atl-paas.netinitials.png"
-                            },
-                            "html": {
-                                "href": "https://bitbucket.org/%7B11111111-1111-1111-1111-111111111111%7D/"
-                            },
-                            "self": {
-                                "href": "https://api.bitbucket.org/2.0/users/%7B11111111-1111-1111-1111-111111111111%7D"
-                            }
-                        },
-                        "nickname": "Some User",
-                        "type": "user",
-                        "uuid": "{11111111-1111-1111-1111-111111111111}"
-                    }
-                }
-            ],
-            "reason": "",
-            "rendered": {
-                "description": {
-                    "html": "<p>updating description</p>",
-                    "markup": "markdown",
-                    "raw": "updating description",
-                    "type": "rendered"
-                },
-                "title": {
-                    "html": "<p>pull_request</p>",
-                    "markup": "markdown",
-                    "raw": "pull_request",
-                    "type": "rendered"
-                }
-            },
-            "reviewers": [],
-            "source": {
-                "branch": {
-                    "name": "test"
-                },
-                "commit": {
-                    "hash": "111111111111",
-                    "links": {
-                        "html": {
-                            "href": "https://bitbucket.org/workspace/start_repo/commits/111111111111"
-                        },
-                        "self": {
-                            "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/commit/111111111111"
-                        }
-                    },
-                    "type": "commit"
-                },
-                "repository": {
-                    "full_name": "workspace/start_repo",
-                    "links": {
-                        "avatar": {
-                            "href": "https://bytebucket.org/ravatar/%1111111111-1111-1111-1111-111111111111%11?ts=default"
-                        },
-                        "html": {
-                            "href": "https://bitbucket.org/workspace/start_repo"
-                        },
-                        "self": {
-                            "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo"
-                        }
-                    },
-                    "name": "start_repo",
-                    "type": "repository",
-                    "uuid": "{11111111-1111-1111-1111-111111111111}"
-                }
-            },
-            "state": "OPEN",
-            "summary": {
-                "html": "<p>updating description</p>",
-                "markup": "markdown",
-                "raw": "updating description",
-                "type": "rendered"
-            },
-            "task_count": 0,
-            "title": "pull_request",
-            "type": "pullrequest",
-            "updated_on": "2022-09-18T08:00:00.000000+00:00"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->The pull request 8 was updated successfully
+| Bitbucket.PullRequest.summary.html | String | The description of the pull request in HTML format. | 
 
 ### bitbucket-pull-request-list
 ***
-Returns a list of the pull requests. If a state is provided than the list will contain only PR with the wanted status. If a state is not provided, by default a list of the open pull requests will return.
+Returns a list of the pull requests. If a state is provided than the list will contain only PRs with the wanted status. If a state is not provided, by default a list of the open pull requests will return.
 
 
 #### Base Command
@@ -2330,7 +2129,7 @@ Returns a list of the pull requests. If a state is provided than the list will c
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
-| pull_request_id | The id of the pull request to update. In order to get the pull_request_id use the command '!bitbucket-pull-request-list'. | Optional | 
+| pull_request_id | The ID of the pull request to update. To get the pull_request_id, use the !bitbucket-pull-request-list command. | Optional | 
 | state | The state of the pull requests to see. Possible values are: OPEN, MERGED, DECLINED, SUPERSEDED, ALL. | Optional | 
 | limit | The maximum number of items in the list. The default value is 50. | Optional | 
 | page | The specific result page to display. | Optional | 
@@ -2343,52 +2142,52 @@ Returns a list of the pull requests. If a state is provided than the list will c
 | Bitbucket.PullRequest.comment_count | Number | The number of comments in the pull request. | 
 | Bitbucket.PullRequest.task_count | Number | The number of tasks in the pull request. | 
 | Bitbucket.PullRequest.type | String | The type of the request. | 
-| Bitbucket.PullRequest.id | Number | The pull request id. | 
+| Bitbucket.PullRequest.id | Number | The pull request ID. | 
 | Bitbucket.PullRequest.title | String | The title of the pull request. | 
 | Bitbucket.PullRequest.description | String | The description of the pull request. | 
 | Bitbucket.PullRequest.state | String | The status of the pull request. | 
 | Bitbucket.PullRequest.merge_commit.type | String | The type of the merge commit. | 
 | Bitbucket.PullRequest.merge_commit.hash | String | The hash of the merged commit. | 
 | Bitbucket.PullRequest.merge_commit.links | String | Links with information about the merged commit. | 
-| Bitbucket.PullRequest.close_source_branch | Boolean | Should the branch be closed after the merge. | 
-| Bitbucket.PullRequest.closed_by.display_name | String | The display name of the user that closed the pull request. | 
-| Bitbucket.PullRequest.closed_by.links | String | Links with information about the user that closed the pull request. | 
-| Bitbucket.PullRequest.closed_by.type | String | The type of user that closed the pull request. | 
-| Bitbucket.PullRequest.closed_by.uuid | String | The unique id of the user who closed the pull request. | 
-| Bitbucket.PullRequest.closed_by.account_id | String | The account id of the user who closed the pull request. | 
+| Bitbucket.PullRequest.close_source_branch | Boolean | Whether the branch should be closed after the merge. | 
+| Bitbucket.PullRequest.closed_by.display_name | String | The display name of the user who closed the pull request. | 
+| Bitbucket.PullRequest.closed_by.links | String | Links with information about the user who closed the pull request. | 
+| Bitbucket.PullRequest.closed_by.type | String | The type of user who closed the pull request. | 
+| Bitbucket.PullRequest.closed_by.uuid | String | The unique ID of the user who closed the pull request. | 
+| Bitbucket.PullRequest.closed_by.account_id | String | The account ID of the user who closed the pull request. | 
 | Bitbucket.PullRequest.closed_by.nickname | String | The nickname of the user who closed the pull request. | 
 | Bitbucket.PullRequest.author.display_name | String | The display name of the author of the pull request. | 
 | Bitbucket.PullRequest.author.links.self.href | String | Links with information about the author of the pull request. | 
 | Bitbucket.PullRequest.author.type | String | The type of the author. | 
-| Bitbucket.PullRequest.author.uuid | String | The unique universal id of the author. | 
-| Bitbucket.PullRequest.author.account_id | String | The account id of the author of the pull request. | 
+| Bitbucket.PullRequest.author.uuid | String | The unique universal ID of the author. | 
+| Bitbucket.PullRequest.author.account_id | String | The account ID of the author of the pull request. | 
 | Bitbucket.PullRequest.author.nickname | String | The nickname of the author. | 
 | Bitbucket.PullRequest.reason | String | The reason to create the request. | 
 | Bitbucket.PullRequest.created_on | String | The creation date of the request. | 
 | Bitbucket.PullRequest.updated_on | String | The date of the last update of the pull request. | 
-| Bitbucket.PullRequest.destination.branch.name | String | The name of the destination branch, the branch to merge to. | 
+| Bitbucket.PullRequest.destination.branch.name | String | The name of the destination branch. That is the branch to merge to. | 
 | Bitbucket.PullRequest.destination.commit.type | String | The type of the commit. | 
 | Bitbucket.PullRequest.destination.commit.hash | String | The hash of the commit. | 
 | Bitbucket.PullRequest.destination.commit.links | String | Links with information about the commit. | 
 | Bitbucket.PullRequest.destination.repository.type | String | The type of the repository of the destination branch. | 
 | Bitbucket.PullRequest.destination.repository.full_name | String | The full name of the repository of the destination branch. | 
-| Bitbucket.PullRequest.destination.repository.links | String | Links with information about The repository of the destination branch. | 
+| Bitbucket.PullRequest.destination.repository.links | String | Links with information about the repository of the destination branch. | 
 | Bitbucket.PullRequest.destination.repository.name | String | The name of the repository of the destination branch. | 
-| Bitbucket.PullRequest.destination.repository.uuid | String | The unique id of the repository of the destination branch. | 
-| Bitbucket.PullRequest.source.branch.name | String | The name of the source branch, The branch with the changes that will be merged. | 
+| Bitbucket.PullRequest.destination.repository.uuid | String | The unique ID of the repository of the destination branch. | 
+| Bitbucket.PullRequest.source.branch.name | String | The name of the source branch. The branch with the changes that will be merged. | 
 | Bitbucket.PullRequest.source.commit.type | String | The type of the commit in the source branch. | 
 | Bitbucket.PullRequest.source.commit.hash | String | The hash of the commit in the source branch. | 
-| Bitbucket.PullRequest.source.commit.links | String | Links with information about the commit in source branch. | 
+| Bitbucket.PullRequest.source.commit.links | String | Links with information about the commit in the source branch. | 
 | Bitbucket.PullRequest.source.repository.type | String | The type of the repository of the source branch. | 
 | Bitbucket.PullRequest.source.repository.full_name | String | The full name of the repository of the source branch. | 
 | Bitbucket.PullRequest.source.repository.links | String | Links with information about the repository of the source branch. | 
 | Bitbucket.PullRequest.source.repository.name | String | The name of the repository of the source branch. | 
-| Bitbucket.PullRequest.source.repository.uuid | String | The unique id of the repository of the source branch. | 
+| Bitbucket.PullRequest.source.repository.uuid | String | The unique ID of the repository of the source branch. | 
 | Bitbucket.PullRequest.links | String | Links to information about the pull request. | 
 | Bitbucket.PullRequest.summary.type | String | The type of the pull request. | 
 | Bitbucket.PullRequest.summary.raw | String | The description of the pull request. | 
 | Bitbucket.PullRequest.summary.markup | String | The text styling type, such as markdown. | 
-| Bitbucket.PullRequest.summary.html | String | The description of the pull request in html format. | 
+| Bitbucket.PullRequest.summary.html | String | The description of the pull request in HTML format. | 
 
 #### Command example
 ```!bitbucket-pull-request-list```
@@ -2714,7 +2513,7 @@ Creates a comment on an issue in Bitbucket.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
-| issue_id | The id of the issue to comment on. In order to get the issue_id, use the command '!bitbucket-issue-list'. | Required | 
+| issue_id | The ID of the issue to comment on. To get the issue_id, use the !bitbucket-issue-list command. | Required | 
 | content | The content of the comment. | Required | 
 
 
@@ -2723,26 +2522,26 @@ Creates a comment on an issue in Bitbucket.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Bitbucket.IssueComment.type | String | The action type. | 
-| Bitbucket.IssueComment.id | Number | The id of the comment on the issue. | 
+| Bitbucket.IssueComment.id | Number | The ID of the comment on the issue. | 
 | Bitbucket.IssueComment.created_on | String | The creation date of the comment. | 
 | Bitbucket.IssueComment.updated_on | Unknown | When the comment was updated. | 
 | Bitbucket.IssueComment.content.type | String | The type of the content. | 
 | Bitbucket.IssueComment.content.raw | String | The content of the comment. | 
 | Bitbucket.IssueComment.content.markup | String | The text styling type, such as markdown. | 
-| Bitbucket.IssueComment.content.html | String | The content of the comment in html format. | 
+| Bitbucket.IssueComment.content.html | String | The content of the comment in HTML format. | 
 | Bitbucket.IssueComment.user.display_name | String | The display name of the user who created the comment. | 
 | Bitbucket.IssueComment.user.links | String | Links with information about the user who created the comment. | 
 | Bitbucket.IssueComment.user.type | String | The type of the user who created the comment. | 
-| Bitbucket.IssueComment.user.uuid | String | The unique id of the user who created the comment. | 
-| Bitbucket.IssueComment.user.account_id | String | The account id of the user who created the comment. | 
-| Bitbucket.IssueComment.user.nickname | String | The nickname of the user of who created the comment. | 
+| Bitbucket.IssueComment.user.uuid | String | The unique ID of the user who created the comment. | 
+| Bitbucket.IssueComment.user.account_id | String | The account ID of the user who created the comment. | 
+| Bitbucket.IssueComment.user.nickname | String | The nickname of the user who created the comment. | 
 | Bitbucket.IssueComment.issue.type | String | The type of the issue. | 
-| Bitbucket.IssueComment.issue.id | Number | The id of the issue. | 
+| Bitbucket.IssueComment.issue.id | Number | The ID of the issue. | 
 | Bitbucket.IssueComment.issue.repository.type | String | The type of the repository connected to the relevant issue. | 
 | Bitbucket.IssueComment.issue.repository.full_name | String | The full name of the repository connected to the relevant issue. | 
 | Bitbucket.IssueComment.issue.repository.links | String | Links to information about the relevant repository. | 
 | Bitbucket.IssueComment.issue.repository.name | String | The name of the relevant repository. | 
-| Bitbucket.IssueComment.issue.repository.uuid | String | The unique id of the relevant repository. | 
+| Bitbucket.IssueComment.issue.repository.uuid | String | The unique ID of the relevant repository. | 
 | Bitbucket.IssueComment.issue.links | String | Links with information about the issue. | 
 | Bitbucket.IssueComment.issue.title | String | The title of the issue. | 
 | Bitbucket.IssueComment.links | String | Links to information about the comment. | 
@@ -2839,8 +2638,8 @@ Deletes a comment on an issue in Bitbucket.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
-| issue_id | The id of the issue to comment on. In order to get the issue_id, use the command '!bitbucket-issue-list'. | Required | 
-| comment_id | The id of the comment to delete. In order to get the comment_id, use the command '!bitbucket-issue-comment-list'. | Required | 
+| issue_id | The ID of the issue to comment on. To get the issue_id, use the !bitbucket-issue-list command. | Required | 
+| comment_id | The ID of the comment to delete. To get the comment_id, use the !bitbucket-issue-comment-list command. | Required | 
 
 
 #### Context Output
@@ -2849,7 +2648,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->The comment was deleted created successfully
+>The comment was deleted successfully
 
 ### bitbucket-issue-comment-list
 ***
@@ -2864,8 +2663,8 @@ Returns a list of comments on a specific issue. If a comment_id is given it will
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
-| issue_id | The id of the issue to comment on. In order to get the issue_id please use the command bitbucket-issue-list. | Required | 
-| comment_id | The id of the comment to delete. In order to get the comment_id, use the command '!bitbucket-issue-comment-list' without any parameters. | Optional | 
+| issue_id | The ID of the issue to comment on. To get the issue_id, use the bitbucket-issue-list command. | Required | 
+| comment_id | The ID of the comment to delete. To get the comment_id, use the !bitbucket-issue-comment-list command without any parameters. | Optional | 
 | limit | The maximum number of items in the list. The default value is 50. | Optional | 
 | page | The specific result page to display. | Optional | 
 
@@ -2875,26 +2674,26 @@ Returns a list of comments on a specific issue. If a comment_id is given it will
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Bitbucket.IssueComment.type | String | The action type. | 
-| Bitbucket.IssueComment.id | Number | The id of comment on the issue. | 
+| Bitbucket.IssueComment.id | Number | The ID of comment on the issue. | 
 | Bitbucket.IssueComment.created_on | String | The creation date of the comment. | 
 | Bitbucket.IssueComment.updated_on | Unknown | When the comment was updated. | 
 | Bitbucket.IssueComment.content.type | String | The type of the content. | 
 | Bitbucket.IssueComment.content.raw | String | The content of the comment. | 
 | Bitbucket.IssueComment.content.markup | String | The text styling type, such as markdown. | 
-| Bitbucket.IssueComment.content.html | String | The content of the comment in html format. | 
+| Bitbucket.IssueComment.content.html | String | The content of the comment in HTML format. | 
 | Bitbucket.IssueComment.user.display_name | String | The display name of the user who created the comment. | 
 | Bitbucket.IssueComment.user.links | String | Links with information about the user who created the comment. | 
 | Bitbucket.IssueComment.user.type | String | The type of the user who created the comment. | 
-| Bitbucket.IssueComment.user.uuid | String | The unique id of the user who created the comment. | 
-| Bitbucket.IssueComment.user.account_id | String | The account id of the user who created the comment. | 
-| Bitbucket.IssueComment.user.nickname | String | The nickname of the user of who created the comment. | 
+| Bitbucket.IssueComment.user.uuid | String | The unique ID of the user who created the comment. | 
+| Bitbucket.IssueComment.user.account_id | String | The account ID of the user who created the comment. | 
+| Bitbucket.IssueComment.user.nickname | String | The nickname of the user who created the comment. | 
 | Bitbucket.IssueComment.issue.type | String | The type of the issue. | 
-| Bitbucket.IssueComment.issue.id | Number | The id of the issue. | 
+| Bitbucket.IssueComment.issue.id | Number | The ID of the issue. | 
 | Bitbucket.IssueComment.issue.repository.type | String | The type of the repository connected to the relevant issue. | 
 | Bitbucket.IssueComment.issue.repository.full_name | String | The full name of the repository connected to the relevant issue. | 
 | Bitbucket.IssueComment.issue.repository.links | String | Links to information about the relevant repository. | 
 | Bitbucket.IssueComment.issue.repository.name | String | The name of the relevant repository. | 
-| Bitbucket.IssueComment.issue.repository.uuid | String | The unique id of the relevant repository. | 
+| Bitbucket.IssueComment.issue.repository.uuid | String | The unique ID of the relevant repository. | 
 | Bitbucket.IssueComment.issue.links | String | Links with information about the issue. | 
 | Bitbucket.IssueComment.issue.title | String | The title of the issue. | 
 | Bitbucket.IssueComment.links | String | Links to information about the comment. | 
@@ -3063,8 +2862,8 @@ Updates a specific comment on a given issue.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
-| issue_id | The id of the issue to comment on. In order to get the issue_id please use the command '!bitbucket-issue-list.'. | Required | 
-| comment_id | The id of the comment to delete. In order to get the issue_id please use the command !'bitbucket-issue-comment-list'. | Required | 
+| issue_id | The ID of the issue to comment on. To get the issue_id, use the !bitbucket-issue-list command. | Required | 
+| comment_id | The ID of the comment to delete. To get the issue_id, use the !bitbucket-issue-comment-list command. | Required | 
 | content | The new content of the comment. | Required | 
 
 
@@ -3073,26 +2872,26 @@ Updates a specific comment on a given issue.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Bitbucket.IssueComment.type | String | The action type. | 
-| Bitbucket.IssueComment.id | Number | The id of the comment on the issue. | 
+| Bitbucket.IssueComment.id | Number | The ID of the comment on the issue. | 
 | Bitbucket.IssueComment.created_on | String | The creation date of the comment. | 
 | Bitbucket.IssueComment.updated_on | Unknown | When the comment was updated. | 
 | Bitbucket.IssueComment.content.type | String | The type of the content. | 
 | Bitbucket.IssueComment.content.raw | String | The content of the comment. | 
 | Bitbucket.IssueComment.content.markup | String | The text styling type, such as markdown. | 
-| Bitbucket.IssueComment.content.html | String | The content of the comment in html format. | 
+| Bitbucket.IssueComment.content.html | String | The content of the comment in HTML format. | 
 | Bitbucket.IssueComment.user.display_name | String | The display name of the user who created the comment. | 
 | Bitbucket.IssueComment.user.links | String | Links with information about the user who created the comment. | 
 | Bitbucket.IssueComment.user.type | String | The type of the user who created the comment. | 
-| Bitbucket.IssueComment.user.uuid | String | The unique id of the user who created the comment. | 
-| Bitbucket.IssueComment.user.account_id | String | The account id of the user who created the comment. | 
-| Bitbucket.IssueComment.user.nickname | String | The nickname of the user of who created the comment. | 
+| Bitbucket.IssueComment.user.uuid | String | The unique ID of the user who created the comment. | 
+| Bitbucket.IssueComment.user.account_id | String | The account ID of the user who created the comment. | 
+| Bitbucket.IssueComment.user.nickname | String | The nickname of the user who created the comment. | 
 | Bitbucket.IssueComment.issue.type | String | The type of the issue. | 
-| Bitbucket.IssueComment.issue.id | Number | The id of the issue. | 
+| Bitbucket.IssueComment.issue.id | Number | The ID of the issue. | 
 | Bitbucket.IssueComment.issue.repository.type | String | The type of the repository connected to the relevant issue. | 
 | Bitbucket.IssueComment.issue.repository.full_name | String | The full name of the repository connected to the relevant issue. | 
 | Bitbucket.IssueComment.issue.repository.links | String | Links to information about the relevant repository. | 
 | Bitbucket.IssueComment.issue.repository.name | String | The name of the relevant repository. | 
-| Bitbucket.IssueComment.issue.repository.uuid | String | The unique id of the relevant repository. | 
+| Bitbucket.IssueComment.issue.repository.uuid | String | The unique ID of the relevant repository. | 
 | Bitbucket.IssueComment.issue.links | String | Links with information about the issue. | 
 | Bitbucket.IssueComment.issue.title | String | The title of the issue. | 
 | Bitbucket.IssueComment.links | String | Links to information about the comment. | 
@@ -3189,7 +2988,7 @@ Creates a new comment on a pull request.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
-| pull_request_id | The id of the pull request to comment on. In order to get the pull request id use the command '!bitbucket-pull-request-list'. | Required | 
+| pull_request_id | The ID of the pull request to comment on. To get the pull request ID, use the  !bitbucket-pull-request-list command. | Required | 
 | content | The content of the comment. | Required | 
 
 
@@ -3197,24 +2996,24 @@ Creates a new comment on a pull request.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Bitbucket.PullRequestComment.id | Number | The id of the comment in the pull request. | 
+| Bitbucket.PullRequestComment.id | Number | The ID of the comment in the pull request. | 
 | Bitbucket.PullRequestComment.created_on | String | The creation date of the pull request comment. | 
 | Bitbucket.PullRequestComment.updated_on | String | The update date of the pull request comment. | 
-| Bitbucket.PullRequestComment.content.type | String | The type of the content, like rendered. | 
+| Bitbucket.PullRequestComment.content.type | String | The type of the content, such as rendered. | 
 | Bitbucket.PullRequestComment.content.raw | String | The actual content of the comment. | 
 | Bitbucket.PullRequestComment.content.markup | String | The text styling type, such as markdown. | 
-| Bitbucket.PullRequestComment.content.html | String | The content of the comment in html format. | 
+| Bitbucket.PullRequestComment.content.html | String | The content of the comment in HTML format. | 
 | Bitbucket.PullRequestComment.user.display_name | String | The display name of the user who created the comment. | 
 | Bitbucket.PullRequestComment.user.links | String | Links to information about the user | 
 | Bitbucket.PullRequestComment.user.type | String | The type of the user. | 
-| Bitbucket.PullRequestComment.user.uuid | String | The unique id of the user. | 
-| Bitbucket.PullRequestComment.user.account_id | String | The account id of the user. | 
+| Bitbucket.PullRequestComment.user.uuid | String | The unique ID of the user. | 
+| Bitbucket.PullRequestComment.user.account_id | String | The account ID of the user. | 
 | Bitbucket.PullRequestComment.user.nickname | String | The nickname of the user. | 
-| Bitbucket.PullRequestComment.deleted | Boolean | Is the comment deleted. | 
+| Bitbucket.PullRequestComment.deleted | Boolean | Whether the comment was deleted. | 
 | Bitbucket.PullRequestComment.type | String | The type of the action. | 
 | Bitbucket.PullRequestComment.links | String | Links to information about the pull request. | 
 | Bitbucket.PullRequestComment.pullrequest.type | String | The type of the pull request. | 
-| Bitbucket.PullRequestComment.pullrequest.id | Number | The id of the pull request. | 
+| Bitbucket.PullRequestComment.pullrequest.id | Number | The ID of the pull request. | 
 | Bitbucket.PullRequestComment.pullrequest.title | String | The title of the pull request. | 
 | Bitbucket.PullRequestComment.pullrequest.links | String | Links to information about the pull request. | 
 
@@ -3288,7 +3087,7 @@ Creates a new comment on a pull request.
 
 ### bitbucket-pull-request-comment-list
 ***
-returns a list of comments of a specific pull request.
+Returns a list of comments of a specific pull request.
 
 
 #### Base Command
@@ -3299,8 +3098,8 @@ returns a list of comments of a specific pull request.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
-| pull_request_id | The id of the pull request. In order to get the pull_request_id use the command '!bitbucket-pull-request-list'. | Required | 
-| comment_id | The id of the comment. In order to get the comment_id, use the command '!bitbucket-pull-request-comment-list'. | Optional | 
+| pull_request_id | The ID of the pull request. To get the pull_request_id, use the !bitbucket-pull-request-list command. | Required | 
+| comment_id | The ID of the comment. To get the comment_id, use the !bitbucket-pull-request-comment-list command. | Optional | 
 | limit | The maximum number of items in the list. The default value is 50. | Optional | 
 | page | The specific result page to display. | Optional | 
 
@@ -3309,24 +3108,24 @@ returns a list of comments of a specific pull request.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Bitbucket.PullRequestComment.id | Number | The id of the comment in the pull request. | 
+| Bitbucket.PullRequestComment.id | Number | The ID of the comment in the pull request. | 
 | Bitbucket.PullRequestComment.created_on | String | The creation date of the pull request comment. | 
 | Bitbucket.PullRequestComment.updated_on | String | The update date of the pull request comment. | 
-| Bitbucket.PullRequestComment.content.type | String | The type of the content, like rendered. | 
+| Bitbucket.PullRequestComment.content.type | String | The type of the content, such as rendered. | 
 | Bitbucket.PullRequestComment.content.raw | String | The actual content of the comment. | 
 | Bitbucket.PullRequestComment.content.markup | String | The text styling type, such as markdown. | 
-| Bitbucket.PullRequestComment.content.html | String | The content of the comment in html format. | 
+| Bitbucket.PullRequestComment.content.html | String | The content of the comment in HTML format. | 
 | Bitbucket.PullRequestComment.user.display_name | String | The display name of the user who created the comment. | 
-| Bitbucket.PullRequestComment.user.links | String | Links to information about the user | 
+| Bitbucket.PullRequestComment.user.links | String | Links to information about the user. | 
 | Bitbucket.PullRequestComment.user.type | String | The type of the user. | 
-| Bitbucket.PullRequestComment.user.uuid | String | The unique id of the user. | 
-| Bitbucket.PullRequestComment.user.account_id | String | The account id of the user. | 
+| Bitbucket.PullRequestComment.user.uuid | String | The unique ID of the user. | 
+| Bitbucket.PullRequestComment.user.account_id | String | The account ID of the user. | 
 | Bitbucket.PullRequestComment.user.nickname | String | The nickname of the user. | 
-| Bitbucket.PullRequestComment.deleted | Boolean | Is the comment deleted. | 
+| Bitbucket.PullRequestComment.deleted | Boolean | Whether the comment was deleted. | 
 | Bitbucket.PullRequestComment.type | String | The type of the action. | 
 | Bitbucket.PullRequestComment.links | String | Links to information about the pull request. | 
 | Bitbucket.PullRequestComment.pullrequest.type | String | The type of the pull request. | 
-| Bitbucket.PullRequestComment.pullrequest.id | Number | The id of the pull request. | 
+| Bitbucket.PullRequestComment.pullrequest.id | Number | The ID of the pull request. | 
 | Bitbucket.PullRequestComment.pullrequest.title | String | The title of the pull request. | 
 | Bitbucket.PullRequestComment.pullrequest.links | String | Links to information about the pull request. | 
 
@@ -3396,7 +3195,7 @@ returns a list of comments of a specific pull request.
 
 #### Human Readable Output
 
->### List of the comments on pull request number "1"
+>### List of the comments on pull request "1"
 >|Id|Content|CreatedBy|CreatedAt|UpdatedAt|
 >|---|---|---|---|---|
 >| 11111111 | new comment on a pull request | Some User | 2022-09-18T08:57:13.848266+00:00 | 2022-09-18T08:57:13.848309+00:00 |
@@ -3404,7 +3203,7 @@ returns a list of comments of a specific pull request.
 
 ### bitbucket-pull-request-comment-update
 ***
-updates a specific comment in a specific pull request.
+Updates a specific comment in a specific pull request.
 
 
 #### Base Command
@@ -3415,33 +3214,33 @@ updates a specific comment in a specific pull request.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
-| pull_request_id | The id of the pull request. In order to get the pull request_id use the command '!bitbucket-pull-request-list'. | Required | 
-| comment_id | The id of the comment. In order to get the comment_id, use the command '!bitbucket-pull-request-comment-list'. | Required | 
-| content | The id of the comment. | Required | 
+| pull_request_id | The ID of the pull request. To get the pull request_id use, the !bitbucket-pull-request-list command. | Required | 
+| comment_id | The ID of the comment. To get the comment_id, use the !bitbucket-pull-request-comment-list command. | Required | 
+| content | The ID of the comment. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Bitbucket.PullRequestComment.id | Number | The id of the comment in the pull request. | 
+| Bitbucket.PullRequestComment.id | Number | The ID of the comment in the pull request. | 
 | Bitbucket.PullRequestComment.created_on | String | The creation date of the pull request comment. | 
 | Bitbucket.PullRequestComment.updated_on | String | The update date of the pull request comment. | 
-| Bitbucket.PullRequestComment.content.type | String | The type of the content, like rendered. | 
+| Bitbucket.PullRequestComment.content.type | String | The type of the content, such as rendered. | 
 | Bitbucket.PullRequestComment.content.raw | String | The actual content of the comment. | 
 | Bitbucket.PullRequestComment.content.markup | String | The text styling type, such as markdown. | 
-| Bitbucket.PullRequestComment.content.html | String | The content of the comment in html format. | 
+| Bitbucket.PullRequestComment.content.html | String | The content of the comment in HTML format. | 
 | Bitbucket.PullRequestComment.user.display_name | String | The display name of the user who created the comment. | 
-| Bitbucket.PullRequestComment.user.links | String | Links to information about the user | 
+| Bitbucket.PullRequestComment.user.links | String | Links to information about the user. | 
 | Bitbucket.PullRequestComment.user.type | String | The type of the user. | 
-| Bitbucket.PullRequestComment.user.uuid | String | The unique id of the user. | 
-| Bitbucket.PullRequestComment.user.account_id | String | The account id of the user. | 
+| Bitbucket.PullRequestComment.user.uuid | String | The unique ID of the user. | 
+| Bitbucket.PullRequestComment.user.account_id | String | The account ID of the user. | 
 | Bitbucket.PullRequestComment.user.nickname | String | The nickname of the user. | 
-| Bitbucket.PullRequestComment.deleted | Boolean | Is the comment deleted. | 
+| Bitbucket.PullRequestComment.deleted | Boolean | Whether the comment was deleted. | 
 | Bitbucket.PullRequestComment.type | String | The type of the action. | 
 | Bitbucket.PullRequestComment.links | String | Links to information about the pull request. | 
 | Bitbucket.PullRequestComment.pullrequest.type | String | The type of the pull request. | 
-| Bitbucket.PullRequestComment.pullrequest.id | Number | The id of the pull request. | 
+| Bitbucket.PullRequestComment.pullrequest.id | Number | The ID of the pull request. | 
 | Bitbucket.PullRequestComment.pullrequest.title | String | The title of the pull request. | 
 | Bitbucket.PullRequestComment.pullrequest.links | String | Links to information about the pull request. | 
 
@@ -3515,7 +3314,7 @@ updates a specific comment in a specific pull request.
 
 ### bitbucket-pull-request-comment-delete
 ***
-deletes a specific comment in a specific pull request.
+Deletes a specific comment in a specific pull request.
 
 
 #### Base Command
@@ -3526,8 +3325,8 @@ deletes a specific comment in a specific pull request.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
-| pull_request_id | The id of the pull request. In order to get the pull_request_id use the command '!bitbucket-pull-request-list'. | Required | 
-| comment_id | The id of the comment. In order to get the comment_id use the command '!bitbucket-pull-request-comment-list'. | Required | 
+| pull_request_id | The ID of the pull request. To get the pull_request_id, use the !bitbucket-pull-request-list command. | Required | 
+| comment_id | The ID of the comment. To get the comment_id, use the !bitbucket-pull-request-comment-list command. | Required | 
 
 
 #### Context Output
@@ -3541,7 +3340,7 @@ There is no context output for this command.
 
 ### bitbucket-workspace-member-list
 ***
-returns a list of all the members in the workspace.
+Returns a list of all the members in the workspace.
 
 
 #### Base Command
@@ -3563,11 +3362,11 @@ returns a list of all the members in the workspace.
 | Bitbucket.WorkspaceMember.user.display_name | String | The display name of the user. | 
 | Bitbucket.WorkspaceMember.user.links | String | Links with information about the user. | 
 | Bitbucket.WorkspaceMember.user.type | String | The type of the user. | 
-| Bitbucket.WorkspaceMember.user.uuid | String | The unique id of the user. | 
-| Bitbucket.WorkspaceMember.user.account_id | String | The account id of the user. | 
+| Bitbucket.WorkspaceMember.user.uuid | String | The unique ID of the user. | 
+| Bitbucket.WorkspaceMember.user.account_id | String | The account ID of the user. | 
 | Bitbucket.WorkspaceMember.user.nickname | String | The nickname of the user. | 
 | Bitbucket.WorkspaceMember.workspace.type | String | The type of the workspace. | 
-| Bitbucket.WorkspaceMember.workspace.uuid | String | The unique id of the workspace. | 
+| Bitbucket.WorkspaceMember.workspace.uuid | String | The unique ID of the workspace. | 
 | Bitbucket.WorkspaceMember.workspace.name | String | The name of the workspace. | 
 | Bitbucket.WorkspaceMember.workspace.slug | String | The slug of the workspace. | 
 | Bitbucket.WorkspaceMember.workspace.links | String | Links to information about the workspace. | 
@@ -3630,27 +3429,27 @@ returns a list of all the members in the workspace.
                 },
                 "type": "workspace_membership",
                 "user": {
-                    "account_id": "111111111111111111111111",
+                    "account_id": "222222222222222222222222",
                     "display_name": "Display Name",
                     "links": {
                         "avatar": {
                             "href": "https://secure.gravatar.com/avatar/?d=httpsavatar-management--avatars.us-west-2.prod.public.atl-paas.net.png"
                         },
                         "html": {
-                            "href": "https://bitbucket.org/%11111111-1111-1111-1111-111111111111%11/"
+                            "href": "https://bitbucket.org/%22222222-2222-2222-2222-222222222222%11/"
                         },
                         "self": {
-                            "href": "https://api.bitbucket.org/2.0/users/%11111111-1111-1111-1111-111111111111%11"
+                            "href": "https://api.bitbucket.org/2.0/users/%22222222-2222-2222-2222-222222222222%22"
                         }
                     },
                     "nickname": "nickname",
                     "type": "user",
-                    "uuid": "{11111111-1111-1111-1111-111111111111}"
+                    "uuid": "{22222222-2222-2222-2222-222222222222}"
                 },
                 "workspace": {
                     "links": {
                         "avatar": {
-                            "href": "https://bitbucket.org/workspaces/workspace/avatar/?ts=1111111111"
+                            "href": "https://bitbucket.org/workspaces/workspace/avatar/?ts=22222222"
                         },
                         "html": {
                             "href": "https://bitbucket.org/workspace/"
@@ -3659,10 +3458,10 @@ returns a list of all the members in the workspace.
                             "href": "https://api.bitbucket.org/2.0/workspaces/workspace"
                         }
                     },
-                    "name": "Some User",
+                    "name": "Another User",
                     "slug": "workspace",
                     "type": "workspace",
-                    "uuid": "{11111111-1111-1111-1111-111111111111}"
+                    "uuid": "{222222222-2222-2222-2222-222222222222}"
                 }
             }
         ]
@@ -3673,8 +3472,8 @@ returns a list of all the members in the workspace.
 #### Human Readable Output
 
 >### The list of all the workspace members
->|Name|AccountId|
->|---|---|
->| Name | 111111111111111111111111 |
->| Name | 111111111111111111111111 |
+>| Name         |AccountId|
+--------------|---|---|
+>| Some User | 111111111111111111111111 |
+>| Another User | 222222222222222222222222 |
 
