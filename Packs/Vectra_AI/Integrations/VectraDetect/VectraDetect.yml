@@ -447,6 +447,9 @@ script:
     - contextPath: Vectra.Assignment.TriagedDetections
       type: String
       description: List of Detection that have been triaged with the resolution
+    - contextPath: Vectra.Assignment.TriagedAs
+      type: String
+      description: Name of the triage rule if any
     - contextPath: Vectra.Assignment.ResolvedBy
       type: String
       description: Who resolved this assignment

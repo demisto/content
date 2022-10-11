@@ -1126,6 +1126,9 @@ def extract_assignment_data(assignment: Dict[str, Any]) -> Dict[str, Any]:
     resolved_by = assignment.get('resolved_by')
     resolved_by_user = resolved_by.get('username') if resolved_by else None
 
+    # assignment['events'][0]['context'] is always present
+    triaged_as = assignment['events'][0]['context'].get('triage_as')
+
     return remove_empty_elements({
         'AccountID'         : assignment.get('account_id'),                                  # noqa: E203
         'AssignedBy'        : assigned_by_user,                                              # noqa: E203
@@ -1137,6 +1140,7 @@ def extract_assignment_data(assignment: Dict[str, Any]) -> Dict[str, Any]:
         'OutcomeCategory'   : convert_outcome_category_raw2text(outcome_category),           # noqa: E203
         'OutcomeTitle'      : outcome_title,                                                 # noqa: E203
         'TriagedDetections' : assignment.get('triaged_detections'),                          # noqa: E203
+        'TriagedAs'         : triaged_as,                                                    # noqa: E203
         'ResolvedBy'        : resolved_by_user,                                              # noqa: E203
         'ResolvedDate'      : convert_date(assignment.get('date_resolved')),                 # noqa: E203
     })
