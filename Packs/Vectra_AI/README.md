@@ -11,6 +11,7 @@ This pack is designed to quickly integrate with Vectra Detect platform to detect
 * Enriches incidents
 * Download detection PCAP
 * Push tags to Vectra Detect platform
+* Create/Update/Resolve Vectra assignments
 
 ## Before you start
 
