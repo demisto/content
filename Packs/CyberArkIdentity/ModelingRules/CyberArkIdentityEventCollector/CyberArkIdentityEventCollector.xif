@@ -6,7 +6,7 @@ filter EventType in ("Cloud.Core.OAuthToken.Create", "Cloud.Core.Logout", "Cloud
         XDM.Auth.outcome=MfaResult,
         XDM.Auth.reason=MfaReason,
         XDM.Auth.Target.application.name=coalesce(ProfileName, ApplicationName, AppName),
-		XDM.Auth.auth_method=AuthMethod;
+		    XDM.Auth.auth_method=AuthMethod;
         
 [MODEL: dataset=cyberark_identity_raw, model=Audit]
   alter XDM.Audit.audited_resource.name=coalesce(ObjectName, Role, Alias, ProfileName, TargetUser, DSName, ImpersonateTargetName, Cname, AffectedTenant, OU, DeviceName, ApplicationName, AppName, EntityName),
@@ -28,4 +28,4 @@ filter EventType in ("Cloud.Core.OAuthToken.Create", "Cloud.Core.Logout", "Cloud
         XDM.Audit.operation_sub_type=SyncAction,
         XDM.Audit.observation_timestamp=to_timestamp(to_integer(arrayindex(regextract(WhenLogged, "[0-9]+"), 0)), "MILLIS"),
         XDM.Audit.event_timestamp=to_timestamp(to_integer(arrayindex(regextract(WhenOccurred, "[0-9]+"), 0)), "MILLIS"),
-		XDM.Audit.original_event_type=EventType;
+		    XDM.Audit.original_event_type=EventType;
