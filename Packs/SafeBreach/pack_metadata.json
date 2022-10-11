@@ -14,10 +14,7 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Breach",
-        "Simulation",
-        "Attack",
-        "TIM"
+        "Breach Simulation"
     ],
     "useCases": [
         "Breach Notification",
