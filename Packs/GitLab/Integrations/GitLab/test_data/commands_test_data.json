@@ -568,16 +568,7 @@
                 "service_desk_reply_to": null
             }
         ],
-    "raw_file":{
-        "Hey,
-        I am a file.
-        My purpose is to check raw file command and file get command.
-            
-        Friends is better than how I Met Your Mother.
-            
-        thanks."
-
-    },
+    "raw_file": "I am a file.",
     "List Brnaches":
     [
         {
@@ -1164,7 +1155,6 @@
             "web_url": "https://gitlab.com/test9308"
         },
     "issue_create":{
-        "id": 0,
         "iid": 114,
         "title": "title_test",
         "description": "desc_test",

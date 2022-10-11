@@ -1,6 +1,6 @@
 import io
 import json
-# import pytest
+import pytest
 
 RESPONSE_DETAILS_GET_PUT = [
     (200, 'GitLab.', "The opretion was successfull"),
@@ -32,42 +32,46 @@ def util_load_json(path):
 test_data = {'group_id': '55694272',
              'raw_file': '.gitlab-ci.yml'}
 
-
 ARGS_CASES = [
-    (1, 0, 'The page value must be equal to 1 or bigger.'),
-    (2, -1, 'The page_size value must be equal to 1 or bigger.'),
-    (1, 1, 'valid values')
+    (2, -1, False,  # The page_size value must be equal to 1 or bigger.
+     {'error': 'Pagination values must be positive'}  # expected
+     ),
+    (-5, 11, False,  # The page_size value must be equal to 1 or bigger.
+     {'error': 'Pagination values must be positive'}  # expected
+     ),
+    (1, 1, True,  # Good Case
+     {'limit': 1, 'per_page': 1, 'page_number': 1}),  # expected
+    (120, 1, True,  # Good Case
+     {'limit': 120, 'per_page': 100, 'page_number': 1})  # expected
 ]
 
 
-def test_create_issue_command(mocker):
+@pytest.mark.parametrize('limit, page_number, isGoodCase, expected_results', ARGS_CASES)
+def test_check_args(limit, page_number, isGoodCase, expected_results):
     """
-    Given:
-        'title': the new title for the issue.
-        'description': description for the issue.
-        'labels': labels for the issue.
-    When:
-        Running the add_issue_to_project_board_command function.
-    Then:
-        Assert the message returned is as expected.
-    """
-    from GitLab import Client, create_issue_command
-    client = Client(project_id=1234,
-                    base_url="base_url",
-                    verify=False,
-                    proxy=False,
-                    headers={'PRIVATE-TOKEN': 'api_key'})
-    params = {'title': 'title_test', 'description': 'desc_test', 'labels': 'label1'}
-    expected_results = {'Iid': 114,
-                        'Title': 'title_test',
-                        'CreatedAt': '2022-10-06T14:45:38.004Z',
-                        'UpdatedAt': '2022-10-06T14:45:38.004Z',
-                        'CreatedBy': 'name',
-                        'State': 'opened'}
-    ret_value = util_load_json('test_data/commands_test_data.json').get('issue_create')
-    mocker.patch.object(Client, 'create_issue_request', return_value=ret_value)
-    result = create_issue_command(client, params)
-    assert result == expected_results
+        Given:
+            - A command's arguments
+
+        When:
+            - running commands that has pagination
+
+        Then:
+            - checking that if the parameters < 1 , exception is thrown
+
+        """
+    from GitLab import validate_pagination_values
+    from CommonServerPython import DemistoException
+
+    if isGoodCase:
+        res_limit, res_per_page, res_page_number = validate_pagination_values(limit, page_number)
+        assert res_limit == expected_results['limit']
+        assert res_per_page == expected_results['per_page']
+        assert res_page_number == expected_results['page_number']
+
+    else:
+        with pytest.raises(DemistoException) as e:
+            validate_pagination_values(limit, page_number)
+        assert str(e.value) == expected_results['error']
 
 
 '''
@@ -109,27 +113,6 @@ def test_get_version_command(requests_mock):
     assert len(results) == 2
     assert results['version'] == response_version['version']
     assert results['reversion'] == response_version['reversion']
-
-
-
-@pytest.mark.parametrize('page, limit, expected_results', ARGS_CASES)
-def test_check_args(page, limit, expected_results):
-    """
-        Given:
-            - A command's arguments
-
-        When:
-            - running commands that has pagination
-
-        Then:
-            - checking that if the parameters < 1 , exception is thrown
-
-        """
-    from GitLab import validate_pagination_values
-
-    with pytest.raises(Exception) as e:
-        validate_pagination_values(page, limit)
-    assert e.value.args[0] == expected_results
 
 
 def test_group_project_list_command_limit(requests_mock):
@@ -284,38 +267,33 @@ def test_project_list_command_page(requests_mock):
     assert results == res
 
 
-def test_issue_update_command(request_mock):
-    pass
+def test_create_issue_command(mocker):
+    """
+    Given:
+        'title': the new title for the issue.
+        'description': description for the issue.
+        'labels': labels for the issue.
+    When:
+        Running the add_issue_to_project_board_command function.
+    Then:
+        Assert the message returned is as expected.
+    """
+    from GitLab import Client, create_issue_command
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    params = {'title': 'title_test', 'description': 'desc_test', 'labels': 'label1'}
+    expected_results = {'Iid': 114,
+                        'Title': 'title_test',
+                        'CreatedAt': '2022-10-06T14:45:38.004Z',
+                        'CreatedBy': 'name',
+                        'UpdatedAt': '2022-10-06T14:45:38.004Z',
+                        'State': 'opened'}
 
-
-def test_issue_list_command(request_mock):
-    pass
-
-
-def test_get_raw_file_command(request_mock):
-    pass
-
-
-def test_get_project_list_command(request_mock):
-    pass
-
-
-def test_list_project_users_command(request_mock):
-    pass
-
-
-def test_list_group_members_command(request_mock):
-    pass
-
-
-def test_list_merge_request_command(request_mock):
-    pass
-
-
-def list_commits_command(request_mock):
-    pass
-
-
-def list_branches_command(request_mock):
-    pass
+    ret_value = util_load_json('test_data/commands_test_data.json').get('issue_create')
+    mocker.patch.object(Client, 'create_issue_request', return_value=ret_value)
+    result = create_issue_command(client, params)
+    assert type(result.readable_output) == dict
 '''
