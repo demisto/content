@@ -190,9 +190,9 @@ class Build:
     #  END CHANGE ON LOCAL RUN  #
     @staticmethod
     def get_secret_service_account_config() -> str:
-        f = open(os.environ['GSM_SERVICE_ACCOUNT'])
-        creds = json.load(f)
-        return json.dumps(creds)
+        with open(os.environ['GSM_SERVICE_ACCOUNT']) as f:
+            creds = json.load(f)
+            return json.dumps(creds)
 
     def __init__(self, options):
         self._proxy = None
@@ -208,6 +208,7 @@ class Build:
         self.secret_conf = GoogleSecreteManagerModule(self.get_secret_service_account_config())
         self.username = options.user if options.user else os.environ['DEMISTO_USERNAME']
         self.password = options.password if options.password else os.environ['DEMISTO_PASSWORD']
+        self.project_id = os.environ['GSM_PROJECT_ID']
         self.is_private = options.is_private
         conf = get_json_file(options.conf)
         self.tests = conf['tests']
@@ -406,7 +407,6 @@ class Build:
             placeholders_map = {'%%SERVER_HOST%%': self.servers[0]}
             new_ints_params_set = set_integration_params(self,
                                                          new_integrations,
-                                                         self.secret_conf,
                                                          instance_names_conf,
                                                          placeholders_map)
             ints_to_configure_params_set = set_integration_params(self,
@@ -1070,7 +1070,7 @@ def change_placeholders_to_values(placeholders_map, config_item):
 
 def set_integration_params(build,
                            integrations,
-                           secret_params,
+                           project_id,
                            instance_names,
                            placeholders_map,
                            logging_module=logging):
@@ -1089,9 +1089,8 @@ def set_integration_params(build,
         build: Build object
         integrations: (list of dicts)
             List of integration objects whose 'params' attribute will be populated in this function.
-        secret_params: (list of dicts)
-            List of secret configuration values for all of our integrations (as well as specific
-            instances of said integrations).
+        project_id: (str)
+            The id of the vault project in google cloud services.
         instance_names: (list)
             The names of particular instances of an integration to use the secret_params of as the
             configuration values.
@@ -1103,8 +1102,9 @@ def set_integration_params(build,
         (bool): True if integrations params were filled with secret configuration values, otherwise false
     """
     for integration in integrations:
-        integration_params = [change_placeholders_to_values(placeholders_map, item) for item
-                              in secret_params if item['name'] == integration['name']]
+        # integration_params = [change_placeholders_to_values(placeholders_map, item) for item
+        #                       in secret_params if item['name'] == integration['name']]
+        self.secret_conf.get_secret(project_id, '''get name from integration'''),
         if integration_params:
             matched_integration_params = integration_params[0]
             # if there are more than one integration params, it means that there are configuration
