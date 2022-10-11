@@ -421,6 +421,7 @@ def main():  # pragma: no cover
             if command == 'proofpoint-trap-get-events':
                 first_fetch, _ = parse_date_range('2 years',
                                                   date_format=TIME_FORMAT)
+                fetch_limit = 1000
                 incidents_states = 'open'
                 events, last_run = fetch_events_command(
                     client,
