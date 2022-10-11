@@ -2,7 +2,7 @@ import demistomock as demisto
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Generator
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -186,23 +186,32 @@ def get_events_command(
 def fetch_events_from_saas_security(client: Client, max_fetch: Optional[int] = None) -> List[Dict]:
     """
     Fetches events from the saas-security queue.
+
+    timeouts (204) docs:
+    https://docs.paloaltonetworks.com/saas-security/saas-security-admin/saas-security-api/syslog-and-api-integration/
+    api-client-integration/public-api-references/log-events-api#id2bfde842-f708-4e0b-bc41-9809903a6021_id8089db72-8f30-
+    4cce-93d2-e39446be650d
     """
     events: List[Dict] = []
     under_max_fetch = True
+    fetch_num = 1
 
     #  if max fetch is None, all events will be fetched until there aren't anymore in the queue (until we get 204)
     while under_max_fetch:
         response = client.get_events_request()
-        if response.status_code == 204:  # if we got 204, it means there aren't events in the queue, hence breaking.
-            break
         fetched_events = response.json().get('events') or []
-        demisto.info(f'fetched events length: ({len(fetched_events)})')
-        demisto.debug(f'fetched events: ({fetched_events})')
+        if response.status_code == 204 or not fetched_events:
+            # if we got 204, it means there is a timeout, hence breaking.
+            # if there aren't any events in the queue, we can break as well.
+            break
+        demisto.info(f'{fetch_num=}, ({len(fetched_events)})')
+        demisto.debug(f'{fetch_num=}, ({fetched_events})')
+        yield fetched_events
         events.extend(fetched_events)
         if max_fetch:
             under_max_fetch = len(events) < max_fetch
 
-    return events
+    demisto.debug(f'fetched total events: {len(events)=}, {events=}')
 
 
 def main() -> None:
