@@ -13,9 +13,9 @@ Parse Stix files to Demisto indicators
 ---
 
 | **Argument Name** | **Description** |
-| --- | --- |
-| ioc_txt | ioc xml or json in stix format. |
-| entry_id | ioc file entry id. |
+|-------------------| --- |
+| iocXml            | ioc xml or json in stix format. |
+| entry_id          | ioc file entry id. |
 
 ## Outputs
 ---

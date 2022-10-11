@@ -1537,11 +1537,11 @@ def parse_stix(file_name):
 def main():     # pragma: no cover
     args = demisto.args()
 
-    indicator_txt = args.get('ioc_txt')
+    indicator_txt = args.get('iocXml')
     entry_id = args.get('entry_id')
 
     if not indicator_txt and not entry_id:
-        raise Exception('You must enter ioc_txt or entry_id of the Indicator.')
+        raise Exception('You must enter iocXml or entry_id of the Indicator.')
     elif entry_id:
         file_path = demisto.getFilePath(entry_id).get('path')
         with open(file_path, 'r') as f:

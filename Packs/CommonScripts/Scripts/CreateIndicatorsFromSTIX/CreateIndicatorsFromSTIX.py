@@ -25,6 +25,7 @@ def create_indicators_loop(indicators):
     """
     errors = list()
     for indicator in indicators:
+        indicator['type'] = indicator.get('indicator_type')
         res = demisto.executeCommand("createNewIndicator", indicator)
         if is_error(res[0]):
             errors.append(f'Error creating indicator - {(res[0]["Contents"])}')

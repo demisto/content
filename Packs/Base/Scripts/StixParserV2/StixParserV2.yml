@@ -2,7 +2,7 @@ args:
 - default: true
   description: ioc xml or json in stix format.
   isArray: false
-  name: ioc_txt
+  name: iocXml
   required: false
 - default: true
   description: ioc file entry id.
