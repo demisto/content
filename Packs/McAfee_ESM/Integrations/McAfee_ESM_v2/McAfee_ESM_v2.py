@@ -654,9 +654,8 @@ class McAfeeESMClient(BaseClient):
     def __alarms_to_incidents(self, start_time: str, start_id: int = 0, limit: int = 1) -> Tuple[List, Dict]:
         current_time = datetime.utcnow().strftime(self.demisto_format)
         current_run = {}
-        # _, _, all_alarms = self.fetch_alarms(start_time=start_time, end_time=current_time, raw=True)
-        # all_alarms = filtering_incidents(all_alarms, start_id=start_id, limit=limit)
-        all_alarms = [{'id': 'test'}]
+        _, _, all_alarms = self.fetch_alarms(start_time=start_time, end_time=current_time, raw=True)
+        all_alarms = filtering_incidents(all_alarms, start_id=start_id, limit=limit)
         demisto.debug(f'finished fetching all alarms and filtering, {len(all_alarms)=}')
         if all_alarms:
             current_run['time'] = all_alarms[0].get('triggeredDate', start_time)
