@@ -414,13 +414,13 @@ def get_exception_message(e: DemistoException) -> Dict:
 
 
 def check_pagination(client: Client, response: Dict, limit: int) -> List:
-    """ Test the connection to bitbucket.
+    """ Check if pagination is needed.
     Args:
         client: A Bitbucket client.
         response: A response from the API call.
-        limit: A limit to the list
+        limit: A limit to the list.
     Returns:
-        'ok' if the connection was successful, else throws exception.
+        An array of all the relevant results.
     """
     arr: List[Dict] = response.get('values', [])
     is_next = response.get('next', None)
@@ -444,16 +444,14 @@ def get_paged_results(client: Client, response: Dict, limit: int) -> List:
     arr: List[Dict] = response.get('values', [])
     is_next = response.get('next', None)
     while response:
-        for value in arr:
-            if limit > 0:
-                results.append(value)
-                limit = limit - 1
-            else:
-                break
+        results += arr
+        limit = limit - len(arr)
         if limit > 0 and is_next:
             response = client.get_full_url(full_url=is_next)
             is_next = response.get('next', None)
             arr = response.get('values', [])
+            if len(arr) > limit:
+                arr = arr[:len(arr) - (len(arr) - limit)]
         else:
             return results
     return results
