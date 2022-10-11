@@ -9,6 +9,7 @@ import requests
 import traceback
 import urllib.parse
 from typing import Tuple, Optional, List, Dict
+from sys import getsizeof
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -47,7 +48,8 @@ class Client(BaseClient):
     def __init__(self, indicator_type: str, api_token: str, services: list, risk_rule: str = None,
                  fusion_file_path: str = None, insecure: bool = False,
                  polling_timeout: int = 20, proxy: bool = False, threshold: int = 65, risk_score_threshold: int = 0,
-                 tags: Optional[list] = None, tlp_color: Optional[str] = None):
+                 tags: Optional[list] = None, tlp_color: Optional[str] = None,
+                 exclude_from_indicator: Optional[str] = None):
         """
         Attributes:
              indicator_type: string, the indicator type of the feed.
@@ -61,7 +63,8 @@ class Client(BaseClient):
              threshold: The minimum score from the feed in order to to determine whether the indicator is malicious.
              risk_score_threshold: The minimum score to filter out the ingested indicators.
              tags: A list of tags to add to indicators
-             :param tlp_color: Traffic Light Protocol color
+             tlp_color: Traffic Light Protocol color
+             exclude_from_indicator (optional): A field to exclude from indicator object, e.g. rawJSON.
         """
         if tags is None:
             tags = []
@@ -79,6 +82,7 @@ class Client(BaseClient):
         self.risk_score_threshold = int(risk_score_threshold) if risk_score_threshold else risk_score_threshold
         self.tags = tags
         self.tlp_color = tlp_color
+        self.exclude_from_indicator = exclude_from_indicator
         super().__init__(self.BASE_URL, proxy=proxy, verify=not insecure)
 
     def _build_request(self, service, indicator_type, risk_rule: Optional[str] = None) -> requests.PreparedRequest:
@@ -368,6 +372,25 @@ def fetch_and_create_indicators(client, risk_rule: Optional[str] = None):
         demisto.createIndicators(indicators)
 
 
+def print_batch_stats(indicators):
+    if not indicators:
+        demisto.debug('No indicators to ingest in this batch')
+        return
+    min_size = getsizeof(indicators[0])
+    max_size = getsizeof(indicators[0])
+    total_size = getsizeof(indicators[0])
+    max_record = indicators[0]
+    for ind in indicators:
+        curr_ind_size = getsizeof(ind)
+        min_size = curr_ind_size if min_size > curr_ind_size else min_size
+        max_size = curr_ind_size if max_size < curr_ind_size else max_size
+        total_size += curr_ind_size
+        max_record = ind if max_size == curr_ind_size else max_record
+    avg_size = total_size / len(indicators)
+    demisto.debug(f'{min_size=}, {max_size=}, {total_size=}, {avg_size=} (bytes)')
+    demisto.debug(f'max_record:\n{json.dumps(max_record, indent=4)}')
+
+
 def fetch_indicators_command(client, indicator_type, risk_rule: Optional[str] = None, limit: Optional[int] = None):
     """Fetches indicators from the Recorded Future feeds.
     Args:
@@ -414,18 +437,20 @@ def fetch_indicators_command(client, indicator_type, risk_rule: Optional[str] = 
                 indicator_obj = {
                     'value': value,
                     'type': raw_json['type'],
-                    'rawJSON': raw_json,
-                    'fields': {
-                        'recordedfutureevidencedetails': lower_case_evidence_details_keys,
-                        'tags': client.tags,
-                    },
                     'score': score
                 }
+                if client.exclude_from_indicator != 'rawJSON':
+                    indicator_obj['rawJSON'] = raw_json
+                if client.exclude_from_indicator != 'fields':
+                    indicator_obj['fields'] = {
+                        'recordedfutureevidencedetails': lower_case_evidence_details_keys,
+                        'tags': client.tags,
+                    }
                 if client.tlp_color:
                     indicator_obj['fields']['trafficlightprotocol'] = client.tlp_color
 
                 indicators.append(indicator_obj)
-
+            print_batch_stats(indicators)
             yield indicators
 
 
@@ -503,7 +528,8 @@ def main():  # pragma: no cover
     client = Client(RF_INDICATOR_TYPES[params.get('indicator_type')], params.get('api_token'), params.get('services'),
                     params.get('risk_rule'), params.get('fusion_file_path'), params.get('insecure'),
                     params.get('polling_timeout'), params.get('proxy'), params.get('threshold'),
-                    params.get('risk_score_threshold'), argToList(params.get('feedTags')), params.get('tlp_color'))
+                    params.get('risk_score_threshold'), argToList(params.get('feedTags')), params.get('tlp_color'),
+                    params.get('exclude_from_indicator'))
     command = demisto.command()
     demisto.info('Command being called is {}'.format(command))
     # Switch case

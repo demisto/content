@@ -154,6 +154,15 @@ configuration:
   name: risk_score_threshold
   required: false
   type: 0
+- display: Items to exclude from indicator object
+  name: exclude_from_indicator
+  defaultvalue: None
+  type: 15
+  required: false
+  options:
+  - None
+  - rawJSON
+  - fields
 description: Ingests indicators from Recorded Future feeds into Demisto.
 display: Recorded Future RiskList Feed
 name: Recorded Future Feed
