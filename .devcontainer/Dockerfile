@@ -25,7 +25,6 @@ RUN UID="1000" GID="1000" bash install-common.sh
 RUN VERSION="os-provided" bash install-git.sh
 RUN VERSION="latest" bash install-dind.sh
 RUN VERSION="latest" bash install-node.sh
-RUN VERSION="latest" bash install-powershell.sh
 
 # install poetry, configure certificate for git and tools for oh my zsh
 RUN curl -sSL https://install.python-poetry.org | python3 - \

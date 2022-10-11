@@ -2,8 +2,7 @@
 
 set -e
 
-sudo chown -R demisto .venv
-sudo chown -R demisto node_modules
+sudo chown -R demisto /workspaces
 
 cp .devcontainer/settings.json .vscode/settings.json 
 touch CommonServerUserPython.py
