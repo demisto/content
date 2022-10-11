@@ -5,5 +5,4 @@ name: Mimecast Modeling Rule
 rules: ''
 schema: ''
 tags: mimecast
-to_xdr_version: 3.4.9
-toversion: 6.9.9
+

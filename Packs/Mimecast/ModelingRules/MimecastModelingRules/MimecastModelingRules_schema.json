@@ -8,14 +8,6 @@
         "type": "datetime",
         "is_array": false
       },
-      "eventInfo": {
-        "type": "string",
-        "is_array": false
-      },
-      "auditType": {
-        "type": "string",
-        "is_array": false
-      },
       "user": {
         "type": "string",
         "is_array": false
