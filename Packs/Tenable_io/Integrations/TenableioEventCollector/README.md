@@ -14,7 +14,7 @@ This integration was integrated and tested with version 1.0 of Tenable.io
     | Vulnerabilities Fetch Interval | Fetch interval in minutes. | True |
     | Severity | The severity of the vulnerabilities to include in the export. | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Max Fetch | The maximum amount of audit logs to retrieve for each event type. For more information about event types see the help section. | False |
+    | Max Fetch | The maximum number of audit logs to retrieve for each event type. For more information about event types see the help section. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
@@ -36,10 +36,10 @@ Returns audit logs extracted from Tenable io.
 | --- | --- | --- |
 | should_push_events | Set this argument to True in order to create events, otherwise the command will only display the events. Possible values are: true, false. Default is false. | Required | 
 | limit | The maximum number of alerts to return (maximum value - 5000). | Optional | 
-| from_date | Date to return events that occurred after. | Optional | 
-| to_date | Date to return events that occurred before. | Optional | 
-| actor_id | Return events contains given actor UUID. | Optional | 
-| target_id | Return events matching given target UUID. | Optional | 
+| from_date | Return events that occurred after the specified date.  | Optional | 
+| to_date | Return events that occurred before the specified date. | Optional | 
+| actor_id | Return events that contain the specified actor UUID. | Optional | 
+| target_id | Return events matching the specified target UUID. | Optional | 
 
 
 #### Context Output
@@ -73,7 +73,7 @@ Returns vulnerabilities extracted from Tenable io.
 | should_push_events | Set this argument to True in order to create events, otherwise the command will only display the events. Possible values are: true, false. Default is false. | Required | 
 | last_found | Returns vulnerabilities that were last found between the specified date (in Unix time) and now. | Optional | 
 | num_assets | The severity of the vulnerabilities to include in the export. | Optional | 
-| hide_polling_output | Hide polling output. | Optional | 
+| hide_polling_output | Whether to hide the polling output. | Optional | 
 
 
 #### Context Output
