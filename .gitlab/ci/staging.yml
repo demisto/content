@@ -20,13 +20,13 @@ graph-create-instances:
     - !reference [.download-demisto-conf]
     # - !reference [.create-id-set-xsoar]
     - !reference [.create-release-notes-and-common-docs]
-    - section_start "Create content graph"
+    - section_start "Create content graph" --collapsed
     - neo4j-admin --version
     - demisto-sdk create-content-graph -o $ARTIFACTS_FOLDER/content-graph.dump
-    - section_end "Create content graph" --collapsed
+    - section_end "Create content graph"
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
-    - demisto-sdk create-content-artifacts-v2 -o $ARTIFACTS_FOLDER --marketplace "xsoar" --dependencies
+    - demisto-sdk create-content-artifacts-v2 -o $ARTIFACTS_FOLDER --marketplace "xsoar" --dependencies true
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
     # - successful_feature_branch_build=$(gsutil ls "gs://xsoar-ci-artifacts/content/$FEATURE_BRANCH_NAME/*" | tail -n 1 | grep -o -E "content/$FEATURE_BRANCH_NAME/[0-9]*")
     # - echo $successful_feature_branch_build
@@ -102,7 +102,7 @@ graph-prepare-testing-bucket-mpv2:
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
     # - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "xsoar" -fbi -idp ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
-    - demisto-sdk create-content-artifacts-v2 -o $ARTIFACTS_FOLDER --marketplace "marketplacev2" --no-zip --dependencies
+    - demisto-sdk create-content-artifacts-v2 -o $ARTIFACTS_FOLDER --marketplace "marketplacev2" --no-zip --dependencies true
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
 
     # - section_start "Create Content Artifacts and Update Conf" --collapsed
