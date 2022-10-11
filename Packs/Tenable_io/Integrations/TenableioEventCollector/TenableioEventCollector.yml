@@ -32,7 +32,7 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: The maximum amount of audit logs to retrieve for each event type. For more information about event types see the help section.
+- additionalinfo: The maximum number of audit logs to retrieve for each event type. For more information about event types see the help section.
   defaultvalue: '1000'
   display: Max Fetch
   hidden: false
@@ -48,7 +48,7 @@ configuration:
   required: false
   type: 8
 - display: Vulnerabilities Fetch Interval in minutes
-  additionalinfo:  Time in minutes between fetches of vulnerabilities.
+  additionalinfo: Time in minutes between fetches of vulnerabilities.
   name: vuln_fetch_interval
   required: true
   type: 0
@@ -74,25 +74,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: Date to return events that occurred after.
+      description: Return events that occurred after the specified date. 
       isArray: false
       name: from_date
       required: false
       secret: false
     - default: false
-      description: Date to return events that occurred before.
+      description: Return events that occurred before the specified date. 
       isArray: false
       name: to_date
       required: false
       secret: false
     - default: false
-      description: Return events contains given actor UUID.
+      description: Return events that contain the specified actor UUID.
       isArray: false
       name: actor_id
       required: false
       secret: false
     - default: false
-      description: Return events matching given target UUID.
+      description: Return events matching the specified target UUID.
       isArray: false
       name: target_id
       required: false
@@ -124,10 +124,10 @@ script:
       required: false
       secret: false
     - name: hide_polling_output
-      description: Hide polling output.
+      description: Whether to hide the polling output.
       deprecated: true
     - name: export_uuid
-      description: Export uuid to check status for.
+      description: Whether to export the UUID for which to check the status.
       deprecated: true
     deprecated: false
     description: Returns vulnerabilities extracted from Tenable io.
