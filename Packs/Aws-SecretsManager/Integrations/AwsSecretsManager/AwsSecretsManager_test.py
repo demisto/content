@@ -141,8 +141,8 @@ def test_aws_secrets_manager_secret_policy_get_command(mocker, args, expected_re
     aws_client = create_client()
     mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, 'get_resource_policy',
-                        return_value={'ARN': 'arn', 'Name': 'd', 'ResourcePolicy': 'dw', 'ResponseMetadata':
-                            {'HTTPStatusCode': 200}})
+                        return_value={'ARN': 'arn', 'Name': 'd', 'ResourcePolicy': 'dw',
+                                      'ResponseMetadata': {'HTTPStatusCode': 200}})
     mocker.patch.object(demisto, 'results')
     return_error_method = mocker.patch.object(AWS_SECRETSMANAGER, 'return_error', return_value=expected_results)
 
