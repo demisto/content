@@ -1156,6 +1156,73 @@ def test_vectra_get_assignment_by_id_command(requests_mock, id, expected_outputs
 
 # Test only the exceptions for now
 @pytest.mark.parametrize(
+    "assignee_id,account_id,host_id,assignment_id,expected_outputs,expected_readable,exception",
+    [
+        pytest.param(None, None, None, None, None, None,
+                     pytest.raises(VectraException, match='"assignee_id" not specified'),
+                     id="none-assignee-id_exception"),
+        pytest.param('1', None, None, None, None, None,
+                     pytest.raises(VectraException, match='You must specify one of "assignment_id", "account_id" or "host_id"'),
+                     id="none-entity-ids_exception"),
+        pytest.param('1', '2', '3', None, None, None,
+                     pytest.raises(VectraException, match='You must specify one of "assignment_id", "account_id" or "host_id"'),
+                     id="account-and-host-ids_exception"),
+        pytest.param('1', '2', None, '4', None, None,
+                     pytest.raises(VectraException, match='You must specify one of "assignment_id", "account_id" or "host_id"'),
+                     id="account-and-assignment-ids_exception"),
+        pytest.param('1', None, '3', '4', None, None,
+                     pytest.raises(VectraException, match='You must specify one of "assignment_id", "account_id" or "host_id"'),
+                     id="host-and-assignment-ids_exception"),
+        pytest.param('1', '2', '3', '4', None, None,
+                     pytest.raises(VectraException, match='You must specify one of "assignment_id", "account_id" or "host_id"'),
+                     id="all-ids_exception"),
+        pytest.param('text-id', None, None, '4', None, None,
+                     pytest.raises(ValueError, match='"assignee_id" value is invalid'),
+                     id="text-assignee-id_exception"),
+        pytest.param('1', 'text-id', None, None, None, None,
+                     pytest.raises(ValueError, match='"account_id" value is invalid'),
+                     id="text-account-id_exception"),
+        pytest.param('1', None, 'text-id', None, None, None,
+                     pytest.raises(ValueError, match='"host_id" value is invalid'),
+                     id="text-host-id_exception"),
+        pytest.param('1', None, None, 'text-id', None, None,
+                     pytest.raises(ValueError, match='"assignment_id" value is invalid'),
+                     id="text-assignment-id_exception"),
+        pytest.param('1', None, None, '25', load_test_data('single_assignment_extracted.json'), None,
+                     does_not_raise(),
+                     id="assignment_ok"),
+    ]
+)
+def test_vectra_assignment_assign_command(requests_mock,
+                                          assignee_id, account_id, host_id, assignment_id,
+                                          expected_outputs, expected_readable, exception):
+    """
+    Tests vectra_assignment_assign_command command function.
+    """
+    from VectraDetect import Client, vectra_assignment_assign_command
+
+    # Test answer, useless to check XSOAR inner exceptions (none API call raised)
+    # Need to create inner checks based on post query body to have a better coverage
+    requests_mock.put(f'{API_URL}{API_ENDPOINT_ASSIGNMENTS}'
+                      '/25',
+                      complete_qs=True,
+                      json={'assignment': load_test_data('single_assignment.json')})
+
+    client = Client(
+        base_url=f'{API_URL}', headers={}
+    )
+
+    with exception:
+        result = vectra_assignment_assign_command(client=client, assignee_id=assignee_id,
+                                                  account_id=account_id, host_id=host_id,
+                                                  assignment_id=assignment_id)
+        assert result.outputs == expected_outputs
+        if expected_outputs is None:
+            assert result.readable_output == expected_readable
+
+
+# Test only the exceptions for now
+@pytest.mark.parametrize(
     "assignment_id,outcome_id,note,detections_filter,filter_rule_name,detections_list,"
     "expected_outputs,expected_readable,exception",
     [
