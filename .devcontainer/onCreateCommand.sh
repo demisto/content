@@ -3,6 +3,7 @@
 set -e
 
 sudo chown -R demisto /workspaces
+git config --global --add safe.directory /workspaces/content
 
 cp .devcontainer/settings.json .vscode/settings.json 
 touch CommonServerUserPython.py
