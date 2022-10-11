@@ -17,16 +17,16 @@ filter _raw_log contains "system_logs" or _raw_log contains "ftpd_logs" or _raw_
 | alter location = arrayindex(regextract(_raw_log,"Location\:\s([^\,]+)"),0)
 | alter event_id = arrayindex(regextract(_raw_log,"Event\:\s([^\.]+)"),0)
 | alter
-    _collection_timestamp = parse_timestamp("%h %e %T",Timestamp),
+    _time = parse_timestamp("%h %e %T",Timestamp),
     xdm.event.description = Message,
     xdm.event.type = log_category,
     xdm.source.user.username = Username,
     xdm.target.user.identifier = Session,
-    xdm.target.resource.name = Filename,
+    xdm.target.file.filename = Filename,
     xdm.source.ipv4 = sourceip,
     xdm.target.resource.value = location;
-    // xdm.target.resource.name = appliance,
-    // xdm.event.type = event_id,
+    dm.target.resource.name = appliance,
+    xdm.event.id = event_id,
 
 filter _raw_log contains "cli_logs" or _raw_log contains "Event: User logged out" or _raw_log contains "Event: User input was" or _raw_log contains "Event: Successful login" or _raw_log contains "Event: Permission denied" or _raw_log contains "Event: User visited the web page"
     or _raw_log contains "euqgui_logs: Info: login:" or _raw_log contains "euqgui_logs: Info: logout:"
@@ -50,7 +50,7 @@ filter _raw_log contains "cli_logs" or _raw_log contains "Event: User logged out
 | alter location = arrayindex(regextract(_raw_log,"Location\:\s([^\,]+)"),0)
 | alter event_id = arrayindex(regextract(_raw_log,"Event\:\s([^\.]+)"),0)
 | alter
-    _collection_timestamp = parse_timestamp("%h %e %T",Timestamp),
+    _time = parse_timestamp("%h %e %T",Timestamp),
     xdm.event.description = Message,
     xdm.event.type = log_category,
     xdm.source.user.username = Username,
@@ -93,7 +93,7 @@ filter
 | alter attachment = arrayindex(regextract(_raw_log,"attachment\s\'?([^\']+)"),0)
 | alter signature_status = arrayindex(regextract(_raw_log,"(\w+)\s\(v\="),0)
 | alter
-    _collection_timestamp = parse_timestamp("%h %e %T",Timestamp),
+    _time= parse_timestamp("%h %e %T",Timestamp),
     xdm.event.description = Message,
     xdm.event.type = log_category,
     xdm.email.subject = Subject,
@@ -125,7 +125,7 @@ filter
 | alter http_version = arrayindex(regextract(_raw_log,"id\:\S+\s\d+\s\w+\s\S+\s([^\s]+)"),0)
 | alter user_agent = arrayindex(regextract(_raw_log,"id\:\S+\s\d+\s\w+\s\S+\s[^\s]+\s([^\!]+)"),0)
 | alter
-    _collection_timestamp = parse_timestamp("%h %e %T",Timestamp),
+    _time = parse_timestamp("%h %e %T",Timestamp),
     xdm.event.description = Message,
     xdm.event.type = log_category,
     xdm.source.user.username = Username,
