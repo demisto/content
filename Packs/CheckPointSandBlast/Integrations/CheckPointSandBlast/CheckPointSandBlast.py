@@ -75,7 +75,7 @@ class Client(BaseClient):
     """
     VERSION = 'v1'
 
-    def __init__(self, host: str, api_key: str, verify: bool = False, proxy: bool = False):
+    def __init__(self, host: str, api_key: str, reliability: str, verify: bool = False, proxy: bool = False):
         """
         Client constructor, set headers and call super class BaseClient.
 
@@ -93,6 +93,7 @@ class Client(BaseClient):
                 'Authorization': api_key
             }
         )
+        self.reliability = reliability
 
     def query_request(
         self,
@@ -343,7 +344,7 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
                     'Malicious',
                 ]
             )
-            file_indicator = get_file_indicator(file_hash, hash_type, raw_response)
+            file_indicator = get_file_indicator(file_hash, hash_type, raw_response, client.reliability)
 
             command_results.append(CommandResults(
                 readable_output=readable_output,
@@ -857,7 +858,7 @@ def get_dbotscore(response: Dict[str, Any]) -> int:
     return score
 
 
-def get_file_indicator(file_hash: str, hash_type: str, response: Dict[str, Any]) -> Common.File:
+def get_file_indicator(file_hash: str, hash_type: str, response: Dict[str, Any], reliability: str) -> Common.File:
     """
     Returns a file indicator that could potentially be malicious and will be checked for reputation.
 
@@ -865,6 +866,7 @@ def get_file_indicator(file_hash: str, hash_type: str, response: Dict[str, Any])
         file_hash (str): File hash value
         hash_type (str): File hash type.
         response (Dict[str, Any]): Response received from the API request.
+        reliability (str): integration source reliability.
 
     Returns:
         Common.File: File indicator.
@@ -873,7 +875,7 @@ def get_file_indicator(file_hash: str, hash_type: str, response: Dict[str, Any])
         indicator=file_hash,
         indicator_type=DBotScoreType.FILE,
         integration_name='CheckPointSandBlast',
-        reliability=demisto.params().get('integrationReliability'),
+        reliability=reliability,
         score=get_dbotscore(response),
     )
 
@@ -976,6 +978,7 @@ def main() -> None:
     host = params['url']
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    reliability = params.get('integrationReliability')
 
     commands = {
         'sandblast-query': query_command,
@@ -991,6 +994,7 @@ def main() -> None:
         client = Client(
             host=host,
             api_key=api_key,
+            reliability=reliability,
             verify=verify_certificate,
             proxy=proxy,
         )
