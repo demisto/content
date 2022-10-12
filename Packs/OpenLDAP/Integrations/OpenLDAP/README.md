@@ -1,20 +1,23 @@
 ## Overview
 ---
-This integration enables using your OpenLDAP user authentication settings in Cortex XSOAR. Users can log in to Cortex XSOAR with their OpenLDAP username and passwords, and their permissions in Cortex XSOAR will be set according to the groups and mapping set in AD Roles Mapping.  
+This integration enables using your OpenLDAP or Active Directory user authentication settings in Cortex XSOAR. Users can log in to Cortex XSOAR with their OpenLDAP or Active Directory username and passwords, and their permissions in Cortex XSOAR will be set according to the groups and mapping set in AD Roles Mapping.  
 
+* For connecting to the LDAP server with TLS connection it is recommended to use this integration instead of the server integration
+**Active Directory Authentication**.
 
 ## Use Cases
 ---
-Use OpenLDAP user authentication groups to set user roles in Cortex XSOAR.
+Use OpenLDAP or Active Directory user authentication groups to set user roles in Cortex XSOAR.
 
 
 ## Configure OpenLDAP on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
-2. Search for OpenLDAP.
+2. Search for 'LDAP Authentication' ('OpenLDAP' or 'Active Directory Authentication' should work as well).
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
+    * __LDAP Server Vendor (OpenLDAP or Active Directory)__
     * __Server IP or Host Name (e.g., 192.168.0.1)__
     * __Port. If not specified, default port is 389, or 636 for LDAPS.__
     * __User DN (e.g cn=admin,ou=users,dc=domain,dc=com)__
@@ -26,7 +29,7 @@ Use OpenLDAP user authentication groups to set user roles in Cortex XSOAR.
     * __User Object Class__
     * __User Unique Identifier Attribute__
     * __Page size__
-    * __Connection Type__
+    * __Connection Type (None, SSL or Start TLS)__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.
@@ -34,7 +37,7 @@ Use OpenLDAP user authentication groups to set user roles in Cortex XSOAR.
 
 ## Additional Information
 ---
-Steps required for setting AD roles Mapping:
+**Steps required for setting AD roles Mapping:** (The steps refer to an OpenLDAP server)
 
 1. Create OpenLDAP child entry of *User Account* template under wanted *Organizational Unit* and *Posix Group*, with *uid* as part of DN:
 ![user](https://user-images.githubusercontent.com/45535078/71556364-722c4980-2a40-11ea-850a-4b556f5f0f4b.png)
@@ -108,16 +111,40 @@ There is no context output for this command.
 `!ad-groups`
 
 #### Human Readable Output
-
->{
->    "Entries": {
->        "Attributes": [
->            {
->                "Name": "primaryGroupToken"
->            }
->        ]
->    }
->}
+```json
+{
+    "Controls": null,
+    "Entries": [
+        {
+            "Attributes": [
+                {
+                    "Name": "primaryGroupToken",
+                    "Values": [
+                        "111"
+                    ]
+                }
+            ],
+            "DN": "CN=Admin,CN=Builtin,DC=Test,DC=Test1"
+        },
+        {
+            "Attributes": [
+                {
+                    "Name": "primaryGroupToken",
+                    "Values": [
+                        "222"
+                    ]
+                }
+            ],
+            "DN": "CN=Users,CN=Builtin,DC=Test,DC=Test1"
+        },
+        
+    ],
+    "Referrals": [
+        "ldap://domainTest/CN=Test,DC=Test,DC=Test1",
+        "ldap://domainTest2/CN=Test,DC=Test,DC=Test2"
+    ]
+}
+```
 
 ### ad-authenticate-and-roles
 ***
@@ -135,22 +162,60 @@ Performs a simple bind operation on the LDAP server and returns the authenticate
 | attribute-mail-pull | Whether to return the mail attribute. Possible values are: "true", "false". Default is "true". | Optional | 
 | attribute-mail | Mail attribute to return in the response. Default is "mail". | Optional | 
 | attribute-name-pull | Whether to return the name attribute. Possible values are: "true", "false". Default is "true". | Optional | 
-| attribute-name | Name attribute to return in the response. | Optional | 
+| attribute-name | Name attribute to return in the response. Default is "name". | Optional | 
+| attribute-phone-pull | Whether to return the phone attribute. Possible values are: "true", "false". Default is "false". | Optional | 
+| attribute-phone | Phone attribute to return in the response. Default is "mobile". | Optional | 
 
 #### Context Output
 There is no context output for this command.
 
 #### Command Example
-`!ad-authenticate-and-roles`
+`!ad-authenticate-and-roles username='username' password='password' attribute-phone-pull=true`
 
 #### Human Readable Output
-
->{
->    "Entries": {
->        "Attributes": [
->            {
->                "Name": "primaryGroupToken"
->            }
->        ]
->    }
->}
+```json
+{
+    "Controls": [],
+    "Entries": [
+        {
+            "Attributes": [
+                {
+                    "Name": "memberOf",
+                    "Values": [
+                        "CN=Domain ,CN=Users,DC=Test,DC=Test1"
+                    ]
+                },
+                {
+                    "Name": "name",
+                    "Values": [
+                        "User Name"
+                    ]
+                },
+                {
+                    "Name": "primaryGroupID",
+                    "Values": [
+                        "111"
+                    ]
+                },
+                {
+                    "Name": "mail",
+                    "Values": [
+                        "username@mail.com"
+                    ]
+                },
+                {
+                    "Name": "mobile",
+                    "Values": [
+                        "555-5555555"
+                    ]
+                }
+            ],
+            "DN": "CN=User Name,CN=Users,DC=Test,DC=Test1"
+        }
+    ],
+    "Referrals": [
+        "ldap://domainTest/CN=Test,DC=Test,DC=Test1",
+        "ldap://domainTest2/CN=Test,DC=Test,DC=Test2"
+    ]
+}
+```

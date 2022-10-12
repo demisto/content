@@ -69,7 +69,8 @@ def test_args_to_filter_for_dismiss_and_resolve_alerts(alert_ids, customer_filte
     assert res == expected
 
 
-client_mocker = Client(base_url='https://demistodev.eu2.portal.cloudappsecurity.com/api/v1')
+client_mocker = Client(base_url='https://demistodev.eu2.portal.cloudappsecurity.com/api/v1', app_id='1234', verify=True,
+                       proxy=True, auth_mode='legacy')
 
 
 def test_list_alerts_command(requests_mock):
