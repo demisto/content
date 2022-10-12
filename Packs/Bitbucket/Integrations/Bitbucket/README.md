@@ -1,5 +1,5 @@
 Bitbucket Cloud is a Git-based code and CI/CD tool optimized for teams using Jira.
-This integration was integrated and tested with version xx of Bitbucket
+This integration was integrated and tested with version 7.21.0 of Bitbucket
 
 ## Configure Bitbucket on Cortex XSOAR
 
