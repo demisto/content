@@ -1,7 +1,6 @@
 [MODEL: dataset=cyberark_identity_raw]
 filter
-    EventType in ("Cloud.Core.OAuthToken.Create", "Cloud.Core.Logout", "Cloud.Core.MfaSummary", "Cloud.Core.StartImpersonate","Cloud.Core.Login", "Cloud.Core.LoginFail", "Cloud.Core.Logout", "Cloud.Core.OAuthToken.InvalidClient" )
-| alter
+alter
     xdm.target.user.identifier = ImpersonateTargetUuid,
     xdm.target.user.username = ImpersonateTargetName,
     xdm.session_context_id = Session,
