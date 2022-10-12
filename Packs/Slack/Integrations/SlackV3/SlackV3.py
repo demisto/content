@@ -2350,7 +2350,8 @@ def invite_to_channel():
     users = argToList(demisto.args().get('users', []))
 
     if not users:
-        return_error('Missing required argument - users')
+        # Not raising an error here to preserve BC
+        demisto.results('Missing required argument - users')
 
     if not channel:
         mirror = find_mirror_by_investigation()
