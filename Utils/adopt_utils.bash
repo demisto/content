@@ -305,7 +305,8 @@ get_today_date(){
 }
 
 #######################################
-# Append adoption message to top of README.md 
+# Append adoption message to top of README.md
+# Handles empty README file
 # Globals:
 #   None
 # Arguments:
@@ -318,11 +319,24 @@ add_msg_to_readme(){
 	message=$2
 	os=$(detect_os)
 
-	if [ "$os" == "Mac OS" ] 
+	# Check if README exists, create if not
+	[ ! -f "$readme" ] && touch "$FILE"
+
+	if [ "$os" == "Mac OS" ]
 	then
-		sed -i '' "1s/^/$message\n\n/" "$readme"
+		if ! [[ -s "$readme" ]]; then
+        	# The file is empty.
+			echo "$message" > "$readme"
+		else
+			sed -i '' "1s/^/$message\n\n/" "$readme"
+		fi
 	else
-		sed -i "1s/^/$message\n\n/" "$readme"
+		if ! [[ -s "$readme" ]]; then
+        	# The file is empty.
+			echo "$message" > "$readme"
+		else
+			sed -i "1s/^/$message\n\n/" "$readme"
+		fi
 	fi
 
 }
