@@ -1,5 +1,6 @@
 import pytest
 from freezegun import freeze_time
+from test_data import input_data
 
 MOCK_MAIL_NO_LABELS = {
     u'internalDate': u'1572251535000',
@@ -248,7 +249,7 @@ def test_template_params(params_str, expected_result):
         When:
             - sending email.
         Then:
-            - get a dictionary.
+            - the output dictionary is valid.
     """
 
     from Gmail import template_params
@@ -256,97 +257,19 @@ def test_template_params(params_str, expected_result):
     assert template_params(params_str) == expected_result
 
 
-@freeze_time("2022-09-08 12:00:00 UTC")
-@pytest.mark.parametrize('date, arg_name, expected_result', [
-    ("2022-09-08", "", 1662595200000)
-])
-def test_get_millis_from_date(date, arg_name, expected_result):
-    """
-    Tests get_millis_from_date function.
-        Given:
-            - .
-        When:
-            - .
-        Then:
-            - .
-    """
-
-    from Gmail import get_millis_from_date
-
-    assert get_millis_from_date(date, arg_name) == expected_result
-
-
-RESPONSE = [
-    {'kind': 'admin#directory#user',
-        'id': '000000000000000000000',
-        'etag': '“XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX”',
-        'primaryEmail': 'johndoe@test.com',
-        'name': {'givenName': 'john',
-                        'familyName': 'doe',
-                        'fullName': 'john doe'},
-        'isAdmin': True,
-        'isDelegatedAdmin': False,
-        'lastLoginTime': '2021-09-21T08:52:17.000Z',
-        'creationTime': '2019-12-30T14:32:18.000Z',
-        'agreedToTerms': True,
-        'suspended': False,
-        'archived': False,
-        'changePasswordAtNextLogin': False,
-        'ipWhitelisted': False,
-        'emails': [
-                {'address': 'johndoe@test.com', 'primary': True}],
-        'languages': [{'languageCode': 'en', 'preference': 'preferred'}],
-        'nonEditableAliases': ['johndoe@test.com'],
-        'customerId': 'Cxxxxxxxx',
-        'orgUnitPath': '/',
-        'isMailboxSetup': True,
-        'isEnrolledIn2Sv': False,
-        'isEnforcedIn2Sv': False,
-        'includeInGlobalAddressList': True,
-        'recoveryEmail': 'johndoe@test.com',
-        'recoveryPhone': '+972500000000'}]
-expected_outputs = [
-    {
-        'Type': 'Google',
-        'ID': '000000000000000000000',
-        'UserName': 'john',
-        'Username': 'john',  # adding to fit the new context standard
-        'DisplayName': 'john doe',
-        'Email': {'Address': 'johndoe@test.com'},
-        'Gmail': {'Address': 'johndoe@test.com'},
-        'Group': 'admin#directory#user',
-        'Groups': 'admin#directory#user',  # adding to fit the new context standard
-        'CustomerId': 'Cxxxxxxxx',
-        'Domain': 'test.com',
-        'VisibleInDirectory': True,
-
-    }
-]
-
-expected_human_readable = "### User 000000000000000000000:\n\
-|Type|ID|Username|DisplayName|Groups|CustomerId|Domain|Email|VisibleInDirectory|\n\
-|---|---|---|---|---|---|---|---|---|\n\
-| Google | 000000000000000000000 | john | john doe |\
- admin#directory#user |\
- Cxxxxxxxx | test.com |\
- Address: johndoe@test.com | true |\n"
-EXPECTED_RESULT_test_users_to_entry = {"expected_human_readable": expected_human_readable,
-                                       "expected_outputs": expected_outputs,
-                                       "expected_raw_response": RESPONSE}
-
-
 @pytest.mark.parametrize('title, response, expected_result', [
-    ('User 000000000000000000000:', RESPONSE, EXPECTED_RESULT_test_users_to_entry)
+    (input_data.title_test_users_to_entry, input_data.response_test_users_to_entry,
+     input_data.expected_result_test_users_to_entry)
 ])
 def test_users_to_entry(title, response, expected_result):
     """
-    Tests get_millis_from_date function.
+    Tests users_to_entry function.
         Given:
-            - .
+            - gmail get list of users api response.
         When:
-            - .
+            - executing users_to_entry function.
         Then:
-            - .
+            -the outputs, raw response, and human readable are valid.
     """
 
     from Gmail import users_to_entry
@@ -357,41 +280,19 @@ def test_users_to_entry(title, response, expected_result):
     assert result.raw_response == expected_result.get('expected_raw_response')
 
 
-get_auto_replay_result = {'enableAutoReply': True, 'responseSubject': 'subject_test', 'responseBodyPlainText': 'body_test', 'restrictToContacts': False, 'restrictToDomain': False}
-
-expected_raw_response_test_autoreply_to_entry = [{'EnableAutoReply': True, 'ResponseBody': 'body_test', 'ResponseSubject': 'subject_test', 'RestrictToContact': False, 'RestrictToDomain': False, 'StartTime': None, 'EndTime': None, 'ResponseBodyHtml': None}]
-
-expected_human_readable_test_autoreply_to_entry = '### User johndoe@test.com:\n|EnableAutoReply|ResponseBody|ResponseSubject\
-|RestrictToContact|RestrictToDomain|EnableAutoReply|\n|---|---|---|---|---|---|\n| true | body_test |\
- subject_test | false | false | true |\n'
-
-expected_outputs_test_autoreply_to_entry = {"Address": "johndoe@test.com",
-                                            "AutoReply": [{'EnableAutoReply': True,
-                                                           'ResponseBody': 'body_test',
-                                                           'ResponseSubject': 'subject_test',
-                                                           'RestrictToContact': False,
-                                                           'RestrictToDomain': False,
-                                                           'StartTime': None, 'EndTime': None,
-                                                           'ResponseBodyHtml': None}]
-                                            }
-
-expected_result_test_autoreply_to_entry = {"expected_human_readable": expected_human_readable_test_autoreply_to_entry,
-                                           "expected_outputs": expected_outputs_test_autoreply_to_entry,
-                                           "expected_raw_response": expected_raw_response_test_autoreply_to_entry}
-
-
 @pytest.mark.parametrize('title, response, user_id, expected_result', [
-    ('User johndoe@test.com:', [get_auto_replay_result], 'johndoe@test.com', expected_result_test_autoreply_to_entry)
+    (input_data.title_test_autoreply_to_entry, [input_data.get_auto_replay_result],
+     input_data.user_id_test_autoreply_to_entry, input_data.expected_result_test_autoreply_to_entry)
 ])
 def test_autoreply_to_entry(title, response, user_id, expected_result):
     """
-    Tests get_millis_from_date function.
+    Tests autoreply_to_entry function.
         Given:
-            - .
+            -gmail get autoreply api response (from get_autoreply function).
         When:
-            - .
+            - executing autoreply_to_entry function.
         Then:
-            - .
+            -the outputs, raw response, and human readable are valid.
     """
 
     from Gmail import autoreply_to_entry
@@ -400,3 +301,160 @@ def test_autoreply_to_entry(title, response, user_id, expected_result):
     assert result.readable_output == expected_result.get("expected_human_readable")
     assert result.outputs == expected_result.get("expected_outputs")
     assert result.raw_response == expected_result.get('expected_raw_response')
+
+
+@pytest.mark.parametrize('title, role, expected_result', [
+    (input_data.title_test_role_to_entry, input_data.role_test_role_to_entry, input_data.expected_result_test_role_to_entry)
+])
+def test_role_to_entry(title, role, expected_result):
+    """
+    Tests role_to_entry function.
+        Given:
+            - gmail get role api response (from get_role function).
+        When:
+            - executing role_to_entry function.
+        Then:
+            -the outputs, raw response, and human readable are valid.
+    """
+
+    from Gmail import role_to_entry
+
+    result = role_to_entry(title, role)
+    assert result.readable_output == expected_result.get("expected_human_readable")
+    assert result.outputs == expected_result.get("expected_outputs")
+    assert result.raw_response == expected_result.get('expected_raw_response')
+
+
+@pytest.mark.parametrize('title, response, expected_result', [
+    (input_data.title_test_user_roles_to_entry, input_data.get_user_role_mock_result,
+     input_data.expected_result_user_roles_to_entry)
+])
+def test_user_roles_to_entry(title, response, expected_result):
+    """
+    Tests user_roles_to_entry function.
+        Given:
+            - gmail get user role api response (from get_user_role function).
+        When:
+            - executing user_roles_to_entry function.
+        Then:
+            -the outputs, raw response, and human readable are valid.
+    """
+
+    from Gmail import user_roles_to_entry
+
+    result = user_roles_to_entry(title, response)
+    assert result.readable_output == expected_result.get("expected_human_readable")
+    assert result.outputs == expected_result.get("expected_outputs")
+    assert result.raw_response == expected_result.get('expected_raw_response')
+
+
+@pytest.mark.parametrize('title, response, expected_result', [
+    (input_data.title_test_tokens_to_entry, input_data.get_user_tokens_mock_result,
+     input_data.expected_result_test_tokens_to_entry)
+])
+def test_tokens_to_entry(title, response, expected_result):
+    """
+    Tests tokens_to_entry function.
+        Given:
+            - gmail get user tokens api response (from get_user_tokens function).
+        When:
+            - executing tokens_to_entry function.
+        Then:
+            -the outputs, raw response, and human readable are valid.
+    """
+
+    from Gmail import tokens_to_entry
+
+    result = tokens_to_entry(title, response)
+    assert result.readable_output == expected_result.get("expected_human_readable")
+    assert result.outputs == expected_result.get("expected_outputs")
+    assert result.raw_response == expected_result.get('expected_raw_response')
+
+
+@pytest.mark.parametrize('title, response, to, emailfrom, cc, bcc, body, subject, expected_result', [
+    (input_data.title_sent_mail_to_entry, [input_data.send_mail_mock_result], input_data.to_sent_mail_to_to_entry,
+     input_data.email_from_sent_mail_to_to_entry, [], [], None,
+     input_data.subject_sent_mail_to_to_entry, input_data.expected_result_test_sent_mail_to_entry)
+])
+def test_sent_mail_to_entry(title, response, to, emailfrom, cc, bcc, body, subject, expected_result):
+    """
+    Tests sent_mail_to_entry function.
+        Given:
+            - gmail send mail api response (from send_mail function).
+        When:
+            - executing sent_mail_to_entry function.
+        Then:
+            -the outputs, raw response, and human readable are valid.
+    """
+
+    from Gmail import sent_mail_to_entry
+
+    result = sent_mail_to_entry(title, response, to, emailfrom, cc, bcc, body, subject)
+    assert result.readable_output == expected_result.get("expected_human_readable")
+    assert result.outputs == expected_result.get("expected_outputs")
+    assert result.raw_response == expected_result.get('expected_raw_response')
+
+
+@pytest.mark.parametrize('title, mailbox, response, expected_result', [
+    (input_data.title_test_filters_to_entry, input_data.mailbox_test_filters_to_entry,
+     input_data.list_filters_mock_result, input_data.expected_result_test_filters_to_entry)
+])
+def test_filters_to_entry(title, mailbox, response, expected_result):
+    """
+    Tests filters_to_entry function.
+        Given:
+            - gmail get filters list api response (from list_filters function).
+        When:
+            - executing filters_to_entry function.
+        Then:
+            -the contents and human readable are valid.
+    """
+
+    from Gmail import filters_to_entry
+
+    result = filters_to_entry(title, mailbox, response)
+    assert result.get("Contents") == expected_result.get("except_contents")
+    assert result.get("HumanReadable") == expected_result.get("expected_human_readable")
+
+
+@pytest.mark.parametrize('mailboxes, expected_result', [
+    (input_data.list_mailboxes, input_data.expected_result_test_mailboxes_to_entry)
+])
+def test_mailboxes_to_entry(mailboxes, expected_result):
+    """
+    Tests mailboxes_to_entry function.
+        Given:
+            - gmail get message list api response (from search_command function).
+        When:
+            - executing mailboxes_to_entry function.
+        Then:
+            -the contents and human readable are valid.
+    """
+
+    from Gmail import mailboxes_to_entry
+
+    result = mailboxes_to_entry(mailboxes)
+    assert result.get("Contents") == expected_result.get("except_contents")
+    assert result.get("HumanReadable") == expected_result.get("expected_human_readable")
+
+
+@pytest.mark.parametrize('title, raw_emails, format_data, mailbox, expected_result', [
+    (input_data.title_test_emails_to_entry, input_data.mails, input_data.format_data_test_emails_to_entry,
+     input_data.mailbox_test_emails_to_entry, input_data.expected_result_test_emails_to_entry)
+])
+def test_emails_to_entry(title, raw_emails, format_data, mailbox, expected_result):
+    """
+    Tests emails_to_entry function.
+        Given:
+             - gmail get message list api response (from search_command function).
+        When:
+            - executing emails_to_entry function.
+        Then:
+            -the contents and human readable are valid.
+    """
+
+    from Gmail import emails_to_entry
+
+    result = emails_to_entry(title, raw_emails, format_data, mailbox)
+    assert result.get("Contents") == expected_result.get("except_contents")
+    assert result.get("HumanReadable") == expected_result.get("expected_human_readable")

@@ -514,7 +514,7 @@ def autoreply_to_entry(title, response, user_id):
     return CommandResults(
         raw_response=autoreply_context,
         outputs=account_context,
-        readable_output= tableToMarkdown(title, autoreply_context, headers, removeNull=True),
+        readable_output=tableToMarkdown(title, autoreply_context, headers, removeNull=True),
         outputs_prefix='Account.Gmail',
         outputs_key_field='Address'
     )
@@ -562,11 +562,11 @@ def user_roles_to_entry(title, response):
         })
     headers = ['ID', 'RoleAssignmentId',
                'ScopeType', 'Kind', 'OrgUnitId']
-
+    human_readable = tableToMarkdown(title, context, headers, removeNull=True)
     return CommandResults(
         raw_response=context,
         outputs=context,
-        readable_output=tableToMarkdown(title, context, headers, removeNull=True),
+        readable_output=human_readable,
         outputs_prefix='Gmail.Role',
         outputs_key_field=['ID']
     )
@@ -700,7 +700,6 @@ def list_users_command() -> CommandResults:
 def list_labels_command():
     args = demisto.args()
     user_key = args.get('user-id')
-    # user_key = "gcp-demisto@demistodev.com"
     labels = list_labels(user_key)
     return labels_to_entry(f'Labels for UserID {user_key}:', labels, user_key)
 
@@ -1142,7 +1141,7 @@ def search_command(mailbox=None):
     _in = args.get('in', '')
 
     query = args.get('query', '')
-    fields = args.get('fields')  # TODO
+    fields = args.get('fields')
     label_ids = [lbl for lbl in args.get('labels-ids', '').split(',') if lbl != '']
     max_results = int(args.get('max-results', 100))
     page_token = args.get('page-token')
@@ -1214,7 +1213,7 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
             raise
 
     # In case the user wants only account list without content.
-    if receive_only_accounts and result.get('sizeEstimate') > 0:
+    if receive_only_accounts and result.get('sizeEstimate', 0) > 0:
         return True, q
 
     entries = [get_mail(user_id=user_id,
