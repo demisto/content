@@ -1,7 +1,7 @@
 [
     {
         "value": "Online Job Site Trojan",
-        "type": "Malware",
+        "indicator_type": "Malware",
         "score": 3,
         "rawJSON": {
             "type": "malware",
@@ -50,7 +50,7 @@
             "name": "resume.pdf",
             "value": "c79a326f8411e9488bdc3779753e1e3489aaedea"
         },
-        "type": "File",
+        "indicator_type": "File",
         "customFields": {
             "stixid": "file--364fe3e5-b1f4-5ba3-b951-ee5983b3538d",
             "associatedfilenames": "resume.pdf",
@@ -70,7 +70,7 @@
             "spec_version": "2.1",
             "key": "HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Services\\WSALG2"
         },
-        "type": "Registry Key",
+        "indicator_type": "Registry Key",
         "customFields": {
             "stixid": "windows-registry-key--16b80d14-d574-5620-abad-10ff304b1c26",
             "registryvalue": null,

@@ -1,7 +1,7 @@
 [
     {
         "value": "cf2b3ad32a8a4cfb05e9dfc45875bd70",
-        "type": "File",
+        "indicator_type": "File",
         "title": null,
         "description": null,
         "name": null,

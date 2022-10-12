@@ -1,7 +1,7 @@
 [
     {
         "value": "Disco Team Threat Actor Group",
-        "type": "Threat Actor",
+        "indicator_type": "Threat Actor",
         "score": 3,
         "rawJSON": {
             "type": "threat-actor",

@@ -1,7 +1,7 @@
 [
     {
         "value": "http://demisto.com",
-        "type": "URL",
+        "indicator_type": "URL",
         "rawJSON": {
             "created": "2019-05-26T16:18:32.000Z",
             "id": "indicator--893eac0c-3232-4219-91bb-97f9a6b0de6c",
@@ -24,7 +24,7 @@
     },
     {
         "value": "4e0daff2b6a2db421e79fb64228943be",
-        "type": "File",
+        "indicator_type": "File",
         "rawJSON": {
             "created": "2019-05-26T16:12:18.000Z",
             "id": "indicator--8be84046-032a-4556-be39-940a06440d81",
@@ -47,7 +47,7 @@
     },
     {
         "value": "demisto.com",
-        "type": "Domain",
+        "indicator_type": "Domain",
         "rawJSON": {
             "created": "2019-05-26T16:10:49.000Z",
             "id": "indicator--62662049-2a64-4961-b493-4c932633a72f",
@@ -70,7 +70,7 @@
     },
     {
         "value": "384:mzawcK1gOUqJMpMhE5yOaF0O9TwFExCZkUf6H+PknKV+rXkrsH/CxEdubVAjMPW4:AiMVWcK9AhrDNEf",
-        "type": "File",
+        "indicator_type": "File",
         "rawJSON": {
             "created": "2019-05-26T16:18:03.000Z",
             "id": "indicator--c38d5378-ff87-4412-aa05-9d0c72f5bdcf",
@@ -93,7 +93,7 @@
     },
     {
         "value": "HKEY_LOCAL_MACHINE\\\\SOFTWARE\\\\RKey",
-        "type": "Registry Key",
+        "indicator_type": "Registry Key",
         "rawJSON": {
             "created": "2019-05-26T16:17:43.000Z",
             "id": "indicator--35372915-0109-406b-9e5b-b375dd843df7",
@@ -116,7 +116,7 @@
     },
     {
         "value": "9.9.9.9",
-        "type": "IP",
+        "indicator_type": "IP",
         "rawJSON": {
             "created": "2019-05-26T16:17:08.000Z",
             "id": "indicator--cc6f097d-651d-462f-a4cf-a6065cfa2f26",
@@ -139,7 +139,7 @@
     },
     {
         "value": "2001:0db8:85a3:1337:0000:8a2e:0370:7334",
-        "type": "IPv6",
+        "indicator_type": "IPv6",
         "rawJSON": {
             "created": "2019-05-26T16:16:19.000Z",
             "id": "indicator--7fa7ad39-1337-1337-1337-ce716d3e2ad7",
@@ -162,7 +162,7 @@
     },
     {
         "value": "8.3.3.3",
-        "type": "IP",
+        "indicator_type": "IP",
         "rawJSON": {
             "created": "2019-05-26T16:16:19.000Z",
             "id": "indicator--7fa7ad39-29c9-4cb1-9ee8-ce716d3e2ad7",
@@ -185,7 +185,7 @@
     },
     {
         "value": "ip-8-8-8-8",
-        "type": "Domain",
+        "indicator_type": "Domain",
         "rawJSON": {
             "created": "2019-05-26T16:15:44.000Z",
             "id": "indicator--620f36bc-ab89-484d-8ff0-51dbd4cfe4b9",
@@ -208,7 +208,7 @@
     },
     {
         "value": "115f9ecff8fcd3f266184c32eae03296e0131567ada6094dd022aa771c66cc8e",
-        "type": "File",
+        "indicator_type": "File",
         "rawJSON": {
             "created": "2019-05-26T16:15:14.000Z",
             "id": "indicator--b484b083-a85e-49e0-84e4-d0ab13edeca5",
@@ -231,7 +231,7 @@
     },
     {
         "value": "d76dcf2ae966dae2839c3145c55342d9cb528bd803deb71cdc39cbab3f556f0b",
-        "type": "File",
+        "indicator_type": "File",
         "rawJSON": {
             "created": "2019-05-26T16:13:33.000Z",
             "id": "indicator--af539811-9383-4cdb-9a44-4a8985525302",
@@ -254,7 +254,7 @@
     },
     {
         "value": "d7a10a4b3fd245dc44c1bb143d1a7f12816cdef7",
-        "type": "File",
+        "indicator_type": "File",
         "rawJSON": {
             "created": "2019-05-26T16:13:00.000Z",
             "id": "indicator--454c5435-fa71-4cf8-bcba-1336dbc20600",

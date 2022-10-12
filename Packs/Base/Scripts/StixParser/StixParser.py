@@ -177,7 +177,7 @@ class STIX2Parser:
 
     @staticmethod
     def change_attack_pattern_to_stix_attack_pattern(indicator: Dict[str, Any]):
-        indicator['type'] = f'STIX {indicator["type"]}'
+        indicator['indicator_type'] = f'STIX {indicator["indicator_type"]}'
         indicator['customFields']['stixkillchainphases'] = indicator['customFields'].pop('killchainphases', None)
         indicator['customFields']['stixdescription'] = indicator['customFields'].pop('description', None)
 
@@ -667,8 +667,8 @@ class STIX2Parser:
             if not a_object or not b_object:
                 continue
 
-            a_value, a_type = a_object.get('value'), a_object.get('type')
-            b_value, b_type = b_object.get('value'), b_object.get('type')
+            a_value, a_type = a_object.get('value'), a_object.get('indicator_type')
+            b_value, b_type = b_object.get('value'), b_object.get('indicator_type')
 
             if not (a_value and a_type and b_value and b_type):
                 continue

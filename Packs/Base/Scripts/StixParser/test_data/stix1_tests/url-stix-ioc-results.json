@@ -1,7 +1,7 @@
 [
     {
         "value": "http://demisto.com/4712",
-        "type": "URL",
+        "indicator_type": "URL",
         "title": null,
         "description": null,
         "name": null,

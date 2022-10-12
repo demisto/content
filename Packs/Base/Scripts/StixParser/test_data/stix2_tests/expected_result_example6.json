@@ -1,7 +1,7 @@
 [
     {
         "value": "Poison Ivy C2",
-        "type": "Infrastructure",
+        "indicator_type": "Infrastructure",
         "score": 2,
         "rawJSON": {
             "created": "2016-05-07T11:22:30.000Z",
@@ -48,7 +48,7 @@
     },
     {
         "value": "Example target-list-hosting",
-        "type": "Infrastructure",
+        "indicator_type": "Infrastructure",
         "score": 2,
         "rawJSON": {
             "created": "2016-11-22T09:22:30.000Z",
@@ -78,7 +78,7 @@
     },
     {
         "value": "Poison Ivy",
-        "type": "Malware",
+        "indicator_type": "Malware",
         "score": 3,
         "rawJSON": {
             "created": "2016-05-08T14:31:09.000Z",
@@ -117,7 +117,7 @@
     },
     {
         "value": "IMDDOS",
-        "type": "Malware",
+        "indicator_type": "Malware",
         "score": 3,
         "rawJSON": {
             "created": "2016-11-12T14:31:09.000Z",
@@ -174,7 +174,7 @@
             "type": "ipv4-addr",
             "value": "10.10.10.10"
         },
-        "type": "IP",
+        "indicator_type": "IP",
         "customFields": {
             "stixid": "ipv4-addr--1e4ffad7-0b88-41d4-ba4d-77d27490b956"
         }
@@ -187,7 +187,7 @@
             "type": "domain-name",
             "value": "example.com"
         },
-        "type": "Domain",
+        "indicator_type": "Domain",
         "customFields": {
             "stixid": "domain-name--ecb120bf-2694-4902-a737-62b74539a41b"
         }

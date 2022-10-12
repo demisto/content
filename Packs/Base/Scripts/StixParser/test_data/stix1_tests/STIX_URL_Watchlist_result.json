@@ -1,7 +1,7 @@
 [
     {
         "value": "http://example.com/foo/malicious1.html",
-        "type": "URL",
+        "indicator_type": "URL",
         "title": null,
         "description": null,
         "name": null,
@@ -16,7 +16,7 @@
     },
     {
         "value": "http://example.com/foo/malicious2.html",
-        "type": "URL",
+        "indicator_type": "URL",
         "title": null,
         "description": null,
         "name": null,
@@ -31,7 +31,7 @@
     },
     {
         "value": "http://example.com/foo/malicious3.html",
-        "type": "URL",
+        "indicator_type": "URL",
         "title": null,
         "description": null,
         "name": null,

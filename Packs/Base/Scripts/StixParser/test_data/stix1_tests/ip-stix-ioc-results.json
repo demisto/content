@@ -1,7 +1,7 @@
 [
     {
         "value": "10.0.0.0/20",
-        "type": "CIDR",
+        "indicator_type": "CIDR",
         "title": null,
         "description": null,
         "name": null,
@@ -16,7 +16,7 @@
     },
     {
         "value": "10.0.0.1",
-        "type": "IP",
+        "indicator_type": "IP",
         "title": null,
         "description": null,
         "name": null,
@@ -31,7 +31,7 @@
     },
     {
         "value": "10.0.0.2",
-        "type": "IP",
+        "indicator_type": "IP",
         "title": null,
         "description": null,
         "name": null,

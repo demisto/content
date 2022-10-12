@@ -1,7 +1,7 @@
 [
     {
         "value": "malicious1.example.com",
-        "type": "Domain",
+        "indicator_type": "Domain",
         "title": null,
         "description": null,
         "name": null,
@@ -16,7 +16,7 @@
     },
     {
         "value": "malicious2.example.com",
-        "type": "Domain",
+        "indicator_type": "Domain",
         "title": null,
         "description": null,
         "name": null,
@@ -31,7 +31,7 @@
     },
     {
         "value": "malicious3.example.com",
-        "type": "Domain",
+        "indicator_type": "Domain",
         "title": null,
         "description": null,
         "name": null,

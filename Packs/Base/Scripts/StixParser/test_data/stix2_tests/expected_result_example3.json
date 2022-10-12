@@ -1,7 +1,7 @@
 [
     {
         "value": "http://example.com/4712/",
-        "type": "URL",
+        "indicator_type": "URL",
         "rawJSON": {
             "type": "URL",
             "spec_version": "2.1",
@@ -42,7 +42,7 @@
     },
     {
         "value": "x4z9arb backdoor",
-        "type": "Malware",
+        "indicator_type": "Malware",
         "score": 3,
         "rawJSON": {
             "type": "malware",

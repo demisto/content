@@ -1,7 +1,7 @@
 [
     {
         "value": "Fake BPP (Branistan Peoples Party)",
-        "type": "Threat Actor",
+        "indicator_type": "Threat Actor",
         "score": 3,
         "rawJSON": {
             "type": "threat-actor",
@@ -84,7 +84,7 @@
     },
     {
         "value": "Content Spoofing",
-        "type": "STIX Attack Pattern",
+        "indicator_type": "STIX Attack Pattern",
         "score": 2,
         "rawJSON": {
             "type": "attack-pattern",
@@ -119,7 +119,7 @@
     },
     {
         "value": "HTTP Flood",
-        "type": "STIX Attack Pattern",
+        "indicator_type": "STIX Attack Pattern",
         "score": 2,
         "rawJSON": {
             "type": "attack-pattern",
@@ -154,7 +154,7 @@
     },
     {
         "value": "Operation Bran Flakes",
-        "type": "Campaign",
+        "indicator_type": "Campaign",
         "score": 3,
         "rawJSON": {
             "type": "campaign",
@@ -230,7 +230,7 @@
     },
     {
         "value": "Operation Raisin Bran",
-        "type": "Campaign",
+        "indicator_type": "Campaign",
         "score": 3,
         "rawJSON": {
             "type": "campaign",
@@ -306,7 +306,7 @@
     },
     {
         "value": "APT BPP",
-        "type": "Intrusion Set",
+        "indicator_type": "Intrusion Set",
         "score": 3,
         "rawJSON": {
             "type": "intrusion-set",

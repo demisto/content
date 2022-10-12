@@ -1,7 +1,7 @@
 [
     {
         "value": "http://example.org/?n",
-        "type": "URL",
+        "indicator_type": "URL",
         "title": "URL: http://example.org/?n...",
         "description": "URL: http://example.org/?n| isOnline:yes| dateVerified:2021-10-19T04:13:43+00:00",
         "name": "phishTank.com id:7324360 with malicious URL:http://app.example...",
@@ -47,7 +47,7 @@
     },
     {
         "value": "https://pancakeswap.finance.exchange-goswap.com/",
-        "type": "URL",
+        "indicator_type": "URL",
         "title": "URL: https://pancakeswap.finance.exchange-goswap.com/...",
         "description": "URL: https://pancakeswap.finance.exchange-goswap.com/| isOnline:yes| dateVerified:2021-10-19T04:13:43+00:00",
         "name": "phishTank.com id:7324397 with malicious URL:https://example...",
@@ -93,7 +93,7 @@
     },
     {
         "value": "http://example.org/",
-        "type": "URL",
+        "indicator_type": "URL",
         "title": "URL: http://example.org/...",
         "description": "URL: http://example.org/| isOnline:yes| dateVerified:2021-10-19T10:07:34+00:00",
         "name": "phishTank.com id:7324767 with malicious URL:https://example...",
@@ -139,7 +139,7 @@
     },
     {
         "value": "URL embedded in Email",
-        "type": "Attack Pattern",
+        "indicator_type": "Attack Pattern",
         "title": null,
         "description": null,
         "shortdescription": null,

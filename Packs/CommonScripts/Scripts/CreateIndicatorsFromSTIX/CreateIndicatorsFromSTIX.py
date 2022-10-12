@@ -1,3 +1,5 @@
+import json
+
 import demistomock as demisto
 from CommonServerPython import *
 
@@ -14,7 +16,7 @@ def parse_indicators_using_stix_parser(entry_id):
     indicators = comm_output[0].get("Contents")
     if is_error(comm_output[0]):
         return_error(indicators)
-    return indicators
+    return json.loads(indicators)
 
 
 def create_relationships_from_entity(indicator_relationships):
@@ -43,7 +45,8 @@ def create_indicators_loop(indicators):
     errors = list()
     for indicator in indicators:
         indicator['type'] = indicator.get('indicator_type')
-        result = CommandResults(indicator=indicator,
+        result = CommandResults(readable_output=f"{indicator}",
+            #indicator=indicator,
                                 relationships=create_relationships_from_entity(indicator.get('relationships')))
         results.append(result)
         res = demisto.executeCommand("createNewIndicator", indicator)
