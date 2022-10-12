@@ -1279,7 +1279,6 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
             result = fileResult(file_name, report_str, file_type)  # will be saved under 'InfoFile' in the context.
             demisto.results(result)
             human_readable = tableToMarkdown('WildFire File Report - MAEC format', prettify_report_entry(file_info))
-            #outputs = report
             outputs['maec_report'] = report
 
         except Exception as exc:
