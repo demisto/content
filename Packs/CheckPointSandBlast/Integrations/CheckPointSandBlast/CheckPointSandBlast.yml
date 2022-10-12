@@ -1,6 +1,6 @@
 category: Forensics & Malware Analysis
 commonfields:
-  id: CheckPointSandBlast
+  id: CheckPointSandBlast - Test
   version: -1
 configuration:
 - display: Server URL
@@ -22,8 +22,8 @@ configuration:
   required: false
   type: 8
 description: "Uploads files using polling. The service supports Microsoft Office files, as well as PDF, SWF, archives, and executables. Active content will be cleaned from any documents that you upload (Microsoft Office and PDF files only). Queries on existing IOCs, file status, analysis, and reports. Downloads files from the database. Supports both appliance and cloud. Supported Threat Emulation versions are any R80x."
-display: Check Point Threat Emulation (SandBlast)
-name: CheckPointSandBlast
+display: Check Point Threat Emulation (SandBlast) - Test
+name: CheckPointSandBlast - Test
 script:
   commands:
   - name: file
@@ -87,7 +87,7 @@ script:
       required: false
     - auto: PREDEFINED
       defaultValue: xml, summary
-      description: A comma-separated list of supported report formats. Note - Simultaneous requests for PDF and summary reports is not supported.
+      description: A comma-separated list of supported report formats. To download the report, use the download id of the report with the sandblast-download command. Note - Simultaneous requests for PDF and summary reports is not supported.
       isArray: true
       name: reports
       predefined:
@@ -129,7 +129,7 @@ script:
       - Summary Properties
       required: false
     deprecated: false
-    description: Use the Query API to have a client application look for either a specific file's analysis report on the Check Point Threat Prevention service databases or the status of a file, uploaded for analysis. It is recommended to add file_name.
+    description: Use the Query API to have a client application look for either a specific file's analysis report on the Check Point Threat Prevention service databases or the status of a file, uploaded for analysis. It is recommended to add file_name. To download the report files, use the download id of the report file (found under the SandBlast.Query.ThreatEmulation.Images.report context path) with the sandblast-download command.
     execution: false
     name: sandblast-query
     outputs:
@@ -247,9 +247,33 @@ script:
     - contextPath: SandBlast.Query.ThreatEmulation.Severity
       description: The combined severity of threats found. If threats are not found, this field is not shown.
       type: Number
-    - contextPath: SandBlast.Query.ThreatEmulation.Images
-      description: The sandboxes used in Threat Emulation. Information about image types can be found in https://sc1.checkpoint.com/documents/TPAPI/CP_1.0_ThreatPreventionAPI_APIRefGuide/html_frameset.htm under "Query API" -> "Query Response Format" -> "Images Object Format".
+    - contextPath: SandBlast.Query.ThreatEmulation.Images.report.verdict
+      description: The verdict of the report.
       type: String
+    - contextPath: SandBlast.Query.ThreatEmulation.Images.report.pdf_report
+      description: The download ID of the pdf report. To download the report, use this id with the sandblast-download command.
+      type: String
+    - contextPath: SandBlast.Query.ThreatEmulation.Images.report.xml_report
+      description: The download ID of the xml report. To download the report, use this id with the sandblast-download command.
+      type: String
+    - contextPath: SandBlast.Query.ThreatEmulation.Images.report.tar_report
+      description: The download ID of the tar report. To download the report, use this id with the sandblast-download command.
+      type: String
+    - contextPath: SandBlast.Query.ThreatEmulation.Images.report.summary_report
+      description: The download ID of the summary report. To download the report, use this id with the sandblast-download command.
+      type: String
+    - contextPath: SandBlast.Query.ThreatEmulation.Images.report.full_report
+      description: The download ID of the full report. To download the report, use this id with the sandblast-download command.
+      type: String
+    - contextPath: SandBlast.Query.ThreatEmulation.Images.status
+      description: The status of the image. Information about image types can be found in https://sc1.checkpoint.com/documents/TPAPI/CP_1.0_ThreatPreventionAPI_APIRefGuide/html_frameset.htm under "Query API" -> "Query Response Format" -> "Images Object Format".
+      type: String
+    - contextPath: SandBlast.Query.ThreatEmulation.Images.id
+      description: The id of the image. Information about image types can be found in https://sc1.checkpoint.com/documents/TPAPI/CP_1.0_ThreatPreventionAPI_APIRefGuide/html_frameset.htm under "Query API" -> "Query Response Format" -> "Images Object Format".
+      type: String
+    - contextPath: SandBlast.Query.ThreatEmulation.Images.revision
+      description: The revision number of the image. Information about image types can be found in https://sc1.checkpoint.com/documents/TPAPI/CP_1.0_ThreatPreventionAPI_APIRefGuide/html_frameset.htm under "Query API" -> "Query Response Format" -> "Images Object Format".
+      type: Number
     - contextPath: SandBlast.Query.ThreatEmulation.Confidence
       description: Rating of the threat data and its relevance to this instance. It is recommended to block threats with confidence 2 and above. 1 - low, 2 - medium, 3 - high.
       type: Number

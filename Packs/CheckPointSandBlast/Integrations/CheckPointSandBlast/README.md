@@ -100,7 +100,7 @@ Runs reputation on files.
 
 ### sandblast-query
 ***
-Use the Query API to have a client application look for either the analysis report of a specific file on the Check Point Threat Prevention service databases or the status of a file, uploaded for analysis. It is recommended to add file_name.
+Use the Query API to have a client application look for either a specific file's analysis report on the Check Point Threat Prevention service databases or the status of a file, uploaded for analysis. It is recommended to add file_name.
 
 
 #### Base Command
@@ -110,59 +110,67 @@ Use the Query API to have a client application look for either the analysis repo
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_name | Name of the file to query. Recommended to use, without it status will be "PARTIALLY_FOUND". | Optional | 
-| file_hash | File hash to query, accepted digests are: md5, sha1 and sha256. Only md5 returns 'FOUND' status. | Required | 
+| file_name | Name of the file to query (recommend using). Without it, status will be "PARTIALLY_FOUND". | Optional | 
+| file_hash | File hash to query. Accepted digests are: md5, sha1 and sha256. Only md5 returns FOUND status. | Required | 
 | features | Features to use on the file. Possible values are: Threat Emulation, Anti-Virus, Threat Extraction, All. Default is All. | Optional | 
-| reports | Comma separated list of supported report formats. Note - Requesting for PDF and summary reports simultaneously is not supported. Possible values are: pdf, xml, tar, summary. Default is xml, summary. | Optional | 
+| reports | A comma-separated list of supported report formats. To download the report, use the download id of the report with the sandblast-download command. Note - Simultaneous requests for PDF and summary reports is not supported. Possible values are: pdf, xml, tar, summary. Default is xml, summary. | Optional | 
 | method | Threat extraction request method. Possible values are: clean, pdf. Default is pdf. | Optional | 
-| extracted_parts | Comma separated list of fields to be cleaned in the file. Only relevant if method = clean. Possible values are: Linked Objects, Macros and Code, Sensitive Hyperlinks, PDF GoToR Actions, PDF Launch Actions, PDF URI Actions, PDF Sound Actions, PDF Movie Actions, PDF JavaScript Actions, PDF Submit Form Actions, Database Queries, Embedded Objects, Fast Save Data, Custom Properties, Statistic Properties, Summary Properties. Default is Linked Objects, Macros and Code, Sensitive Hyperlinks, PDF GoToR Actions, PDF Launch Actions, PDF URI Actions, PDF Sound Actions, PDF Movie Actions, PDF JavaScript Actions, PDF Submit Form Actions, Database Queries, Embedded Objects, Fast Save Data. | Optional | 
+| extracted_parts | A comma-separated list of fields to be cleaned in the file. Only relevant if method = clean. Possible values are: Linked Objects, Macros and Code, Sensitive Hyperlinks, PDF GoToR Actions, PDF Launch Actions, PDF URI Actions, PDF Sound Actions, PDF Movie Actions, PDF JavaScript Actions, PDF Submit Form Actions, Database Queries, Embedded Objects, Fast Save Data, Custom Properties, Statistic Properties, Summary Properties. Default is Linked Objects, Macros and Code, Sensitive Hyperlinks, PDF GoToR Actions, PDF Launch Actions, PDF URI Actions, PDF Sound Actions, PDF Movie Actions, PDF JavaScript Actions, PDF Submit Form Actions, Database Queries, Embedded Objects, Fast Save Data. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SandBlast.Query.Status | String | Status of requested features. | 
-| SandBlast.Query.MD5 | String | The file's MD5. | 
-| SandBlast.Query.SHA1 | String | The file's SHA1. | 
-| SandBlast.Query.SHA256 | String | The file's SHA256. | 
-| SandBlast.Query.FileType | String | File type can be different from the one sent in the query request \(according to the type to identify\). | 
-| SandBlast.Query.FileName | String | Name of the file saved on Check Point databases. | 
-| SandBlast.Query.Features | String | Features used. | 
-| SandBlast.Query.AntiVirus.SignatureName | String | If the file is not detected by Anti-Virus, the signature name is empty. | 
-| SandBlast.Query.AntiVirus.MalwareFamily | Number | ID for malware family, if available: \{0-\}. | 
-| SandBlast.Query.AntiVirus.MalwareType | Number | ID for malware type, if available: \{0-\}. | 
-| SandBlast.Query.AntiVirus.Severity | Number | 0 for benign files. Minimum: 0 Maximum: 4 | 
-| SandBlast.Query.AntiVirus.Confidence | Number | 0 for benign files. Minimum: 0 Maximum 5 | 
-| SandBlast.Query.AntiVirus.Status | String | Status of Anti-Virus on the requested file. | 
-| SandBlast.Query.ThreatExtraction.Method | String | Method that was used. | 
-| SandBlast.Query.ThreatExtraction.ExtractResult | String | CP_EXTRACT_RESULT_UNKNOWN \(Default - returned if the POD did not receive an answer from the Threat Extraction engine in 60 seconds\). CP_EXTRACT_RESULT_SUCCESS, CP_EXTRACT_RESULT_FAILURE, CP_EXTRACT_RESULT_TIMEOUT, CP_EXTRACT_RESULT_UNSUPPORTED_FILE, CP_EXTRACT_RESULT_NOT_SCRUBBED, CP_EXTRACT_RESULT_INTERNAL_ERROR, CP_EXTRACT_RESULT_DISK_LIMIT_REACHED, CP_EXTRACT_RESULT_ENCRYPTED_FILE, CP_EXTRACT_RESULT_DOCSEC_FILE, CP_EXTRACT_RESULT_OUT_OF_MEMORY | 
-| SandBlast.Query.ThreatExtraction.ExtractedFileDownloadId | String | The download id of the extracted file, for download request. Only sent when extract_result = CP_EXTRACT_RESULT_SUCCESS | 
-| SandBlast.Query.ThreatExtraction.OutputFileName | String | Clean file name. | 
-| SandBlast.Query.ThreatExtraction.Time | String | Time for threat extraction completion. | 
-| SandBlast.Query.ThreatExtraction.ExtractContent | String | Content of extracted file. | 
+| SandBlast.Query.Status | String | The status of requested features. | 
+| SandBlast.Query.MD5 | String | The file MD5. | 
+| SandBlast.Query.SHA1 | String | The file SHA1. | 
+| SandBlast.Query.SHA256 | String | The file SHA256. | 
+| SandBlast.Query.FileType | String | The file type, can be different from the one sent in the query request \(according to the type to identify\). | 
+| SandBlast.Query.FileName | String | The name of the file saved on the Check Point databases. | 
+| SandBlast.Query.Features | String | The features used. | 
+| SandBlast.Query.AntiVirus.SignatureName | String | The signature name. If the file is not detected by Anti-Virus, the signature name is empty. | 
+| SandBlast.Query.AntiVirus.MalwareFamily | Number | The ID for the malware family, if available: \{0-\}. | 
+| SandBlast.Query.AntiVirus.MalwareType | Number | The ID for the malware type, if available: \{0-\}. | 
+| SandBlast.Query.AntiVirus.Severity | Number | The severity, 0 for benign files. Minimum: 0 Maximum: 4. | 
+| SandBlast.Query.AntiVirus.Confidence | Number | The confidence, 0 for benign files. Minimum: 0 Maximum 5. | 
+| SandBlast.Query.AntiVirus.Status | String | The Anti-Virus status for the requested file. | 
+| SandBlast.Query.ThreatExtraction.Method | String | The method that was used. | 
+| SandBlast.Query.ThreatExtraction.ExtractResult | String | The result from the Threat Extraction engine. Default is CP_EXTRACT_RESULT_UNKNOWN \(returned if the POD did not receive an answer from the Threat Extraction engine in 60 seconds\). Possible values: CP_EXTRACT_RESULT_UNKNOWN, CP_EXTRACT_RESULT_SUCCESS, CP_EXTRACT_RESULT_FAILURE, CP_EXTRACT_RESULT_TIMEOUT, CP_EXTRACT_RESULT_UNSUPPORTED_FILE, CP_EXTRACT_RESULT_NOT_SCRUBBED, CP_EXTRACT_RESULT_INTERNAL_ERROR, CP_EXTRACT_RESULT_DISK_LIMIT_REACHED, CP_EXTRACT_RESULT_ENCRYPTED_FILE, CP_EXTRACT_RESULT_DOCSEC_FILE, CP_EXTRACT_RESULT_OUT_OF_MEMORY. | 
+| SandBlast.Query.ThreatExtraction.ExtractedFileDownloadId | String | The download ID of the extracted file, for download request. Only sent when extract_result = CP_EXTRACT_RESULT_SUCCESS. | 
+| SandBlast.Query.ThreatExtraction.OutputFileName | String | The clean file name. | 
+| SandBlast.Query.ThreatExtraction.Time | String | The time for threat extraction completion. | 
+| SandBlast.Query.ThreatExtraction.ExtractContent | String | The content of the extracted file. | 
 | SandBlast.Query.ThreatExtraction.TexProduct | Boolean | True if the queried file is already a Sandblast-safe copy. | 
-| SandBlast.Query.ThreatExtraction.Status | String | Status of Threat Extraction on the requested file. | 
-| SandBlast.Upload.ThreatExtraction.ExtractionData.InputExtension | String | Uploaded filename-extension as sent by the client. | 
-| SandBlast.Query.ThreatExtraction.ExtractionData.InputRealExtension | String | Extension as resolved by Threat Extraction. | 
-| SandBlast.Query.ThreatExtraction.ExtractionData.Message | String | Status message for scrub_result | 
-| SandBlast.Query.ThreatExtraction.ExtractionData.ProtectionName | String | Potential malicious content extracted. | 
-| SandBlast.Query.ThreatExtraction.ExtractionData.ProtectionType | String | Protection done for scrub_method: Conversion to PDF | Content Removal | 
-| SandBlast.Query.ThreatExtraction.ExtractionData.ProtocolVersion | String | Protocol used. | 
-| SandBlast.Query.ThreatExtraction.ExtractionData.RealExtension | String | Real extension as resolved by Threat Extraction | 
-| SandBlast.Query.ThreatExtraction.ExtractionData.Risk | Number | Represents the risk of the part that was extracted from the document. | 
-| SandBlast.Query.ThreatExtraction.ExtractionData.ScrubActivity | String | Readable result from Threat Extraction. | 
-| SandBlast.Query.ThreatExtraction.ExtractionData.ScrubMethod | String | Convert to PDF | Clean Document. | 
-| SandBlast.Query.ThreatExtraction.ExtractionData.ScrubResult | Number | Code result from Threat Extraction. | 
-| SandBlast.Query.ThreatExtraction.ExtractionData.ScrubTime | String | Threat Extraction process time. | 
-| SandBlast.Query.ThreatExtraction.ExtractionData.ScrubbedContent | String | Content that was removed | 
-| SandBlast.Query.ThreatEmulation.Trust | Number | Rating of the threat data and its relevance to this instance. It is recommended to block threats with confidence medium and above. | 
-| SandBlast.Query.ThreatEmulation.Score | Number | Threat Emulation score. | 
-| SandBlast.Query.ThreatEmulation.CombinedVerdict | String | Combined verdict of all the images. Benign reports are not supported for local gateways. | 
-| SandBlast.Query.ThreatEmulation.Severity | Number | Combined severity of threats found. In case threats are not found, this field is not given. 1 - low, 2 - medium, 3 - high, 4 - critical. | 
+| SandBlast.Query.ThreatExtraction.Status | String | The Threat Extraction status for the requested file. | 
+| SandBlast.Upload.ThreatExtraction.ExtractionData.InputExtension | String | The uploaded filename extension as sent by the client. | 
+| SandBlast.Query.ThreatExtraction.ExtractionData.InputRealExtension | String | The extension as resolved by Threat Extraction. | 
+| SandBlast.Query.ThreatExtraction.ExtractionData.Message | String | The status message for scrub_result. | 
+| SandBlast.Query.ThreatExtraction.ExtractionData.ProtectionName | String | The potentially malicious extracted content. | 
+| SandBlast.Query.ThreatExtraction.ExtractionData.ProtectionType | String | The protection done for scrub_method: Conversion to PDF | Content Removal. | 
+| SandBlast.Query.ThreatExtraction.ExtractionData.ProtocolVersion | String | The protocol used. | 
+| SandBlast.Query.ThreatExtraction.ExtractionData.RealExtension | String | The real extension as resolved by Threat Extraction. | 
+| SandBlast.Query.ThreatExtraction.ExtractionData.Risk | Number | The risk of the part that was extracted from the document. | 
+| SandBlast.Query.ThreatExtraction.ExtractionData.ScrubActivity | String | The readable result from Threat Extraction. | 
+| SandBlast.Query.ThreatExtraction.ExtractionData.ScrubMethod | String | The scrub_method: Convert to PDF | Clean Document. | 
+| SandBlast.Query.ThreatExtraction.ExtractionData.ScrubResult | Number | The code result from the Threat Extraction. | 
+| SandBlast.Query.ThreatExtraction.ExtractionData.ScrubTime | String | The Threat Extraction process time. | 
+| SandBlast.Query.ThreatExtraction.ExtractionData.ScrubbedContent | String | The content that was removed. | 
+| SandBlast.Query.ThreatEmulation.Trust | Number | The rating of the threat data and its relevance to this instance. It is recommended to block threats with confidence medium and above. | 
+| SandBlast.Query.ThreatEmulation.Score | Number | The Threat Emulation score. | 
+| SandBlast.Query.ThreatEmulation.CombinedVerdict | String | The combined verdict of all the images. Benign reports are not supported for local gateways. | 
+| SandBlast.Query.ThreatEmulation.Severity | Number | The combined severity of threats found. If threats are not found, this field is not shown. | 
+| SandBlast.Query.ThreatEmulation.Images.report.verdict | String | The verdict of the report. | 
+| SandBlast.Query.ThreatEmulation.Images.report.pdf_report | String | The download ID of the pdf report. To download the report, use this id with the sandblast-download command. | 
+| SandBlast.Query.ThreatEmulation.Images.report.xml_report | String | The download ID of the xml report. To download the report, use this id with the sandblast-download command. | 
+| SandBlast.Query.ThreatEmulation.Images.report.tar_report | String | The download ID of the tar report. To download the report, use this id with the sandblast-download command. | 
+| SandBlast.Query.ThreatEmulation.Images.report.summary_report | String | The download ID of the summary report. To download the report, use this id with the sandblast-download command. | 
+| SandBlast.Query.ThreatEmulation.Images.report.full_report | String | The download ID of the full report. To download the report, use this id with the sandblast-download command. | 
+| SandBlast.Query.ThreatEmulation.Images.status | String | The status of the image. Information about image types can be found in https://sc1.checkpoint.com/documents/TPAPI/CP_1.0_ThreatPreventionAPI_APIRefGuide/html_frameset.htm under "Query API" -&gt; "Query Response Format" -&gt; "Images Object Format". | 
+| SandBlast.Query.ThreatEmulation.Images.id | String | The id of the image. Information about image types can be found in https://sc1.checkpoint.com/documents/TPAPI/CP_1.0_ThreatPreventionAPI_APIRefGuide/html_frameset.htm under "Query API" -&gt; "Query Response Format" -&gt; "Images Object Format". | 
+| SandBlast.Query.ThreatEmulation.Images.revision | Number | The revision number of the image. Information about image types can be found in https://sc1.checkpoint.com/documents/TPAPI/CP_1.0_ThreatPreventionAPI_APIRefGuide/html_frameset.htm under "Query API" -&gt; "Query Response Format" -&gt; "Images Object Format". | 
 | SandBlast.Query.ThreatEmulation.Confidence | Number | Rating of the threat data and its relevance to this instance. It is recommended to block threats with confidence 2 and above. 1 - low, 2 - medium, 3 - high. | 
-| SandBlast.Query.ThreatEmulation.Images | String | Sand boxes used in Threat Emulation. Information about image types can be found in https://sc1.checkpoint.com/documents/TPAPI/CP_1.0_ThreatPreventionAPI_APIRefGuide/html_frameset.htm under "Query API" -&gt; "Query Response Format" -&gt; "Images Object Format". | 
-| SandBlast.Query.ThreatEmulation.Status | String | Status of Threat Emulation on the requested file. | 
+| SandBlast.Query.ThreatEmulation.Status | String | The status of Threat Emulation on the requested file. | 
 
 #### Command example
 ```!sandblast-query file_hash=e129988964fa250bc8186bfe6f399f12 file_name=HelloWorld.pdf```
@@ -279,7 +287,6 @@ Use the Query API to have a client application look for either the analysis repo
 >|Extractresult|Extractedfiledownloadid|Risk|
 >|---|---|---|
 >| CP_EXTRACT_RESULT_SUCCESS | 11aa4b44-6699-43fe-b73a-d42435551b06 | 0 |
-
 
 ### sandblast-upload
 ***
