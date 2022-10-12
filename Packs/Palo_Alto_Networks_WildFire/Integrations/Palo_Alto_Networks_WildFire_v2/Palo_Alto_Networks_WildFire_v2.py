@@ -485,7 +485,6 @@ Content-Disposition: form-data; name="agent"
     if ADDITIONAL_FORM_BOUNDARY != '':
         # we need to attach another form element of agent for this APIKEY
         body = body2
-        # print(body)
 
     result = http_request(
         upload_file_url_uri,
