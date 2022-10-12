@@ -2628,7 +2628,7 @@ def test_sophos_central_group_membership_get_exception(requests_mock) -> None:
 
     result = sophos_central_group_membership_get(client, {
         "groupId": "fake-id"})
-    assert result.readable_output == "Unable to find the following endpoint of group: fake-id"
+    assert result.readable_output == "Unable to find the following endpoint of group: fake-id."
 
 
 def test_sophos_central_group_endpoints_add(requests_mock) -> None:
@@ -2680,7 +2680,7 @@ def test_sophos_central_group_endpoints_add_exception(requests_mock) -> None:
 
     result = sophos_central_group_endpoints_add(client, {
         "groupId": "fake-id"})
-    assert result.readable_output == "Unable to add the endpoint to the following group: fake-id"
+    assert result.readable_output == "Unable to add the endpoint to the following group: fake-id."
 
 
 def test_sophos_central_group_endpoints_remove(requests_mock) -> None:
@@ -2733,7 +2733,7 @@ def test_sophos_central_group_endpoints_remove_exception(requests_mock) -> None:
         "groupId": "fake-id",
         "endpointId": "ids"})
 
-    assert result.readable_output == "Unable to remove endpoint(s) from the following group: fake-id"
+    assert result.readable_output == "Unable to remove endpoint(s) from the following group: fake-id."
 
 
 def test_sophos_central_group_endpoint_remove(requests_mock) -> None:
@@ -2785,7 +2785,7 @@ def test_sophos_central_group_endpoint_remove_exception(requests_mock) -> None:
         "groupId": "fake-id",
         "endpointId": "endpoint-ids"
     })
-    assert result.readable_output == "Unable to remove endpoint from the following group: fake-id"
+    assert result.readable_output == "Unable to remove endpoint from the following group: fake-id."
 
 
 def test_sophos_central_group_endpoint_remove_false(requests_mock) -> None:
@@ -2876,7 +2876,7 @@ def test_sophos_central_group_list_exception(requests_mock) -> None:
     client.get_endpoint_group.side_effect = DemistoException("Demisto Exception")
 
     result = sophos_central_group_list(client, {"page_size": "1", "page": "1"})
-    assert result.readable_output == "Unable to fetch the group list"
+    assert result.readable_output == "Unable to fetch the group list."
 
 
 @pytest.mark.parametrize(('page_size', 'page'), [["-1", "1"], ["1001", "1"], ["1000", "-1"]])
@@ -2952,7 +2952,7 @@ def test_sophos_central_group_create_exception(requests_mock) -> None:
         "name": "Seattle computers",
         "endpointIds": []
     })
-    assert result.readable_output == "Unable to create the group"
+    assert result.readable_output == "Unable to create the group."
 
 
 def test_sophos_central_group_update(requests_mock) -> None:
@@ -3004,7 +3004,7 @@ def test_sophos_central_group_update_exception(requests_mock) -> None:
         "groupId": "fake-id",
         "description": "User devices in Seattle office",
         "name": "Sophos Central Cosmos"})
-    assert result.readable_output == "Unable to update the following group: fake-id"
+    assert result.readable_output == "Unable to update the following group: fake-id."
 
 
 def test_sophos_central_group_get(requests_mock) -> None:
@@ -3054,7 +3054,7 @@ def test_sophos_central_group_get_exception(requests_mock) -> None:
 
     result = sophos_central_group_get(client, {
         "groupId": "fake-id"})
-    assert result.readable_output == "Unable to find the following group: fake-id"
+    assert result.readable_output == "Unable to find the following group: fake-id."
 
 
 def test_sophos_central_group_delete(requests_mock) -> None:
@@ -3263,7 +3263,7 @@ def test_sophos_central_endpoint_policy_delete_command_failed(requests_mock) -> 
     result = sophos_central_endpoint_policy_search_delete_command(
         client, {"policy_id": policy_id}
     )
-    assert result.readable_output == f"Failed deleting endpoint policy: {policy_id}"
+    assert result.readable_output == f"Failed deleting endpoint policy: {policy_id}."
 
 
 def test_sophos_central_endpoint_policy_clone_command(requests_mock) -> None:
@@ -3320,7 +3320,7 @@ def test_sophos_central_endpoint_policy_clone_command_failed(requests_mock) -> N
     result = sophos_central_endpoint_policy_clone_command(
         client, {"policy_id": policy_id}
     )
-    assert result.readable_output == f"Failed cloning endpoint policy: {policy_id}"
+    assert result.readable_output == f"Failed cloning endpoint policy: {policy_id}."
 
 
 def test_sophos_central_endpoint_policy_reorder_command(requests_mock) -> None:
@@ -3375,7 +3375,7 @@ def test_sophos_central_endpoint_policy_reorder_command_failed(requests_mock) ->
     result = sophos_central_endpoint_policy_reorder_command(
         client, {"policy_id": policy_id}
     )
-    assert result.readable_output == f"Failed updating endpoint policy: {policy_id}"
+    assert result.readable_output == f"Failed updating endpoint policy: {policy_id}."
 
 
 def test_usergroups_list_command(requests_mock) -> None:
@@ -3774,7 +3774,7 @@ def test_sophos_central_usergroups_membership_get_exception() -> None:
     result = sophos_central_usergroups_membership_get(client, {
         "groupId": group_id
     })
-    assert result.readable_output == f"Unable to get users for the following group: {group_id}"
+    assert result.readable_output == f"Unable to get users for the following group: {group_id}."
 
 
 def test_sophos_central_usergroups_membership_get_invalid_page_parameter(requests_mock) -> None:
@@ -3872,7 +3872,7 @@ def test_sophos_central_usergroups_users_add_exception() -> None:
         "groupId": group_id,
         "ids": "55570a08-0a38-41e6-b075-e0a7eb96571d"
     })
-    assert result.readable_output == f"Unable to add user to the following group: {group_id}"
+    assert result.readable_output == f"Unable to add user to the following group: {group_id}."
 
 
 def test_sophos_central_usergroups_user_delete(requests_mock) -> None:
@@ -3925,7 +3925,7 @@ def test_sophos_central_usergroups_user_delete_exception() -> None:
         "groupId": group_id,
         "userId": user_id
     })
-    assert result.readable_output == f"Unable to remove user({user_id}) from the following group: {group_id}"
+    assert result.readable_output == f"Unable to remove user({user_id}) from the following group: {group_id}."
 
 
 def test_users_list_command(requests_mock) -> None:
@@ -4087,7 +4087,7 @@ def test_users_get_command_exception(requests_mock) -> None:
     }
     )
 
-    assert result.readable_output == f"Unable to find the following user with userId:{user_id}"
+    assert result.readable_output == f"Unable to find the following user with userId:{user_id}."
 
 
 def test_users_add_command(requests_mock) -> None:
