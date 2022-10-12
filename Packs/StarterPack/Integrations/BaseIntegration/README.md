@@ -1,5 +1,5 @@
 [Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]
-This integration was integrated and tested with version xx of BaseIntegration
+This integration was integrated and tested with version v1.0.0 of BaseIntegration
 
 ## Configure Starter Base Integration - Name the integration as it will appear in the XSOAR UI on Cortex XSOAR
 
