@@ -203,11 +203,11 @@ def fetch_events_from_saas_security(client: Client, max_fetch: Optional[int] = N
     #  if max fetch is None, all events will be fetched until there aren't anymore in the queue (until we get 204)
     while under_max_fetch:
         response = client.get_events_request()
-        if response.status_code == 204:
-            # if we got 204, it means there is a timeout, hence breaking.
-            # if there aren't any events in the queue, we can break as well.
+        if response.status_code == 204:  # if we got 204, it means there is a timeout, hence breaking.
             break
         fetched_events = response.json().get('events') or []
+        if not fetched_events:  # if there aren't any events in the queue, we can break as well.
+            break
         demisto.info(f'{fetch_num=}, ({len(fetched_events)=})')
         demisto.debug(f'{fetch_num=}, ({fetched_events=})')
         yield fetched_events
