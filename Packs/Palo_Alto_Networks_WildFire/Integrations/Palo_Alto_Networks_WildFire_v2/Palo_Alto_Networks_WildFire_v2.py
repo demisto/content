@@ -1550,7 +1550,7 @@ def main():
         if len(TOKEN) > 32:
             # the token is longer than 32 so either PPC or Prismaaccessapi needs to be set
             if API_KEY_SOURCE not in ['pcc', 'prismaaccessapi', 'xsoartim']:
-                raise DemistoException('API Key is longer than 32 characters, agent value must be selected in the intergration instance.')
+                raise DemistoException('API Key longer than 32 chars, agent value must be selected in the intergration instance.')
 
         if command == 'test-module':
             test_module()
@@ -1590,7 +1590,7 @@ def main():
 
         elif command == 'wildfire-get-url-webartifacts':
             wildfire_get_url_webartifacts_command()
-        
+
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
 
