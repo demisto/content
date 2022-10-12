@@ -48,7 +48,7 @@ def test_set_files_reputation_invalid():
     Given:
         - TIE client, a list of hashes, and an invalid trust_level argument
     When:
-        - The function set_file_reputation is called to set a new Enterprise reputation for the specified files
+        - The function set_file_reputation_command is called to set a new Enterprise reputation for the specified files
     Then:
         - Validate that an exception is thrown in response to the invalid trust_level argument
     """
@@ -106,7 +106,7 @@ def test_files_references_invalid_query_limit(params):
     Given:
         - TIE client, a list of hashes, and a query limit
     When:
-        - The function file_references is called to retrieve the references of the given files
+        - The function file_references_command is called to retrieve the references of the given files
     Then:
         - Validate that an exception is thrown in response to the invalid query_limit value
     """
