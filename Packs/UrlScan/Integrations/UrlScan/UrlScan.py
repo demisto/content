@@ -142,7 +142,7 @@ def http_request(client, method, url_suffix, json=None, retries=0):
         response_json['is_error'] = True
         response_json['error_string'] = 'Error in API call to URLScan.io [%d] - %s: %s' % (r.status_code, r.reason,
                                                                                            error_description)
-        return response_json, ErrorTypes.GENERAL_ERROR
+        return response_json, ErrorTypes.GENERAL_ERROR, None
     return r.json(), None, None
 
 
