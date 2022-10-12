@@ -1,0 +1,12 @@
+{
+    "addedEndpoints": [
+        {
+            "id": "147fd36c-afd4-4a29-bc29-b8f1207894ab",
+            "hostname": "Lightning-bnbh9ww3rn"
+        },
+        {
+            "id": "06f4c8b4-e369-4b4b-8266-5dd9235c59b7",
+            "hostname": "Lightning-baf3x3hun0"
+        }
+    ]
+}
