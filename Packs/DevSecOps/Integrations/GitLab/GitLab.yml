@@ -1111,7 +1111,7 @@ script:
       description: Web URL of the user who triggered the pipeline.
       type: String
     deprecated: true
-  dockerimage: demisto/python3:3.10.1.26972
+  dockerimage: demisto/python3:3.10.7.35188
   feed: false
   isfetch: false
   longRunning: false
