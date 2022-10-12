@@ -474,3 +474,16 @@ def test_check_args_for_update(args, optinal_params, isGoodCase, expected_result
         with pytest.raises(DemistoException) as e:
             check_args_for_update(args, optinal_params)
         assert str(e.value) == expected_results['e']
+
+
+def test_check_pagintion(mocker):
+    """
+    Given:
+        - optinal params, arguments
+    When:
+        - running commands that contains limit, page_number args.
+    Then:
+        - checking that the response is according pagination
+    """
+    from GitLab import Client, project_user_list_command, response_according_pagination
+    params = (Client.project_user_list_request, 3,1,{},None)
