@@ -150,6 +150,7 @@ script:
       description: User agent to perform request
     - name: use_url_as_name
       default: true
+      description: Whether to use the URL as the file name.
       auto: PREDEFINED
       predefined:
       - "false"
@@ -431,7 +432,7 @@ script:
   script: ''
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.7.35188
 fromversion: 5.0.0
 tests:
 - urlscan_malicious_Test
