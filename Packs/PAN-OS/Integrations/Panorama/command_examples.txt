@@ -120,3 +120,4 @@ not_running_this!panorama-get-ssl-decryption-rules
 !pan-os-commit description=test polling=true interval_in_seconds=5 timeout=60
 !pan-os-push-to-device-group description=test polling=true interval_in_seconds=5 timeout=60
 !pan-os-push-status job_id=31377
+!pan-os-list-templates limit=20
