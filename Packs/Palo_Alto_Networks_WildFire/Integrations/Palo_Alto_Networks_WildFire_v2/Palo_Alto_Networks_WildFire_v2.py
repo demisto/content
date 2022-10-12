@@ -485,7 +485,7 @@ Content-Disposition: form-data; name="agent"
 --upload_boundry--'''
 
     # check upload value
-    #body2 = 'apikey=' + TOKEN + '&url=' + upload + AGENT_VALUE
+    # body2 = 'apikey=' + TOKEN + '&url=' + upload + AGENT_VALUE
 
     if ADDITIONAL_FORM_BOUNDARY != '':
         # we need to attach another form element of agent for this APIKEY
@@ -847,7 +847,7 @@ def wildfire_get_url_webartifacts_command():
             empty_screenshot_tar = False
             # add check for inline screenshot extraction
             if types in ['screenshot']:
-                # we have a screenshot found - only a screenshot, 
+                # we have a screenshot found - only a screenshot,
                 # this will not extract a screenshot from a tgz with files for security reasons
                 if screenshot_inline in ['true']:
                     # we have a screenshot returned and we have inline extaction requested
@@ -1434,7 +1434,7 @@ def wildfire_get_file_report(file_hash: str, args: dict):
             raise DemistoException('Error while trying to get the report from the API.')
 
 
-def wildfire_get_report_command(args):
+def wildfire_get_report_command(args: dict):
     """
     Args:
         args: the command arguments from demisto.args(), including url or file hash (sha256 or md5) to query on
@@ -1465,7 +1465,7 @@ def wildfire_get_report_command(args):
     return command_results_list, status
 
 
-def wildfire_file_command(args):
+def wildfire_file_command(args: dict):
     inputs = file_args_handler(args.get('file'), args.get('md5'), args.get('sha256'))
     command_results_list = []
     for element in inputs:
@@ -1525,7 +1525,7 @@ def wildfire_get_sample_command():
                 'For more info contact your WildFire representative.')
 
 
-def assert_upload_argument(args):
+def assert_upload_argument(args: dict):
     """
     Assert the upload argument is inserted when running the command without the builtin polling flow.
     The upload argument is only required when polling is false.
@@ -1545,14 +1545,12 @@ def main():
         # Remove proxy if not set to true in params
         handle_proxy()
 
-        # if the apikey is longer than 32 characters agent is not set, 
+        # if the apikey is longer than 32 characters agent is not set,
         # send exception othewise API calls will fail
         if len(TOKEN) > 32:
             # the token is longer than 32 so either PPC or Prismaaccessapi needs to be set
             if API_KEY_SOURCE not in ['pcc', 'prismaaccessapi', 'xsoartim']:
-                raise DemistoException(
-                    'API Key is longer than 32 characters, agent value must be selected in the intergration instance.'
-                    )
+                raise DemistoException('API Key is longer than 32 characters, agent value must be selected in the intergration instance.')
 
         if command == 'test-module':
             test_module()
@@ -1592,6 +1590,9 @@ def main():
 
         elif command == 'wildfire-get-url-webartifacts':
             wildfire_get_url_webartifacts_command()
+        
+        else:
+            raise NotImplementedError(f"command {command} is not implemented.")
 
     except Exception as err:
         return_error(str(err))
