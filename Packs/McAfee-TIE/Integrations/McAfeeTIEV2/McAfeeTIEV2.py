@@ -267,9 +267,9 @@ def get_provider_abbr(provider_id: Union[int, str]) -> str:
 
 def epoch_to_localtime(epoch_time: int) -> str:
     try:
-        date = datetime.fromtimestamp(epoch_time)
+        date = datetime.fromtimestamp(epoch_time, tz=timezone.utc)
     except ValueError:
-        date = datetime.fromtimestamp(epoch_time / 1000)
+        date = datetime.fromtimestamp(epoch_time / 1000, tz=timezone.utc)
 
     return date.strftime("%Y-%m-%d %H:%M:%S")
 

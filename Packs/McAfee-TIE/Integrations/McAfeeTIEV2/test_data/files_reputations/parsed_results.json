@@ -42,7 +42,7 @@
                     }
                 }
             },
-            "HumanReadable": "### McAfee TIE Hash Reputations For f2c7bb8acc97f92e987a2d4087d021b1:\n|Created date|Provider (verbose)|Provider ID|Trust level|Trust level (verbose)|\n|---|---|---|---|---|\n| 2017-10-18 03:24:02 | Global Threat Intelligence (GTI) | 1 | 1 | KNOWN_MALICIOUS |\n| 2017-10-18 03:24:02 | Enterprise reputation | 3 | 0 | NOT_SET |\n| 2017-10-16 23:37:22 | 2022 | 2022 | 15 | MOST_LIKELY_MALICIOUS |\n",
+            "HumanReadable": "### McAfee TIE Hash Reputations For f2c7bb8acc97f92e987a2d4087d021b1:\n|Created date|Provider (verbose)|Provider ID|Trust level|Trust level (verbose)|\n|---|---|---|---|---|\n| 2017-10-18 00:24:02 | Global Threat Intelligence (GTI) | 1 | 1 | KNOWN_MALICIOUS |\n| 2017-10-18 00:24:02 | Enterprise reputation | 3 | 0 | NOT_SET |\n| 2017-10-16 20:37:22 | 2022 | 2022 | 15 | MOST_LIKELY_MALICIOUS |\n",
             "EntryContext": {
                 "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": [
                     {
@@ -72,29 +72,29 @@
                     "Reputations": {
                         "Hash": "f2c7bb8acc97f92e987a2d4087d021b1",
                         "GTI": {
-                            "Create_Date": "2017-10-18 03:24:02",
+                            "Create_Date": "2017-10-18 00:24:02",
                             "Provider": "Global Threat Intelligence (GTI)",
                             "Trust_Level": 1,
                             "Original_Response": "2139162632",
-                            "First_Contact": "2017-10-17 19:04:32",
+                            "First_Contact": "2017-10-17 16:04:32",
                             "Prevalence": "152",
                             "Provider_ID": 1
                         },
                         "Enterprise": {
-                            "Create_Date": "2017-10-18 03:24:02",
+                            "Create_Date": "2017-10-18 00:24:02",
                             "Provider": "Enterprise reputation",
                             "Trust_Level": 0,
                             "Prevalence": "340",
                             "Is_Prevalent": "0",
                             "2098277": "0",
-                            "First_Contact": "2017-10-18 03:24:02",
+                            "First_Contact": "2017-10-18 00:24:02",
                             "File_Name_Count": "0",
                             "Enterprise_Size": "167425",
                             "Server_Version": "3.0.0.480",
                             "Provider_ID": 3
                         },
                         "2022": {
-                            "Create_Date": "2017-10-16 23:37:22",
+                            "Create_Date": "2017-10-16 20:37:22",
                             "Provider": "2022",
                             "Trust_Level": 15,
                             "2120340": "2139162632",
@@ -164,7 +164,7 @@
                     }
                 }
             },
-            "HumanReadable": "### McAfee TIE Hash Reputations For 7eb0139d2175739b3ccb0d1110067820be6abd29:\n|Created date|Provider (verbose)|Provider ID|Trust level|Trust level (verbose)|\n|---|---|---|---|---|\n| 2017-10-15 18:33:20 | Enterprise reputation | 3 | 70 | MIGHT_BE_TRUSTED |\n| 2017-10-15 18:33:20 | Global Threat Intelligence (GTI) | 1 | 99 | KNOWN_TRUSTED |\n| 2022-08-23 08:30:05 | Advanced Threat Defense (ATD) | 5 | 30 | MIGHT_BE_MALICIOUS |\n",
+            "HumanReadable": "### McAfee TIE Hash Reputations For 7eb0139d2175739b3ccb0d1110067820be6abd29:\n|Created date|Provider (verbose)|Provider ID|Trust level|Trust level (verbose)|\n|---|---|---|---|---|\n| 2017-10-15 15:33:20 | Enterprise reputation | 3 | 70 | MIGHT_BE_TRUSTED |\n| 2017-10-15 15:33:20 | Global Threat Intelligence (GTI) | 1 | 99 | KNOWN_TRUSTED |\n| 2022-08-23 05:30:05 | Advanced Threat Defense (ATD) | 5 | 30 | MIGHT_BE_MALICIOUS |\n",
             "EntryContext": {
                 "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": [
                     {
@@ -190,13 +190,13 @@
                     "Reputations": {
                         "Hash": "7eb0139d2175739b3ccb0d1110067820be6abd29",
                         "Enterprise": {
-                            "Create_Date": "2017-10-15 18:33:20",
+                            "Create_Date": "2017-10-15 15:33:20",
                             "Provider": "Enterprise reputation",
                             "Trust_Level": 70,
                             "Prevalence": "4336",
                             "Is_Prevalent": "0",
                             "2098277": "0",
-                            "First_Contact": "2017-10-15 18:33:20",
+                            "First_Contact": "2017-10-15 15:33:20",
                             "File_Name_Count": "2",
                             "Min_Local_Rep": "30",
                             "Max_Local_Rep": "99",
@@ -207,22 +207,22 @@
                             "Parent_Avg_Local_Rep": "70",
                             "Server_Version": "3.0.0.480",
                             "Detection_Count": "76",
-                            "Last_Detection_Time": "2017-10-15 21:20:00",
+                            "Last_Detection_Time": "2017-10-15 18:20:00",
                             "Child_File_Reps": "(2, 100, 50, 100, 75.0)",
                             "Parent_File_Reps": "(5, 100, 50, 100, 75.0)",
                             "Provider_ID": 3
                         },
                         "GTI": {
-                            "Create_Date": "2017-10-15 18:33:20",
+                            "Create_Date": "2017-10-15 15:33:20",
                             "Provider": "Global Threat Intelligence (GTI)",
                             "Trust_Level": 99,
                             "Original_Response": "2139160704",
-                            "First_Contact": "2017-10-15 15:41:40",
+                            "First_Contact": "2017-10-15 12:41:40",
                             "Prevalence": "150",
                             "Provider_ID": 1
                         },
                         "ATD": {
-                            "Create_Date": "2022-08-23 08:30:05",
+                            "Create_Date": "2022-08-23 05:30:05",
                             "Provider": "Advanced Threat Defense (ATD)",
                             "Trust_Level": 30,
                             "GAM_Score": "4",
@@ -271,7 +271,7 @@
                     }
                 }
             },
-            "HumanReadable": "### McAfee TIE Hash Reputations For 142e1d688ef0568370c37187fd9f2351d7ddeda574f8bfa9b0fa4ef42db85aa2:\n|Created date|Provider (verbose)|Provider ID|Trust level|Trust level (verbose)|\n|---|---|---|---|---|\n| 2022-08-24 17:50:05 | Enterprise reputation | 3 | 15 | MOST_LIKELY_MALICIOUS |\n| 2022-08-23 08:30:05 | Advanced Threat Defense (ATD) | 5 | 30 | MIGHT_BE_MALICIOUS |\n",
+            "HumanReadable": "### McAfee TIE Hash Reputations For 142e1d688ef0568370c37187fd9f2351d7ddeda574f8bfa9b0fa4ef42db85aa2:\n|Created date|Provider (verbose)|Provider ID|Trust level|Trust level (verbose)|\n|---|---|---|---|---|\n| 2022-08-24 14:50:05 | Enterprise reputation | 3 | 15 | MOST_LIKELY_MALICIOUS |\n| 2022-08-23 05:30:05 | Advanced Threat Defense (ATD) | 5 | 30 | MIGHT_BE_MALICIOUS |\n",
             "EntryContext": {
                 "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": [
                     {
@@ -301,20 +301,20 @@
                     "Reputations": {
                         "Hash": "142e1d688ef0568370c37187fd9f2351d7ddeda574f8bfa9b0fa4ef42db85aa2",
                         "Enterprise": {
-                            "Create_Date": "2022-08-24 17:50:05",
+                            "Create_Date": "2022-08-24 14:50:05",
                             "Provider": "Enterprise reputation",
                             "Trust_Level": 15,
                             "Prevalence": "0",
                             "Is_Prevalent": "0",
                             "2098277": "0",
-                            "First_Contact": "2022-08-24 17:50:05",
+                            "First_Contact": "2022-08-24 14:50:05",
                             "File_Name_Count": "0",
                             "Enterprise_Size": "167428",
                             "Server_Version": "3.0.0.480",
                             "Provider_ID": 3
                         },
                         "ATD": {
-                            "Create_Date": "2022-08-23 08:30:05",
+                            "Create_Date": "2022-08-23 05:30:05",
                             "Provider": "Advanced Threat Defense (ATD)",
                             "Trust_Level": 30,
                             "GAM_Score": "5",

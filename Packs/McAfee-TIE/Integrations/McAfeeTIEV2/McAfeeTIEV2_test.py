@@ -14,7 +14,7 @@ def test_safe_get_file_reputation_returned_exception(mocker):
     Given:
         - TIE client and hash parameter
     When:
-        - The TIE client returns some exception when running get_file_reputation
+        - The TIE client returns some exception due to an exception thrown from the API call when running get_file_reputation
     Then:
         - Validate that we print to log and return None object
     """
@@ -46,9 +46,9 @@ def test_safe_get_file_reputation_returned_rep(mocker):
 def test_set_files_reputation_invalid():
     """
     Given:
-        - TIE client and an invalid trust_level argument
+        - TIE client, a list of hashes, and an invalid trust_level argument
     When:
-        - The function set_file_reputation is called to set a new Enterprise reputation for the specified file
+        - The function set_file_reputation is called to set a new Enterprise reputation for the specified files
     Then:
         - Validate that an exception is thrown in response to the invalid trust_level argument
     """
@@ -67,9 +67,9 @@ def test_set_files_reputation_invalid():
 def test_set_files_reputation_valid(mocker):
     """
     Given:
-        - TIE client and a valid trust_level argument
+        - TIE client, a list of hashes, and a valid trust_level argument
     When:
-        - The function set_file_reputation is called to set a new reputation for the specified file
+        - The function set_file_reputation_command is called to set a new reputation for the specified files
     Then:
         - Validate the contect of the Command Result that is returned from the function
     """
@@ -104,7 +104,7 @@ QUERY_LIMIT_CASES = [
 def test_files_references_invalid_query_limit(params):
     """
     Given:
-        - TIE client and a list of hashes representing files
+        - TIE client, a list of hashes, and a query limit
     When:
         - The function file_references is called to retrieve the references of the given files
     Then:
@@ -134,11 +134,11 @@ REFERENCES_HUMAN_READABLE_CASES = [
         ],
         [
             {
-                "Date": "2017-10-15 18:33:20",
+                "Date": "2017-10-15 15:33:20",
                 "AgentGuid": "0c906be0-224c-45d4-8e6f-bc89da69d268"
             },
             {
-                "Date": "2016-10-07 23:54:52",
+                "Date": "2016-10-07 20:54:52",
                 "AgentGuid": "3a6f574a-3e6f-436d-acd4-bcde336b054d"
             },
         ]
@@ -150,15 +150,13 @@ REFERENCES_HUMAN_READABLE_CASES = [
 def test_references_to_human_readable(raw_result, expected_parsed_res):
     """
     Given:
-        - Raw result from the API that represents the references of a hash
+        - An example of raw result from the API that represents the references of a hash
     When:
         - The function references_to_human_readable is called to convert the raw response to human readable data
     Then:
         - Assert that the parsed raw result is of the correct form
     """
     from McAfeeTIEV2 import references_to_human_readable
-    import os
-    os.environ['TZ'] = 'Asia/Jerusalem'
     result = references_to_human_readable(raw_result)
     assert expected_parsed_res == result
 
@@ -192,18 +190,18 @@ FILE_REFERENCES_CASES = [
         [
             {
                 'Hash': 'hash1',
-                'References': [{'Date': '2017-10-15 18:33:20',
+                'References': [{'Date': '2017-10-15 15:33:20',
                                'AgentGuid': '0c906be0-224c-45d4-8e6f-bc89da69d268'},
-                               {'Date': '2016-11-08 19:29:32',
+                               {'Date': '2016-11-08 17:29:32',
                                'AgentGuid': '68125cd6-a5d8-11e6-348e-000c29663178'},
                                ]
 
             },
             {
                 'Hash': 'hash2',
-                'References': [{'Date': '2016-10-07 23:54:52',
+                'References': [{'Date': '2016-10-07 20:54:52',
                                'AgentGuid': '3a6f574a-3e6f-436d-acd4-bcde336b054d'},
-                               {'Date': '2017-10-15 18:34:11',
+                               {'Date': '2017-10-15 15:34:11',
                                 'AgentGuid': '70be2ee9-7166-413b-b03e-64a48f6ab6c8'},
                                ]
 
@@ -222,16 +220,14 @@ FILE_REFERENCES_CASES = [
 def test_files_references(mocker, params, raw_result, expected_parsed_results):
     """
     Given:
-        - TIE client and a list of hashes representing files
+        - TIE client and a list of hashes
     When:
-        - The function file_references is called to retrieve the references of the given files
+        - The function file_references_command is called to retrieve the references of the given files
     Then:
         - Assert that the parsed raw result is of the correct form
     """
     from CommonServerPython import Common
     from McAfeeTIEV2 import files_references_command, MAX_QUERY_LIMIT
-    import os
-    os.environ['TZ'] = 'Asia/Jerusalem'
     query_limit = MAX_QUERY_LIMIT
 
     mocker.patch('McAfeeTIEV2.get_hash_type_key', return_value='hash_type_key')
@@ -246,43 +242,25 @@ def test_files_references(mocker, params, raw_result, expected_parsed_results):
             assert exp_parsed_res == result.outputs
 
 
-def test_files_reputations(mocker):
+TEST_DATA_FILES_CASES = [
+    ('test_data/files_reputations/raw_result.json', 'test_data/files_reputations/parsed_results.json'),
+    ('test_data/files_reputations/raw_result_empty.json', 'test_data/files_reputations/parsed_results_empty.json')
+]
+
+
+@pytest.mark.parametrize('raw_result_file, parsed_results_file', TEST_DATA_FILES_CASES)
+def test_files_reputations(mocker, raw_result_file, parsed_results_file):
     """
     Given:
-        - TIE client and a list of hashes representing files
+        - TIE client and a list of hashes
     When:
-        - The function files_reputations is called to retrieve the reputations of the given files
+        - The function files_reputations_command is called to retrieve the reputations of the given files
     Then:
-        - Assert that the parsed raw result is of the correct form
-    """
-    import os
-    os.environ['TZ'] = 'Asia/Jerusalem'
-    raw_responses = util_load_json('test_data/files_reputations/raw_result.json')
-    parsed_results = util_load_json('test_data/files_reputations/parsed_results.json')
-    validate_parsed_files_reputations(mocker=mocker, raw_responses=raw_responses, parsed_results=parsed_results)
-
-
-def test_files_reputations_empty(mocker):
-    """
-    Given:
-        - TIE client and a list of hashes representing files
-    When:
-        - The function files_reputations is called to retrieve the reputations of the given files
-    Then:
-        - Assert that the parsed empty raw result is of the correct form
-    """
-    raw_responses = util_load_json('test_data/files_reputations/raw_result_empty.json')
-    parsed_results = util_load_json('test_data/files_reputations/parsed_results_empty.json')
-    validate_parsed_files_reputations(mocker=mocker, raw_responses=raw_responses, parsed_results=parsed_results)
-
-
-def validate_parsed_files_reputations(mocker, raw_responses, parsed_results):
-    """
-        This functions recieves the raw responses that mock the output of the API call get_file_reputation,
-        and also the expected parsed results that mock the output of the function files_reputations, then
-        validates if the returned values from the function is what we expect.
+        - Assert that raw result is parsed to the correct form
     """
     from McAfeeTIEV2 import files_reputations_command
+    raw_responses = util_load_json(raw_result_file)
+    parsed_results = util_load_json(parsed_results_file)
     mocker.patch('McAfeeTIEV2.safe_get_file_reputation', side_effect=raw_responses['raw_results'])
     expected_command_results = parsed_results['parsed_results']
     with patch('dxltieclient.TieClient') as mock_tie_client:

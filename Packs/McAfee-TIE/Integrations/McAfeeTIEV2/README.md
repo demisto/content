@@ -45,7 +45,8 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### file
 ***
-Retrieves the reputations for the specified hashes. Can be "MD5", "SHA1", or "SHA256".
+Retrieves the reputations for the specified hashes. Can be "MD5", "SHA1", or "SHA256".  
+**Note**: The outputed dates are with respect to the UTC timezone.
 
 
 #### Base Command
@@ -197,7 +198,7 @@ Retrieves the reputations for the specified hashes. Can be "MD5", "SHA1", or "SH
                     "Reputations": {
                         "Enterprise": {
                             "Create_Date": "2017-10-15 15:33:20",
-                            "Enterprise_Size": "167528",
+                            "Enterprise_Size": "167565",
                             "File_Name_Count": "3",
                             "First_Contact": "2017-10-15 15:33:20",
                             "Is_Prevalent": "0",
@@ -221,7 +222,7 @@ Retrieves the reputations for the specified hashes. Can be "MD5", "SHA1", or "SH
                     "Reputations": {
                         "Enterprise": {
                             "Create_Date": "2017-10-15 16:30:54",
-                            "Enterprise_Size": "167529",
+                            "Enterprise_Size": "167566",
                             "File_Name_Count": "1",
                             "First_Contact": "2017-10-15 16:30:54",
                             "Is_Prevalent": "0",
@@ -251,14 +252,14 @@ Retrieves the reputations for the specified hashes. Can be "MD5", "SHA1", or "SH
 ### McAfee TIE Hash Reputations For f2c7bb8acc97f92e987a2d4087d021b1:
 |Created date|Provider (verbose)|Provider ID|Trust level|Trust level (verbose)|
 |---|---|---|---|---|
-| 2017-10-15 18:33:20 | Global Threat Intelligence (GTI) | 1 | 99 | KNOWN_TRUSTED |
-| 2017-10-15 18:33:20 | Enterprise reputation | 3 | 85 | MOST_LIKELY_TRUSTED |
+| 2017-10-15 15:33:20 | Global Threat Intelligence (GTI) | 1 | 99 | KNOWN_TRUSTED |
+| 2017-10-15 15:33:20 | Enterprise reputation | 3 | 85 | MOST_LIKELY_TRUSTED |
 
 ### McAfee TIE Hash Reputations For 7eb0139d2175739b3ccb0d1110067820be6abd29:
 |Created date|Provider (verbose)|Provider ID|Trust level|Trust level (verbose)|
 |---|---|---|---|---|
-| 2017-10-15 19:30:54 | Enterprise reputation | 3 | 1 | KNOWN_MALICIOUS |
-| 2018-06-04 16:31:02 | Global Threat Intelligence (GTI) | 1 | 99 | KNOWN_TRUSTED |
+| 2017-10-15 16:30:54 | Enterprise reputation | 3 | 1 | KNOWN_MALICIOUS |
+| 2018-06-04 13:31:02 | Global Threat Intelligence (GTI) | 1 | 99 | KNOWN_TRUSTED |
 
 ### tie-set-file-reputation
 ***
@@ -288,7 +289,8 @@ Sets the “Enterprise” reputation (trust level, filename, and comment) of the
 
 ### tie-file-references
 ***
-Retrieves the set of systems which have referenced (typically executed) the specified hashes.
+Retrieves the set of systems which have referenced (typically executed) the specified hashes.  
+**Note**: The outputed dates are with respect to the UTC timezone.
 
 #### Base Command
 
@@ -403,20 +405,20 @@ Retrieves the set of systems which have referenced (typically executed) the spec
 ### References For Hash f2c7bb8acc97f92e987a2d4087d021b1:
 |AgentGuid|Date|
 |---|---|
-| 0c906be0-224c-45d4-8e6f-bc89da69d268 | 2017-10-15 18:33:20 |
-| 70be2ee9-7166-413b-b03e-64a48f6ab6c8 | 2017-10-15 18:34:11 |
-| c21b8995-9c5a-412c-b727-c4284d42380a | 2017-10-15 19:30:48 |
-| 24e0e935-2241-47d7-822b-20dfe0fe86de | 2017-10-15 19:30:49 |
-| e50a8b51-2063-42cb-a85f-10bd0a698323 | 2017-10-15 19:30:51 |
+| 0c906be0-224c-45d4-8e6f-bc89da69d268 | 2017-10-15 15:33:20 |
+| 70be2ee9-7166-413b-b03e-64a48f6ab6c8 | 2017-10-15 15:34:11 |
+| c21b8995-9c5a-412c-b727-c4284d42380a | 2017-10-15 16:30:48 |
+| 24e0e935-2241-47d7-822b-20dfe0fe86de | 2017-10-15 16:30:49 |
+| e50a8b51-2063-42cb-a85f-10bd0a698323 | 2017-10-15 16:30:51 |
 
 ### References For Hash 7eb0139d2175739b3ccb0d1110067820be6abd29:
 |AgentGuid|Date|
 |---|---|
-| 157eaf84-88ab-4d95-9456-30878fded9d5 | 2017-10-15 19:30:54 |
-| 0bbcd439-aaed-4931-b9f4-b37e4a49b980 | 2017-10-16 16:28:43 |
-| f87fb2c3-2032-4fc5-a54f-7d36b441a122 | 2017-10-16 16:28:46 |
-| 33b05a2e-6bb2-46c2-998f-893668c46402 | 2017-10-16 17:12:17 |
-| 99ed15bb-ebc5-4b48-9a4d-5ad1b30abaac | 2017-10-16 17:14:36 |
+| 157eaf84-88ab-4d95-9456-30878fded9d5 | 2017-10-15 16:30:54 |
+| 0bbcd439-aaed-4931-b9f4-b37e4a49b980 | 2017-10-16 13:28:43 |
+| f87fb2c3-2032-4fc5-a54f-7d36b441a122 | 2017-10-16 13:28:46 |
+| 33b05a2e-6bb2-46c2-998f-893668c46402 | 2017-10-16 14:12:17 |
+| 99ed15bb-ebc5-4b48-9a4d-5ad1b30abaac | 2017-10-16 14:14:36 |
 
 
 ## Breaking Changes
