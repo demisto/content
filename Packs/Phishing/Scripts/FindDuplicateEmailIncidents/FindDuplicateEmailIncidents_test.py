@@ -223,7 +223,7 @@ def test_eliminate_urls_extensions():
           'NC_9nanQc6pPG_SpT0&r=sUpl2dZrOIls7oQLXwn74C7qVYSZVCdsK9UIY1nPz30&m=qD-Bndy5WGvuZizr-Jz7YQ5-8xXgRcK3w8NnNzX' \
           'lOsk&s=_NEaEUMVW0JU5b--ODhZKY9csky777X1jtFywaQyN2o&e='
     url_shortened = eliminate_urls_extensions(url)
-    assert url_shortened == 'https://urldefense.proofpoint.com/'
+    assert url_shortened == 'http://fridmancpa.com/'
     template = 'hello world {} goodbye'
     assert template.format(url_shortened) == eliminate_urls_extensions(template.format(url))
 
