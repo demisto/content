@@ -18,7 +18,7 @@ def test_create_indicators_loop(mocker):
     with open('test_data/ip-stix-ioc-results.json') as json_f:
         indicators = json.load(json_f)
     mocker.patch.object(demisto, 'executeCommand', return_value=[None])
-    errors = create_indicators_loop(indicators=indicators)
+    results, errors = create_indicators_loop(indicators=indicators)
     assert errors == []
 
 
