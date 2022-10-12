@@ -8,11 +8,11 @@
             "id": "indicator--d81f86b9-975b-4c0b-875e-810c5ad45a4f",
             "created": "2014-06-29T13:49:37.079Z",
             "modified": "2014-06-29T13:49:37.079Z",
-            "name": "Malicious site http://darya456.com/",
+            "name": "Malicious site http://Dror123.com/",
             "indicator_types": [
                 "malicious-activity"
             ],
-            "pattern": "[url:value = 'http://darya456.com/']",
+            "pattern": "[url:value = 'http://Dror123.com/']",
             "pattern_type": "stix",
             "valid_from": "2014-06-29T13:49:37.079Z"
         },
@@ -22,7 +22,7 @@
             "id": "malware--162d917e-766f-4611-b5d6-652791454fca",
             "created": "2014-06-30T09:15:17.182Z",
             "modified": "2014-06-30T09:15:17.182Z",
-            "name": "Darya456 New",
+            "name": "Dror123 New",
             "description": "This malware newwwww.",
             "malware_types": [
                 "backdoor",

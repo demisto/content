@@ -41,21 +41,21 @@ def create_indicators_loop(indicators):
     :param indicators: parsed indicators
     :return: errors if exist
     """
-    results = list()
+    relationships_objects = list()
     errors = list()
     for indicator in indicators:
         indicator['type'] = indicator.get('indicator_type')
-        result = CommandResults(readable_output=f"{indicator}",
-            #indicator=indicator,
-                                relationships=create_relationships_from_entity(indicator.get('relationships')))
-        results.append(result)
+        relationship_object = create_relationships_from_entity(indicator.get('relationships'))
+        if relationship_object:
+            relationships_objects.extend(relationship_object)
         res = demisto.executeCommand("createNewIndicator", indicator)
         if is_error(res[0]):
             errors.append(f'Error creating indicator - {(res[0]["Contents"])}')
-    return_outputs(
-        f"Create Indicators From STIX: {len(indicators) - len(errors)} indicators were created."
+    result = CommandResults(
+        readable_output=f"Create Indicators From STIX: {len(indicators) - len(errors)} indicators were created.",
+        relationships=relationships_objects
     )
-    return results, errors
+    return result, errors
 
 
 def main():  # pragma: no cover
