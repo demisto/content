@@ -179,21 +179,21 @@ ARGS_BRANCHES = [
      'get_branches_single',  # result from json
      '### Branch details\n' \
      '|Title|CommitShortId|CommitTitle|CreatedAt|IsMerge|IsProtected|\n' \
-     '|---|---|---|---|\n' \
-     '| 1-test | f9d0bf17 | test1 | \'2022-07-27T13:09:50.000+00:00\' | false | false |\n'
+     '|---|---|---|---|---|---|\n' \
+     '| 1-test | f9d0bf17 | test1 | 2022-07-27T13:09:50.000+00:00 | false | false |\n'
      ),
     ({'limit': '2'},  # args list
      'branch_list_request',
      'get_branches',
      '### List Branches\n' \
      '|Title|CommitShortId|CommitTitle|CreatedAt|IsMerge|IsProtected|\n' \
-     '|---|---|---|---|\n' \
-     '| 1-test | f9d0bf17 | test1 | \'2022-07-27T13:09:50.000+00:00\' | false | false |\n' \
-     '| 2-test | d9177263 | test2 | \'2022-07-18T12:19:47.000+00:00\' | false | false |\n'
+     '|---|---|---|---|---|---|\n' \
+     '| 1-test | f9d0bf17 | test1 | 2022-07-27T13:09:50.000+00:00 | false | false |\n' \
+     '| 2-test | d9177263 | test2 | 2022-07-18T12:19:47.000+00:00 | false | false |\n'
      )
 ]
 
-'''
+
 @pytest.mark.parametrize('args, client_function, result_key_json, expected_results', ARGS_BRANCHES)
 def test_branch_list_command(mocker, args, client_function, result_key_json, expected_results):
     """
@@ -214,10 +214,81 @@ def test_branch_list_command(mocker, args, client_function, result_key_json, exp
     mocker.patch.object(Client, client_function, return_value=response_client)
     result = branch_list_command(client, args)
     assert result.readable_output == expected_results
+
+
+ARGS_COMMITS = [
+    ({'commit_id': 'a1', 'limit': '1'},  # args single branch
+     'commit_single_request',
+     'get_commit_single',  # result from json
+     '### Commit details\n' \
+     '|Title|Message|ShortId|Author|CreatedAt|\n' \
+     '|---|---|---|---|---|\n' \
+     '| commit1 | message1 | a1 | demo1 | 2022-07-26T11:28:03.000+00:00 |\n' \
+     ),
+    ({'limit': '2'},  # args list
+     'commit_list_request',
+     'get_commits',
+     '### List Commits\n' \
+     '|Title|Message|ShortId|Author|CreatedAt|\n' \
+     '|---|---|---|---|---|\n' \
+     '| commit1 | message1 | a1 | demo1 | 2022-07-26T11:28:03.000+00:00 |\n' \
+     '| commit2 | message2 | b2 | demo2 | 2022-07-26T11:28:03.000+00:00 |\n'
+     '| commit3 | message3 | c3 | demo3 | 2022-07-26T11:28:03.000+00:00 |\n'
+     )
+]
+
+
+@pytest.mark.parametrize('args, client_function, result_key_json, expected_results', ARGS_COMMITS)
+def test_commit_list_command(mocker, args, client_function, result_key_json, expected_results):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - running a commit_list_command
+    Then:
+        - The http request is called with the right arguments, and returns the right command result
+    """
+    from GitLab import Client, commit_list_command
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    response_client = util_load_json('test_data/commands_test_data.json').get(result_key_json)
+    mocker.patch.object(Client, client_function, return_value=response_client)
+    result = commit_list_command(client, args)
+    assert result.readable_output == expected_results
+
+
+def test_merge_request_list_command(mocker):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - running a merge_request_list_command
+    Then:
+        - The http request is called with the right arguments, and returns the right command result
+    """
+    from GitLab import Client, merge_request_list_command
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    args = {'limit': 2}
+    response_client = util_load_json('test_data/commands_test_data.json').get('list_merge_request')
+    mocker.patch.object(Client, 'merge_request_list_request', return_value=response_client)
+    result = merge_request_list_command(client, args)
+    expected_hr = '### List Merge requests\n' \
+                  '|Iid|CreatedAt|CreatedBy|Status|\n' \
+                  '|---|---|---|---|\n' \
+                  '| 5 | 2022-10-02T10:11:27.506Z | Test Account | opened |\n' \
+                  '| 6 | 2022-10-02T10:11:27.506Z | Test Account | opened |\n'
+    assert result.readable_output == expected_hr
     assert result.raw_response == response_client
 
 
-
+'''
 @pytest.mark.parametrize('args, client_result_jason_name,total_results ', ARGS_CHECK_LIMIT_GROUP_PROJECT)
 def test_group_project_list_command_limit(requests_mock,args, client_result_jason_name, total_results):
     """

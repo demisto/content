@@ -1,4 +1,54 @@
 {
+    "get_commits": 
+    [
+        {
+            "short_id": "a1",
+            "created_at": "2022-07-26T11:28:03.000+00:00",
+            "parent_ids": [
+                "112"
+            ],
+            "title": "commit1",
+            "message": "message1",
+            "author_name": "demo1"
+        },
+        {
+            "id": "296c0c7bf32f23190ebcd3c47bf46f95097afbc4",
+            "short_id": "b2",
+            "created_at": "2022-07-26T11:28:03.000+00:00",
+            "parent_ids": [
+                "114",
+                "112"
+            ],
+            "title": "commit2",
+            "message": "message2",
+            "author_name": "demo2"
+        },
+        {
+            "id": "aade54fdaab9b970825f245ac2b595c09f420ef6",
+            "short_id": "c3",
+            "created_at": "2022-07-26T11:28:03.000+00:00",
+            "parent_ids": [
+                "25836836a437e5c11719ba0bdffce6edf80f7f9e"
+            ],
+            "title": "commit3",
+            "message": "message3",
+            "author_name": "demo3"
+            
+        }
+    ],
+    "get_commit_single":
+    {
+        "short_id": "a1",
+        "created_at": "2022-07-26T11:28:03.000+00:00",
+        "parent_ids": [
+            "112"
+        ],
+        "title": "commit1",
+        "message": "message1",
+        "author_name": "demo1"
+    },
+    
+    
     "get_branches":[
         {
             "name": "1-test",
@@ -755,346 +805,46 @@
             "commands_changes": {}
         }
     ],
-    "List Merge Request":
+
+    "list_merge_request":
         [
             {
-                "id": 180503976,
                 "iid": 5,
-                "project_id": 1234,
-                "title": "t",
+                "title": "t1",
                 "description": null,
                 "state": "opened",
                 "created_at": "2022-10-02T10:11:27.506Z",
-                "updated_at": "2022-10-02T10:11:27.506Z",
                 "merged_by": null,
                 "merge_user": null,
-                "merged_at": null,
-                "closed_by": null,
-                "closed_at": null,
-                "target_branch": "b",
-                "source_branch": "b2",
+                "merged_at": "2022-10-02T10:11:27.506Z",
                 "user_notes_count": 0,
                 "upvotes": 0,
                 "downvotes": 0,
                 "author": {
-                    "id": 12665296,
-                    "username": "test9308",
-                    "name": "Test Account",
-                    "state": "active",
-                    "avatar_url": "https://secure.gravatar.com/avatar/9c7fbddb174ff5468dd993fb6f83b59a?s=80&d=identicon",
-                    "web_url": "https://gitlab.com/test9308"
+                    "name": "Test Account"
                 },
                 "assignees": [],
                 "assignee": null,
-                "reviewers": [],
-                "source_project_id": 39823965,
-                "target_project_id": 39823965,
-                "labels": [],
-                "draft": false,
-                "work_in_progress": false,
-                "milestone": null,
-                "merge_when_pipeline_succeeds": false,
-                "merge_status": "cannot_be_merged",
-                "sha": "eadec97163297620df38f9cbc906eff7fa04eb18",
-                "merge_commit_sha": null,
-                "squash_commit_sha": null,
-                "discussion_locked": null,
-                "should_remove_source_branch": null,
-                "force_remove_source_branch": null,
-                "reference": "!5",
-                "references": {
-                    "short": "!5",
-                    "relative": "!5",
-                    "full": "test9308/gitlabtest!5"
-                },
-                "web_url": "https://gitlab.com/test9308/gitlabtest/-/merge_requests/5",
-                "time_stats": {
-                    "time_estimate": 0,
-                    "total_time_spent": 0,
-                    "human_time_estimate": null,
-                    "human_total_time_spent": null
-                },
-                "squash": false,
-                "task_completion_status": {
-                    "count": 0,
-                    "completed_count": 0
-                },
-                "has_conflicts": true,
-                "blocking_discussions_resolved": true,
-                "approvals_before_merge": null
+                "reviewers": []
             },
             {
-                "id": 180503904,
-                "iid": 4,
-                "project_id": 1234,
-                "title": "title update",
-                "description": "descc",
+                "iid": 6,
+                "title": "t2",
+                "description": null,
                 "state": "opened",
-                "created_at": "2022-10-02T10:08:20.192Z",
-                "updated_at": "2022-10-02T10:08:24.463Z",
+                "created_at": "2022-10-02T10:11:27.506Z",
                 "merged_by": null,
                 "merge_user": null,
-                "merged_at": null,
-                "closed_by": null,
-                "closed_at": null,
-                "target_branch": "main",
-                "source_branch": "mmmhe",
+                "merged_at": "2022-10-02T10:11:27.506Z",
                 "user_notes_count": 0,
                 "upvotes": 0,
                 "downvotes": 0,
                 "author": {
-                    "id": 12665296,
-                    "username": "test9308",
-                    "name": "Test Account",
-                    "state": "active",
-                    "avatar_url": "https://secure.gravatar.com/avatar/9c7fbddb174ff5468dd993fb6f83b59a?s=80&d=identicon",
-                    "web_url": "https://gitlab.com/test9308"
+                    "name": "Test Account"
                 },
                 "assignees": [],
                 "assignee": null,
-                "reviewers": [],
-                "source_project_id": 39823965,
-                "target_project_id": 39823965,
-                "labels": [
-                    "hey",
-                    "label1"
-                ],
-                "draft": false,
-                "work_in_progress": false,
-                "milestone": null,
-                "merge_when_pipeline_succeeds": false,
-                "merge_status": "cannot_be_merged",
-                "sha": null,
-                "merge_commit_sha": null,
-                "squash_commit_sha": null,
-                "discussion_locked": null,
-                "should_remove_source_branch": null,
-                "force_remove_source_branch": null,
-                "reference": "!4",
-                "references": {
-                    "short": "!4",
-                    "relative": "!4",
-                    "full": "test9308/gitlabtest!4"
-                },
-                "web_url": "https://gitlab.com/test9308/gitlabtest/-/merge_requests/4",
-                "time_stats": {
-                    "time_estimate": 0,
-                    "total_time_spent": 0,
-                    "human_time_estimate": null,
-                    "human_total_time_spent": null
-                },
-                "squash": false,
-                "task_completion_status": {
-                    "count": 0,
-                    "completed_count": 0
-                },
-                "has_conflicts": true,
-                "blocking_discussions_resolved": true,
-                "approvals_before_merge": null
-            },
-            {
-                "id": 180503824,
-                "iid": 3,
-                "project_id": 1234,
-                "title": "title update",
-                "description": "descc",
-                "state": "opened",
-                "created_at": "2022-10-02T10:05:50.590Z",
-                "updated_at": "2022-10-02T10:05:54.608Z",
-                "merged_by": null,
-                "merge_user": null,
-                "merged_at": null,
-                "closed_by": null,
-                "closed_at": null,
-                "target_branch": "main",
-                "source_branch": "dkhtr",
-                "user_notes_count": 0,
-                "upvotes": 0,
-                "downvotes": 0,
-                "author": {
-                    "id": 12665296,
-                    "username": "test9308",
-                    "name": "Test Account",
-                    "state": "active",
-                    "avatar_url": "https://secure.gravatar.com/avatar/9c7fbddb174ff5468dd993fb6f83b59a?s=80&d=identicon",
-                    "web_url": "https://gitlab.com/test9308"
-                },
-                "assignees": [],
-                "assignee": null,
-                "reviewers": [],
-                "source_project_id": 39823965,
-                "target_project_id": 39823965,
-                "labels": [
-                    "hey",
-                    "label1"
-                ],
-                "draft": false,
-                "work_in_progress": false,
-                "milestone": null,
-                "merge_when_pipeline_succeeds": false,
-                "merge_status": "cannot_be_merged",
-                "sha": null,
-                "merge_commit_sha": null,
-                "squash_commit_sha": null,
-                "discussion_locked": null,
-                "should_remove_source_branch": null,
-                "force_remove_source_branch": null,
-                "reference": "!3",
-                "references": {
-                    "short": "!3",
-                    "relative": "!3",
-                    "full": "test9308/gitlabtest!3"
-                },
-                "web_url": "https://gitlab.com/test9308/gitlabtest/-/merge_requests/3",
-                "time_stats": {
-                    "time_estimate": 0,
-                    "total_time_spent": 0,
-                    "human_time_estimate": null,
-                    "human_total_time_spent": null
-                },
-                "squash": false,
-                "task_completion_status": {
-                    "count": 0,
-                    "completed_count": 0
-                },
-                "has_conflicts": true,
-                "blocking_discussions_resolved": true,
-                "approvals_before_merge": null
-            },
-            {
-                "id": 180502010,
-                "iid": 2,
-                "project_id": 1234,
-                "title": "title update",
-                "description": "descc",
-                "state": "opened",
-                "created_at": "2022-10-02T08:48:41.287Z",
-                "updated_at": "2022-10-02T08:48:43.515Z",
-                "merged_by": null,
-                "merge_user": null,
-                "merged_at": null,
-                "closed_by": null,
-                "closed_at": null,
-                "target_branch": "main",
-                "source_branch": "mnegw",
-                "user_notes_count": 0,
-                "upvotes": 0,
-                "downvotes": 0,
-                "author": {
-                    "id": 12665296,
-                    "username": "test9308",
-                    "name": "Test Account",
-                    "state": "active",
-                    "avatar_url": "https://secure.gravatar.com/avatar/9c7fbddb174ff5468dd993fb6f83b59a?s=80&d=identicon",
-                    "web_url": "https://gitlab.com/test9308"
-                },
-                "assignees": [],
-                "assignee": null,
-                "reviewers": [],
-                "source_project_id": 39823965,
-                "target_project_id": 39823965,
-                "labels": [
-                    "hey",
-                    "label1"
-                ],
-                "draft": false,
-                "work_in_progress": false,
-                "milestone": null,
-                "merge_when_pipeline_succeeds": false,
-                "merge_status": "cannot_be_merged_recheck",
-                "sha": null,
-                "merge_commit_sha": null,
-                "squash_commit_sha": null,
-                "discussion_locked": null,
-                "should_remove_source_branch": null,
-                "force_remove_source_branch": null,
-                "reference": "!2",
-                "references": {
-                    "short": "!2",
-                    "relative": "!2",
-                    "full": "test9308/gitlabtest!2"
-                },
-                "web_url": "https://gitlab.com/test9308/gitlabtest/-/merge_requests/2",
-                "time_stats": {
-                    "time_estimate": 0,
-                    "total_time_spent": 0,
-                    "human_time_estimate": null,
-                    "human_total_time_spent": null
-                },
-                "squash": false,
-                "task_completion_status": {
-                    "count": 0,
-                    "completed_count": 0
-                },
-                "has_conflicts": false,
-                "blocking_discussions_resolved": true,
-                "approvals_before_merge": null
-            },
-            {
-                "id": 180501799,
-                "iid": 1,
-                "project_id": 1234,
-                "title": "Test file commands for playbook",
-                "description": "",
-                "state": "opened",
-                "created_at": "2022-10-02T08:39:26.148Z",
-                "updated_at": "2022-10-02T10:08:45.598Z",
-                "merged_by": null,
-                "merge_user": null,
-                "merged_at": null,
-                "closed_by": null,
-                "closed_at": null,
-                "target_branch": "main",
-                "source_branch": "TestFileCommandsForPlaybook",
-                "user_notes_count": 0,
-                "upvotes": 0,
-                "downvotes": 0,
-                "author": {
-                    "id": 12665296,
-                    "username": "test9308",
-                    "name": "Test Account",
-                    "state": "active",
-                    "avatar_url": "https://secure.gravatar.com/avatar/9c7fbddb174ff5468dd993fb6f83b59a?s=80&d=identicon",
-                    "web_url": "https://gitlab.com/test9308"
-                },
-                "assignees": [],
-                "assignee": null,
-                "reviewers": [],
-                "source_project_id": 39823965,
-                "target_project_id": 39823965,
-                "labels": [],
-                "draft": false,
-                "work_in_progress": false,
-                "milestone": null,
-                "merge_when_pipeline_succeeds": false,
-                "merge_status": "unchecked",
-                "sha": "1188e1e97bc6aa297986695eccecd6227dc8c4a7",
-                "merge_commit_sha": null,
-                "squash_commit_sha": null,
-                "discussion_locked": null,
-                "should_remove_source_branch": null,
-                "force_remove_source_branch": true,
-                "reference": "!1",
-                "references": {
-                    "short": "!1",
-                    "relative": "!1",
-                    "full": "test9308/gitlabtest!1"
-                },
-                "web_url": "https://gitlab.com/test9308/gitlabtest/-/merge_requests/1",
-                "time_stats": {
-                    "time_estimate": 0,
-                    "total_time_spent": 0,
-                    "human_time_estimate": null,
-                    "human_total_time_spent": null
-                },
-                "squash": false,
-                "task_completion_status": {
-                    "count": 0,
-                    "completed_count": 0
-                },
-                "has_conflicts": false,
-                "blocking_discussions_resolved": true,
-                "approvals_before_merge": null
+                "reviewers": []
             }
         ],
     "List Group Members":

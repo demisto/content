@@ -851,11 +851,11 @@ def commit_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         response = response_according_pagination(client.commit_list_request, limit, page_number, params, None)
 
     for commit in response:
-        response_to_hr.append({'Title': commit.get('name', ''),
+        response_to_hr.append({'Title': commit.get('title', ''),
                                'Message': commit.get('message', ''),
                                'ShortId': commit.get('short_id', ''),
                                'Author': commit.get('author_name', ''),
-                               'CreatedAt': commit.get('committed_date', '')})
+                               'CreatedAt': commit.get('created_at', '')})
     human_readable = tableToMarkdown(response_title, response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
         outputs_prefix='GitLab.Commit',
