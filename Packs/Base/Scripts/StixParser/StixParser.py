@@ -697,10 +697,13 @@ class STIX2Parser:
         Polls the taxii server and builds a list of cortex indicators objects from the result
         :return: Cortex indicators list
         """
-        if not js_content.get('objects'):
-            raise Exception('STIX2 Indicators json file should contain `objects` key, where the value is the'
+        if js_content.get('id', '').startswith('bundle--') and not js_content.get('objects'):
+            raise Exception('STIX2 Indicators bundle json file should contain `objects` key, where the value is the'
                             ' array with indicators.')
-        envelopes = STIX2Parser.create_envelopes_by_type(js_content['objects'])  # got data from server
+        elif not js_content.get('id', '').startswith('bundle--'):
+            envelopes = STIX2Parser.create_envelopes_by_type([js_content])
+        else:
+            envelopes = STIX2Parser.create_envelopes_by_type(js_content['objects'])
         indicators = self.load_stix_objects_from_envelope(envelopes)
 
         return indicators

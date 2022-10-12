@@ -10,7 +10,7 @@ def parse_indicators_using_stix_parser(entry_id):
     """
     if not entry_id:
         return_error(f"Could not find file for entry id {entry_id}.")
-    comm_output = demisto.executeCommand("StixParserV2", {"entry_id": entry_id})
+    comm_output = demisto.executeCommand("StixParser", {"entry_id": entry_id})
     indicators = comm_output[0].get("Contents")
     if is_error(comm_output[0]):
         return_error(indicators)
