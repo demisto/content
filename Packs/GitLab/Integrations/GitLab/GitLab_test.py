@@ -288,7 +288,197 @@ def test_merge_request_list_command(mocker):
     assert result.raw_response == response_client
 
 
+def test_group_list_command(mocker):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - running a merge_request_list_command
+    Then:
+        - The http request is called with the right arguments, and returns the right command result
+    """
+    from GitLab import Client, group_list_command
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    args = {'limit': 1}
+    response_client = util_load_json('test_data/commands_test_data.json').get('list_groups')
+    mocker.patch.object(Client, 'group_list_request', return_value=response_client)
+    result = group_list_command(client, args)
+    expected_hr = '### List Groups\n' \
+                  '|Id|Name|Path|CreatedAt|Visibility|\n' \
+                  '|---|---|---|---|---|\n' \
+                  '| 55694272 | demistoTest | demistotest1 | 2022-07-18T12:19:46.363Z | private |\n'
+    assert result.readable_output == expected_hr
+    assert result.raw_response == response_client
+
+
+def test_issue_note_list_command(mocker):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - running a merge_request_list_command
+    Then:
+        - The http request is called with the right arguments, and returns the right command result
+    """
+    from GitLab import Client, issue_note_list_command
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    args = {'limit': 2}
+    response_client = util_load_json('test_data/commands_test_data.json').get('list_issue_note')
+    mocker.patch.object(Client, 'issue_note_list_request', return_value=response_client)
+    result = issue_note_list_command(client, args)
+    expected_hr = '### List Issue notes\n' \
+                  '|Id|Text|CreatedAt|UpdatedAt|\n' \
+                  '|---|---|---|---|\n' \
+                  '| 112 | body1 | 2022-07-27T10:47:38.028Z | 2022-07-27T10:47:38.032Z |\n' \
+                  '| 113 | body2 | 2022-07-27T10:47:38.028Z | 2022-07-27T10:47:38.032Z |\n'
+    assert result.readable_output == expected_hr
+    assert result.raw_response == response_client
+
+
+def test_merge_request_note_list_command(mocker):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - running a merge_request_note_list_command
+    Then:
+        - The http request is called with the right arguments, and returns the right command result
+    """
+    from GitLab import Client, merge_request_note_list_command
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    args = {'limit': 2}
+    response_client = util_load_json('test_data/commands_test_data.json').get('list_merge_request_note')
+    mocker.patch.object(Client, 'merge_request_note_list_request', return_value=response_client)
+    result = merge_request_note_list_command(client, args)
+    expected_hr = '### List Merge Issue Notes\n'\
+                  '|Id|Text|CreatedAt|UpdatedAt|\n' \
+                  '|---|---|---|---|\n' \
+                  '| 115 | body11 | 2022-10-02T08:48:43.674Z | 2022-10-02T08:48:43.676Z |\n' \
+                  '| 112 | body12 | 2022-10-02T08:48:43.588Z | 2022-10-02T08:48:43.591Z |\n'
+    assert result.readable_output == expected_hr
+    assert result.raw_response == response_client
+
+
+def test_group_member_list_command(mocker):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - running a group_member_list_command
+    Then:
+        - The http request is called with the right arguments, and returns the right command result
+    """
+    from GitLab import Client, group_member_list_command
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    args = {'limit': 2}
+
+    response_client = util_load_json('test_data/commands_test_data.json').get('list_group_members')
+    mocker.patch.object(Client, 'group_member_list_request', return_value=response_client)
+    result = group_member_list_command(client, args)
+    expected_hr = '### List Group Members\n' \
+                  '|Id|Name|UserName|MembershipState|ExpiresAt|\n' \
+                  '|---|---|---|---|---|\n' \
+                  '| 126 | Test Account | test2 | active | 2032-10-02T08:44:38.826Z |\n' \
+                  '| 116 | Test Account | test2 | active | 2032-10-02T08:44:38.826Z |\n'
+    assert result.readable_output == expected_hr
+    assert result.raw_response == response_client
+
+
+def test_project_user_list_command(mocker):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - running a group_member_list_command
+    Then:
+        - The http request is called with the right arguments, and returns the right command result
+    """
+    from GitLab import Client, project_user_list_command
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    args = {'limit': 3}
+    response_client = util_load_json('test_data/commands_test_data.json').get('list_project_user')
+    mocker.patch.object(Client, 'project_user_list_request', return_value=response_client)
+    result = project_user_list_command(client, args)
+    expected_hr = '### List Users\n'\
+                  '|Id|UserName|Name|State|WebLink|\n'\
+                  '|---|---|---|---|---|\n'\
+                  '| 123 | test1 | Test Account | active | web_url1 |\n'\
+                  '| 345 | test2 | Test Account | active | web_url2 |\n'\
+                  '| 678 | test3 | Test Account | active | web_url3 |\n'
+    assert result.readable_output == expected_hr
+    assert result.raw_response == response_client
+
+
+ARGS_FOR_UPDATE = [
+    (
+        {'arg1': 'not in optinal_params', 'arg2': 'not in optinal_params'}, ['optinal_param'],  # args
+        False,  # not valid case
+        {'e': 'At least one of arguments is required for the request to be successful\n'}  # expected result
+    ),
+    (
+        {}, ['optinal_param'],  # expected result, # args - Invalid Case
+        False,  # not valid case
+        {'e': 'At least one of arguments is required for the request to be successful\n'}  # expected result
+    ),
+    (
+        {'arg1': 'not in optinal_params'}, [],  # args - Invalid Case
+        False,  # not valid case
+        {'e': 'At least one of arguments is required for the request to be successful\n'}  # expected result
+    ),
+    (
+        {'optinal_param': 'exist', 'arg2': 'not in optinal_params'}, ['optinal_param'],
+        True,  # valid case
+        {'optinal_param': 'exist'}  # expected result
+    )
+]
+
+
+@pytest.mark.parametrize('args, optinal_params, isGoodCase, expected_results', ARGS_FOR_UPDATE)
+def test_check_args_for_update(args, optinal_params, isGoodCase, expected_results):
+    """
+    Given:
+        - optinal params, arguments
+    When:
+        - running update commands
+    Then:
+        - checking that at least one argument from optinal params is in args.
+    """
+    from GitLab import check_args_for_update
+    from CommonServerPython import DemistoException
+
+    if isGoodCase:
+        res = check_args_for_update(args, optinal_params)
+        assert res == expected_results
+
+    else:
+        with pytest.raises(DemistoException) as e:
+            check_args_for_update(args, optinal_params)
+        assert str(e.value) == expected_results['e']
+
+
 '''
+def testcode_search_command(mockedr):
+    pass
 @pytest.mark.parametrize('args, client_result_jason_name,total_results ', ARGS_CHECK_LIMIT_GROUP_PROJECT)
 def test_group_project_list_command_limit(requests_mock,args, client_result_jason_name, total_results):
     """

@@ -754,58 +754,22 @@
             "web_url": "https://gitlab.com/test9308/gitlabtest/-/commit/7d584f46406188ba35bf6d651cbd12b4108b6284"
         }
     ],
-    "List Merge Request Note":
+    "list_merge_request_note":
     [
         {
-            "id": 1121564705,
-            "type": null,
-            "body": "changed the description",
+            "id": 115,
+            "body": "body11",
             "attachment": null,
-            "author": {
-                "id": 12665296,
-                "username": "test9308",
-                "name": "Test Account",
-                "state": "active",
-                "avatar_url": "https://secure.gravatar.com/avatar/9c7fbddb174ff5468dd993fb6f83b59a?s=80&d=identicon",
-                "web_url": "https://gitlab.com/test9308"
-            },
             "created_at": "2022-10-02T08:48:43.674Z",
-            "updated_at": "2022-10-02T08:48:43.676Z",
-            "system": true,
-            "noteable_id": 180502010,
-            "noteable_type": "MergeRequest",
-            "resolvable": false,
-            "confidential": false,
-            "internal": false,
-            "noteable_iid": 2,
-            "commands_changes": {}
+            "updated_at": "2022-10-02T08:48:43.676Z"
         },
         {
-            "id": 1121564704,
-            "type": null,
-            "body": "changed title from **{-playbook-}** to **{+title update+}**",
-            "attachment": null,
-            "author": {
-                "id": 12665296,
-                "username": "test9308",
-                "name": "Test Account",
-                "state": "active",
-                "avatar_url": "https://secure.gravatar.com/avatar/9c7fbddb174ff5468dd993fb6f83b59a?s=80&d=identicon",
-                "web_url": "https://gitlab.com/test9308"
-            },
+            "id": 112,
+            "body": "body12",
             "created_at": "2022-10-02T08:48:43.588Z",
-            "updated_at": "2022-10-02T08:48:43.591Z",
-            "system": true,
-            "noteable_id": 180502010,
-            "noteable_type": "MergeRequest",
-            "resolvable": false,
-            "confidential": false,
-            "internal": false,
-            "noteable_iid": 2,
-            "commands_changes": {}
+            "updated_at": "2022-10-02T08:48:43.591Z"
         }
     ],
-
     "list_merge_request":
         [
             {
@@ -847,28 +811,55 @@
                 "reviewers": []
             }
         ],
-    "List Group Members":
-        {
-            "id": 12665296,
-            "username": "test9308",
+    "list_group_members":
+        [{
+            "id": 126,
+            "username": "test2",
             "name": "Test Account",
             "state": "active",
-            "avatar_url": "https://secure.gravatar.com/avatar/9c7fbddb174ff5468dd993fb6f83b59a?s=80&d=identicon",
-            "web_url": "https://gitlab.com/test9308",
             "access_level": 50,
             "created_at": "2022-10-02T08:44:38.826Z",
-            "expires_at": null,
+            "expires_at": "2032-10-02T08:44:38.826Z",
             "membership_state": "active"
         },
-    "List Project Users":
         {
-            "id": 12665296,
-            "username": "test9308",
+            "id": 116,
+            "username": "test2",
             "name": "Test Account",
             "state": "active",
-            "avatar_url": "https://secure.gravatar.com/avatar/9c7fbddb174ff5468dd993fb6f83b59a?s=80&d=identicon",
-            "web_url": "https://gitlab.com/test9308"
+            "access_level": 50,
+            "created_at": "2022-10-02T08:44:38.826Z",
+            "expires_at": "2032-10-02T08:44:38.826Z",
+            "membership_state": "active"
+        }
+        ],
+    "list_project_user":
+        [{
+            "id": 123,
+            "username": "test1",
+            "name": "Test Account",
+            "state": "active",
+            "avatar_url": "avater_url",
+            "web_url": "web_url1"
         },
+        {
+            "id": 345,
+            "username": "test2",
+            "name": "Test Account",
+            "state": "active",
+            "avatar_url": "avater_url",
+            "web_url": "web_url2"
+        },
+        {
+            "id": 678,
+            "username": "test3",
+            "name": "Test Account",
+            "state": "active",
+            "avatar_url": "avater_url",
+            "web_url": "web_url3"
+        }
+
+    ],
     "issue_create":{
         "iid": 114,
         "title": "title_test",
@@ -880,5 +871,46 @@
             "name": "name"
         }
     },
-    "issue_update":{}
+    "list_groups":[
+        {
+            "id": 55694272,
+            "name": "demistoTest",
+            "path": "demistotest1",
+            "description": "exaple unit test",
+            "visibility": "private",
+            "created_at": "2022-07-18T12:19:46.363Z",
+            "parent_id": null,
+            "ldap_cn": null,
+            "ldap_access": null
+        }
+    ],
+    "list_issue_note":
+    [
+        {
+            "id": 112,
+            "body": "body1",
+            "attachment": null,
+            "author": {
+                "id": 1,
+                "username": "demo",
+                "name": "user test",
+                "state": "active"
+            },
+            "created_at": "2022-07-27T10:47:38.028Z",
+            "updated_at": "2022-07-27T10:47:38.032Z"
+        },
+        {
+            "id": 113,
+            "body": "body2",
+            "attachment": null,
+            "author": {
+                "id": 1,
+                "username": "demo",
+                "name": "user test",
+                "state": "active"
+            },
+            "created_at": "2022-07-27T10:47:38.028Z",
+            "updated_at": "2022-07-27T10:47:38.032Z"
+        }
+    ]
 }
