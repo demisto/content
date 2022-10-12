@@ -1,5 +1,14 @@
-id: Cortex XDR - Port Scan
-version: -1
+id: 1fb3469d-8ee8-49a5-8fd3-7a79dda6c5be
+version: 10
+contentitemexportablefields:
+  contentitemfields:
+    packID: ""
+    packName: Palo Alto Networks Cortex XDR - Investigation and Response
+    itemVersion: 4.8.19
+    fromServerVersion: 5.0.0
+    toServerVersion: ""
+    definitionid: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: Cortex XDR - Port Scan
 description: |-
   Investigates a Cortex XDR incident containing internal port scan alerts. The playbook:
@@ -22,18 +31,18 @@ tasks:
       id: 7c46d5ad-2e77-4213-8d84-4de23934ce23
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 20
+          "x": 1575,
+          "y": 50
         }
       }
     note: false
@@ -41,6 +50,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: 8277520e-1e78-403a-8914-018cd06cc1f3
@@ -49,7 +60,6 @@ tasks:
       id: 8277520e-1e78-403a-8914-018cd06cc1f3
       version: -1
       name: Triage
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -57,11 +67,12 @@ tasks:
       '#none#':
       - "92"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 145
+          "x": 1575,
+          "y": 195
         }
       }
     note: false
@@ -69,6 +80,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: dd99e02f-59f3-403d-86ed-0c56428cd7ad
@@ -92,14 +105,14 @@ tasks:
           root: AttackerIPs
           transformers:
           - operator: uniq
-      ipRanges: {}
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 880
+          "x": 920,
+          "y": 1040
         }
       }
     note: false
@@ -107,6 +120,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: fb9bb58b-4c96-4820-84a6-ea829168c785
@@ -125,10 +140,8 @@ tasks:
       '#none#':
       - "42"
     scriptarguments:
-      append: {}
       key:
         simple: WhitelistedHostnames
-      stringify: {}
       value:
         complex:
           root: inputs.WhitelistedHostnames
@@ -140,11 +153,12 @@ tasks:
                   simple: ','
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 860,
-          "y": 720
+          "x": 1780,
+          "y": 1040
         }
       }
     note: false
@@ -152,6 +166,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
     taskid: 7a7a6ec8-c9fa-415a-87bc-bc507762e35e
@@ -160,8 +176,8 @@ tasks:
       id: 7a7a6ec8-c9fa-415a-87bc-bc507762e35e
       version: -1
       name: Save email addresses to notify
-      description: Saves the email addresses to notify about the compromised host,
-        if any were configured in the playbook inputs.
+      description: Saves the email addresses to notify about the compromised host
+        if any emails were configured in the playbook inputs.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -170,10 +186,8 @@ tasks:
       '#none#':
       - "42"
     scriptarguments:
-      append: {}
       key:
         simple: EmailAddressesToNotify
-      stringify: {}
       value:
         complex:
           root: inputs.EmailAddressesToNotify
@@ -186,11 +200,12 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1270,
-          "y": 720
+          "x": 2210,
+          "y": 1040
         }
       }
     note: false
@@ -198,6 +213,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "32":
     id: "32"
     taskid: 9de655f8-11e9-4297-8a3d-90b5c7878c91
@@ -217,11 +234,12 @@ tasks:
       "yes":
       - "34"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1740,
-          "y": 3100
+          "x": 265,
+          "y": 3370
         }
       }
     note: false
@@ -229,6 +247,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "34":
     id: "34"
     taskid: 5ade44c2-fea8-45bf-81fd-a1f00699998a
@@ -246,11 +266,12 @@ tasks:
       '#none#':
       - "61"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1740,
-          "y": 3325
+          "x": 480,
+          "y": 3545
         }
       }
     note: false
@@ -258,6 +279,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "37":
     id: "37"
     taskid: 60870224-e9dc-4cab-8f05-eaf6e832a45c
@@ -275,10 +298,8 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      append: {}
       key:
         simple: AttackerIPs
-      stringify: {}
       value:
         complex:
           root: PaloAltoNetworksXDR
@@ -287,11 +308,12 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 720
+          "x": 920,
+          "y": 865
         }
       }
     note: false
@@ -299,6 +321,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "40":
     id: "40"
     taskid: 73644573-1b41-4de6-847a-036fa9003a86
@@ -316,10 +340,8 @@ tasks:
       '#none#':
       - "42"
     scriptarguments:
-      append: {}
       key:
         simple: AttackerUsername
-      stringify: {}
       value:
         complex:
           root: PaloAltoNetworksXDR
@@ -345,13 +367,14 @@ tasks:
                 value:
                   simple: user_name
     reputationcalc: 1
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -770,
-          "y": 720
+          "x": 60,
+          "y": 1040
         }
       }
     note: false
@@ -359,6 +382,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "42":
     id: "42"
     taskid: 8cbe42bf-2e02-4201-8a2a-10d019de3b5f
@@ -367,7 +392,6 @@ tasks:
       id: 8cbe42bf-2e02-4201-8a2a-10d019de3b5f
       version: -1
       name: Detection
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -375,11 +399,12 @@ tasks:
       '#none#':
       - "93"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1270
+          "x": 1995,
+          "y": 1215
         }
       }
     note: false
@@ -387,6 +412,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "45":
     id: "45"
     taskid: 21793aba-c2ca-4961-85e9-10b3ff85b818
@@ -404,10 +431,8 @@ tasks:
       '#none#':
       - "42"
     scriptarguments:
-      append: {}
       key:
         simple: FileArtifacts
-      stringify: {}
       value:
         complex:
           root: PaloAltoNetworksXDR
@@ -415,13 +440,14 @@ tasks:
           transformers:
           - operator: uniq
     reputationcalc: 1
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 720
+          "x": 1350,
+          "y": 1040
         }
       }
     note: false
@@ -429,6 +455,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "46":
     id: "46"
     taskid: d9ea6596-fcd4-4f66-8bae-e6d654b358d4
@@ -446,10 +474,8 @@ tasks:
       '#none#':
       - "42"
     scriptarguments:
-      append: {}
       key:
         simple: AttackerHostnames
-      stringify: {}
       value:
         complex:
           root: PaloAltoNetworksXDR
@@ -458,11 +484,12 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -370,
-          "y": 720
+          "x": 490,
+          "y": 1040
         }
       }
     note: false
@@ -470,6 +497,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "48":
     id: "48"
     taskid: c233bda6-bc73-4094-89bf-d7c8d15315c0
@@ -506,11 +535,12 @@ tasks:
             value:
               simple: LateralMovementFirstDatetime
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1980
+          "x": 1995,
+          "y": 1885
         }
       }
     note: false
@@ -518,6 +548,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "49":
     id: "49"
     taskid: c15ebabb-7bd3-420f-8a0e-e98c9b1a0407
@@ -537,21 +569,20 @@ tasks:
       - "50"
       - "97"
     scriptarguments:
-      append: {}
       key:
         simple: IncidentAlerts
-      stringify: {}
       value:
         complex:
           root: PaloAltoNetworksXDR
           accessor: Incident.alerts
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 2090,
-          "y": 720
+          "x": 2875,
+          "y": 690
         }
       }
     note: false
@@ -559,6 +590,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "50":
     id: "50"
     taskid: 8d3ea69c-7a79-4d44-8316-4b8e628791ca
@@ -580,7 +613,6 @@ tasks:
         simple: "false"
       key:
         simple: PortScanFirstDatetime
-      stringify: {}
       value:
         complex:
           root: IncidentAlerts
@@ -607,11 +639,12 @@ tasks:
           - operator: TimeStampToDate
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 2090,
-          "y": 890
+          "x": 2640,
+          "y": 1040
         }
       }
     note: false
@@ -619,6 +652,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "51":
     id: "51"
     taskid: fe20e8a9-9913-4989-8337-1cc117319cf4
@@ -641,7 +676,6 @@ tasks:
         simple: "false"
       key:
         simple: LateralMovementFirstDatetime
-      stringify: {}
       value:
         complex:
           root: IncidentAlerts
@@ -668,11 +702,12 @@ tasks:
           - operator: TimeStampToDate
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 2750,
-          "y": 1070
+          "x": 3090,
+          "y": 1040
         }
       }
     note: false
@@ -680,6 +715,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "52":
     id: "52"
     taskid: 3c6b03b5-80b2-4526-8a5d-4571103d4f6e
@@ -696,11 +733,12 @@ tasks:
       '#none#':
       - "61"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": 3660
+          "x": 1790,
+          "y": 3545
         }
       }
     note: false
@@ -708,6 +746,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "54":
     id: "54"
     taskid: 658cbdbe-d7d7-4575-86dc-03de7c56e103
@@ -738,11 +778,12 @@ tasks:
                 root: PANWHunting
                 accessor: DetectedInternalHosts
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 3290
+          "x": 1145,
+          "y": 3195
         }
       }
     note: false
@@ -750,6 +791,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "59":
     id: "59"
     taskid: e02d1a26-fc02-47af-8409-b98f7206acb0
@@ -775,12 +818,9 @@ tasks:
       - "54"
       - "67"
     scriptarguments:
-      IPAddresses: {}
       InternalRange:
         complex:
           root: inputs.InternalIPRanges
-      MD5: {}
-      SHA1: {}
       SHA256:
         complex:
           root: FileArtifacts
@@ -804,8 +844,8 @@ tasks:
                   simple: BENIGN
               ignorecase: true
           accessor: file_sha256
-      URLDomain: {}
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -814,8 +854,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 3100
+          "x": 1790,
+          "y": 3020
         }
       }
     note: false
@@ -823,6 +863,8 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "60":
     id: "60"
     taskid: 94865e07-4176-494c-815b-36d6e15aee37
@@ -831,7 +873,6 @@ tasks:
       id: 94865e07-4176-494c-815b-36d6e15aee37
       version: -1
       name: Containment & Remediation
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -839,11 +880,12 @@ tasks:
       '#none#':
       - "94"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2660
+          "x": 1892.5,
+          "y": 2555
         }
       }
     note: false
@@ -851,6 +893,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "61":
     id: "61"
     taskid: 53c86ada-28b3-46de-8da2-e799b8a88bd9
@@ -891,13 +935,13 @@ tasks:
       DBotScore:
         complex:
           root: DBotScore
-      EmailAuthenticityCheck: {}
       Endpoint:
         complex:
           root: Endpoint
           transformers:
           - operator: uniq
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -906,8 +950,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 3840
+          "x": 1892.5,
+          "y": 3720
         }
       }
     note: false
@@ -915,6 +959,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "62":
     id: "62"
     taskid: 564342aa-8759-4b57-81c9-f8251f7362b7
@@ -937,7 +983,6 @@ tasks:
         simple: "true"
       key:
         simple: Endpoint.Hostname
-      stringify: {}
       value:
         complex:
           root: PANWHunting
@@ -945,11 +990,12 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": 3485
+          "x": 1790,
+          "y": 3370
         }
       }
     note: false
@@ -957,6 +1003,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "63":
     id: "63"
     taskid: 6d49f70a-f26a-4fa6-80e9-70a448ad330a
@@ -977,20 +1025,19 @@ tasks:
     scriptarguments:
       assignBy:
         simple: random
-      email: {}
       onCall:
         complex:
           root: inputs.OnCall
       roles:
         complex:
           root: inputs.RoleForEscalation
-      username: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 140,
-          "y": 2475
+          "x": 2322.5,
+          "y": 2380
         }
       }
     note: false
@@ -998,6 +1045,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "64":
     id: "64"
     taskid: 612da2fe-8435-4296-860c-3f3406c69d9d
@@ -1026,11 +1075,12 @@ tasks:
               complex:
                 root: inputs.RoleForEscalation
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 140,
-          "y": 2300
+          "x": 2107.5,
+          "y": 2205
         }
       }
     note: false
@@ -1038,6 +1088,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "65":
     id: "65"
     taskid: ef28b658-0ec9-4697-8b88-2d48a854d590
@@ -1054,11 +1106,12 @@ tasks:
       '#none#':
       - "60"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -280,
-          "y": 2475
+          "x": 1892.5,
+          "y": 2380
         }
       }
     note: false
@@ -1066,6 +1119,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "66":
     id: "66"
     taskid: 36ca3b97-fe38-46cd-80e9-1e2ec5967245
@@ -1084,10 +1139,8 @@ tasks:
       '#none#':
       - "42"
     scriptarguments:
-      append: {}
       key:
         simple: CriticalUsernames
-      stringify: {}
       value:
         complex:
           root: inputs.CriticalUsernames
@@ -1100,11 +1153,12 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1680,
-          "y": 720
+          "x": 3520,
+          "y": 1040
         }
       }
     note: false
@@ -1112,6 +1166,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "67":
     id: "67"
     taskid: 7f35d238-c12d-4a4d-8882-f60193205889
@@ -1141,11 +1197,12 @@ tasks:
                 root: PANWHunting
                 accessor: DetectedExternalIPs
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 720,
-          "y": 3290
+          "x": 2342.5,
+          "y": 3195
         }
       }
     note: false
@@ -1153,6 +1210,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "68":
     id: "68"
     taskid: da2051e1-6927-4981-8029-bb62d9aa8b3b
@@ -1170,7 +1229,7 @@ tasks:
       '#default#':
       - "69"
       "yes":
-      - "70"
+      - "98"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1185,11 +1244,12 @@ tasks:
             value:
               simple: "true"
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1030,
-          "y": 3475
+          "x": 2455,
+          "y": 3370
         }
       }
     note: false
@@ -1197,6 +1257,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "69":
     id: "69"
     taskid: d788391d-43fe-46d8-86de-104abc8ccb81
@@ -1213,11 +1275,12 @@ tasks:
       '#none#':
       - "61"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 830,
-          "y": 3660
+          "x": 2240,
+          "y": 3545
         }
       }
     note: false
@@ -1225,64 +1288,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "70":
-    id: "70"
-    taskid: bc083d17-bb8e-484e-8e41-a0bbb1ef4a51
-    type: playbook
-    task:
-      id: bc083d17-bb8e-484e-8e41-a0bbb1ef4a51
-      version: -1
-      name: Block IP - Generic v2
-      description: |-
-        This playbook blocks malicious IPs using all integrations that are enabled.
-
-        Supported integrations for this playbook:
-        * Check Point Firewall
-        * Palo Alto Networks Minemeld
-        * Palo Alto Networks PAN-OS
-        * Zscaler
-      playbookName: Block IP - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "61"
-    scriptarguments:
-      AutoCommit:
-        simple: "No"
-      CustomBlockRule:
-        simple: "True"
-      DAG: {}
-      EDLServerIP: {}
-      IP:
-        complex:
-          root: PANWHunting
-          accessor: DetectedExternalIPs
-          transformers:
-          - operator: uniq
-      IPBlacklistMiner: {}
-      IPListName: {}
-      LogForwarding: {}
-      StaticAddressGroup: {}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 1250,
-          "y": 3660
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "71":
     id: "71"
     taskid: 4aa93eea-6c1f-4581-836b-0fdbe9add734
@@ -1291,7 +1298,6 @@ tasks:
       id: 4aa93eea-6c1f-4581-836b-0fdbe9add734
       version: -1
       name: Block File - Generic v2
-      description: ""
       playbookName: Block File - Generic v2
       type: playbook
       iscommand: false
@@ -1300,11 +1306,12 @@ tasks:
       '#none#':
       - "61"
     separatecontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -370,
-          "y": 3660
+          "x": 1360,
+          "y": 3545
         }
       }
     note: false
@@ -1312,6 +1319,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "72":
     id: "72"
     taskid: 158f2967-e083-4320-80b9-c59a5457e271
@@ -1344,11 +1353,12 @@ tasks:
             value:
               simple: "True"
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -370,
-          "y": 3485
+          "x": 1145,
+          "y": 3370
         }
       }
     note: false
@@ -1356,6 +1366,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "73":
     id: "73"
     taskid: 019f9c6b-61aa-4aab-85c2-b92bab3899bb
@@ -1373,11 +1385,12 @@ tasks:
       '#none#':
       - "61"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -800,
-          "y": 3660
+          "x": 930,
+          "y": 3545
         }
       }
     note: false
@@ -1385,6 +1398,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "75":
     id: "75"
     taskid: 4830e0a6-14de-40fb-8b7a-331a28311f0b
@@ -1452,11 +1467,12 @@ tasks:
                       value:
                         simple: active
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 170,
-          "y": 1620
+          "x": 2107.5,
+          "y": 1535
         }
       }
     note: false
@@ -1464,6 +1480,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "76":
     id: "76"
     taskid: b9dc1315-c732-4365-8561-999d8662de3d
@@ -1482,19 +1500,8 @@ tasks:
       '#none#':
       - "48"
     scriptarguments:
-      additionalHeader: {}
-      attachCIDs: {}
-      attachIDs: {}
-      attachNames: {}
-      bcc: {}
-      body: {}
-      cc: {}
-      from: {}
-      htmlBody: {}
-      replyTo: {}
       subject:
         simple: Port scan & potential compromise
-      templateParams: {}
       to:
         complex:
           root: inputs.EmailAddressesToNotify
@@ -1505,15 +1512,13 @@ tasks:
                 value:
                   simple: ','
           - operator: uniq
-      transientFile: {}
-      transientFileCID: {}
-      transientFileContent: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 170,
-          "y": 1800
+          "x": 2220,
+          "y": 1710
         }
       }
     note: false
@@ -1521,6 +1526,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "77":
     id: "77"
     taskid: 286f079f-f592-420f-881f-f2af0405ab41
@@ -1573,11 +1580,12 @@ tasks:
                         simple: WhitelistedHostnames
                       iscontext: true
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1550,
-          "y": 3100
+          "x": 3315,
+          "y": 3020
         }
       }
     note: false
@@ -1585,6 +1593,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "78":
     id: "78"
     taskid: b1d73a2e-7823-4147-80ed-f666ad970851
@@ -1602,11 +1612,12 @@ tasks:
       '#none#':
       - "61"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1790,
-          "y": 3280
+          "x": 3100,
+          "y": 3545
         }
       }
     note: false
@@ -1614,6 +1625,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "79":
     id: "79"
     taskid: b69262ea-4383-4218-824b-e13233a2c5a1
@@ -1656,6 +1669,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -1664,8 +1678,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1300,
-          "y": 3580
+          "x": 3530,
+          "y": 3545
         }
       }
     note: false
@@ -1673,6 +1687,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "80":
     id: "80"
     taskid: 11521065-d8aa-4e7e-8b53-2c77657f6ba7
@@ -1701,42 +1717,21 @@ tasks:
       - "49"
       - "66"
     scriptarguments:
-      alert_count: {}
-      assigned_user_mail: {}
-      assigned_user_pretty_name: {}
-      description: {}
-      first: {}
-      high_severity_alert_count: {}
-      host_count: {}
       incident_id:
         complex:
           root: incident
           accessor: xdrincidentid
       interval:
         simple: "5"
-      low_severity_alert_count: {}
-      med_severity_alert_count: {}
-      notes: {}
-      playbook_to_run: {}
-      resolve_comment: {}
-      severity: {}
-      status: {}
-      user_count: {}
-      verbose: {}
-      xdr_alerts: {}
-      xdr_file_artifacts: {}
-      xdr_incident_from_previous_run: {}
-      xdr_incident_markdown_field: {}
-      xdr_network_artifacts: {}
-      xdr_url: {}
     results:
     - XDRSyncScriptTaskID
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 530
+          "x": 1575,
+          "y": 515
         }
       }
     note: false
@@ -1744,6 +1739,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "81":
     id: "81"
     taskid: 51b45449-8567-4a5f-871e-ee3f197b067f
@@ -1769,11 +1766,12 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 4030
+          "x": 1892.5,
+          "y": 3895
         }
       }
     note: false
@@ -1781,6 +1779,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "82":
     id: "82"
     taskid: 15bc7cde-88d7-4ff6-8389-64f1b0a2ef6b
@@ -1798,23 +1798,18 @@ tasks:
       '#none#':
       - "83"
     scriptarguments:
-      assigned_user_mail: {}
-      assigned_user_pretty_name: {}
       incident_id:
         complex:
           root: incident
           accessor: xdrincidentid
-      manual_severity: {}
-      resolve_comment: {}
-      status: {}
-      unassign_user: {}
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 4200
+          "x": 1892.5,
+          "y": 4070
         }
       }
     note: false
@@ -1822,6 +1817,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "83":
     id: "83"
     taskid: 0c124ca8-5d37-4e19-83a1-53f67beef180
@@ -1838,20 +1835,14 @@ tasks:
     nexttasks:
       '#none#':
       - "96"
-    scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      emailclassification: {}
-      id: {}
-      phishingsubtype: {}
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 4380
+          "x": 1892.5,
+          "y": 4245
         }
       }
     note: false
@@ -1859,6 +1850,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "84":
     id: "84"
     taskid: 366c1ef2-5cb7-4dc2-8b26-8cde056e287c
@@ -1879,32 +1872,18 @@ tasks:
       '#none#':
       - "95"
     scriptarguments:
-      alias_name: {}
-      dist_name: {}
-      endpoint_id_list: {}
-      first_seen_gte: {}
-      first_seen_lte: {}
-      group_name: {}
       hostname:
         complex:
           root: AttackerHostnames
           transformers:
           - operator: uniq
-      ip_list: {}
-      isolate: {}
-      last_seen_gte: {}
-      last_seen_lte: {}
-      limit: {}
-      page: {}
-      platform: {}
-      sort_by: {}
-      sort_order: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1300,
-          "y": 3280
+          "x": 3530,
+          "y": 3195
         }
       }
     note: false
@@ -1912,6 +1891,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "86":
     id: "86"
     taskid: f0f2d1d0-d4c1-4089-8ed9-31e88ea93610
@@ -1920,7 +1901,6 @@ tasks:
       id: f0f2d1d0-d4c1-4089-8ed9-31e88ea93610
       version: -1
       name: Exploitation
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -1928,11 +1908,12 @@ tasks:
       '#none#':
       - "64"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 140,
-          "y": 2170
+          "x": 2107.5,
+          "y": 2060
         }
       }
     note: false
@@ -1940,6 +1921,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "87":
     id: "87"
     taskid: 0818dc59-3276-4a92-86b3-20a0c006774c
@@ -1948,7 +1931,6 @@ tasks:
       id: 0818dc59-3276-4a92-86b3-20a0c006774c
       version: -1
       name: Port Blocking Unneeded
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -1956,11 +1938,12 @@ tasks:
       '#none#':
       - "61"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 2100,
-          "y": 3680
+          "x": 50,
+          "y": 3560
         }
       }
     note: false
@@ -1968,6 +1951,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "88":
     id: "88"
     taskid: a6627a56-c465-4d96-8e3e-4f1ed0ed6bbb
@@ -1976,7 +1961,6 @@ tasks:
       id: a6627a56-c465-4d96-8e3e-4f1ed0ed6bbb
       version: -1
       name: Port Blocking
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -1984,11 +1968,12 @@ tasks:
       '#none#':
       - "32"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1740,
-          "y": 2950
+          "x": 265,
+          "y": 3210
         }
       }
     note: false
@@ -1996,6 +1981,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "89":
     id: "89"
     taskid: 43adfaa6-26d4-4f0b-8429-90088ffa1094
@@ -2004,7 +1991,6 @@ tasks:
       id: 43adfaa6-26d4-4f0b-8429-90088ffa1094
       version: -1
       name: Malware Hunting
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -2012,11 +1998,12 @@ tasks:
       '#none#':
       - "59"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2940
+          "x": 1790,
+          "y": 2875
         }
       }
     note: false
@@ -2024,6 +2011,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "90":
     id: "90"
     taskid: 887a43af-e9fe-4c60-85ca-611d319676f0
@@ -2032,7 +2021,6 @@ tasks:
       id: 887a43af-e9fe-4c60-85ca-611d319676f0
       version: -1
       name: Host Isolation
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -2040,11 +2028,12 @@ tasks:
       '#none#':
       - "77"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1550,
-          "y": 2950
+          "x": 3315,
+          "y": 2875
         }
       }
     note: false
@@ -2052,6 +2041,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "91":
     id: "91"
     taskid: 9f4c3903-549c-4273-8a45-b98e203a2dc3
@@ -2060,7 +2051,6 @@ tasks:
       id: 9f4c3903-549c-4273-8a45-b98e203a2dc3
       version: -1
       name: IP Enrichment - Internal - Generic v2
-      description: ""
       playbookName: IP Enrichment - Internal - Generic v2
       type: playbook
       iscommand: false
@@ -2080,6 +2070,7 @@ tasks:
       ResolveIP:
         simple: "True"
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -2088,8 +2079,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 730,
-          "y": 1620
+          "x": 1770,
+          "y": 1710
         }
       }
     note: false
@@ -2097,6 +2088,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "92":
     id: "92"
     taskid: cb51a083-1e21-44b5-8901-116962d8c5b5
@@ -2114,287 +2107,17 @@ tasks:
       '#none#':
       - "80"
     scriptarguments:
-      accountid: {}
-      accountname: {}
-      activedirectoryaccountstatus: {}
-      activedirectorydisplayname: {}
-      activedirectorypasswordstatus: {}
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      agentid: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      attackerusername: {}
-      blockedaction: {}
-      bugtraq: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      commandline: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      companypropertystatus: {}
-      contactaddress: {}
-      contactname: {}
-      coordinates: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      dbotprediction: {}
-      dbotpredictionprobability: {}
-      dbottextsuggestionhighlighted: {}
-      deleteEmptyField: {}
-      dest: {}
-      destinationhostname: {}
-      destinationip: {}
-      destinationport: {}
-      destntdomain: {}
-      details: {}
-      detectionendtime: {}
-      detectionid: {}
-      detectionticketed: {}
-      detectionupdatetime: {}
-      detectionurl: {}
-      devicegsuiteaccountstatus: {}
-      devicename: {}
-      dpoemailaddress: {}
-      duoaccountstatus: {}
-      duration: {}
-      emailaddress: {}
-      emailauthenticitycheck: {}
-      emailautoreply: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailheaders: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      employeedisplayname: {}
-      employeeemail: {}
-      employeemanageremail: {}
-      extrahopapplianceid: {}
-      extrahophostname: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      filesize: {}
-      firstseen: {}
-      globaldirectoryvisibility: {}
-      googleaccountstatus: {}
-      googleadminrolesstatus: {}
-      googledisplayname: {}
-      googledrivestatus: {}
-      googlemailstatus: {}
-      googlepasswordstatus: {}
-      hostname: {}
-      id: {}
-      infectedhosts: {}
       investigationstage:
         simple: Triage
-      isolated: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      lastmodifiedby: {}
-      lastmodifiedon: {}
-      lastseen: {}
-      likelyimpact: {}
-      mailboxdelegation: {}
-      maliciousbehavior: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      markdowntest: {}
-      measurestomitigate: {}
-      name: {}
-      niststage: {}
-      occurred: {}
-      offboardingdate: {}
-      offboardingstage: {}
-      oktaaccountstatus: {}
-      owner: {}
-      parentprocessid: {}
-      participants: {}
-      phase: {}
-      phishingsubtype: {}
-      pid: {}
-      policydeleted: {}
-      policydescription: {}
-      policydetails: {}
-      policyid: {}
-      policyrecommendation: {}
-      policyremediable: {}
-      policyseverity: {}
-      policytype: {}
-      portscantimestamp: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      previouscoordinates: {}
-      previouscountry: {}
-      previoussignindatetime: {}
-      previoussourceip: {}
-      prismacloudcomputeactivitytype: {}
-      prismacloudcomputeappid: {}
-      prismacloudcomputecategory: {}
-      prismacloudcomputecollections: {}
-      prismacloudcomputecommand: {}
-      prismacloudcomputecontainer: {}
-      prismacloudcomputecredentialid: {}
-      prismacloudcomputedistribution: {}
-      prismacloudcomputeerror: {}
-      prismacloudcomputeforensic: {}
-      prismacloudcomputefqdn: {}
-      prismacloudcomputefunction: {}
-      prismacloudcomputehost: {}
-      prismacloudcomputeimage: {}
-      prismacloudcomputeinteractive: {}
-      prismacloudcomputekubernetesresource: {}
-      prismacloudcomputelabels: {}
-      prismacloudcomputeline: {}
-      prismacloudcomputelogfile: {}
-      prismacloudcomputemarkdown: {}
-      prismacloudcomputemessage: {}
-      prismacloudcomputeproject: {}
-      prismacloudcomputeprotected: {}
-      prismacloudcomputeprovider: {}
-      prismacloudcomputerawalertjson: {}
-      prismacloudcomputeregion: {}
-      prismacloudcomputeregistry: {}
-      prismacloudcomputerule: {}
-      prismacloudcomputeruntime: {}
-      prismacloudcomputeservice: {}
-      prismacloudcomputeservicetype: {}
-      prismacloudcomputetotal: {}
-      prismacloudcomputetype: {}
-      prismacloudcomputeuser: {}
-      prismacloudid: {}
-      prismacloudreason: {}
-      prismacloudrules: {}
-      prismacloudstatus: {}
-      prismacloudtime: {}
-      rating: {}
-      rawparticipants: {}
-      region: {}
-      regionid: {}
-      replacePlaybook: {}
-      reporteremailaddress: {}
-      resourceapiname: {}
-      resourcecloudtype: {}
-      resourceid: {}
-      resourcename: {}
-      resourcetype: {}
-      riskrating: {}
-      riskscore: {}
-      roles: {}
-      rrn: {}
-      sectorofaffectedparty: {}
-      severity: {}
-      signature: {}
-      signindatetime: {}
-      sixgillalertid: {}
-      sixgillcontent: {}
-      sixgillthreatlevel: {}
-      sixgillthreattype: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      skuname: {}
-      skutier: {}
-      sla: {}
-      slaField: {}
-      sourcehostname: {}
-      sourceip: {}
-      src: {}
-      srcntdomain: {}
-      srcos: {}
-      srcuser: {}
-      subscriptionassignedby: {}
-      subscriptioncreatedby: {}
-      subscriptioncreatedon: {}
-      subscriptiondescription: {}
-      subscriptionid: {}
-      subscriptionname: {}
-      subscriptiontype: {}
-      subscriptionupdatedby: {}
-      subscriptionupdatedon: {}
-      subtype: {}
-      systemdefault: {}
-      systems: {}
-      telephoneno: {}
-      terminatedaction: {}
-      threatactor: {}
-      trapsid: {}
-      travelmaplink: {}
-      triggeredsecurityprofile: {}
-      type: {}
-      urlsslverification: {}
-      user: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vpcid: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-      xdralertcount: {}
-      xdralerts: {}
-      xdrassigneduseremail: {}
-      xdrassigneduserprettyname: {}
-      xdrdescription: {}
-      xdrdetectiontime: {}
-      xdrfileartifacts: {}
-      xdrhighseverityalertcount: {}
-      xdrhostcount: {}
-      xdrincidentid: {}
-      xdrlowseverityalertcount: {}
-      xdrmediumseverityalertcount: {}
-      xdrnetworkartifacts: {}
-      xdrnotes: {}
-      xdrresolvecomment: {}
-      xdrstatus: {}
-      xdrurl: {}
-      xdrusercount: {}
     reputationcalc: 1
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 290
+          "x": 1575,
+          "y": 340
         }
       }
     note: false
@@ -2402,6 +2125,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "93":
     id: "93"
     taskid: 4a2b9672-7df4-496d-8852-9669a2b078ac
@@ -2421,228 +2146,8 @@ tasks:
       - "91"
       - "75"
     scriptarguments:
-      accountid: {}
-      accountname: {}
-      activedirectoryaccountstatus: {}
-      activedirectorydisplayname: {}
-      activedirectorypasswordstatus: {}
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      agentid: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      attackerusername: {}
-      blockedaction: {}
-      bugtraq: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      commandline: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      companypropertystatus: {}
-      contactaddress: {}
-      contactname: {}
-      coordinates: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      dbotprediction: {}
-      dbotpredictionprobability: {}
-      dbottextsuggestionhighlighted: {}
-      deleteEmptyField: {}
-      dest: {}
-      destinationhostname: {}
-      destinationip: {}
-      destinationport: {}
-      destntdomain: {}
-      details: {}
-      detectionendtime: {}
-      detectionid: {}
-      detectionticketed: {}
-      detectionupdatetime: {}
-      detectionurl: {}
-      devicegsuiteaccountstatus: {}
-      devicename: {}
-      dpoemailaddress: {}
-      duoaccountstatus: {}
-      duration: {}
-      emailaddress: {}
-      emailauthenticitycheck: {}
-      emailautoreply: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailheaders: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      employeedisplayname: {}
-      employeeemail: {}
-      employeemanageremail: {}
-      extrahopapplianceid: {}
-      extrahophostname: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      filesize: {}
-      firstseen: {}
-      globaldirectoryvisibility: {}
-      googleaccountstatus: {}
-      googleadminrolesstatus: {}
-      googledisplayname: {}
-      googledrivestatus: {}
-      googlemailstatus: {}
-      googlepasswordstatus: {}
-      hostname: {}
-      id: {}
-      infectedhosts: {}
       investigationstage:
         simple: Detection
-      isolated: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      lastmodifiedby: {}
-      lastmodifiedon: {}
-      lastseen: {}
-      likelyimpact: {}
-      mailboxdelegation: {}
-      maliciousbehavior: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      markdowntest: {}
-      measurestomitigate: {}
-      name: {}
-      niststage: {}
-      occurred: {}
-      offboardingdate: {}
-      offboardingstage: {}
-      oktaaccountstatus: {}
-      owner: {}
-      parentprocessid: {}
-      participants: {}
-      phase: {}
-      phishingsubtype: {}
-      pid: {}
-      policydeleted: {}
-      policydescription: {}
-      policydetails: {}
-      policyid: {}
-      policyrecommendation: {}
-      policyremediable: {}
-      policyseverity: {}
-      policytype: {}
-      portscantimestamp: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      previouscoordinates: {}
-      previouscountry: {}
-      previoussignindatetime: {}
-      previoussourceip: {}
-      prismacloudcomputeactivitytype: {}
-      prismacloudcomputeappid: {}
-      prismacloudcomputecategory: {}
-      prismacloudcomputecollections: {}
-      prismacloudcomputecommand: {}
-      prismacloudcomputecontainer: {}
-      prismacloudcomputecredentialid: {}
-      prismacloudcomputedistribution: {}
-      prismacloudcomputeerror: {}
-      prismacloudcomputeforensic: {}
-      prismacloudcomputefqdn: {}
-      prismacloudcomputefunction: {}
-      prismacloudcomputehost: {}
-      prismacloudcomputeimage: {}
-      prismacloudcomputeinteractive: {}
-      prismacloudcomputekubernetesresource: {}
-      prismacloudcomputelabels: {}
-      prismacloudcomputeline: {}
-      prismacloudcomputelogfile: {}
-      prismacloudcomputemarkdown: {}
-      prismacloudcomputemessage: {}
-      prismacloudcomputeproject: {}
-      prismacloudcomputeprotected: {}
-      prismacloudcomputeprovider: {}
-      prismacloudcomputerawalertjson: {}
-      prismacloudcomputeregion: {}
-      prismacloudcomputeregistry: {}
-      prismacloudcomputerule: {}
-      prismacloudcomputeruntime: {}
-      prismacloudcomputeservice: {}
-      prismacloudcomputeservicetype: {}
-      prismacloudcomputetotal: {}
-      prismacloudcomputetype: {}
-      prismacloudcomputeuser: {}
-      prismacloudid: {}
-      prismacloudreason: {}
-      prismacloudrules: {}
-      prismacloudstatus: {}
-      prismacloudtime: {}
-      rating: {}
-      rawparticipants: {}
-      region: {}
-      regionid: {}
-      replacePlaybook: {}
-      reporteremailaddress: {}
-      resourceapiname: {}
-      resourcecloudtype: {}
-      resourceid: {}
-      resourcename: {}
-      resourcetype: {}
-      riskrating: {}
-      riskscore: {}
-      roles: {}
-      rrn: {}
-      sectorofaffectedparty: {}
-      severity: {}
-      signature: {}
-      signindatetime: {}
-      sixgillalertid: {}
-      sixgillcontent: {}
-      sixgillthreatlevel: {}
-      sixgillthreattype: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      skuname: {}
-      skutier: {}
-      sla: {}
-      slaField: {}
       sourcehostname:
         complex:
           root: AttackerHostnames
@@ -2661,63 +2166,15 @@ tasks:
               separator:
                 value:
                   simple: ', '
-      src: {}
-      srcntdomain: {}
-      srcos: {}
-      srcuser: {}
-      subscriptionassignedby: {}
-      subscriptioncreatedby: {}
-      subscriptioncreatedon: {}
-      subscriptiondescription: {}
-      subscriptionid: {}
-      subscriptionname: {}
-      subscriptiontype: {}
-      subscriptionupdatedby: {}
-      subscriptionupdatedon: {}
-      subtype: {}
-      systemdefault: {}
-      systems: {}
-      telephoneno: {}
-      terminatedaction: {}
-      threatactor: {}
-      trapsid: {}
-      travelmaplink: {}
-      triggeredsecurityprofile: {}
-      type: {}
-      urlsslverification: {}
-      user: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vpcid: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-      xdralertcount: {}
-      xdralerts: {}
-      xdrassigneduseremail: {}
-      xdrassigneduserprettyname: {}
-      xdrdescription: {}
-      xdrdetectiontime: {}
-      xdrfileartifacts: {}
-      xdrhighseverityalertcount: {}
-      xdrhostcount: {}
-      xdrincidentid: {}
-      xdrlowseverityalertcount: {}
-      xdrmediumseverityalertcount: {}
-      xdrnetworkartifacts: {}
-      xdrnotes: {}
-      xdrresolvecomment: {}
-      xdrstatus: {}
-      xdrurl: {}
-      xdrusercount: {}
     reputationcalc: 1
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1410
+          "x": 1995,
+          "y": 1360
         }
       }
     note: false
@@ -2725,6 +2182,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "94":
     id: "94"
     taskid: 87e6b32a-23a6-4aed-8103-6ffdbe0d2928
@@ -2745,287 +2204,17 @@ tasks:
       - "89"
       - "90"
     scriptarguments:
-      accountid: {}
-      accountname: {}
-      activedirectoryaccountstatus: {}
-      activedirectorydisplayname: {}
-      activedirectorypasswordstatus: {}
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      agentid: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      attackerusername: {}
-      blockedaction: {}
-      bugtraq: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      commandline: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      companypropertystatus: {}
-      contactaddress: {}
-      contactname: {}
-      coordinates: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      dbotprediction: {}
-      dbotpredictionprobability: {}
-      dbottextsuggestionhighlighted: {}
-      deleteEmptyField: {}
-      dest: {}
-      destinationhostname: {}
-      destinationip: {}
-      destinationport: {}
-      destntdomain: {}
-      details: {}
-      detectionendtime: {}
-      detectionid: {}
-      detectionticketed: {}
-      detectionupdatetime: {}
-      detectionurl: {}
-      devicegsuiteaccountstatus: {}
-      devicename: {}
-      dpoemailaddress: {}
-      duoaccountstatus: {}
-      duration: {}
-      emailaddress: {}
-      emailauthenticitycheck: {}
-      emailautoreply: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailheaders: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      employeedisplayname: {}
-      employeeemail: {}
-      employeemanageremail: {}
-      extrahopapplianceid: {}
-      extrahophostname: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      filesize: {}
-      firstseen: {}
-      globaldirectoryvisibility: {}
-      googleaccountstatus: {}
-      googleadminrolesstatus: {}
-      googledisplayname: {}
-      googledrivestatus: {}
-      googlemailstatus: {}
-      googlepasswordstatus: {}
-      hostname: {}
-      id: {}
-      infectedhosts: {}
       investigationstage:
         simple: Containment & Remediation
-      isolated: {}
-      isthedatasubjecttodpia: {}
-      labels: {}
-      lastmodifiedby: {}
-      lastmodifiedon: {}
-      lastseen: {}
-      likelyimpact: {}
-      mailboxdelegation: {}
-      maliciousbehavior: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      markdowntest: {}
-      measurestomitigate: {}
-      name: {}
-      niststage: {}
-      occurred: {}
-      offboardingdate: {}
-      offboardingstage: {}
-      oktaaccountstatus: {}
-      owner: {}
-      parentprocessid: {}
-      participants: {}
-      phase: {}
-      phishingsubtype: {}
-      pid: {}
-      policydeleted: {}
-      policydescription: {}
-      policydetails: {}
-      policyid: {}
-      policyrecommendation: {}
-      policyremediable: {}
-      policyseverity: {}
-      policytype: {}
-      portscantimestamp: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      previouscoordinates: {}
-      previouscountry: {}
-      previoussignindatetime: {}
-      previoussourceip: {}
-      prismacloudcomputeactivitytype: {}
-      prismacloudcomputeappid: {}
-      prismacloudcomputecategory: {}
-      prismacloudcomputecollections: {}
-      prismacloudcomputecommand: {}
-      prismacloudcomputecontainer: {}
-      prismacloudcomputecredentialid: {}
-      prismacloudcomputedistribution: {}
-      prismacloudcomputeerror: {}
-      prismacloudcomputeforensic: {}
-      prismacloudcomputefqdn: {}
-      prismacloudcomputefunction: {}
-      prismacloudcomputehost: {}
-      prismacloudcomputeimage: {}
-      prismacloudcomputeinteractive: {}
-      prismacloudcomputekubernetesresource: {}
-      prismacloudcomputelabels: {}
-      prismacloudcomputeline: {}
-      prismacloudcomputelogfile: {}
-      prismacloudcomputemarkdown: {}
-      prismacloudcomputemessage: {}
-      prismacloudcomputeproject: {}
-      prismacloudcomputeprotected: {}
-      prismacloudcomputeprovider: {}
-      prismacloudcomputerawalertjson: {}
-      prismacloudcomputeregion: {}
-      prismacloudcomputeregistry: {}
-      prismacloudcomputerule: {}
-      prismacloudcomputeruntime: {}
-      prismacloudcomputeservice: {}
-      prismacloudcomputeservicetype: {}
-      prismacloudcomputetotal: {}
-      prismacloudcomputetype: {}
-      prismacloudcomputeuser: {}
-      prismacloudid: {}
-      prismacloudreason: {}
-      prismacloudrules: {}
-      prismacloudstatus: {}
-      prismacloudtime: {}
-      rating: {}
-      rawparticipants: {}
-      region: {}
-      regionid: {}
-      replacePlaybook: {}
-      reporteremailaddress: {}
-      resourceapiname: {}
-      resourcecloudtype: {}
-      resourceid: {}
-      resourcename: {}
-      resourcetype: {}
-      riskrating: {}
-      riskscore: {}
-      roles: {}
-      rrn: {}
-      sectorofaffectedparty: {}
-      severity: {}
-      signature: {}
-      signindatetime: {}
-      sixgillalertid: {}
-      sixgillcontent: {}
-      sixgillthreatlevel: {}
-      sixgillthreattype: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      skuname: {}
-      skutier: {}
-      sla: {}
-      slaField: {}
-      sourcehostname: {}
-      sourceip: {}
-      src: {}
-      srcntdomain: {}
-      srcos: {}
-      srcuser: {}
-      subscriptionassignedby: {}
-      subscriptioncreatedby: {}
-      subscriptioncreatedon: {}
-      subscriptiondescription: {}
-      subscriptionid: {}
-      subscriptionname: {}
-      subscriptiontype: {}
-      subscriptionupdatedby: {}
-      subscriptionupdatedon: {}
-      subtype: {}
-      systemdefault: {}
-      systems: {}
-      telephoneno: {}
-      terminatedaction: {}
-      threatactor: {}
-      trapsid: {}
-      travelmaplink: {}
-      triggeredsecurityprofile: {}
-      type: {}
-      urlsslverification: {}
-      user: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vpcid: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-      xdralertcount: {}
-      xdralerts: {}
-      xdrassigneduseremail: {}
-      xdrassigneduserprettyname: {}
-      xdrdescription: {}
-      xdrdetectiontime: {}
-      xdrfileartifacts: {}
-      xdrhighseverityalertcount: {}
-      xdrhostcount: {}
-      xdrincidentid: {}
-      xdrlowseverityalertcount: {}
-      xdrmediumseverityalertcount: {}
-      xdrnetworkartifacts: {}
-      xdrnotes: {}
-      xdrresolvecomment: {}
-      xdrstatus: {}
-      xdrurl: {}
-      xdrusercount: {}
     reputationcalc: 1
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2780
+          "x": 1892.5,
+          "y": 2700
         }
       }
     note: false
@@ -3033,6 +2222,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "95":
     id: "95"
     taskid: 1fc18b5e-5f11-47f6-8f94-f8bad97fc719
@@ -3051,10 +2242,8 @@ tasks:
       '#none#':
       - "79"
     scriptarguments:
-      append: {}
       key:
         simple: PaloAltoNetworksXDREndpoint
-      stringify: {}
       value:
         complex:
           root: PaloAltoNetworksXDR
@@ -3062,11 +2251,12 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1300,
-          "y": 3420
+          "x": 3530,
+          "y": 3370
         }
       }
     note: false
@@ -3074,6 +2264,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "96":
     id: "96"
     taskid: 0dfd512e-ddfc-40ab-879c-301b55822d1a
@@ -3082,16 +2274,16 @@ tasks:
       id: 0dfd512e-ddfc-40ab-879c-301b55822d1a
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 4550
+          "x": 1892.5,
+          "y": 4420
         }
       }
     note: false
@@ -3099,6 +2291,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "97":
     id: "97"
     taskid: 40036b5f-2d29-4c29-80a7-9f8cdd508a94
@@ -3137,11 +2331,12 @@ tasks:
                         simple: Lateral Movement
                 accessor: detection_timestamp
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 2530,
-          "y": 890
+          "x": 2987.5,
+          "y": 865
         }
       }
     note: false
@@ -3149,6 +2344,62 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "98":
+    id: "98"
+    taskid: d874a048-42ca-4ccf-868d-c3a5eda1e4bb
+    type: playbook
+    task:
+      id: d874a048-42ca-4ccf-868d-c3a5eda1e4bb
+      version: -1
+      name: Block IP - Generic v3
+      playbookName: Block IP - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      IP:
+        complex:
+          root: IP
+          transformers:
+          - operator: uniq
+      InputEnrichment:
+        simple: "False"
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block IP playbook - ${incident.id}
+      UserVerification:
+        simple: "True"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 2670,
+          "y": 3545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -3161,7 +2412,6 @@ view: |-
       "64_63_yes": 0.44,
       "67_61_#default#": 0.39,
       "68_69_#default#": 0.47,
-      "68_70_yes": 0.57,
       "72_71_yes": 0.4,
       "72_73_#default#": 0.76,
       "75_48_#default#": 0.52,
@@ -3170,10 +2420,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4595,
-        "width": 4920,
-        "x": -1790,
-        "y": 20
+        "height": 4435,
+        "width": 3860,
+        "x": 50,
+        "y": 50
       }
     }
   }
@@ -3259,6 +2509,4 @@ inputs:
   description: Set to true to assign only the users that are currently on shift.
   playbookInputQuery: null
 outputs: []
-fromversion: 5.0.0
-tests:
-- no test
+sourceplaybookid: Cortex XDR - Port Scan
