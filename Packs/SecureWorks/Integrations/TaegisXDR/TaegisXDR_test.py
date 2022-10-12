@@ -226,7 +226,7 @@ def test_update_comment(requests_mock):
 
     # Comment creation failed
     client = mock_client(requests_mock, CREATE_UPDATE_COMMENT_BAD_RESPONSE)
-    with pytest.raises(ValueError, match="Failed to update comment:"):
+    with pytest.raises(ValueError, match="Failed to locate/update comment:"):
         assert update_comment_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
 
@@ -379,7 +379,7 @@ def test_update_investigation(requests_mock):
 
     # Investigation update failure
     client = mock_client(requests_mock, FETCH_COMMENTS_BAD_RESPONSE)
-    with pytest.raises(ValueError, match="Failed to update investigation"):
+    with pytest.raises(ValueError, match="Failed to locate/update investigation"):
         assert update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
     # Invalid investigation status
