@@ -1228,7 +1228,7 @@ Returns the content of the given file, along with the option to download it.
 
 ### bitbucket-issue-create
 ***
-Creates an issue in Bitbucket. To perform this command, create an issue tracker by clicking on the relevant repo > Repository settings > Issue tracker.
+Creates an issue in Bitbucket.
 
 ##### Required Permissions
 In order to perform this command, please create an issue tracker by clicking on the relevant repo -> Repository settings -> Issue tracker
@@ -1606,7 +1606,7 @@ If an issue_id is given, returns the information about it. Otherwise, returns a 
 
 ### bitbucket-issue-update
 ***
-Updates an issue in Bitbucket. To perform this command, create an issue tracker by clicking on the relevant repo > Repository settings > Issue tracker.
+Updates an issue in Bitbucket.
 
 ##### Required Permissions
 In order to perform this command, please create an issue tracker by clicking on the relevant repo -> Repository settings -> Issue tracker.

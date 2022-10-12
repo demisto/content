@@ -1,5 +1,3 @@
-
-
 import json
 import io
 
@@ -32,9 +30,10 @@ def test_get_paged_results(mocker, bitbucket_client):
             - return a list with all the results after pagination
         """
     from Bitbucket import get_paged_results
-    response1 = util_load_json('test_data/commands_test_data.json').get('get_paged_results').get('response1')
-    response2 = util_load_json('test_data/commands_test_data.json').get('get_paged_results').get('response2')
-    res = util_load_json('test_data/commands_test_data.json').get('get_paged_results').get('results')
+    get_paged_results_object = util_load_json('test_data/commands_test_data.json').get('get_paged_results')
+    response1 = get_paged_results_object.get('response1')
+    response2 = get_paged_results_object.get('response2')
+    res = get_paged_results_object.get('results')
     mocker.patch.object(bitbucket_client, 'get_full_url', return_value=response2)
     results = get_paged_results(bitbucket_client, response1, 10)
     assert len(results) == 2
@@ -54,15 +53,11 @@ def test_check_pagination(bitbucket_client):
     """
     from Bitbucket import check_pagination
     response = util_load_json('test_data/commands_test_data.json').get('check_pagination').get('response')
-    res = util_load_json('test_data/commands_test_data.json').get('check_pagination').get('result')
-    response_2 = util_load_json('test_data/commands_test_data.json').get('check_pagination').get('res_2')
-    result_2 = util_load_json('test_data/commands_test_data.json').get('check_pagination').get('result_2')
+    res = response.get('values', [])
     results10 = check_pagination(bitbucket_client, response, 10)
     results1 = check_pagination(bitbucket_client, response, 1)
-    results_2 = check_pagination(bitbucket_client, response_2, 1)
     assert results10 == res
     assert results1 == res
-    assert results_2 == result_2
 
 
 create_pull_request_body_params = [('new_pr', 'test', 'master', '111111111', "hi this is a new pr", 'yes',
@@ -97,7 +92,7 @@ def test_create_pull_request_body(title, source_branch, destination_branch, revi
 def test_project_list_command(mocker, bitbucket_client):
     """
     Given:
-        - All relevant arguments for the command
+        - A limit to te list
 
     When:
         - bitbucket-project-list command is executed
@@ -107,12 +102,14 @@ def test_project_list_command(mocker, bitbucket_client):
     """
     from Bitbucket import project_list_command
     args = {'limit': '10'}
-    response = util_load_json('test_data/commands_test_data.json').get('check_pagination').get('res_2')
-    expected_result = util_load_json('test_data/commands_test_data.json').get('check_pagination').get('result_2')
+    check_pagination_object = util_load_json('test_data/commands_test_data.json').get('check_pagination')
+    response = check_pagination_object.get('response2')
+    expected_result = response.get('values')
     mocker.patch.object(bitbucket_client, 'get_project_list_request', return_value=response)
     result = project_list_command(bitbucket_client, args)
     expected_readable_output = '### List of projects in workspace\n|Key|Name|Description|IsPrivate|\n' \
-                               '|---|---|---|---|\n| T1 | Test1 | description | true |\n| T2 | Test1 | description | true |\n'
+                               '|---|---|---|---|\n| T1 | Test1 | description | true |\n' \
+                               '| T2 | Test2 | description | true |\n'
     readable_output = result.readable_output
     assert readable_output == expected_readable_output
     assert result.raw_response == expected_result
@@ -121,18 +118,19 @@ def test_project_list_command(mocker, bitbucket_client):
 def test_project_list_command_with_project_key(mocker, bitbucket_client):
     """
     Given:
-        - All relevant arguments for the command
+        - A project key.
 
     When:
         - bitbucket-project-list command is executed
 
     Then:
-        - The http request is called with the right arguments, and returns the right command result.
+        - The http request is called with the right arguments,
+            and returns a command result with the project information.
     """
     from Bitbucket import project_list_command
-    args = {'limit': '10', 'project_key': 'T1'}
-    response = util_load_json('test_data/commands_test_data.json').get(
-        'test_project_list_command_with_project_key').get('response')
+    args = {'project_key': 'T1'}
+    response = util_load_json('test_data/commands_test_data.json').get('test_project_list_command_with_project_key') \
+        .get('response')
     mocker.patch.object(bitbucket_client, 'get_project_list_request', return_value=response)
     result = project_list_command(bitbucket_client, args)
     expected_readable_output = '### The information about project T1\n|Key|Name|Description|IsPrivate|\n' \
@@ -145,11 +143,12 @@ def test_project_list_command_with_project_key(mocker, bitbucket_client):
 def test_open_branch_list_command(mocker, bitbucket_client):
     """
     Given:
-        - All relevant arguments for the command
+            - No arguments needed to this function.
     When:
-        - bitbucket-open-branch-list command is executed
+        - bitbucket-open-branch-list command is executed.
     Then:
-        - The http request is called with the right arguments, and returns the right command result.
+        - The http request is called with the right arguments,
+        and returns a command result with a list of the open branches.
     """
     from Bitbucket import open_branch_list_command
     response = util_load_json('test_data/commands_test_data.json').get('test_open_branch_list_command')
@@ -168,11 +167,11 @@ def test_open_branch_list_command(mocker, bitbucket_client):
 def test_branch_get_command(mocker, bitbucket_client):
     """
     Given:
-        - All relevant arguments for the command
+        - A branch name.
     When:
         - bitbucket-branch-get command is executed
     Then:
-        - The http request is called with the right arguments, and returns the right command result.
+        - The http request is called with the right arguments, and returns a command result with the branch information.
     """
     from Bitbucket import branch_get_command
     args = {'branch_name': 'master'}
@@ -189,11 +188,12 @@ def test_branch_get_command(mocker, bitbucket_client):
 def test_branch_create_command(mocker, bitbucket_client):
     """
     Given:
-        - All relevant arguments for the command
+        - A name (for the new branch), a target branch (a source branch)
     When:
         - bitbucket-branch-create command is executed
     Then:
-        - The http request is called with the right arguments, and returns the right command result.
+        - The http request is called with the right arguments,
+        returns a command result with a success message and info about the new branch.
     """
     from Bitbucket import branch_create_command
     http_request = mocker.patch.object(bitbucket_client, '_http_request')
@@ -213,7 +213,7 @@ def test_branch_create_command(mocker, bitbucket_client):
 def test_branch_delete_command(mocker, bitbucket_client):
     """
     Given:
-        - All relevant arguments for the command
+        - A branch name.
     When:
         - bitbucket-branch-delete command is executed
     Then:
@@ -231,11 +231,11 @@ def test_branch_delete_command(mocker, bitbucket_client):
 def test_commit_create_command(mocker, bitbucket_client):
     """
     Given:
-        - All relevant arguments for the command
+        - A commit message, a branch, a file name, a file content
     When:
         - bitbucket-commit-create command is executed
     Then:
-        - The http request is called with the right arguments, and returns the right command result.
+        - The http request is called with the right arguments, creates a new file, and returns a success message.
     """
     from Bitbucket import commit_create_command
     http_request = mocker.patch.object(bitbucket_client, '_http_request')
@@ -260,11 +260,12 @@ def test_commit_create_command(mocker, bitbucket_client):
 def test_commit_list_command(mocker, bitbucket_client):
     """
     Given:
-        - All relevant arguments for the command
+        - A branch (that its commits will be on the list), and a limit to the list.
     When:
         - bitbucket-commit-list command is executed
     Then:
-        - The http request is called with the right arguments, and returns the right command result.
+        - The http request is called with the right arguments,
+            and returns a command result with the relevant commit list.
     """
     from Bitbucket import commit_list_command
     args = {'included_branches': 'master', 'limit': '3'}
@@ -287,11 +288,11 @@ def test_commit_list_command(mocker, bitbucket_client):
 def test_issue_create_command(mocker, bitbucket_client):
     """
     Given:
-        - All relevant arguments for the command
+        - A title, a state, a type, a priority, a content, for the new issue.
     When:
         - bitbucket-issue-create command is executed
     Then:
-        - The http request is called with the right arguments, and returns the right command result.
+        - The http request is called with the right arguments, and returns a command result with a success message.
     """
     from Bitbucket import issue_create_command
     http_request = mocker.patch.object(bitbucket_client, '_http_request')
@@ -320,11 +321,11 @@ def test_issue_create_command(mocker, bitbucket_client):
 def test_issue_list_command(mocker, bitbucket_client):
     """
     Given:
-        - All relevant arguments for the command
+        - A limit to the list.
     When:
         - bitbucket-issue-list command is executed
     Then:
-        - The http request is called with the right arguments, and returns the right command result.
+        - The http request is called with the right arguments, and returns a command result with the issue list.
     """
     from Bitbucket import issue_list_command
     args = {'limit': '3'}
@@ -347,11 +348,12 @@ def test_issue_list_command(mocker, bitbucket_client):
 def test_issue_update_command(mocker, bitbucket_client):
     """
     Given:
-        - All relevant arguments for the command
+        - An issue id (to update), a title, a state, a type, a priority, a content.
     When:
         - bitbucket-issue-update command is executed
     Then:
-        - The http request is called with the right arguments, and returns the right command result.
+        - The http request is called with the right arguments,
+        returns a command result with a success message and info about the updated issue.
     """
     from Bitbucket import issue_update_command
     http_request = mocker.patch.object(bitbucket_client, '_http_request')
@@ -381,11 +383,12 @@ def test_issue_update_command(mocker, bitbucket_client):
 def test_pull_request_create_command(mocker, bitbucket_client):
     """
     Given:
-        - All relevant arguments for the command
+        - A title, a source branch, a destination branch, a description, and if to close the branch after the merge.
     When:
         - bitbucket-pull-request-create command is executed
     Then:
-        - The http request is called with the right arguments, and returns the right command result.
+        - The http request is called with the right arguments, and returns a command result with info about
+            the new PR and a success message.
     """
     from Bitbucket import pull_request_create_command
     http_request = mocker.patch.object(bitbucket_client, '_http_request')
@@ -420,11 +423,12 @@ def test_pull_request_create_command(mocker, bitbucket_client):
 def test_pull_request_update_command(mocker, bitbucket_client):
     """
     Given:
-        - All relevant arguments for the command
+        - A title, a source branch, a destination branch, a description, if to close the branch after the merge, and a PR id.
     When:
         - bitbucket-pull-request-update command is executed
     Then:
-        - The http request is called with the right arguments, and returns the right command result.
+        - The http request is called with the right arguments, and returns a command result with a success message
+            and info about the updated PR.
     """
     from Bitbucket import pull_request_update_command
     args = {
@@ -446,11 +450,11 @@ def test_pull_request_update_command(mocker, bitbucket_client):
 def test_issue_comment_create_command(mocker, bitbucket_client):
     """
     Given:
-        - All relevant arguments for the command
+        - An issue id and a comment content.
     When:
         - bitbucket-issue-comment-create command is executed
     Then:
-        - The http request is called with the right arguments, and returns the right command result.
+        - The http request is called with the right arguments, and returns a command result with info and a success message.
     """
     from Bitbucket import issue_comment_create_command
     http_request = mocker.patch.object(bitbucket_client, '_http_request')
@@ -472,11 +476,11 @@ def test_issue_comment_create_command(mocker, bitbucket_client):
 def test_issue_comment_update_command(mocker, bitbucket_client):
     """
     Given:
-        - All relevant arguments for the command
+        - An issue id, a comment content and a comment id.
     When:
         - bitbucket-issue-comment-update command is executed
     Then:
-        - The http request is called with the right arguments, and returns the right command result.
+        - The http request is called with the right arguments, and returns a command result with info and a success message.
     """
     from Bitbucket import issue_comment_update_command
     http_request = mocker.patch.object(bitbucket_client, '_http_request')
@@ -499,11 +503,11 @@ def test_issue_comment_update_command(mocker, bitbucket_client):
 def test_pull_request_list_command(mocker, bitbucket_client):
     """
     Given:
-        - All relevant arguments for the command
+        - A limit to the list.
     When:
         - bitbucket-pull-request-list command is executed
     Then:
-        - The http request is called with the right arguments, and returns the right command result.
+        - The http request is called with the right arguments, and returns a command result with the PR list.
     """
     from Bitbucket import pull_request_list_command
     args = {'limit': '2'}
@@ -525,11 +529,11 @@ def test_pull_request_list_command(mocker, bitbucket_client):
 def test_issue_comment_list_command(mocker, bitbucket_client):
     """
     Given:
-        - All relevant arguments for the command
+        - A limit to the list and an issue id.
     When:
         - bitbucket-issue-comment-list command is executed
     Then:
-        - The http request is called with the right arguments, and returns the right command result.
+        - The http request is called with the right arguments, and returns a command result a list of comments of the issue.
     """
     from Bitbucket import issue_comment_list_command
     args = {'limit': '2', 'issue_id': '8'}
@@ -539,7 +543,7 @@ def test_issue_comment_list_command(mocker, bitbucket_client):
                               '|Id|Content|CreatedBy|CreatedAt|UpdatedAt|IssueId|IssueTitle|\n' \
                               '|---|---|---|---|---|---|---|\n' \
                               '| 11111111 |  | Some User | 2022-09-14T00:00:00.000000+00:00 |  | 8 | hi resolved |\n' \
-                              '| 22222222 | The new and updated comment | Some User | 2022-09-14T00:00:00.000000+00:00 '\
+                              '| 22222222 | The new and updated comment | Some User | 2022-09-14T00:00:00.000000+00:00 ' \
                               '| 2022-09-14T00:00:00.000000+00:00 | 8 | hi resolved |\n'
     result = issue_comment_list_command(bitbucket_client, args)
     assert result.readable_output == expected_human_readable
@@ -549,11 +553,11 @@ def test_issue_comment_list_command(mocker, bitbucket_client):
 def test_pull_request_comment_list_command(mocker, bitbucket_client):
     """
     Given:
-        - All relevant arguments for the command
+        - A limit to the list and a PR id.
     When:
         - bitbucket-pull-request-comment-list command is executed
     Then:
-        - The http request is called with the right arguments, and returns the right command result.
+        - The http request is called with the right arguments, and returns a command result with a list of PR comments.
     """
     from Bitbucket import pull_request_comment_list_command
     args = {'limit': '3', 'pull_request_id': '6'}
@@ -574,11 +578,11 @@ def test_pull_request_comment_list_command(mocker, bitbucket_client):
 def test_workspace_member_list_command(mocker, bitbucket_client):
     """
     Given:
-        - All relevant arguments for the command
+        - A limit to the list.
     When:
         - bitbucket-workspace-member-list command is executed
     Then:
-        - The http request is called with the right arguments, and returns the right command result.
+        - The http request is called with the right arguments, and returns a command result with a list of the members.
     """
     from Bitbucket import workspace_member_list_command
     args = {'limit': '2'}

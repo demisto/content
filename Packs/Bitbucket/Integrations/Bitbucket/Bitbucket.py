@@ -148,7 +148,7 @@ class Client(BaseClient):
             param_list = f'{param_list}exclude={branch}&'
         for branch in included_list:
             param_list = f'{param_list}include={branch}&'
-        if excluded_list or included_list:
+        if param_list:
             url_suffix = f'{url_suffix}?{param_list[:-1]}'
         return self._http_request(method='POST', url_suffix=url_suffix, params=params)
 
@@ -451,7 +451,7 @@ def get_paged_results(client: Client, response: Dict, limit: int) -> List:
             is_next = response.get('next', None)
             arr = response.get('values', [])
             if len(arr) > limit:
-                arr = arr[:len(arr) - (len(arr) - limit)]
+                arr = arr[:limit]
         else:
             return results
     return results
@@ -698,7 +698,7 @@ def commit_create_command(client: Client, args: Dict) -> CommandResults:
 
     if not file_name and not entry_id:
         raise Exception('You must specify either the "file_name" and "file_content" or the "entry_id" of the file.')
-    elif file_name and entry_id:
+    if file_name and entry_id:
         raise Exception('You must specify the "file_name" and "file_content" or the "entry_id" of the file, not both.')
     elif entry_id:
         file_path = demisto.getFilePath(entry_id).get('path')
@@ -728,14 +728,12 @@ def commit_list_command(client: Client, args: Dict) -> CommandResults:
     """
     repo = args.get('repo', client.repository)
     file_path = args.get('file_path', None)
-    excluded_branches = args.get('excluded_branches', None)
-    included_branches = args.get('included_branches', None)
+    excluded_branches = argToList(args.get('excluded_branches', None))
+    included_branches = argToList(args.get('included_branches', None))
     limit = arg_to_number(args.get('limit')) or 50
     page = arg_to_number(args.get('page', 1)) or 1
     page_size = min(limit, 100)
-    excluded_list = argToList(arg=excluded_branches)
-    included_list = argToList(arg=included_branches)
-    response = client.commit_list_request(repo, file_path, page, page_size, included_list, excluded_list)
+    response = client.commit_list_request(repo, file_path, page, page_size, included_branches, excluded_branches)
     results = check_pagination(client, response, limit)
     human_readable = []
     for value in results:

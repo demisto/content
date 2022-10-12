@@ -107,10 +107,10 @@
               }
             }
           },
-          "key": "T1",
+          "key": "T2",
           "uuid": "{22222222}",
           "is_private": true,
-          "name": "Test1",
+          "name": "Test2",
           "description": "description",
           "links": {
             "self": {
@@ -233,10 +233,10 @@
             }
           }
         },
-        "key": "T1",
+        "key": "T2",
         "uuid": "{22222222}",
         "is_private": true,
-        "name": "Test1",
+        "name": "Test2",
         "description": "description",
         "links": {
           "self": {
@@ -326,69 +326,7 @@
       "size": 1,
       "page": 1
     },
-    "result": [
-      {
-        "type": "project",
-        "owner": {
-          "display_name": "Bit Bucket",
-          "links": {
-            "self": {
-              "href": "https://api.bitbucket.org/2.0/users/111111"
-            },
-            "avatar": {
-              "href": "https://secure.gravatar.com/avatar/.png"
-            },
-            "html": {
-              "href": "https://bitbucket.org/"
-            }
-          },
-          "type": "user",
-          "uuid": "{11111111}",
-          "account_id": "1111111111111111",
-          "nickname": "Bit Bucket"
-        },
-        "workspace": {
-          "type": "workspace",
-          "uuid": "{11111111}",
-          "name": "Bit Bucket",
-          "slug": "bitbucket",
-          "links": {
-            "avatar": {
-              "href": "https://bitbucket.org/workspaces/bitbucket/avatar/?ts=11111111"
-            },
-            "html": {
-              "href": "https://bitbucket.org/bitbucket/"
-            },
-            "self": {
-              "href": "https://api.bitbucket.org/2.0/workspaces/bitbucket"
-            }
-          }
-        },
-        "key": "T1",
-        "uuid": "{11111111}",
-        "is_private": true,
-        "name": "Test1",
-        "description": "description",
-        "links": {
-          "self": {
-            "href": "https://api.bitbucket.org/2.0/workspaces/bitbucket/projects/T1"
-          },
-          "html": {
-            "href": "https://bitbucket.org/bitbicket/workspace/projects/T1"
-          },
-          "repositories": {
-            "href": "https://api.bitbucket.org/2.0/repositories/bitbucket?q=project.key=\"T1\""
-          },
-          "avatar": {
-            "href": "https://bitbucket.org/account/user/bitbucket/projects/T1/avatar/32?ts=11111111"
-          }
-        },
-        "created_on": "2022-08-24T09:25:07.002184+00:00",
-        "updated_on": "2022-08-24T09:25:07.002201+00:00",
-        "has_publicly_visible_repos": false
-      }
-    ],
-    "res_2": {
+    "response2": {
       "values": [
         {
           "type": "project",
@@ -451,192 +389,70 @@
           "has_publicly_visible_repos": false
         },
         {
-          "type": "project",
-          "owner": {
-            "display_name": "Bit Bucket",
-            "links": {
-              "self": {
-                "href": "https://api.bitbucket.org/2.0/users/22222222"
-              },
-              "avatar": {
-                "href": "https://secure.gravatar.com/avatar/.png"
-              },
-              "html": {
-                "href": "https://bitbucket.org/"
-              }
-            },
-            "type": "user",
-            "uuid": "{22222222}",
-            "account_id": "22222222",
-            "nickname": "Bit Bucket"
-          },
-          "workspace": {
-            "type": "workspace",
-            "uuid": "{22222222}",
-            "name": "Bit Bucket",
-            "slug": "bitbucket",
-            "links": {
-              "avatar": {
-                "href": "https://bitbucket.org/workspaces/bitbucket/avatar/?ts=22222222"
-              },
-              "html": {
-                "href": "https://bitbucket.org/bitbucket/"
-              },
-              "self": {
-                "href": "https://api.bitbucket.org/2.0/workspaces/bitbucket"
-              }
-            }
-          },
-          "key": "T2",
-          "uuid": "{22222222}",
-          "is_private": true,
-          "name": "Test1",
-          "description": "description",
+        "type": "project",
+        "owner": {
+          "display_name": "Bit Bucket",
           "links": {
             "self": {
-              "href": "https://api.bitbucket.org/2.0/workspaces/bitbucket/projects/T2"
-            },
-            "html": {
-              "href": "https://bitbucket.org/bitbicket/workspace/projects/T2"
-            },
-            "repositories": {
-              "href": "https://api.bitbucket.org/2.0/repositories/bitbucket?q=project.key=\"T2\""
+              "href": "https://api.bitbucket.org/2.0/users/22222222"
             },
             "avatar": {
-              "href": "https://bitbucket.org/account/user/bitbucket/projects/T1/avatar/32?ts=22222222"
+              "href": "https://secure.gravatar.com/avatar/.png"
+            },
+            "html": {
+              "href": "https://bitbucket.org/"
             }
           },
-          "created_on": "2022-08-24T09:25:07.002184+00:00",
-          "updated_on": "2022-08-24T09:25:07.002201+00:00",
-          "has_publicly_visible_repos": false
+          "type": "user",
+          "uuid": "{22222222}",
+          "account_id": "22222222",
+          "nickname": "Bit Bucket"
+        },
+        "workspace": {
+          "type": "workspace",
+          "uuid": "{22222222}",
+          "name": "Bit Bucket",
+          "slug": "bitbucket",
+          "links": {
+            "avatar": {
+              "href": "https://bitbucket.org/workspaces/bitbucket/avatar/?ts=22222222"
+            },
+            "html": {
+              "href": "https://bitbucket.org/bitbucket/"
+            },
+            "self": {
+              "href": "https://api.bitbucket.org/2.0/workspaces/bitbucket"
+            }
+          }
+        },
+        "key": "T2",
+        "uuid": "{22222222}",
+        "is_private": true,
+        "name": "Test2",
+        "description": "description",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/workspaces/bitbucket/projects/T2"
+          },
+          "html": {
+            "href": "https://bitbucket.org/bitbicket/workspace/projects/T2"
+          },
+          "repositories": {
+            "href": "https://api.bitbucket.org/2.0/repositories/bitbucket?q=project.key=\"T2\""
+          },
+          "avatar": {
+            "href": "https://bitbucket.org/account/user/bitbucket/projects/T1/avatar/32?ts=22222222"
+          }
+        },
+        "created_on": "2022-08-24T09:25:07.002184+00:00",
+        "updated_on": "2022-08-24T09:25:07.002201+00:00",
+        "has_publicly_visible_repos": false
         }
       ],
       "pagelen": 2,
       "size": 2,
       "page": 1
-    },
-    "result_2": [
-        {
-          "type": "project",
-          "owner": {
-            "display_name": "Bit Bucket",
-            "links": {
-              "self": {
-                "href": "https://api.bitbucket.org/2.0/users/111111"
-              },
-              "avatar": {
-                "href": "https://secure.gravatar.com/avatar/.png"
-              },
-              "html": {
-                "href": "https://bitbucket.org/"
-              }
-            },
-            "type": "user",
-            "uuid": "{11111111}",
-            "account_id": "1111111111111111",
-            "nickname": "Bit Bucket"
-          },
-          "workspace": {
-            "type": "workspace",
-            "uuid": "{11111111}",
-            "name": "Bit Bucket",
-            "slug": "bitbucket",
-            "links": {
-              "avatar": {
-                "href": "https://bitbucket.org/workspaces/bitbucket/avatar/?ts=11111111"
-              },
-              "html": {
-                "href": "https://bitbucket.org/bitbucket/"
-              },
-              "self": {
-                "href": "https://api.bitbucket.org/2.0/workspaces/bitbucket"
-              }
-            }
-          },
-          "key": "T1",
-          "uuid": "{11111111}",
-          "is_private": true,
-          "name": "Test1",
-          "description": "description",
-          "links": {
-            "self": {
-              "href": "https://api.bitbucket.org/2.0/workspaces/bitbucket/projects/T1"
-            },
-            "html": {
-              "href": "https://bitbucket.org/bitbicket/workspace/projects/T1"
-            },
-            "repositories": {
-              "href": "https://api.bitbucket.org/2.0/repositories/bitbucket?q=project.key=\"T1\""
-            },
-            "avatar": {
-              "href": "https://bitbucket.org/account/user/bitbucket/projects/T1/avatar/32?ts=11111111"
-            }
-          },
-          "created_on": "2022-08-24T09:25:07.002184+00:00",
-          "updated_on": "2022-08-24T09:25:07.002201+00:00",
-          "has_publicly_visible_repos": false
-        },
-        {
-          "type": "project",
-          "owner": {
-            "display_name": "Bit Bucket",
-            "links": {
-              "self": {
-                "href": "https://api.bitbucket.org/2.0/users/22222222"
-              },
-              "avatar": {
-                "href": "https://secure.gravatar.com/avatar/.png"
-              },
-              "html": {
-                "href": "https://bitbucket.org/"
-              }
-            },
-            "type": "user",
-            "uuid": "{22222222}",
-            "account_id": "22222222",
-            "nickname": "Bit Bucket"
-          },
-          "workspace": {
-            "type": "workspace",
-            "uuid": "{22222222}",
-            "name": "Bit Bucket",
-            "slug": "bitbucket",
-            "links": {
-              "avatar": {
-                "href": "https://bitbucket.org/workspaces/bitbucket/avatar/?ts=22222222"
-              },
-              "html": {
-                "href": "https://bitbucket.org/bitbucket/"
-              },
-              "self": {
-                "href": "https://api.bitbucket.org/2.0/workspaces/bitbucket"
-              }
-            }
-          },
-          "key": "T2",
-          "uuid": "{22222222}",
-          "is_private": true,
-          "name": "Test1",
-          "description": "description",
-          "links": {
-            "self": {
-              "href": "https://api.bitbucket.org/2.0/workspaces/bitbucket/projects/T2"
-            },
-            "html": {
-              "href": "https://bitbucket.org/bitbicket/workspace/projects/T2"
-            },
-            "repositories": {
-              "href": "https://api.bitbucket.org/2.0/repositories/bitbucket?q=project.key=\"T2\""
-            },
-            "avatar": {
-              "href": "https://bitbucket.org/account/user/bitbucket/projects/T1/avatar/32?ts=22222222"
-            }
-          },
-          "created_on": "2022-08-24T09:25:07.002184+00:00",
-          "updated_on": "2022-08-24T09:25:07.002201+00:00",
-          "has_publicly_visible_repos": false
-        }
-      ]
+    }
   },
   "test_project_list_command_with_project_key": {
     "response": {

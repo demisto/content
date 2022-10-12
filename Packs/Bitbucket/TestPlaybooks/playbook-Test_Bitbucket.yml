@@ -8,10 +8,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c04b83dc-e8e5-4c22-8daa-0edbdce49e9b
+    taskid: f0b48305-2aab-4d9c-8b9f-1154d6316165
     type: start
     task:
-      id: c04b83dc-e8e5-4c22-8daa-0edbdce49e9b
+      id: f0b48305-2aab-4d9c-8b9f-1154d6316165
       version: -1
       name: ""
       iscommand: false
@@ -25,7 +25,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 30
+          "y": 40
         }
       }
     note: false
@@ -37,12 +37,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: e5260781-c5cc-4071-8ead-c5c9a471ac77
+    taskid: 0619e123-450b-4200-82a5-4571930e24ab
     type: regular
     task:
-      id: e5260781-c5cc-4071-8ead-c5c9a471ac77
+      id: 0619e123-450b-4200-82a5-4571930e24ab
       version: -1
-      name: test_project_list_command
+      name: Projects List
       script: Bitbucket|||bitbucket-project-list
       type: regular
       iscommand: true
@@ -68,12 +68,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: c67a56be-2dcd-44a9-8043-c5a2014e8e00
+    taskid: 56035598-0856-4026-8f49-cb6dd9ccf467
     type: condition
     task:
-      id: c67a56be-2dcd-44a9-8043-c5a2014e8e00
+      id: 56035598-0856-4026-8f49-cb6dd9ccf467
       version: -1
-      name: 'Check project list command output '
+      name: Verify List Projects output
       type: condition
       iscommand: false
       brand: ""
@@ -107,7 +107,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 410
+          "y": 380
         }
       }
     note: false
@@ -119,10 +119,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: ad23a076-b81b-4243-89db-ccc1338cc7e6
+    taskid: 3363a4cf-8ec5-42da-8a75-7c1387cffc8c
     type: title
     task:
-      id: ad23a076-b81b-4243-89db-ccc1338cc7e6
+      id: 3363a4cf-8ec5-42da-8a75-7c1387cffc8c
       version: -1
       name: Finish
       type: title
@@ -133,8 +133,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 8550
+          "x": 450,
+          "y": 7620
         }
       }
     note: false
@@ -146,12 +146,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 3bb044cc-43c0-4039-8b96-7d3b0d7fb330
+    taskid: ad695f6e-1bff-43de-88b5-31ee13f8cb6a
     type: regular
     task:
-      id: 3bb044cc-43c0-4039-8b96-7d3b0d7fb330
+      id: ad695f6e-1bff-43de-88b5-31ee13f8cb6a
       version: -1
-      name: Test open branch list command
+      name: Open Branch List
       script: Bitbucket|||bitbucket-open-branch-list
       type: regular
       iscommand: true
@@ -159,13 +159,14 @@ tasks:
     nexttasks:
       '#none#':
       - "5"
+      - "55"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 575
+          "y": 555
         }
       }
     note: false
@@ -177,18 +178,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: e18805ce-1540-4c43-8e80-71fe6c5c306c
+    taskid: b805a31b-a152-4c44-82e2-ca219be0427c
     type: condition
     task:
-      id: e18805ce-1540-4c43-8e80-71fe6c5c306c
+      id: b805a31b-a152-4c44-82e2-ca219be0427c
       version: -1
-      name: Check open branch list command
+      name: Verify Open Branch List outputs
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      "yes":
+      '#default#':
       - "8"
+      "yes":
+      - "6"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -196,24 +199,29 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Bitbucket.Branch.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: Bitbucket.Branch.target.hash
             iscontext: true
+          right:
+            value: {}
       - - operator: isNotEmpty
           left:
             value:
               simple: Bitbucket.Branch.target.author.user.display_name
             iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Bitbucket.Branch.name
+            iscontext: true
+          right:
+            value:
+              simple: demisto
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 740
+          "y": 720
         }
       }
     note: false
@@ -225,19 +233,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 770a9285-2c11-4334-8db8-7bf575b898d1
+    taskid: 0c418305-e55a-401e-8c94-41c30af51bd6
     type: regular
     task:
-      id: 770a9285-2c11-4334-8db8-7bf575b898d1
+      id: 0c418305-e55a-401e-8c94-41c30af51bd6
       version: -1
-      name: 'Test branch get command '
+      name: Branch Get
       script: Bitbucket|||bitbucket-branch-get
       type: regular
       iscommand: true
       brand: Bitbucket
     nexttasks:
       '#none#':
-      - "7"
+      - "50"
     scriptarguments:
       branch_name:
         simple: demisto
@@ -247,55 +255,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: ac98fc3d-5f45-4aee-8b48-a9fa33a04cbb
-    type: condition
-    task:
-      id: ac98fc3d-5f45-4aee-8b48-a9fa33a04cbb
-      version: -1
-      name: check branch get output
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "10"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Bitbucket.Branch.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Bitbucket.Branch.target.hash
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Bitbucket.Branch.target.author.user.display_name
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1360
+          "y": 1180
         }
       }
     note: false
@@ -307,12 +267,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 7fecf0cf-ebd8-4de8-8d16-50224996b513
+    taskid: 2601d3ee-a3c9-4884-829a-91572939f256
     type: regular
     task:
-      id: 7fecf0cf-ebd8-4de8-8d16-50224996b513
+      id: 2601d3ee-a3c9-4884-829a-91572939f256
       version: -1
-      name: Test branch create command
+      name: Branch Create
       script: Bitbucket|||bitbucket-branch-create
       type: regular
       iscommand: true
@@ -330,8 +290,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 890
+          "x": 900,
+          "y": 880
         }
       }
     note: false
@@ -343,12 +303,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: f0f33190-a73f-49ce-87c3-80d4ebf8da4e
+    taskid: c4879f21-de49-4bc2-8a52-6829c603df1b
     type: condition
     task:
-      id: f0f33190-a73f-49ce-87c3-80d4ebf8da4e
+      id: c4879f21-de49-4bc2-8a52-6829c603df1b
       version: -1
-      name: Check branch create output
+      name: Verify Branch Create outputs
       description: Check whether the values provided in arguments are equal. If either
         of the arguments are missing, no is returned.
       type: condition
@@ -364,19 +324,22 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Bitbucket.Branch.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: Bitbucket.Branch.target.author.user.account_id
             iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Bitbucket.Branch.name
+            iscontext: true
+          right:
+            value:
+              simple: demisto
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1035
+          "x": 900,
+          "y": 1040
         }
       }
     note: false
@@ -388,22 +351,59 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 69327df0-48e0-4d8c-8819-466a050019b8
+    taskid: 565dbadd-9df1-4880-8ffe-345bcc169fcb
     type: regular
     task:
-      id: 69327df0-48e0-4d8c-8819-466a050019b8
+      id: 565dbadd-9df1-4880-8ffe-345bcc169fcb
       version: -1
-      name: Test branch delete command
+      name: Branch Delete
       script: Bitbucket|||bitbucket-branch-delete
+      type: regular
+      iscommand: true
+      brand: Bitbucket
+    scriptarguments:
+      branch_name:
+        simple: demisto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 162d7702-de7f-4875-8539-8c8ba526f5f1
+    type: regular
+    task:
+      id: 162d7702-de7f-4875-8539-8c8ba526f5f1
+      version: -1
+      name: Commit Create
+      script: Bitbucket|||bitbucket-commit-create
       type: regular
       iscommand: true
       brand: Bitbucket
     nexttasks:
       '#none#':
-      - "11"
+      - "12"
     scriptarguments:
-      branch_name:
+      branch:
         simple: demisto
+      file_content:
+        simple: hello file1
+      file_name:
+        simple: file1
+      message:
+        simple: message
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -420,54 +420,14 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: cd2034ba-7a4f-41be-8a61-5d82a10ff52b
-    type: regular
-    task:
-      id: cd2034ba-7a4f-41be-8a61-5d82a10ff52b
-      version: -1
-      name: Test commit create command
-      script: Bitbucket|||bitbucket-commit-create
-      type: regular
-      iscommand: true
-      brand: Bitbucket
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      branch:
-        simple: test
-      file_content:
-        simple: hello file1
-      file_name:
-        simple: file1
-      message:
-        simple: message
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1675
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: d832c91b-303a-4b13-8118-ff2a71ac185a
+    taskid: 6e8c7c03-ef79-47c8-8155-c7f85ccccf2a
     type: regular
     task:
-      id: d832c91b-303a-4b13-8118-ff2a71ac185a
+      id: 6e8c7c03-ef79-47c8-8155-c7f85ccccf2a
       version: -1
-      name: Test commit list command
+      name: Commit List
       script: Bitbucket|||bitbucket-commit-list
       type: regular
       iscommand: true
@@ -477,7 +437,7 @@ tasks:
       - "13"
     scriptarguments:
       included_branches:
-        simple: test
+        simple: demisto
       limit:
         simple: "30"
     separatecontext: false
@@ -486,7 +446,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1845
+          "y": 1685
         }
       }
     note: false
@@ -498,12 +458,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 3098461f-5921-4774-80d0-fabe11d6c0ff
+    taskid: 9cd5b6ef-6bcb-4feb-8936-8443fd34dedf
     type: condition
     task:
-      id: 3098461f-5921-4774-80d0-fabe11d6c0ff
+      id: 9cd5b6ef-6bcb-4feb-8936-8443fd34dedf
       version: -1
-      name: Check commit list
+      name: Verify Commit List outputs
       type: condition
       iscommand: false
       brand: ""
@@ -529,7 +489,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2010
+          "y": 1850
         }
       }
     note: false
@@ -541,12 +501,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 078fdf73-4b71-4f87-8fe1-970c05bc4210
+    taskid: ad836356-54c6-437e-8535-a220230c2850
     type: regular
     task:
-      id: 078fdf73-4b71-4f87-8fe1-970c05bc4210
+      id: ad836356-54c6-437e-8535-a220230c2850
       version: -1
-      name: Test file delete command
+      name: File Delete command
       script: Bitbucket|||bitbucket-file-delete
       type: regular
       iscommand: true
@@ -556,7 +516,7 @@ tasks:
       - "17"
     scriptarguments:
       branch:
-        simple: test
+        simple: demisto
       file_name:
         simple: file1
       message:
@@ -567,7 +527,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2500
+          "y": 2340
         }
       }
     note: false
@@ -579,12 +539,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: b8a11026-ee95-4801-8890-c0a9fd0c4476
+    taskid: a027c44b-c32d-4268-857c-827d87c00af2
     type: regular
     task:
-      id: b8a11026-ee95-4801-8890-c0a9fd0c4476
+      id: a027c44b-c32d-4268-857c-827d87c00af2
       version: -1
-      name: Test raw file get command
+      name: Raw File Get
       script: Bitbucket|||bitbucket-raw-file-get
       type: regular
       iscommand: true
@@ -594,7 +554,7 @@ tasks:
       - "16"
     scriptarguments:
       branch:
-        simple: test
+        simple: demisto
       file_path:
         simple: file1
     separatecontext: false
@@ -603,7 +563,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2175
+          "y": 2015
         }
       }
     note: false
@@ -615,12 +575,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 3e0cc27e-1f1d-4a42-87ab-cdfa9a7e6b10
+    taskid: fb7ff651-4c7a-4692-8447-343648988bb4
     type: condition
     task:
-      id: 3e0cc27e-1f1d-4a42-87ab-cdfa9a7e6b10
+      id: fb7ff651-4c7a-4692-8447-343648988bb4
       version: -1
-      name: Check raw file get output
+      name: Verify Raw File Get output
       type: condition
       iscommand: false
       brand: ""
@@ -652,7 +612,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2340
+          "y": 2180
         }
       }
     note: false
@@ -664,12 +624,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 8370f758-81fa-48b5-85b3-7e3743331ba9
+    taskid: 44131257-3d92-463b-8537-f4fcee84f842
     type: regular
     task:
-      id: 8370f758-81fa-48b5-85b3-7e3743331ba9
+      id: 44131257-3d92-463b-8537-f4fcee84f842
       version: -1
-      name: Test issue create command
+      name: Issue Create
       description: Creates an issue in Bitbucket. In order to perform this command,
         please create an issue tracker by clicking on the relevant repo -> Repository
         settings -> Issue tracker
@@ -679,7 +639,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "28"
+      - "54"
     scriptarguments:
       content:
         simple: enhancement for an integration
@@ -697,7 +657,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2660
+          "y": 2500
         }
       }
     note: false
@@ -709,12 +669,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: d72b1c27-38e0-4db6-8e8a-d1c09e7af9de
+    taskid: cd05977b-cf5a-410a-84b4-8894963e59be
     type: regular
     task:
-      id: d72b1c27-38e0-4db6-8e8a-d1c09e7af9de
+      id: cd05977b-cf5a-410a-84b4-8894963e59be
       version: -1
-      name: Test issue list command
+      name: Issue List
       script: Bitbucket|||bitbucket-issue-list
       type: regular
       iscommand: true
@@ -730,8 +690,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 5350
+          "x": 450,
+          "y": 4640
         }
       }
     note: false
@@ -743,12 +703,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 38d1d85d-b195-4644-86ae-f1d245d03a75
+    taskid: dccef8b0-f344-42ea-87b5-70b83c58850a
     type: condition
     task:
-      id: 38d1d85d-b195-4644-86ae-f1d245d03a75
+      id: dccef8b0-f344-42ea-87b5-70b83c58850a
       version: -1
-      name: check issue list output
+      name: Verify Issue List outputs
       type: condition
       iscommand: false
       brand: ""
@@ -764,6 +724,8 @@ tasks:
             value:
               simple: Bitbucket.Issue.id
             iscontext: true
+          right:
+            value: {}
       - - operator: isNotEmpty
           left:
             value:
@@ -773,97 +735,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 5540
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
-    taskid: 82d671f9-fd68-41c9-8a1e-fd44260107e1
-    type: regular
-    task:
-      id: 82d671f9-fd68-41c9-8a1e-fd44260107e1
-      version: -1
-      name: Test issue update command
-      description: Updates an issue in Bitbucket. In order to perform this command,
-        please create an issue tracker by clicking on the relevant repo -> Repository
-        settings -> Issue tracker
-      script: Bitbucket|||bitbucket-issue-update
-      type: regular
-      iscommand: true
-      brand: Bitbucket
-    nexttasks:
-      '#none#':
-      - "21"
-    scriptarguments:
-      content:
-        simple: updated content
-      issue_id:
-        simple: ${Bitbucket.Issue.id}
-      state:
-        simple: resolved
-      title:
-        simple: ${Bitbucket.Issue.title}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 3960
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: 81eb0b2e-73e9-4dfd-8789-6862f4c916b3
-    type: condition
-    task:
-      id: 81eb0b2e-73e9-4dfd-8789-6862f4c916b3
-      version: -1
-      name: Check issue update command
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "35"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Bitbucket.Issue.content.raw
-            iscontext: true
-          right:
-            value:
-              simple: updated content
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Bitbucket.Issue.id
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 4125
+          "x": 450,
+          "y": 4800
         }
       }
     note: false
@@ -875,12 +748,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 5ab3c6bf-a2f6-487a-899b-642f79b17aa2
+    taskid: 3072391d-f73f-483f-864a-9e8b2bcb5dc9
     type: regular
     task:
-      id: 5ab3c6bf-a2f6-487a-899b-642f79b17aa2
+      id: 3072391d-f73f-483f-864a-9e8b2bcb5dc9
       version: -1
-      name: Test pull request create command
+      name: Pull Request Create
       script: Bitbucket|||bitbucket-pull-request-create
       type: regular
       iscommand: true
@@ -892,7 +765,7 @@ tasks:
       destination_branch:
         simple: master
       source_branch:
-        simple: test
+        simple: demisto
       title:
         simple: new pr
     separatecontext: false
@@ -900,8 +773,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 5720
+          "x": 450,
+          "y": 4975
         }
       }
     note: false
@@ -913,12 +786,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: f858389e-558f-4618-8774-4c068d2116d0
+    taskid: 0315741a-d7cb-4e39-892f-4175a3152c3e
     type: condition
     task:
-      id: f858389e-558f-4618-8774-4c068d2116d0
+      id: 0315741a-d7cb-4e39-892f-4175a3152c3e
       version: -1
-      name: Check pull request create
+      name: Verify Pull Request Create outputs
       type: condition
       iscommand: false
       brand: ""
@@ -946,8 +819,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 5890
+          "x": 450,
+          "y": 5140
         }
       }
     note: false
@@ -959,12 +832,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 6aba43fb-9fba-4513-888b-72aa2a66562f
+    taskid: 8c972f4a-cb32-4181-805d-d9b89e4b3574
     type: regular
     task:
-      id: 6aba43fb-9fba-4513-888b-72aa2a66562f
+      id: 8c972f4a-cb32-4181-805d-d9b89e4b3574
       version: -1
-      name: Test pull request update command
+      name: Pull Request Update
       script: Bitbucket|||bitbucket-pull-request-update
       type: regular
       iscommand: true
@@ -982,8 +855,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 6090
+          "x": 450,
+          "y": 5305
         }
       }
     note: false
@@ -995,12 +868,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 6ba4aa62-8360-4bd9-85d3-7c316a0650e9
+    taskid: e7f8ba80-af04-460e-820c-e84220608f73
     type: condition
     task:
-      id: 6ba4aa62-8360-4bd9-85d3-7c316a0650e9
+      id: e7f8ba80-af04-460e-820c-e84220608f73
       version: -1
-      name: Check pull request update output
+      name: Verify Pull Request Update
       type: condition
       iscommand: false
       brand: ""
@@ -1016,6 +889,8 @@ tasks:
             value:
               simple: Bitbucket.PullRequest.id
             iscontext: true
+          right:
+            value: {}
       - - operator: isEqualString
           left:
             value:
@@ -1028,8 +903,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 6270
+          "x": 450,
+          "y": 5470
         }
       }
     note: false
@@ -1041,12 +916,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 2e04bca6-5f8f-4a97-8dc6-a1581f63f568
+    taskid: ffabf941-aea1-4487-862f-4dda8a65941a
     type: regular
     task:
-      id: 2e04bca6-5f8f-4a97-8dc6-a1581f63f568
+      id: ffabf941-aea1-4487-862f-4dda8a65941a
       version: -1
-      name: Test pull request list command
+      name: Pull Request List
       description: Returns a list of the pull requests. If a state is provided than
         the list will contain only PR with the wanted status. If a state is not provided,
         by default a list of the open pull requests will return.
@@ -1065,8 +940,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 7740
+          "x": 450,
+          "y": 6850
         }
       }
     note: false
@@ -1078,12 +953,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 02894363-c8fa-43b5-837b-128dab98e985
+    taskid: 106bce73-38c4-4a93-85a9-cd2394f2b8ec
     type: condition
     task:
-      id: 02894363-c8fa-43b5-837b-128dab98e985
+      id: 106bce73-38c4-4a93-85a9-cd2394f2b8ec
       version: -1
-      name: Check pull request list output
+      name: Verify Pull Request List outputs
       type: condition
       iscommand: false
       brand: ""
@@ -1099,6 +974,8 @@ tasks:
             value:
               simple: Bitbucket.PullRequest.id
             iscontext: true
+          right:
+            value: {}
       - - operator: isNotEmpty
           left:
             value:
@@ -1108,8 +985,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 7925
+          "x": 450,
+          "y": 7010
         }
       }
     note: false
@@ -1121,12 +998,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: be75463b-6a3b-40c6-8097-6455729cf31f
+    taskid: 5afbd885-2643-4494-88e7-de6e1f85f77b
     type: regular
     task:
-      id: be75463b-6a3b-40c6-8097-6455729cf31f
+      id: 5afbd885-2643-4494-88e7-de6e1f85f77b
       version: -1
-      name: Test issue comment create command
+      name: Issue Comment Create
       description: Creates a comment on an issue in Bitbucket.
       script: Bitbucket|||bitbucket-issue-comment-create
       type: regular
@@ -1134,7 +1011,7 @@ tasks:
       brand: Bitbucket
     nexttasks:
       '#none#':
-      - "32"
+      - "51"
     scriptarguments:
       content:
         simple: check creating comment
@@ -1146,140 +1023,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2820
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
-    taskid: 100316ee-19bd-4f29-8732-fd93d170bf18
-    type: condition
-    task:
-      id: 100316ee-19bd-4f29-8732-fd93d170bf18
-      version: -1
-      name: 'Check issue comment create '
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "30"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Bitbucket.IssueComment.id
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Bitbucket.IssueComment.content.raw
-            iscontext: true
-          right:
-            value:
-              simple: a new comment on an issue
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 4450
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
-    taskid: c4a77372-c16a-425c-80d7-0557352134bf
-    type: regular
-    task:
-      id: c4a77372-c16a-425c-80d7-0557352134bf
-      version: -1
-      name: Test issue comment update command
-      description: Updates a specific comment on a given issue.
-      script: Bitbucket|||bitbucket-issue-comment-update
-      type: regular
-      iscommand: true
-      brand: Bitbucket
-    nexttasks:
-      '#none#':
-      - "31"
-    scriptarguments:
-      comment_id:
-        simple: ${Bitbucket.IssueComment.id}
-      content:
-        simple: hello
-      issue_id:
-        simple: ${Bitbucket.IssueComment.issue.id}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 4630
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "31":
-    id: "31"
-    taskid: b037d9d9-b78f-4cba-8b76-060413bf7576
-    type: condition
-    task:
-      id: b037d9d9-b78f-4cba-8b76-060413bf7576
-      version: -1
-      name: check issue comment update
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "37"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Bitbucket.IssueComment.content.raw
-            iscontext: true
-          right:
-            value:
-              simple: hello
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Bitbucket.IssueComment.id
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 4800
+          "y": 2850
         }
       }
     note: false
@@ -1291,12 +1035,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 21172403-f209-431c-8699-b1ce7f3ba943
+    taskid: e8285339-e8a9-4b55-8616-045ba4d8f059
     type: regular
     task:
-      id: 21172403-f209-431c-8699-b1ce7f3ba943
+      id: e8285339-e8a9-4b55-8616-045ba4d8f059
       version: -1
-      name: bitbucket-issue-comment-delete
+      name: Issue Comment Delete
       description: Deletes a comment on an issue in Bitbucket.
       script: Bitbucket|||bitbucket-issue-comment-delete
       type: regular
@@ -1318,119 +1062,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2980
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
-    taskid: 029d70d4-2449-400a-82bd-348f82206501
-    type: regular
-    task:
-      id: 029d70d4-2449-400a-82bd-348f82206501
-      version: -1
-      name: Test create issue command
-      description: Creates an issue in Bitbucket. In order to perform this command,
-        please create an issue tracker by clicking on the relevant repo -> Repository
-        settings -> Issue tracker
-      script: Bitbucket|||bitbucket-issue-create
-      type: regular
-      iscommand: true
-      brand: Bitbucket
-    nexttasks:
-      '#none#':
-      - "34"
-    scriptarguments:
-      title:
-        simple: Hi I am new
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 3630
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "34":
-    id: "34"
-    taskid: 09383594-ee4e-4328-8eea-58784be72a32
-    type: condition
-    task:
-      id: 09383594-ee4e-4328-8eea-58784be72a32
-      version: -1
-      name: Check create issue output
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "20"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Bitbucket.Issue.id
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 3790
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
-    taskid: 1c33d377-4ffc-413b-87ae-64dcb4cb79e0
-    type: regular
-    task:
-      id: 1c33d377-4ffc-413b-87ae-64dcb4cb79e0
-      version: -1
-      name: Test issue comment create
-      description: Creates a comment on an issue in Bitbucket.
-      script: Bitbucket|||bitbucket-issue-comment-create
-      type: regular
-      iscommand: true
-      brand: Bitbucket
-    nexttasks:
-      '#none#':
-      - "29"
-    scriptarguments:
-      content:
-        simple: a new comment on an issue
-      issue_id:
-        simple: ${Bitbucket.Issue.id}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 4290
+          "y": 3980
         }
       }
     note: false
@@ -1442,10 +1074,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 31e648fb-1bf2-4b86-8e2b-0988dc006762
+    taskid: c48a7fb5-116d-4998-8ef7-56fed0096aab
     type: regular
     task:
-      id: 31e648fb-1bf2-4b86-8e2b-0988dc006762
+      id: c48a7fb5-116d-4998-8ef7-56fed0096aab
       version: -1
       name: delete context
       description: |-
@@ -1460,7 +1092,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "33"
+      - "18"
     scriptarguments:
       all:
         simple: "yes"
@@ -1469,8 +1101,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 3470
+          "x": 450,
+          "y": 4480
         }
       }
     note: false
@@ -1482,10 +1114,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: bc4c102f-54a8-407d-844f-e8331189c8ba
+    taskid: 79f4baf4-408d-44b1-8ebb-6530e26757e8
     type: regular
     task:
-      id: bc4c102f-54a8-407d-844f-e8331189c8ba
+      id: 79f4baf4-408d-44b1-8ebb-6530e26757e8
       version: -1
       name: Test issue comment list command
       description: Returns a list of comments on a specific issue. If a comment_id
@@ -1507,8 +1139,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 4990
+          "x": 450,
+          "y": 3655
         }
       }
     note: false
@@ -1520,10 +1152,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: b9b23014-816c-42de-885b-27d339732249
+    taskid: 84e56d46-e028-4d3c-8705-1011124c994a
     type: condition
     task:
-      id: b9b23014-816c-42de-885b-27d339732249
+      id: 84e56d46-e028-4d3c-8705-1011124c994a
       version: -1
       name: check issue comment list output
       type: condition
@@ -1531,7 +1163,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "18"
+      - "32"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1550,8 +1182,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 5170
+          "x": 450,
+          "y": 3820
         }
       }
     note: false
@@ -1563,12 +1195,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: eff61895-d304-47cf-8bfe-c65667283f0d
+    taskid: 6527ac7a-153a-4378-8c21-6a2e70b80f6a
     type: regular
     task:
-      id: eff61895-d304-47cf-8bfe-c65667283f0d
+      id: 6527ac7a-153a-4378-8c21-6a2e70b80f6a
       version: -1
-      name: Test pull request comment create
+      name: Pull Request Comment Create
       description: Creates a new comment on a pull request.
       script: Bitbucket|||bitbucket-pull-request-comment-create
       type: regular
@@ -1587,8 +1219,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 6465
+          "x": 450,
+          "y": 5660
         }
       }
     note: false
@@ -1600,12 +1232,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: ef085553-b1e3-408a-8cf0-305fb9bc4f6c
+    taskid: 2baaf7f1-b1df-4974-8892-4d8ac7896f0b
     type: condition
     task:
-      id: ef085553-b1e3-408a-8cf0-305fb9bc4f6c
+      id: 2baaf7f1-b1df-4974-8892-4d8ac7896f0b
       version: -1
-      name: check pull request comment output
+      name: Verify Pull Request Comment
       type: condition
       iscommand: false
       brand: ""
@@ -1633,8 +1265,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 6630
+          "x": 450,
+          "y": 5825
         }
       }
     note: false
@@ -1646,12 +1278,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: d9c35b27-2d77-473a-86a6-e45204c08af4
+    taskid: 47c1d4eb-127a-4ef7-84b4-7f0c0e09c1ef
     type: regular
     task:
-      id: d9c35b27-2d77-473a-86a6-e45204c08af4
+      id: 47c1d4eb-127a-4ef7-84b4-7f0c0e09c1ef
       version: -1
-      name: Test pull request comment update
+      name: Pull Request Comment Update
       description: updates a comment in a specific pull request.
       script: Bitbucket|||bitbucket-pull-request-comment-update
       type: regular
@@ -1672,8 +1304,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 6820
+          "x": 450,
+          "y": 6000
         }
       }
     note: false
@@ -1685,12 +1317,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 9d7e1129-01f6-4a53-8b97-f6fdb729478f
+    taskid: 9c21f9ae-9812-495c-8279-1d01b9164954
     type: condition
     task:
-      id: 9d7e1129-01f6-4a53-8b97-f6fdb729478f
+      id: 9c21f9ae-9812-495c-8279-1d01b9164954
       version: -1
-      name: Check pull request comment update output
+      name: Verify Pull Request Comment Update
       type: condition
       iscommand: false
       brand: ""
@@ -1718,8 +1350,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 6995
+          "x": 450,
+          "y": 6160
         }
       }
     note: false
@@ -1731,12 +1363,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 8f88399c-cdb5-4afa-8883-bf080d387698
+    taskid: a2de1c16-30e8-441e-8225-99349121e506
     type: regular
     task:
-      id: 8f88399c-cdb5-4afa-8883-bf080d387698
+      id: a2de1c16-30e8-441e-8225-99349121e506
       version: -1
-      name: Test Pull request comment list command
+      name: Pull Request Comment List
       description: returns a list of comments of a specific pull request.
       script: Bitbucket|||bitbucket-pull-request-comment-list
       type: regular
@@ -1757,8 +1389,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 7180
+          "x": 450,
+          "y": 6340
         }
       }
     note: false
@@ -1770,12 +1402,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: cb7cb2bc-55e4-4e86-80b6-da4ba1b2e01e
+    taskid: 53bbd607-9b39-4311-8ed0-446d8d4e21bf
     type: condition
     task:
-      id: cb7cb2bc-55e4-4e86-80b6-da4ba1b2e01e
+      id: 53bbd607-9b39-4311-8ed0-446d8d4e21bf
       version: -1
-      name: Check pull request comment list output
+      name: Verify Pull Request Comment List outputs
       type: condition
       iscommand: false
       brand: ""
@@ -1791,6 +1423,8 @@ tasks:
             value:
               simple: Bitbucket.PullRequestComment.id
             iscontext: true
+          right:
+            value: {}
       - - operator: isNotEmpty
           left:
             value:
@@ -1800,8 +1434,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 7360
+          "x": 450,
+          "y": 6510
         }
       }
     note: false
@@ -1813,12 +1447,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 7d819b99-67f6-40f3-8b2f-3106b6e94871
+    taskid: 4de7343a-76cd-4d53-8aeb-bce21fc3409e
     type: regular
     task:
-      id: 7d819b99-67f6-40f3-8b2f-3106b6e94871
+      id: 4de7343a-76cd-4d53-8aeb-bce21fc3409e
       version: -1
-      name: change the issue type to resolved
+      name: Issue Update - Resolved
       description: Updates an issue in Bitbucket. In order to perform this command,
         please create an issue tracker by clicking on the relevant repo -> Repository
         settings -> Issue tracker
@@ -1842,7 +1476,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3140
+          "y": 4140
         }
       }
     note: false
@@ -1854,12 +1488,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 5202f5bf-a183-4218-8897-fb3cbcb2821e
+    taskid: 79df5611-9c16-4100-8068-f63a941aba88
     type: condition
     task:
-      id: 5202f5bf-a183-4218-8897-fb3cbcb2821e
+      id: 79df5611-9c16-4100-8068-f63a941aba88
       version: -1
-      name: Check that the new issue is resolved
+      name: Verify Issue Update - Resolved
       type: condition
       iscommand: false
       brand: ""
@@ -1883,7 +1517,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3305
+          "y": 4310
         }
       }
     note: false
@@ -1895,12 +1529,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 8819bd10-e9df-4b14-84e0-eb3e4705b669
+    taskid: 6034126e-beec-4007-8577-b5302856b543
     type: regular
     task:
-      id: 8819bd10-e9df-4b14-84e0-eb3e4705b669
+      id: 6034126e-beec-4007-8577-b5302856b543
       version: -1
-      name: Test pull request comment delete command
+      name: Pull Request Comment Delete
       description: deletes a comment in a specific pull request.
       script: Bitbucket|||bitbucket-pull-request-comment-delete
       type: regular
@@ -1919,8 +1553,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 7540
+          "x": 450,
+          "y": 6690
         }
       }
     note: false
@@ -1932,12 +1566,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: a06041fb-4360-4f47-8df7-1f209d266a7a
+    taskid: 91c81c69-70a1-437c-8bd3-d71cfb20af8f
     type: regular
     task:
-      id: a06041fb-4360-4f47-8df7-1f209d266a7a
+      id: 91c81c69-70a1-437c-8bd3-d71cfb20af8f
       version: -1
-      name: Test workspace member list command
+      name: Workspace Member List
       description: returns a list of all the members in the workspace.
       script: Bitbucket|||bitbucket-workspace-member-list
       type: regular
@@ -1954,8 +1588,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 8110
+          "x": 450,
+          "y": 7190
         }
       }
     note: false
@@ -1967,12 +1601,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 8ef37fca-248c-4ec6-8d6e-9e2470b4eff2
+    taskid: d63dd34d-9ae6-4a18-8fa9-c13d2874bb2f
     type: condition
     task:
-      id: 8ef37fca-248c-4ec6-8d6e-9e2470b4eff2
+      id: d63dd34d-9ae6-4a18-8fa9-c13d2874bb2f
       version: -1
-      name: Check workspace member list output
+      name: Verify Workspace Member List outputs
       type: condition
       iscommand: false
       brand: ""
@@ -1988,12 +1622,309 @@ tasks:
             value:
               simple: Bitbucket.WorkspaceMember.user.account_id
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 8290
+          "x": 450,
+          "y": 7350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 79d0c386-75ce-4946-80b4-0493d986a002
+    type: condition
+    task:
+      id: 79d0c386-75ce-4946-80b4-0493d986a002
+      version: -1
+      name: Verify Branch Get outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bitbucket.Branch.name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: c38ae1d1-8740-4b21-8958-0a730431482a
+    type: condition
+    task:
+      id: c38ae1d1-8740-4b21-8958-0a730431482a
+      version: -1
+      name: Verify Issue Comment Create
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bitbucket.IssueComment.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bitbucket.IssueComment.content.raw
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 9071197c-0fb3-4467-891e-6fe63c51d653
+    type: regular
+    task:
+      id: 9071197c-0fb3-4467-891e-6fe63c51d653
+      version: -1
+      name: Issue Comment Update
+      description: Updates a specific comment on a given issue.
+      script: Bitbucket|||bitbucket-issue-comment-update
+      type: regular
+      iscommand: true
+      brand: Bitbucket
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      comment_id:
+        simple: ${Bitbucket.IssueComment.id}
+      issue_id:
+        simple: ${Bitbucket.IssueComment.issue.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: a989024c-ad99-41d5-846d-55f5be40cc8f
+    type: condition
+    task:
+      id: a989024c-ad99-41d5-846d-55f5be40cc8f
+      version: -1
+      name: Verify Issue Comment Update outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bitbucket.IssueComment.id
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Bitbucket.IssueComment.content.raw
+            iscontext: true
+          right:
+            value:
+              simple: just changing the content
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 7a95f942-7270-446e-8c7c-d17ace458149
+    type: condition
+    task:
+      id: 7a95f942-7270-446e-8c7c-d17ace458149
+      version: -1
+      name: Verify Issue Create
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bitbucket.Issue.id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 62b11513-1c39-4ad9-85c0-e906c4a9e327
+    type: condition
+    task:
+      id: 62b11513-1c39-4ad9-85c0-e906c4a9e327
+      version: -1
+      name: Verify Open Branch List outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bitbucket.Branch.target.hash
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Bitbucket.Branch.target.author.user.display_name
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Bitbucket.Branch.name
+            iscontext: true
+          right:
+            value:
+              simple: test
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: c77c0dd8-f6dd-41a0-80cb-4d53005dd8ae
+    type: regular
+    task:
+      id: c77c0dd8-f6dd-41a0-80cb-4d53005dd8ae
+      version: -1
+      name: Branch Create
+      script: Bitbucket|||bitbucket-branch-create
+      type: regular
+      iscommand: true
+      brand: Bitbucket
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      name:
+        simple: demisto
+      target_branch:
+        simple: master
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 1020
         }
       }
     note: false
@@ -2008,10 +1939,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 8585,
-        "width": 390,
-        "x": 450,
-        "y": 30
+        "height": 7645,
+        "width": 1250,
+        "x": 30,
+        "y": 40
       }
     }
   }
