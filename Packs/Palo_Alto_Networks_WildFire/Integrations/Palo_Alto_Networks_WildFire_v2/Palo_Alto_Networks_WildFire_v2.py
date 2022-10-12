@@ -1545,7 +1545,7 @@ def main():
         # if the apikey is longer than 32 characters and one of agent=pcc or prismaaccessapi is not set, send exception othewise API calls will fail
         if len(TOKEN) > 32:
             # the token is longer than 32 so either PPC or Prismaaccessapi needs to be set
-            if API_KEY_SOURCE not in ['pcc', 'prismaaccessapi']:
+            if API_KEY_SOURCE not in ['pcc', 'prismaaccessapi', 'xsoartim']:
                 raise DemistoException(
                     'API Key is longer than 32 characters, one of pcc or prismaaceessapi must be selected in the intergration instance for the API queries to work.')
 
