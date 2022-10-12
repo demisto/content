@@ -1,5 +1,5 @@
 {
-    "name": "Palo Alto Networks WildFire",
+    "name": "WildFire by Palo Alto Networks",
     "description": "Perform malware dynamic analysis",
     "support": "xsoar",
     "currentVersion": "2.1.7",
