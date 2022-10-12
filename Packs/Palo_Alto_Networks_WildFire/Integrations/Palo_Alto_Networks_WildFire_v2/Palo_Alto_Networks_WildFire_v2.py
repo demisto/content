@@ -50,7 +50,7 @@ ADDITIONAL_FORM_BOUNDARY = ''
 BODY_DICT = {'apikey': TOKEN}
 PARAMS_DICT = {'apikey': TOKEN}
 
-if API_KEY_SOURCE in ['pcc', 'prismaaccessapi','xsoartim']:
+if API_KEY_SOURCE in ['pcc', 'prismaaccessapi', 'xsoartim']:
     BODY_DICT['agent'] = API_KEY_SOURCE
     PARAMS_DICT['agent'] = API_KEY_SOURCE
 
@@ -408,7 +408,7 @@ def wildfire_upload_file(upload):
     upload_file_uri = URL + URL_DICT["upload_file"]
 
     # update the body with
-    #body = {'apikey': TOKEN}
+    # body = {'apikey': TOKEN}
     body = BODY_DICT
 
     file_path = demisto.getFilePath(upload)['path']
@@ -550,7 +550,7 @@ Content-Disposition: form-data; name="agent"
 {API_KEY_SOURCE}
 --upload_boundry--'''
 
-    #body2 = 'apikey=' + TOKEN + '&url=' + upload + AGENT_VALUE
+    # body2 = 'apikey=' + TOKEN + '&url=' + upload + AGENT_VALUE
 
     if ADDITIONAL_FORM_BOUNDARY != '':
         body = body2
@@ -847,7 +847,8 @@ def wildfire_get_url_webartifacts_command():
             empty_screenshot_tar = False
             # add check for inline screenshot extraction
             if types in ['screenshot']:
-                # we have a screenshot found - only a screenshot, this will not extract a screenshot from a tgz with files for security reasons
+                # we have a screenshot found - only a screenshot, 
+                # this will not extract a screenshot from a tgz with files for security reasons
                 if screenshot_inline in ['true']:
                     # we have a screenshot returned and we have inline extaction requested
 
@@ -866,7 +867,7 @@ def wildfire_get_url_webartifacts_command():
                             # first element is the folder name screenshot
 
                             members = tar.getmembers()
-                            path = members[1].name
+                            # path = members[1].name
                             data = tar.extractfile(members[1])
                             fdata = data.read()
                             exported_files.append(members[1].name)
@@ -880,11 +881,11 @@ def wildfire_get_url_webartifacts_command():
                                 'Contents': ''
                             })
 
-                    except Exception as exc:
+                    except Exception:
                         # the tgz for screenshot is empty, no screenshot provided
                         empty_screenshot_tar = True
 
-            if empty_screenshot_tar == True:
+            if empty_screenshot_tar is True:
                 file_entry = fileResult(f'empty_{url}_webartifacts.tgz', result.content, entryTypes['entryInfoFile'])
             else:
                 file_entry = fileResult(f'{url}_webartifacts.tgz', result.content, entryTypes['entryInfoFile'])
@@ -1544,12 +1545,14 @@ def main():
         # Remove proxy if not set to true in params
         handle_proxy()
 
-        # if the apikey is longer than 32 characters and one of agent=pcc or prismaaccessapi is not set, send exception othewise API calls will fail
+        # if the apikey is longer than 32 characters agent is not set, 
+        # send exception othewise API calls will fail
         if len(TOKEN) > 32:
             # the token is longer than 32 so either PPC or Prismaaccessapi needs to be set
             if API_KEY_SOURCE not in ['pcc', 'prismaaccessapi', 'xsoartim']:
                 raise DemistoException(
-                    'API Key is longer than 32 characters, one of pcc or prismaaceessapi must be selected in the intergration instance for the API queries to work.')
+                    'API Key is longer than 32 characters, agent value must be selected in the intergration instance.'
+                    )
 
         if command == 'test-module':
             test_module()
