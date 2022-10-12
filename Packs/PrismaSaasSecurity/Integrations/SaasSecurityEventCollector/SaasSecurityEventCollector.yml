@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: SaaS Security Event Collector
+  id: SaaS Security Event Collector - long-running
   version: -1
 configuration:
 - additionalinfo: 'The instance configuration URL based on the server location: <br/>US: https://api.aperture.paloaltonetworks.com<br/> EU: https://api.aperture-eu.paloaltonetworks.com<br/> APAC: https://api.aperture-apac.paloaltonetworks.com'
@@ -30,8 +30,8 @@ configuration:
   required: false
   type: 0
 description: Palo Alto Networks SaaS Security Event Collector integration for XSIAM.
-display: SaaS Security Event Collector
-name: SaaS Security Event Collector
+display: SaaS Security Event Collector - long-running
+name: SaaS Security Event Collector - long-running
 script:
   commands:
   - deprecated: false
