@@ -84,7 +84,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: IP information to be hunt on
+  description: IP value to be hunt on
   playbookInputQuery:
 - key: MD5
   value:
@@ -99,7 +99,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: MD5 file information to be hunt upon
+  description: MD5 file value to be hunt upon
   playbookInputQuery:
 - key: URL_or_Domain
   value:
@@ -119,7 +119,7 @@ inputs:
               simple: URL
       - operator: uniq
   required: false
-  description: URL or Domain information to be hunt upon
+  description: URL or Domain to be hunt upon
   playbookInputQuery:
 - key: FileSha1
   value:
@@ -135,7 +135,7 @@ inputs:
             iscontext: true
       - operator: uniq
   required: false
-  description: File SHA1 information to be hunt upon.
+  description: File SHA1 value to be hunt upon.
   playbookInputQuery:
 name: Cortex XDR - True Positive Incident Handling
 outputs: []
