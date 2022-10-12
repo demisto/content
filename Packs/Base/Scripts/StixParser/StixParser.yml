@@ -9,7 +9,7 @@ args:
   isArray: false
   name: entry_id
   required: false
-comment: Parse Stix files to Demisto indicators
+comment: Parse Stix files to Demisto indicators using `Upload STIX File` button.
 commonfields:
   id: StixParser
   version: -1

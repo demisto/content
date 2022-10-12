@@ -1,4 +1,7 @@
-Parse Stix files to Demisto indicators
+Parse Stix files to Demisto indicators using `Upload STIX File` button. This script is used for the button only. 
+This script is not supporting indicators relationships creation.
+In order to create indicators from STIX files using automation, please use `CreateIndicatorsFromSTIX`, this automation supports indicators relationships creation. 
+
 
 ## Script Data
 ---
