@@ -1548,11 +1548,9 @@ def main():     # pragma: no cover
     elif entry_id:
         file_path = demisto.getFilePath(entry_id).get('path')
         with open(file_path, 'r') as f:
-            content = f.read()
-    else:
-        content = indicator_txt
+            indicator_txt = f.read()
 
-    if stix2 := convert_to_json(content):
+    if stix2 := convert_to_json(indicator_txt):
         stix2_parser = STIX2Parser()
         observables = stix2_parser.parse_stix2(stix2)
     else:
