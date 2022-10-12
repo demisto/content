@@ -94,15 +94,12 @@ class Client(BaseClient):
 
 def parse_domain_date(domain_date: Union[List[str], str], date_format: str = '%Y-%m-%dT%H:%M:%S.000Z') -> Optional[str]:
     """Converts whois date format to an ISO8601 string
-
     Converts the HelloWorld domain WHOIS date (YYYY-mm-dd HH:MM:SS) format
     in a datetime. If a list is returned with multiple elements, takes only
     the first one.
-
     :type domain_date: ``Union[List[str],str]``
     :param severity:
         a string or list of strings with the format 'YYYY-mm-DD HH:MM:SS'
-
     :return: Parsed time in ISO8601 format
     :rtype: ``Optional[str]``
     """
@@ -431,9 +428,9 @@ def scan_result_command(client: Client, args: Dict[str, Any], api_key) -> List[C
 
                     ip_indicator = Common.IP(
                         ip=qid_data['data']['indicator'],
-                        asn=qid_data['data']['properties']['geo']['asn'],
-                        geo_country=qid_data['data']['properties']['geo']['country'],
-                        port=qid_data['data']['attributes']['port'],
+                        asn=qid_data['data']['properties']['geo'].get('asn'),
+                        geo_country=qid_data['data']['properties']['geo'].get('country'),
+                        port=qid_data['data']['attributes'].get('port') if qid_data['data']['attributes'] != [] else None,
                         dbot_score=dbot_score
                     )
 
@@ -459,8 +456,8 @@ def scan_result_command(client: Client, args: Dict[str, Any], api_key) -> List[C
 
                     domain_indicator = Common.Domain(
                         domain=qid_data['data']['indicator'],
-                        domain_status=qid_data['data']['properties']['whois']['status'],
-                        name_servers=qid_data['data']['properties']['whois']['nserver'],
+                        domain_status=qid_data['data']['properties']['whois'].get('status'),
+                        name_servers=qid_data['data']['properties']['whois'].get('nserver'),
                         dbot_score=dbot_score
                     )
 
