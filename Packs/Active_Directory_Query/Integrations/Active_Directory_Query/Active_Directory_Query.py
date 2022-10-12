@@ -547,9 +547,8 @@ def free_search(default_base_dn, page_size):
         page_size=page_size,
         page_cookie=page_cookie
     )
-
     ec = {} if context_output == 'no' else {'ActiveDirectory.Search(obj.dn == val.dn)': entries['flat'],
-                                            'ActiveDirectory(obj.SearchPageCookie)': {
+                                            'ActiveDirectory(true)': {
                                                 'SearchPageCookie': entries['page_cookie']}
                                             }
     demisto_entry = {
@@ -651,7 +650,7 @@ def search_users(default_base_dn, page_size):
             'ActiveDirectory.Users(obj.dn == val.dn)': entries['flat'],
             # 'backward compatability' with ADGetUser script
             'Account(obj.ID == val.ID)': accounts,
-            'ActiveDirectory(obj.UsersPageCookie)': {'UsersPageCookie': entries['page_cookie']}
+            'ActiveDirectory(true)': {'UsersPageCookie': entries['page_cookie']}
         }
     }
     demisto.results(demisto_entry)
@@ -775,7 +774,7 @@ def search_computers(default_base_dn, page_size):
                 'ActiveDirectory.Computers(obj.dn == val.dn)': entries['flat'],
                 # 'backward compatability' with ADGetComputer script
                 'Endpoint(obj.ID == val.ID)': endpoints,
-                'ActiveDirectory(obj.ComputersPageCookie)': {'ComputersPageCookie': entries['page_cookie']}
+                'ActiveDirectory(true)': {'ComputersPageCookie': entries['page_cookie']}
             },
             raw_response=entries['raw'],
         )
@@ -844,7 +843,7 @@ def search_group_members(default_base_dn, page_size):
                 'dn': group_dn,
                 'members': members
             },
-            'ActiveDirectory(obj.GroupsPageCookie)': {'GroupsPageCookie': entries['page_cookie']}
+            'ActiveDirectory(true)': {'GroupsPageCookie': entries['page_cookie']}
         }
     }
 
