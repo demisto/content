@@ -149,7 +149,7 @@ def create_comment_command(client: Client, env: str, args=None):
 
     try:
         comment = result["data"]["createComment"]
-    except KeyError:
+    except (KeyError, TypeError):
         raise ValueError(f"Failed to create comment: {result['errors'][0]['message']}")
 
     results = CommandResults(
@@ -189,7 +189,7 @@ def create_investigation_command(client: Client, env: str, args=None):
     try:
         investigation = result["data"]["createInvestigation"]
         investigation["url"] = generate_id_url(env, "investigations", investigation["id"])
-    except KeyError:
+    except (KeyError, TypeError):
         raise ValueError(f"Failed to create investigation: {result['errors'][0]['message']}")
 
     results = CommandResults(
@@ -403,7 +403,7 @@ def fetch_comment_command(client: Client, env: str, args=None):
 
     try:
         comment = result["data"]["comment"]
-    except KeyError:
+    except (KeyError, TypeError):
         raise ValueError("Could not locate comment by provided ID")
 
     results = CommandResults(
@@ -461,7 +461,7 @@ def fetch_comments_command(client: Client, env: str, args=None):
 
     try:
         comments = result["data"]["commentsByParent"]
-    except KeyError:
+    except (KeyError, TypeError):
         raise ValueError(f"Failed to fetch comments: {result['errors'][0]['message']}")
 
     results = CommandResults(
@@ -625,7 +625,7 @@ def fetch_investigation_alerts_command(client: Client, env: str, args=None):
 
     try:
         alerts = result["data"]["investigationAlerts"]["alerts"]
-    except KeyError:
+    except (KeyError, TypeError):
         alerts = []
 
     for alert in alerts:
@@ -724,7 +724,7 @@ def fetch_investigation_command(client: Client, env: str, args=None):
 
     try:
         investigations = [result["data"]["investigation"]] if investigation_id else result["data"]["allInvestigations"]
-    except KeyError:
+    except (KeyError, TypeError):
         investigations = []
 
     for investigation in investigations:
@@ -780,7 +780,7 @@ def fetch_playbook_execution_command(client: Client, env: str, args=None):
     try:
         execution = result['data']["playbookExecution"]
         execution["url"] = generate_id_url(env, "automations/playbook-executions", execution["id"])
-    except KeyError:
+    except (KeyError, TypeError):
         raise ValueError(f"Failed to fetch playbook execution: {result['errors'][0]['message']}")
 
     results = CommandResults(
@@ -824,8 +824,8 @@ def update_comment_command(client: Client, env: str, args=None):
 
     try:
         comment = result["data"]["updateComment"]
-    except KeyError:
-        raise ValueError(f"Failed to update comment: {result['errors'][0]['message']}")
+    except (KeyError, TypeError):
+        raise ValueError(f"Failed to locate/update comment: {result['errors'][0]['message']}")
 
     results = CommandResults(
         outputs_prefix="TaegisXDR.CommentUpdate",
@@ -875,8 +875,8 @@ def update_investigation_command(client: Client, env: str, args=None):
     try:
         investigation = result["data"]["updateInvestigation"]
         investigation["url"] = generate_id_url(env, "investigations", investigation["id"])
-    except KeyError:
-        raise ValueError(f"Failed to update investigation: {result['errors'][0]['message']}")
+    except (KeyError, TypeError):
+        raise ValueError(f"Failed to locate/update investigation: {result['errors'][0]['message']}")
 
     results = CommandResults(
         outputs_prefix="TaegisXDR.InvestigationUpdate",
