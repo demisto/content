@@ -1550,16 +1550,19 @@ def main():     # pragma: no cover
         with open(file_path, 'r') as f:
             content = f.read()
     else:
-        with tempfile.NamedTemporaryFile() as temp:
-            temp.write(str.encode(indicator_txt))
-            file_path = temp.name
         content = indicator_txt
 
     if stix2 := convert_to_json(content):
         stix2_parser = STIX2Parser()
         observables = stix2_parser.parse_stix2(stix2)
     else:
-        observables = parse_stix(file_path)
+        if 'file_path' not in locals():
+            with tempfile.NamedTemporaryFile() as temp:
+                temp.write(str.encode(indicator_txt))
+                temp.flush()
+                observables = parse_stix(temp.name)
+        else:
+            observables = parse_stix(file_path)
 
     json_data = json.dumps(observables)
     return_results(json_data)

@@ -15,11 +15,12 @@ def test_create_indicators_loop(mocker):
     Then:
         - Validate the indicators extract without errors.
     """
-    with open('test_data/ip-stix-ioc-results.json') as json_f:
+    with open('test_data/expected_result_example3.json') as json_f:
         indicators = json.load(json_f)
     mocker.patch.object(demisto, 'executeCommand', return_value=[None])
     results, errors = create_indicators_loop(indicators=indicators)
     assert errors == []
+    assert results  # todo check relationships
 
 
 def test_parse_indicators_using_stix_parser(mocker):
