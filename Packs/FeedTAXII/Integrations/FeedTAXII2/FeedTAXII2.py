@@ -123,7 +123,7 @@ def get_added_after(
 
 
 def get_indicators_command(
-    client, raw="false", limit=3000, added_after=None
+    client, raw="false", limit=10, added_after=None
 ):
     """
     Fetch indicators from TAXII 2 server

@@ -156,7 +156,7 @@ configuration:
     poll (http request). A single fetch is made of several taxii polls. Changing this
     setting can help speed up fetches, or fix issues on slower networks. Please note
     server restrictions may apply, overriding and limiting the "requested limit".
-  defaultvalue: '3000'
+  defaultvalue: '100'
   display: Max STIX Objects Per Poll
   hidden: false
   name: limit_per_request
@@ -211,7 +211,7 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '3000'
+      defaultValue: '10'
       description: Maximum number of indicators to fetch.
       isArray: false
       name: limit
