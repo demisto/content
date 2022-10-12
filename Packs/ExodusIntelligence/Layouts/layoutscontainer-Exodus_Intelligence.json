@@ -1,0 +1,273 @@
+{
+    "group": "indicator",
+    "id": "testing-exodus",
+    "indicatorsDetails": {
+        "tabs": [
+            {
+                "id": "default-main",
+                "name": "Info",
+                "sections": [
+                    {
+                        "h": 2,
+                        "i": "default-main-relationshipsTable",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Relationships",
+                        "static": false,
+                        "type": "relationshipsTable",
+                        "w": 1,
+                        "x": 2,
+                        "y": 5
+                    },
+                    {
+                        "h": 2,
+                        "i": "default-main-relatedIncidents",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 1,
+                        "x": 2,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "xiidentifier",
+                                "height": 22,
+                                "id": "839350f0-2219-11ed-91fe-eb6dfdbe8eb0",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xicve",
+                                "height": 22,
+                                "id": "ddcc32e0-2218-11ed-91fe-eb6dfdbe8eb0",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "xiscores",
+                                "height": 22,
+                                "id": "e1fd0b50-2218-11ed-91fe-eb6dfdbe8eb0",
+                                "index": 2,
+                                "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xicvss",
+                                "height": 22,
+                                "id": "edc36b00-2218-11ed-91fe-eb6dfdbe8eb0",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xiproduct",
+                                "height": 22,
+                                "id": "d1169bc0-2219-11ed-91fe-eb6dfdbe8eb0",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "xivendor",
+                                "height": 22,
+                                "id": "ca1cdf50-2219-11ed-91fe-eb6dfdbe8eb0",
+                                "index": 4,
+                                "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xipublishdate",
+                                "height": 22,
+                                "id": "f2deca80-2218-11ed-91fe-eb6dfdbe8eb0",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "ximodifiedtimestamp",
+                                "height": 22,
+                                "id": "b177f930-2219-11ed-91fe-eb6dfdbe8eb0",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Basic Information",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "default-main-actions",
+                        "items": [
+                            {
+                                "args": {},
+                                "endCol": 1,
+                                "height": 44,
+                                "index": 0,
+                                "name": "Enrich indicator",
+                                "scriptId": "Builtin|||enrichIndicators",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "height": 44,
+                                "index": 1,
+                                "name": "Expire indicator",
+                                "scriptId": "Builtin|||expireIndicators",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Actions",
+                        "static": false,
+                        "type": "actions",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "default-main-indicatorTimeline",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Timeline",
+                        "static": false,
+                        "type": "indicatorTimeline",
+                        "w": 1,
+                        "x": 2,
+                        "y": 1
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "default-main-publications",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "ximitigation",
+                                "height": 44,
+                                "id": "10c6e370-2219-11ed-91fe-eb6dfdbe8eb0",
+                                "index": 0,
+                                "listId": "default-main-publications",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xizdis",
+                                "height": 44,
+                                "id": "1cc1f240-221a-11ed-91fe-eb6dfdbe8eb0",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Publications",
+                        "static": false,
+                        "type": "publications",
+                        "w": 2,
+                        "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": false,
+                        "hideName": false,
+                        "i": "default-main-593892c0-2219-11ed-91fe-eb6dfdbe8eb0",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "xidescription",
+                                "height": 44,
+                                "id": "71511760-2219-11ed-91fe-eb6dfdbe8eb0",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xiports",
+                                "height": 22,
+                                "id": "1767dc10-221a-11ed-91fe-eb6dfdbe8eb0",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xitransport",
+                                "height": 22,
+                                "id": "1a90ba60-221a-11ed-91fe-eb6dfdbe8eb0",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "ximethods",
+                                "height": 22,
+                                "id": "27ddba10-221a-11ed-91fe-eb6dfdbe8eb0",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Description",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "name": "testing-exodus",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "description": ""
+}
