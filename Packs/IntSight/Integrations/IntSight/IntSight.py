@@ -763,7 +763,7 @@ def search_for_ioc():
     """
     Search for IOC by value
     """
-    response = mocked_ioc_by_val()  # ohttp_request('GET', 'public/v1/iocs/ioc-by-value', params=handle_filters(), json_response=True)
+    response = http_request('GET', f'public/v3/iocs/ioc-by-value?iocValue={demisto.getArg("value")}', json_response=True)
 
     if response:
         ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = ioc_to_readable(response)
@@ -1020,8 +1020,8 @@ def get_iocs():
     """
     Gets all IOCs with the given filters
     """
-    response = mocked_vs_iocs_resp().get(
-        'content')  # http_request('GET', 'public/v1/iocs/complete-iocs-list', params=handle_filters(), json_response=True)
+    response = http_request('GET', 'public/v3/iocs', params=handle_filters(), json_response=True)\
+    content = response.get('content')
     domains = []
     ip_infos = []
     url_infos = []
@@ -1030,7 +1030,7 @@ def get_iocs():
     iocs_context = []
     iocs_readable = []
 
-    for indicator in response:
+    for indicator in content:
         ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = ioc_to_readable(indicator)
         iocs_context.append(ioc_context)
         iocs_readable.append(ioc_readable)
