@@ -569,9 +569,9 @@ def list_activities_command(client: Client, args: dict):
     while has_next:
         activities_response_data = client.list_activities(url_suffix, request_data, timeout)
         list_activities.append(
-            activities_response_data.get('data') if activities_response_data.get('data') else [activities_response_data])
-        has_next = activities_response_data.get('data').get('hasNext', False)
-        request_data['filters'] = activities_response_data.get('data').get('nextQueryFilters')
+            activities_response_data.get('data') if activities_response_data.get('data') else activities_response_data)
+        has_next = activities_response_data.get('data', {}).get('hasNext', False)
+        request_data['filters'] = activities_response_data.get('data', {}).get('nextQueryFilters')
     activities = arrange_entities_data(list_activities)
     return create_ip_command_results(activities)
 
