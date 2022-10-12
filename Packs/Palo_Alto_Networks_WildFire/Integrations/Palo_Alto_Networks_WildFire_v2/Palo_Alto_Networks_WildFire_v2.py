@@ -1,6 +1,11 @@
 import shutil
 from typing import Callable, Tuple, Optional, List
 
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+import tarfile
+import io
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -1282,7 +1287,6 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
             outputs['maec_report'] = report
 
         except Exception as exc:
-            print(exc)
             demisto.error(f'Report MAEC Exception. Error: {exc}')
             human_readable = None
             outputs = None
@@ -1485,7 +1489,7 @@ def wildfire_get_sample(file_hash):
         get_report_uri,
         'POST',
         headers=DEFAULT_HEADERS,
-        params=PARMAS_DICT,
+        params=PARAMS_DICT,
         return_raw=True
     )
     return result
