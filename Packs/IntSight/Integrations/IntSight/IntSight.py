@@ -594,11 +594,101 @@ def ioc_to_readable(ioc_data):
     """
     Convert IOC to readable format
     """
+    reported_feeds = demisto.get(ioc_data, 'reportedFeeds', demisto.get(ioc_data, 'sources', [{}]))
+    single_reported_feed = reported_feeds[0] if isinstance(reported_feeds, list) else reported_feeds
+    ioc_context = {
+        'ID': demisto.get(ioc_data, '_id'),
+        'AccountID': demisto.get(ioc_data, 'AccountID'),
+        'Type': demisto.get(ioc_data, 'type'),
+        'Value': demisto.get(ioc_data, 'value'),
+        'FirstSeen': demisto.get(ioc_data, 'firstSeen'),
+        'LastSeen': demisto.get(ioc_data, 'lastSeen'),
+        'Domain': demisto.get(ioc_data, 'domain'),
+        'Status': demisto.get(ioc_data, 'status'),
+        'Severity': demisto.get(ioc_data, 'severity'),
+        'RelatedMalware': demisto.get(ioc_data, 'relatedMalware'),
+        'RelatedCampaigns': demisto.get(ioc_data, 'relatedCampaigns'),
+        'Geolocation': demisto.get(ioc_data, 'geolocation', demisto.get(ioc_data, 'Geolocation')),
+        'RelatedThreatActors': demisto.get(ioc_data, 'relatedThreatActors'),
+        'Sources': reported_feeds,
+        'SourceName': single_reported_feed.get('name'),  # bw compatibility
+        'SourceConfidence': single_reported_feed.get('confidenceLevel'),
+        'SourceID': single_reported_feed.get('id'),
+        'Tags': demisto.get(ioc_data, 'tags'),
+        'Flags': {'IsInAlexa': demisto.get(ioc_data, 'Flags.IsInAlexa')},
+        'Whitelisted': demisto.get(ioc_data, 'Whitelisted', demisto.get(ioc_data, 'whitelisted')),
+        'Enrichment': {
+            'Status': demisto.get(ioc_data, 'Enrichment.Status'),
+            'Data': demisto.get(ioc_data, 'Enrichment.Data'),
+            'Date': demisto.get(ioc_data, 'Enrichment.Data')  # Backwards compatibility issue
+        }
+    }
+    ioc_readable = {
+        'ID': demisto.get(ioc_data, '_id'),
+        'SourceID': demisto.get(ioc_context, 'SourceID'),
+        'AccountID': demisto.get(ioc_context, 'AccountID'),
+        'Type': demisto.get(ioc_context, 'Type'),
+        'Value': demisto.get(ioc_context, 'Value'),
+        'FirstSeen': demisto.get(ioc_context, 'FirstSeen'),
+        'LastSeen': demisto.get(ioc_context, 'LastSeen'),
+        'Domain': demisto.get(ioc_context, 'Domain'),
+        'Status': demisto.get(ioc_context, 'Status'),
+        'Severity': demisto.get(ioc_context, 'Severity'),
+        'Geolocation': demisto.get(ioc_context, 'Geolocation'),
+        'SourceName': demisto.get(ioc_context, 'SourceName'),
+        'SourceConfidence': demisto.get(ioc_context, 'SourceConfidence'),
+        'IsInAlexa': demisto.get(ioc_context, 'Flags.IsInAlexa'),
+        'Enrichment Status': demisto.get(ioc_context, 'Enrichment.Status'),
+        'Enrichment Data': demisto.get(ioc_context, 'Enrichment.Data')
+    }
+    dbot_score = {
+        'Indicator': ioc_context['Value'],
+        'Type': IOC_TYPE_TO_DBOT_TYPE[ioc_context['Type']],
+        'Vendor': 'IntSights',
+        'Score': translate_severity(ioc_readable['Severity'])
+    }
+    malicious_dict = {
+        'Vendor': 'IntSights',
+        'Description': 'IntSights severity level is High'
+    }
+    domain = {}
+    if ioc_context['Domain']:
+        domain['Name'] = ioc_context['Domain']
+        if translate_severity(ioc_readable['Severity']) == 3:
+            domain['Malicious'] = malicious_dict
+
+    ip_info = {}
+    if ioc_context['Type'] == 'IpAddresses':
+        ip_info['Address'] = ioc_context['Value']
+        if translate_severity(ioc_readable['Severity']) == 3:
+            ip_info['Malicious'] = malicious_dict
+
+    url_info = {}
+    if ioc_context['Type'] == 'Urls':
+        url_info['Data'] = ioc_context['Value']
+        if translate_severity(ioc_readable['Severity']) == 3:
+            url_info['Malicious'] = malicious_dict
+
+    hash_info = {}
+    if ioc_context['Type'] == 'Hashes':
+        hash_info['Name'] = ioc_context['Value']
+        hash_info[hash_identifier(ioc_context['Value'])] = ioc_context['Value']
+        if translate_severity(ioc_readable['Severity']) == 3:
+            hash_info['Malicious'] = malicious_dict
+
+    return ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info
+
+
+def ioc_to_readable_get_all(ioc_data):
+    """
+    Convert IOC to readable format
+    """
+    demisto.results(ioc_data)
     ioc_context = {
         'ID': demisto.get(ioc_data, '_id'),
         'SourceID': demisto.get(ioc_data, 'SourceID'),
         'AccountID': demisto.get(ioc_data, 'AccountID'),
-        'Type': demisto.get(ioc_data, 'Type'),
+        'Type': demisto.get(ioc_data, 'type'),
         'Value': demisto.get(ioc_data, 'Value'),
         'FirstSeen': demisto.get(ioc_data, 'FirstSeen'),
         'LastSeen': demisto.get(ioc_data, 'LastSeen'),
@@ -673,7 +763,7 @@ def search_for_ioc():
     """
     Search for IOC by value
     """
-    response = http_request('GET', 'public/v1/iocs/ioc-by-value', params=handle_filters(), json_response=True)
+    response = mocked_ioc_by_val()  # ohttp_request('GET', 'public/v1/iocs/ioc-by-value', params=handle_filters(), json_response=True)
 
     if response:
         ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = ioc_to_readable(response)
@@ -838,7 +928,8 @@ def request_for_ioc_enrichment():
     response = http_request('GET', request_url, json_response=True)
     status = response.get('Status')
     if status == 'Done':
-        ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = ioc_enrichment_to_readable(response)
+        ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = ioc_enrichment_to_readable(
+            response)
 
         demisto.results(
             {
@@ -929,7 +1020,8 @@ def get_iocs():
     """
     Gets all IOCs with the given filters
     """
-    response = http_request('GET', 'public/v1/iocs/complete-iocs-list', params=handle_filters(), json_response=True)
+    response = mocked_vs_iocs_resp().get(
+        'content')  # http_request('GET', 'public/v1/iocs/complete-iocs-list', params=handle_filters(), json_response=True)
     domains = []
     ip_infos = []
     url_infos = []
@@ -950,7 +1042,7 @@ def get_iocs():
 
     headers = ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen', 'LastSeen',
                'Domain', 'Status', 'Severity', 'SourceName', 'SourceConfidence',
-               'IsInAlexa', 'Enrichment Status', 'Enrichment Data']
+               'Geolocation', 'Enrichment Status', 'Enrichment Data']
     demisto.results(
         {
             'Type': entryTypes['note'],
@@ -1100,7 +1192,7 @@ def test_module():
     demisto.results('ok')
 
 
-def main():     # pragma: no cover
+def main():  # pragma: no cover
     try:
         if demisto.command() == 'test-module':
             test_module()
@@ -1154,6 +1246,94 @@ def main():     # pragma: no cover
             raise Exception('Unrecognized command: ' + demisto.command())
     except Exception as err:
         return_error(str(err))
+
+
+def mocked_vs_iocs_resp():
+    return {
+        "content": [
+            {
+                "value": "domain.com",
+                "type": "Domains",
+                "severity": "Low",
+                "status": "Active",
+                "score": 12,
+                "lastUpdateDate": "2021-01-14T06:30:22.645Z",
+                "lastSeen": "2021-01-14T06:30:22.645Z",
+                "firstSeen": "2021-01-14T06:30:22.645Z",
+                "relatedMalware": [],
+                "relatedCampaigns": [],
+                "relatedThreatActors": [],
+                "reportedFeeds": [
+                    {
+                        "id": "511fe4fe2e3024c2e5c00b42",
+                        "name": "SAC",
+                        "confidenceLevel": 2
+                    }
+                ],
+                "whitelisted": False,
+                "tags": []
+            },
+            {
+                "value": "68.65.120.214",
+                "type": "IpAddresses",
+                "severity": "Low",
+                "score": 12,
+                "lastUpdateDate": "2021-01-14T06:30:22.718Z",
+                "lastSeen": "2021-01-14T06:30:22.718Z",
+                "firstSeen": "2021-01-14T06:30:22.718Z",
+                "geolocation": "US",
+                "relatedMalware": [],
+                "relatedCampaigns": [],
+                "relatedThreatActors": [],
+                "reportedFeeds": [
+                    {
+                        "id": "587cc90ac294f907cbe97e19",
+                        "name": "Cyber Crime Tracker",
+                        "confidenceLevel": 1
+                    }
+                ],
+                "whitelisted": False,
+                "tags": [
+                    "Important"
+                ],
+            }
+        ],
+        "nextOffset": "2021-01-14T06:53:49.753Z"
+    }
+
+
+def mocked_ioc_by_val():
+    return {
+        "value": "example.com",
+        "type": "Domains",
+        "severity": "High",
+        "status": "Active",
+        "score": 100,
+        "Whitelisted": "false",
+        "firstSeen": "2020-01-01T20:01:27.344Z",
+        "lastSeen": "2020-01-30T16:18:51.148Z",
+        "LastUpdate": "2020-02-21T23:00:51.268Z",
+        "Geolocation": "US",
+        "sources": [
+            {
+                "name": "AlienVault OTX",
+                "confidenceLevel": 3
+            }
+        ],
+        "tags": [
+            "MyTag_1"
+        ],
+        "relatedMalwares": [
+            "doppeldridex",
+            "dridex"
+        ],
+        "relatedCampaigns": [
+            "SolarWinds"
+        ],
+        "relatedThreatActors": [
+            "doppelspider"
+        ]
+    }
 
 
 if __name__ in ('__main__', 'builtin', 'builtins'):

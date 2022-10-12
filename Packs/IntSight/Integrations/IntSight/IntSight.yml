@@ -1,8 +1,8 @@
 commonfields:
-  id: IntSights
+  id: IntSights2
   version: -1
-name: IntSights
-display: IntSights
+name: IntSights2
+display: IntSights2
 category: Data Enrichment & Threat Intelligence
 description: Use IntSights to manage and mitigate threats.
 configuration:
