@@ -20,7 +20,7 @@ def test_create_indicators_loop(mocker):
     mocker.patch.object(demisto, 'executeCommand', return_value=[None])
     results, errors = create_indicators_loop(indicators=indicators)
     assert errors == []
-    assert results  # todo check relationships
+    assert results.readable_output == 'Create Indicators From STIX: 2 indicators were created.'
 
 
 def test_parse_indicators_using_stix_parser(mocker):
@@ -34,9 +34,9 @@ def test_parse_indicators_using_stix_parser(mocker):
     Then:
         - Validate the indicators extract without errors.
     """
-    with open('test_data/ip-stix-ioc-results.json') as json_f:
-        expected_res = json.load(json_f)
+    with open('test_data/expected_result_example3.json') as json_f:
+        expected_res = json_f.read()
     mocker.patch.object(demisto, 'executeCommand', return_value=[{'Contents': expected_res, 'Type': 1}])
     mocker.patch('CommonServerPython.is_error', False)
-    indicators = parse_indicators_using_stix_parser(expected_res)
-    assert expected_res == indicators
+    indicators = parse_indicators_using_stix_parser('entry_id')
+    assert json.loads(expected_res) == indicators
