@@ -4,6 +4,7 @@ import base64
 
 MULTIPLIER = 4
 PADDING_CHAR = "="
+HUMAN_READABLE_EMPTY_STRING = "The decoded value is empty (empty string)"
 
 
 def add_padding(value: str) -> str:
@@ -23,19 +24,19 @@ def add_padding(value: str) -> str:
     return f"{value}{PADDING_CHAR*padding_length}"
 
 
-def decode(value: str):
+def decode(value: str) -> CommandResults:
     decoded_bytes = base64.urlsafe_b64decode(add_padding(value))
     res = decoded_bytes.decode(errors="ignore")
 
     outputs = {"Base64": {"originalValue": value, "decoded": res}}
-
-    return res, outputs
+    human_readable = res if res else HUMAN_READABLE_EMPTY_STRING
+    return CommandResults(outputs=outputs, readable_output=human_readable)
 
 
 def main():  # pragma: no cover
     value = demisto.args().get("value")
     try:
-        return_outputs(*decode(value))
+        return_results(decode(value))
     except Exception as e:
         return_error(f"Failed to execute command." f"\nError:\n{str(e)}")
 
