@@ -198,10 +198,13 @@ check_branch(){
 #   None
 # Arguments:
 #   $1: Option
+#   $2: README
+#   $3: Release Note
+#   $4: Pack metadata
 #######################################
 commit(){
 
-	git add .
+	git add "$2" "$3" "$4"
 	git commit -m "$pack_name adoption $1" -q
 
 }
@@ -545,7 +548,7 @@ adopt() {
 	add_msg_to_readme "$readme" "$message"
 	echo "✓ Adoption $option message added to README.md"
 
-	commit "$option"
+	commit "$option" "$readme" "$release_note" "$pack_metadata"
 	echo "✓ Changes committed."
 
 	pr_url=$(push "$branch")
