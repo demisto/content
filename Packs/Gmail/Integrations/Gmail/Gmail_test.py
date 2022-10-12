@@ -1,5 +1,4 @@
 import pytest
-from freezegun import freeze_time
 from test_data import input_data
 
 MOCK_MAIL_NO_LABELS = {
