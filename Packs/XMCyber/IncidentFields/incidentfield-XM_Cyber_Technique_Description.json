@@ -1,11 +1,12 @@
 {
-    "id": "incident_avgcomplexitylevel",
+    "id": "incident_xmcyberdescription",
     "version": -1,
-    "modified": "2022-09-12T05:56:19.862404354Z",
-    "name": "Avg. complexity level",
+    "fromVersion": "6.0.0",
+    "modified": "2020-10-25T11:09:49.214226268Z",
+    "name": "XM Cyber description",
     "ownerOnly": false,
-    "cliName": "avgcomplexitylevel",
-    "type": "shortText",
+    "cliName": "xmcyberdescription",
+    "type": "longText",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -17,16 +18,13 @@
     "content": true,
     "group": 0,
     "hidden": false,
-    "openEnded": false,
     "associatedTypes": [
-        "XM Cyber Critical Asset",
-        "XM Cyber Choke Point"
+        "XM Cyber Technique"
     ],
     "associatedToAll": false,
     "unmapped": false,
     "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
-    "threshold": 72,
-    "fromVersion": "6.5.0"
+    "threshold": 72
 }

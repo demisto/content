@@ -86,7 +86,7 @@ tasks:
       - "5"
     scriptarguments:
       value:
-        simple: ${incident.labels.entityId}
+        simple: ${inputs.hostname}
     separatecontext: false
     conditions:
     - label: "yes"
@@ -95,7 +95,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.Hostname
+                root: inputs.hostname
             iscontext: true
           right:
             value: {}
@@ -199,7 +199,7 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      entityId:
+      hostname:
         simple: ${inputs.Hostname}
     separatecontext: false
     continueonerrortype: ""
@@ -226,13 +226,13 @@ tasks:
     - incidentfield: Affected Entities
       output:
         simple: ${XMCyber.Entity.affectedEntities}
-    - incidentfield: Avg. complexity score
+    - incidentfield: XM Cyber avg. complexity score
       output:
         simple: ${XMCyber.Entity.averageComplexity}
     - incidentfield: Critical Assets At Risk
       output:
         simple: ${XMCyber.Entity.criticalAssetsAtRisk}
-    - incidentfield: Avg. complexity level
+    - incidentfield: XM Cyber avg. complexity level
       output:
         simple: ${XMCyber.Entity.averageComplexityLevel}
     - incidentfield: Entity type

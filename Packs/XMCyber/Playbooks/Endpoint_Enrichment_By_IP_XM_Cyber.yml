@@ -186,13 +186,13 @@ tasks:
     - incidentfield: Affected Entities
       output:
         simple: ${XMCyber.Entity.affectedEntities}
-    - incidentfield: Avg. complexity score
+    - incidentfield: XM Cyber avg. complexity score
       output:
         simple: ${XMCyber.Entity.averageComplexity}
     - incidentfield: Critical Assets At Risk
       output:
         simple: ${XMCyber.Entity.criticalAssetsAtRisk}
-    - incidentfield: Avg. complexity level
+    - incidentfield: XM Cyber avg. complexity level
       output:
         simple: ${XMCyber.Entity.averageComplexityLevel}
     - incidentfield: Entity type

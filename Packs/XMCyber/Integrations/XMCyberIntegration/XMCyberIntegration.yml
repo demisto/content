@@ -256,9 +256,9 @@ script:
       type: String
   - arguments:
     - default: true
-      description: List of entityIds.
+      description: List of hostnames.
       isArray: true
-      name: entityId
+      name: hostname
       required: false
       secret: false
     deprecated: false

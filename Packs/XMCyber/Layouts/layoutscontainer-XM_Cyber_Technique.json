@@ -356,7 +356,7 @@
 							{
 								"dropEffect": "move",
 								"endCol": 4,
-								"fieldId": "techniquedescription",
+								"fieldId": "xmcyberdescription",
 								"height": 22,
 								"id": "b3efd8d0-1768-11eb-ae90-a7556e35a3ad",
 								"index": 0,
@@ -394,7 +394,7 @@
 							{
 								"dropEffect": "move",
 								"endCol": 4,
-								"fieldId": "criticalassetstrend",
+								"fieldId": "xmcybercriticalassetstrend",
 								"height": 22,
 								"id": "2f1e4520-19b5-11eb-8dad-55a28fb83de0",
 								"index": 3,
@@ -423,10 +423,10 @@
 							{
 								"dropEffect": "move",
 								"endCol": 4,
-								"fieldId": "mitre",
+								"fieldId": "xmcybermitre",
 								"height": 106,
 								"id": "77457f80-17a8-11eb-ba78-db44622b4844",
-								"index": 5,
+								"index": 6,
 								"listId": "uxtwwfoghk-ab31b010-1768-11eb-ae90-a7556e35a3ad",
 								"sectionItemType": "field",
 								"startCol": 0
@@ -434,33 +434,13 @@
 							{
 								"dropEffect": "move",
 								"endCol": 4,
-								"fieldId": "advices",
+								"fieldId": "xmcyberadvices",
 								"height": 106,
 								"id": "4f9be4a0-31e2-11ed-996f-7bcf12d73325",
-								"index": 6,
+								"index": 7,
 								"listId": "caseinfoid-uxtwwfoghk-ab31b010-1768-11eb-ae90-a7556e35a3ad",
 								"sectionItemType": "field",
 								"startCol": 0
-							},
-							{
-								"endCol": 4,
-								"fieldId": "techniqueadvices",
-								"height": 22,
-								"id": "5526f620-1827-11eb-8e7e-2b1d7ad27ca8",
-								"index": 7,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 4,
-								"fieldId": "techniquechokepoints",
-								"height": 22,
-								"id": "af280700-17a9-11eb-ba78-db44622b4844",
-								"index": 0,
-								"listId": "uxtwwfoghk-ab31b010-1768-11eb-ae90-a7556e35a3ad",
-								"sectionItemType": "field",
-								"startCol": 2
 							}
 						],
 						"maxH": null,

@@ -489,7 +489,7 @@
 							{
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "criticalasset",
+								"fieldId": "entityisacriticalasset",
 								"height": 22,
 								"id": "89960d20-1317-11eb-8677-ed095e9aa5f3",
 								"index": 4,
@@ -499,7 +499,7 @@
 							},
 							{
 								"endCol": 4,
-								"fieldId": "avgcomplexitylevel",
+								"fieldId": "xmcyberavgcomplexitylevel",
 								"height": 22,
 								"id": "edbe5870-325f-11ed-9f3b-1919f4cc0d55",
 								"index": 0,
@@ -508,7 +508,7 @@
 							},
 							{
 								"endCol": 4,
-								"fieldId": "avgcomplexityscore",
+								"fieldId": "xmcyberavgcomplexityscore",
 								"height": 22,
 								"id": "eeb4ed70-325f-11ed-9f3b-1919f4cc0d55",
 								"index": 1,

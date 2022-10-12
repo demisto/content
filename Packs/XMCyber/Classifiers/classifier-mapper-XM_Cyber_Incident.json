@@ -10,14 +10,14 @@
 				"Agent ID": {
 					"simple": "entityId"
 				},
-				"Avg. complexity level": {
+				"XM Cyber avg. complexity level": {
 					"complex": {
 						"filters": [],
 						"root": "level",
 						"transformers": []
 					}
 				},
-				"Avg. complexity score": {
+				"XM Cyber avg. complexity score": {
 					"complex": {
 						"filters": [],
 						"root": "value",
@@ -89,14 +89,14 @@
 				"Agent ID": {
 					"simple": "entityId"
 				},
-				"Avg. complexity level": {
+				"XM Cyber avg. complexity level": {
 					"complex": {
 						"filters": [],
 						"root": "level",
 						"transformers": []
 					}
 				},
-				"Avg. complexity score": {
+				"XM Cyber avg. complexity score": {
 					"complex": {
 						"filters": [],
 						"root": "value",
@@ -165,21 +165,21 @@
 		"XM Cyber Security Score": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Current security score": {
+				"XM Cyber current security score": {
 					"complex": {
 						"filters": [],
 						"root": "current_score",
 						"transformers": []
 					}
 				},
-				"Security score grade": {
+				"XM Cyber security score grade": {
 					"complex": {
 						"filters": [],
 						"root": "current_grade",
 						"transformers": []
 					}
 				},
-				"Security score trend": {
+				"XM Cyber security score trend": {
 					"complex": {
 						"filters": [],
 						"root": "trend",
@@ -205,7 +205,7 @@
 		"XM Cyber Technique": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Advices": {
+				"XM Cyber advices": {
 					"complex": {
 						"filters": [],
 						"root": "advices",
@@ -218,14 +218,14 @@
 				"Critical assets at risk": {
 					"simple": "criticalAssets"
 				},
-				"Critical assets trend": {
+				"XM Cyber critical assets trend": {
 					"complex": {
 						"filters": [],
 						"root": "criticalAssets_trend",
 						"transformers": []
 					}
 				},
-				"Description": {
+				"XM Cyber description": {
 					"complex": {
 						"filters": [],
 						"root": "description",
@@ -235,7 +235,7 @@
 				"Event Type": {
 					"simple": "type"
 				},
-				"MITRE": {
+				"XM Cyber MITRE": {
 					"complex": {
 						"filters": [],
 						"root": "mitre",
