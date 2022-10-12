@@ -769,7 +769,8 @@ script:
         name: vulnerability_id
         required: true
         secret: false
-      - default: false
+      - auto: PREDEFINED
+        default: false
         description: The type of the exception scope.
         isArray: false
         name: scope_type
@@ -781,7 +782,8 @@ script:
           - Instance
         required: true
         secret: false
-      - default: false
+      - auto: PREDEFINED
+        default: false
         description: The state of the vulnerability exception.
         isArray: false
         name: state
@@ -798,7 +800,8 @@ script:
         name: comment
         required: false
         secret: false
-      - default: false
+      - auto: PREDEFINED
+        default: false
         description: The reason the vulnerability exception was submitted.
         isArray: false
         name: reason
@@ -1179,7 +1182,8 @@ script:
       name: site_name
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: 'True'
       description: Whether to enable the scheduled scan after creation or not.
       isArray: false
@@ -1189,7 +1193,8 @@ script:
         - 'False'
       required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: The desired behavior of a repeating scheduled scan when the previous scan was paused
         due to reaching its maximum duration.
       isArray: false
@@ -1923,7 +1928,8 @@ script:
         name: schedule_id
         required: false
         secret: false
-      - default: false
+      - auto: PREDEFINED
+        default: false
         defaultValue: 'True'
         description: A flag indicating whether the scheduled scan is enabled or not.
         isArray: false
@@ -1933,7 +1939,8 @@ script:
           - 'False'
         required: true
         secret: false
-      - default: false
+      - auto: PREDEFINED
+        default: false
         description: The desired behavior of a repeating scheduled scan when the previous scan was paused
           due to reaching its maximum duration.
         isArray: false
@@ -2052,7 +2059,8 @@ script:
       name: expiration
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: A status to update the vulnerability exception to. Required if `expiration` is not used.
       isArray: false
       name: status
@@ -2071,7 +2079,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.7.35188
 fromversion: 5.0.0
 tests:
 - nexpose_test

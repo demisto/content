@@ -3,6 +3,7 @@ import urllib3
 
 import demistomock as demisto
 
+from copy import deepcopy
 from datetime import datetime
 from enum import Enum
 from time import strptime, struct_time
@@ -18,71 +19,6 @@ REPORT_DOWNLOAD_WAIT_TIME = 60  # Time in seconds to wait before downloading a r
 VENDOR_NAME = "Rapid7 Nexpose"  # TODO: Check if correct
 
 urllib3.disable_warnings()  # Disable insecure warnings
-
-
-class RepeatBehaviour(Enum):
-    """An Enum of possible repeat behaviours for scheduled scans to use when repeating a scan that was paused
-    due to reaching its maximum duration."""
-    RESTART_SCAN = 1
-    RESUME_SCAN = 2
-
-
-class RepeatFrequencyType(Enum):
-    """An Enum of possible repeat frequency for scheduled scans."""
-    HOUR = 1
-    DAY = 2
-    WEEK = 3
-    DATE_OF_MONTH = 4
-
-
-class ReportFileFormat(Enum):
-    """An Enum of possible file formats to use for reports."""
-    PDF = 1
-    RTF = 2
-    XML = 3
-    HTML = 4
-    Text = 5
-
-
-class ScanStatus(Enum):
-    """An Enum of possible scan status values."""
-    PAUSE = 1
-    RESUME = 2
-    STOP = 3
-
-
-class SNMPv3AuthenticationType(Enum):
-    """An Enum of possible authentication type values for shared credentials."""
-    NO_AUTHENTICATION = 1
-    MD5 = 2
-    SHA = 3
-
-
-class SSHElevationType(Enum):
-    """An Enum of possible permission elevation values for SSH credentials."""
-    NONE = 1
-    SUDO = 2
-    SUDOSU = 3
-    SU = 4
-    PBRUN = 5
-    PRIVILEGED_EXEC = 6
-
-
-class SNMPv3PrivacyType(Enum):
-    """An Enum of possible privacy type values for SNMPv3P credentials."""
-    NO_PRIVACY = 1
-    DES = 2
-    AES_128 = 3
-    AES_192 = 4
-    AES_192_WITH_3_DES_KEY_EXTENSION = 5
-    AES_256 = 6
-    AES_265_WITH_3_DES_KEY_EXTENSION = 7
-
-
-class SharedCredentialSiteAssignment(Enum):
-    """An Enum of possible site assignment values for shared credentials."""
-    ALL_SITES = 1
-    SPECIFIC_SITES = 2
 
 
 class CredentialService(Enum):
@@ -109,6 +45,43 @@ class CredentialService(Enum):
     TELNET = 20
 
 
+class ReportFileFormat(Enum):
+    """An Enum of possible file formats to use for reports."""
+    PDF = 1
+    RTF = 2
+    XML = 3
+    HTML = 4
+    Text = 5
+
+
+class RepeatBehaviour(Enum):
+    """An Enum of possible repeat behaviours for scheduled scans to use when repeating a scan that was paused
+    due to reaching its maximum duration."""
+    RESTART_SCAN = 1
+    RESUME_SCAN = 2
+
+
+class RepeatFrequencyType(Enum):
+    """An Enum of possible repeat frequency for scheduled scans."""
+    HOUR = 1
+    DAY = 2
+    WEEK = 3
+    DATE_OF_MONTH = 4
+
+
+class ScanStatus(Enum):
+    """An Enum of possible scan status values."""
+    PAUSE = 1
+    RESUME = 2
+    STOP = 3
+
+
+class SharedCredentialSiteAssignment(Enum):
+    """An Enum of possible site assignment values for shared credentials."""
+    ALL_SITES = 1
+    SPECIFIC_SITES = 2
+
+
 class SiteImportance(Enum):
     """An Enum of possible site importance values."""
     VERY_LOW = 1
@@ -116,6 +89,52 @@ class SiteImportance(Enum):
     NORMAL = 3
     HIGH = 4
     VERY_HIGH = 5
+
+
+class SNMPv3AuthenticationType(Enum):
+    """An Enum of possible authentication type values for shared credentials."""
+    NO_AUTHENTICATION = 1
+    MD5 = 2
+    SHA = 3
+
+
+class SNMPv3PrivacyType(Enum):
+    """An Enum of possible privacy type values for SNMPv3P credentials."""
+    NO_PRIVACY = 1
+    DES = 2
+    AES_128 = 3
+    AES_192 = 4
+    AES_192_WITH_3_DES_KEY_EXTENSION = 5
+    AES_256 = 6
+    AES_265_WITH_3_DES_KEY_EXTENSION = 7
+
+
+class SSHElevationType(Enum):
+    """An Enum of possible permission elevation values for SSH credentials."""
+    NONE = 1
+    SUDO = 2
+    SUDOSU = 3
+    SU = 4
+    PBRUN = 5
+    PRIVILEGED_EXEC = 6
+
+
+class VulnerabilityExceptionReason(Enum):
+    """An Enum of possible vulnerability exception reason values."""
+    FALSE_POSITIVE = 1
+    COMPENSATING_CONTROL = 2
+    ACCEPTED_USE = 3
+    ACCEPTED_RISK = 4
+    OTHER = 5
+
+
+class VulnerabilityExceptionScopeType(Enum):
+    """An Enum of possible vulnerability exception scope type values."""
+    GLOBAL = 1
+    SITE = 2
+    ASSET = 3
+    ASSET_GROUP = 4
+    INSTANCE = 5
 
 
 class VulnerabilityExceptionState(Enum):
@@ -131,24 +150,6 @@ class VulnerabilityExceptionStatus(Enum):
     RECALL = 1
     APPROVE = 2
     REJECT = 3
-
-
-class VulnerabilityExceptionScopeType(Enum):
-    """An Enum of possible vulnerability exception scope type values."""
-    GLOBAL = 1
-    SITE = 2
-    ASSET = 3
-    ASSET_GROUP = 4
-    INSTANCE = 5
-
-
-class VulnerabilityExceptionReason(Enum):
-    """An Enum of possible vulnerability exception reason values."""
-    FALSE_POSITIVE = 1
-    COMPENSATING_CONTROL = 2
-    ACCEPTED_USE = 3
-    ACCEPTED_RISK = 4
-    OTHER = 5
 
 
 class InvalidSiteNameException(DemistoException):
@@ -262,7 +263,7 @@ class Client(BaseClient):
         )
 
     def create_report_config(self, scope: dict[str, Any], template_id: str,
-                             report_name: str, report_format: str) -> dict:
+                             report_name: str, report_format: ReportFileFormat) -> dict:
         """
         | Create a new report configuration.
         |
@@ -272,7 +273,7 @@ class Client(BaseClient):
             scope (dict[str, Any]): Scope of the report, see Nexpose's documentation for more details.
             template_id (str): ID of report template to use.
             report_name (str): Name for the report that will be generated.
-            report_format (str): Format of the report that will be generated.
+            report_format (ReportFileFormat): Format of the report that will be generated.
 
         Returns:
             dict: API response with information about the newly created report configuration.
@@ -281,7 +282,7 @@ class Client(BaseClient):
             "scope": scope,
             "template": template_id,
             "name": report_name,
-            "format": report_format
+            "format": report_format.name.lower()
         }
 
         return self._http_request(
@@ -503,8 +504,8 @@ class Client(BaseClient):
                                   included_asset_groups: Optional[list[int]] = None,
                                   included_targets: Optional[list[str]] = None,
                                   duration: Optional[str] = None, enabled: bool = None,
-                                  repeat_behaviour: Optional[str] = None,
-                                  frequency: Optional[str] = None,
+                                  repeat_behaviour: Optional[RepeatBehaviour] = None,
+                                  frequency: Optional[RepeatFrequencyType] = None,
                                   interval: Optional[int] = None, date_of_month: Optional[int] = None,
                                   scan_name: Optional[str] = None, scan_template_id: Optional[str] = None) -> dict:
         """
@@ -525,14 +526,12 @@ class Client(BaseClient):
             duration (str, optional): An ISO 8601 formatted duration string that Specifies the maximum duration
                 the scheduled scan is allowed to run.
             enabled (bool): A flag indicating whether the scan schedule is enabled.
-            repeat_behaviour (str, optional): The desired behavior of a repeating scheduled scan
+            repeat_behaviour (RepeatBehaviour, optional): The desired behavior of a repeating scheduled scan
                 when the previous scan was paused due to reaching its maximum duration.
-                Can be one of: "restart-scan", "resume-scan".
-            frequency (str, optional): Frequency for the schedule to repeat.
-                Can be one of: "hour", "day", "week", "date-of-month", "day-of-month".
-                Required if using other repeaet settings.
+            frequency (RepeatFrequencyType, optional): Frequency for the schedule to repeat.
+                Required if using other repeat settings.
             interval (int, optional): The interval time the schedule should repeat.
-                Required if using other repeaet settings.
+                Required if using other repeat settings.
             date_of_month(int, optional): Specifies the schedule repeat day of the interval month.
                 Required and used only if frequency is set to "DATE_OF_MONTH".
             scan_name (str, optional): A unique user-defined name for the scan launched by the schedule.
@@ -560,11 +559,11 @@ class Client(BaseClient):
             if interval is None:
                 raise ValueError("'interval' parameter must be set if frequency is used.")
 
-            if frequency == "date_of_month" and not date_of_month:
+            if frequency == RepeatFrequencyType.DATE_OF_MONTH and not date_of_month:
                 raise ValueError("'date_of_month' parameter must be set if frequency is set to 'Date of month'.")
 
             repeat = find_valid_params(
-                every=frequency,
+                every=frequency.name.lower().replace("_", "-"),
                 interval=interval,
                 dateOfMonth=date_of_month,
             )
@@ -573,7 +572,7 @@ class Client(BaseClient):
             assets=assets,
             duration=duration,
             enabled=enabled,
-            onScanRepeat=repeat_behaviour,
+            onScanRepeat=repeat_behaviour.name.lower().replace("_", "-"),
             repeat=repeat,
             scanName=scan_name,
             scanTemplateId=scan_template_id,
@@ -585,10 +584,10 @@ class Client(BaseClient):
             method="POST",
             json_data=post_data,
             resp_type="json",
-        )["id"]
+        )
 
     def create_site(self, name: str, description: Optional[str] = None, assets: Optional[list[str]] = None,
-                    site_importance: Optional[str] = None, template_id: Optional[str] = None) -> dict:
+                    site_importance: Optional[SiteImportance] = None, template_id: Optional[str] = None) -> dict:
         """
         | Create a new site.
         |
@@ -598,8 +597,7 @@ class Client(BaseClient):
             name (str): Name of the site. Must be unique.
             description (str | None, optional): Description of the site. Defaults to None.
             assets (list[str] | None, optional): List of asset IDs to be included in site scans. Defaults to None.
-            site_importance (str | None, optional): Importance of the site. Can be either:
-                "very_low", "low", "normal", "high" or "very_high".
+            site_importance (SiteImportance | None, optional): Importance of the site.
                 Defaults to None (results in using API's default - "normal").
             template_id (str | None, optional): The identifier of a scan template.
                 Defaults to None (results in using default scan template).
@@ -607,10 +605,12 @@ class Client(BaseClient):
         Returns:
             dict: API response with information about the newly created site.
         """
+        importance: Optional[str] = site_importance.name.lower() if site_importance else None
+
         post_data = find_valid_params(
             name=name,
             description=description,
-            importance=site_importance,
+            importance=importance,
             template_id=template_id,
             scanTemplateId=template_id,
         )
@@ -629,7 +629,8 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def create_vulnerability_exception(self, vulnerability_id: str, scope_type: str, state: str, reason: str,
+    def create_vulnerability_exception(self, vulnerability_id: str, scope_type: VulnerabilityExceptionScopeType,
+                                       state: VulnerabilityExceptionState, reason: VulnerabilityExceptionReason,
                                        expires: Optional[str] = None, comment: Optional[str] = None):
         """
         | Create a new vulnerability exception.
@@ -639,11 +640,9 @@ class Client(BaseClient):
 
         Args:
             vulnerability_id (str): ID of the vulnerability to create an exception for.
-            scope_type (str): The type of the exception scope.
-                Can be one of: "Global", "Site", "Asset", "Asset Group", and "Instance".
-            state (str): The state of the vulnerability exception.
-                Can be one of: "Deleted", "Expired", "Approved", "Rejected", and "Under Review".
-            reason (str): The reason the vulnerability exception was submitted.
+            scope_type (VulnerabilityExceptionScopeType): The type of the exception scope.
+            state (VulnerabilityExceptionState): The state of the vulnerability exception.
+            reason (VulnerabilityExceptionReason): The reason the vulnerability exception was submitted.
                 Can be one of: "False Positive", "Compensating Control", "Acceptable Use",
                 "Acceptable Risk", and "Other".
             expires (str | None, optional): The date and time the vulnerability exception is set to expire.
@@ -654,11 +653,11 @@ class Client(BaseClient):
         """
         scope_obj = find_valid_params(
             id=vulnerability_id,
-            type=scope_type,
+            type=scope_type.name.lower().replace("_", " ").title(),
         )
 
         submit_obj = find_valid_params(
-            reason=reason,
+            reason=reason.name.lower().replace("_", " ").title(),
             comment=comment,
         )
 
@@ -669,7 +668,7 @@ class Client(BaseClient):
         post_data = find_valid_params(
             expires=expires,
             scope=scope_obj,
-            state=state,
+            state=state.name.lower().replace("_", " ").title(),
             submit=submit_obj,
         )
 
@@ -1370,8 +1369,8 @@ class Client(BaseClient):
                                   included_asset_groups: Optional[list[int]] = None,
                                   included_targets: Optional[list[str]] = None,
                                   duration: Optional[str] = None, enabled: bool = None,
-                                  repeat_behaviour: Optional[str] = None,
-                                  frequency: Optional[str] = None,
+                                  repeat_behaviour: Optional[RepeatBehaviour] = None,
+                                  frequency: Optional[RepeatFrequencyType] = None,
                                   interval: Optional[int] = None, date_of_month: Optional[int] = None,
                                   scan_name: Optional[str] = None, scan_template_id: Optional[str] = None) -> dict:
         """
@@ -1393,14 +1392,12 @@ class Client(BaseClient):
             duration (str, optional): An ISO 8601 formatted duration string that Specifies the maximum duration
                 the scheduled scan is allowed to run.
             enabled (bool): A flag indicating whether the scan schedule is enabled.
-            repeat_behaviour (str, optional): The desired behavior of a repeating scheduled scan
+            repeat_behaviour (RepeatBehaviour, optional): The desired behavior of a repeating scheduled scan
                 when the previous scan was paused due to reaching its maximum duration.
-                Can be one of: "restart-scan", "resume-scan".
-            frequency (str, optional): Frequency for the schedule to repeat.
-                Can be one of: "hour", "day", "week", "date-of-month", "day-of-month".
-                Required if using other repeaet settings.
+            frequency (RepeatFrequencyType, optional): Frequency for the schedule to repeat.
+                Required if using other repeat settings.
             interval (int, optional): The interval time the schedule should repeat.
-                Required if using other repeaet settings.
+                Required if using other repeat settings.
             date_of_month(int, optional): Specifies the schedule repeat day of the interval month.
                 Required and used only if frequency is set to `DATE_OF_MONTH`.
             scan_name (str, optional): A unique user-defined name for the scan launched by the schedule.
@@ -1428,11 +1425,11 @@ class Client(BaseClient):
             if not interval:
                 raise ValueError("'interval' parameter must be set if frequency is used.")
 
-            if frequency == "date_of_month" and not date_of_month:
-                raise ValueError("'date_of_month' parameter must be set if frequency is set to 'Date of month'.")
+            if frequency == RepeatFrequencyType.DATE_OF_MONTH and not date_of_month:
+                raise ValueError("'date-of-month' parameter must be set if frequency is set to 'Date of month'.")
 
             repeat = find_valid_params(
-                every=frequency,
+                every=frequency.name.lower().replace("_", "-"),
                 interval=interval,
                 dateOfMonth=date_of_month,
             )
@@ -1441,7 +1438,7 @@ class Client(BaseClient):
             assets=assets,
             duration=duration,
             enabled=enabled,
-            onScanRepeat=repeat_behaviour,
+            onScanRepeat=repeat_behaviour.name.lower().replace("_", "-"),
             repeat=repeat,
             scanName=scan_name,
             scanTemplateId=scan_template_id,
@@ -1455,7 +1452,8 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def update_vulnerability_exception_status(self, vulnerability_exception_id: str, status: str) -> dict:
+    def update_vulnerability_exception_status(self, vulnerability_exception_id: str,
+                                              status: VulnerabilityExceptionStatus) -> dict:
         """
         | Update the status of a vulnerability exception.
         |
@@ -1464,13 +1462,13 @@ class Client(BaseClient):
 
         Args:
             vulnerability_exception_id (str): ID of the vulnerability exception to update.
-            status (str): Status to set the vulnerability exception to. Can be either "recall", "approve", or "reject".
+            status (VulnerabilityExceptionStatus): Status to set the vulnerability exception to.
 
         Returns:
             dict: API response with information about the updated vulnerability exception.
         """
         return self._http_request(
-            url_suffix=f"/vulnerability_exceptions/{vulnerability_exception_id}/{status}",
+            url_suffix=f"/vulnerability_exceptions/{vulnerability_exception_id}/{status.name.lower()}",
             method="POST",
             resp_type="json",
         )
@@ -1634,135 +1632,6 @@ def convert_datetime_str(time_str: str) -> struct_time:
         return strptime(time_str, "%Y-%m-%dT%H:%M:%SZ")
 
 
-def convert_to_duration_time(years: Optional[int] = None, months: Optional[int] = None,
-                             weeks: Optional[int] = None, days: Optional[int] = None,
-                             hours: Optional[int] = None, minutes: Optional[int] = None,
-                             seconds: Optional[float] = None) -> Optional[str]:
-    """
-    | Generate an ISO 8601 duration string.
-    | More info about format's specification can be found on:
-        https://en.wikipedia.org/wiki/ISO_8601#Durations
-    | Note that this if an overflow of a time unit occurs, the next unit will be incremented.
-    | For months, 4 weeks are added for each month, even though months have variable length.
-
-    Args:
-        years (int | None, optional): Duration years.
-        months (int | None, optional): Duration months.
-        weeks (int | None, optional): Duration weeks.
-        days (int | None, optional): Duration days.
-        hours (int | None, optional): Duration hours.
-        minutes (int | None, optional): Duration minutes.
-        seconds (float | None, optional): Duration seconds.
-
-    Returns:
-        str: The duration represented in an ISO 8601 duration string.
-    """
-    if not any((years, months, weeks, days, hours, minutes, seconds)):
-        return None
-
-    duration_str = "P"
-
-    if years:
-        duration_str += f"{years}Y"
-    
-    if months:
-        duration_str += f"{months}M"
-
-    if weeks:
-        duration_str += f"{weeks}W"
-
-    if days:
-        duration_str += f"{days}D"
-
-    if hours or minutes or seconds:
-        duration_str += "T"
-
-        if hours:
-            duration_str += f"{hours}H"
-
-        if minutes:
-            duration_str += f"{minutes}M"
-
-        if seconds:
-            duration_str += f"{seconds}S"
-
-    return duration_str
-
-
-def convert_from_duration_time(duration: str) -> str:
-    """
-    | Convert an ISO 8601 duration string to a human-readable string format.
-    | More info about format's specification can be found on:
-        https://en.wikipedia.org/wiki/ISO_8601#Durations
-
-    Args:
-        duration (str): An ISO 8601 duration string.
-
-    Returns:
-        str: The duration represented in a human-readable string format.
-    """
-    # Assure duration is in a valid format
-    if not re.fullmatch(r"P(?:[\d.]+[YMWD]){0,4}T(?:[\d.]+[HMS]){0,3}", duration):
-        raise ValueError(f"\"{duration}\" is not a valid ISO 8601 duration string.")
-
-    p_duration, t_duration = duration.replace("T", ",T").split(",")
-    p_duration = re.findall(r"([\d.]+[A-Z])", p_duration)
-    t_duration = re.findall(r"([\d.]+[A-Z])", t_duration)
-    duration_mapping_p = {
-        "P": "years",
-        "M": "months",
-        "W": "weeks",
-        "D": "days",
-    }
-    duration_mapping_t = {
-        "H": "hours",
-        "M": "minutes",
-        "S": "seconds",
-    }
-    duration_values = {
-        "years": 0,
-        "months": 0,
-        "weeks": 0,
-        "days": 0,
-        "hours": 0,
-        "minutes": 0,
-        "seconds": 0,
-    }
-
-    for item in p_duration:
-        designator = item[-1]
-        number = float(item[:-1])
-
-        if number.is_integer():
-            number = int(number)
-
-        else:
-            number = round(number)
-
-        duration_values[duration_mapping_p[designator]] = number
-
-    for item in t_duration:
-        designator = item[-1]
-        number = float(item[:-1])
-
-        if number.is_integer():
-            number = int(number)
-
-        duration_values[duration_mapping_t[designator]] = number
-
-    result = []
-    for item in duration_values:
-        zero_up_to_now = True
-
-        if duration_values[item] > 0:
-            zero_up_to_now = False
-
-        if not zero_up_to_now:
-            result += [f"{duration_values[item]} {item}"]
-
-    return ", ".join(result)
-
-
 def create_report(client: Client, scope: dict[str, Any], template_id: Optional[str] = None,
                   report_name: Optional[str] = None, report_format: Optional[ReportFileFormat] = None,
                   download_immediately: Optional[bool] = None) -> Union[dict, CommandResults]:
@@ -1793,8 +1662,6 @@ def create_report(client: Client, scope: dict[str, Any], template_id: Optional[s
     if not report_format:
         report_format = ReportFileFormat.PDF
 
-    report_format_str = report_format.name.lower()
-
     if download_immediately is None:
         download_immediately = True
 
@@ -1802,7 +1669,7 @@ def create_report(client: Client, scope: dict[str, Any], template_id: Optional[s
         scope=scope,
         template_id=template_id,
         report_name=report_name,
-        report_format=report_format_str,
+        report_format=report_format,
     )["id"]
 
     instance_id = client.create_report(report_id)["id"]
@@ -1811,7 +1678,7 @@ def create_report(client: Client, scope: dict[str, Any], template_id: Optional[s
         "Name": report_name,
         "ID": report_id,
         "InstanceID": instance_id,
-        "Format": report_format_str,
+        "Format": report_format.name.lower(),
     }
     hr = tableToMarkdown("Report Information", context)
 
@@ -1931,6 +1798,8 @@ def find_valid_params(**kwargs):
 def get_scan_entry(scan: dict) -> CommandResults:
     """
     Generate entry data from scan data (as received from the API).
+    NOTE: This function alters scan data for HR, and returns that way in ContextData as well.
+          For example, if "id" turns to "ID" in HR, the change also applies for ContextData.
 
     Args:
         scan (dict): Scan data as it was received from the API.
@@ -1956,6 +1825,7 @@ def get_scan_entry(scan: dict) -> CommandResults:
             "total": "Total",
         },
         recursive=True,
+        no_copy=True,
     )
 
     scan_hr = tableToMarkdown(
@@ -2046,9 +1916,66 @@ def find_site_from_asset(asset_id: str):
     }
 
 
+def generate_duration_time(years: Optional[int] = None, months: Optional[int] = None,
+                           weeks: Optional[int] = None, days: Optional[int] = None,
+                           hours: Optional[int] = None, minutes: Optional[int] = None,
+                           seconds: Optional[float] = None) -> Optional[str]:
+    """
+    | Generate an ISO 8601 duration string.
+    | More info about format's specification can be found on:
+        https://en.wikipedia.org/wiki/ISO_8601#Durations
+    |
+    | If an overflow of a time unit occurs, the next unit will be incremented.
+    | For months, 4 weeks are will be added to a month, even though months have variable length.
+
+    Args:
+        years (int | None, optional): Duration years.
+        months (int | None, optional): Duration months.
+        weeks (int | None, optional): Duration weeks.
+        days (int | None, optional): Duration days.
+        hours (int | None, optional): Duration hours.
+        minutes (int | None, optional): Duration minutes.
+        seconds (float | None, optional): Duration seconds.
+
+    Returns:
+        str: The duration represented in an ISO 8601 duration string.
+    """
+    if not any((years, months, weeks, days, hours, minutes, seconds)):
+        return None
+
+    duration_str = "P"
+
+    if years:
+        duration_str += f"{years}Y"
+
+    if months:
+        duration_str += f"{months}M"
+
+    if weeks:
+        duration_str += f"{weeks}W"
+
+    if days:
+        duration_str += f"{days}D"
+
+    if hours or minutes or seconds:
+        duration_str += "T"
+
+        if hours:
+            duration_str += f"{hours}H"
+
+        if minutes:
+            duration_str += f"{minutes}M"
+
+        if seconds:
+            duration_str += f"{seconds}S"
+
+    return duration_str
+
+
 def normalize_scan_data(scan: dict) -> dict:
     """
-    Normalizes scan data received from the API to a format that will be displayed in the UI.
+    Normalizes scan data received from the API to a HumanReadable format that will be displayed in the UI.
+    NOTE: This function alters the original data that's passed under the `scan` parameter, and does not create a copy.
 
     Args:
         scan (dict): Scan data as it was received from the API.
@@ -2070,34 +1997,118 @@ def normalize_scan_data(scan: dict) -> dict:
             "message": "Message",
         },
         recursive=False,
+        no_copy=True,
     )
 
-    scan_output["TotalTime"] = convert_from_duration_time(scan_output["TotalTime"])
+    scan_output["TotalTime"] = readable_duration_time(scan_output["TotalTime"])
 
     return scan_output
 
 
+def readable_duration_time(duration: str) -> str:
+    """
+    | Convert an ISO 8601 duration string to a human-readable string format.
+    | More info about format's specification can be found on:
+        https://en.wikipedia.org/wiki/ISO_8601#Durations
+
+    Args:
+        duration (str): An ISO 8601 duration string.
+
+    Returns:
+        str: The duration represented in a human-readable string format.
+    """
+    # Assure duration is in a valid format
+    if not re.fullmatch(r"P(?:[\d.]+[YMWD]){0,4}T(?:[\d.]+[HMS]){0,3}", duration):
+        raise ValueError(f"\"{duration}\" is not a valid ISO 8601 duration string.")
+
+    p_duration, t_duration = duration.replace("T", ",T").split(",")
+    p_duration = re.findall(r"([\d.]+[A-Z])", p_duration)
+    t_duration = re.findall(r"([\d.]+[A-Z])", t_duration)
+    duration_mapping_p = {
+        "P": "years",
+        "M": "months",
+        "W": "weeks",
+        "D": "days",
+    }
+    duration_mapping_t = {
+        "H": "hours",
+        "M": "minutes",
+        "S": "seconds",
+    }
+    duration_values = {
+        "years": 0,
+        "months": 0,
+        "weeks": 0,
+        "days": 0,
+        "hours": 0,
+        "minutes": 0,
+        "seconds": 0,
+    }
+
+    for item in p_duration:
+        designator = item[-1]
+        number = float(item[:-1])
+
+        if number.is_integer():
+            number = int(number)
+
+        else:
+            number = round(number)
+
+        duration_values[duration_mapping_p[designator]] = number
+
+    for item in t_duration:
+        designator = item[-1]
+        number = float(item[:-1])
+
+        if number.is_integer():
+            number = int(number)
+
+        duration_values[duration_mapping_t[designator]] = number
+
+    result = []
+    for item in duration_values:
+        zero_up_to_now = True
+
+        if duration_values[item] > 0:
+            zero_up_to_now = False
+
+        if not zero_up_to_now:
+            result += [f"{duration_values[item]} {item}"]
+
+    return ", ".join(result)
+
+
 # TODO: Disable "recursive" if it's not actually needed.
 def replace_key_names(data: Union[dict, list, tuple], name_mapping: dict[str, str],
-                      recursive: bool = False) -> Union[dict, list, tuple, set]:
+                      recursive: bool = False, no_copy: bool = False) -> Union[dict, list, tuple, set]:
     """
     Replace key names in a dictionary.
 
     Args:
         data (dict | list | tuple): An iterable to replace key names for dictionaries within it.
-        name_mapping (dict): A dictionary in a `from: to` mapping format of which key names to replace with what.
-            the value of the keys ("from") can represent nested dict items in a "parent.child" format.
+        name_mapping (dict): A dictionary in a `from (key): to (value)` mapping format
+                             of which key names to replace with what.
+                             The value of the keys can represent nested dict items in a "parent.child" format.
         recursive (bool, optional): Whether to replace key names in all sub-dictionaries. Defaults to False.
+        no_copy (bool, optional): If set to true, the function will replace the keys in the original dictionary
+                                  and return it, instead of creating, applying changes, and returning a new copy.
 
     Returns:
-        Union[dict, list, tuple]: The same data-structure with key names of dicts replaced according to mapping.
+        Union[dict, list, tuple]: The data-structure (original or copy)
+                                  with key names of dicts replaced according to mapping.
     """
     # TODO: Fix issue when nested key is inside a list
+
+    if not no_copy:
+        data = deepcopy(data)
+
     if isinstance(data, Union[list, tuple]):
         return [replace_key_names(
             data=data[i],
             name_mapping=name_mapping,
             recursive=recursive,
+            no_copy=True,
         ) for i in range(len(data))]
 
     elif isinstance(data, dict):
@@ -2122,7 +2133,12 @@ def replace_key_names(data: Union[dict, list, tuple], name_mapping: dict[str, st
         if recursive:
             for item in data:
                 if isinstance(data[item], Union[dict, list, tuple]):
-                    data[item] = replace_key_names(data[item], name_mapping, recursive)
+                    data[item] = replace_key_names(
+                        data=data[item],
+                        name_mapping=name_mapping,
+                        recursive=recursive,
+                        no_copy=True,
+                    )
 
     return data
 
@@ -2146,9 +2162,6 @@ def create_assets_report_command(client: Client, asset_ids: list[str], template_
             Defaults to True.
     """
     scope = {"assets": [int(asset_id) for asset_id in asset_ids]}
-
-    if report_format is not None:
-        report_format = report_format.name.lower()
 
     return create_report(
         client=client,
@@ -2224,24 +2237,19 @@ def create_scan_schedule_command(client: Client, site: Site, enabled: bool, repe
         duration_minutes (int, optional): Maximum duration of the scan in minutes.
             Can be used along with `duration_days` and `duration_hours`.
         frequency (RepeatFrequencyType, optional): Frequency for the schedule to repeat.
-            Required if using other repeaet settings.
+            Required if using other repeat settings.
         interval (int, optional): The interval time the schedule should repeat.
-            Required if using other repeaet settings.
+            Required if using other repeat settings.
         date_of_month(int, optional): Specifies the schedule repeat day of the interval month.
             Required and used only if frequency is set to `DATE_OF_MONTH`.
         scan_name (str, optional): A unique user-defined name for the scan launched by the schedule.
             If not explicitly set in the schedule, the scan name will be generated prior to the scan launching.
         scan_template_id (str, optional): ID of the scan template to use.
     """
-    repeat_behaviour = repeat_behaviour.name.lower().replace("_", "-")
-
-    duration = convert_to_duration_time(
+    duration = generate_duration_time(
         days=duration_days,
         hours=duration_hours,
         minutes=duration_minutes)
-
-    if frequency is not None:
-        frequency = frequency.name.lower().replace("_", "-")
 
     response_data = client.create_site_scan_schedule(
         site_id=site.id,
@@ -2389,13 +2397,11 @@ def create_site_command(client: Client, name: str, description: Optional[str] = 
         template_id (str | None, optional): The identifier of a scan template.
             Defaults to None (results in using default scan template).
     """
-    site_importance_str = site_importance.name.lower() if site_importance else None
-
     response_data = client.create_site(
         name=name,
         description=description,
         assets=assets,
-        site_importance=site_importance_str,
+        site_importance=site_importance,
         template_id=template_id)
 
     return CommandResults(
@@ -2458,9 +2464,9 @@ def create_vulnerability_exception_command(client: Client, vulnerability_id: str
     """
     response_data = client.create_vulnerability_exception(
         vulnerability_id=vulnerability_id,
-        scope_type=scope_type.name.lower().replace("_", " ").title(),
-        state=state.name.lower().replace("_", " ").title(),
-        reason=reason.name.lower().replace("_", " ").title(),
+        scope_type=scope_type,
+        state=state,
+        reason=reason,
         expires=expires,
         comment=comment,
     )
@@ -2605,6 +2611,7 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults:
             "riskScore": "RiskScore",
         },
         recursive=True,
+        no_copy=True,
     )
 
     # Set all vars to None
@@ -2623,6 +2630,7 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults:
                 "version": "Version",
             },
             recursive=True,
+            no_copy=True,
         )
 
     if "services" in asset and len(asset["services"]) > 0:
@@ -2642,6 +2650,7 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults:
                 "protocol": "Protocol",
             },
             recursive=True,
+            no_copy=True,
         )
 
     if "users" in asset and len(asset["users"]) > 0:
@@ -2659,6 +2668,7 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults:
                 "id": "UserId",
             },
             recursive=True,
+            no_copy=True,
         )
 
     vulnerability_headers = [
@@ -2808,6 +2818,7 @@ def get_assets_command(client: Client, page_size: Optional[int] = None,
             "assessedForVulnerabilities": "Assessed",
         },
         recursive=True,
+        no_copy=True,
     )
 
     result = []
@@ -2891,6 +2902,7 @@ def get_asset_vulnerability_command(client: Client, asset_id: str, vulnerability
             "cves": "CVES",
         },
         recursive=True,
+        no_copy=True,
     )
 
     results_headers = [
@@ -2914,6 +2926,7 @@ def get_asset_vulnerability_command(client: Client, asset_id: str, vulnerability
                 "status": "Status",
             },
             recursive=True,
+            no_copy=True,
         )
 
     # Remove HTML tags
@@ -2944,10 +2957,11 @@ def get_asset_vulnerability_command(client: Client, asset_id: str, vulnerability
                 "additionalInformation.text": "AdditionalInformation",
             },
             recursive=True,
+            no_copy=True,
         )
 
         for i, val in enumerate(solutions_output):
-            solutions_output[i]["Estimate"] = convert_from_duration_time(solutions_output[i]["Estimate"])
+            solutions_output[i]["Estimate"] = readable_duration_time(solutions_output[i]["Estimate"])
 
     vulnerabilities_md = tableToMarkdown("Vulnerability " + vulnerability_id, vulnerability_outputs,
                                          vulnerability_headers, removeNull=True)
@@ -3046,6 +3060,7 @@ def get_report_templates_command(client: Client) -> CommandResults:
             "type": "Type",
         },
         recursive=True,
+        no_copy=True,
     )
 
     return CommandResults(
@@ -3235,25 +3250,8 @@ def list_scan_schedule_command(client: Client, site: Site, schedule_id: Optional
     if not scan_schedules:
         return CommandResults(readable_output="No scan schedules were found for the site.")
 
-    hr_outputs = scan_schedules.copy()
-
-    for scan_schedule in hr_outputs:
-        if scan_schedule.get("duration"):
-            scan_schedule["duration"] = convert_from_duration_time(scan_schedule["duration"])
-        if scan_schedule.get("repeat") and scan_schedule["repeat"].get("every"):
-            scan_schedule["repeat"]["every"] = "every " + scan_schedule["repeat"]["every"]
-
-    headers = [
-        "Enable",
-        "StartDate",
-        "Name",
-        "MaxDuration",
-        "Repeat",
-        "NextStart",
-    ]
-
     hr_outputs = replace_key_names(
-        data=hr_outputs,
+        data=scan_schedules,
         name_mapping={
             "id": "Id",
             "enabled": "Enable",
@@ -3265,6 +3263,21 @@ def list_scan_schedule_command(client: Client, site: Site, schedule_id: Optional
         },
         recursive=True,
     )
+
+    for scan_schedule in hr_outputs:
+        if scan_schedule.get("MaxDuration"):
+            scan_schedule["MaxDuration"] = readable_duration_time(scan_schedule["MaxDuration"])
+        if scan_schedule.get("Repeat"):
+            scan_schedule["Repeat"] = "every " + scan_schedule["Repeat"]
+
+    headers = [
+        "Enable",
+        "StartDate",
+        "Name",
+        "MaxDuration",
+        "Repeat",
+        "NextStart",
+    ]
 
     return CommandResults(
         outputs_prefix="Nexpose.ScanSchedule",
@@ -3323,10 +3336,8 @@ def list_vulnerability_command(client: Client, vulnerability_id: Optional[str], 
         "Severity",
     ]
 
-    vulnerabilities_hr = vulnerabilities.copy()
-
-    replace_key_names(
-        data=vulnerabilities_hr,
+    vulnerabilities_hr = replace_key_names(
+        data=vulnerabilities,
         name_mapping={
             "title": "Title",
             "malwareKits": "MalwareKits",
@@ -3399,10 +3410,8 @@ def list_vulnerability_exceptions_command(client: Client, vulnerability_exceptio
         "ExpiresOn",
     ]
 
-    hr_outputs = vulnerability_exceptions.copy()
-
-    replace_key_names(
-        data=hr_outputs,
+    hr_outputs = replace_key_names(
+        data=vulnerability_exceptions,
         name_mapping={
             "id": "Id",
             "scope.vulnerability": "Vulnerability",
@@ -3541,6 +3550,7 @@ def search_assets_command(client: Client, filter_query: Optional[str] = None, ip
             "assessedForVulnerabilities": "Assessed",
         },
         recursive=True,
+        no_copy=True,
     )
 
     result = []
@@ -3720,15 +3730,10 @@ def update_scan_schedule_command(client: Client, site: Site, scan_schedule_id: i
             If not explicitly set in the schedule, the scan name will be generated prior to the scan launching.
         scan_template_id (str, optional): ID of the scan template to use.
     """
-    repeat_behaviour = repeat_behaviour.name.lower().replace("_", "-")
-
-    duration = convert_to_duration_time(
+    duration = generate_duration_time(
         days=duration_days,
         hours=duration_hours,
         minutes=duration_minutes)
-
-    if frequency is not None:
-        frequency = frequency.name.lower().replace("_", "-")
 
     client.update_site_scan_schedule(
         site_id=site.id,
@@ -3780,7 +3785,7 @@ def update_vulnerability_exception_command(client: Client, vulnerability_excepti
         responses.append(
             client.update_vulnerability_exception_status(
                 vulnerability_exception_id=vulnerability_exception_id,
-                status=status.name.lower()
+                status=status
             )
         )
 
@@ -3811,10 +3816,10 @@ def main():
             client.get_assets(page_size=1, limit=1)
             results = "ok"
         elif command == "nexpose-create-assets-report":
-            report_format = args.get("format")
+            report_format = None
 
             if args.get("format"):
-                report_format = ReportFileFormat(args["format"].upper())
+                report_format = ReportFileFormat[args["format"].upper()]
 
             results = create_assets_report_command(
                 client=client,
@@ -3828,7 +3833,7 @@ def main():
             report_format = None
 
             if args.get("format"):
-                report_format = ReportFileFormat(args["format"].upper())
+                report_format = ReportFileFormat[args["format"].upper()]
 
             results = create_scan_report_command(
                 client=client,
@@ -3839,6 +3844,12 @@ def main():
                 download_immediately=argToBoolean(args.get("download_immediately")),
             )
         elif command == "nexpose-create-scan-schedule":
+            repeat_behaviour = RepeatBehaviour[args["on_scan_repeat"].upper().replace(' ', '_')]
+            frequency = None
+
+            if args.get("frequency"):
+                frequency = RepeatFrequencyType[args.get("frequency").upper().replace(' ', '_')]
+
             results = create_scan_schedule_command(
                 client=client,
                 site=Site(
@@ -3847,7 +3858,7 @@ def main():
                     client=client,
                 ),
                 enabled=args.get("enabled"),
-                repeat_behaviour=RepeatBehaviour(args["on_scan_repeat"].upper().replace(' ', '_')),
+                repeat_behaviour=repeat_behaviour,
                 start_date=args["start"],
                 excluded_asset_groups=[int(asset_id) for asset_id in argToList(args.get("excluded_asset_group_ids"))],
                 excluded_targets=argToList(args.get("excluded_addresses")),
@@ -3856,7 +3867,7 @@ def main():
                 duration_days=arg_to_number(args.get("duration_days")),
                 duration_hours=arg_to_number(args.get("duration_hours")),
                 duration_minutes=arg_to_number(args.get("duration_minutes")),
-                frequency=RepeatFrequencyType(args.get("frequency").upper().replace(' ', '_')),
+                frequency=frequency,
                 interval=arg_to_number(args.get("interval_time")),
                 date_of_month=arg_to_number(args.get("date_of_month")),
                 scan_name=args.get("scan_name"),
@@ -3905,7 +3916,7 @@ def main():
             site_importance = None
 
             if args.get("importance"):
-                site_importance = SiteImportance(args["importance"].upper())
+                site_importance = SiteImportance[args["importance"].upper()]
 
             results = create_site_command(
                 client=client,
@@ -3924,7 +3935,7 @@ def main():
             report_format = None
 
             if args.get("format"):
-                report_format = ReportFileFormat(args["format"].upper())
+                report_format = ReportFileFormat[args["format"].upper()]
 
             results = create_sites_report_command(
                 client=client,
@@ -3935,12 +3946,16 @@ def main():
                 download_immediately=argToBoolean(args.get("download_immediately")),
             )
         elif command == "nexpose-create-vulnerability-exception":
+            scope_type = VulnerabilityExceptionScopeType[args["scope_type"].upper().replace(' ', '_')]
+            state = VulnerabilityExceptionState[args["state"].upper().replace(' ', '_')]
+            reason = VulnerabilityExceptionReason[args["reason"].upper().replace(' ', '_')]
+
             results = create_vulnerability_exception_command(
                 client=client,
                 vulnerability_id=args["vulnerability_id"],
-                scope_type=VulnerabilityExceptionScopeType(args["scope_type"].upper().replace(' ', '_')),
-                state=VulnerabilityExceptionState(args["state"].upper().replace(' ', '_')),
-                reason=VulnerabilityExceptionReason(args["reason"].upper().replace(' ', '_')),
+                scope_type=scope_type,
+                state=state,
+                reason=reason,
                 expires=args.get("expires"),
                 comment=args.get("comment"),
 
@@ -3970,12 +3985,17 @@ def main():
                 ),
             )
         elif command == "nexpose-download-report":
+            report_format = None
+
+            if args.get("format"):
+                report_format = ReportFileFormat[args["format"].upper()]
+
             results = download_report_command(
                 client=client,
                 report_id=args["report_id"],
                 instance_id=args["instance_id"],
                 report_name=args.get("name"),
-                report_format=ReportFileFormat(args.get("format", "pdf").upper()),
+                report_format=report_format,
             )
         elif command == "nexpose-get-asset":
             results = get_asset_command(
@@ -4070,6 +4090,12 @@ def main():
                 scan_status=ScanStatus.RESUME,
             )
         elif command == "nexpose-update-scan-schedule":
+            repeat_behaviour = RepeatBehaviour[args["on_scan_repeat"].upper().replace(' ', '_')]
+            frequency = None
+
+            if args.get("frequency"):
+                frequency = RepeatFrequencyType[args.get("frequency").upper().replace(' ', '_')]
+
             results = update_scan_schedule_command(
                 client=client,
                 site=Site(
@@ -4079,7 +4105,7 @@ def main():
                 ),
                 scan_schedule_id=args["schedule_id"],
                 enabled=args.get("enabled"),
-                repeat_behaviour=RepeatBehaviour(args["on_scan_repeat"].upper().replace(' ', '_')),
+                repeat_behaviour=repeat_behaviour,
                 start_date=args["start"],
                 excluded_asset_groups=[int(asset_id) for asset_id in argToList(args.get("excluded_asset_group_ids"))],
                 excluded_targets=argToList(args.get("excluded_addresses")),
@@ -4088,16 +4114,16 @@ def main():
                 duration_days=arg_to_number(args.get("duration_days")),
                 duration_hours=arg_to_number(args.get("duration_hours")),
                 duration_minutes=arg_to_number(args.get("duration_minutes")),
-                frequency=RepeatFrequencyType(args.get("frequency").upper().replace(' ', '_')),
+                frequency=frequency,
                 interval=arg_to_number(args.get("interval_time")),
                 date_of_month=arg_to_number(args.get("date_of_month")),
                 scan_name=args.get("scan_name"),
                 scan_template_id=args.get("scan_template_id"))
         elif command == "nexpose-update-vulnerability-exception":
-            status = args.get("status")
+            status = None
 
-            if status is not None:
-                status = VulnerabilityExceptionStatus(status.upper())
+            if args.get("status"):
+                status = VulnerabilityExceptionStatus[args.get("status").upper()]
 
             results = update_vulnerability_exception_command(
                 client=client,
