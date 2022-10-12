@@ -416,9 +416,10 @@ class InstalledPackAPI(EntityAPI):
     name = 'pack'
     always_excluded = ['ContentManagement', 'CleanUpContent']
 
-    def __init__(self):
-        skip_proxy()
-        core_packs_response = requests.get(CORE_PACKS_LIST_URL, verify=False)
+    def __init__(self, proxy_skip=True, verify=True):
+        if proxy_skip:
+            skip_proxy()
+        core_packs_response = requests.get(CORE_PACKS_LIST_URL, verify=verify)
         self.always_excluded = json.loads(core_packs_response.text) + self.always_excluded
 
     def search_specific_id(self, specific_id: str):
@@ -533,11 +534,6 @@ def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: list = [], incl
                 not_deleted.append(included_id)
 
     else:
-        if entity_api.name == InstalledPackAPI.name:
-            demisto.info('Not deleting unspecified installed packs. To delete an installed pack, '
-                         'use the included_ids option.')
-            return [], []
-
         all_entities = search_for_all_entities(entity_api=entity_api)
         if not all_entities:
             return [], []
@@ -619,8 +615,11 @@ def get_and_delete_needed_ids(args: dict) -> CommandResults:
     dry_run = True if args.get('dry_run', 'true') == 'true' else False
     include_ids = handle_input_dict(args.get('include_ids_dict'))
     exclude_ids = handle_input_dict(args.get('exclude_ids_dict'))
+    skip_proxy = True if args.get('skip_proxy', 'false') == 'true' else False
+    verify_cert = True if args.get('verify_cert', 'true') == 'true' else False
 
-    entities_to_delete = [InstalledPackAPI(), IntegrationAPI(), ScriptAPI(), PlaybookAPI(), IncidentFieldAPI(),
+    entities_to_delete = [InstalledPackAPI(proxy_skip=skip_proxy, verify=verify_cert), IntegrationAPI(), ScriptAPI(),
+                          PlaybookAPI(), IncidentFieldAPI(),
                           PreProcessingRuleAPI(), WidgetAPI(), DashboardAPI(), ReportAPI(), JobAPI(), ListAPI(),
                           IncidentTypeAPI(), ClassifierAPI(), ReputationAPI(), LayoutAPI()]
 
