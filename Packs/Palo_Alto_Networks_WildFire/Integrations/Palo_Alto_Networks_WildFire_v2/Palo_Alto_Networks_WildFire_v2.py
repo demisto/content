@@ -1281,7 +1281,6 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
             human_readable = tableToMarkdown('WildFire File Report - MAEC format', prettify_report_entry(file_info))
             #outputs = report
             outputs['maec_report'] = report
-            # print(outputs)
 
         except Exception as exc:
             print(exc)
