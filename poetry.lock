@@ -505,8 +505,8 @@ build = ["gsutil (==5.14)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "09fdbb5034abf8444ddd7c5d590685f105f49a63"
-resolved_reference = "09fdbb5034abf8444ddd7c5d590685f105f49a63"
+reference = "1206505d3c25fe116a0a0ea663df8719150233f0"
+resolved_reference = "1206505d3c25fe116a0a0ea663df8719150233f0"
 
 [[package]]
 name = "deprecated"
@@ -1853,7 +1853,7 @@ python-versions = "*"
 
 [[package]]
 name = "stevedore"
-version = "4.0.0"
+version = "4.0.1"
 description = "Manage dynamic plugins for Python applications"
 category = "dev"
 optional = false
@@ -2288,7 +2288,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "7e91d8fdd9bf4227c46948aa6aae00745e30977a79a935d81dcad15139e9a98c"
+content-hash = "a44895eafe4e7df6c4c909a91f173d67243b0c236f1b58cc0abe1c536f39e2aa"
 
 [metadata.files]
 aiohttp = [
@@ -3731,8 +3731,8 @@ starkbank-ecdsa = [
     {file = "starkbank-ecdsa-2.1.0.tar.gz", hash = "sha256:24422395e8682ac22a5b20ba3d7418d62e1a927aef29e8ddb5e678662be6b643"},
 ]
 stevedore = [
-    {file = "stevedore-4.0.0-py3-none-any.whl", hash = "sha256:87e4d27fe96d0d7e4fc24f0cbe3463baae4ec51e81d95fbe60d2474636e0c7d8"},
-    {file = "stevedore-4.0.0.tar.gz", hash = "sha256:f82cc99a1ff552310d19c379827c2c64dd9f85a38bcd5559db2470161867b786"},
+    {file = "stevedore-4.0.1-py3-none-any.whl", hash = "sha256:01645addb67beff04c7cfcbb0a6af8327d2efc3380b0f034aa316d4576c4d470"},
+    {file = "stevedore-4.0.1.tar.gz", hash = "sha256:9a23111a6e612270c591fd31ff3321c6b5f3d5f3dabb1427317a5ab608fc261a"},
 ]
 tabulate = [
     {file = "tabulate-0.8.10-py3-none-any.whl", hash = "sha256:0ba055423dbaa164b9e456abe7920c5e8ed33fcc16f6d1b2f2d152c8e1e8b4fc"},
