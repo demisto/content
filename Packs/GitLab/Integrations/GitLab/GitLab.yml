@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: GitLab
+  id: Gitlab
   version: -1
 configuration:
 - display: Server URL (e.g. https://gitlab.com/api/v4)
