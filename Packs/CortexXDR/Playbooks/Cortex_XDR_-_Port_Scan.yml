@@ -1,14 +1,5 @@
-id: 1fb3469d-8ee8-49a5-8fd3-7a79dda6c5be
-version: 10
-contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Palo Alto Networks Cortex XDR - Investigation and Response
-    itemVersion: 4.8.19
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
+id: Cortex XDR - Port Scan
+version: -1
 name: Cortex XDR - Port Scan
 description: |-
   Investigates a Cortex XDR incident containing internal port scan alerts. The playbook:
@@ -33,11 +24,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -50,6 +41,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "1":
@@ -63,11 +55,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "92"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -80,6 +72,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
@@ -90,8 +83,7 @@ tasks:
       id: dd99e02f-59f3-403d-86ed-0c56428cd7ad
       version: -1
       name: Check if attacker is internal or external
-      description: Uses an automated script to determine if the IP used in the incident
-        is in one of the ranges provided.
+      description: Uses an automated script to determine if the IP used in the incident is in one of the ranges provided.
       scriptName: IsIPInRanges
       type: regular
       iscommand: false
@@ -107,7 +99,6 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -120,6 +111,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "15":
@@ -130,8 +122,7 @@ tasks:
       id: fb9bb58b-4c96-4820-84a6-ea829168c785
       version: -1
       name: Save whitelisted hostnames as list
-      description: Saves the whitelisted hostnames, if any were configured in the
-        playbook inputs.
+      description: Saves the whitelisted hostnames, if any were configured in the playbook inputs.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -153,7 +144,6 @@ tasks:
                   simple: ','
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -166,6 +156,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "24":
@@ -176,8 +167,7 @@ tasks:
       id: 7a7a6ec8-c9fa-415a-87bc-bc507762e35e
       version: -1
       name: Save email addresses to notify
-      description: Saves the email addresses to notify about the compromised host
-        if any emails were configured in the playbook inputs.
+      description: Saves the email addresses to notify about the compromised host if any emails were configured in the playbook inputs.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -200,7 +190,6 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -213,6 +202,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "32":
@@ -223,8 +213,7 @@ tasks:
       id: 9de655f8-11e9-4297-8a3d-90b5c7878c91
       version: -1
       name: Has there been a successful login to the scanned host?
-      description: Manually check if there has been a successful login to the scanned
-        host following the port scan.
+      description: Manually check if there has been a successful login to the scanned host following the port scan.
       type: condition
       iscommand: false
       brand: ""
@@ -234,7 +223,6 @@ tasks:
       "yes":
       - "34"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -247,6 +235,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "34":
@@ -257,8 +246,7 @@ tasks:
       id: 5ade44c2-fea8-45bf-81fd-a1f00699998a
       version: -1
       name: Block ports used for exploitation on the scanned host
-      description: Manually block the port/s associated with vulnerable services or
-        that allowed the attacker to gain unauthorized access to the target machine.
+      description: Manually block the port/s associated with vulnerable services or that allowed the attacker to gain unauthorized access to the target machine.
       type: regular
       iscommand: false
       brand: ""
@@ -266,7 +254,6 @@ tasks:
       '#none#':
       - "61"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -279,6 +266,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "37":
@@ -308,7 +296,6 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -321,6 +308,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "40":
@@ -367,9 +355,8 @@ tasks:
                 value:
                   simple: user_name
     reputationcalc: 1
-    separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -382,6 +369,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "42":
@@ -395,11 +383,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "93"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -412,6 +400,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "45":
@@ -440,9 +429,8 @@ tasks:
           transformers:
           - operator: uniq
     reputationcalc: 1
-    separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -455,6 +443,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "46":
@@ -484,7 +473,6 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -497,6 +485,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "48":
@@ -507,8 +496,7 @@ tasks:
       id: c233bda6-bc73-4094-89bf-d7c8d15315c0
       version: -1
       name: Was there a case of lateral movement following the scan?
-      description: Checks whether there was a lateral movement alert that came after
-        the port scan alert.
+      description: Checks whether there was a lateral movement alert that came after the port scan alert.
       type: condition
       iscommand: false
       brand: ""
@@ -535,7 +523,6 @@ tasks:
             value:
               simple: LateralMovementFirstDatetime
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -548,6 +535,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "49":
@@ -558,8 +546,7 @@ tasks:
       id: c15ebabb-7bd3-420f-8a0e-e98c9b1a0407
       version: -1
       name: Save incident alerts
-      description: Saves the alerts associated with this incident in a new context
-        key.
+      description: Saves the alerts associated with this incident in a new context key.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -577,7 +564,6 @@ tasks:
           accessor: Incident.alerts
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -590,6 +576,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "50":
@@ -639,7 +626,6 @@ tasks:
           - operator: TimeStampToDate
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -652,6 +638,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "51":
@@ -662,8 +649,7 @@ tasks:
       id: fe20e8a9-9913-4989-8337-1cc117319cf4
       version: -1
       name: Save lateral movement date time
-      description: Saves the date and time of the first lateral movement alert, when
-        it exists.
+      description: Saves the date and time of the first lateral movement alert, when it exists.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -702,7 +688,6 @@ tasks:
           - operator: TimeStampToDate
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -715,6 +700,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "52":
@@ -733,7 +719,6 @@ tasks:
       '#none#':
       - "61"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -746,6 +731,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "54":
@@ -756,8 +742,7 @@ tasks:
       id: 658cbdbe-d7d7-4575-86dc-03de7c56e103
       version: -1
       name: Were internal hosts infected with malware?
-      description: Checks whether internal hosts were related in any way to the SHA256
-        hash of the malware associated with this incident.
+      description: Checks whether internal hosts were related in any way to the SHA256 hash of the malware associated with this incident.
       type: condition
       iscommand: false
       brand: ""
@@ -778,7 +763,6 @@ tasks:
                 root: PANWHunting
                 accessor: DetectedInternalHosts
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -791,6 +775,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "59":
@@ -801,14 +786,7 @@ tasks:
       id: e02d1a26-fc02-47af-8409-b98f7206acb0
       version: -1
       name: PANW - Hunting and threat detection by indicator type V2
-      description: "Integrations list: Cortex (Traps, PAN-OS, Analytics)\nThis is
-        a multipurpose playbook used for hunting and threat detection. The playbook
-        receives inputs based on hashes, IP addresses, or domain names provided manually
-        or from outputs by other playbooks. \nWith the received indicators, the playbook
-        leverages Palo Alto Cortex data received by products such as Traps, Analytics
-        and Pan-OS to search for IP addresses and hosts related to that specific hash.
-        \nThe output provided by the playbook facilitates pivoting searches for possibly
-        affected hosts, IP addresses, or users."
+      description: "Integrations list: Cortex (Traps, PAN-OS, Analytics)\nThis is a multipurpose playbook used for hunting and threat detection. The playbook receives inputs based on hashes, IP addresses, or domain names provided manually or from outputs by other playbooks. \nWith the received indicators, the playbook leverages Palo Alto Cortex data received by products such as Traps, Analytics and Pan-OS to search for IP addresses and hosts related to that specific hash. \nThe output provided by the playbook facilitates pivoting searches for possibly affected hosts, IP addresses, or users."
       playbookName: PANW - Hunting and threat detection by indicator type V2
       type: playbook
       iscommand: false
@@ -845,7 +823,6 @@ tasks:
               ignorecase: true
           accessor: file_sha256
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -863,6 +840,7 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "60":
@@ -876,11 +854,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "94"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -893,6 +871,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "61":
@@ -941,7 +920,6 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -959,6 +937,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "62":
@@ -969,8 +948,7 @@ tasks:
       id: 564342aa-8759-4b57-81c9-f8251f7362b7
       version: -1
       name: Save involved hostnames to endpoint objects
-      description: Saves hostnames related to this incident in the Endpoint.Hostname
-        context key.
+      description: Saves hostnames related to this incident in the Endpoint.Hostname context key.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -990,7 +968,6 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1003,6 +980,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "63":
@@ -1013,8 +991,7 @@ tasks:
       id: 6d49f70a-f26a-4fa6-80e9-70a448ad330a
       version: -1
       name: Escalate incident to higher tier
-      description: Assigns the incident to a random user who has the role configured
-        in the RoleForEscalation playbook input.
+      description: Assigns the incident to a random user who has the role configured in the RoleForEscalation playbook input.
       scriptName: AssignAnalystToIncident
       type: regular
       iscommand: false
@@ -1032,7 +1009,6 @@ tasks:
         complex:
           root: inputs.RoleForEscalation
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1045,6 +1021,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "64":
@@ -1055,8 +1032,7 @@ tasks:
       id: 612da2fe-8435-4296-860c-3f3406c69d9d
       version: -1
       name: Can the incident be auto-escalated to a higher tier?
-      description: Checks whether a role from which analysts can be assigned to the
-        incident was configured in the RoleForEscalation playbook input.
+      description: Checks whether a role from which analysts can be assigned to the incident was configured in the RoleForEscalation playbook input.
       type: condition
       iscommand: false
       brand: ""
@@ -1075,7 +1051,6 @@ tasks:
               complex:
                 root: inputs.RoleForEscalation
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1088,6 +1063,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "65":
@@ -1106,7 +1082,6 @@ tasks:
       '#none#':
       - "60"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1119,6 +1094,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "66":
@@ -1129,8 +1105,7 @@ tasks:
       id: 36ca3b97-fe38-46cd-80e9-1e2ec5967245
       version: -1
       name: Save critical usernames as list
-      description: Saves any usernames of critical users that are configured in the
-        playbook inputs.
+      description: Saves any usernames of critical users that are configured in the playbook inputs.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1153,7 +1128,6 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1166,6 +1140,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "67":
@@ -1176,8 +1151,7 @@ tasks:
       id: 7f35d238-c12d-4a4d-8882-f60193205889
       version: -1
       name: Are external IPs associated with the malware?
-      description: Checks whether the SHA256 hash of the malware associated with this
-        incident was found related to any external IP addresses.
+      description: Checks whether the SHA256 hash of the malware associated with this incident was found related to any external IP addresses.
       type: condition
       iscommand: false
       brand: ""
@@ -1197,7 +1171,6 @@ tasks:
                 root: PANWHunting
                 accessor: DetectedExternalIPs
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1210,6 +1183,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "68":
@@ -1220,8 +1194,7 @@ tasks:
       id: da2051e1-6927-4981-8029-bb62d9aa8b3b
       version: -1
       name: Can the external IPs be blocked automatically?
-      description: Checks whether the external IPs associated with the malware's SHA256
-        hash can be blocked automatically.
+      description: Checks whether the external IPs associated with the malware's SHA256 hash can be blocked automatically.
       type: condition
       iscommand: false
       brand: ""
@@ -1244,7 +1217,6 @@ tasks:
             value:
               simple: "true"
           ignorecase: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1257,6 +1229,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "69":
@@ -1275,7 +1248,6 @@ tasks:
       '#none#':
       - "61"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1288,6 +1260,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "71":
@@ -1302,11 +1275,11 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "61"
     separatecontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1319,6 +1292,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "72":
@@ -1329,8 +1303,7 @@ tasks:
       id: 158f2967-e083-4320-80b9-c59a5457e271
       version: -1
       name: Can the file be automatically blocked on all endpoints?
-      description: Checks whether malicious files associated with the incident can
-        be blocked automatically using various EDR integrations.
+      description: Checks whether malicious files associated with the incident can be blocked automatically using various EDR integrations.
       type: condition
       iscommand: false
       brand: ""
@@ -1353,7 +1326,6 @@ tasks:
             value:
               simple: "True"
           ignorecase: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1366,6 +1338,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "73":
@@ -1376,8 +1349,7 @@ tasks:
       id: 019f9c6b-61aa-4aab-85c2-b92bab3899bb
       version: -1
       name: Manually block the file on all endpoints
-      description: Manually block malicious files associated with the incident using
-        EDR integrations.
+      description: Manually block malicious files associated with the incident using EDR integrations.
       type: regular
       iscommand: false
       brand: ""
@@ -1385,7 +1357,6 @@ tasks:
       '#none#':
       - "61"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1398,6 +1369,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "75":
@@ -1408,8 +1380,7 @@ tasks:
       id: 4830e0a6-14de-40fb-8b7a-331a28311f0b
       version: -1
       name: Can a host compromise notification be sent via email?
-      description: Checks whether any email addresses to notify were configured, and
-        whether any mail sender integrations are enabled.
+      description: Checks whether any email addresses to notify were configured, and whether any mail sender integrations are enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -1467,7 +1438,6 @@ tasks:
                       value:
                         simple: active
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1480,6 +1450,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "76":
@@ -1490,8 +1461,7 @@ tasks:
       id: b9dc1315-c732-4365-8561-999d8662de3d
       version: -1
       name: Send notification emails about compromise
-      description: Sends an email to the email addresses configured in the playbook
-        inputs telling them that a host was compromised.
+      description: Sends an email to the email addresses configured in the playbook inputs telling them that a host was compromised.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -1513,7 +1483,6 @@ tasks:
                   simple: ','
           - operator: uniq
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1526,6 +1495,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "77":
@@ -1536,8 +1506,7 @@ tasks:
       id: 286f079f-f592-420f-881f-f2af0405ab41
       version: -1
       name: Can attacker hosts be isolated?
-      description: Checks whether attacker hostnames exist in context, are not whitelisted,
-        and the IsolateEndpointAutomatically input is set to True.
+      description: Checks whether attacker hostnames exist in context, are not whitelisted, and the IsolateEndpointAutomatically input is set to True.
       type: condition
       iscommand: false
       brand: ""
@@ -1580,7 +1549,6 @@ tasks:
                         simple: WhitelistedHostnames
                       iscontext: true
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1593,6 +1561,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "78":
@@ -1603,8 +1572,7 @@ tasks:
       id: b1d73a2e-7823-4147-80ed-f666ad970851
       version: -1
       name: Manually isolate attacker endpoint
-      description: Manually isolate the endpoint that performed the port scan, if
-        the endpoint was not specified in the WhitelistedHostnames playbook input.
+      description: Manually isolate the endpoint that performed the port scan, if the endpoint was not specified in the WhitelistedHostnames playbook input.
       type: regular
       iscommand: false
       brand: ""
@@ -1612,7 +1580,6 @@ tasks:
       '#none#':
       - "61"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1625,6 +1592,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "79":
@@ -1669,7 +1637,6 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -1687,6 +1654,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "80":
@@ -1697,11 +1665,7 @@ tasks:
       id: 11521065-d8aa-4e7e-8b53-2c77657f6ba7
       version: -1
       name: Sync XDR event
-      description: Syncs a single incident between Demisto and XDR. This script uses
-        the xdr-get-incident-extra-data command and outputs to the context the entire
-        incident JSON. When the incident is updated in XDR, the Demisto incident will
-        be updated accordingly. When an incident is updated in Demisto, the script
-        executes the xdr-update-incident command and update the incident in XDR.
+      description: Syncs a single incident between Demisto and XDR. This script uses the xdr-get-incident-extra-data command and outputs to the context the entire incident JSON. When the incident is updated in XDR, the Demisto incident will be updated accordingly. When an incident is updated in Demisto, the script executes the xdr-update-incident command and update the incident in XDR.
       scriptName: XDRSyncScript
       type: regular
       iscommand: false
@@ -1726,7 +1690,6 @@ tasks:
     results:
     - XDRSyncScriptTaskID
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1739,6 +1702,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "81":
@@ -1749,8 +1713,7 @@ tasks:
       id: 51b45449-8567-4a5f-871e-ee3f197b067f
       version: -1
       name: Stop XDR sync
-      description: Stops synchronization between the Cortex XDR incident and this
-        investigation.
+      description: Stops synchronization between the Cortex XDR incident and this investigation.
       scriptName: StopScheduledTask
       type: regular
       iscommand: false
@@ -1766,7 +1729,6 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1779,6 +1741,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "82":
@@ -1804,7 +1767,6 @@ tasks:
           accessor: xdrincidentid
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1817,6 +1779,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "83":
@@ -1837,7 +1800,6 @@ tasks:
       - "96"
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1850,6 +1812,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "84":
@@ -1860,10 +1823,7 @@ tasks:
       id: 366c1ef2-5cb7-4dc2-8b26-8cde056e287c
       version: -1
       name: xdr-get-endpoints
-      description: Gets a list of endpoints, according to the passed filters. Filtering
-        by multiple fields will be concatenated using AND condition (OR is not supported).
-        Maximum result set size is 100. Offset is the zero-based number of endpoint
-        from the start of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
       script: '|||xdr-get-endpoints'
       type: regular
       iscommand: true
@@ -1878,7 +1838,6 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1891,6 +1850,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "86":
@@ -1904,11 +1864,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "64"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1921,6 +1881,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "87":
@@ -1934,11 +1895,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "61"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1951,6 +1912,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "88":
@@ -1964,11 +1926,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "32"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1981,6 +1943,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "89":
@@ -1994,11 +1957,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "59"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2011,6 +1974,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "90":
@@ -2024,11 +1988,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "77"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2041,6 +2005,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "91":
@@ -2055,6 +2020,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "48"
@@ -2070,7 +2036,6 @@ tasks:
       ResolveIP:
         simple: "True"
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -2088,6 +2053,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "92":
@@ -2110,9 +2076,8 @@ tasks:
       investigationstage:
         simple: Triage
     reputationcalc: 1
-    separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -2125,6 +2090,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "93":
@@ -2135,8 +2101,7 @@ tasks:
       id: 4a2b9672-7df4-496d-8852-9669a2b078ac
       version: -1
       name: Update incident stage
-      description: Updates the stage of the port scan investigation to "Detection".
-        Additionally, saves gathered incident data to incident fields.
+      description: Updates the stage of the port scan investigation to "Detection". Additionally, saves gathered incident data to incident fields.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -2167,9 +2132,8 @@ tasks:
                 value:
                   simple: ', '
     reputationcalc: 1
-    separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -2182,6 +2146,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "94":
@@ -2192,8 +2157,7 @@ tasks:
       id: 87e6b32a-23a6-4aed-8103-6ffdbe0d2928
       version: -1
       name: Update incident stage
-      description: Updates the stage of the port scan investigation to "Containment
-        & Remediation". Additionally, saves gathered incident data to incident fields.
+      description: Updates the stage of the port scan investigation to "Containment & Remediation". Additionally, saves gathered incident data to incident fields.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -2207,9 +2171,8 @@ tasks:
       investigationstage:
         simple: Containment & Remediation
     reputationcalc: 1
-    separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -2222,6 +2185,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "95":
@@ -2232,8 +2196,7 @@ tasks:
       id: 1fc18b5e-5f11-47f6-8f94-f8bad97fc719
       version: -1
       name: Save XDR endpoints
-      description: Saves the XDR endpoints under the PaloAltoNetworksXDREndpoint context
-        key.
+      description: Saves the XDR endpoints under the PaloAltoNetworksXDREndpoint context key.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2251,7 +2214,6 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2264,6 +2226,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "96":
@@ -2277,8 +2240,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2291,6 +2254,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "97":
@@ -2301,8 +2265,7 @@ tasks:
       id: 40036b5f-2d29-4c29-80a7-9f8cdd508a94
       version: -1
       name: Was there a lateral movement alert?
-      description: Checks whether one of the received alerts is a lateral movement
-        alert.
+      description: Checks whether one of the received alerts is a lateral movement alert.
       type: condition
       iscommand: false
       brand: ""
@@ -2331,7 +2294,6 @@ tasks:
                         simple: Lateral Movement
                 accessor: detection_timestamp
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2344,6 +2306,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "98":
@@ -2358,6 +2321,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "61"
@@ -2431,82 +2395,73 @@ inputs:
 - key: WhitelistedPorts
   value: {}
   required: false
-  description: A list of comma-separated ports that should not be blocked even if
-    used in an attack.
-  playbookInputQuery: null
+  description: A list of comma-separated ports that should not be blocked even if used in an attack.
+  playbookInputQuery:
 - key: BlockAttackerIP
   value:
     simple: "False"
   required: false
   description: Whether attacking IPs should be automatically blocked using firewalls.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: WhitelistedHostnames
   value:
     simple: AdminPC
   required: false
-  description: A list of comma-separated hostnames that should not be isolated even
-    if used in an attack.
-  playbookInputQuery: null
+  description: A list of comma-separated hostnames that should not be isolated even if used in an attack.
+  playbookInputQuery:
 - key: EmailAddressesToNotify
   value: {}
   required: false
-  description: A list of comma-separated values of email addresses that should receive
-    a notification about compromised hosts.
-  playbookInputQuery: null
+  description: A list of comma-separated values of email addresses that should receive a notification about compromised hosts.
+  playbookInputQuery:
 - key: CriticalUsernames
   value: {}
   required: false
-  description: A list of comma-separated names of critical users in the organization.
-    This will affect the calculated severity of the incident.
-  playbookInputQuery: null
+  description: A list of comma-separated names of critical users in the organization. This will affect the calculated severity of the incident.
+  playbookInputQuery:
 - key: IsolateEndpointAutomatically
   value:
     simple: "False"
   required: false
-  description: Whether to automatically isolate endpoints, or opt for manual user
-    approval. True means isolation will be done automatically.
-  playbookInputQuery: null
+  description: Whether to automatically isolate endpoints, or opt for manual user approval. True means isolation will be done automatically.
+  playbookInputQuery:
 - key: InternalIPRanges
   value: {}
   required: false
-  description: 'A list of IP ranges to check the IP against. The list should be provided
-    in CIDR notation, separated by commas. An example of a list of ranges would be:
-    "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided,
-    will use default list provided in the IsIPInRanges script (the known IPv4 private
-    address ranges).'
-  playbookInputQuery: null
+  description: 'A list of IP ranges to check the IP against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
+  playbookInputQuery:
 - key: CriticalHostnames
   value:
     simple: AdminPC
   required: false
-  description: A list of comma-separated names of critical endpoints in the organization.
-    This will affect the calculated severity of the incident.
-  playbookInputQuery: null
+  description: A list of comma-separated names of critical endpoints in the organization. This will affect the calculated severity of the incident.
+  playbookInputQuery:
 - key: RoleForEscalation
   value: {}
   required: false
-  description: The name of the Demisto role of the users that the incident can be
-    escalated to in case of developments like lateral movement.
-  playbookInputQuery: null
+  description: The name of the Demisto role of the users that the incident can be escalated to in case of developments like lateral movement.
+  playbookInputQuery:
 - key: BlockMaliciousFiles
   value:
     simple: "False"
   required: false
-  description: Whether to automatically block malicious files involved with the incident
-    across all endpoints in the organization.
-  playbookInputQuery: null
+  description: Whether to automatically block malicious files involved with the incident across all endpoints in the organization.
+  playbookInputQuery:
 - key: CriticalADGroups
   value:
     simple: admins
   required: false
-  description: CSV of DN names of critical Active Directory groups. This will affect
-    the severity calculated for this incident.
-  playbookInputQuery: null
+  description: CSV of DN names of critical Active Directory groups. This will affect the severity calculated for this incident.
+  playbookInputQuery:
 - key: OnCall
   value:
     simple: "false"
   required: false
   description: Set to true to assign only the users that are currently on shift.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
-sourceplaybookid: Cortex XDR - Port Scan
+fromversion: 5.0.0
+tests:
+- Test XDR Playbook
+contentitemexportablefields:
+  contentitemfields: {}
