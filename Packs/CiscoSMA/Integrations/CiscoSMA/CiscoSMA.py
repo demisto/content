@@ -574,8 +574,8 @@ class Client(BaseClient):
             start_date (str): Start date.
             end_date (str): End date.
             device_type (str): Device type.
-            device_group_name (str, optional): _description_. Defaults to None.
-            device_name (str, optional): _description_. Defaults to None.
+            device_group_name (str, optional): Device group name. Defaults to None.
+            device_name (str, optional): Device name. Defaults to None.
             order_by (str, optional): Order results by field. Defaults to None.
             order_dir (str, optional): Order direction. Defaults to None.
             top (str, optional): Number of records with the highest values to return. Defaults to None.
