@@ -1372,7 +1372,7 @@ def project_user_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     command = demisto.command()
     params = demisto.params()
     verify_certificate = not params.get('insecure', False)
