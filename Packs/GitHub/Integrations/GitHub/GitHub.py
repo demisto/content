@@ -2,16 +2,18 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
+import codecs
 import copy
 import json
 from datetime import datetime
 from typing import Any, Union
-import codecs
+
 import requests
 import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
+# first contrib comment
 
 ''' GLOBALS/PARAMS '''
 BASE_URL: str
