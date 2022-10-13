@@ -143,8 +143,15 @@ def test_verion_parse():
     assert client.version_parse('10') == 10
     assert client.version_parse('10.1') == 10.1
 
+
 def test_token_generator():
     client = get_firewall_instance_client()
     client.session_metadata['cookie_key'] = 'test'
     assert client.token_generator() == 'f6f4061a1bddc1c04d8109b39f581270'
 
+
+def test_extract_csrf():
+    client = get_firewall_instance_client()
+    assert client.extract_csrf(
+        '<input type="hidden" name="_csrf" value="422JE5PO1WARA1I91CB5FRS99UQ65RF31P9Y3L4T" />') == \
+           '422JE5PO1WARA1I91CB5FRS99UQ65RF31P9Y3L4T'

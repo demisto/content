@@ -50,7 +50,14 @@ class Client:
         except ValueError:
             raise Exception('Version is not in the correct format')
 
-    def login(self) -> str:
+    @staticmethod
+    def extract_csrf(response_text: str) -> str:
+        # the constant amount of chars until the value we want for the csrf
+        csrf_start = response_text.find('_csrf') + CSRF_PARSING_CHARS
+        csrf_end = response_text.find('"', csrf_start)
+        return response_text[csrf_start:csrf_end]
+
+    def login(self) -> str:  # pragma: no cover
         # This is the data sent to Panorama from the Login screen to complete the login and get a PHPSESSID cookie
         login_data = {
             'prot': 'https:',
@@ -67,10 +74,7 @@ class Client:
                 # We do this to get the cookie we need to add to the requests in the new version of PAN-OS
                 response = self.session.get(url=f'{self.session_metadata["base_url"]}/php/login.php?',
                                             verify=self.verify)
-                # the constant amount of chars until the value we want for the csrf
-                csrf_start = response.text.find('_csrf') + CSRF_PARSING_CHARS
-                csrf_end = response.text.find('"', csrf_start)
-                csrf = response.text[csrf_start:csrf_end]
+                csrf = self.extract_csrf(response.text)
                 login_data['_csrf'] = csrf
                 self.session_metadata["cookie"] = f'PHPSESSID={response.cookies.get_dict().get("PHPSESSID")}'
                 headers = {
@@ -99,7 +103,7 @@ class Client:
             raise Exception('Failed to login. Please double-check the credentials and the server URL.')
         return match.group(1)
 
-    def logout(self):
+    def logout(self):  # pragma: no cover
         self.session.post(url=f'{self.session_metadata["base_url"]}/php/logout.php?', verify=False)
 
     def token_generator(self) -> str:
@@ -443,7 +447,7 @@ def policy_optimizer_get_dag_command(client: Client, args: dict) -> CommandResul
     )
 
 
-def main():
+def main():  # pragma: no cover
     command = demisto.command()
     params = demisto.params()
     args = demisto.args()
