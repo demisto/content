@@ -66,8 +66,8 @@ def create_incidents_human_readable(human_readable_message, incidents_list):
         human_readable.append({
             'Created At': incident.get('created_at'),
             'ID': incident.get('id'),
-            'Type': incident.get('type'),
             'State': incident.get('state'),
+            'Type': incident.get('type'),
             'Summary': incident.get('summary'),
             'Score': incident.get('score'),
             'Event Count': incident.get('event_count'),
@@ -221,7 +221,7 @@ def get_incidents_batch_by_time_request(client, params):
     fetch_limit = arg_to_number(params.get('fetch_limit', '100'))
     last_fetched_id = arg_to_number(params.get('last_fetched_id', '0'))
 
-    current_time = datetime.now() + timedelta(days=1)
+    current_time = datetime.now()
 
     time_delta = get_time_delta(fetch_delta)
 
@@ -292,7 +292,8 @@ def fetch_events_command(client, first_fetch, last_run, fetch_limit, fetch_delta
             'fetch_limit': fetch_limit
         }
         id = last_fetched_id[state]
-        incidents = get_incidents_batch_by_time_request(client, request_params)
+        incidents_list = get_incidents_batch_by_time_request(client, request_params)
+        incidents.extend(incidents_list)
 
         if incidents:
             id = incidents[-1].get('id')
