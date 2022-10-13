@@ -1433,5 +1433,5 @@ def main() -> None:  # pragma: no cover
 ''' ENTRY POINT '''
 
 
-if __name__ in ("builtins", "__builtin__", "__main__"):
+if __name__ in ("builtins", "__builtin__", "__main__"):  # pragma: no cover
     main()
