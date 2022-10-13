@@ -53,22 +53,22 @@ Searches for processes with various filters.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Process.Name | Unknown | The process name | 
-| Process.Malicious | Unknown | Malicious status of the process | 
-| Process.CreationTime | Unknown | The process creation time | 
-| Process.EndTime | Unknown | The process end time | 
-| Process.CommandLine | Unknown | The command line of the process | 
-| Process.SignedAndVerified | Unknown | Is the process signed and verified | 
-| Process.ProductType | Unknown | The product type | 
-| Process.Children | Unknown | Children of the process | 
-| Process.Parent | Unknown | The parent process | 
-| Process.OwnerMachine | Unknown | The machine's hostname | 
-| Process.User | Unknown | The user who ran the process | 
-| Process.ImageFile | Unknown | Image file of the process | 
-| Process.SHA1 | Unknown | SHA1 of the process file | 
-| Process.MD5 | Unknown | MD5 of the process file | 
-| Process.CompanyName | Unknown | The company's name | 
-| Process.ProductName | Unknown | The product's name | 
+| Cybereason.Process.Name | Unknown | The process name | 
+| Cybereason.Process.Malicious | Unknown | Malicious status of the process | 
+| Cybereason.Process.CreationTime | Unknown | The process creation time | 
+| Cybereason.Process.EndTime | Unknown | The process end time | 
+| Cybereason.Process.CommandLine | Unknown | The command line of the process | 
+| Cybereason.Process.SignedAndVerified | Unknown | Is the process signed and verified | 
+| Cybereason.Process.ProductType | Unknown | The product type | 
+| Cybereason.Process.Children | Unknown | Children of the process | 
+| Cybereason.Process.Parent | Unknown | The parent process | 
+| Cybereason.Process.OwnerMachine | Unknown | The machine's hostname | 
+| Cybereason.Process.User | Unknown | The user who ran the process | 
+| Cybereason.Process.ImageFile | Unknown | Image file of the process | 
+| Cybereason.Process.SHA1 | Unknown | SHA1 of the process file | 
+| Cybereason.Process.MD5 | Unknown | MD5 of the process file | 
+| Cybereason.Process.CompanyName | Unknown | The company's name | 
+| Cybereason.Process.ProductName | Unknown | The product's name | 
 
 #### Command example
 ```!cybereason-query-processes machine=desktop-vg9ke2u hasOutgoingConnection=true hasIncomingConnection=true```
@@ -166,18 +166,18 @@ Searches for connections.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Connection.Name | Unknown | The connection's name | 
-| Connection.Direction | Unknown | OUTGOING/INCOMING | 
-| Connection.ServerAddress | Unknown | Address of the Cybereason machine | 
-| Connection.ServerPort | Unknown | Port of the Cybereason machine | 
-| Connection.PortType | Unknown | Type of the connection | 
-| Connection.ReceivedBytes | Unknown | Received bytes count | 
-| Connection.TransmittedBytes | Unknown | Transmitted bytes count | 
-| Connection.RemoteCountry | Unknown | The connection's remote country | 
-| Connection.OwnerMachine | Unknown | The machine's hostname | 
-| Connection.OwnerProcess | Unknown | The process which performed the connection | 
-| Connection.CreationTime | Unknown | Creation time of the connection | 
-| Connection.EndTime | Unknown | End time of the connection | 
+| Cybereason.Connection.Name | Unknown | The connection's name | 
+| Cybereason.Connection.Direction | Unknown | OUTGOING/INCOMING | 
+| Cybereason.Connection.ServerAddress | Unknown | Address of the Cybereason machine | 
+| Cybereason.Connection.ServerPort | Unknown | Port of the Cybereason machine | 
+| Cybereason.Connection.PortType | Unknown | Type of the connection | 
+| Cybereason.Connection.ReceivedBytes | Unknown | Received bytes count | 
+| Cybereason.Connection.TransmittedBytes | Unknown | Transmitted bytes count | 
+| Cybereason.Connection.RemoteCountry | Unknown | The connection's remote country | 
+| Cybereason.Connection.OwnerMachine | Unknown | The machine's hostname | 
+| Cybereason.Connection.OwnerProcess | Unknown | The process which performed the connection | 
+| Cybereason.Connection.CreationTime | Unknown | Creation time of the connection | 
+| Cybereason.Connection.EndTime | Unknown | End time of the connection | 
 
 #### Command example
 ```!cybereason-query-connections ip=192.168.1.103```
