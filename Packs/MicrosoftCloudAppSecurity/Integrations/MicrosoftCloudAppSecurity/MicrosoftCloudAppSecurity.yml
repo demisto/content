@@ -568,6 +568,17 @@ script:
       name: skip
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: 'Whether this command should return more than 100 results. Possible values: "false" and "true".'
+      isArray: false
+      name: is_scan
+      predefined:
+        - 'false'
+        - 'true'
+      required: false
+      secret: false
     - default: false
       defaultValue: '50'
       description: Maximum number of records returned to the user.
