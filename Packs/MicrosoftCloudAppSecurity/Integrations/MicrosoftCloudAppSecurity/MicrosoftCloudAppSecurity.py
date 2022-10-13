@@ -4,7 +4,6 @@ from pytz import utc
 import urllib3
 
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
-import demistomock as demisto
 
 # Disable insecure warnings
 urllib3.disable_warnings()
