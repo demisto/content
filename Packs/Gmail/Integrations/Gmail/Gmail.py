@@ -590,7 +590,7 @@ def tokens_to_entry(title, response):
         outputs=context,
         readable_output=tableToMarkdown(title, context, headers, removeNull=True),
         outputs_prefix='Tokens',
-        outputs_key_field=['ClientId']
+        outputs_key_field='ClientId'
     )
 
 
