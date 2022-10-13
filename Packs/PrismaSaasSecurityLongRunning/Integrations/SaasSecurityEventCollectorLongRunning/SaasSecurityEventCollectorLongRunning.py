@@ -223,19 +223,34 @@ def fetch_events_from_saas_security(client: Client, max_fetch: Optional[int] = N
 
 
 def long_running_fetch_events(client):
+    """
+    Fetches events from the saas-security queue in a long-running integration
+
+    timeouts (204) docs:
+    https://docs.paloaltonetworks.com/saas-security/saas-security-admin/saas-security-api/syslog-and-api-integration/
+    api-client-integration/public-api-references/log-events-api#id2bfde842-f708-4e0b-bc41-9809903a6021_id8089db72-8f30-
+    4cce-93d2-e39446be650d
+
+    This long-running integration will only fetch events if the fetch-events is set 'true', otherwise, it won't
+    do anything.
+    """
     while True:
         try:
-            response = client.get_events_request()
-            if response.status_code == 200:
-                fetched_events = response.json().get('events') or []
-                num_of_fetched_events = len(fetched_events)
-                demisto.info(f'({num_of_fetched_events=})')
-                demisto.debug(f'({fetched_events=})')
-                send_events_to_xsiam(events=fetched_events, vendor=VENDOR, product=PRODUCT)
-                demisto.updateModuleHealth({'eventsPulled': num_of_fetched_events})
-            elif response.status_code == 204:
-                demisto.debug(f'No events in the queue, received status code of 204')
-            time.sleep(1)
+            if argToBoolean(demisto.params().get('isFetchEvents')):
+                response = client.get_events_request()
+                if response.status_code == 200:
+                    fetched_events = response.json().get('events') or []
+                    num_of_fetched_events = len(fetched_events)
+                    demisto.info(f'({num_of_fetched_events=})')
+                    demisto.debug(f'({fetched_events=})')
+                    send_events_to_xsiam(events=fetched_events, vendor=VENDOR, product=PRODUCT)
+                    demisto.updateModuleHealth({'eventsPulled': num_of_fetched_events})
+                elif response.status_code == 204:
+                    demisto.debug(f'No events in the queue, received status code of 204')
+                else:
+                    demisto.debug(f'Received status code of {response.status_code}')
+            else:
+                time.sleep(30)  # sleeping for 30 seconds if fetch events is set to 'false'.
         except Exception as e:
             error_message = f'error occurred in long running, error: {e}'
             demisto.error(error_message)
@@ -268,9 +283,10 @@ def main() -> None:
         elif command == 'test-module':
             return_results(test_module(client))
         elif command == 'fetch-events':
-            raise NotImplementedError('Events are being fetched through the long running integration only')
+            pass  # events are fetched in the long-running integration
         elif command == 'saas-security-get-events':
-            raise NotImplementedError('Events are being fetched through the long running integration only')
+            return_results(get_events_command(client, args, max_fetch=max_fetch))
+            # pass  # events are fetched in the long-running integration
         else:
             raise NotImplementedError(f'Command {command} is not implemented in saas-security integration.')
     except Exception as e:
