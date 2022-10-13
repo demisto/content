@@ -1,7 +1,7 @@
 ''' TESTS ARGUMENTS '''
 
 # test_users_to_entry #
-title_test_users_to_entry = 'User 000000000000000000000:'
+
 response_test_users_to_entry = [
     {'kind': 'admin#directory#user',
         'id': '000000000000000000000',
@@ -56,8 +56,7 @@ expected_result_test_users_to_entry = {"expected_human_readable": expected_human
 
 
 # test_autoreply_to_entry #
-user_id_test_autoreply_to_entry = 'johndoe@test.com'
-title_test_autoreply_to_entry = 'User johndoe@test.com:'
+
 get_auto_replay_result = {'enableAutoReply': True,
                           'responseSubject': 'subject_test',
                           'responseBodyPlainText': 'body_test',
@@ -89,7 +88,6 @@ expected_result_test_autoreply_to_entry = {"expected_human_readable": expected_h
 
 
 # test_user_role_to_entry #
-title_test_role_to_entry = 'Role 00000000000000000 details:'
 role_test_role_to_entry = {'kind': 'admin#directory#role',
                            'etag': '"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"',
                            'roleId': '00000000000000000',
@@ -121,7 +119,7 @@ expected_result_test_role_to_entry = {"expected_human_readable": expected_human_
 
 
 # test_user_roles_to_entry #
-title_test_user_roles_to_entry = 'User Roles of 222222222222222222222:'
+
 get_user_role_mock_result = [{'kind': 'admin#directory#roleAssignment',
                               'etag': '"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"',
                               'roleAssignmentId': '00000000000000000',
@@ -144,7 +142,7 @@ expected_result_user_roles_to_entry = {"expected_human_readable": expected_human
 
 
 # test_tokens_to_entry #
-title_test_tokens_to_entry = 'Tokens:'
+
 get_user_tokens_mock_result = [{'kind': 'admin#directory#token',
                                 'etag': '"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"',
                                 'clientId': '000000000000.apps.googleusercontent.com',
@@ -171,10 +169,7 @@ expected_result_test_tokens_to_entry = {"expected_human_readable": expected_huma
 
 
 # test_sent_mail_to_entry #
-title_sent_mail_to_entry = 'Email sent:'
-to_sent_mail_to_to_entry = ['helloworld@gmail.com']
-email_from_sent_mail_to_to_entry = 'test@gmail.com'
-subject_sent_mail_to_to_entry = 'ls'
+
 send_mail_mock_result = {'id': '1111111111111111', 'threadId': '1111111111111111', 'labelIds': ['SENT']}
 
 expected_human_readable_test_sent_mail_to_entry = '### Email sent:\n|Type|ID|To|From|Subject|Labels|ThreadId|\n\
@@ -199,9 +194,6 @@ expected_result_test_sent_mail_to_entry = {"expected_human_readable": expected_h
 
 
 # test_filters_to_entry #
-title_test_filters_to_entry = 'filters:'
-mailbox_test_filters_to_entry = '111111111111111111111'
-
 list_filters_mock_result = [{'id': 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', 'criteria': {'from': 'test1@gmail.com'},
                              'action': {'addLabelIds': ['TRASH']}},
                             {'id': 'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB', 'criteria': {'from': 'test2@gmail.com'},
@@ -278,6 +270,3 @@ except_contents_test_emails_to_entry = [{'id': '183c702bfdbb3fc2',
                                          'internalDate': '1665491175000'}]
 expected_result_test_emails_to_entry = {"expected_human_readable": expected_human_readable_test_emails_to_entry,
                                         "except_contents": except_contents_test_emails_to_entry}
-title_test_emails_to_entry = 'Search in 111111111111111111111:\nquery: "subject:helloworld"'
-format_data_test_emails_to_entry = 'full'
-mailbox_test_emails_to_entry = '111111111111111111111'
