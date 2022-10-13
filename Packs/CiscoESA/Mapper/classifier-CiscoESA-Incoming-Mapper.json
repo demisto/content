@@ -1,0 +1,101 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "CiscoESA-incoming-mapper",
+    "mapping": {
+        "Cisco ESA Spam Quarantine": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "CiscoESA Attachments": {
+                    "complex": {
+                        "filters": [],
+                        "root": "attachments",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "CiscoESA Email From": {
+                    "complex": {
+                        "filters": [],
+                        "root": "fromAddress",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "CiscoESA Email Message ID": {
+                    "simple": "mid"
+                },
+                "CiscoESA Email Subject": {
+                    "simple": "subject"
+                },
+                "CiscoESA Email To": {
+                    "complex": {
+                        "filters": [],
+                        "root": "toAddress",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": "\\n"
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "CiscoESA Envelope Recipient": {
+                    "complex": {
+                        "filters": [],
+                        "root": "envelopeRecipient",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
+                },
+                "CiscoESA Message Body": {
+                    "simple": "messageBody"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {}
+        }
+    },
+    "name": "CiscoESA-incoming-mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}
