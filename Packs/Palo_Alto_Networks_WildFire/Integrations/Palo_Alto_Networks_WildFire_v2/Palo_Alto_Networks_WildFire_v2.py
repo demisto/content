@@ -857,19 +857,24 @@ def wildfire_get_url_webartifacts_command():
 
                     # test for 0 byte tgz returned
                     try:
-
-                        tar = tarfile.open(fileobj=io.BytesIO(result.content))
+                        image_content = result.content
+                        # byte_array = image_content.read_bytes()
+                        file_like_object = io.BytesIO(image_content)
+                        tar = tarfile.open(fileobj=file_like_object)
+                        
+                        # tar = tarfile.open(fileobj=io.BytesIO(result.content))
+                        
+                        # get the names of the files in the TAR
                         files = tar.getnames()
 
-                        # we have a tar file with entries to extract
+                        # we have a TAR file with entries to extract
                         # this assumes there is only one screenshot per tgz
                         if files[0] in ['screenshot']:
                             # first element is the folder name screenshot
 
                             members = tar.getmembers()
-                            # path = members[1].name
-                            data = tar.extractfile(members[1])
-                            fdata = data.read()
+                            data = tar.extractfile(members[1])   # type:ignore
+                            fdata = data.read()   # type:ignore
                             exported_files.append(members[1].name)
                             stored_img = fileResult(f'screenshot_{url}.png', fdata)
 
