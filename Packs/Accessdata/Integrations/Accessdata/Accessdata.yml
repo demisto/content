@@ -5,6 +5,7 @@ name: Accessdata
 display: Accessdata (Deprecated)
 category: Forensics & Malware Analysis
 description: Deprecated. Use Exterro FTK instead.
+deprecated: true
 configuration:
 - display: Server URL with scheme (FQDN or IP address in X.X.X.X format with scheme specified)
   name: server_name
