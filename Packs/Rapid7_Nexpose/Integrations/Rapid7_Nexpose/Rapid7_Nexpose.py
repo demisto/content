@@ -5,7 +5,7 @@ import demistomock as demisto
 
 from copy import deepcopy
 from datetime import datetime
-from enum import Enum
+from enum import Enum, EnumMeta
 from time import strptime, struct_time
 from typing import Optional, Union
 from CommonServerPython import *
@@ -21,54 +21,6 @@ VENDOR_NAME = "Rapid7 Nexpose"  # TODO: Check if correct
 urllib3.disable_warnings()  # Disable insecure warnings
 
 
-class CredentialService(Enum):
-    """An Enum of possible service values for credentials."""
-    AS400 = 1
-    CIFS = 2
-    CIFSHASH = 3
-    CVS = 4
-    DB2 = 5
-    FTP = 6
-    HTTP = 7
-    MS_SQL = 8
-    MYSQL = 9
-    NOTES = 10
-    ORACLE = 11
-    POP = 12
-    POSTGRESQL = 13
-    REMOTE_EXEC = 14
-    SNMP = 15
-    SNMPV3 = 16
-    SSH = 17
-    SSH_KEY = 18
-    SYBASE = 19
-    TELNET = 20
-
-
-class ReportFileFormat(Enum):
-    """An Enum of possible file formats to use for reports."""
-    PDF = 1
-    RTF = 2
-    XML = 3
-    HTML = 4
-    Text = 5
-
-
-class RepeatBehaviour(Enum):
-    """An Enum of possible repeat behaviours for scheduled scans to use when repeating a scan that was paused
-    due to reaching its maximum duration."""
-    RESTART_SCAN = 1
-    RESUME_SCAN = 2
-
-
-class RepeatFrequencyType(Enum):
-    """An Enum of possible repeat frequency for scheduled scans."""
-    HOUR = 1
-    DAY = 2
-    WEEK = 3
-    DATE_OF_MONTH = 4
-
-
 class ScanStatus(Enum):
     """An Enum of possible scan status values."""
     PAUSE = 1
@@ -76,80 +28,139 @@ class ScanStatus(Enum):
     STOP = 3
 
 
-class SharedCredentialSiteAssignment(Enum):
+class FlexibleEnum(EnumMeta):
+    """A custom EnumMeta to allow easy and flexible conversion to and from strings."""
+    def __getitem__(self, item):
+        try:
+            return super().__getitem__(item)
+
+        except KeyError:
+            return super().__getitem__(item.upper().replace(' ', '_').replace('-', '_'))
+
+
+class CredentialService(Enum, metaclass=FlexibleEnum):
+    """An Enum of possible service values for credentials."""
+    AS400 = "as400"
+    CIFS = "cifs"
+    CIFSHASH = "cifshash"
+    CVS = "cvs"
+    DB2 = "db2"
+    FTP = "ftp"
+    HTTP = "http"
+    MS_SQL = "ms-sql"
+    MYSQL = "mysql"
+    NOTES = "notes"
+    ORACLE = "oracle"
+    POP = "pop"
+    POSTGRESQL = "postgresql"
+    REMOTE_EXEC = "remote-exec"
+    SNMP = "snmp"
+    SNMPV3 = "snmpv3"
+    SSH = "ssh"
+    SSH_KEY = "ssh-key"
+    SYBASE = "sybase"
+    TELNET = "telnet"
+
+
+class ReportFileFormat(Enum, metaclass=FlexibleEnum):
+    """An Enum of possible file formats to use for reports."""
+    PDF = "pdf"
+    RTF = "rtf"
+    XML = "xml"
+    HTML = "html"
+    Text = "text"
+
+
+class RepeatBehaviour(Enum, metaclass=FlexibleEnum):
+    """An Enum of possible repeat behaviours for scheduled scans to use when repeating a scan that was paused
+    due to reaching its maximum duration."""
+    RESTART_SCAN = "restart-scan"
+    RESUME_SCAN = "resume-scan"
+
+
+class RepeatFrequencyType(Enum, metaclass=FlexibleEnum):
+    """An Enum of possible repeat frequency for scheduled scans."""
+    HOUR = "hour"
+    DAY = "day"
+    WEEK = "week"
+    DATE_OF_MONTH = "date-of-month"
+    DAY_OF_MONTH = "day-of-month"
+
+
+class SharedCredentialSiteAssignment(Enum, metaclass=FlexibleEnum):
     """An Enum of possible site assignment values for shared credentials."""
-    ALL_SITES = 1
-    SPECIFIC_SITES = 2
+    ALL_SITES = "all-sites"
+    SPECIFIC_SITES = "specific-sites"
 
 
-class SiteImportance(Enum):
+class SiteImportance(Enum, metaclass=FlexibleEnum):
     """An Enum of possible site importance values."""
-    VERY_LOW = 1
-    LOW = 2
-    NORMAL = 3
-    HIGH = 4
-    VERY_HIGH = 5
+    VERY_LOW = "very_low"
+    LOW = "low"
+    NORMAL = "normal"
+    HIGH = "high"
+    VERY_HIGH = "very_high"
 
 
-class SNMPv3AuthenticationType(Enum):
+class SNMPv3AuthenticationType(Enum, metaclass=FlexibleEnum):
     """An Enum of possible authentication type values for shared credentials."""
-    NO_AUTHENTICATION = 1
-    MD5 = 2
-    SHA = 3
+    NO_AUTHENTICATION = "no-authentication"
+    MD5 = "md5"
+    SHA = "sha"
 
 
-class SNMPv3PrivacyType(Enum):
+class SNMPv3PrivacyType(Enum, metaclass=FlexibleEnum):
     """An Enum of possible privacy type values for SNMPv3P credentials."""
-    NO_PRIVACY = 1
-    DES = 2
-    AES_128 = 3
-    AES_192 = 4
-    AES_192_WITH_3_DES_KEY_EXTENSION = 5
-    AES_256 = 6
-    AES_265_WITH_3_DES_KEY_EXTENSION = 7
+    NO_PRIVACY = "no-privacy"
+    DES = "des"
+    AES_128 = "aes-128"
+    AES_192 = "aes-192"
+    AES_192_WITH_3_DES_KEY_EXTENSION = "aes-192-with-3-des-key-extension"
+    AES_256 = "aes-256"
+    AES_265_WITH_3_DES_KEY_EXTENSION = "aes-265-with-3-des-key-extension"
 
 
-class SSHElevationType(Enum):
+class SSHElevationType(Enum, metaclass=FlexibleEnum):
     """An Enum of possible permission elevation values for SSH credentials."""
-    NONE = 1
-    SUDO = 2
-    SUDOSU = 3
-    SU = 4
-    PBRUN = 5
-    PRIVILEGED_EXEC = 6
+    NONE = "none"
+    SUDO = "sudo"
+    SUDOSU = "sudosu"
+    SU = "su"
+    PBRUN = "pbrun"
+    PRIVILEGED_EXEC = "privileged-exec"
 
 
-class VulnerabilityExceptionReason(Enum):
+class VulnerabilityExceptionReason(Enum, metaclass=FlexibleEnum):
     """An Enum of possible vulnerability exception reason values."""
-    FALSE_POSITIVE = 1
-    COMPENSATING_CONTROL = 2
-    ACCEPTED_USE = 3
-    ACCEPTED_RISK = 4
-    OTHER = 5
+    FALSE_POSITIVE = "False Positive"
+    COMPENSATING_CONTROL = "Compensating Control"
+    ACCEPTED_USE = "Acceptable Use"
+    ACCEPTED_RISK = "Acceptable Risk"
+    OTHER = "Other"
 
 
-class VulnerabilityExceptionScopeType(Enum):
+class VulnerabilityExceptionScopeType(Enum, metaclass=FlexibleEnum):
     """An Enum of possible vulnerability exception scope type values."""
-    GLOBAL = 1
-    SITE = 2
-    ASSET = 3
-    ASSET_GROUP = 4
-    INSTANCE = 5
+    GLOBAL = "Global"
+    SITE = "Site"
+    ASSET = "Asset"
+    ASSET_GROUP = "Asset Group"
+    INSTANCE = "Instance"
 
 
-class VulnerabilityExceptionState(Enum):
+class VulnerabilityExceptionState(Enum, metaclass=FlexibleEnum):
     """An Enum of possible vulnerability exception state values."""
-    DELETED = 1
-    EXPIRED = 2
-    APPROVED = 3
-    REJECTED = 4
+    DELETED = "Deleted"
+    EXPIRED = "Expired"
+    APPROVED = "Approved"
+    REJECTED = "Rejected"
 
 
-class VulnerabilityExceptionStatus(Enum):
+class VulnerabilityExceptionStatus(Enum, metaclass=FlexibleEnum):
     """An Enum of possible vulnerability exception status values."""
-    RECALL = 1
-    APPROVE = 2
-    REJECT = 3
+    RECALL = "recall"
+    APPROVE = "approve"
+    REJECT = "reject"
 
 
 class InvalidSiteNameException(DemistoException):
@@ -282,7 +293,7 @@ class Client(BaseClient):
             "scope": scope,
             "template": template_id,
             "name": report_name,
-            "format": report_format.name.lower()
+            "format": report_format.value,
         }
 
         return self._http_request(
@@ -362,8 +373,6 @@ class Client(BaseClient):
         Returns:
             dict: API response with information about the newly created shared credential.
         """
-        service_str = service.name.lower().replace("_", "-")
-
         account_data = {}
 
         with CredentialService as S:  # type: CredentialService
@@ -371,7 +380,7 @@ class Client(BaseClient):
             if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL, S.ORACLE,
                            S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SNMPV3, S.SSH, S.SSH_KEY, S.SYBASE, S.TELNET):
                 if username is None:
-                    raise ValueError(f"Username is required for \"{service_str}\" services.")
+                    raise ValueError(f"Username is required for \"{service.value}\" services.")
 
                 account_data["username"] = username
 
@@ -379,7 +388,7 @@ class Client(BaseClient):
             if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL,
                            S.ORACLE, S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SSH, S.SYBASE, S.TELNET):
                 if password is None:
-                    raise ValueError(f"Password is required for \"{service_str}\" services.")
+                    raise ValueError(f"Password is required for \"{service.value}\" services.")
 
                 account_data["password"] = password
 
@@ -402,7 +411,7 @@ class Client(BaseClient):
 
             if service == S.CIFSHASH:
                 if ntlm_hash is None:
-                    raise ValueError(f"NTLM hash is required for \"{service_str}\" services.")
+                    raise ValueError(f"NTLM hash is required for \"{service.value}\" services.")
 
                 account_data["ntlmHash"] = ntlm_hash
 
@@ -426,28 +435,28 @@ class Client(BaseClient):
 
             if service == S.SNMP:
                 if snmp_community_name is None:
-                    raise ValueError(f"Community name is required for \"{service_str}\" services.")
+                    raise ValueError(f"Community name is required for \"{service.value}\" services.")
 
                 account_data["community"] = snmp_community_name
 
             if service == S.SNMPV3:
                 if snmpv3_authentication_type is None:
-                    raise ValueError(f"Authentication type is required for \"{service_str}\" services.")
+                    raise ValueError(f"Authentication type is required for \"{service.value}\" services.")
 
-                account_data["authenticationType"] = snmpv3_authentication_type.name.lower().replace("_", "-")
+                account_data["authenticationType"] = snmpv3_authentication_type.value
 
                 if snmpv3_authentication_type != SNMPv3AuthenticationType.NO_AUTHENTICATION:
                     if password is None:
-                        raise ValueError(f"Password is required for \"{service_str}\" services when authentication "
+                        raise ValueError(f"Password is required for \"{service.value}\" services when authentication "
                                          f"is md5 to anything other than \"no-authentication\".")
 
                     account_data["password"] = password
 
                 if snmpv3_privacy_type is not None:  # TODO: Should privacy_type be required?
-                    account_data["privacyType"] = snmpv3_privacy_type.name.lower().replace("_", "-")
+                    account_data["privacyType"] = snmpv3_privacy_type.value
 
                     if snmpv3_privacy_type != SNMPv3PrivacyType.NO_PRIVACY and snmpv3_privacy_password is None:
-                        raise ValueError(f"Privacy password is required for \"{service_str}\" services when the "
+                        raise ValueError(f"Privacy password is required for \"{service.value}\" services when the "
                                          f"authentication type is set to a value other than \"no-authentication\", "
                                          f"and privacy type is set to a value other than \"no-privacy\".")
 
@@ -459,20 +468,20 @@ class Client(BaseClient):
 
                 if ssh_permission_elevation not in (SSHElevationType.NONE, SSHElevationType.PBRUN):
                     if None in (ssh_permission_elevation_username, ssh_permission_elevation_password):
-                        raise ValueError(f"Elevation username and password are required for \"{service_str}\" services"
-                                         f"when permission elevation is not \"none\" or \"pbrun\".")
+                        raise ValueError(f"Elevation username and password are required for \"{service.value}\" "
+                                         f"services when permission elevation is not \"none\" or \"pbrun\".")
 
                     account_data["permissionElevationUsername"] = ssh_permission_elevation_username
                     account_data["permissionElevationPassword"] = ssh_permission_elevation_password
 
             if service == S.SSH_KEY:
                 if ssh_key_pem is None:
-                    raise ValueError(f"SSH private key password is required for \"{service_str}\" services.")
+                    raise ValueError(f"SSH private key password is required for \"{service.value}\" services.")
 
                 account_data["pemKey"] = ssh_key_pem
 
                 if ssh_private_key_password is None:  # TODO: Check if actually required
-                    raise ValueError(f"SSH private key password is required for \"{service_str}\" services.")
+                    raise ValueError(f"SSH private key password is required for \"{service.value}\" services.")
 
                 account_data["privateKeyPassword"] = ssh_private_key_password
 
@@ -480,7 +489,7 @@ class Client(BaseClient):
             description=description,
             hostRestriction=host_restriction,
             name=name,
-            siteAssignment=site_assignment.name.lower().replace("_", "-"),
+            siteAssignment=site_assignment.value,
         )
 
         if port_restriction is not None and host_restriction is not None:
@@ -563,7 +572,7 @@ class Client(BaseClient):
                 raise ValueError("'date_of_month' parameter must be set if frequency is set to 'Date of month'.")
 
             repeat = find_valid_params(
-                every=frequency.name.lower().replace("_", "-"),
+                every=frequency.value,
                 interval=interval,
                 dateOfMonth=date_of_month,
             )
@@ -572,7 +581,7 @@ class Client(BaseClient):
             assets=assets,
             duration=duration,
             enabled=enabled,
-            onScanRepeat=repeat_behaviour.name.lower().replace("_", "-"),
+            onScanRepeat=repeat_behaviour.value,
             repeat=repeat,
             scanName=scan_name,
             scanTemplateId=scan_template_id,
@@ -605,7 +614,7 @@ class Client(BaseClient):
         Returns:
             dict: API response with information about the newly created site.
         """
-        importance: Optional[str] = site_importance.name.lower() if site_importance else None
+        importance: Optional[str] = site_importance.value if site_importance else None
 
         post_data = find_valid_params(
             name=name,
@@ -653,11 +662,11 @@ class Client(BaseClient):
         """
         scope_obj = find_valid_params(
             id=vulnerability_id,
-            type=scope_type.name.lower().replace("_", " ").title(),
+            type=scope_type.value,
         )
 
         submit_obj = find_valid_params(
-            reason=reason.name.lower().replace("_", " ").title(),
+            reason=reason.name.value,
             comment=comment,
         )
 
@@ -668,7 +677,7 @@ class Client(BaseClient):
         post_data = find_valid_params(
             expires=expires,
             scope=scope_obj,
-            state=state.name.lower().replace("_", " ").title(),
+            state=state.value,
             submit=submit_obj,
         )
 
@@ -1347,7 +1356,7 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def update_scan_status(self, scan_id: str, status: str) -> dict:
+    def update_scan_status(self, scan_id: str, status: ScanStatus) -> dict:
         """
         | Update status for a specific scan.
         |
@@ -1355,10 +1364,10 @@ class Client(BaseClient):
 
         Args:
             scan_id (str): ID of the scan to update.
-            status (str): Status to set the scan to. Can be either "pause", "stop", or "resume".
+            status (ScanStatus): Status to set the scan to.
         """
         return self._http_request(
-            url_suffix=f"/scans/{scan_id}/{status}",
+            url_suffix=f"/scans/{scan_id}/{status.value}",
             method="POST",
             resp_type="json",
         )
@@ -1429,7 +1438,7 @@ class Client(BaseClient):
                 raise ValueError("'date-of-month' parameter must be set if frequency is set to 'Date of month'.")
 
             repeat = find_valid_params(
-                every=frequency.name.lower().replace("_", "-"),
+                every=frequency.value,
                 interval=interval,
                 dateOfMonth=date_of_month,
             )
@@ -1438,7 +1447,7 @@ class Client(BaseClient):
             assets=assets,
             duration=duration,
             enabled=enabled,
-            onScanRepeat=repeat_behaviour.name.lower().replace("_", "-"),
+            onScanRepeat=repeat_behaviour.value,
             repeat=repeat,
             scanName=scan_name,
             scanTemplateId=scan_template_id,
@@ -1468,7 +1477,7 @@ class Client(BaseClient):
             dict: API response with information about the updated vulnerability exception.
         """
         return self._http_request(
-            url_suffix=f"/vulnerability_exceptions/{vulnerability_exception_id}/{status.name.lower()}",
+            url_suffix=f"/vulnerability_exceptions/{vulnerability_exception_id}/{status.value}",
             method="POST",
             resp_type="json",
         )
@@ -1678,7 +1687,7 @@ def create_report(client: Client, scope: dict[str, Any], template_id: Optional[s
         "Name": report_name,
         "ID": report_id,
         "InstanceID": instance_id,
-        "Format": report_format.name.lower(),
+        "Format": report_format.value,
     }
     hr = tableToMarkdown("Report Information", context)
 
@@ -2192,7 +2201,7 @@ def create_scan_report_command(client: Client, scan_id: str, template_id: Option
     scope = {"scan": scan_id}
 
     if report_format is not None:
-        report_format = report_format.name.lower()
+        report_format = report_format.value
 
     return create_report(
         client=client,
@@ -2433,7 +2442,7 @@ def create_sites_report_command(client: Client, sites: list[Site],
     scope = {"sites": sites}
 
     if report_format is not None:
-        report_format = report_format.name.lower()
+        report_format = report_format.value
 
     return create_report(
         client=client,
@@ -2558,7 +2567,7 @@ def download_report_command(client: Client, report_id: str, instance_id: str,
     )
 
     return fileResult(
-        filename=f"{report_name}.{report_format.name.lower()}",
+        filename=f"{report_name}.{report_format.value}",
         data=report_data,
         file_type=entryTypes["entryInfoFile"],
     )
@@ -3679,10 +3688,10 @@ def update_scan_command(client: Client, scan_id: str, scan_status: ScanStatus) -
         scan_id (str): ID of the scan to update.
         scan_status (ScanStatus): Status to set the scan to.
     """
-    response = client.update_scan_status(scan_id, scan_status.name.lower())
+    response = client.update_scan_status(scan_id, scan_status)
 
     return CommandResults(
-        readable_output=f"Successfully updated scan status to \"{scan_status.name.lower()}\"",
+        readable_output=f"Successfully updated scan status to \"{scan_status.value}\"",
         raw_response=response,
     )
 
@@ -3819,7 +3828,7 @@ def main():
             report_format = None
 
             if args.get("format"):
-                report_format = ReportFileFormat[args["format"].upper()]
+                report_format = ReportFileFormat[args["format"]]
 
             results = create_assets_report_command(
                 client=client,
@@ -3833,7 +3842,7 @@ def main():
             report_format = None
 
             if args.get("format"):
-                report_format = ReportFileFormat[args["format"].upper()]
+                report_format = ReportFileFormat[args["format"]]
 
             results = create_scan_report_command(
                 client=client,
@@ -3844,11 +3853,11 @@ def main():
                 download_immediately=argToBoolean(args.get("download_immediately")),
             )
         elif command == "nexpose-create-scan-schedule":
-            repeat_behaviour = RepeatBehaviour[args["on_scan_repeat"].upper().replace(' ', '_')]
+            repeat_behaviour = RepeatBehaviour[args["on_scan_repeat"]]
             frequency = None
 
             if args.get("frequency"):
-                frequency = RepeatFrequencyType[args.get("frequency").upper().replace(' ', '_')]
+                frequency = RepeatFrequencyType[args.get("frequency")]
 
             results = create_scan_schedule_command(
                 client=client,
@@ -3877,16 +3886,16 @@ def main():
             ssh_permission_elevation = None
 
             if args.get("snmpv3_privacy_type") is not None:
-                snmpv3_privacy_type = SNMPv3PrivacyType[args["snmpv3_privacy_type"].upper().replace('-', '_')]
+                snmpv3_privacy_type = SNMPv3PrivacyType[args["snmpv3_privacy_type"]]
 
             if args.get("ssh_permission_elevation") is not None:
-                ssh_permission_elevation = SSHElevationType[args["ssh_permission_elevation"].upper().replace('-', '_')]
+                ssh_permission_elevation = SSHElevationType[args["ssh_permission_elevation"]]
 
             results = create_shared_credential_command(
                 client=client,
                 name=args["name"],
                 site_assignment=SharedCredentialSiteAssignment[args["site_assignment"]],
-                service=CredentialService[args["service"].replace(' ', '_')],
+                service=CredentialService[args["service"]],
                 database_name=args.get("database"),
                 description=args.get("description"),
                 domain=args.get("domain"),
@@ -3916,7 +3925,7 @@ def main():
             site_importance = None
 
             if args.get("importance"):
-                site_importance = SiteImportance[args["importance"].upper()]
+                site_importance = SiteImportance[args["importance"]]
 
             results = create_site_command(
                 client=client,
@@ -3935,7 +3944,7 @@ def main():
             report_format = None
 
             if args.get("format"):
-                report_format = ReportFileFormat[args["format"].upper()]
+                report_format = ReportFileFormat[args["format"]]
 
             results = create_sites_report_command(
                 client=client,
@@ -3946,9 +3955,9 @@ def main():
                 download_immediately=argToBoolean(args.get("download_immediately")),
             )
         elif command == "nexpose-create-vulnerability-exception":
-            scope_type = VulnerabilityExceptionScopeType[args["scope_type"].upper().replace(' ', '_')]
-            state = VulnerabilityExceptionState[args["state"].upper().replace(' ', '_')]
-            reason = VulnerabilityExceptionReason[args["reason"].upper().replace(' ', '_')]
+            scope_type = VulnerabilityExceptionScopeType[args["scope_type"]]
+            state = VulnerabilityExceptionState[args["state"]]
+            reason = VulnerabilityExceptionReason[args["reason"]]
 
             results = create_vulnerability_exception_command(
                 client=client,
@@ -3988,7 +3997,7 @@ def main():
             report_format = None
 
             if args.get("format"):
-                report_format = ReportFileFormat[args["format"].upper()]
+                report_format = ReportFileFormat[args["format"]]
 
             results = download_report_command(
                 client=client,
@@ -4090,11 +4099,11 @@ def main():
                 scan_status=ScanStatus.RESUME,
             )
         elif command == "nexpose-update-scan-schedule":
-            repeat_behaviour = RepeatBehaviour[args["on_scan_repeat"].upper().replace(' ', '_')]
+            repeat_behaviour = RepeatBehaviour[args["on_scan_repeat"]]
             frequency = None
 
             if args.get("frequency"):
-                frequency = RepeatFrequencyType[args.get("frequency").upper().replace(' ', '_')]
+                frequency = RepeatFrequencyType[args.get("frequency")]
 
             results = update_scan_schedule_command(
                 client=client,
@@ -4123,7 +4132,7 @@ def main():
             status = None
 
             if args.get("status"):
-                status = VulnerabilityExceptionStatus[args.get("status").upper()]
+                status = VulnerabilityExceptionStatus[args.get("status")]
 
             results = update_vulnerability_exception_command(
                 client=client,
