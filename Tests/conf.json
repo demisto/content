@@ -4193,7 +4193,7 @@
         {
             "playbookID": "GitLab-Test",
             "fromversion": "6.5.0",
-            "integrations": "GitLab"
+            "integrations": "Gitlab"
         },
         {
             "playbookID": "LGTM-test-playbook",

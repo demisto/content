@@ -27,7 +27,7 @@ configuration:
   type: 8
 description: Integration to GitLab API
 display: GitLab
-name: GitLab
+name: Gitlab
 script:
   commands:
   - name: gitlab-version-get
