@@ -923,7 +923,7 @@ script:
     description: Returns a list of files that match the specified filters. Filters
       include file type, file share value, file extension, file quarantine status,
       and a custom filter. If you pass the custom_filter argument it will override
-      the other filters in this command.
+      the other filters in this command. This command is supported only when using the legacy authentication.
     execution: false
     name: microsoft-cas-files-list
     outputs:
