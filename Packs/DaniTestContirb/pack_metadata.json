@@ -1,0 +1,21 @@
+{
+    "name": "DaniTestContirb",
+    "description": "Ignore, used for internal testing",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Daniel",
+    "url": "",
+    "email": "",
+    "created": "2022-10-13T09:09:33Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "darkushin"
+    ]
+}
