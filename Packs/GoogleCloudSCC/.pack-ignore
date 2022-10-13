@@ -8,7 +8,7 @@ ignore=RM104
 ignore=BA101
 
 [file:incidentfield-GoogleCloudSCC_Finding_SourceProperties_Alert.json]
-ignore=IF100
+ignore=IF100,IF110,BC106
 
 [file:incidentfield-GoogleCloudSCC_Asset_DisplayName.json]
 ignore=IF110,BC106
@@ -47,9 +47,6 @@ ignore=IF110,BC106
 ignore=IF110,BC106
 
 [file:incidentfield-GoogleCloudSCC_Finding_SourceProperties_ActivationTrigger.json]
-ignore=IF110,BC106
-
-[file:incidentfield-GoogleCloudSCC_Finding_SourceProperties_Alert.json]
 ignore=IF110,BC106
 
 [file:incidentfield-GoogleCloudSCC_Finding_SourceProperties_AlertType.json]
@@ -291,3 +288,21 @@ ignore=IF110,BC106
 
 [file:incidentfield-GoogleCloudSCC_Security_Marks.json]
 ignore=IF110,BC106
+
+[file:fetch_incidents_data.json]
+ignore=BA102
+
+[file:cloud_assets_owners_get_hr.json]
+ignore=BA102
+
+[file:update_finding_hr.md]
+ignore=BA102
+
+[file:list_finding_hr.md]
+ignore=BA102
+
+[file:list_asset_hr.md]
+ignore=BA102
+
+[file:cloud_assets_list_hr.md]
+ignore=BA102
