@@ -5,7 +5,7 @@
           "test@test.com"
         ],
         "toAddress": [
-          "test@test.com <test@test.com>, hi@hi.com <hi@hi.com>, hi1@hi.com <hi1@hi.com>"
+          "test@test.com <test@test.com>, test@test.com <test@test.com>, test@test.com <test@test.com>"
         ],
         "attachments": [],
         "messageBody": "X-MGA-submission: MDHTEMaXiw5S1sGLpHiZuknQgY9yfOYqHCZrZRH+volYPXVDYNHSoSYtn+y92K4gFKFG6sF+MCeTBl1yKgdw4gz2Cs62UzVdh8L0mFnyMCiicQXJeG0LxIvlAzFR+47whtduvrkCl9cpTsFqWDi62pyTlFKY6gWx2iDgkd3cIuGSyw==",

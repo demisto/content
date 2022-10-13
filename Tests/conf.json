@@ -5199,6 +5199,11 @@
         },
         {
             "playbookID": "VerifyCIDR-Test"
+        },
+        {
+            "integrations": "CiscoESA",
+            "playbookID": "CiscoESA",
+            "fromversion": "6.2.0"
         }
     ],
     "skipped_tests": {

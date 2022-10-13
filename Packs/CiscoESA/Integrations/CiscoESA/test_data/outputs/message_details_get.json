@@ -50,7 +50,7 @@
           },
           {
             "timestamp": "20 Sep 2022 13:30:50 (GMT +00:00)",
-            "description": "Protocol SMTP interface Data 1  (IP 194.165.192.36) on incoming connection (ICID 23092) from sender IP 1.1.1.1. Reverse DNS  test.test.com verified yes.",
+            "description": "Protocol SMTP interface Data 1  (IP 1.1.1.1) on incoming connection (ICID 23092) from sender IP 1.1.1.1. Reverse DNS  test.test.com verified yes.",
             "lastEvent": false
           },
           {

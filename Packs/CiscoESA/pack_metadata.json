@@ -1,6 +1,6 @@
 
 {
-    "name": "Cisco ESA",
+    "name": "CiscoESA",
     "description": "The Cisco Email Security Appliance is an email security gateway product. It is designed to detect and block a wide variety of email-borne threats, such as malware, spam and phishing attempts.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
