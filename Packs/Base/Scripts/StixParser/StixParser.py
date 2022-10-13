@@ -782,7 +782,7 @@ class STIX2Parser:
     @staticmethod
     def create_envelopes_by_type(objects) -> dict:
         """
-        Polls a taxii collection
+        Creates objects envelops by type
         """
         types_envelopes: dict = {}
         for obj in objects:
@@ -1502,6 +1502,10 @@ def build_observables(file_name):
 
 
 def parse_stix(file_name):
+    """
+    :param file_name: the file with xml indicators
+    :return: Parsed indicators in XSOAR format
+    """
     indicators = []
 
     # Create the indicators from the observables
