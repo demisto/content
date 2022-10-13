@@ -2347,7 +2347,7 @@ def create_channel():
 def invite_to_channel():
     channel = demisto.args().get('channel')
     channel_id = demisto.args().get('channel_id', '')
-    users = argToList(demisto.args().get('users', []))
+    users = argToList(demisto.args().get('users', '[]').rstrip(', '))
 
     if not users:
         # Not raising an error here to preserve BC
