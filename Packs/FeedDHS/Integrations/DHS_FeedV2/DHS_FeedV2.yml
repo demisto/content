@@ -9,28 +9,27 @@ configuration:
   required: false
   type: 8
 - defaultvalue: https://ais2.cisa.dhs.gov/taxii2/
-  display: Base URL
-  name: base_url
+  display: Discovery Service URL (e.g. https://ais2.cisa.dhs.gov/taxii2/)
+  name: url
   required: true
   type: 0
-- displaypassword: Key File as Text
-  additionalinfo: For more information, visit https://us-cert.cisa.gov/ais.
+- additionalinfo: For more information, visit https://us-cert.cisa.gov/ais.
+  display: Key File as Text
   name: key
-  type: 9
   required: true
-  hiddenusername: true
+  type: 4
 - additionalinfo: For more information, visit https://us-cert.cisa.gov/ais.
   display: Certificate File as Text
-  name: crt
+  name: certificate
   required: true
   type: 12
-- display: Feed Type
-  name: collection
-  required: true
-  type: 15
-  options:
-  - AIS
-  - CISCP
+- additionalinfo: Indicators will be fetched from this collection. Run "dhs-get-collections"
+    command to get a valid value. If left empty, the instance will try to fetch from
+    all the collections in the given discovery service.
+  display: Collection Name To Fetch Indicators From
+  name: collection_to_fetch
+  required: false
+  type: 0
 - additionalinfo: Indicators from this integration instance will be marked with this reputation.
   defaultvalue: Bad
   display: Indicator Reputation
@@ -106,7 +105,7 @@ configuration:
   name: feedIncremental
   required: false
   type: 8
-- additionalinfo: The Default API Root to use (e.g. public, federal).
+- additionalinfo: The default API Root to use (e.g. default, public). If left empty, the server default API root will be used. When the server has no default root, the first available API root will be used instead. The user must be authorized to reach the chosen API root.
   defaultvalue: 'public'
   display: Default API Root to use
   name: default_api_root
