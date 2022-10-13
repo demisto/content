@@ -87,7 +87,7 @@ def test_create_issue_command(mocker):
                   '| 114 | title_test | \'2022-10-06T14:45:38.004Z\' | name | \'2022-10-06T14:45:38.004Z\' | opened |\n'
 
     ret_value = util_load_json('test_data/commands_test_data.json').get('issue_create')
-    mocker.patch.object(Client, 'create_issue_request', return_value=ret_value)
+    mocker.patch.object(Client, '_http_request', return_value=ret_value)
     result = create_issue_command(client, params)
     assert result.raw_response == expected_result
     assert result.readable_output == expected_hr
@@ -109,7 +109,7 @@ def test_get_version_command(mocker):
                     proxy=False,
                     headers={'PRIVATE-TOKEN': 'api_key'})
     response_version = util_load_json('test_data/commands_test_data.json').get('get_version')
-    mocker.patch.object(Client, 'version_get_request', return_value=response_version)
+    mocker.patch.object(Client, '_http_request', return_value=response_version)
     result = version_get_command(client, {})
     expected_raw_result = {'version': '15.5.0-pre', 'revision': '6146b2240b0'}
     expected_hr = 'GitLab version 15.5.0-pre\n reversion: 6146b2240b0 '
@@ -134,7 +134,7 @@ def test_group_project_list_command(mocker):
                     headers={'PRIVATE-TOKEN': 'api_key'})
     args = {'group_id': 112, 'limit': 2}
     response_client = util_load_json('test_data/commands_test_data.json').get('get_group_project')
-    mocker.patch.object(Client, 'group_projects_list_request', return_value=response_client)
+    mocker.patch.object(Client, '_http_request', return_value=response_client)
     result = group_project_list_command(client, args)
     expected_hr = '### List Group Projects\n' \
                   '|Id|Name|Description|Path|\n' \
@@ -162,7 +162,7 @@ def test_get_project_list_command(mocker):
                     headers={'PRIVATE-TOKEN': 'api_key'})
     args = {'limit': 2}
     response_client = util_load_json('test_data/commands_test_data.json').get('get_project_list')
-    mocker.patch.object(Client, 'get_project_list_request', return_value=response_client)
+    mocker.patch.object(Client, '_http_request', return_value=response_client)
     result = get_project_list_command(client, args)
     expected_hr = '### List Projects\n' \
                   '|Id|Name|Description|Path|\n' \
@@ -211,7 +211,7 @@ def test_branch_list_command(mocker, args, client_function, result_key_json, exp
                     proxy=False,
                     headers={'PRIVATE-TOKEN': 'api_key'})
     response_client = util_load_json('test_data/commands_test_data.json').get(result_key_json)
-    mocker.patch.object(Client, client_function, return_value=response_client)
+    mocker.patch.object(Client, '_http_request', return_value=response_client)
     result = branch_list_command(client, args)
     assert result.readable_output == expected_results
 
@@ -255,7 +255,7 @@ def test_commit_list_command(mocker, args, client_function, result_key_json, exp
                     proxy=False,
                     headers={'PRIVATE-TOKEN': 'api_key'})
     response_client = util_load_json('test_data/commands_test_data.json').get(result_key_json)
-    mocker.patch.object(Client, client_function, return_value=response_client)
+    mocker.patch.object(Client, '_http_request', return_value=response_client)
     result = commit_list_command(client, args)
     assert result.readable_output == expected_results
 
@@ -275,9 +275,9 @@ def test_merge_request_list_command(mocker):
                     verify=False,
                     proxy=False,
                     headers={'PRIVATE-TOKEN': 'api_key'})
-    args = {'limit': 2}
+    args = {'limit': 2, 'sort': 'asc'}
     response_client = util_load_json('test_data/commands_test_data.json').get('list_merge_request')
-    mocker.patch.object(Client, 'merge_request_list_request', return_value=response_client)
+    mocker.patch.object(Client, '_http_request', return_value=response_client)
     result = merge_request_list_command(client, args)
     expected_hr = '### List Merge requests\n' \
                   '|Iid|CreatedAt|CreatedBy|Status|\n' \
@@ -305,7 +305,7 @@ def test_group_list_command(mocker):
                     headers={'PRIVATE-TOKEN': 'api_key'})
     args = {'limit': 1}
     response_client = util_load_json('test_data/commands_test_data.json').get('list_groups')
-    mocker.patch.object(Client, 'group_list_request', return_value=response_client)
+    mocker.patch.object(Client, '_http_request', return_value=response_client)
     result = group_list_command(client, args)
     expected_hr = '### List Groups\n' \
                   '|Id|Name|Path|CreatedAt|Visibility|\n' \
@@ -330,9 +330,9 @@ def test_issue_note_list_command(mocker):
                     verify=False,
                     proxy=False,
                     headers={'PRIVATE-TOKEN': 'api_key'})
-    args = {'limit': 2}
+    args = {'limit': 2, 'issue_iid': 4}
     response_client = util_load_json('test_data/commands_test_data.json').get('list_issue_note')
-    mocker.patch.object(Client, 'issue_note_list_request', return_value=response_client)
+    mocker.patch.object(Client, '_http_request', return_value=response_client)
     result = issue_note_list_command(client, args)
     expected_hr = '### List Issue notes\n' \
                   '|Id|Text|CreatedAt|UpdatedAt|\n' \
@@ -358,9 +358,9 @@ def test_merge_request_note_list_command(mocker):
                     verify=False,
                     proxy=False,
                     headers={'PRIVATE-TOKEN': 'api_key'})
-    args = {'limit': 2}
+    args = {'limit': 2, 'sort': 'asc', 'merge_request_iid': 123}
     response_client = util_load_json('test_data/commands_test_data.json').get('list_merge_request_note')
-    mocker.patch.object(Client, 'merge_request_note_list_request', return_value=response_client)
+    mocker.patch.object(Client, '_http_request', return_value=response_client)
     result = merge_request_note_list_command(client, args)
     expected_hr = '### List Merge Issue Notes\n'\
                   '|Id|Text|CreatedAt|UpdatedAt|\n' \
@@ -389,7 +389,7 @@ def test_group_member_list_command(mocker):
     args = {'limit': 2}
 
     response_client = util_load_json('test_data/commands_test_data.json').get('list_group_members')
-    mocker.patch.object(Client, 'group_member_list_request', return_value=response_client)
+    mocker.patch.object(Client, '_http_request', return_value=response_client)
     result = group_member_list_command(client, args)
     expected_hr = '### List Group Members\n' \
                   '|Id|Name|UserName|MembershipState|ExpiresAt|\n' \
@@ -417,7 +417,7 @@ def test_project_user_list_command(mocker):
                     headers={'PRIVATE-TOKEN': 'api_key'})
     args = {'limit': 3}
     response_client = util_load_json('test_data/commands_test_data.json').get('list_project_user')
-    mocker.patch.object(Client, 'project_user_list_request', return_value=response_client)
+    mocker.patch.object(Client, '_http_request', return_value=response_client)
     result = project_user_list_command(client, args)
     expected_hr = '### List Users\n'\
                   '|Id|UserName|Name|State|WebLink|\n'\
