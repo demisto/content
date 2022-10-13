@@ -2392,11 +2392,6 @@ view: |-
     }
   }
 inputs:
-- key: WhitelistedPorts
-  value: {}
-  required: false
-  description: A list of comma-separated ports that should not be blocked even if used in an attack.
-  playbookInputQuery:
 - key: BlockAttackerIP
   value:
     simple: "False"
@@ -2405,7 +2400,7 @@ inputs:
   playbookInputQuery:
 - key: WhitelistedHostnames
   value:
-    simple: AdminPC
+    simple: "AdminPC"
   required: false
   description: A list of comma-separated hostnames that should not be isolated even if used in an attack.
   playbookInputQuery:
@@ -2434,7 +2429,7 @@ inputs:
   value:
     simple: AdminPC
   required: false
-  description: A list of comma-separated names of critical endpoints in the organization. This will affect the calculated severity of the incident.
+  description: 'A list of comma-separated names of critical endpoints in the organization. This will affect the calculated severity of the incident.'
   playbookInputQuery:
 - key: RoleForEscalation
   value: {}
@@ -2449,7 +2444,7 @@ inputs:
   playbookInputQuery:
 - key: CriticalADGroups
   value:
-    simple: admins
+    simple: "admins"
   required: false
   description: CSV of DN names of critical Active Directory groups. This will affect the severity calculated for this incident.
   playbookInputQuery:
