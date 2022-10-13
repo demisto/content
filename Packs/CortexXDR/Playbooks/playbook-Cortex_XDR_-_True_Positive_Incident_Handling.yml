@@ -818,7 +818,7 @@ tasks:
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      no:
+      '#default#':
       - '25'
       yes:
       - '54'
@@ -857,7 +857,7 @@ tasks:
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      no:
+      '#default#':
       - '25'
       yes:
       - '55'
@@ -906,7 +906,7 @@ tasks:
       brand: ''
       id: 48698586-b1d5-4a9a-8ed3-ee37b7e2a1ee
       iscommand: false
-      name: Done with isolating the infected device
+      name: Done cleaning malicious file
       type: title
       version: -1
       description: ''
@@ -1335,7 +1335,7 @@ tasks:
     task:
       id: d800f749-a3e8-4295-801e-b00c787ffce4
       version: -1
-      name: Done Threat Hunting
+      name: Remediation
       type: title
       iscommand: false
       brand: ""

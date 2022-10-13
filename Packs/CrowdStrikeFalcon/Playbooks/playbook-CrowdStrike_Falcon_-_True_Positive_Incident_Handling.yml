@@ -553,7 +553,7 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
-      no:
+      '#default#':
       - '5'
       yes:
       - '3'
@@ -592,7 +592,7 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
-      no:
+      '#default#':
       - '5'
       yes:
       - '38'
@@ -1343,7 +1343,7 @@ tasks:
     task:
       id: 095d52cb-0155-4430-838c-065a446c3fa5
       version: -1
-      name: Done Threat Hunting
+      name: Remediation
       type: title
       iscommand: false
       brand: ""
