@@ -615,6 +615,9 @@ def fetch_investigation_alerts_command(client: Client, env: str, args=None):
             alerts {
                 id
             }
+            alerts2 {
+                id
+            }
             totalCount
         }
     }
@@ -659,6 +662,23 @@ def fetch_investigation_command(client: Client, env: str, args=None):
         description
         key_findings
         alerts2 {
+            id
+            suppressed
+            status
+            priority {
+                value
+            }
+            metadata {
+                title
+                description
+                created_at {
+                    seconds
+                }
+                severity
+                confidence
+            }
+        }
+        genesis_alerts2 {
             id
             suppressed
             status
