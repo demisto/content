@@ -245,7 +245,7 @@ class Taxii2FeedClient:
             self.set_api_root()
         # (TAXIIServiceException, HTTPError) should suffice, but sometimes it raises another type of HTTPError
         except Exception as e:
-            if "406 Client Error" not in str(e):
+            if "406 Client Error" not in str(e) and "version=2.1" not in str(e):
                 raise e
             # switch to TAXII 2.1
             self.init_server(version=TAXII_VER_2_1)
