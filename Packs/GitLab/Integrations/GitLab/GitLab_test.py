@@ -599,8 +599,56 @@ def test_file_create_command(mocker, args, expected_results):
         assert result.readable_output == expected_results
 
 
-'''
-def test_check_pagintion(mocker):
+CASE_FILE_UPDATE = [
+    ({},  # args
+     'You must specify either the "file_text" or the "entry_id" of the file.'),
+    ({'file_path': 'example', 'branch': 'main', 'commit_msg': 'unit', 'file_content': 'update'},  # args
+     'File updated successfully.'  # results
+     )
+
+]
+
+
+@pytest.mark.parametrize('args, expected_results', CASE_FILE_UPDATE)
+def test_file_update_command(mocker, args, expected_results):
+    """
+    Given:
+        - optinal params, arguments
+    When:
+        - running file_update_command
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from GitLab import Client, file_update_command
+    from CommonServerPython import DemistoException
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    if len(args):
+        response_client = util_load_json('test_data/commands_test_data.json').get('create_file')
+        mocker.patch.object(Client, '_http_request', return_value=response_client)
+        result = file_update_command(client, args)
+        assert result.readable_output == expected_results
+    else:
+        with pytest.raises(DemistoException) as e:
+            file_update_command(client, args)
+        assert str(e.value) == expected_results
+
+
+ARGS_PAGINATION = [
+    ({'limit': 3, 'page_number': 1},
+     3),
+    ({'limit': 50, 'page_number': 1},
+     50),
+    ({'limit': 101, 'page_number': 1},
+     101)
+]
+
+
+@pytest.mark.parametrize('args, expected_results', ARGS_PAGINATION)
+def test_check_pagintion(mocker, args, expected_results):
     """
     Given:
         - optinal params, arguments
@@ -609,6 +657,7 @@ def test_check_pagintion(mocker):
     Then:
         - checking that the response is according pagination
     """
-    from GitLab import Client, project_user_list_command, response_according_pagination
-    params = (Client.project_user_list_request, 3,1,{},None)
-'''
+    from GitLab import Client, response_according_pagination
+    mocker.patch.object(Client, 'project_user_list_request', return_value={"response_client"})
+    result = response_according_pagination(Client.project_user_list_request, args['limit'], args['page_number'], {}, None)
+    assert len(result) == expected_results
