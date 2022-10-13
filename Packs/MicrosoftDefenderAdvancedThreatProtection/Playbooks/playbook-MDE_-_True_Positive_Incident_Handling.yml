@@ -88,7 +88,7 @@ inputs:
   description: |-
     This input will provide you the ability to select IOCs to be hunted using the Threat Hunting - generic playbook.
     If false, it will hunt for all IOCs detected in the incident.
-    Note: You can also insert "No Threat Hunting" to skiping the Threat Hunting stage.
+    Note: You can also insert "No Threat Hunting" to skip the Threat Hunting stage.
   playbookInputQuery:
 - key: IP
   value:
