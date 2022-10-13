@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: Gitlab
+  id: GitLab v2
   version: -1
 configuration:
 - display: Server URL (e.g. https://gitlab.com/api/v4)
@@ -26,8 +26,8 @@ configuration:
   required: false
   type: 8
 description: Integration to GitLab API
-display: GitLab
-name: Gitlab
+display: GitLab v2
+name: GitLab v2
 script:
   commands:
   - name: gitlab-version-get
