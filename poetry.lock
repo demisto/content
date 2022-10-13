@@ -505,7 +505,7 @@ build = ["gsutil (==5.8)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "ffdfd91a2f3090198dd38ab5b621444c01c46f76"
+reference = "1.7.6-mypy-hotfix"
 resolved_reference = "ffdfd91a2f3090198dd38ab5b621444c01c46f76"
 
 [[package]]
@@ -2288,7 +2288,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "55ff62a2b535f323d0fd395075e895f3d9fb462fe187801b6ac94322de3a9ac3"
+content-hash = "f768461d19c72fcfe9f04c5f6ea5fa7fcb66201c28111cea9ac2128369206105"
 
 [metadata.files]
 aiohttp = [
