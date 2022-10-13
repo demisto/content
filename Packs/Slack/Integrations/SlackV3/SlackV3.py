@@ -6,7 +6,9 @@ from distutils.util import strtobool
 from typing import Tuple
 
 import aiohttp
+import demistomock as demisto  # noqa: F401
 import slack_sdk
+from CommonServerPython import *  # noqa: F401
 from slack_sdk.errors import SlackApiError
 from slack_sdk.socket_mode.aiohttp import SocketModeClient
 from slack_sdk.socket_mode.request import SocketModeRequest
@@ -15,12 +17,8 @@ from slack_sdk.web.async_client import AsyncWebClient
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
 
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
-
 ''' CONSTANTS '''
-
+# comment for contrib
 SEVERITY_DICT = {
     'Unknown': 0,
     'Low': 1,
@@ -982,6 +980,7 @@ class SlackLogger:
 
     Essentially this converts Logger.info() to demisto.info()
     """
+
     def __init__(self):
         """
         Set the base level as debug. The server will handle the filtering as needed.
@@ -2348,10 +2347,6 @@ def invite_to_channel():
     channel = demisto.args().get('channel')
     channel_id = demisto.args().get('channel_id', '')
     users = argToList(demisto.args().get('users', []))
-
-    if not users:
-        # Not raising an error here to preserve BC
-        demisto.results('Missing required argument - users')
 
     if not channel:
         mirror = find_mirror_by_investigation()
