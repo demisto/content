@@ -8,9 +8,9 @@ from subprocess import Popen, PIPE
 def main():
     domain = demisto.args().get('domain')
 
-    cmd = 'aquatone-discover --domain ' + domain
+    cmd = ['aquatone-discover', '--domain', domain]
 
-    p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE, encoding="utf-8")  # nosec: B602
+    p = Popen(cmd, stdout=PIPE, stderr=PIPE, encoding="utf-8")
 
     stdout, stderr = p.communicate()
 
@@ -18,8 +18,8 @@ def main():
         demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": stdout + stderr})
     else:
         res = stdout
-        cmd = 'cat /root/aquatone/' + domain + '/hosts.json'
-        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE, encoding="utf-8")  # nosec: B602
+        cmd = ['cat', '/root/aquatone/', domain, '/hosts.json']
+        p = Popen(cmd, stdout=PIPE, stderr=PIPE, encoding="utf-8")
         stdout, stderr = p.communicate()
         if p.returncode > 0:
             demisto.results(
