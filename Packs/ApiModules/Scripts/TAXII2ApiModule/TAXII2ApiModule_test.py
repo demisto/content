@@ -822,3 +822,21 @@ class TestParsingSCOIndicators:
         ]
 
         assert taxii_2_client.parse_sco_windows_registry_key_indicator(registry_object) == xsoar_expected_response
+
+
+@pytest.mark.parametrize('limit, element_count, return_value',
+                         [(8, 8, True),
+                          (8, 9, True),
+                          (8, 0, False),
+                          (-1, 10, False)])
+def test_exceeded_limit(limit, element_count, return_value):
+    """
+    Given:
+        - A limit and element count.
+    When:
+        - Enforcing limit on the elements count.
+    Then:
+        - Assert that the element count is not exceeded.
+    """
+    from TAXII2ApiModule import exceeded_limit
+    assert exceeded_limit(limit, element_count) == return_value

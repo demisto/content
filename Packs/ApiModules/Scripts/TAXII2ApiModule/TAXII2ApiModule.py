@@ -1,5 +1,3 @@
-from requests import HTTPError
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -114,8 +112,8 @@ THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {
 }
 
 
-def exceeded_limit(limit, elements_count):
-    return elements_count >= limit > -1
+def exceeded_limit(limit: int, element_count: int):
+    return element_count >= limit > -1
 
 
 class Taxii2FeedClient:
