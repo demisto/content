@@ -661,3 +661,53 @@ def test_check_pagintion(mocker, args, expected_results):
     mocker.patch.object(Client, 'project_user_list_request', return_value={"response_client"})
     result = response_according_pagination(Client.project_user_list_request, args['limit'], args['page_number'], {}, None)
     assert len(result) == expected_results
+
+
+def test_get_raw_file_command(mocker):
+    """
+    Given:
+        - optinal params, arguments
+    When:
+        - running get_raw_file_command
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from GitLab import Client, get_raw_file_command
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    args = {'ref': 'main', 'file_path': 'unit'}
+    response_client = util_load_json('test_data/commands_test_data.json').get('raw_file')
+    mocker.patch.object(Client, '_http_request', return_value=response_client)
+    result = get_raw_file_command(client, args)
+    expected_hr = '### Raw file\n' \
+                  '|path|refrence|content|\n' \
+                  '|---|---|---|\n' \
+                  '| unit |  | I am a file. |\n'
+    assert result[0].raw_response == response_client
+    assert result[0].readable_output == expected_hr
+
+
+def test_code_search_command(mocker):
+    """
+    Given:
+        - optinal params, arguments
+    When:
+        - running code_search_command
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from GitLab import Client, code_search_command
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    expected_raw = ' search via unit test\n'
+    response_client = util_load_json('test_data/commands_test_data.json').get('search_code')
+    args = {'search': 'unit', 'limit': '1'}
+    mocker.patch.object(Client, '_http_request', return_value=response_client)
+    result = code_search_command(client, args)
+    assert result.raw_response[0]['data'] == expected_raw

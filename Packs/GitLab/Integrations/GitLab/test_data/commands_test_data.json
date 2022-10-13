@@ -988,7 +988,20 @@
     {
         "file_path": ".example",
         "branch": "main"
-    }
+    },
+    "search_code":
+    [
+        {
+            "basename": "test",
+            "data": " search via unit test\n",
+            "path": "test",
+            "filename": "test",
+            "id": null,
+            "ref": "main",
+            "startline": 1,
+            "project_id": 1
+        }
+    ]
 
 
 }

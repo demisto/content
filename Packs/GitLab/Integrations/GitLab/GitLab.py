@@ -598,7 +598,7 @@ def get_raw_file_command(client: Client, args: Dict[str, Any]) -> List:
     response = client.get_raw_file_request(file_path, ref)
     file_ = response
     outputs = {'path': file_path, 'content': response, 'ref': ref}
-    human_readable = tableToMarkdown(f'Raw file {file_path} on branch {ref}', outputs, headers=headers)
+    human_readable = tableToMarkdown('Raw file', outputs, headers=headers)
     file_name = file_path.split('/')[-1]
     file_ = fileResult(filename=file_name, data=response, file_type=EntryType.ENTRY_INFO_FILE)
     results = CommandResults(
