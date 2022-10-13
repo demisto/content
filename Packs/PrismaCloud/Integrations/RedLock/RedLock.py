@@ -816,7 +816,7 @@ def expire_stored_ids(fetched_ids):
     cleaned_cache = []
 
     two_hours = timedelta(hours=2).total_seconds() * 1000
-    now = int(datetime.timestamp(datetime.utcnow()) * 1000)
+    now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
 
     for i in range(len(fetched_ids)):
         fetch_time = list(fetched_ids[i].values())[0]
@@ -833,7 +833,7 @@ def fetch_incidents():
     last_run = demisto.getLastRun()
     last_run_time = last_run.get('time')  # This is purely to establish if a first fetch has occurred
     fetched_ids = last_run.get('fetched_ids', [])
-    now = int(datetime.timestamp(datetime.utcnow()) * 1000)
+    now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
     if not last_run_time:
         first_time_fetch = demisto.params().get('fetch_time', '3 days').strip().split(' ')
         first_fetch_amount = int(first_time_fetch[0])

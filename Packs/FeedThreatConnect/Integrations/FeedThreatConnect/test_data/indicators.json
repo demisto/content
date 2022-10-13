@@ -15,5 +15,6 @@
   "falsePositiveCount": 0,
   "privateFlag": false,
   "active": true,
-  "activeLocked": true
+  "activeLocked": true,
+  "associatedIndicators": {"data": [{"summary": "summary", "type": "type"}]}
 }
