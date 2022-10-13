@@ -46,7 +46,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### file
 ***
 Retrieves the reputations for the specified hashes. Can be "MD5", "SHA1", or "SHA256".  
-**Note**: The outputed dates are with respect to the UTC timezone.
 
 
 #### Base Command
@@ -78,14 +77,14 @@ Retrieves the reputations for the specified hashes. Can be "MD5", "SHA1", or "SH
 | McAfee.TIE.FilesReputations.Reputations.Hash | String | The value of the hash. | 
 | McAfee.TIE.FilesReputations.Reputations.GTI.Provider_ID | Number | The [identifier](#providers-table) of the particular provider that provided the reputation. | 
 | McAfee.TIE.FilesReputations.Reputations.GTI.Trust_Level | Number | The [trust level](#trust-level-table) for the reputation subject. | 
-| McAfee.TIE.FilesReputations.Reputations.GTI.Create_Date | String | The time this reputation was created. | 
+| McAfee.TIE.FilesReputations.Reputations.GTI.Create_Date | String | The time this reputation was created (UTC timezone). | 
 | McAfee.TIE.FilesReputations.Reputations.GTI.Provider | String | The name of the particular provider that provided the reputation. | 
 | McAfee.TIE.FilesReputations.Reputations.GTI.Original_Response | String | The raw response as returned by the Global Threat Intelligence \(GTI\) reputation provider. | 
-| McAfee.TIE.FilesReputations.Reputations.GTI.First_Contact | String | The time the file was first seen. | 
+| McAfee.TIE.FilesReputations.Reputations.GTI.First_Contact | String | The time the file was first seen (UTC timezone). | 
 | McAfee.TIE.FilesReputations.Reputations.GTI.Prevalence | String | The number of times the file has been requested. | 
 | McAfee.TIE.FilesReputations.Reputations.ATD.Provider_ID | Number | The [identifier](#providers-table) of the particular provider that provided the reputation. | 
 | McAfee.TIE.FilesReputations.Reputations.ATD.Trust_Level | Number | The [trust level](#trust-level-table) for the reputation subject. | 
-| McAfee.TIE.FilesReputations.Reputations.ATD.Create_Date | String | The time this reputation was created. | 
+| McAfee.TIE.FilesReputations.Reputations.ATD.Create_Date | String | The time this reputation was created (UTC timezone). | 
 | McAfee.TIE.FilesReputations.Reputations.ATD.Provider | String | The name of the particular provider that provided the reputation. | 
 | McAfee.TIE.FilesReputations.Reputations.ATD.GAM_Score | String | The [trust score](#atd-trust-score-table) reported by the Gateway Anti-Malware \(GAM\). | 
 | McAfee.TIE.FilesReputations.Reputations.ATD.AV_Engine_Score | String | The [trust score](#atd-trust-score-table) reported by the Anti-Virus engine. | 
@@ -94,10 +93,10 @@ Retrieves the reputations for the specified hashes. Can be "MD5", "SHA1", or "SH
 | McAfee.TIE.FilesReputations.Reputations.ATD.Behaviors | String | An encoded structure that contains observed behaviors of the file. | 
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Provider_ID| Number | The [identifier](#providers-table) of the particular provider that provided the reputation. | 
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Trust_Level | Number | The [trust level](#trust-level-table) for the reputation subject. | 
-| McAfee.TIE.FilesReputations.Reputations.Enterprise.Create_Date | String | The time this reputation was created. | 
+| McAfee.TIE.FilesReputations.Reputations.Enterprise.Create_Date | String | The time this reputation was created (UTC timezone). | 
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Provider | String | The name of the particular provider that provided the reputation. | 
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Server_Version | String | The version of the TIE server that returned the reputations \(encoded version string\). | 
-| McAfee.TIE.FilesReputations.Reputations.Enterprise.First_Contact | String | The time the file was first seen. | 
+| McAfee.TIE.FilesReputations.Reputations.Enterprise.First_Contact | String | The time the file was first seen (UTC timezone). | 
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Prevalence | String | The number of unique systems that have executed the file. | 
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Enterprise_Size | String | The number of systems within the local enterprise. | 
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Min_Local_Rep | String | The lowest reputation found locally on a system. | 
@@ -108,7 +107,7 @@ Retrieves the reputations for the specified hashes. Can be "MD5", "SHA1", or "SH
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Parent_Avg_Local_Rep | String | The average reputation for the parent found locally on systems. | 
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.File_Name_Count | String | The number of unique file names for the file. | 
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Detection_Count | String | The number of detections for the file or certificate. | 
-| McAfee.TIE.FilesReputations.Reputations.Enterprise.Last_Detection_Time | String | The last time a detection occurred. | 
+| McAfee.TIE.FilesReputations.Reputations.Enterprise.Last_Detection_Time | String | The last time a detection occurred (UTC timezone). | 
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Is_Prevalent | String | Whether the file is considered to be prevalent within the enterprise. | 
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Child_File_Reps | String | The child file reputations \(aggregate string\) according to the following format:<br /> - The number of files.<br />- The maximum trust level found across the files.<br /> - The minimum trust level found across the files.<br /> - The trust level for the last file.<br /> - The average trust level across the files. | 
 | McAfee.TIE.FilesReputations.Reputations.Enterprise.Parent_File_Reps | String | The parent file reputations \(aggregate string\) according to the following format:<br /> - The number of files.<br /> - The maximum trust level found across the files.<br /> - The minimum trust level found across the files.<br /> - The trust level for the last file.<br /> - The average trust level across the files. | 
@@ -290,7 +289,6 @@ Sets the “Enterprise” reputation (trust level, filename, and comment) of the
 ### tie-file-references
 ***
 Retrieves the set of systems which have referenced (typically executed) the specified hashes.  
-**Note**: The outputed dates are with respect to the UTC timezone.
 
 #### Base Command
 
@@ -313,7 +311,7 @@ Retrieves the set of systems which have referenced (typically executed) the spec
 | File.SHA1 | String | The SHA1 hash of the file. | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | McAfee.TIE.FilesReferences.References.AgentGuid | String | The GUID of the system that referenced the file. | 
-| McAfee.TIE.FilesReferences.References.Date | String | The time the system first referenced the file. | 
+| McAfee.TIE.FilesReferences.References.Date | String | The time the system first referenced the file (UTC timezone). | 
 | McAfee.TIE.FilesReferences.Hash | String | The value of the hash. | 
 
 ### Command Example

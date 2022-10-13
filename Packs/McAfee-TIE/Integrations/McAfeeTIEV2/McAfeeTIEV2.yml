@@ -120,7 +120,7 @@ script:
           description: The trust level for the reputation subject.
           type: Number
         - contextPath: McAfee.TIE.FilesReputations.Reputations.GTI.Create_Date
-          description: The time this reputation was created.
+          description: The time this reputation was created (UTC timezone).
           type: String
         - contextPath: McAfee.TIE.FilesReputations.Reputations.GTI.Provider
           description: The name of the particular provider that provided the reputation.
@@ -129,7 +129,7 @@ script:
           description: The raw response as returned by the Global Threat Intelligence (GTI) reputation provider.
           type: String
         - contextPath: McAfee.TIE.FilesReputations.Reputations.GTI.First_Contact
-          description: The time the file was first seen.
+          description: The time the file was first seen (UTC timezone).
           type: String
         - contextPath: McAfee.TIE.FilesReputations.Reputations.GTI.Prevalence
           description: The number of times the file has been requested.
@@ -141,7 +141,7 @@ script:
           description: The trust level for the reputation subject.
           type: Number
         - contextPath: McAfee.TIE.FilesReputations.Reputations.ATD.Create_Date
-          description: The time this reputation was created.
+          description: The time this reputation was created (UTC timezone).
           type: String
         - contextPath: McAfee.TIE.FilesReputations.Reputations.ATD.Provider
           description: The name of the particular provider that provided the reputation.
@@ -168,7 +168,7 @@ script:
           description: The trust level for the reputation subject.
           type: Number
         - contextPath: McAfee.TIE.FilesReputations.Reputations.Enterprise.Create_Date
-          description: The time this reputation was created.
+          description: The time this reputation was created (UTC timezone).
           type: String
         - contextPath: McAfee.TIE.FilesReputations.Reputations.Enterprise.Provider
           description: The name of the particular provider that provided the reputation.
@@ -177,7 +177,7 @@ script:
           description: The version of the TIE server that returned the reputations (encoded version string).
           type: String
         - contextPath: McAfee.TIE.FilesReputations.Reputations.Enterprise.First_Contact
-          description: The time the file was first seen.
+          description: The time the file was first seen (UTC timezone).
           type: String
         - contextPath: McAfee.TIE.FilesReputations.Reputations.Enterprise.Prevalence
           description: The count of unique systems that have executed the file.
@@ -210,7 +210,7 @@ script:
           description: The number of detections for the file or certificate.
           type: String
         - contextPath: McAfee.TIE.FilesReputations.Reputations.Enterprise.Last_Detection_Time
-          description: The last time a detection occurred.
+          description: The last time a detection occurred (UTC timezone).
           type: String
         - contextPath: McAfee.TIE.FilesReputations.Reputations.Enterprise.Is_Prevalent
           description: Whether the file is considered to be prevalent within the enterprise.
@@ -323,7 +323,7 @@ script:
           description: The GUID of the system that referenced the file.
           type: String
         - contextPath: McAfee.TIE.FilesReferences.References.Date
-          description: The time the system first referenced the file.
+          description: The time the system first referenced the file (UTC timezone).
           type: String
         - contextPath: McAfee.TIE.FilesReferences.Hash
           description: The value of the hash.
