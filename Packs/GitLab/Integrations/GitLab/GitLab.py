@@ -228,7 +228,7 @@ class Client(BaseClient):
         response = self._http_request('POST', suffix, headers=headers, json_data=data, params=params, ok_codes=[201])
         return response
 
-    def merge_request_update_request(self, merge_request_id: int,
+    def merge_request_update_request(self, merge_request_id: str | None,
                                      target_branch: str | None, title: str | None, assignee_ids: str | None,
                                      reviewer_ids: str | None, description: str | None, target_project_id: str | None,
                                      add_labels: str | None, remove_labels: str | None, milestone_id: str | None,
@@ -1168,8 +1168,6 @@ def merge_request_update_command(client: Client, args: Dict[str, Any]) -> Comman
     approvals_before_merge = args.get('approvals_before_merge')
     squash = args.get('squash')
     discussion_locked = args.get('discussion_locked')
-    if not merge_request_id or not target_branch or not title:
-        raise DemistoException('You must specify the "merge_request_id" and the "target_branch" and "title" of the file.')
     response = client.merge_request_update_request(merge_request_id, target_branch, title, assignee_ids, reviewer_ids,
                                                    description, target_project_id, add_labels, remove_labels,
                                                    milestone_id, state_event, remove_source_branch, allow_collaboration,

@@ -86,9 +86,67 @@ def test_create_issue_command(mocker):
                   '|---|---|---|---|---|---|\n' \
                   '| 114 | title_test | \'2022-10-06T14:45:38.004Z\' | name | \'2022-10-06T14:45:38.004Z\' | opened |\n'
 
-    ret_value = util_load_json('test_data/commands_test_data.json').get('issue_create')
+    ret_value = util_load_json('test_data/commands_test_data.json').get('issue_client')
     mocker.patch.object(Client, '_http_request', return_value=ret_value)
     result = create_issue_command(client, params)
+    assert result.raw_response == expected_result
+    assert result.readable_output == expected_hr
+
+
+def test_branch_create_command(mocker):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - running a branch_create_command
+    Then:
+        - check if the results of creation a branch.
+    """
+    from GitLab import Client, branch_create_command
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    params = {'branch': 'branchExample', 'ref': 'ref'}
+    expected_hr = '### Create Branch\n' \
+                  '|Title|CommitShortId|CommitTitle|CreatedAt|IsMerge|IsProtected|\n' \
+                  '|---|---|---|---|---|---|\n' \
+                  '| branchExample | f9d0bf17 | test1 | 2022-07-27T13:09:50.000+00:00 | false | false |\n'
+    ret_value = util_load_json('test_data/commands_test_data.json').get('create_branch')
+    mocker.patch.object(Client, '_http_request', return_value=ret_value)
+    result = branch_create_command(client, params)
+    assert result.raw_response == ret_value
+    assert result.readable_output == expected_hr
+
+
+def test_issue_update_command(mocker):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - running a issue_update_command
+    Then:
+        - check if the results of ypdating an issue is valid
+    """
+    from GitLab import Client, issue_update_command
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    params = {'title': 'title_test', 'description': 'desc_test', 'labels': 'label1'}
+    expected_result = {'iid': 114, 'title': 'title_test', 'description': 'desc_test',
+                       'state': 'opened', 'created_at': "'2022-10-06T14:45:38.004Z'",
+                       'updated_at': "'2022-10-06T14:45:38.004Z'", 'author': {'name': 'name'}}
+    expected_hr = '### Update Issue\n' \
+                  '|Iid|Title|CreatedAt|CreatedBy|UpdatedAt|State|\n' \
+                  '|---|---|---|---|---|---|\n' \
+                  '| 114 | title_test | \'2022-10-06T14:45:38.004Z\' | name | \'2022-10-06T14:45:38.004Z\' | opened |\n'
+
+    ret_value = util_load_json('test_data/commands_test_data.json').get('issue_client')
+    mocker.patch.object(Client, '_http_request', return_value=ret_value)
+    result = issue_update_command(client, params)
     assert result.raw_response == expected_result
     assert result.readable_output == expected_hr
 
@@ -474,6 +532,71 @@ def test_check_args_for_update(args, optinal_params, isGoodCase, expected_result
         with pytest.raises(DemistoException) as e:
             check_args_for_update(args, optinal_params)
         assert str(e.value) == expected_results['e']
+
+
+def test_file_get_command(mocker):
+    """
+    Given:
+        - optinal params, arguments
+    When:
+        - running file_get_command
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from GitLab import Client, file_get_command
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    args = {'limit': 3}
+    response_client = util_load_json('test_data/commands_test_data.json').get('file')
+    mocker.patch.object(Client, '_http_request', return_value=response_client)
+    result = file_get_command(client, args)
+    expected_hr = '### Get File\n' \
+                  '|FileName|FilePath|Ref|ContentSha|CommitId|LastCommitId|Size|\n' \
+                  '|---|---|---|---|---|---|---|\n' \
+                  '| example-file | .example-file | test-1 | 7ff1d80f | f9d0b | f9d0b | 1024 |\n'
+    assert result.readable_output == expected_hr
+    assert result.raw_response == response_client
+
+
+CASE_FILE_CREATE = [
+    ({},  # args
+     'You must specify either the "file_content" or the "entry_id" of the file.'),
+    ({'file_content': 'example', 'branch': 'main', 'commit_msg': 'unit'},  # args
+     'File created successfully.'  # results
+     )
+
+]
+
+
+@pytest.mark.parametrize('args, expected_results', CASE_FILE_CREATE)
+def test_file_create_command(mocker, args, expected_results):
+    """
+    Given:
+        - optinal params, arguments
+    When:
+        - running file_create_command
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from GitLab import Client, file_create_command
+    from CommonServerPython import DemistoException
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    if len(args) == 0:
+        with pytest.raises(DemistoException) as e:
+            file_create_command(client, args)
+        assert str(e.value) == expected_results
+    else:
+        response_client = util_load_json('test_data/commands_test_data.json').get('create_file')
+        mocker.patch.object(Client, '_http_request', return_value=response_client)
+        result = file_create_command(client, args)
+        assert result.readable_output == expected_results
 
 
 '''
