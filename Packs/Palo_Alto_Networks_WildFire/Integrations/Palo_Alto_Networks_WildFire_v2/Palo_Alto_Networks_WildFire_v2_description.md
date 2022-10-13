@@ -8,6 +8,7 @@ This API key is used in the *API Key* field in the integration configuration.
 ##### Other Sources of WildFire API keys
 - Prisma Cloud Compute
 - Prisma Access
+- XSOAR TIM
 
 ---
 [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/wild-fire-v2)
