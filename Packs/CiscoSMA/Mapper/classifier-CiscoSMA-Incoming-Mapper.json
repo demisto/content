@@ -7,10 +7,40 @@
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "CiscoSMA Attachments": {
-                    "simple": "attachments"
+                    "complex": {
+                        "filters": [],
+                        "root": "attachments",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
                 },
                 "CiscoSMA Email From": {
-                    "simple": "fromAddress"
+                    "complex": {
+                        "filters": [],
+                        "root": "fromAddress",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
                 },
                 "CiscoSMA Email Message ID": {
                     "simple": "mid"
@@ -19,10 +49,40 @@
                     "simple": "subject"
                 },
                 "CiscoSMA Email To": {
-                    "simple": "toAddress"
+                    "complex": {
+                        "filters": [],
+                        "root": "toAddress",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
                 },
                 "CiscoSMA Envelope Recipient": {
-                    "simple": "envelopeRecipient"
+                    "complex": {
+                        "filters": [],
+                        "root": "envelopeRecipient",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    }
                 },
                 "CiscoSMA Message Body": {
                     "simple": "messageBody"

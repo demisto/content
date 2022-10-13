@@ -1800,7 +1800,7 @@ def fetch_incidents(
 
             incident_details = dict(
                 quarantine_message.get("attributes", {}),
-                **{"mid": quarantine_message.get("mid"), "integration": "CiscoSMA"},
+                **{"mid": quarantine_message.get("mid")},
             )
             incidents.append(
                 {

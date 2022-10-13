@@ -379,6 +379,7 @@
                     {
                         "displayType": "CARD",
                         "h": 3,
+                        "hideItemTitleOnlyOne": false,
                         "hideName": true,
                         "i": "caseinfoid-1ec62170-3407-11ed-9f6b-2551c689e625",
                         "items": [
@@ -387,7 +388,7 @@
                                 "fieldId": "ciscosmamessagebody",
                                 "height": 106,
                                 "id": "25fc4aa0-3407-11ed-9f6b-2551c689e625",
-                                "index": 0,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }

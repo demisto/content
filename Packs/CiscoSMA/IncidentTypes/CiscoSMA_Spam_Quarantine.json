@@ -22,7 +22,7 @@
     "layout": "CiscoSMA",
     "detached": false,
     "extractSettings": {
-        "mode": "Specific",
+        "mode": "All",
         "fieldCliNameToExtractSettings": {}
     },
     "fromVersion": "6.2.0"
