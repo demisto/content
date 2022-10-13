@@ -1,12 +1,14 @@
-from typing import Union, Optional
-
-from requests_oauthlib import OAuth1
-from dateparser import parse
 from datetime import timedelta
-from CommonServerPython import *
+from typing import Optional, Union
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+from dateparser import parse
+from requests_oauthlib import OAuth1
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
+# first comment for contrib
 
 ''' GLOBALS/PARAMS '''
 BASE_URL = demisto.getParam('url').rstrip('/') + '/'
