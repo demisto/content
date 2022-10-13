@@ -36,7 +36,7 @@ CIDR_ISSUBSET_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(
     value="value", operator="ISSUBSET"
 )
 CIDR_ISUPPERSET_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(
-    value="value", operator="ISUPPERSET"
+    value="value", operator="ISSUPPERSET"
 )
 HASHES_EQUALS_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(
     value=r"hashes\..*?", operator="="
@@ -212,6 +212,21 @@ class STIX2Parser:
                 break
         return ioc_type
 
+    @staticmethod
+    def change_ip_to_cidr(indicators):
+        """
+        Iterates over indicators list and changes IP to CIDR type if needed.
+        :param indicators: list of parsed indicators.
+        :return: changes indicators list in-place.
+        """
+        for indicator in indicators:
+            if indicator.get('indicator_type') == FeedIndicatorType.IP:
+                value = indicator.get('value')
+                if value.endswith('/32'):
+                    pass
+                elif '/' in value:
+                    indicator['indicator_type'] = FeedIndicatorType.CIDR
+
     """ PARSING FUNCTIONS"""
 
     def parse_indicator(self, indicator_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -252,6 +267,7 @@ class STIX2Parser:
                     field_map,
                 )
             )
+            self.change_ip_to_cidr(indicators)
 
         return indicators
 

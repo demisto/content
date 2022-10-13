@@ -41,6 +41,7 @@ def test_parse_stix1(indicators_file, expected_result):
     ('stix2_example4.json', 'expected_result_example4.json'),
     ('stix2_example5.json', 'expected_result_example5.json'),
     ('stix2_example6.json', 'expected_result_example6.json'),
+    ('stix2_example7.json', 'expected_result_example7.json'),
     ('stix2.json', 'stix2_results.json'),
 ])
 def test_parse_stix2(indicators_file, expected_result):
