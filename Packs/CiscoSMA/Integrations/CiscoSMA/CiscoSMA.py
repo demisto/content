@@ -576,12 +576,12 @@ class Client(BaseClient):
             device_type (str): Device type.
             device_group_name (str, optional): _description_. Defaults to None.
             device_name (str, optional): _description_. Defaults to None.
-            order_by (str, optional): _description_. Defaults to None.
-            order_dir (str, optional): _description_. Defaults to None.
-            top (str, optional): _description_. Defaults to None.
-            filter_value (str, optional): _description_. Defaults to None.
-            filter_by (str, optional): _description_. Defaults to None.
-            filter_operator (str, optional): _description_. Defaults to None.
+            order_by (str, optional): Order results by field. Defaults to None.
+            order_dir (str, optional): Order direction. Defaults to None.
+            top (str, optional): Number of records with the highest values to return. Defaults to None.
+            filter_value (str, optional): Filter value. Defaults to None.
+            filter_by (str, optional): Filter by field. Defaults to None.
+            filter_operator (str, optional): Filter operator. Defaults to None.
 
         Returns:
             Dict[str, Any]: API response from Cisco SMA.
@@ -603,12 +603,12 @@ class Client(BaseClient):
         return self._http_request("GET", f"reporting/{report_type}", params=params)
 
 
-def format_custom_query_args(custom_query: str) -> Dict[str, Any]:
+def format_custom_query_args(custom_query: str = None) -> Dict[str, Any]:
     """
     Format custom query arguments for tracking message advanced filters.
 
     Args:
-        custom_query (str): Custom query of advanced filters.
+        custom_query (str, optional): Custom query of advanced filters. Defaults to None.
 
     Returns:
         Dict[str, Any]: Formatted dictionary of custom query arguments.
