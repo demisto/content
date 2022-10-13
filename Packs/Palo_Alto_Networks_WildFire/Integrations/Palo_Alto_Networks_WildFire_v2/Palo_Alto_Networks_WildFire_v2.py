@@ -1291,7 +1291,6 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
             demisto.error(f'Report MAEC Exception. Error: {exc}')
             human_readable = None
             outputs = None
-            #file = None
             relationships = None
 
     # catch all report type for those not specified
