@@ -224,21 +224,10 @@ list_mailboxes = [{'Mailbox': 'test1@gmail.com', 'q': ''},
                   {'Mailbox': 'test2@gmail.com', 'q': ''},
                   {'Mailbox': 'test3@gmail.com', 'q': ''},
                   {'Mailbox': 'test4@gmail.com', 'q': ''},
-                  {'Mailbox': 'test5@gmail.com', 'q': ''},
-                  {'Mailbox': 'test6@gmail.com', 'q': ''},
-                  {'Mailbox': 'test7@gmail.com', 'q': ''},
-                  {'Mailbox': 'test8@gmail.com', 'q': ''},
-                  {'Mailbox': 'test9@gmail.com', 'q': ''},
-                  {'Mailbox': 'test10@gmail.com', 'q': ''},
-                  {'Mailbox': 'test11@gmail.com', 'q': ''},
-                  {'Mailbox': 'test12@gmail.com', 'q': ''},
-                  {'Mailbox': 'test13@gmail.com', 'q': ''},
-                  {'Mailbox': 'test14@gmail.com', 'q': ''}]
+                  {'Mailbox': 'test5@gmail.com', 'q': ''}]
 except_contents_test_mailboxes_to_entry = list_mailboxes
 expected_human_readable_test_mailboxes_to_entry = '### Query: \n|Mailbox|\n|---|\n| test1@gmail.com |\n| test2@gmail.com |\n|\
- test3@gmail.com |\n| test4@gmail.com |\n| test5@gmail.com |\n| test6@gmail.com |\n| test7@gmail.com |\n| test8@gmail.com |\n|\
- test9@gmail.com |\n| test10@gmail.com |\n| test11@gmail.com |\n| test12@gmail.com |\n| test13@gmail.com\
- |\n| test14@gmail.com |\n'
+ test3@gmail.com |\n| test4@gmail.com |\n| test5@gmail.com |\n'
 
 expected_result_test_mailboxes_to_entry = {"expected_human_readable": expected_human_readable_test_mailboxes_to_entry,
                                            "except_contents": except_contents_test_mailboxes_to_entry}
