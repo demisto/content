@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: GitLab
+  id: Gitlab
   version: -1
 configuration:
 - defaultvalue: https://gitlab.com/api/v4
