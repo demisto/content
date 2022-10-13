@@ -154,4 +154,4 @@ def test_extract_csrf():
     client = get_firewall_instance_client()
     assert client.extract_csrf(
         '<input type="hidden" name="_csrf" value="422JE5PO1WARA1I91CB5FRS99UQ65RF31P9Y3L4T" />') == \
-           '422JE5PO1WARA1I91CB5FRS99UQ65RF31P9Y3L4T'
+           '422JE5PO1WARA1I91CB5FRS99UQ65RF31P9Y3L4T'  # noqa
