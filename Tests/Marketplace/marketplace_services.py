@@ -3042,6 +3042,7 @@ class Pack(object):
             self._status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
             self.cleanup()
             return False
+
         return True
 
     def cleanup(self):
@@ -3320,6 +3321,14 @@ class Pack(object):
         return versions_dict
 
     def get_preview_image_gcp_path(self, pack_file_name: str, folder_name: str) -> Optional[str]:
+        """ Genrate the preview image path as it stored in the gcp
+        Args:
+            pack_file_name: File name.
+            folder_name: Folder name.
+
+        Returns:
+            The preview image path as it stored in the gcp if preview image exists, or None otherwise.
+        """
         preview_image_name = self.find_preview_image_path(pack_file_name)
         try:
             preview_image_path = os.path.join(self.path, folder_name, preview_image_name)  # disable-secrets-detection
@@ -3374,14 +3383,19 @@ class Pack(object):
 
     @staticmethod
     def find_preview_image_path(file_name: str) -> str:
+        """ Generate preview image file name according to related file.
+        Args:
+            file_name: File name.
+
+        Returns:
+            Preview image file path.
+        """
         prefixes = ['xsiamdashboard', 'xsiamreport']
         file_name = file_name.replace('external-', '')
         for prefix in prefixes:
             file_name = file_name.replace(f'{prefix}-', '')
         image_file_name = os.path.splitext(file_name)[0] + '_image.png'
         return image_file_name
-
-
 
 
 # HELPER FUNCTIONS
