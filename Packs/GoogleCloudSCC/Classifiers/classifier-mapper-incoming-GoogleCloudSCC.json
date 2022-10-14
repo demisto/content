@@ -432,7 +432,7 @@
     "OS Version": {
      "simple": "finding.sourceProperties.os_version"
     },
-    "Organization ID": {
+    "Google Cloud SCC Organization ID": {
      "complex": {
       "accessor": "name",
       "filters": [],
