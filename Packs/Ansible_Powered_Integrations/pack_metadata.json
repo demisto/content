@@ -3,6 +3,7 @@
     "description": "Deprecated. Use Ansible Microsoft Windows instead.",
     "hidden": true,
     "support": "community",
+    "hidden": true,
     "currentVersion": "2.0.2",
     "author": "Serge Bakharev",
     "url": "https://github.com/SergeBakharev/Ansible-for-XSOAR",
