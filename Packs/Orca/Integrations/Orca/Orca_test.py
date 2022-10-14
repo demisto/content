@@ -593,7 +593,7 @@ def test_test_module_fail(requests_mock, orca_client: OrcaClient) -> None:
     }
     requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/user/action?", json=mock_response)
     res = orca_client.validate_api_key()
-    assert res == "Test failed becasue the Orca API key that was entered is invalid, please provide a valid API key"
+    assert res == "Test failed because the Orca API token that was entered is invalid, please provide a valid API token"
 
 
 def test_fetch_all_alerts(requests_mock, orca_client: OrcaClient) -> None:

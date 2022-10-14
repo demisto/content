@@ -19,8 +19,8 @@ class OrcaClient:
 
     def validate_api_key(self) -> str:
         demisto.info("validate_api_key, enter")
-        invalid_token_string = "Test failed becasue the Orca API key that was entered is invalid," \
-                               " please provide a valid API key"
+        invalid_token_string = "Test failed because the Orca API token that was entered is invalid," \
+                               " please provide a valid API token"
         try:
             response = self.client._http_request(
                 method="POST",

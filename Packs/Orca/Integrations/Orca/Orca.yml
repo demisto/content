@@ -6,7 +6,7 @@ configuration:
 - display: API Token
   name: api_token
   required: true
-  type: 4
+  type: 9
 - display: API Host
   name: api_host
   required: false
