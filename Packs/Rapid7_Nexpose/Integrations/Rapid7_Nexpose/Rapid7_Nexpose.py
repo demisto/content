@@ -1024,19 +1024,30 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_shared_credentials(self) -> dict:
+    def get_shared_credentials(self, page_size: Optional[int] = DEFAULT_PAGE_SIZE, page: Optional[int] = None,
+                               limit: Optional[int] = None) -> list[dict]:
         """
         | Retrieve information about all shared credentials.
         |
         | For more information see:
             https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getSharedCredentials
 
+        Args:
+            page_size (int | None, optional): Number of assets to return per page when using pagination.
+                Defaults to DEFAULT_PAGE_SIZE.
+            page (int | None, optional): Specific pagination page to retrieve. Defaults to None.
+            limit (int | None, optional): Limit the number of sites to return. None means to not use a limit.
+                Defaults to None.
+
         Returns:
-            dict: API response with all shared credentials and their information.
+            list[dict]: A list with all shared credentials.
         """
-        return self._http_request(
-            url_suffix="/shared_credentials",
+        return self._paged_http_request(
+            url_suffix="shared_credentials",
             method="GET",
+            page_size=page_size,
+            page=page,
+            limit=limit,
             resp_type="json",
         )
 
@@ -3297,6 +3308,71 @@ def list_scan_schedule_command(client: Client, site: Site, schedule_id: Optional
     )
 
 
+def list_shared_credential_command(client: Client, credential_id: Optional[str], page_size: Optional[int] = None,
+                                   page: Optional[int] = None, limit: Optional[int] = None) -> CommandResults:
+    """
+    Retrieve information about all or a specific vulnerability.
+
+    Args:
+        client (Client): Client to use for API requests.
+        credential_id (str | None, optional): ID of a specific shared credential to retrieve.
+            Defaults to None (Results in getting all vulnerabilities).
+        page_size (int | None, optional): Number of credentials to return per page when using pagination.
+            Defaults to DEFAULT_PAGE_SIZE.
+        page (int | None, optional): Specific pagination page to retrieve. Defaults to None.
+            Defaults to None.
+        limit (int | None, optional): Limit the number of credentials to return. None means to not use a limit.
+            Defaults to None.
+    """
+    if not credential_id:
+        shared_credentials = client.get_shared_credentials(
+            page_size=page_size,
+            page=page,
+            limit=limit,
+        )
+
+    else:
+        shared_credentials = client.get_shared_credential(credential_id)
+
+        shared_credentials = [shared_credentials]
+
+    if not shared_credentials:
+        return CommandResults(readable_output="No shared credentials were found.")
+
+    headers = [
+        "Id",
+        "Name",
+        "Service",
+        "Domain",
+        "UserName",
+        "AvailableToSites",
+    ]
+
+    shared_credentials_hr = replace_key_names(
+        data=shared_credentials,
+        name_mapping={
+            "id": "Id",
+            "name": "Name",
+            "account.service": "Service",
+            "account.domain": "Domain",
+            "account.username": "UserName",
+        },
+        recursive=True,
+    )
+
+    for shared_credential in shared_credentials_hr:
+        if shared_credential.get("sites"):
+            shared_credential["AvailableToSites"] = len(shared_credential["sites"])
+
+    return CommandResults(
+        outputs_prefix="Nexpose.SharedCredential",
+        outputs_key_field="id",
+        outputs=shared_credentials,
+        readable_output=tableToMarkdown("Nexpose Shared Credentials", shared_credentials_hr, headers, removeNull=True),
+        raw_response=shared_credentials,
+    )
+
+
 def list_vulnerability_command(client: Client, vulnerability_id: Optional[str], page_size: Optional[int] = None,
                                page: Optional[int] = None, sort: Optional[str] = None,
                                limit: Optional[int] = None) -> CommandResults:
@@ -4082,6 +4158,14 @@ def main():
                     client=client,
                 ),
                 schedule_id=args.get("schedule_id"),
+                page_size=arg_to_number(args.get("page_size")),
+                page=arg_to_number(args.get("page")),
+                limit=arg_to_number(args.get("limit")),
+            )
+        elif command == "nexpose-list-shared-credential":
+            results = list_shared_credential_command(
+                client=client,
+                credential_id=args.get("id"),
                 page_size=arg_to_number(args.get("page_size")),
                 page=arg_to_number(args.get("page")),
                 limit=arg_to_number(args.get("limit")),

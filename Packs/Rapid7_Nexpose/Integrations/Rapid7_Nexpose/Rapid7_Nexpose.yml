@@ -1324,7 +1324,7 @@ script:
         secret: false
       - default: false
         defaultValue: '10'
-        description: integer <int32> The number of records retrieve.
+        description: The number of records retrieve.
         isArray: false
         name: limit
         required: false
@@ -1558,6 +1558,121 @@ script:
       - contextPath: Nexpose.ScanSchedule.repeat.start
         description: The scheduled start date and time.
           Repeating schedules will determine the next schedule to begin based on this date and time.
+  - arguments:
+      - default: false
+        description: ID of a specific shared credential to retrieve.
+        isArray: false
+        name: id
+        required: false
+        secret: false
+      - default: false
+        description: The number of records to retrieve in each API call when pagination is used.
+        isArray: false
+        name: page_size
+        required: false
+        secret: false
+      - default: false
+        description: An option to retrieve a specific page when pagination is used.
+        isArray: false
+        name: page
+        required: false
+        secret: false
+      - default: false
+        defaultValue: '10'
+        description: The number of records retrieve.
+        isArray: false
+        name: limit
+        required: false
+        secret: false
+    deprecated: false
+    description: Retrieve information about all or a specific shared credential.
+    execution: false
+    name: nexpose-list-shared-credential
+    outputs:
+      - contextPath: Nexpose.SharedCredential.account.authenticationType
+        description: SNMPv3 authentication type for the credential.
+        type: string
+      - contextPath: Nexpose.SharedCredential.account.communityName
+        description: SNMP community for authentication.
+        type: string
+      - contextPath: Nexpose.SharedCredential.account.database
+        description: Database name.
+        type: string
+      - contextPath: Nexpose.SharedCredential.account.domain
+        description: Domain address.
+        type: string
+      - contextPath: Nexpose.SharedCredential.account.enumerateSids
+        description: Whether the scan engine should attempt to enumerate SIDs from the environment.
+        type: boolean
+      - contextPath: Nexpose.SharedCredential.account.notesIDPassword
+        description: Password for the notes account that will be used for authenticating.
+        type: string
+      - contextPath: Nexpose.SharedCredential.account.ntlmHash
+        description: NTLM password hash.
+        type: string
+      - contextPath: Nexpose.SharedCredential.account.oracleListenerPassword
+        description: The Oracle Net Listener password. Used to enumerate SIDs from the environment.
+        type: string
+      - contextPath: Nexpose.SharedCredential.account.password
+        description: Password for the credential.
+        type: string
+      - contextPath: Nexpose.SharedCredential.account.pemKey
+        description: PEM formatted private key.
+        type: string
+      - contextPath: Nexpose.SharedCredential.account.permissionElevation
+        description: Elevation type to use for scans.
+        type: string
+      - contextPath: Nexpose.SharedCredential.account.permissionElevationPassword
+        description: Password to use for elevation.
+        type: string
+      - contextPath: Nexpose.SharedCredential.account.permissionElevationUserName
+        description: Username to use for elevation.
+        type: string
+      - contextPath: Nexpose.SharedCredential.account.privacyPassword
+        description: SNMPv3 privacy password to use.
+        type: string
+      - contextPath: Nexpose.SharedCredential.account.privacyType
+        description: SNMPv3 Privacy protocol to use.
+        type: string
+      - contextPath: Nexpose.SharedCredential.account.privateKeyPassword
+        description: Password for the private key.
+        type: string
+      - contextPath: Nexpose.SharedCredential.account.realm
+        description: HTTP realm.
+        type: string
+      - contextPath: Nexpose.SharedCredential.account.service
+        description: Credential service type.
+        type: string
+      - contextPath: Nexpose.SharedCredential.account.sid
+        description: Oracle database name.
+        type: string
+      - contextPath: Nexpose.SharedCredential.account.useWindowsAuthentication
+        description: Whether to use Windows authentication.
+        type: boolean
+      - contextPath: Nexpose.SharedCredential.account.username
+        description: Username for the credential.
+        type: string
+      - contextPath: Nexpose.SharedCredential.description
+        description: Description for the credential.
+        type: string
+      - contextPath: Nexpose.SharedCredential.hostRestriction
+        description: Hostname or IP address to restrict the credentials to.
+        type: string
+      - contextPath: Nexpose.SharedCredential.id
+        description: ID of the shared credential.
+        type: number
+      - contextPath: Nexpose.SharedCredential.name
+        description: Name of the credential.
+        type: string
+      - contextPath: Nexpose.SharedCredential.portRestriction
+        description: Further restricts the credential to attempt to authenticate on a specific port. Can be used only if `host_restriction` is used.
+        type: number
+      - contextPath: Nexpose.SharedCredential.siteAssignment
+        description: Site assignment configuration for the credential.
+        type: string
+      - contextPath: Nexpose.SharedCredential.sites
+        description: List of site IDs for the shared credential that are explicitly assigned access to the shared scan credential, allowing it to use the credential during a scan.
+        type: array
   - arguments:
       - default: false
         description: ID of the vulnerability exception to retrieve. If not set, all vulnerability exceptions
