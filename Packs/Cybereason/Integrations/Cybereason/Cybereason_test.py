@@ -135,10 +135,6 @@ def test_malop_processes_command(mocker):
     assert command_output.outputs[0].get('SHA1', '') ==\
         'f56238da9fbfa3864d443a85bb80743bd2415682'
 
-    args = {"malopGuids": "11.-6236127207710541535", "machineName": "desktop-123", "dateTime": "2022/08/01 00:00:00"}
-    mocker.patch.object(demisto, 'results')
-    command_output = malop_processes_command(client, args)
-
     args = {"malopGuids": None, "machineName": "desktop", "dateTime": "2022/08/01 00:00:00"}
     mocker.patch.object(demisto, 'results')
     with pytest.raises(Exception):   
@@ -1095,40 +1091,4 @@ def test_get_machine_guid(mocker):
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)    
     command_output = get_machine_guid(client, "test_machine")
     assert command_output == "-1826875736.1198775089551518743"
-=======
-    malop_processes_command()
-    result = demisto.results.call_args[0]
 
-    assert result[0].get('ContentsFormat', '') == 'json'
-    assert 'Cybereason Malop Processes' in result[0].get('HumanReadable', '')
-    assert dict_safe_get(result[0], ['EntryContext', 'Process'], [])[0].get('Name', '') == 'bdata.bin'
-    assert dict_safe_get(result[0], ['EntryContext', 'Process'], [])[0].get('SHA1', '') ==\
-           'f56238da9fbfa3864d443a85bb80743bd2415682'
-
-
-def test_fetch_incidents(mocker):
-    """
-    Given:
-        - LastRun is set.
-    When:
-        - Fetch incidents runs.
-    Then:
-        - The comparison is done as expected, LastRun is set with the right time.
-    """
-    from Cybereason import fetch_incidents
-    mocker.patch.object(demisto, 'params', return_value=params)
-    mocker.patch.object(demisto, 'getLastRun', return_value={'creation_time': '1664438469281'})
-    set_last_run = mocker.patch.object(demisto, 'setLastRun')
-    mocker.patch.object(demisto, 'incidents')
-
-    malop_process_type = {'data': {
-        'resultIdToElementDataMap':
-            {'same': {'simpleValues': {'malopLastUpdateTime': {'values': ['1664438469281']}}, 'guidString': 'same'},
-             'bigger': {'simpleValues': {'malopLastUpdateTime': {'values': ['1665154307940']}}, 'guidString': 'bigger'},
-             'biggest': {'simpleValues': {'malopLastUpdateTime': {'values': ['1665154307942']}}, 'guidString': 'biggest'},
-             'smaller': {'simpleValues': {'malopLastUpdateTime': {'values': ['1659094660967']}}, 'guidString': 'smaller'}}}}
-    malop_loggon_session_type = {'data': {'resultIdToElementDataMap': {}}}
-    mocker.patch('Cybereason.query_malops', return_value=(malop_process_type, malop_loggon_session_type))
-
-    fetch_incidents()
-    set_last_run.assert_called_with({'creation_time': '1665154307942'})
