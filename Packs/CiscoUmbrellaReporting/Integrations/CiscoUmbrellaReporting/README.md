@@ -3,7 +3,7 @@
 Use Cisco Umbrella's Reporting to monitor your Umbrella integration and gain a better understanding of your Umbrella usage. Gain insights into request activity and blocked activity, determining which of your identities are generating blocked requests. Reports help build actionable intelligence in addressing security threats including changes in usage trends over time.
 
 The Umbrella Reporting v2 API provides visibility into your core network and security activities and Umbrella logs.
-This integration was integrated and tested with version 2 of 
+This integration was integrated and tested with version v2 of 
 Cisco-umbrella-reporting.
 
 ## Configure Cisco Umbrella Reporting on Cortex XSOAR
@@ -89,34 +89,6 @@ List of destinations ordered by the number of requests made in descending order.
                 "categories": [
                     {
                         "deprecated": false,
-                        "id": 113,
-                        "integration": false,
-                        "label": "Computer Security",
-                        "type": "content"
-                    }
-                ],
-                "count": 456,
-                "counts": {
-                    "allowedrequests": 456,
-                    "blockedrequests": 0,
-                    "requests": 456
-                },
-                "domain": "rp.cloud.threatseeker.com",
-                "policycategories": [],
-                "rank": 1
-            },
-            {
-                "bandwidth": null,
-                "categories": [
-                    {
-                        "deprecated": false,
-                        "id": 163,
-                        "integration": false,
-                        "label": "Business and Industry",
-                        "type": "content"
-                    },
-                    {
-                        "deprecated": false,
                         "id": 167,
                         "integration": false,
                         "label": "Computers and Internet",
@@ -124,9 +96,9 @@ List of destinations ordered by the number of requests made in descending order.
                     },
                     {
                         "deprecated": false,
-                        "id": 142,
+                        "id": 123,
                         "integration": false,
-                        "label": "Online Meetings",
+                        "label": "Infrastructure and Content Delivery Networks",
                         "type": "content"
                     },
                     {
@@ -151,13 +123,83 @@ List of destinations ordered by the number of requests made in descending order.
                         "type": "content"
                     }
                 ],
-                "count": 442,
+                "count": 522,
                 "counts": {
-                    "allowedrequests": 442,
+                    "allowedrequests": 522,
                     "blockedrequests": 0,
-                    "requests": 442
+                    "requests": 522
                 },
-                "domain": "presence.teams.microsoft.com",
+                "domain": "www.cisco.com",
+                "policycategories": [],
+                "rank": 1
+            },
+            {
+                "bandwidth": null,
+                "categories": [
+                    {
+                        "deprecated": false,
+                        "id": 162,
+                        "integration": false,
+                        "label": "Web-based Email",
+                        "type": "content"
+                    },
+                    {
+                        "deprecated": false,
+                        "id": 205,
+                        "integration": false,
+                        "label": "Online Document Sharing and Collaboration",
+                        "type": "content"
+                    },
+                    {
+                        "deprecated": false,
+                        "id": 167,
+                        "integration": false,
+                        "label": "Computers and Internet",
+                        "type": "content"
+                    },
+                    {
+                        "deprecated": true,
+                        "id": 31,
+                        "integration": false,
+                        "label": "Webmail",
+                        "type": "content"
+                    },
+                    {
+                        "deprecated": false,
+                        "id": 148,
+                        "integration": false,
+                        "label": "Application",
+                        "type": "application"
+                    },
+                    {
+                        "deprecated": false,
+                        "id": 141,
+                        "integration": false,
+                        "label": "Organizational Email",
+                        "type": "content"
+                    },
+                    {
+                        "deprecated": true,
+                        "id": 25,
+                        "integration": false,
+                        "label": "Software/Technology",
+                        "type": "content"
+                    },
+                    {
+                        "deprecated": true,
+                        "id": 32,
+                        "integration": false,
+                        "label": "Business Services",
+                        "type": "content"
+                    }
+                ],
+                "count": 420,
+                "counts": {
+                    "allowedrequests": 420,
+                    "blockedrequests": 0,
+                    "requests": 420
+                },
+                "domain": "outlook.office365.com",
                 "policycategories": [],
                 "rank": 2
             }
@@ -171,8 +213,8 @@ List of destinations ordered by the number of requests made in descending order.
 >### Destination List
 >|Destination|Category|Allowed|Blocked|Requests|
 >|---|---|---|---|---|
->| rp.cloud.threatseeker.com | Computer Security | 456 | 0 | 456 |
->| presence.teams.microsoft.com | Business and Industry,Computers and Internet,Online Meetings,Application,Software/Technology,Business Services | 442 | 0 | 442 |
+>| www.cisco.com | Computers and Internet,Infrastructure and Content Delivery Networks,Application,Software/Technology,Business Services | 522 | 0 | 522 |
+>| outlook.office365.com | Web-based Email,Online Document Sharing and Collaboration,Computers and Internet,Webmail,Application,Organizational Email,Software/Technology,Business Services | 420 | 0 | 420 |
 
 
 ### umbrella-reporting-category-list
@@ -209,12 +251,12 @@ List of categories ordered by the number of requests made matching the categorie
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | UmbrellaReporting.Category.count | Number | Count | 
-| UmbrellaReporting.Category.bandwidth | Number | Bandwidth | 
+| UmbrellaReporting.Category.bandwidth | String | Bandwidth | 
 | UmbrellaReporting.Category.category.id | Number | Category ID | 
 | UmbrellaReporting.Category.category.type | String | Category Type | 
 | UmbrellaReporting.Category.category.label | String | Category Label | 
 | UmbrellaReporting.Category.category.integration | Boolean | Category integration | 
-| UmbrellaReporting.Category.category.deprecated | Boolean | Category deprecated | 
+| UmbrellaReporting.Category.category.deprecated | String | Category deprecated | 
 | UmbrellaReporting.Category.rank | Number | Rank | 
 
 #### Command example
@@ -310,18 +352,18 @@ List of identities ordered by the number of requests made matching the categorie
 | UmbrellaReporting.Identity.identity.deleted | Boolean | Indicates whether the identity was deleted or not | 
 
 #### Command example
-```!umbrella-reporting-identity-list limit=1```
+```!umbrella-reporting-identity-list limit=2```
 #### Context Example
 ```json
 {
     "UmbrellaReporting": {
         "Identity": [
             {
-                "bandwidth": 1236885730,
+                "bandwidth": 0,
                 "counts": {
-                    "allowedrequests": 21329,
-                    "blockedrequests": 19,
-                    "requests": 21432
+                    "allowedrequests": 19653,
+                    "blockedrequests": 42,
+                    "requests": 19792
                 },
                 "identity": {
                     "deleted": false,
@@ -334,7 +376,27 @@ List of identities ordered by the number of requests made matching the categorie
                     }
                 },
                 "rank": 1,
-                "requests": 21432
+                "requests": 19792
+            },
+            {
+                "bandwidth": null,
+                "counts": {
+                    "allowedrequests": 2720,
+                    "blockedrequests": 33,
+                    "requests": 2755
+                },
+                "identity": {
+                    "deleted": false,
+                    "id": 593805843,
+                    "label": "S\u2019s MacBook Pro",
+                    "type": {
+                        "id": 9,
+                        "label": "Roaming Computers",
+                        "type": "roaming"
+                    }
+                },
+                "rank": 2,
+                "requests": 2755
             }
         ]
     }
@@ -346,7 +408,8 @@ List of identities ordered by the number of requests made matching the categorie
 >### Identities List
 >|Identity|Requests|
 >|---|---|
->| DESKTOP-IIQVPJ7 | 21432 |
+>| DESKTOP-IIQVPJ7 | 19792 |
+>| S’s MacBook Pro | 2755 |
 
 
 ### umbrella-reporting-event-type-list
@@ -390,6 +453,10 @@ List of event types ordered by the number of requests made for each type of even
     "UmbrellaReporting": {
         "EventType": [
             {
+                "count": 2,
+                "eventtype": "domain_security"
+            },
+            {
                 "count": 0,
                 "eventtype": "url_integration"
             },
@@ -412,10 +479,6 @@ List of event types ordered by the number of requests made for each type of even
             {
                 "count": 0,
                 "eventtype": "domain_integration"
-            },
-            {
-                "count": 0,
-                "eventtype": "domain_security"
             }
         ]
     }
@@ -427,13 +490,13 @@ List of event types ordered by the number of requests made for each type of even
 >### Event Type List
 >|Event Type|Count|
 >|---|---|
+>| domain_security | 2 |
 >| url_integration | 0 |
 >| url_security | 0 |
 >| antivirus | 0 |
 >| application | 0 |
 >| cisco_amp | 0 |
 >| domain_integration | 0 |
->| domain_security | 0 |
 
 
 ### umbrella-reporting-file-list
@@ -545,7 +608,6 @@ List of files within a timeframe. Only returns proxy data.
     }
 }
 ```
-
 #### Human Readable Output
 
 >### File List
@@ -591,7 +653,6 @@ List of top threats within a timeframe. Returns both DNS and Proxy data.
 
 #### Command example
 ```!umbrella-reporting-threat-list limit=1```
-
 #### Context Example
 ```json
 {
@@ -613,7 +674,6 @@ List of top threats within a timeframe. Returns both DNS and Proxy data.
 | **Threat Type** | **Count** |
 |---|---|
 | Adware | 1 |
-
 
 ### umbrella-reporting-activity-list
 ***
@@ -647,11 +707,10 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within timeframe
 #### Context Output
 
 | **Path** | **Type** | **Description** |
-| --- | --- |------------|
+| --- | --- | --- |
 | UmbrellaReporting.Activity.type | String | External IP for entry. | 
 | UmbrellaReporting.Activity.externalip | String | External IP for entry. | 
-| UmbrellaReporting.Activity.internalip | String | Internal IP for entry. |
-| UmbrellaReporting.Activity.querytype | String | Querytype. |
+| UmbrellaReporting.Activity.internalip | String | Internal IP for entry. | 
 | UmbrellaReporting.Activity.policycategories.id | Number | ID of category. | 
 | UmbrellaReporting.Activity.policycategories.label | String | The human readable label of the category. | 
 | UmbrellaReporting.Activity.policycategories.type | String | Type of the request. a dns request always has type dns. | 
@@ -664,10 +723,17 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within timeframe
 | UmbrellaReporting.Activity.categories.integration | Boolean | If the category is an integration | 
 | UmbrellaReporting.Activity.verdict | String | Verdict for entry. | 
 | UmbrellaReporting.Activity.domain | String | Domain for entry. | 
-| UmbrellaReporting.Activity.timestamp | Number | Timestamp in ms. |
-| UmbrellaReporting.Activity.returncode | Number | The DNS return code for this request. For more information, see Common DNS return codes for any DNS service (and Umbrella). |
+| UmbrellaReporting.Activity.timestamp | Number | Timestamp in ms. | 
 | UmbrellaReporting.Activity.time | String | The time in 24 hour format based on the timezone parameter. | 
 | UmbrellaReporting.Activity.date | String | The date from the timestamp based on the timezone parameter. | 
+| UmbrellaReporting.Activity.identities.id | Number | ID of identity. | 
+| UmbrellaReporting.Activity.identities.type.id | Number | Origin type for identity | 
+| UmbrellaReporting.Activity.identities.type.type | String | Origin type name for identity | 
+| UmbrellaReporting.Activity.identities.type.label | String | Origin type label for identity | 
+| UmbrellaReporting.Activity.identities.label | String | Label for identity | 
+| UmbrellaReporting.Activity.identities.deleted | Boolean | Indicates whether the identity was deleted or not | 
+| UmbrellaReporting.Activity.threats.label | Boolean | The threat name or label. | 
+| UmbrellaReporting.Activity.threats.type | String | The type of threat. | 
 | UmbrellaReporting.Activity.allapplications.id | Number | ID of the application. | 
 | UmbrellaReporting.Activity.allapplications.type | String | Type of the application, NBAR or AVC. | 
 | UmbrellaReporting.Activity.allapplications.label | String | Label of the application. | 
@@ -678,21 +744,13 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within timeframe
 | UmbrellaReporting.Activity.allowedapplications.type | String | Type of the application, NBAR or AVC. | 
 | UmbrellaReporting.Activity.allowedapplications.category.label | String | Label of the application category. | 
 | UmbrellaReporting.Activity.allowedapplications.category.id | Number | ID of the application category. | 
+| UmbrellaReporting.Activity.querytype | String | The type of DNS request that was made. For more information, see Common DNS Request Types. | 
+| UmbrellaReporting.Activity.returncode | Number | The DNS return code for this request. For more information, see Common DNS return codes for any DNS service \(and Umbrella\). | 
 | UmbrellaReporting.Activity.blockedapplications.id | Number | ID of the application. | 
 | UmbrellaReporting.Activity.blockedapplications.label | String | Label of the application. | 
 | UmbrellaReporting.Activity.blockedapplications.type | String | Type of the application, NBAR or AVC. | 
 | UmbrellaReporting.Activity.blockedapplications.category.label | String | Label of the application category. | 
 | UmbrellaReporting.Activity.blockedapplications.category.id | Number | ID of the application category. | 
-| UmbrellaReporting.Activity.identities.id | Number | ID of identity. | 
-| UmbrellaReporting.Activity.identities.type.id | Number | Origin type for identity | 
-| UmbrellaReporting.Activity.identities.type.type | String | Origin type name for identity | 
-| UmbrellaReporting.Activity.identities.type.label | String | Origin type label for identity | 
-| UmbrellaReporting.Activity.identities.label | String | Label for identity | 
-| UmbrellaReporting.Activity.identities.deleted | Boolean | Indicates whether the identity was deleted or not | 
-| UmbrellaReporting.Activity.threats.label | String | The threat name or label. | 
-| UmbrellaReporting.Activity.threats.type | String | The type of threat. | 
-| UmbrellaReporting.Activity.allapplications.id | Number | ID of the application. | 
-| UmbrellaReporting.Activity.allapplications.type | String | Type of the application, NBAR or A#### Context Example 
 
 #### Command example
 ```!umbrella-reporting-activity-list limit=2```
@@ -705,11 +763,11 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within timeframe
                 "allapplications": [
                     {
                         "category": {
-                            "id": 7,
-                            "label": "Collaboration"
+                            "id": 47,
+                            "label": "Media"
                         },
-                        "id": 986340,
-                        "label": "Google Hangouts"
+                        "id": 2128,
+                        "label": "YouTube"
                     }
                 ],
                 "allowedapplications": [],
@@ -717,30 +775,9 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within timeframe
                 "categories": [
                     {
                         "deprecated": true,
-                        "id": 4,
+                        "id": 28,
                         "integration": false,
-                        "label": "Chat",
-                        "type": "content"
-                    },
-                    {
-                        "deprecated": true,
-                        "id": 15,
-                        "integration": false,
-                        "label": "Instant Messaging",
-                        "type": "content"
-                    },
-                    {
-                        "deprecated": true,
-                        "id": 23,
-                        "integration": false,
-                        "label": "Search Engines",
-                        "type": "content"
-                    },
-                    {
-                        "deprecated": false,
-                        "id": 123,
-                        "integration": false,
-                        "label": "Infrastructure and Content Delivery Networks",
+                        "label": "Video Sharing",
                         "type": "content"
                     },
                     {
@@ -752,15 +789,15 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within timeframe
                     },
                     {
                         "deprecated": false,
-                        "id": 190,
+                        "id": 194,
                         "integration": false,
-                        "label": "Search Engines and Portals",
+                        "label": "Streaming Video",
                         "type": "content"
                     }
                 ],
-                "date": "2022-09-16",
-                "domain": "mtalk.google.com",
-                "externalip": "1.1.1.1",
+                "date": "2022-10-11",
+                "domain": "rr3---sn-ci5gup-itqd.googlevideo.com",
+                "externalip": "4.4.4.4",
                 "identities": [
                     {
                         "deleted": false,
@@ -773,53 +810,55 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within timeframe
                         }
                     }
                 ],
-                "internalip": "1.1.1.1",
+                "internalip": "10.10.10.217",
                 "policycategories": [],
                 "querytype": "A",
                 "returncode": 0,
                 "threats": [],
-                "time": "05:52:51",
-                "timestamp": 1663307571000,
+                "time": "10:01:31",
+                "timestamp": 1665482491000,
                 "type": "dns",
                 "verdict": "allowed"
             },
             {
-                "allapplications": [],
+                "allapplications": [
+                    {
+                        "category": {
+                            "id": 47,
+                            "label": "Media"
+                        },
+                        "id": 2128,
+                        "label": "YouTube"
+                    }
+                ],
                 "allowedapplications": [],
                 "blockedapplications": [],
                 "categories": [
                     {
                         "deprecated": true,
-                        "id": 25,
+                        "id": 28,
                         "integration": false,
-                        "label": "Software/Technology",
-                        "type": "content"
-                    },
-                    {
-                        "deprecated": true,
-                        "id": 32,
-                        "integration": false,
-                        "label": "Business Services",
+                        "label": "Video Sharing",
                         "type": "content"
                     },
                     {
                         "deprecated": false,
-                        "id": 113,
+                        "id": 148,
                         "integration": false,
-                        "label": "Computer Security",
-                        "type": "content"
+                        "label": "Application",
+                        "type": "application"
                     },
                     {
                         "deprecated": false,
-                        "id": 198,
+                        "id": 194,
                         "integration": false,
-                        "label": "Cloud and Data Centers",
+                        "label": "Streaming Video",
                         "type": "content"
                     }
                 ],
-                "date": "2022-09-16",
-                "domain": "loginsoft.cmdm.comodo.com",
-                "externalip": "1.1.1.1",
+                "date": "2022-10-11",
+                "domain": "suggestqueries-clients6.youtube.com",
+                "externalip": "4.4.4.4",
                 "identities": [
                     {
                         "deleted": false,
@@ -832,13 +871,13 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within timeframe
                         }
                     }
                 ],
-                "internalip": "1.1.1.1",
+                "internalip": "10.10.10.217",
                 "policycategories": [],
                 "querytype": "A",
                 "returncode": 0,
                 "threats": [],
-                "time": "05:51:39",
-                "timestamp": 1663307499000,
+                "time": "10:01:30",
+                "timestamp": 1665482490000,
                 "type": "dns",
                 "verdict": "allowed"
             }
@@ -850,10 +889,10 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within timeframe
 #### Human Readable Output
 
 >### Activity List
->|Request|Identity|Policy or Ruleset Identity|Destination|Internal IP|External IP|DNS Type|Action|Categories|Public Application|Application Category|Date & Time|
->|---|---|---|---|---|---|---|---|---|---|---|---|
->| dns | DESKTOP-IIQVPJ7 | DESKTOP-IIQVPJ7 | mtalk.google.com | 1.1.1.1 | 1.1.1.1 | A | allowed | Chat,Instant Messaging,Search Engines,Infrastructure and Content Delivery Networks,Application,Search Engines and Portals | Google Hangouts | Collaboration | Sep 16, 2022 05:52 AM |
->| dns | DESKTOP-IIQVPJ7 | DESKTOP-IIQVPJ7 | loginsoft.cmdm.comodo.com | 1.1.1.1 | 1.1.1.1 | A | allowed | Software/Technology,Business Services,Computer Security,Cloud and Data Centers |  |  | Sep 16, 2022 05:51 AM |
+>|Request|Identity|Policy or Ruleset Identity|Destination|Internal IP| External IP    |DNS Type|Action|Categories|Public Application|Application Category|Date & Time|
+>|---|---|---|---|----------------|---|---|---|---|---|---|---|
+>| dns | DESKTOP-IIQVPJ7 | DESKTOP-IIQVPJ7 | rr3---sn-ci5gup-itqd.<br/><br/><br/><br/><br/><br/><br/>googlevideo.com | 10.10.10.217 | 4.4.4.4 | A | allowed | Video Sharing,Application,Streaming Video | YouTube | Media | Oct 11, 2022 10:01 AM |
+>| dns | DESKTOP-IIQVPJ7 | DESKTOP-IIQVPJ7 | suggestqueries-clients6.youtube.com | 10.10.10.217 | 4.4.4.4 | A | allowed | Video Sharing,Application,Streaming Video | YouTube | Media | Oct 11, 2022 10:01 AM |
 
 
 ### umbrella-reporting-activity-get
@@ -888,8 +927,8 @@ Only one activity type can be selected at a time.
 | signatures | List of -, comma delimited.                                                                                                                                                                                                                                                                | Optional | 
 | intrusion_action | List of intrusion actions, comma delimited. possible values: would_block, blocked, detected.                                                                                                                                                                                               | Optional | 
 
-
-</br></br>Context Output for **`traffic_type = dns`** for base command **`umbrella-reporting-activity-get`**
+#### Context Output for **`traffic_type = dns`** for base command 
+**`umbrella-reporting-activity-get`**
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -935,44 +974,19 @@ Only one activity type can be selected at a time.
 | UmbrellaReporting.ActivityDns.blockedapplications.label | String | Label of the application. | 
 | UmbrellaReporting.ActivityDns.blockedapplications.type | String | Type of the application, NBAR or AVC. | 
 | UmbrellaReporting.ActivityDns.blockedapplications.category.label | String | Label of the application category. | 
-| UmbrellaReporting.ActivityDns.blockedapplications.category.id | Number | ID of the application category. | 
-
-Command Example for **`traffic_type = dns`** for base command **`umbrella-reporting-activity-get`**
+| UmbrellaReporting.ActivityDns.blockedapplications.category.id | Number | ID of the application category. |
+#### Command example for **`traffic_type = dns`** for base command **`umbrella-reporting-activity-get`**
 ```!umbrella-reporting-activity-get traffic_type=dns limit=2```
-
-Context Example for **`traffic_type = dns`** for base command **`umbrella-reporting-activity-get`**
+#### Context Example for **`traffic_type = dns`** for base command **`umbrella-reporting-activity-get`**
 ```json
 {
     "UmbrellaReporting": {
         "ActivityDns": [
             {
-                "allapplications": [
-                    {
-                        "category": {
-                            "id": 7,
-                            "label": "Collaboration"
-                        },
-                        "id": 986340,
-                        "label": "Google Hangouts"
-                    }
-                ],
+                "allapplications": [],
                 "allowedapplications": [],
                 "blockedapplications": [],
                 "categories": [
-                    {
-                        "deprecated": true,
-                        "id": 4,
-                        "integration": false,
-                        "label": "Chat",
-                        "type": "content"
-                    },
-                    {
-                        "deprecated": true,
-                        "id": 15,
-                        "integration": false,
-                        "label": "Instant Messaging",
-                        "type": "content"
-                    },
                     {
                         "deprecated": true,
                         "id": 23,
@@ -989,22 +1003,15 @@ Context Example for **`traffic_type = dns`** for base command **`umbrella-report
                     },
                     {
                         "deprecated": false,
-                        "id": 148,
-                        "integration": false,
-                        "label": "Application",
-                        "type": "application"
-                    },
-                    {
-                        "deprecated": false,
                         "id": 190,
                         "integration": false,
                         "label": "Search Engines and Portals",
                         "type": "content"
                     }
                 ],
-                "date": "2022-09-16",
-                "domain": "mtalk.google.com",
-                "externalip": "1.1.1.1",
+                "date": "2022-10-11",
+                "domain": "history.google.com",
+                "externalip": "4.4.4.4",
                 "identities": [
                     {
                         "deleted": false,
@@ -1017,18 +1024,27 @@ Context Example for **`traffic_type = dns`** for base command **`umbrella-report
                         }
                     }
                 ],
-                "internalip": "1.1.1.1",
+                "internalip": "10.10.10.217",
                 "policycategories": [],
                 "querytype": "A",
                 "returncode": 0,
                 "threats": [],
-                "time": "05:52:51",
-                "timestamp": 1663307571000,
+                "time": "10:02:07",
+                "timestamp": 1665482527000,
                 "type": "dns",
                 "verdict": "allowed"
             },
             {
-                "allapplications": [],
+                "allapplications": [
+                    {
+                        "category": {
+                            "id": 7,
+                            "label": "Collaboration"
+                        },
+                        "id": 991950,
+                        "label": "Microsoft Teams"
+                    }
+                ],
                 "allowedapplications": [],
                 "blockedapplications": [],
                 "categories": [
@@ -1048,22 +1064,36 @@ Context Example for **`traffic_type = dns`** for base command **`umbrella-report
                     },
                     {
                         "deprecated": false,
-                        "id": 113,
+                        "id": 142,
                         "integration": false,
-                        "label": "Computer Security",
+                        "label": "Online Meetings",
                         "type": "content"
                     },
                     {
                         "deprecated": false,
-                        "id": 198,
+                        "id": 148,
                         "integration": false,
-                        "label": "Cloud and Data Centers",
+                        "label": "Application",
+                        "type": "application"
+                    },
+                    {
+                        "deprecated": false,
+                        "id": 163,
+                        "integration": false,
+                        "label": "Business and Industry",
+                        "type": "content"
+                    },
+                    {
+                        "deprecated": false,
+                        "id": 167,
+                        "integration": false,
+                        "label": "Computers and Internet",
                         "type": "content"
                     }
                 ],
-                "date": "2022-09-16",
-                "domain": "loginsoft.cmdm.comodo.com",
-                "externalip": "1.1.1.1",
+                "date": "2022-10-11",
+                "domain": "presence.teams.microsoft.com",
+                "externalip": "4.4.4.4",
                 "identities": [
                     {
                         "deleted": false,
@@ -1076,13 +1106,13 @@ Context Example for **`traffic_type = dns`** for base command **`umbrella-report
                         }
                     }
                 ],
-                "internalip": "1.1.1.1",
+                "internalip": "10.10.10.217",
                 "policycategories": [],
                 "querytype": "A",
                 "returncode": 0,
                 "threats": [],
-                "time": "05:51:39",
-                "timestamp": 1663307499000,
+                "time": "10:01:42",
+                "timestamp": 1665482502000,
                 "type": "dns",
                 "verdict": "allowed"
             }
@@ -1090,16 +1120,51 @@ Context Example for **`traffic_type = dns`** for base command **`umbrella-report
     }
 }
 ```
-
 #### Human Readable Output
 
 >### Dns Activity List
 >|Identity|Policy or Ruleset Identity|Destination|Internal IP|External IP|DNS Type|Action|Categories|Public Application|Application Category|Date & Time|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| DESKTOP-IIQVPJ7 | DESKTOP-IIQVPJ7 | mtalk.google.com | 1.1.1.1 | 1.1.1.1 | A | allowed | Chat,Instant Messaging,Search Engines,Infrastructure and Content Delivery Networks,Application,Search Engines and Portals | Google Hangouts | Collaboration | Sep 16, 2022 05:52 AM |
->| DESKTOP-IIQVPJ7 | DESKTOP-IIQVPJ7 | loginsoft.cmdm.comodo.com | 1.1.1.1 | 1.1.1.1 | A | allowed | Software/Technology,Business Services,Computer Security,Cloud and Data Centers |  |  | Sep 16, 2022 05:51 AM |
+>| DESKTOP-IIQVPJ7 | DESKTOP-IIQVPJ7 | history.google.com | 10.10.10.217 | 4.4.4.4 | A | allowed | Search Engines,Infrastructure and Content Delivery Networks,Search Engines and Portals |  |  | Oct 11, 2022 10:02 AM |
+>| DESKTOP-IIQVPJ7 | DESKTOP-IIQVPJ7 | presence.teams.microsoft.com | 10.10.10.217 | 4.4.4.4 | A | allowed | Software/Technology,Business Services,Online Meetings,Application,Business and Industry,Computers and Internet | Microsoft Teams | Collaboration | Oct 11, 2022 10:01 AM |
 
-</br></br>Context Output for **`traffic_type = proxy`** for base command **`umbrella-reporting-activity-get`**
+#### Context Output for **`traffic_type = amp`** for base command **`umbrella-reporting-activity-get`**
+| **Path**                                            | **Type** | **Description** |
+|-----------------------------------------------------| --- |-----------|
+| UmbrellaReporting.ActivityAMPRetro.timestamp              | Number | Timestamp in ms. | 
+| UmbrellaReporting.ActivityAMPRetro.firstseenat              | Number | Timestamp. |
+| UmbrellaReporting.ActivityAMPRetro.disposition              | String | Disposition for entry. |
+| UmbrellaReporting.ActivityAMPRetro.hostname              | String | Hostname for entry. |
+| UmbrellaReporting.ActivityAMPRetro.malwarename              | String | Malware name for entry. |
+| UmbrellaReporting.ActivityAMPRetro.sha256              | String | SHA256 for entry. |
+| UmbrellaReporting.ActivityAMPRetro.score              | Number | Score for entry. |
+#### Command example for **`traffic_type = amp`** for base command **`umbrella-reporting-activity-get`**
+```!umbrella-reporting-activity-get traffic_type=amp limit=2```
+#### Context Example for **`traffic_type = amp`** for base command **`umbrella-reporting-activity-get`**
+```json
+{
+   "UmbrellaReporting":{
+      "ActivityAMPRetro":[
+        {
+            "timestamp": 1548311506,
+            "firstseenat": 1548311506,
+            "disposition": "clean",
+            "score": 10,
+            "hostname": "google.com",
+            "malwarename": "malware",
+            "sha256": "9495b6c155044053953efe30ebaf804780c114e7b721b14f6a5b0a782769696e"
+        }
+    ]
+   }
+}
+```
+#### Human Readable Output
+>### AMP Activity List
+>|First Seen| Disposition | Score | Host Name | Malware | SHA256 | Date & Time |
+>|---|---|---|---|--------|---|---|
+>| 1548311506 | clean | 10 | google.com | malware | 9495b6c155044053953efe30ebaf804780c114e7b721b14f6a5b0a782769696e | Sep 16, 2022 05:52 AM |
+
+#### Context Output for **`traffic_type = proxy`** for base command **`umbrella-reporting-activity-get`**
 
 | **Path**                                                         | **Type** | **Description** |
 |------------------------------------------------------------------| --- | --- |
@@ -1116,7 +1181,7 @@ Context Example for **`traffic_type = dns`** for base command **`umbrella-report
 | UmbrellaReporting.ActivityProxy.sha256                         | String | The hex digest of the response content. |
 | UmbrellaReporting.ActivityProxy.url                         | String | The URL requested. |
 | UmbrellaReporting.ActivityProxy.useragent                         | String | The browser agent that made the request. |
-| UmbrellaReporting.ActivityProxy.warnstatus                         | Boolean | Warn Status. |
+| UmbrellaReporting.ActivityProxy.warnstatus                         | String | Warn Status. |
 | UmbrellaReporting.ActivityProxy.securityoverridden                         | Boolean | Security Overridden. |
 | UmbrellaReporting.ActivityProxy.tenantcontrols                         | Boolean | If the request was part of a tenant control policy. |
 | UmbrellaReporting.ActivityProxy.bundleid                     | Number | Bundleid. |
@@ -1174,147 +1239,204 @@ Context Example for **`traffic_type = dns`** for base command **`umbrella-report
 | UmbrellaReporting.ActivityProxy.policy.timebasedrule                | Boolean | Whether the policy triggered a time-of-day rule. | 
 | UmbrellaReporting.ActivityProxy.policy.ruleid               | Number | The rule ID for the policy. | 
 | UmbrellaReporting.ActivityProxy.policy.rulesetid           | Number | The rule set ID for the policy. |  
-| UmbrellaReporting.ActivityProxy.policy.destinationlistids                 | String | The destination lists that the policy triggered. | 
-| UmbrellaReporting.ActivityProxy.httperrors.reason                | Boolean | The name of the error. | 
-| UmbrellaReporting.ActivityProxy.httperrors.type               | Number | Type of the error CertificateError or TLSError. | 
-| UmbrellaReporting.ActivityProxy.httperrors.attributes           | Number | Map of additional information about the error. |  
+| UmbrellaReporting.ActivityProxy.policy.destinationlistids                 | Unknown | The destination lists that the policy triggered. | 
+| UmbrellaReporting.ActivityProxy.httperrors.reason                | String | The name of the error. | 
+| UmbrellaReporting.ActivityProxy.httperrors.type               | String | Type of the error CertificateError or TLSError. | 
+| UmbrellaReporting.ActivityProxy.httperrors.attributes           | Unknown | Map of additional information about the error. |  
 | UmbrellaReporting.ActivityProxy.httperrors.code                 | String | The http error code. |
 | UmbrellaReporting.ActivityProxy.amp.disposition               | String | AMP disposition.                                  | 
 | UmbrellaReporting.ActivityProxy.amp.malware           | String | AMP malware.                              |  
 | UmbrellaReporting.ActivityProxy.amp.score                 | Number | AMP score.             |
-
-
-Command Example for **`traffic_type = proxy`** for base command **`umbrella-reporting-activity-get`**
+#### Command example for **`traffic_type = proxy`** for base command **`umbrella-reporting-activity-get`**
 ```!umbrella-reporting-activity-get traffic_type=proxy limit=2```
-
-Context Example for **`traffic_type = proxy`** for base command **`umbrella-reporting-activity-get`**
+#### Context Example for **`traffic_type = proxy`** for base command **`umbrella-reporting-activity-get`**
 ```json
 {
-   "UmbrellaReporting":{
-      "ActivityProxy":[
-         {
-            "destinationip":"",
-            "externalip":"1.1.1.1",
-            "responsesize":3329530,
-            "allapplications":[
-               {
-                  "id":1313,
-                  "label":"Netflix",
-                  "category":{
-                     "id":47,
-                     "label":"Media"
-                  }
-               }
-            ],
-            "date":"2022-02-18",
-            "datalossprevention":{
-               "state":""
+    "UmbrellaReporting": {
+        "ActivityProxy": [
+            {
+                "allapplications": [],
+                "allowedapplications": [],
+                "amp": {
+                    "disposition": "",
+                    "malware": "",
+                    "score": 0
+                },
+                "antivirusthreats": {
+                    "others": [],
+                    "puas": [],
+                    "viruses": []
+                },
+                "blockedapplications": [],
+                "blockedfiletype": "",
+                "bundleid": 13531789,
+                "categories": [
+                    {
+                        "deprecated": false,
+                        "id": 123,
+                        "integration": false,
+                        "label": "Infrastructure and Content Delivery Networks",
+                        "type": "content"
+                    }
+                ],
+                "contenttype": "application/pkix-crl",
+                "datacenter": {
+                    "id": "",
+                    "label": ""
+                },
+                "datalossprevention": {
+                    "state": ""
+                },
+                "date": "2022-10-11",
+                "destinationip": "4.4.4.4",
+                "egress": {
+                    "ip": "",
+                    "type": ""
+                },
+                "externalip": "4.4.4.4",
+                "forwardingmethod": "",
+                "httperrors": [],
+                "identities": [
+                    {
+                        "deleted": false,
+                        "id": 589064228,
+                        "label": "DESKTOP-IIQVPJ7",
+                        "type": {
+                            "id": 9,
+                            "label": "Roaming Computers",
+                            "type": "roaming"
+                        }
+                    }
+                ],
+                "internalip": "10.10.10.217",
+                "isolated": {
+                    "fileaction": "",
+                    "state": ""
+                },
+                "policy": {
+                    "destinationlistids": [],
+                    "ruleid": null,
+                    "rulesetid": null,
+                    "timebasedrule": false
+                },
+                "policycategories": [],
+                "port": 80,
+                "referer": "",
+                "requestmethod": "GET",
+                "requestsize": 0,
+                "responsefilename": " ",
+                "responsesize": 0,
+                "securityoverridden": false,
+                "sha256": "",
+                "statuscode": 304,
+                "tenantcontrols": false,
+                "threats": [],
+                "time": "09:35:08",
+                "timestamp": 1665480908000,
+                "type": "proxy",
+                "url": "http://google.com",
+                "useragent": "Microsoft-CryptoAPI/10.0",
+                "verdict": "allowed",
+                "warnstatus": ""
             },
-            "antivirusthreats":{
-               "puas":[
-                  
-               ],
-               "viruses":[
-                  
-               ],
-               "others":[
-                  
-               ]
-            },
-            "internalip":"192.168.1.43",
-            "referer":"",
-            "contenttype":"",
-            "tenantcontrols":false,
-            "securityoverridden":false,
-            "useragent":"",
-            "time":"23:29:42",
-            "amp":{
-               "disposition":"",
-               "score":0,
-               "malware":""
-            },
-            "policycategories":[
-               
-            ],
-            "type":"proxy",
-            "requestsize":1996,
-            "port":443,
-            "policy":{
-               "ruleid":0,
-               "rulesetid":0,
-               "destinationlistids":[
-                  
-               ],
-               "timebasedrule":false
-            },
-            "forwardingmethod":"",
-            "categories":[
-               {
-                  "id":17,
-                  "type":"content",
-                  "label":"Movies",
-                  "integration":false,
-                  "deprecated":true
-               }
-            ],
-            "isolated":{
-               "state":"not-isolated",
-               "fileaction":""
-            },
-            "statuscode":200,
-            "egress":{
-               "ip":"1.1.1.1",
-               "type":"shared"
-            },
-            "blockedfiletype":"",
-            "url":"www.google.com",
-            "verdict":"allowed",
-            "responsefilename":"",
-            "warnstatus":"",
-            "sha256":"",
-            "timestamp":1645226982000,
-            "blockedapplications":[
-               
-            ],
-            "allowedapplications":[
-               
-            ],
-            "identities":[
-               {
-                  "id":1,
-                  "type":{
-                     "id":34,
-                     "type":"anyconnect",
-                     "label":"Anyconnect Roaming Client"
-                  },
-                  "label":"Vincent's Macbook",
-                  "deleted":false
-               }
-            ],
-            "datacenter":{
-               "label":"Los Angeles, US",
-               "id":"LAX"
-            },
-            "threats":[
-               
-            ],
-            "httperrors":[
-               
-            ],
-            "bundleid":3
-         }
-      ]
-   }
+            {
+                "allapplications": [],
+                "allowedapplications": [],
+                "amp": {
+                    "disposition": "",
+                    "malware": "",
+                    "score": 0
+                },
+                "antivirusthreats": {
+                    "others": [],
+                    "puas": [],
+                    "viruses": []
+                },
+                "blockedapplications": [],
+                "blockedfiletype": "",
+                "bundleid": 13531789,
+                "categories": [
+                    {
+                        "deprecated": false,
+                        "id": 123,
+                        "integration": false,
+                        "label": "Infrastructure and Content Delivery Networks",
+                        "type": "content"
+                    }
+                ],
+                "contenttype": "application/pkix-crl",
+                "datacenter": {
+                    "id": "",
+                    "label": ""
+                },
+                "datalossprevention": {
+                    "state": ""
+                },
+                "date": "2022-10-11",
+                "destinationip": "4.4.4.4",
+                "egress": {
+                    "ip": "",
+                    "type": ""
+                },
+                "externalip": "4.4.4.4",
+                "forwardingmethod": "",
+                "httperrors": [],
+                "identities": [
+                    {
+                        "deleted": false,
+                        "id": 589064228,
+                        "label": "DESKTOP-IIQVPJ7",
+                        "type": {
+                            "id": 9,
+                            "label": "Roaming Computers",
+                            "type": "roaming"
+                        }
+                    }
+                ],
+                "internalip": "10.10.10.217",
+                "isolated": {
+                    "fileaction": "",
+                    "state": ""
+                },
+                "policy": {
+                    "destinationlistids": [],
+                    "ruleid": null,
+                    "rulesetid": null,
+                    "timebasedrule": false
+                },
+                "policycategories": [],
+                "port": 80,
+                "referer": "",
+                "requestmethod": "GET",
+                "requestsize": 0,
+                "responsefilename": " ",
+                "responsesize": 0,
+                "securityoverridden": false,
+                "sha256": "",
+                "statuscode": 304,
+                "tenantcontrols": false,
+                "threats": [],
+                "time": "08:29:18",
+                "timestamp": 1665476958000,
+                "type": "proxy",
+                "url": "http://google.com",
+                "useragent": "Microsoft-CryptoAPI/10.0",
+                "verdict": "allowed",
+                "warnstatus": ""
+            }
+        ]
+    }
 }
 ```
 #### Human Readable Output
 
 >### Proxy Activity List
->|Identity|Policy or Ruleset Identity|Internal IP|External IP|Action|Categories|Public Application| Application Category | URL |Date & Time|
->|---|---|---|---|---|---|----------------------|-----|---|---|
->| Vincent's Macbook | Vincent's Macbook |192.168.1.43 | 1.1.1.1 | allowed | Movies | Netflix | Media | www.google.com  | Sep 16, 2022 05:52 AM |
+>|Identity|Policy or Ruleset Identity|Internal IP|External IP|Action|Categories|Date & Time|
+>|---|---|---|---|---|---|---|
+>| DESKTOP-IIQVPJ7 | DESKTOP-IIQVPJ7 | 10.10.10.217 | 4.4.4.4 | allowed | Infrastructure and Content Delivery Networks | Oct 11, 2022 09:35 AM |
+>| DESKTOP-IIQVPJ7 | DESKTOP-IIQVPJ7 | 10.10.10.217 | 4.4.4.4 | allowed | Infrastructure and Content Delivery Networks | Oct 11, 2022 08:29 AM |
 
-</br></br>Context Output for **`traffic_type = firewall`** for base command **`umbrella-reporting-activity-get`**
+#### Context Output for **`traffic_type = firewall`** for base command **`umbrella-reporting-activity-get`**
 
 | **Path**                                                         | **Type** | **Description** |
 |------------------------------------------------------------------| --- |-----------|
@@ -1347,12 +1469,9 @@ Context Example for **`traffic_type = proxy`** for base command **`umbrella-repo
 | UmbrellaReporting.ActivityFirewall.applicationprotocols.id                 | Number | ID of the application. | 
 | UmbrellaReporting.ActivityFirewall.applicationprotocols.app               | String | Type: "IT Service Management" (string) - application/protocol type. | 
 | UmbrellaReporting.ActivityFirewall.applicationprotocols.label              | String | Application/Protocol label. |
-
-
-Command Example for **`traffic_type = firewall`** for base command **`umbrella-reporting-activity-get`**
-```!umbrella-reporting-activity-get traffic_type=firewall limit=1```
-
-Context Example for **`traffic_type = firewall`** for base command **`umbrella-reporting-activity-get`**
+#### Command example for **`traffic_type = firewall`** for base command **`umbrella-reporting-activity-get`**
+```!umbrella-reporting-activity-get traffic_type=firewall limit=2```
+#### Context Example for **`traffic_type = firewall`** for base command **`umbrella-reporting-activity-get`**
 ```json
 {
    "UmbrellaReporting":{
@@ -1409,89 +1528,12 @@ Context Example for **`traffic_type = firewall`** for base command **`umbrella-r
 }
 ```
 #### Human Readable Output
-
 >### Firewall Activity List
 >|Identity|Policy or Ruleset Identity|Internal IP|Source IP|Source Port|Destination Port|Protocol|Rule|Type|Action|Public Application|Direction|Date & Time|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Catch Rate Testing System | Catch Rate Testing System | 1.1.1.1 | 192.168.0.1 | 0 | 0 | UDP | Default Rule | firewall |allowed|dns IT Service Management|towards| Sep 16, 2022 05:52 AM |
 
-</br></br>Context Output for **`traffic_type = ip`** for base command **`umbrella-reporting-activity-get`**
-
-| **Path**                                                         | **Type** | **Description** |
-|------------------------------------------------------------------| --- |-----------|
-| UmbrellaReporting.ActivityIP.type                             | String <br/>| External IP for entry. | 
-| UmbrellaReporting.ActivityIP.destinationip                         | String | Destination IP for entry. |
-| UmbrellaReporting.ActivityIP.sourceip                         | String | Source IP |
-| UmbrellaReporting.ActivityIP.destinationport                         | Number | Destination port for entry. |
-| UmbrellaReporting.ActivityIP.sourceport                         | Number | Source port for entry. |
-| UmbrellaReporting.ActivityIP.verdict                            | String | Verdict for entry. | 
-| UmbrellaReporting.ActivityIP.timestamp                          | Number | Timestamp in ms. | 
-| UmbrellaReporting.ActivityIP.time                               | String | The time in 24 hour format based on the timezone parameter. | 
-| UmbrellaReporting.ActivityIP.date                               | String | The date from the timestamp based on the timezone parameter. | 
-| UmbrellaReporting.ActivityIP.identities.id                      | Number | ID of identity. | 
-| UmbrellaReporting.ActivityIP.identities.type.id                 | Number | Origin type for identity | 
-| UmbrellaReporting.ActivityIP.identities.type.type               | String | Origin type name for identity | 
-| UmbrellaReporting.ActivityIP.identities.type.label              | String | Origin type label for identity | 
-| UmbrellaReporting.ActivityIP.identities.label                   | String | Label for identity | 
-| UmbrellaReporting.ActivityIP.identities.deleted                 | Boolean | Indicates whether the identity was deleted or not | 
-| UmbrellaReporting.ActivityIP.categories.id                      | Number | id of category | 
-| UmbrellaReporting.ActivityIP.categories.label                   | String | The human readable label of the category | 
-| UmbrellaReporting.ActivityIP.categories.type                    | String | The type of category | 
-| UmbrellaReporting.ActivityIP.categories.deprecated              | Boolean | If the category is a legacy category | 
-| UmbrellaReporting.ActivityIP.categories.integration             | Boolean | If the category is an integration |  
-
-
-Command Example for **`traffic_type = ip`** for base command **`umbrella-reporting-activity-get`**
-```!umbrella-reporting-activity-get traffic_type=ip limit=1```
-
-Context Example for **`traffic_type = ip`** for base command **`umbrella-reporting-activity-get`**
-```json
-{
-   "UmbrellaReporting":{
-      "ActivityIP":[
-        {
-            "destinationip": "1.1.1.1",
-            "sourceip": "192.168.0.1",
-            "date": "03-15-22",
-            "sourceport": 0,
-            "destinationport": 0,
-            "verdict": "allowed",
-            "timestamp": 1548311506,
-            "time": "10:15",
-            "identities": [
-                {
-                    "id": 1,
-                    "label": "Catch Rate Testing System",
-                    "type": {
-                        "id": 21,
-                        "label": "Sites",
-                        "type": "site"
-                    },
-                    "deleted": false
-                }
-            ],
-            "categories": [
-                {
-                    "id": 66,
-                    "label": "Malware",
-                    "type": "security",
-                    "integration": true
-                }
-            ],
-            "type": "ip"
-        }
-    ]
-   }
-}
-```
-#### Human Readable Output
-
->### IP Activity List
->|Identity|Destination IP|Source IP|Source Port| Destination Port|Categories|Type|Action|Date & Time|
->|---|---|---|---|---|---|---|---|---|
->| Catch Rate Testing System |  10.10.10.10 | 10.10.10.10 |22|33|Malware|IP|allowed|Sep 16, 2022 05:52 AM|
-
-</br></br>Context Output for **`traffic_type = intrusion`** for base command **`umbrella-reporting-activity-get`**
+#### Context Output for **`traffic_type = intrusion`** for base command **`umbrella-reporting-activity-get`**
 
 | **Path**                                                         | **Type** | **Description** |
 |------------------------------------------------------------------| --- |-----------|
@@ -1519,13 +1561,10 @@ Context Example for **`traffic_type = ip`** for base command **`umbrella-reporti
 | UmbrellaReporting.ActivityIntrusion.signature.generatorid               | Number | Unique id assigned to the part of the IPS which generated the event. | 
 | UmbrellaReporting.ActivityIntrusion.signature.label              | String | A brief description of the signature. | 
 | UmbrellaReporting.ActivityIntrusion.signature.cves              | String | An identifier for a known security vulnerability/exposure. |
-| UmbrellaReporting.ActivityIntrusion.signaturelist.id                 | Number | Unique id assigned to a Default or Custom Signature List. | 
-
-
-Command Example for **`traffic_type = intrusion`** for base command **`umbrella-reporting-activity-get`**
-```!umbrella-reporting-activity-get traffic_type=intrusion limit=1```
-
-Context Example for **`traffic_type = intrusion`** for base command **`umbrella-reporting-activity-get`**
+| UmbrellaReporting.ActivityIntrusion.signaturelist.id                 | Number | Unique id assigned to a Default or Custom Signature List. |
+#### Command example for **`traffic_type = intrusion`** for base command **`umbrella-reporting-activity-get`**
+```!umbrella-reporting-activity-get traffic_type=intrusion limit=2```
+#### Context Example for **`traffic_type = intrusion`** for base command **`umbrella-reporting-activity-get`**
 ```json
 {
    "UmbrellaReporting":{
@@ -1575,52 +1614,82 @@ Context Example for **`traffic_type = intrusion`** for base command **`umbrella-
 }
 ```
 #### Human Readable Output
-
 >### Intrusion Activity List
 >|Identity|Classification|Destination IP|Source IP|Source Port| Destination Port|Protocol|Severity|CVE|CVE|Signature|Type|Action|Date & Time|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Anyconnect Roaming Client | malicious | 10.10.10.10 | 10.10.10.10 |22|33|UDP|HIGH|HIGH|cve-2015-0279,cve-2018-12532|SERVER-OTHER JBoss Richfaces expression language injection attempt|intrusion|detected|Sep 16, 2022 05:52 AM|
 
-</br></br>Context Output for **`traffic_type = amp`** for base command **`umbrella-reporting-activity-get`**
+#### Context Output for **`traffic_type = ip`** for base command **`umbrella-reporting-activity-get`**
 
-| **Path**                                            | **Type** | **Description** |
-|-----------------------------------------------------| --- |-----------|
-| UmbrellaReporting.ActivityAMPRetro.timestamp              | Number | Timestamp in ms. | 
-| UmbrellaReporting.ActivityAMPRetro.firstseenat              | Number | Timestamp. |
-| UmbrellaReporting.ActivityAMPRetro.disposition              | String | Disposition for entry. |
-| UmbrellaReporting.ActivityAMPRetro.hostname              | String | Hostname for entry. |
-| UmbrellaReporting.ActivityAMPRetro.malwarename              | String | Malware name for entry. |
-| UmbrellaReporting.ActivityAMPRetro.sha256              | String | SHA256 for entry. |
-| UmbrellaReporting.ActivityAMPRetro.score              | Number | Score for entry. |
-
-
-Command Example for **`traffic_type = amp`** for base command **`umbrella-reporting-activity-get`**
-```!umbrella-reporting-activity-get traffic_type=amp limit=1```
-
-Context Example for **`traffic_type = amp`** for base command **`umbrella-reporting-activity-get`**
+| **Path**                                                         | **Type** | **Description** |
+|------------------------------------------------------------------| --- |-----------|
+| UmbrellaReporting.ActivityIP.type                             | String <br/>| External IP for entry. | 
+| UmbrellaReporting.ActivityIP.destinationip                         | String | Destination IP for entry. |
+| UmbrellaReporting.ActivityIP.sourceip                         | String | Source IP |
+| UmbrellaReporting.ActivityIP.destinationport                         | Number | Destination port for entry. |
+| UmbrellaReporting.ActivityIP.sourceport                         | Number | Source port for entry. |
+| UmbrellaReporting.ActivityIP.verdict                            | String | Verdict for entry. | 
+| UmbrellaReporting.ActivityIP.timestamp                          | Number | Timestamp in ms. | 
+| UmbrellaReporting.ActivityIP.time                               | String | The time in 24 hour format based on the timezone parameter. | 
+| UmbrellaReporting.ActivityIP.date                               | String | The date from the timestamp based on the timezone parameter. | 
+| UmbrellaReporting.ActivityIP.identities.id                      | Number | ID of identity. | 
+| UmbrellaReporting.ActivityIP.identities.type.id                 | Number | Origin type for identity | 
+| UmbrellaReporting.ActivityIP.identities.type.type               | String | Origin type name for identity | 
+| UmbrellaReporting.ActivityIP.identities.type.label              | String | Origin type label for identity | 
+| UmbrellaReporting.ActivityIP.identities.label                   | String | Label for identity | 
+| UmbrellaReporting.ActivityIP.identities.deleted                 | Boolean | Indicates whether the identity was deleted or not | 
+| UmbrellaReporting.ActivityIP.categories.id                      | Number | id of category | 
+| UmbrellaReporting.ActivityIP.categories.label                   | String | The human readable label of the category | 
+| UmbrellaReporting.ActivityIP.categories.type                    | String | The type of category | 
+| UmbrellaReporting.ActivityIP.categories.deprecated              | Boolean | If the category is a legacy category | 
+| UmbrellaReporting.ActivityIP.categories.integration             | Boolean | If the category is an integration |
+#### Command example
+```!umbrella-reporting-activity-get traffic_type=ip limit=2```
+#### Context Example for **`traffic_type = ip`** for base command **`umbrella-reporting-activity-get`**
 ```json
 {
    "UmbrellaReporting":{
-      "ActivityAMPRetro":[
+      "ActivityIP":[
         {
+            "destinationip": "1.1.1.1",
+            "sourceip": "192.168.0.1",
+            "date": "03-15-22",
+            "sourceport": 0,
+            "destinationport": 0,
+            "verdict": "allowed",
             "timestamp": 1548311506,
-            "firstseenat": 1548311506,
-            "disposition": "clean",
-            "score": 10,
-            "hostname": "google.com",
-            "malwarename": "malware",
-            "sha256": "9495b6c155044053953efe30ebaf804780c114e7b721b14f6a5b0a782769696e"
+            "time": "10:15",
+            "identities": [
+                {
+                    "id": 1,
+                    "label": "Catch Rate Testing System",
+                    "type": {
+                        "id": 21,
+                        "label": "Sites",
+                        "type": "site"
+                    },
+                    "deleted": false
+                }
+            ],
+            "categories": [
+                {
+                    "id": 66,
+                    "label": "Malware",
+                    "type": "security",
+                    "integration": true
+                }
+            ],
+            "type": "ip"
         }
     ]
    }
 }
 ```
 #### Human Readable Output
-
->### AMP Activity List
->|First Seen| Disposition | Score | Host Name | Malware | SHA256 | Date & Time |
->|---|---|---|---|--------|---|---|
->| 1548311506 | clean | 10 | google.com | malware | 9495b6c155044053953efe30ebaf804780c114e7b721b14f6a5b0a782769696e | Sep 16, 2022 05:52 AM |
+>### IP Activity List
+>|Identity|Destination IP|Source IP|Source Port| Destination Port|Categories|Type|Action|Date & Time|
+>|---|---|---|---|---|---|---|---|---|
+>| Catch Rate Testing System |  10.10.10.10 | 10.10.10.10 |22|33|Malware|IP|allowed|Sep 16, 2022 05:52 AM|
 
 
 ### umbrella-reporting-summary-list
@@ -1652,9 +1721,7 @@ Get the summary.
 | page | The page number. Default Page number is 1.                                                | Optional | 
 | page_size | The number of requested results per page.                                                 | Optional | 
 | signatures | List of -, comma delimited.                                                               | Optional | 
-| intrusion_action | List of intrusion actions, comma delimited. possible values: would_block, blocked, detected. | Optional | 
-
-
+| intrusion_action | List of intrusion actions, comma delimited. possible values: would_block, blocked, detected. | Optional |
 
 
 #### Context Output of summary list
@@ -1710,7 +1777,7 @@ Get the summary.
 >| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 
-</br></br>Context Output for **`summary_type=category`**  for base command **`umbrella-reporting-summary-list`**
+#### Context Output for **`summary_type=category`**  for base command **`umbrella-reporting-summary-list`**
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -1735,10 +1802,10 @@ Get the summary.
 | UmbrellaReporting.SummaryWithCategory.summary.requestsblocked | Number | Total number of blocked requests. |
 
 
-Command example for **`summary_type=category`**  for base command **`umbrella-reporting-summary-list`**
+#### Command example for **`summary_type=category`**  for base command **`umbrella-reporting-summary-list`**
 ```!umbrella-reporting-summary-list summary_type=category limit=1```
 
-Context Example for **`summary_type=category`**  for base command **`umbrella-reporting-summary-list`**
+#### Context Example for **`summary_type=category`**  for base command **`umbrella-reporting-summary-list`**
 ```json
 {
    "UmbrellaReporting":{
@@ -1773,15 +1840,13 @@ Context Example for **`summary_type=category`**  for base command **`umbrella-re
 ```
 #### Human Readable Output
 
-#### Human Readable Output
-
 >### Summary with Category List 
 >|Category Type| Category Name |Application|Allowed Application|Blocked Application|Category|Domain|File|File Type|Identity|Identity Type|Policy Category|Policy Request|Request|Allowed Request|Blocked Request|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| security | Malware | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 
-</br></br>Context Output for **`summary_type=destination`**  for base command **`umbrella-reporting-summary-list`**
+#### Context Output for **`summary_type=destination`**  for base command **`umbrella-reporting-summary-list`**
 
 | **Path** | **Type** | **Description**                                |
 | --- |----------|------------------------------------------------|
@@ -1802,10 +1867,10 @@ Context Example for **`summary_type=category`**  for base command **`umbrella-re
 | UmbrellaReporting.SummaryWithDestination.summary.requestsblocked | Number   | Total number of blocked requests.              |
 
 
-Command example for **`summary_type=destination`**  for base command **`umbrella-reporting-summary-list`**
+#### Command example for **`summary_type=destination`**  for base command **`umbrella-reporting-summary-list`**
 ```!umbrella-reporting-summary-list summary_type=destination limit=1```
 
-Context Example for **`summary_type=destination`**  for base command **`umbrella-reporting-summary-list`**
+#### Context Example for **`summary_type=destination`**  for base command **`umbrella-reporting-summary-list`**
 ```json
 {
    "UmbrellaReporting":{
@@ -1841,7 +1906,7 @@ Context Example for **`summary_type=destination`**  for base command **`umbrella
 >| www.google.com | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 
-</br></br>Context Output for **`summary_type=intrusion_rule`**  for base command **`umbrella-reporting-summary-list`**
+#### Context Output for **`summary_type=intrusion_rule`**  for base command **`umbrella-reporting-summary-list`**
 
 | **Path** | **Type** | **Description**                                |
 | --- |----------|------------------------------------------------|
@@ -1854,11 +1919,11 @@ Context Example for **`summary_type=destination`**  for base command **`umbrella
 | UmbrellaReporting.SignatureListSummary.signatures.counts.wouldblock | Number   | Would Block. |
 
 
-Command example for **`summary_type=intrusion_rule`**  for base command **`umbrella-reporting-summary-list`**
+#### Command example for **`summary_type=intrusion_rule`**  for base command **`umbrella-reporting-summary-list`**
 ```!umbrella-reporting-summary-list summary_type=intrusion_rule limit=1```
 
 
-Context Example for **`summary_type=intrusion_rule`**  for base command **`umbrella-reporting-summary-list`**
+#### Context Example for **`summary_type=intrusion_rule`**  for base command **`umbrella-reporting-summary-list`**
 ```json
 {
    "UmbrellaReporting":{
