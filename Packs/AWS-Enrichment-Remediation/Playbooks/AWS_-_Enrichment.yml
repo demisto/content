@@ -1,6 +1,5 @@
-id: 590186fd-bac8-4d4e-843f-2948e29ef9eb
-version: 68
-vcShouldKeepItemLegacyProdMachine: false
+id: AWS - Enrichment
+version: -1
 name: AWS - Enrichment
 description: Given the IP address this playbook enriches EC2 and IAM information.
 starttaskid: "0"
@@ -189,8 +188,7 @@ tasks:
       id: d9f625c8-f422-4e29-8575-6dc1ce98eff6
       version: -1
       name: Is AWS - EC2 enabled?
-      description: Determines if the AWS - EC2 integration instance is pull enrichment
-        data.
+      description: Determines if the AWS - EC2 integration instance is pull enrichment data.
       type: condition
       iscommand: false
       brand: ""
@@ -251,8 +249,7 @@ tasks:
       id: 060102cd-0ced-4e67-88bc-6916f4f3750b
       version: -1
       name: Is AWS - IAM enabled?
-      description: Determines if the AWS - IAM integration instance is configured
-        to continue with scanning.
+      description: Determines if the AWS - IAM integration instance is configured to continue with scanning.
       type: condition
       iscommand: false
       brand: ""
@@ -377,7 +374,7 @@ inputs:
   playbookInputQuery:
     query: ""
     queryEntity: indicators
-    results: null
+    results:
     daterange:
       fromdate: 0001-01-01T00:00:00Z
       todate: 0001-01-01T00:00:00Z
@@ -385,8 +382,8 @@ inputs:
         by: ""
         byto: ""
         byfrom: ""
-        tovalue: null
-        fromvalue: null
+        tovalue:
+        fromvalue:
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: true
@@ -397,7 +394,7 @@ inputs:
       accessor: remoteip
   required: false
   description: AWS IP in alert
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: AWS.EC2.Instances
   description: AWS EC2 information.
@@ -410,3 +407,5 @@ outputs:
   type: unknown
 quiet: true
 fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

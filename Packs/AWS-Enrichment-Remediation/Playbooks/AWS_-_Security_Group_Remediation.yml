@@ -1,6 +1,5 @@
-id: ed7cb3f7-6a98-40e3-831c-cc3586496da9
-version: 212
-vcShouldKeepItemLegacyProdMachine: false
+id: AWS - Security Group Remediation
+version: -1
 name: AWS - Security Group Remediation
 description: Replace current security groups with limited access security groups.
 starttaskid: "0"
@@ -70,8 +69,7 @@ tasks:
     task:
       id: 86c543a8-5c75-4f17-8c34-820a91af424e
       version: -1
-      name: Add a security group ingress rule (IP 172.16.0.0/12 & port 22) permitting
-        specific traffic
+      name: Add a security group ingress rule (IP 172.16.0.0/12 & port 22) permitting specific traffic
       description: Adds ingress rule to a security group.
       script: AWS - EC2|||aws-ec2-authorize-security-group-ingress-rule
       type: regular
@@ -127,8 +125,7 @@ tasks:
       id: a646bdcb-9c96-4e8e-8bd8-95ab738fbb50
       version: -1
       name: Is AWS - EC2 enabled?
-      description: Determines if the AWS - EC2 integration instance is configured
-        to continue with remediating security groups.
+      description: Determines if the AWS - EC2 integration instance is configured to continue with remediating security groups.
       type: condition
       iscommand: false
       brand: ""
@@ -199,8 +196,7 @@ tasks:
       - "30"
     scriptarguments:
       description:
-        simple: This is an XSIAM remediation security group that has rules for basic
-          access to the instance.
+        simple: This is an XSIAM remediation security group that has rules for basic access to the instance.
       groupName:
         simple: XSIAM-Remediation-Security-Group
       vpcId:
@@ -232,8 +228,7 @@ tasks:
       id: 41908428-ef2b-4471-8920-b5e326548853
       version: -1
       name: Replace security group
-      description: Modifies the specified network interface attribute. You can specify
-        only one attribute at a time.
+      description: Modifies the specified network interface attribute. You can specify only one attribute at a time.
       script: AWS - EC2|||aws-ec2-modify-network-interface-attribute
       type: regular
       iscommand: true
@@ -316,8 +311,7 @@ tasks:
     task:
       id: 73219688-7291-4956-8765-e64953bebc34
       version: -1
-      name: Add a security group ingress rule (IP 10.0.0.0/8 & port 22) permitting
-        specific traffic
+      name: Add a security group ingress rule (IP 10.0.0.0/8 & port 22) permitting specific traffic
       description: Adds ingress rule to a security group.
       script: AWS - EC2|||aws-ec2-authorize-security-group-ingress-rule
       type: regular
@@ -372,8 +366,7 @@ tasks:
     task:
       id: afbc2968-5af3-4961-8544-c83eb18010d3
       version: -1
-      name: Add a security group ingress rule (IP 192.168.0.0/16 & port 22) permitting
-        specific traffic
+      name: Add a security group ingress rule (IP 192.168.0.0/16 & port 22) permitting specific traffic
       description: Adds ingress rule to a security group.
       script: AWS - EC2|||aws-ec2-authorize-security-group-ingress-rule
       type: regular
@@ -494,8 +487,7 @@ tasks:
     task:
       id: 4a22d5ae-b386-44b9-8b62-e2fb15468851
       version: -1
-      name: Add a security group ingress rule (IP 172.16.0.0/12 & port 3389) permitting
-        specific traffic
+      name: Add a security group ingress rule (IP 172.16.0.0/12 & port 3389) permitting specific traffic
       description: Adds ingress rule to a security group.
       script: AWS - EC2|||aws-ec2-authorize-security-group-ingress-rule
       type: regular
@@ -550,8 +542,7 @@ tasks:
     task:
       id: 2e5c9282-0f3d-4980-8246-8daf1ed9b6d6
       version: -1
-      name: Add a security group ingress rule (IP 10.0.0.0/8 & port 3389) permitting
-        specific traffic
+      name: Add a security group ingress rule (IP 10.0.0.0/8 & port 3389) permitting specific traffic
       description: Adds ingress rule to a security group.
       script: AWS - EC2|||aws-ec2-authorize-security-group-ingress-rule
       type: regular
@@ -606,8 +597,7 @@ tasks:
     task:
       id: 8555ec1a-abdd-4889-847f-ac8212086a42
       version: -1
-      name: Add a security group ingress rule (IP 192.168.0.0/16 & port 3389) permitting
-        specific traffic
+      name: Add a security group ingress rule (IP 192.168.0.0/16 & port 3389) permitting specific traffic
       description: Adds ingress rule to a security group.
       script: AWS - EC2|||aws-ec2-authorize-security-group-ingress-rule
       type: regular
@@ -698,8 +688,7 @@ tasks:
       id: e975e535-8265-4fd4-88a4-010d0d79aa06
       version: -1
       name: Was there a SG named XSIAM-Remediation-Security-Group?
-      description: Check whether the last command returned security group information
-        or not.
+      description: Check whether the last command returned security group information or not.
       type: condition
       iscommand: false
       brand: ""
@@ -870,11 +859,13 @@ inputs:
   value: {}
   required: true
   description: This is the VPC ID used for Security group creation.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: NicID
   value: {}
   required: true
   description: This is the Network interface of Ec2 instance.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
