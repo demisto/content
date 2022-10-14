@@ -81,13 +81,11 @@
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "googlecloudsccorganizationid",
                                 "height": 22,
-                                "id": "cbdd1ee0-2d3b-11ed-a35a-618e0c3a9a8e",
+                                "id": "bda1b090-4b84-11ed-b194-2b8ed3710d53",
                                 "index": 7,
-                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
