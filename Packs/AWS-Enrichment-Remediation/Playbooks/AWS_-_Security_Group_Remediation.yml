@@ -94,7 +94,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: XSIAM-Remediation-Security-Group
+                  simple: Remediation-Security-Group
           accessor: GroupId
       ipProtocol:
         simple: tcp
@@ -196,9 +196,9 @@ tasks:
       - "30"
     scriptarguments:
       description:
-        simple: This is an XSIAM remediation security group that has rules for basic access to the instance.
+        simple: This is a remediation security group that has rules for basic access to the instance.
       groupName:
-        simple: XSIAM-Remediation-Security-Group
+        simple: Remediation-Security-Group
       vpcId:
         complex:
           root: inputs.VpcID
@@ -248,7 +248,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: XSIAM-Remediation-Security-Group
+                  simple: Remediation-Security-Group
           accessor: GroupId
           transformers:
           - operator: uniq
@@ -336,7 +336,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: XSIAM-Remediation-Security-Group
+                  simple: Remediation-Security-Group
           accessor: GroupId
       ipProtocol:
         simple: tcp
@@ -391,7 +391,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: XSIAM-Remediation-Security-Group
+                  simple: Remediation-Security-Group
           accessor: GroupId
       ipProtocol:
         simple: tcp
@@ -512,7 +512,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: XSIAM-Remediation-Security-Group
+                  simple: Remediation-Security-Group
           accessor: GroupId
       ipProtocol:
         simple: tcp
@@ -567,7 +567,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: XSIAM-Remediation-Security-Group
+                  simple: Remediation-Security-Group
           accessor: GroupId
       ipProtocol:
         simple: tcp
@@ -622,7 +622,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: XSIAM-Remediation-Security-Group
+                  simple: Remediation-Security-Group
           accessor: GroupId
       ipProtocol:
         simple: tcp
@@ -652,7 +652,7 @@ tasks:
     task:
       id: fab84dc2-5f23-438a-895e-cfcfbeabbc54
       version: -1
-      name: Check if XSIAM-Remediation-Security-Group exists?
+      name: Check if Remediation-Security-Group exists?
       description: Checks if the remediation security group exists.
       script: AWS - EC2|||aws-ec2-describe-security-groups
       type: regular
@@ -663,7 +663,7 @@ tasks:
       - "25"
     scriptarguments:
       filters:
-        simple: Name=group-name,Values=XSIAM-Remediation-Security-Group
+        simple: Name=group-name,Values=Remediation-Security-Group
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -687,7 +687,7 @@ tasks:
     task:
       id: e975e535-8265-4fd4-88a4-010d0d79aa06
       version: -1
-      name: Was there a SG named XSIAM-Remediation-Security-Group?
+      name: Was there a SG named Remediation-Security-Group?
       description: Check whether the last command returned security group information or not.
       type: condition
       iscommand: false
