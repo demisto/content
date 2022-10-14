@@ -7,8 +7,7 @@ import demistomock as demisto
 import urllib3
 from CommonServerPython import *
 
-"""EcleticIQ Integration for Cortex XSOAR (aka Demisto)."""
-
+"""EclecticIQ Integration for Cortex XSOAR (aka Demisto)."""
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -16,23 +15,36 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-MAX_INCIDENTS_TO_FETCH = 50
 
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
     """Client class to interact with the service API
-
     This Client implements API calls, and does not contain any Demisto logic.
     Should only do requests and return data.
     It inherits from BaseClient defined in CommonServer Python.
     Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this HelloWorld implementation, no special attributes defined
     """
 
     def sighting(self, value: str, description: str,
                  title: str, tags: str, type_eiq: str, confidence_level: str) -> Dict[str, Any]:
+        """Create the sighting using the '/entities' API endpoint
+        :param value: sighting value
+        :type value: str
+        :param description: sighting description
+        :type description: str
+        :param title: title for the sighting
+        :type title: str
+        :param tags: sighting tags
+        :type tags: str
+        :param type_eiq: sighting value type
+        :type type_eiq: str
+        :param confidence_level: maliciousness of the value
+        :type confidence_level : ``str``
+        :return: sighting payload
+        :rtype: ``Dict[str, Any]``
+        """
         sighting_schema: Mapping[str, Any] = {
             "data": {
                 "data": {
@@ -72,6 +84,14 @@ class Client(BaseClient):
         )
 
     def lookup_obs(self, type_eiq: str, value: str) -> Dict[str, Any]:
+        """Get observables using the '/observables' API endpoint.
+        :param type_eiq: observable type
+        :type type_eiq: str
+        :param value: observable value
+        :type value: str
+        :return: observables
+        :rtype: Dict[str, Any]
+        """
         return self._http_request(
             method='GET',
             url_suffix='observables',
@@ -79,6 +99,12 @@ class Client(BaseClient):
         )
 
     def fetch_entity(self, id: str) -> Dict[str, Any]:
+        """Get entity details by id.
+        :param id: entity id
+        :type: str
+        :return: id releted entity
+        :rtype: Dict[str, Any]
+        """
         return self._http_request(
             method='GET',
             url_suffix='/entities/{}'.format(id),
@@ -86,6 +112,12 @@ class Client(BaseClient):
         )
 
     def get_observable_by_id(self, id: str) -> Dict[str, Any]:
+        """Get observables by id.
+        :param id: observable id
+        :type id: str
+        :return: id related observable
+        :rtype: Dict[str, Any]
+        """
         return self._http_request(
             method='GET',
             url_suffix=f'observables/{id}',
@@ -93,6 +125,16 @@ class Client(BaseClient):
         )
 
     def observable(self, type_eiq: str, value: str, maliciousness: str) -> Dict[str, Any]:
+        """Create the observable using the '/observables' API endpoint
+        :param type_eiq: observable type
+        :type type_eiq: str
+        :param value: observable value
+        :type value: str
+        :param maliciousness: malciousness of the value
+        :type maliciousness: str
+        :return: observable payload
+        :rtype: ``Dict[str, Any]``
+        """
         Body_paramas: Mapping[str, Any] = {
             "data": {
                 "meta": {
@@ -111,7 +153,13 @@ class Client(BaseClient):
             data=json.dumps(Body_paramas)
         )
 
-    def get_user_granted_permissions(self):
+    def get_user_granted_permissions(self) -> Any:
+        """Get user granted permissions.
+        :param: self
+        :type: str
+        :return: user granted permissions
+        :rtype: Any
+        """
         response = self._http_request(
             method='GET',
             url_suffix='users/self',
@@ -122,7 +170,13 @@ class Client(BaseClient):
             return data.get("permissions")
         return {}
 
-    def get_platform_permissions(self):
+    def get_platform_permissions(self) -> Any:
+        """Get platform permissions for user.
+        :param: self
+        :type: str
+        :return: permissions data
+        :rtype: Any
+        """
         response = self._http_request(
             method='GET',
             url_suffix='permissions',
@@ -164,7 +218,7 @@ def authenticate_user(ids_of_user: list, ids_required_for_user: list) -> Tuple[b
     :param ids_required_for_user: permission ids required for user to authenticate
     :type ids_required_for_user: list
     :return: is user authenticated , missing permissions ids
-    :rtype: boolean,set
+    :rtype: boolean,list
     """
     user_authenticated = False
     value = list(set(ids_required_for_user).difference(ids_of_user))
@@ -174,10 +228,14 @@ def authenticate_user(ids_of_user: list, ids_required_for_user: list) -> Tuple[b
     return user_authenticated, value
 
 
-def get_permission_name_from_id(permission_data: dict, permission_ids: list):
+def get_permission_name_from_id(permission_data: dict, permission_ids: list) -> Any:
     """Get permission name from permission ids.
+    :param permission_data: permission data
+    :type permission_data: dict
+    :param permission_ids: permission id for authenticate
+    :type permission_ids: list
     :return: permissions name
-    :rtype: list of str
+    :rtype: Any
     """
     permissions_name = []
     for data in permission_data:
@@ -189,19 +247,13 @@ def get_permission_name_from_id(permission_data: dict, permission_ids: list):
 
 def test_module(client: Client) -> Any:
     """Tests API connectivity and authentication'
-
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
     Raises exceptions if something goes wrong.
-
     :type client: ``Client``
-    :param Client: HelloWorld client to use
-
-    :type name: ``str``
-    :param name: name to append to the 'Hello' string
-
+    :param Client: EclecticIQ client to use
     :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
+    :rtype: ``Any``
     """
 
     # INTEGRATION DEVELOPER TIP
@@ -250,25 +302,19 @@ def test_module(client: Client) -> Any:
     return 'ok'
 
 
-def maliciousness_to_dbotscore(maliciousness) -> Any:
-    """
-
-    Translates EclecticIQ obversable maliciousness confidence level to DBotScore based on given threshold
-
+def maliciousness_to_dbotscore(maliciousness) -> int:
+    """Translates EclecticIQ obversable maliciousness confidence level to DBotScore based on given threshold
     Parameters
     ----------
     maliciousness : str
         EclecticIQ obversable maliciousness confidence level.
     threshold : str
         Minimum maliciousness confidence level to consider the IOC malicious.
-
     Returns
     -------
     number
         Translated DBot Score
-
     """
-
     maliciousness_dictionary = {
         'unknown': 0,
         'safe': 1,
@@ -276,7 +322,6 @@ def maliciousness_to_dbotscore(maliciousness) -> Any:
         'medium': 2,
         'high': 3
     }
-
     return maliciousness_dictionary[maliciousness]
 
 
@@ -298,8 +343,6 @@ def get_entity_data(client, data_item: Any) -> List[Any]:
     """Get entity data to show on UI.
     :param data_item: Data from lookup obsrvables Dict
     :type data_item: dict
-    :param eiq_api: EIQ API object
-    :type eiq_api: object
     :return: prepared data to show on UI
     :rtype: List
     """
@@ -331,9 +374,9 @@ def get_entity_data(client, data_item: Any) -> List[Any]:
 def prepare_entity_data(data: Any, obs_data: Any) -> dict[Any, Any]:
     """Prepare entity data to show on UI.
     :param data: Entity data
-    :type data: dict
-    :param data: Observable data
-    :type data: list
+    :type data: Any
+    :param obs_data: Observable data
+    :type data: Any
     :return: Only selected fields dict
     :rtype: dict
     """
@@ -379,10 +422,12 @@ def prepare_entity_data(data: Any, obs_data: Any) -> dict[Any, Any]:
 
 def validate_type(s_type: str, value: Any) -> Any:  # pylint: disable=R0911
     """Get the type of the observable.
+    :param s_type :observable pattern type
+    :type s_type: str
     :param value: observable value
-    :type value: str
+    :type value: Any
     :return: type of the observable
-    :rtype: str
+    :rtype: Any
     """
     if s_type == "ipv4":  # pylint: disable=R1705
         return bool(re.match(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", value))
@@ -432,10 +477,23 @@ def validate_type(s_type: str, value: Any) -> Any:  # pylint: disable=R0911
 
 
 def lookup_observables(client: Client, args: Any) -> CommandResults:
+    """lookup_observables command: Returns the observable
+    :type client: ``Client``
+    :param Client: EclecticIQ client to use
+    :type args: ``Any``
+    :param args: args {type, value}
+    :return: observable data
+    :rtype: ``CommandResults``
+    """
     type_eiq = args.get("type")
     value_eiq = args.get("value")
     if not validate_type(type_eiq, value_eiq):
         raise ValueError("Type does not match specified value")
+    data = client.lookup_obs(type_eiq, value_eiq)
+    if data.get("data"):
+        data = data["data"]
+    else:
+        return "No observable data found"  # type:ignore
     data = client.lookup_obs(type_eiq, value_eiq)
     data = data["data"] if data.get("data") else []
     standard_observable_outputs = []
@@ -481,6 +539,14 @@ def lookup_observables(client: Client, args: Any) -> CommandResults:
 
 
 def create_sighting(client: Client, args: Any) -> CommandResults:
+    """create_sighting command: Returns the sighting data
+    :type client: ``Client``
+    :param Client: EclecticIQ client to use
+    :type args: ``Any``
+    :param args: args {value, description, title, tags, type, confidence_level}
+    :return: sighting data
+    :rtype: ``CommandResults``
+    """
     value = args.get("value")
     description = args.get("description")
     title = args.get("title")
@@ -512,6 +578,14 @@ def create_sighting(client: Client, args: Any) -> CommandResults:
 
 
 def create_observable(client: Client, args: Any) -> CommandResults:
+    """create_observable command: Returns the observable data
+    :type client: ``Client``
+    :param Client: EclecticIQ client to use
+    :type args: ``Any``
+    :param args: args {type, value}
+    :return: observable data
+    :rtype: ``CommandResults``
+    """
     type_eiq = args.get("type")
     value = args.get("value")
     maliciousness = args.get("maliciousness")
@@ -603,4 +677,3 @@ def main() -> None:
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
