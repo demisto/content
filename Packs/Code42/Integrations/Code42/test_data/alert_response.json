@@ -1,0 +1,50 @@
+{
+  "type$": "ALERT_QUERY_RESPONSE",
+  "alerts": [
+    {
+      "type$": "ALERT_SUMMARY",
+      "tenantId": "tenant-abc-123",
+      "type": "FED_ENDPOINT_EXFILTRATION",
+      "name": "Departing Employee Alert",
+      "description": "Cortex XSOAR is cool.",
+      "actor": "user1@example.com",
+      "target": "N/A",
+      "severity": "HIGH",
+      "ruleId": "rule-id-abc-123",
+      "ruleSource": "Departing Employee",
+      "id": "36fb8ca5-0533-4d25-9763-e09d35d60610",
+      "createdAt": "2019-10-02T17:02:23.5867670Z",
+      "state": "OPEN"
+    },
+    {
+      "type$": "ALERT_SUMMARY",
+      "tenantId": "tenant-abc-123",
+      "type": "FED_CLOUD_SHARE_PERMISSIONS",
+      "name": "High-Risk Employee Alert",
+      "actor": "user2@example.com",
+      "target": "N/A",
+      "severity": "MEDIUM",
+      "ruleId": "rule-id-abc-123",
+      "ruleSource": "Departing Employee",
+      "id": "18ac641d-7d9c-4d37-a48f-c89396c07d03",
+      "createdAt": "2019-10-02T17:02:24.2071980Z",
+      "state": "OPEN"
+    },
+    {
+      "type$": "ALERT_SUMMARY",
+      "tenantId": "tenant-abc-123",
+      "type": "FED_ENDPOINT_EXFILTRATION",
+      "name": "Custom Alert 1",
+      "actor": "user3@example.com",
+      "target": "N/A",
+      "severity": "LOW",
+      "ruleId": "rule-id-abc-123",
+      "ruleSource": "Departing Employee",
+      "id": "3137ff1b-b824-42e4-a476-22bccdd8ddb8",
+      "createdAt": "2019-10-02T17:03:28.2885720Z",
+      "state": "OPEN"
+    }
+  ],
+  "totalCount": 3,
+  "problems": []
+}

@@ -29,7 +29,10 @@ DEFAULT_HEADERS = {
     'Authorization': 'Bearer {}'.format(API_TOKEN),
     'Accept': 'application/json'
 }
-MALICIOUS_THRESHOLD = int(demisto.params().get('dboscore_threshold', -100))
+SUSPICIOUS_THRESHOLD = arg_to_number(demisto.params().get('suspicious_threshold', 0))
+MALICIOUS_THRESHOLD = arg_to_number(demisto.params().get('dboscore_threshold', -100))
+MAX_THRESHOLD_VALUE = 100
+MIN_THRESHOLD_VALUE = -100
 
 reliability = demisto.params().get('integrationReliability')
 reliability = reliability if reliability else DBotScoreReliability.B
@@ -103,6 +106,14 @@ IP_DNS_FEATURE_INFO = {
 }
 
 ''' HELPER FUNCTIONS '''
+
+
+def verify_threshold_params(suspicious_threshold, malicious_threshold):
+    if not (MAX_THRESHOLD_VALUE >= suspicious_threshold > malicious_threshold >= MIN_THRESHOLD_VALUE):  # type: ignore
+        return_error(
+            "Please provide valid threshold values for the Suspicious and Malicious thresholds when Suspicious is greater than "
+            f"Malicious and both are within a range of {MIN_THRESHOLD_VALUE} to {MAX_THRESHOLD_VALUE}"
+        )
 
 
 def extract_domain_name(url):
@@ -184,9 +195,9 @@ def securerank_to_dbotscore(sr):
     # converts cisco umbrella score to dbotscore
     DBotScore = 0
     if sr is not None:
-        if sr > 0 and sr <= 100:
+        if SUSPICIOUS_THRESHOLD < sr <= MAX_THRESHOLD_VALUE:
             DBotScore = 1
-        elif sr < 0 and sr > MALICIOUS_THRESHOLD:
+        elif MALICIOUS_THRESHOLD < sr <= SUSPICIOUS_THRESHOLD:
             DBotScore = 2
         elif sr <= MALICIOUS_THRESHOLD:
             DBotScore = 3
@@ -1872,6 +1883,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         handle_proxy()
+        verify_threshold_params(SUSPICIOUS_THRESHOLD, MALICIOUS_THRESHOLD)
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
             http_request('/domains/categorization/google.com?showLabels')

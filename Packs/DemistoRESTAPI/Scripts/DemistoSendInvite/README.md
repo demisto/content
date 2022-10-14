@@ -1,4 +1,4 @@
-Sends an invitation to join Demisto.
+Sends an invitation to join Cortex XSOAR.
 
 ## Script Data
 ---
