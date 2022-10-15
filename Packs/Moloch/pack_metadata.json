@@ -1,6 +1,7 @@
 {
     "name": "Moloch (Deprecated)",
     "description": "Deprecated. Use Arkime instead.",
+    "hidden": true,
     "support": "xsoar",
     "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",

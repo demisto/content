@@ -1,6 +1,7 @@
 {
     "name": "Check Point Sandblast Appliance (Deprecated)",
     "description": "Deprecated. Use Check Point Threat Emulation (SandBlast) instead.",
+    "hidden": true,
     "support": "xsoar",
     "currentVersion": "1.0.2",
     "author": "Cortex XSOAR",
