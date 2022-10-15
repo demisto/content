@@ -2582,7 +2582,7 @@ script:
     outputs:
     - contextPath: AWS.IAM.Tags
       description: Tags from the policy
-  dockerimage: demisto/boto3py3:1.0.0.35343
+  dockerimage: demisto/boto3py3:1.0.0.35436
   feed: false
   isfetch: false
   longRunning: false
