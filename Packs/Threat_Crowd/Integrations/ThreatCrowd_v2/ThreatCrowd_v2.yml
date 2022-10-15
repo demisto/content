@@ -38,7 +38,7 @@ configuration:
   required: false
   type: 8
 description: Deprecated. No available replacement.
-display: Threat Crowd v2
+display: Threat Crowd v2 (Deprecated)
 name: ThreatCrowd_v2
 script:
   commands:
