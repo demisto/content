@@ -1,8 +1,8 @@
 {
     "name": "Threat Crowd (Deprecated)",
-    "description": "Deprecated. Service is down and no available replacement.",
+    "description": "Deprecated. Service is down, no available replacement.",
     "support": "xsoar",
-    "currentVersion": "2.0.7",
+    "currentVersion": "2.0.8",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
