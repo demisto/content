@@ -34,9 +34,9 @@ configuration:
   name: incidents_fetch_query
   required: false
   type: 0
-- defaultvalue: 'true'
-  display: Fetch incidents
+- display: Fetch incidents
   name: isFetch
+  defaultvalue: 'true'
   required: false
   type: 8
 - display: Incident type
@@ -83,13 +83,13 @@ configuration:
   - Incidents
   required: false
   type: 16
-- defaultvalue: '1'
+- defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
   type: 19
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
-display: CrowdStrike Falcon
+display: CrowdstrikeFalcon
 name: CrowdstrikeFalcon
 script:
   commands:
@@ -338,8 +338,7 @@ script:
   - arguments:
     - description: Any commands run against an offline-queued session will be queued up and executed when the host comes online.
       name: queue_offline
-      defaultValue: false
-      required: false
+      defaultValue: "false"
     - description: A comma-separated list of host agent IDs to run commands for. (Can be retrieved by running the 'cs-falcon-search-device' command.)
       name: host_ids
       required: true
@@ -472,8 +471,7 @@ script:
     - contextPath: File.Size
       description: The size of the file in bytes.
       type: Number
-  - arguments: []
-    description: Returns a list of put-file IDs that are available for the user in the 'put' command.
+  - description: Returns a list of put-file IDs that are available for the user in the 'put' command.
     name: cs-falcon-list-files
     outputs:
     - contextPath: CrowdStrike.File.ID
@@ -518,6 +516,7 @@ script:
     - contextPath: File.Size
       description: The size of the file in bytes.
       type: Number
+    arguments: []
   - arguments:
     - description: A comma-separated list of script IDs to return. (The script IDs can be retrieved by running the 'cs-falcon-list-scripts' command.)
       name: script_id
@@ -570,8 +569,7 @@ script:
       required: true
     description: Deletes a custom-script based on the provided ID. Can delete only one script at a time.
     name: cs-falcon-delete-script
-  - arguments: []
-    description: Returns a list of custom script IDs that are available for the user in the 'runscript' command.
+  - description: Returns a list of custom script IDs that are available for the user in the 'runscript' command.
     name: cs-falcon-list-scripts
     outputs:
     - contextPath: CrowdStrike.Script.ID
@@ -613,6 +611,7 @@ script:
     - contextPath: CrowdStrike.Script.WriteAccess
       description: Whether the user has write access to the script.
       type: Boolean
+    arguments: []
   - arguments:
     - description: The name of the script to run.
       name: script_name
@@ -1150,9 +1149,9 @@ script:
       name: sources
     - description: The date the indicator will become inactive (ISO 8601 format, i.e. YYYY-MM-DDThh:mm:ssZ).
       name: expiration
-    - defaultValue: '50'
-      description: The maximum number of records to return. The minimum is 1 and the maximum is 500.
+    - description: The maximum number of records to return. The minimum is 1 and the maximum is 500.
       name: limit
+      defaultValue: "50"
     - auto: PREDEFINED
       description: 'The order the results are returned in. Possible values are: "type.asc", "type.desc", "value.asc", "value.desc", "policy.asc", "policy.desc", "share_level.asc", "share_level.desc", "expiration_timestamp.asc", and "expiration_timestamp.desc".'
       name: sort
@@ -1219,9 +1218,9 @@ script:
       - domain
       - ipv4
       - ipv6
-    - description: The string representation of the indicator. Either ioc_id or ioc_type and value must be provided.
+    - description: 'The string representation of the indicator. Either ioc_id or ioc_type and value must be provided.'
       name: value
-    - description: The ID of the IOC to get. Can be retrieved by running the cs-falcon-search-custom-iocs command. Either ioc_id or ioc_type and value must be provided.
+    - description: 'The ID of the IOC to get. Can be retrieved by running the cs-falcon-search-custom-iocs command. Either ioc_id or ioc_type and value must be provided.'
       name: ioc_id
     description: Gets the full definition of one or more indicators that you are watching.
     name: cs-falcon-get-custom-ioc
@@ -1314,12 +1313,12 @@ script:
     - description: A meaningful description of the indicator. Limited to 200 characters.
       name: description
     - auto: PREDEFINED
-      description: Whether the indicator is applied globally. Either applied_globally or host_groups must be provided.
+      description: 'Whether the indicator is applied globally. Either applied_globally or host_groups must be provided.'
       name: applied_globally
       predefined:
       - 'true'
       - 'false'
-    - description: List of host group IDs that the indicator applies to. Can be retrieved by running the cs-falcon-list-host-groups command. Either applied_globally or host_groups must be provided.
+    - description: 'List of host group IDs that the indicator applies to. Can be retrieved by running the cs-falcon-list-host-groups command. Either applied_globally or host_groups must be provided.'
       isArray: true
       name: host_groups
     description: Uploads an indicator for CrowdStrike to monitor.
@@ -2069,7 +2068,7 @@ script:
     - description: Page offset.
       name: offset
     - default: true
-      defaultValue: '50'
+      defaultValue: "50"
       description: Maximum number of results on a page.
       name: limit
     description: List the available host groups.
@@ -2151,7 +2150,7 @@ script:
     - description: Page offset.
       name: offset
     - default: true
-      defaultValue: '50'
+      defaultValue: "50"
       description: The maximum number of results on a page.
       name: limit
     description: Gets the list of host group members.
@@ -2422,6 +2421,7 @@ script:
       isArray: true
       name: SHA256
     description: Gets the RTR extracted file contents for the specified file path.
+    polling: true
     name: cs-falcon-rtr-retrieve-file
     outputs:
     - contextPath: CrowdStrike.File.FileName
@@ -2463,7 +2463,6 @@ script:
     - contextPath: File.Extension
       description: The extension of the file.
       type: String
-    polling: true
   - arguments:
     - default: true
       description: The incident ID to get detections for.
@@ -2481,9 +2480,9 @@ script:
     - contextPath: CrowdStrike.IncidentDetection.detection_ids
       description: A list of detection IDs connected to the incident.
       type: String
-  - arguments: []
-    description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
+  - description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
     name: get-mapping-fields
+    arguments: []
   - arguments:
     - description: The remote incident or detection ID.
       name: id
@@ -2498,10 +2497,19 @@ script:
       name: lastUpdate
     description: Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
     name: get-modified-remote-data
-  - arguments: []
-    description: Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection.
+  - description: Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection.
     name: update-remote-system
-  dockerimage: demisto/python3:3.10.7.33922
+    arguments: []
+  - arguments:
+    - description: ID of device for which to get recent login history
+      name: device_id
+      required: true
+    description: Gets recent user login history for a single device based on device ID
+    name: cs-falcon-get-device-login-history
+    outputs:
+    - contextPath: CrowdStrike.Device.RecentLogins
+      description: Recent login history for the device.
+  dockerimage: demisto/python3:3.10.7.35188
   isfetch: true
   ismappable: true
   isremotesyncin: true
@@ -2510,6 +2518,6 @@ script:
   script: ''
   subtype: python3
   type: python
-fromversion: 5.0.0
 tests:
 - Test - CrowdStrike Falcon
+fromversion: 5.0.0

@@ -3925,7 +3925,7 @@ Gets the detections for a specific incident.
 | CrowdStrike.IncidentDetection.detection_ids | String | A list of detection ids connected to the incident. | 
 
 #### Command example
-```!cs-falcon-get-detections-for-incident incident_id=`inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593````
+```!cs-falcon-get-detections-for-incident incident_id=`inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593```
 #### Context Example
 ```json
 {
@@ -3951,3 +3951,73 @@ Gets the detections for a specific incident.
 >| ind:0bde2c4645294245aca522971ccc44c4:162597577534-10305-6712576 | ldt:0bde2c4645294245aca522971ccc44c4:38658614774 | inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593 |
 >| ind:0bde2c4645294245aca522971ccc44c4:162589633341-10303-6705920 | ldt:0bde2c4645294245aca522971ccc44c4:38655034604 | inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593 |
 
+### cs-falcon-get-device-login-history
+***
+Gets recent user login history for a single device based on device ID.
+
+
+#### Base Command
+
+`cs-falcon-get-device-login-history`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_id | ID of device for which to get recent login history. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Device.RecentLogins | List | Recent login history for the device. |
+
+#### Command example
+```!cs-falcon-get-device-login-history device_id=046761c46ec84f40b27b6f79ce7cd32c```
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "Device": {
+            "RecentLogins": [
+                {
+                    "LoginTime": "2022-10-13T03:55:26Z",
+                    "UserName": "WORKGROUP\\INSTANCE-1$"
+                },
+                {
+                    "LoginTime": "2022-10-13T03:55:25Z",
+                    "UserName": "NT AUTHORITY\\LOCAL SERVICE"
+                },
+                {
+                    "LoginTime": "2022-10-13T03:55:25Z",
+                    "UserName": "WORKGROUP\\INSTANCE-1$"
+                },
+                {
+                    "LoginTime": "2022-10-05T23:32:53Z",
+                    "UserName": "Font Driver Host\\UMFD-1"
+                },
+                {
+                    "LoginTime": "2022-10-05T23:32:53Z",
+                    "UserName": "Font Driver Host\\UMFD-0"
+                },
+                {
+                    "LoginTime": "2022-10-05T23:32:53Z",
+                    "UserName": "Window Manager\\DWM-1"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Detection For Incident
+>|Login Time|User Name|
+>|---|---|
+>| 2022-10-13T03:55:26Z |	WORKGROUP\INSTANCE-1$ |
+>| 2022-10-13T03:55:25Z	| NT AUTHORITY\LOCAL SERVICE |
+>| 2022-10-13T03:55:25Z	| WORKGROUP\INSTANCE-1$ |
+>| 2022-10-05T23:32:53Z	| Font Driver Host\UMFD-1 |
+>| 2022-10-05T23:32:53Z	| Font Driver Host\UMFD-0 |
+>| 2022-10-05T23:32:53Z	| Window Manager\DWM-1 |

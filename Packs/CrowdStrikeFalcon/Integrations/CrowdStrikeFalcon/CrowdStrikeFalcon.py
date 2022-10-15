@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 ''' IMPORTS '''
 import base64
 import email
@@ -1641,6 +1642,13 @@ def get_detections_by_behaviors(behaviors_id):
     except Exception as e:
         demisto.error(f'Error occurred when trying to get detections by behaviors: {str(e)}')
         return {}
+
+
+def get_device_login_history(device_id):
+    data = {
+        "ids": device_id
+    }
+    return http_request('POST', '/devices/combined/devices/login-history/v1', data=data)
 
 
 ''' MIRRORING COMMANDS '''
@@ -3806,6 +3814,33 @@ def get_detection_for_incident_command(incident_id: str) -> CommandResults:
                           raw_response=detection_res)
 
 
+def get_device_login_history_command(args):
+    device_id = args.get('device_id')
+    response = get_device_login_history(device_id)
+    resources = response.get('resources')
+
+    command_results = []
+    for resource in resources:
+        logins_list = []
+        for login in resource.get('recent_logins'):
+            logins_list.append({
+                "LoginTime": login.get("login_time"),
+                "UserName": login.get("user_name")
+            })
+        headers = ["LoginTime", "UserName"]
+        command_results.append(CommandResults(
+            outputs_prefix='CrowdStrike.Device',
+            outputs_key_field='ID',
+            outputs={
+                "RecentLogins": logins_list
+            },
+            readable_output=tableToMarkdown(f'Device {device_id} Recent Logins', logins_list,
+                                            headers=headers, headerTransform=pascalToSpace),
+            raw_response=response
+        ))
+    return command_results
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is {}'.format(demisto.command()))
@@ -3959,6 +3994,9 @@ def main():
 
         elif command == 'cs-falcon-get-detections-for-incident':
             return_results(get_detection_for_incident_command(args.get('incident_id')))
+
+        elif command == 'cs-falcon-get-device-login-history':
+            return_results(get_device_login_history_command(args))
 
         elif command == 'get-remote-data':
             return_results(get_remote_data_command(args))
