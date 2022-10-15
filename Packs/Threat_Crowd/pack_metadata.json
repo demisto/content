@@ -1,6 +1,6 @@
 {
     "name": "Threat Crowd (Deprecated)",
-    "description": "Deprecated. Service is down, no available replacement.",
+    "description": "Deprecated. No available replacement.",
     "support": "xsoar",
     "currentVersion": "2.0.8",
     "author": "Cortex XSOAR",

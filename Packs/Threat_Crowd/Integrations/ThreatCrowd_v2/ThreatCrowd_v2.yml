@@ -37,7 +37,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Deprcated. Service is down, no available replacement.
+description: Deprecated. No available replacement.
 display: Threat Crowd v2
 name: ThreatCrowd_v2
 script:
