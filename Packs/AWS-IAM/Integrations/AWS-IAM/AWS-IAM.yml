@@ -2291,6 +2291,9 @@ script:
     - contextPath: AWS.IAM.Policy.Description
       description: A friendly description of the policy.
       type: string
+    - contextPath: AWS.IAM.Policy.AttachmentCount
+      description: The number of entities (users, groups, and roles) that the policy is attached to.
+      type: number
   - arguments:
     - default: false
       description: The name (friendly name, not ARN) of the user to list attached
@@ -2470,6 +2473,115 @@ script:
       description: Specifies whether the user is required to set a new password on
         next sign-in.
       type: Boolean
+  - arguments:
+    - name: groupName
+      description: The name of the group.
+      required: true
+    name: aws-iam-get-group
+    description: Returns a list of IAM users that are in the specified IAM group.
+    outputs:
+    - contextPath: AWS.IAM.Group.GroupName
+      description: Group name
+    - contextPath: AWS.IAM.Group.GroupId
+      description: Group ID
+  - arguments:
+    - name: userName
+      description: The name of the user.
+    - name: policyName
+      description: The name of the policy.
+    description: This grabs an inline policy for the specified user.
+    name: aws-iam-get-user-policy
+    outputs:
+    - contextPath: AWS.IAM.Users.PolicyDocument
+      description: The policy document.
+      type: string
+  - arguments:
+    - name: groupName
+      description: The name of the group the policy is associated with.
+    - name: policyName
+      description: The name of the policy document to get.
+    name: aws-iam-get-group-policy
+    description: Retrieves the specified inline policy document that is embedded in the specified IAM group.
+  - arguments:
+    - name: groupName
+      description: The name of the group to list policies for.
+      required: true
+    description: List the names of inline policies specified by the group
+    name: aws-iam-list-group-policies
+    outputs:
+    - contextPath: AWS.IAM.GroupPolicies.GroupName
+      description: Group name
+      type: string
+    - contextPath: AWS.IAM.GroupPolicies.PolicyName
+      description: Policy Name
+    - contextPath: AWS.IAM.Groups.InlinePoliciesMarker
+      description: When output is truncated, this element is present and contains the value to use for the Marker parameter in a subsequent pagination request.
+  - arguments:
+    - description: Policy document
+      name: policyDocument
+      required: true
+    - description: The name of the policy document.
+      name: policyName
+      required: true
+    - description: The name of the user to associate the policy with.
+      name: userName
+      required: true
+    description: Update inline user policy
+    execution: true
+    name: aws-iam-put-user-policy
+  - arguments:
+    - description: The name of the group to associate the policy with.
+      name: groupName
+      required: true
+    - description: The policy document.
+      name: policyDocument
+      required: true
+    - description: The name of the policy document.
+      name: policyName
+      required: true
+    description: Adds or updates an inline policy document that is embedded in the specified IAM group.
+    execution: true
+    name: aws-iam-put-group-policy
+  - arguments:
+    - description: The policy document.
+      name: policyDocument
+      required: true
+    - description: The name of the policy document.
+      name: policyName
+      required: true
+    - description: The name of the role to associate the policy with.
+      name: roleName
+      required: true
+    description: Adds or updates an inline policy document that is embedded in the specified IAM role.
+    execution: true
+    name: aws-iam-put-role-policy
+  - arguments:
+    - description: The name of the IAM role for which you want to see the list of tags.
+      name: roleName
+      required: true
+    description: Lists the tags that are attached to the specified role.
+    name: aws-iam-list-role-tags
+    outputs:
+    - contextPath: AWS.IAM.Tags
+      description: Tags for the role
+  - arguments:
+    - description: The name of the IAM user whose tags you want to see.
+      name: userName
+      required: true
+    description: 'Lists the tags that are attached to the specified IAM user. '
+    name: aws-iam-list-user-tags
+    outputs:
+    - contextPath: AWS.IAM.Tags
+      description: Tags for the user
+  - arguments:
+    - description: The ARN of the IAM customer managed policy whose tags you want to see.
+      name: policyArn
+      required: true
+    description: Lists the tags that are attached to the specified IAM customer managed policy.
+    name: aws-iam-list-policy-tags
+    outputs:
+    - contextPath: AWS.IAM.Tags
+      description: Tags from the policy
   dockerimage: demisto/boto3py3:1.0.0.35343
   feed: false
   isfetch: false

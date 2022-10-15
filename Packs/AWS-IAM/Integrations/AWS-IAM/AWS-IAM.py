@@ -1009,6 +1009,52 @@ def get_role_policy(args, aws_client):  # pragma: no cover
     return_outputs(human_readable, outputs, response)
 
 
+def get_user_policy(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+    kwargs = {
+        'UserName': args.get('userName'),
+        'PolicyName': args.get('policyName')
+    }
+    response = client.get_user_policy(**kwargs)
+    response_string = json.dumps(response, default=datetime_to_string)
+    response = json.loads(response_string)
+    outputs = {
+        'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)':
+            response}
+    del response['ResponseMetadata']
+    table_header = 'AWS IAM User Policy for {}'.format(args.get('userName'))
+
+    return_outputs(response_string, outputs, response)
+
+
+def get_group_policy(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+    kwargs = {
+        'GroupName': args.get('groupName'),
+        'PolicyName': args.get('policyName')
+    }
+    response = client.get_group_policy(**kwargs)
+    response = json.dumps(response, default=datetime_to_string)
+    response = json.loads(response)
+    outputs = {
+        'AWS.IAM.Groups(val.GroupName && val.GroupName === obj.GroupName)':
+            response}
+    del response['ResponseMetadata']
+    table_header = 'AWS IAM Group Policy for {}'.format(args.get('groupName'))
+    human_readable = aws_table_to_markdown(response, table_header)
+    return_outputs(human_readable, outputs, response)
+
+
 def get_policy(args, aws_client):   # pragma: no cover
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1068,6 +1114,49 @@ def list_user_policies(args, aws_client):
               'AWS.IAM.Users(val.UserName === \'{}\').InlinePoliciesMarker'.format(user_name): marker}
 
     human_readable = tableToMarkdown('AWS IAM Policies for user {}'.format(user_name),
+                                     headers=["PolicyNames"],
+                                     headerTransform=pascalToSpace,
+                                     t=data)
+    return_outputs(human_readable, ec, response)
+
+
+def list_group_policies(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+    user_name = args.get('groupName', "")
+    marker = args.get('marker', None)
+    limit, is_manual, page_size = get_limit(args)
+
+    kwargs = {
+        'GroupName': user_name,
+        'MaxItems': limit
+    }
+    if marker:
+        kwargs.update({'Marker': marker})
+
+    response = client.list_group_policies(**kwargs)
+    data = response.get('PolicyNames', [])
+    marker = response.get('Marker', None)
+
+    if is_manual and page_size and len(data) > page_size:
+        data = data[-1 * page_size:]
+
+    policy_data = [{
+        'GroupName': user_name,
+        'PolicyName': policy,
+    } for policy in data]
+
+    ec = {}
+    if policy_data:
+        ec = {'AWS.IAM.GroupPolicies(val.GroupName && val.GroupName && val.PolicyName === obj.PolicyName && '
+              'val.GroupName === obj.GroupName)': policy_data,
+              'AWS.IAM.Groups(val.GroupName === \'{}\').InlinePoliciesMarker'.format(user_name): marker}
+
+    human_readable = tableToMarkdown('AWS IAM Policies for groups {}'.format(user_name),
                                      headers=["PolicyNames"],
                                      headerTransform=pascalToSpace,
                                      t=data)
@@ -1166,6 +1255,28 @@ def list_attached_group_policies(args, aws_client):
     return_outputs(human_readable, ec, response)
 
 
+def get_group(args, aws_client):   # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+    kwargs = {
+        'GroupName': args.get('groupName')
+    }
+    response = client.get_group(**kwargs)
+    response = json.dumps(response, default=datetime_to_string)
+    response = json.loads(response)
+    outputs = {
+        'AWS.IAM.Group(val.GroupName && val.GroupName === obj.GroupName)':
+            response.get('Group')}
+    del response['ResponseMetadata']
+    table_header = 'AWS IAM Group for {}'.format(args.get('groupName'))
+    human_readable = aws_table_to_markdown(response, table_header)
+    return_outputs(human_readable, outputs, response)
+
+
 def get_user_login_profile(args, aws_client):
     client = aws_client.aws_session(
         service=SERVICE,
@@ -1205,6 +1316,144 @@ def get_user_login_profile(args, aws_client):
             return_outputs(tableToMarkdown('AWS IAM Login Profile for user {}'.format(user_name), t={}))
         else:
             raise error
+
+
+def put_user_policy(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+
+    kwargs = {
+        'PolicyName': args.get('policyName'),
+        'PolicyDocument': json.dumps(json.loads(args.get('policyDocument'))),
+        'UserName': args.get('userName')
+    }
+
+    response = client.put_user_policy(**kwargs)
+
+    human_readable = tableToMarkdown('Put User Policy', response)
+    return_outputs(human_readable, response)
+
+
+def put_group_policy(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+
+    kwargs = {
+        'PolicyName': args.get('policyName'),
+        'PolicyDocument': json.dumps(json.loads(args.get('policyDocument'))),
+        'GroupName': args.get('groupName')
+    }
+
+    response = client.put_group_policy(**kwargs)
+
+    human_readable = tableToMarkdown('Put Group Policy', response)
+    return_outputs(human_readable, response)
+
+
+def put_role_policy(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+
+    kwargs = {
+        'PolicyName': args.get('policyName'),
+        'PolicyDocument': json.dumps(json.loads(args.get('policyDocument'))),
+        'RoleName': args.get('roleName')
+    }
+
+    response = client.put_role_policy(**kwargs)
+
+    human_readable = tableToMarkdown('Put Role Policy', response)
+    return_outputs(human_readable, response)
+
+
+def list_role_tags(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+    data = []
+
+    kwargs = {
+        'RoleName': args.get('roleName')
+    }
+
+    response = client.list_role_tags(**kwargs)
+
+    for tag in response['Tags']:
+        data.append({
+            'Key': tag['Key'],
+            'Value': tag['Value']
+        })
+
+    ec = {'AWS.IAM.Tags': data}
+    human_readable = tableToMarkdown('AWS IAM Tags', data)
+    return_outputs(human_readable, ec)
+
+
+def list_user_tags(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+    data = []
+
+    kwargs = {
+        'UserName': args.get('userName')
+    }
+
+    response = client.list_user_tags(**kwargs)
+
+    for tag in response['Tags']:
+        data.append({
+            'Key': tag['Key'],
+            'Value': tag['Value']
+        })
+
+    ec = {'AWS.IAM.Tags': data}
+    human_readable = tableToMarkdown('AWS IAM Tags', data)
+    return_outputs(human_readable, ec)
+
+
+def list_policy_tags(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+    data = []
+
+    kwargs = {
+        'PolicyArn': args.get('policyArn')
+    }
+
+    response = client.list_policy_tags(**kwargs)
+
+    for tag in response['Tags']:
+        data.append({
+            'Key': tag['Key'],
+            'Value': tag['Value']
+        })
+
+    ec = {'AWS.IAM.Tags': data}
+    human_readable = tableToMarkdown('AWS IAM Tags', data)
+    return_outputs(human_readable, ec)
 
 
 def test_function(aws_client):
@@ -1258,6 +1507,8 @@ def main():     # pragma: no cover
             create_group(args, aws_client)
         elif command == 'aws-iam-list-groups':
             list_groups(args, aws_client)
+        elif command == 'aws-iam-get-group':
+            get_group(args, aws_client)
         elif command == 'aws-iam-list-groups-for-user':
             list_groups_for_user(args, aws_client)
         elif command == 'aws-iam-create-access-key':
@@ -1334,12 +1585,30 @@ def main():     # pragma: no cover
             get_policy(args, aws_client)
         elif command == 'aws-iam-list-user-policies':
             list_user_policies(args, aws_client)
+        elif command == 'aws-iam-list-group-policies':
+            list_group_policies(args, aws_client)
         elif command == 'aws-iam-list-attached-user-policies':
             list_attached_user_policies(args, aws_client)
         elif command == 'aws-iam-list-attached-group-policies':
             list_attached_group_policies(args, aws_client)
         elif command == 'aws-iam-get-user-login-profile':
             get_user_login_profile(args, aws_client)
+        elif command == 'aws-iam-get-user-policy':
+            get_user_policy(args, aws_client)
+        elif command == 'aws-iam-get-group-policy':
+            get_group_policy(args, aws_client)
+        elif command == 'aws-iam-put-user-policy':
+            put_user_policy(args, aws_client)
+        elif command == 'aws-iam-put-group-policy':
+            put_group_policy(args, aws_client)
+        elif command == 'aws-iam-put-role-policy':
+            put_role_policy(args, aws_client)
+        elif command == 'aws-iam-list-role-tags':
+            list_role_tags(args, aws_client)
+        elif command == 'aws-iam-list-user-tags':
+            list_user_tags(args, aws_client)
+        elif command == 'aws-iam-list-policy-tags':
+            list_policy_tags(args, aws_client)
 
     except Exception as e:
         LOG(str(e))

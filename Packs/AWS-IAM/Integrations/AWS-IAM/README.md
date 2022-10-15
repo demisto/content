@@ -1572,6 +1572,7 @@ Retrieves information about the specified managed policy, including the policy's
 | AWS.IAM.Policy.Arn | string | The Amazon Resource Name (ARN). ARNs are unique identifiers for Amazon Web Services resources. | 
 | AWS.IAM.Policy.Path | string | The path to the policy. | 
 | AWS.IAM.Policy.Description | string | A friendly description of the policy. | 
+| AWS.IAM.Policy.AttachmentCount | number | The number of entities \(users, groups, and roles\) that the policy is attached to. | 
 
 #### Command Example
 ``` !aws-iam-get-policy policyName=testPolicy```
@@ -1689,3 +1690,211 @@ Lists all managed policies that are attached to the specified IAM user.
 #### Command Example
 ``` !aws-iam-get-user-login-profile userName=testUser```
 
+### aws-iam-get-group
+***
+Returns a list of IAM users that are in the specified IAM group.
+
+
+#### Base Command
+
+`aws-iam-get-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| groupName | The name of the group. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.Group.GroupName | unknown | Group name | 
+| AWS.IAM.Group.GroupId | unknown | Group ID | 
+
+### aws-iam-get-user-policy
+***
+This grabs an inline policy for the specified user.
+
+
+#### Base Command
+
+`aws-iam-get-user-policy`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| userName | The name of the user. | Optional | 
+| policyName | The name of the policy. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.Users.PolicyDocument | string | The policy document. | 
+
+### aws-iam-get-group-policy
+***
+Retrieves the specified inline policy document that is embedded in the specified IAM group.
+
+
+#### Base Command
+
+`aws-iam-get-group-policy`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| groupName | The name of the group the policy is associated with. | Optional | 
+| policyName | The name of the policy document to get. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### aws-iam-list-group-policies
+***
+List the names of inline policies specified by the group
+
+
+#### Base Command
+
+`aws-iam-list-group-policies`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| groupName | The name of the group to list policies for. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.GroupPolicies.GroupName | string | Group name | 
+| AWS.IAM.GroupPolicies.PolicyName | unknown | Policy Name | 
+| AWS.IAM.Groups.InlinePoliciesMarker | unknown | When output is truncated, this element is present and contains the value to use for the Marker parameter in a subsequent pagination request. | 
+
+### aws-iam-put-user-policy
+***
+Update inline user policy
+
+
+#### Base Command
+
+`aws-iam-put-user-policy`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policyDocument | Policy document. | Required | 
+| policyName | The name of the policy document. | Required | 
+| userName | The name of the user to associate the policy with. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### aws-iam-put-group-policy
+***
+Adds or updates an inline policy document that is embedded in the specified IAM group.
+
+
+#### Base Command
+
+`aws-iam-put-group-policy`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| groupName | The name of the group to associate the policy with. | Required | 
+| policyDocument | The policy document. | Required | 
+| policyName | The name of the policy document. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### aws-iam-put-role-policy
+***
+Adds or updates an inline policy document that is embedded in the specified IAM role.
+
+
+#### Base Command
+
+`aws-iam-put-role-policy`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policyDocument | The policy document. | Required | 
+| policyName | The name of the policy document. | Required | 
+| roleName | The name of the role to associate the policy with. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### aws-iam-list-role-tags
+***
+Lists the tags that are attached to the specified role.
+
+
+#### Base Command
+
+`aws-iam-list-role-tags`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| roleName | The name of the IAM role for which you want to see the list of tags. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.Tags | unknown | Tags for the role | 
+
+### aws-iam-list-user-tags
+***
+Lists the tags that are attached to the specified IAM user. 
+
+
+#### Base Command
+
+`aws-iam-list-user-tags`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| userName | The name of the IAM user whose tags you want to see. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.Tags | unknown | Tags for the user | 
+
+### aws-iam-list-policy-tags
+***
+Lists the tags that are attached to the specified IAM customer managed policy.
+
+
+#### Base Command
+
+`aws-iam-list-policy-tags`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policyArn | The ARN of the IAM customer managed policy whose tags you want to see. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.Tags | unknown | Tags from the policy | 
