@@ -244,9 +244,10 @@ def upload_sample():
             args[k] = demisto.getArg(k)
     args['api_key'] = API_KEY
     fileData = demisto.getFilePath(demisto.getArg('file-id'))
+    filename = demisto.getArg('filename').replace('"', '').replace('\n', '')
     with open(fileData['path'], 'rb') as f:
         r = requests.request('POST', URL + SUB_API + 'samples',
-                             files={'sample': (encode_sample_file_name(demisto.getArg('filename')), f)},
+                             files={'sample': (filename, f)},
                              data=args, verify=VALIDATE_CERT)
         if r.status_code != requests.codes.ok:
             if r.status_code == 503:
@@ -266,19 +267,14 @@ def upload_sample():
         return sample.get('ID')
 
 
-def encode_sample_file_name(filename):
-    """
-    Encodes sample file name
-    """
-    return filename.encode('ascii', 'ignore').replace('"', '').replace('\n', '')
-
-
 def get_html_report_by_id():
     """
     Download the html report for a sample given the id
     """
     sample_id = demisto.getArg('id')
+
     r = req('GET', SUB_API + 'samples/' + sample_id + '/report.html')
+
     ec = {'ThreatGrid.Sample.Id': sample_id}
     demisto.results([
         {
@@ -287,7 +283,7 @@ def get_html_report_by_id():
             'HumanReadable': '### ThreatGrid Sample Run HTML Report -\n'
                              + 'Your sample run HTML report download request has been completed successfully for '
                              + sample_id,
-            'Contents': r.content,
+            'Contents': r.text,
             'ContentsFormat': formats['html']
         },
         fileResult(sample_id + '-report.html', r.content, file_type=entryTypes['entryInfoFile'])
@@ -650,7 +646,7 @@ def handle_artifact_from_analysis_json(ec, hr, analysis_json, limit):
 def create_analysis_json_human_readable(hr):
     hr_str = tableToMarkdown('Files scanned:', hr['File'], SAMPLE_ANALYSIS_HEADERS_MAP['File'])
     tmp_hr_str = ''
-    for k in hr['Sample'].keys():
+    for k in hr['Sample'].copy():
         if isinstance(hr['Sample'][k], dict) or (isinstance(hr['Sample'][k], list) and len(hr['Sample'][k]) > 0
                                                  and k in SAMPLE_ANALYSIS_HEADERS_MAP):
             tmp_hr_str = tmp_hr_str + tableToMarkdown('{0}:'.format(str(k)), hr['Sample'][k],

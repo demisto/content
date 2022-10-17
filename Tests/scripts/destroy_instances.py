@@ -24,7 +24,7 @@ def main():
         logging.info(f'Downloading server log from {env.get("Role", "Unknown role")}')
         try:
             logging.debug(f'Downloading server logs from server {env["InstanceDNS"]}')
-            dmst_client = demisto_client.configure(base_url=f'https://localhost:{env["TunnelPort"]}')
+            dmst_client = demisto_client.configure(base_url=f'https://localhost:{env["TunnelPort"]}', verify_ssl=False)
             tmp_file_path, _, _ = dmst_client.generic_request('/log/bundle', 'GET', response_type='file')
 
             server_ip = env["InstanceDNS"].split('.')[0]
