@@ -35,48 +35,13 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 #### Context Output
 
-| **Path** | **Description** | **Type** |
+| **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | The indicator that was tested. | String |
-| DBotScore.Score| The actual score.| Number
-| DBotScore.Type| The indicator type.| String
-| DBotScore.Vendor| The vendor used to calculate the score.| String
-| Domain.Name| The domain name.| String
-| Domain.Malicious.Vendor| The vendor reporting the domain as malicious.| String
-| Domain.Malicious.Description| A description explaining why the domain was reported as malicious.| String
-| Domain.Registrant.Name| The name of the registrant.| String
-| Domain.Registrant.Country| The country of the registrant.| String
-| Domain.Organization| The organization of the domain.| String
-| Domain.CreationDate| The creation date of the domain. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').| Date
-| Domain.ExpirationDate| The expiration date of the domain. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').| Date
-| Domain.UpdatedDate| The date when the domain was last updated. Format is ISO8601 (i.e.'2020-04-30T10:35:00.000Z').| Date
-| Domain.NameServers| Name servers of the domain.| String
-| Domain.WHOIS.NameServers| A CSV string of name servers, for example 'ns1.bla.com, ns2.bla.com'.| String
-| Domain.WHOIS.CreationDate| The creation date of the domain. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').| Date
-| Domain.WHOIS.UpdatedDate| The date when the domain was last updated. Format is ISO8601 (i.e.'2020-04-30T10:35:00.000Z').| Date
-| Domain.WHOIS.ExpirationDate| The expiration date of the domain.| Date
-| Domain.WHOIS.Registrar.Name| The name of the registrar, for example 'GoDaddy'| String
-| IP.ASN | The autonomous system name for the IP address.| String
-| Pulsedive.Domain.address| Domain admin address.| String
-| Pulsedive.Domain.city| Domain admin city.| String
-| Pulsedive.Domain.country| Domain admin country.| String
-| Pulsedive.Domain.creation_date| Domain creation date. Format is ISO8601.| Date
-| Pulsedive.Domain.dnssec| DNSSEC status.| String
-| Pulsedive.Domain.domain| The domain name.| String
-| Pulsedive.Domain.domain_name| Domain name options.| String
-| Pulsedive.Domain.emails| Contact emails.| String
-| Pulsedive.Domain.expiration_date| Expiration date. Format is ISO8601.| Date
-| Pulsedive.Domain.name| Domain admin name.| String
-| Pulsedive.Domain.name_servers| Name server.| String
-| Pulsedive.Domain.org| Domain organization.| String
-| Pulsedive.Domain.referral_url| Referral URL.| Unknown
-| Pulsedive.Domain.registrar| Domain registrar.| String
-| Pulsedive.Domain.score| Reputation score from HelloWorld for this domain (0 to 100, where        higher is worse).| Number
-| Pulsedive.Domain.state| Domain admin state.| String
-| Pulsedive.Domain.status| Domain status.| String
-| Pulsedive.Domain.updated_date| Updated date. Format is ISO8601.| Date
-| Pulsedive.Domain.whois_server| WHOIS server.| String
-| Pulsedive.Domain.zipcode| Domain admin zipcode.| Unknown
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor| String | The vendor used to calculate the score.|
+
 
 #### Base Command
 
