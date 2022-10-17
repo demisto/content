@@ -1,6 +1,7 @@
 """Unit Tests file"""
 
-from GCenterv102 import (
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from GCenter import (
     gw_list_alerts,
     gw_get_alert,
     gw_add_malcore_list_entry,
@@ -481,13 +482,20 @@ def test_gw_del_ignore_mac_address(client, requests_mock, ignore_id, prefix_mapp
         gw_del_ignore_mac_address(client, args)
 
 
-@pytest.mark.parametrize("filename", ["test1", "test2"])
-def test_gw_send_malware(client, requests_mock, filename, prefix_mapping, send_malware):
+@pytest.mark.parametrize("filename, fileid", [
+    ("test1", "332@dfca9ea2-5198-4d64-8c36-5282ac3b2dc5"),
+    ("test2", "332@dfca9ea2-5198-4d64-8c36-5282ac3b2dc6")
+])
+def test_gw_send_malware(client, mocker, requests_mock, filename, fileid, prefix_mapping, send_malware):
     args = {
         "name": filename,
         "content": "this is a dummy response"
     }
     send_malware["file_name"] = filename
+    mocker.patch("CommonServerPython.demisto.getFilePath", mocker.MagicMock(
+        **{"return_value": {'id': fileid, 'path': filename, 'name': filename}}
+    ))
+    mocker.patch("builtins.open", mocker.mock_open())
     requests_mock.post(
         f"https://{client.ip}/api/gscan/malcore/",
         json=send_malware,
@@ -498,6 +506,7 @@ def test_gw_send_malware(client, requests_mock, filename, prefix_mapping, send_m
     assert response.outputs_prefix == prefix_mapping[
         inspect.stack()[0][3].replace("test_", "")
     ]
+    assert open.mock_calls[0][1] == (filename, 'rb')
     requests_mock.post(
         f"https://{client.ip}/api/gscan/malcore/",
         status_code=500
@@ -506,13 +515,20 @@ def test_gw_send_malware(client, requests_mock, filename, prefix_mapping, send_m
         gw_send_malware(client, args)
 
 
-@pytest.mark.parametrize("filename", ["test1", "test2"])
-def test_gw_send_powershell(client, requests_mock, filename, prefix_mapping, send_powershell):
+@pytest.mark.parametrize("filename, fileid", [
+    ("test1", "332@dfca9ea2-5198-4d64-8c36-5282ac3b2dc5"),
+    ("test2", "332@dfca9ea2-5198-4d64-8c36-5282ac3b2dc6")
+])
+def test_gw_send_powershell(client, mocker, requests_mock, filename, fileid, prefix_mapping, send_powershell):
     args = {
         "name": filename,
         "content": "this is a dummy response"
     }
     send_powershell["file_name"] = filename
+    mocker.patch("CommonServerPython.demisto.getFilePath", mocker.MagicMock(
+        **{"return_value": {'id': fileid, 'path': filename, 'name': filename}}
+    ))
+    mocker.patch("builtins.open", mocker.mock_open())
     requests_mock.post(
         f"https://{client.ip}/api/gscan/powershell/",
         json=send_powershell,
@@ -523,6 +539,7 @@ def test_gw_send_powershell(client, requests_mock, filename, prefix_mapping, sen
     assert response.outputs_prefix == prefix_mapping[
         inspect.stack()[0][3].replace("test_", "")
     ]
+    assert open.mock_calls[0][1] == (filename, 'rb')
     requests_mock.post(
         f"https://{client.ip}/api/gscan/powershell/",
         status_code=500
@@ -531,8 +548,11 @@ def test_gw_send_powershell(client, requests_mock, filename, prefix_mapping, sen
         gw_send_powershell(client, args)
 
 
-@pytest.mark.parametrize("filename", ["test1", "test2"])
-def test_gw_send_shellcode(client, requests_mock, filename, prefix_mapping, send_shellcode):
+@pytest.mark.parametrize("filename, fileid", [
+    ("test1", "332@dfca9ea2-5198-4d64-8c36-5282ac3b2dc5"),
+    ("test2", "332@dfca9ea2-5198-4d64-8c36-5282ac3b2dc6")
+])
+def test_gw_send_shellcode(client, mocker, requests_mock, filename, fileid, prefix_mapping, send_shellcode):
     args = {
         "name": filename,
         "content": "this is a dummy response",
@@ -540,6 +560,10 @@ def test_gw_send_shellcode(client, requests_mock, filename, prefix_mapping, send
         "timeout": 120
     }
     send_shellcode["file_name"] = filename
+    mocker.patch("CommonServerPython.demisto.getFilePath", mocker.MagicMock(
+        **{"return_value": {'id': fileid, 'path': filename, 'name': filename}}
+    ))
+    mocker.patch("builtins.open", mocker.mock_open())
     requests_mock.post(
         f"https://{client.ip}/api/gscan/shellcode/",
         json=send_shellcode,
@@ -550,6 +574,7 @@ def test_gw_send_shellcode(client, requests_mock, filename, prefix_mapping, send
     assert response.outputs_prefix == prefix_mapping[
         inspect.stack()[0][3].replace("test_", "")
     ]
+    assert open.mock_calls[0][1] == (filename, 'rb')
     requests_mock.post(
         f"https://{client.ip}/api/gscan/shellcode/",
         status_code=500

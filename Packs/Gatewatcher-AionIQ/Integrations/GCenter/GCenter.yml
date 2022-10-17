@@ -1,16 +1,22 @@
 category: Network Security
 commonfields:
-  id: GCenterv102
+  id: GCenter
   version: -1
 configuration:
 - display: GCenter IP address
   name: ip
   type: 0
   required: true
+- display: GCenter Version
+  name: version
+  type: 0
+  defaultvalue: 2.5.3.102
+  required: false
 - display: GCenter API token
   name: token
   type: 4
   required: false
+  additionalinfo: You must provide either an API token or a username and a password.
 - display: GCenter username
   displaypassword: GCenter password
   name: credentials
@@ -21,8 +27,8 @@ configuration:
   type: 8
   required: false
 description: This integration allows, via about twenty commands, to interact with the GCenter appliance via its API.
-display: GCenter v2.5.3.102
-name: GCenterv102
+display: GCenter
+name: GCenter
 script:
   commands:
   - name: gw-list-alerts

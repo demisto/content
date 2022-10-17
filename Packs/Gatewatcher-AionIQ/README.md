@@ -11,7 +11,7 @@ Gatewatcher is a European leader in advanced Threats detection, protecting criti
 
 **This pack includes 1 integration:**
 
-- GCenterv102 (GCenter 2.5.3.102) integration:
+- GCenter integration:
   - List Elasticsearch (NoSQL database) alerts.
   - Get an Elasticsearch (NoSQL database) alert by uid.
   - Add a malcore (Malwares analysis) whitelist/blacklist entry.

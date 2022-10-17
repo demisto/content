@@ -1,5 +1,4 @@
 """Base Integration for Cortex XSOAR (aka Demisto)"""
-import io
 import requests
 from typing import (
     Any,
