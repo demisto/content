@@ -5201,6 +5201,9 @@
             "integrations": [
                 "Panorama"
             ]
+        },
+        {
+            "playbookID": "VerifyCIDR-Test"
         }
     ],
     "skipped_tests": {
