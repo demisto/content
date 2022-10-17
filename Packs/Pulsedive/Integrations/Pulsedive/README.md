@@ -37,7 +37,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| --- | --- | --- |
 | DBotScore.Indicator | String | The indicator that was tested. |
 | DBotScore.Score | Number | The actual score. |
 | DBotScore.Type | String | The indicator type. |
@@ -89,6 +88,49 @@ After you successfully execute a command, a DBot message appears in the War Room
 | --- | --- | --- |
 | ip | List of IPs | Required | 
 
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| Pulsedive.IP.asn | String | The autonomous system name for the IP address. |
+| Pulsedive.IP.asn_cidr | String | The ASN CIDR. |
+| Pulsedive.IP.asn_country_code | String | The ASN country code. |
+| Pulsedive.IP.asn_date | Date | The date on which the ASN was assigned. |
+| Pulsedive.IP.asn_description | String | The ASN description. |
+| Pulsedive.IP.asn_registry | String | The registry the ASN belongs to. |
+| Pulsedive.IP.entities | String | Entities associated to the IP. |
+| Pulsedive.IP.ip | String | The actual IP address. |
+| Pulsedive.IP.network.cidr | String | Network CIDR for the IP address. |
+| Pulsedive.IP.network.country | Unknown | The country of the IP address. |
+| Pulsedive.IP.network.end_address | String | The last IP address of the CIDR. |
+| Pulsedive.IP.network.events.action | String | The action that happened on the event. |
+| Pulsedive.IP.network.events.actor | Unknown | The actor that performed the action on the event. |
+| Pulsedive.IP.network.events.timestamp | String | The timestamp when the event occurred. |
+| Pulsedive.IP.network.handle | String | The handle of the network. |
+| Pulsedive.IP.network.ip_version | String | The IP address version. |
+| Pulsedive.IP.network.links | String | Links associated to the IP address. |
+| Pulsedive.IP.network.name | String | The name of the network. |
+| Pulsedive.IP.network.notices.description | String | The description of the notice. |
+| Pulsedive.IP.network.notices.links | Unknown | Links associated with the notice. |
+| Pulsedive.IP.network.notices.title | String | Title of the notice. |
+| Pulsedive.IP.network.parent_handle | String | Handle of the parent network. |
+| Pulsedive.IP.network.raw | Unknown | Additional raw data for the network. |
+| Pulsedive.IP.network.remarks | Unknown | Additional remarks for the network.  |
+| Pulsedive.IP.network.start_address | String | The first IP address of the CIDR. |
+| Pulsedive.IP.network.status | String | Status of the network. |
+| Pulsedive.IP.network.type | String | The type of the network. |
+| Pulsedive.IP.query | String | IP address that was queried. |
+| Pulsedive.IP.raw | Unknown | Additional raw data for the IP address. |
+| Pulsedive.IP.score | Number | Reputation score from HelloWorld for this IP (0 to 100, where higher is worse). |
+| IP.Address | String | IP address. |
+| IP.Malicious.Vendor | String | The vendor reporting the IP address as malicious. |
+| IP.Malicious.Description | String | A description explaining why the IP address was reported as malicious. |
+| IP.ASN | String | The autonomous system name for the IP address. |
+
 #### Base Command
 
 `url`
@@ -97,6 +139,20 @@ After you successfully execute a command, a DBot message appears in the War Room
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | url | List of URLs | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| URL.Malicious.Vendor | String | The vendor reporting the URL as malicious. |
+| URL.Data | String | The URL. |
+| URL.Malicious.Description | String | A description of the malicious URL. |
+| URL.DetectionEngines | String | The total number of engines that checked the indicator. |
+| URL.PositiveDetections | String | The number of engines that positively detected the indicator as malicious. |
 
 #### Base Command
 
@@ -108,6 +164,14 @@ After you successfully execute a command, a DBot message appears in the War Room
 | value | The value to scan | Required | 
 | scan_type | You can choose between passive and active scanning. Default value is 'active' | Optional | 
 
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Pulsedive.Scan.qid | Number | QID of the scan. |
+| Pulsedive.Scan.value | String | The value which was scanned. |
+| Pulsedive.Scan.success | String | The success message. |
+
 #### Base Command
 
 `pulsedive-scan-result`
@@ -115,4 +179,25 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| qid | QID recieved from scan command | Required | 
+| qid | QID received from scan command | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| Pulsedive.ScanResult | Unknown | Complete data returned from the scan. | 
+| Domain.Name | String | The domain name. |
+| Domain.DomainStatus | String | The status of the domain. |
+| Domain.NameServers | String | Name servers of the domain. |
+| Domain.WHOIS.NameServers | String | A CSV string of name servers, for example 'ns1.bla.com, ns2.bla.com'. |
+| Pulsedive.Scan.success | String | The success message. |
+| IP.Address | String | IP address. |
+| IP.Geo.Country | String | The country in which the IP address is located. |
+| IP.Port | String | Ports that are associated with the IP. |
+| IP.ASN | String | "The autonomous system name for the URL, for example: 'AS8948'." |
+| URL.DATA | String | The URL. |
