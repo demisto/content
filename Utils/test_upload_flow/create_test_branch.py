@@ -32,13 +32,18 @@ def create_new_pack():
     """
         Creates new pack with given pack name
     """
+    content_dict = {}
     content_path = Path(__file__).parent.parent.parent
     source_path = Path(__file__).parent / 'TestUploadFlow'
     dest_path = content_path / 'Packs' / 'TestUploadFlow'
     if dest_path.exists():
         shutil.rmtree(dest_path)
     shutil.copytree(source_path, dest_path)
-    return dest_path, '1.0.0', {'Integrations': 'TestUploadFlow', 'Playbooks': 'TestUploadFlow'}
+
+    for top_dir, sub_dir, file_path in os.walk(source_path):
+        if sub_dir and sub_dir[0] not in ['ReleaseNotes', 'TestPlaybooks']:  # get only uploaded content items from pack
+            content_dict[Path(top_dir).name] = file_path
+    return dest_path, '1.0.0', content_dict
 
 
 @add_changed_pack

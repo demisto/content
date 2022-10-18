@@ -179,7 +179,7 @@ class GCP:
     def is_item_in_pack(self, pack_id, item_type, item_file_name, extension):
         """
         Check if an item is inside the pack. this function is suitable for content items that
-        have a subfolder (for example: Integrations/ObjectName/integration-ObjectName.yml
+        have a subfolder (for example: Integrations/ObjectName/integration-ObjectName.yml)
         """
         return os.path.exists(os.path.join(self.extracting_destination, pack_id, item_type, item_file_name,
                                            f'{item_type.lower()[:-1]}-{item_file_name}.{extension}'))
