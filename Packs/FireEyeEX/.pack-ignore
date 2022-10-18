@@ -5,5 +5,5 @@ from pytz import UTC
 ignore=BA101
 
 [known_words]
-UTC
+utc
 blockedlist
