@@ -3,6 +3,7 @@
 sudo chown demisto .venv
 sudo chown demisto node_modules
 sudo chwon demisto $HOME
+sudo chown -R demisto /worspaces
 
 cp .devcontainer/settings.json .vscode/settings.json 
 touch CommonServerUserPython.py
