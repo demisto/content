@@ -569,7 +569,7 @@ def list_activities_command(client: Client, args: dict):
         activities_response_data = client.list_activities(url_suffix, request_data, timeout)
         list_activities.extend(
             activities_response_data.get('data') if activities_response_data.get('data') else [activities_response_data]
-            )
+        )
         has_next = activities_response_data.get('hasNext', False)
         request_data['filters'] = activities_response_data.get('nextQueryFilters')
         if is_scan is False:
