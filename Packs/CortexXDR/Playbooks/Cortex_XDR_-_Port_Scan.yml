@@ -2311,17 +2311,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "98":
     id: "98"
-    taskid: d874a048-42ca-4ccf-868d-c3a5eda1e4bb
+    taskid: 2235283f-decb-41e3-8e9c-2ca00e0eeed2
     type: playbook
     task:
-      id: d874a048-42ca-4ccf-868d-c3a5eda1e4bb
+      id: 2235283f-decb-41e3-8e9c-2ca00e0eeed2
       version: -1
       name: Block IP - Generic v3
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
       playbookName: Block IP - Generic v3
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "61"
@@ -2332,7 +2332,8 @@ tasks:
         simple: "True"
       IP:
         complex:
-          root: IP
+          root: PANWHunting
+          accessor: DetectedExternalIPs
           transformers:
           - operator: uniq
       InputEnrichment:
@@ -2342,7 +2343,7 @@ tasks:
       RuleName:
         simple: XSOAR - Block IP playbook - ${incident.id}
       UserVerification:
-        simple: "True"
+        simple: "False"
     separatecontext: true
     continueonerrortype: ""
     loop:
