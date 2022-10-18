@@ -79,5 +79,5 @@
 	// "overrideFeatureInstallOrder": [
 	// 	"ghcr.io/devcontainers/features/common-utils:1"
 	// ],
-	"onCreateCommand": "sudo chown demisto .venv && sudo chown demisto node_modules && cp .devcontainer/settings.json .vscode/settings.json && touch ${containerWorkspaceFolder}/CommonServerUserPython.py && path=$(printf '%s:' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$PYTHONPATH && echo PYTHONPATH=\"$path\" >> .env && echo MYPYPATH=\"$path\" >> .env && NO_HOOKS=1 .hooks/bootstrap"
+	"onCreateCommand": "dos2unix .devcontainer/createCommand.sh && chmod +x .devcontainer/createCommand.sh && bash .devcontainer/createCommand.sh"
 }
