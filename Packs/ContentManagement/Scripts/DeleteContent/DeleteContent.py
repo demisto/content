@@ -517,10 +517,12 @@ def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: list = [], incl
     if not included_ids and not excluded_ids:
         return [], []
 
-    if hasattr(entity_api, 'always_excluded'):
-        excluded_ids += entity_api.always_excluded  # type: ignore
+    extended_excluded_ids = excluded_ids.copy()
 
-    new_included_ids = [item for item in included_ids if item not in excluded_ids]
+    if hasattr(entity_api, 'always_excluded'):
+        extended_excluded_ids += entity_api.always_excluded  # type: ignore
+
+    new_included_ids = [item for item in included_ids if item not in extended_excluded_ids]
     demisto.debug(f'Included ids for {entity_api.name} after excluding excluded are {new_included_ids}')
 
     if included_ids:
@@ -539,7 +541,7 @@ def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: list = [], incl
             return [], []
 
         for entity_id in all_entities:
-            if entity_id not in excluded_ids:
+            if entity_id not in extended_excluded_ids:
                 if search_and_delete_existing_entity(entity_id, entity_api=entity_api, dry_run=dry_run):
                     succesfully_deleted.append(entity_id)
                 else:
