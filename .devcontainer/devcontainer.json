@@ -10,6 +10,7 @@
 	"overrideCommand": false,
 	"mounts": [
 		"source=venv,target=${containerWorkspaceFolder}/.venv,type=volume",
+		"source=poetry-venv,target=/home/demisto/.cache/pypoetry,type=volume",
 		"source=node-modules,target=${containerWorkspaceFolder}/node_modules,type=volume",
 		"source=dind-var-lib-docker,target=/var/lib/docker,type=volume"
 	],
