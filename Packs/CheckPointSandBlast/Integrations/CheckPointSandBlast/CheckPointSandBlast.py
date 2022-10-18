@@ -978,7 +978,7 @@ def main() -> None:
     host = params['url']
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    reliability = params.get('integrationReliability')
+    reliability = params.get('integrationReliability', 'C - Fairly reliable')
 
     commands = {
         'sandblast-query': query_command,
