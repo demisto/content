@@ -2023,8 +2023,7 @@ script:
       secret: false
     name: nexpose-disable-shared-credential
     description: Disable an assigned shared credential.
-  - name: nexpose-download-report
-    arguments:
+  - arguments:
     - name: report_id
       required: true
       description: The identifier of the report.
@@ -2045,6 +2044,7 @@ script:
       - nexpose-simple-xml
       description: The report format, default is pdf.
       defaultValue: pdf
+    name: nexpose-download-report
     outputs:
     - contextPath: InfoFile.EntryId
       description: Entry ID of the report file.
@@ -2086,8 +2086,7 @@ script:
       secret: false
     name: nexpose-enable-shared-credential
     description: Enable an assigned shared credential.
-  - name: nexpose-get-report-status
-    arguments:
+  - arguments:
     - name: report_id
       required: true
       description: The identifier of the report.
@@ -2095,6 +2094,7 @@ script:
       required: true
       description: The identifier of the report instance. Also supports the "latest"
         keyword.
+    name: nexpose-get-report-status
     outputs:
     - contextPath: Nexpose.Report.ID
       description: The identifier of the report.

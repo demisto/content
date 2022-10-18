@@ -452,7 +452,7 @@ class Client(BaseClient):
 
                     account_data["password"] = password
 
-                if snmpv3_privacy_type is not None:  # TODO: Should privacy_type be required?
+                if snmpv3_privacy_type is not None:
                     account_data["privacyType"] = snmpv3_privacy_type.value
 
                     if snmpv3_privacy_type != SNMPv3PrivacyType.NO_PRIVACY and snmpv3_privacy_password is None:
@@ -480,10 +480,8 @@ class Client(BaseClient):
 
                 account_data["pemKey"] = ssh_key_pem
 
-                if ssh_private_key_password is None:  # TODO: Check if actually required
-                    raise ValueError(f"SSH private key password is required for \"{service.value}\" services.")
-
-                account_data["privateKeyPassword"] = ssh_private_key_password
+                if ssh_private_key_password is None:
+                    account_data["privateKeyPassword"] = ssh_private_key_password
 
         post_data = find_valid_params(
             description=description,
@@ -666,7 +664,7 @@ class Client(BaseClient):
         )
 
         submit_obj = find_valid_params(
-            reason=reason.name.value,
+            reason=reason.value,
             comment=comment,
         )
 
@@ -737,7 +735,6 @@ class Client(BaseClient):
             method="DELETE",
             resp_type="json",
         )
-
 
     def delete_vulnerability_exception(self, vulnerability_exception_id: str) -> dict:
         """
@@ -844,6 +841,27 @@ class Client(BaseClient):
         """
         return self._http_request(
             url_suffix=f"/assets/{asset_id}",
+            method="GET",
+            resp_type="json",
+        )
+
+    def get_asset_vulnerability_solution(self, asset_id: str, vulnerability_id: str) -> dict:
+        """
+        | Retrieve information about solutions that can be used to remediate a vulnerability on an asset.
+        |
+        | For more information see:
+            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getAssetVulnerabilitySolutions
+
+        Args:
+            asset_id (str): ID of the asset to retrieve solutions for.
+            vulnerability_id (str): ID of the vulnerability to retrieve solutions for.
+
+        Returns:
+            dict: API response with information about solutions that can be used to remediate
+                a vulnerability on an asset.
+        """
+        return self._http_request(
+            url_suffix=f"/assets/{asset_id}/vulnerabilities/{vulnerability_id}/solution",
             method="GET",
             resp_type="json",
         )
@@ -1257,27 +1275,6 @@ class Client(BaseClient):
             limit=limit,
         )
 
-    def get_asset_vulnerability_solution(self, asset_id: str, vulnerability_id: str) -> dict:
-        """
-        | Retrieve information about solutions that can be used to remediate a vulnerability on an asset.
-        |
-        | For more information see:
-            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getAssetVulnerabilitySolutions
-
-        Args:
-            asset_id (str): ID of the asset to retrieve solutions for.
-            vulnerability_id (str): ID of the vulnerability to retrieve solutions for.
-
-        Returns:
-            dict: API response with information about solutions that can be used to remediate
-                a vulnerability on an asset.
-        """
-        return self._http_request(
-            url_suffix=f"/assets/{asset_id}/vulnerabilities/{vulnerability_id}/solution",
-            method="GET",
-            resp_type="json",
-        )
-
     def search_assets(self, filters: Optional[list[dict]], match: str,
                       page_size: Optional[int] = DEFAULT_PAGE_SIZE, page: Optional[int] = None,
                       sort: Optional[str] = None, limit: Optional[int] = None) -> list[dict]:
@@ -1531,7 +1528,7 @@ class Client(BaseClient):
 
                     account_data["password"] = password
 
-                if snmpv3_privacy_type is not None:  # TODO: Should privacy_type be required?
+                if snmpv3_privacy_type is not None:
                     account_data["privacyType"] = snmpv3_privacy_type.value
 
                     if snmpv3_privacy_type != SNMPv3PrivacyType.NO_PRIVACY and snmpv3_privacy_password is None:
@@ -1559,10 +1556,8 @@ class Client(BaseClient):
 
                 account_data["pemKey"] = ssh_key_pem
 
-                if ssh_private_key_password is None:  # TODO: Check if actually required
-                    raise ValueError(f"SSH private key password is required for \"{service.value}\" services.")
-
-                account_data["privateKeyPassword"] = ssh_private_key_password
+                if ssh_private_key_password is not None:
+                    account_data["privateKeyPassword"] = ssh_private_key_password
 
         post_data = find_valid_params(
             description=description,
@@ -2048,7 +2043,7 @@ def get_scan_entry(scan: dict) -> CommandResults:
             "total": "Total",
         },
         recursive=True,
-        no_copy=True,
+        use_reference=True,
     )
 
     scan_hr = tableToMarkdown(
@@ -2220,7 +2215,7 @@ def normalize_scan_data(scan: dict) -> dict:
             "message": "Message",
         },
         recursive=False,
-        no_copy=True,
+        use_reference=True,
     )
 
     scan_output["TotalTime"] = readable_duration_time(scan_output["TotalTime"])
@@ -2304,7 +2299,7 @@ def readable_duration_time(duration: str) -> str:
 
 # TODO: Disable "recursive" if it's not actually needed.
 def replace_key_names(data: Union[dict, list, tuple], name_mapping: dict[str, str],
-                      recursive: bool = False, no_copy: bool = False) -> Union[dict, list, tuple, set]:
+                      recursive: bool = False, use_reference: bool = False) -> Union[dict, list, tuple, set]:
     """
     Replace key names in a dictionary.
 
@@ -2314,7 +2309,7 @@ def replace_key_names(data: Union[dict, list, tuple], name_mapping: dict[str, st
                              of which key names to replace with what.
                              The value of the keys can represent nested dict items in a "parent.child" format.
         recursive (bool, optional): Whether to replace key names in all sub-dictionaries. Defaults to False.
-        no_copy (bool, optional): If set to true, the function will replace the keys in the original dictionary
+        use_reference (bool, optional): If set to true, the function will replace the keys in the original dictionary
                                   and return it, instead of creating, applying changes, and returning a new copy.
 
     Returns:
@@ -2323,7 +2318,7 @@ def replace_key_names(data: Union[dict, list, tuple], name_mapping: dict[str, st
     """
     # TODO: Fix issue when nested key is inside a list
 
-    if not no_copy:
+    if not use_reference:
         data = deepcopy(data)
 
     if isinstance(data, Union[list, tuple]):
@@ -2331,7 +2326,7 @@ def replace_key_names(data: Union[dict, list, tuple], name_mapping: dict[str, st
             data=data[i],
             name_mapping=name_mapping,
             recursive=recursive,
-            no_copy=True,
+            use_reference=True,
         ) for i in range(len(data))]
 
     elif isinstance(data, dict):
@@ -2360,7 +2355,7 @@ def replace_key_names(data: Union[dict, list, tuple], name_mapping: dict[str, st
                         data=data[item],
                         name_mapping=name_mapping,
                         recursive=recursive,
-                        no_copy=True,
+                        use_reference=True,
                     )
 
     return data
@@ -2715,12 +2710,15 @@ def delete_scheduled_scan_command(client: Client, site: Site, scheduled_scan_id:
     Returns:
         dict: API response.
     """
-    client.delete_scan_schedule(
+    response_data = client.delete_scan_schedule(
         site_id=site.id,
         scheduled_scan_id=scheduled_scan_id,
     )
 
-    return CommandResults(readable_output=f"Scheduled scan with ID {scheduled_scan_id} has been deleted.")
+    return CommandResults(
+        readable_output=f"Scheduled scan with ID {scheduled_scan_id} has been deleted.",
+        raw_response=response_data,
+    )
 
 
 def delete_site_command(client: Client, site: Site) -> CommandResults:
@@ -2731,12 +2729,13 @@ def delete_site_command(client: Client, site: Site) -> CommandResults:
         client (Client): Client to use for API requests.
         site (Site): Site to delete.
     """
-    client.delete_site(site.id)
+    response_data = client.delete_site(site.id)
 
     return CommandResults(
         readable_output=f"Site ID {site.id} has been deleted.",
         outputs_prefix="Nexpose.Report",
         outputs_key_field=["ID", "InstanceID"],
+        raw_response=response_data,
     )
 
 
@@ -2748,8 +2747,12 @@ def delete_shared_credential_command(client: Client, shared_credential_id: str) 
         client (Client): Client to use for API requests.
         shared_credential_id (str): ID of the shared credential to delete.
     """
-    client.delete_shared_credential(shared_credential_id)
-    return CommandResults(readable_output=f"Shared credential with ID {shared_credential_id} has been deleted.")
+    response_data = client.delete_shared_credential(shared_credential_id)
+
+    return CommandResults(
+        readable_output=f"Shared credential with ID {shared_credential_id} has been deleted.",
+        raw_response=response_data,
+    )
 
 
 def delete_vulnerability_exception_command(client: Client, vulnerability_exception_id: str) -> CommandResults:
@@ -2846,7 +2849,7 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults:
             "riskScore": "RiskScore",
         },
         recursive=True,
-        no_copy=True,
+        use_reference=True,
     )
 
     # Set all vars to None
@@ -2865,7 +2868,7 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults:
                 "version": "Version",
             },
             recursive=True,
-            no_copy=True,
+            use_reference=True,
         )
 
     if "services" in asset and len(asset["services"]) > 0:
@@ -2885,7 +2888,7 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults:
                 "protocol": "Protocol",
             },
             recursive=True,
-            no_copy=True,
+            use_reference=True,
         )
 
     if "users" in asset and len(asset["users"]) > 0:
@@ -2903,7 +2906,7 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults:
                 "id": "UserId",
             },
             recursive=True,
-            no_copy=True,
+            use_reference=True,
         )
 
     vulnerability_headers = [
@@ -2919,8 +2922,7 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults:
         "Instances",
     ]
 
-    vulnerabilities = client.get_vulnerabilities(asset["id"])
-    asset["vulnerabilities"] = vulnerabilities
+    asset["vulnerabilities"] = client.get_vulnerabilities(asset["id"])
 
     vulnerabilities_output = []
     cves_output = []
@@ -3053,7 +3055,7 @@ def get_assets_command(client: Client, page_size: Optional[int] = None,
             "assessedForVulnerabilities": "Assessed",
         },
         recursive=True,
-        no_copy=True,
+        use_reference=True,
     )
 
     result = []
@@ -3137,7 +3139,7 @@ def get_asset_vulnerability_command(client: Client, asset_id: str, vulnerability
             "cves": "CVES",
         },
         recursive=True,
-        no_copy=True,
+        use_reference=True,
     )
 
     results_headers = [
@@ -3161,7 +3163,7 @@ def get_asset_vulnerability_command(client: Client, asset_id: str, vulnerability
                 "status": "Status",
             },
             recursive=True,
-            no_copy=True,
+            use_reference=True,
         )
 
     # Remove HTML tags
@@ -3192,7 +3194,7 @@ def get_asset_vulnerability_command(client: Client, asset_id: str, vulnerability
                 "additionalInformation.text": "AdditionalInformation",
             },
             recursive=True,
-            no_copy=True,
+            use_reference=True,
         )
 
         for i, val in enumerate(solutions_output):
@@ -3295,7 +3297,7 @@ def get_report_templates_command(client: Client) -> CommandResults:
             "type": "Type",
         },
         recursive=True,
-        no_copy=True,
+        use_reference=True,
     )
 
     return CommandResults(
@@ -3479,7 +3481,6 @@ def list_scan_schedule_command(client: Client, site: Site, schedule_id: Optional
             site_id=site.id,
             schedule_id=schedule_id,
         )
-
         scan_schedules = [scan_schedules]
 
     if not scan_schedules:
@@ -3548,7 +3549,6 @@ def list_shared_credential_command(client: Client, credential_id: Optional[str],
 
     else:
         shared_credentials = client.get_shared_credential(credential_id)
-
         shared_credentials = [shared_credentials]
 
     if not shared_credentials:
@@ -3624,7 +3624,8 @@ def list_assigned_shared_credential_command(client: Client, site: Site) -> Comma
         outputs_prefix="Nexpose.AssignedSharedCredential",
         outputs_key_field="id",
         outputs=response_data,
-        readable_output=tableToMarkdown("Nexpose Assigned Shared Credentials", assigned_shared_credentials_hr, headers, removeNull=True),
+        readable_output=tableToMarkdown("Nexpose Assigned Shared Credentials",
+                                        assigned_shared_credentials_hr, headers, removeNull=True),
         raw_response=response_data,
     )
 
@@ -3656,10 +3657,7 @@ def list_vulnerability_command(client: Client, vulnerability_id: Optional[str], 
         )
 
     else:
-        vulnerabilities = client.get_vulnerability(
-            vulnerability_id=vulnerability_id,
-        )
-
+        vulnerabilities = client.get_vulnerability(vulnerability_id)
         vulnerabilities = [vulnerabilities]
 
     if not vulnerabilities:
@@ -3730,10 +3728,7 @@ def list_vulnerability_exceptions_command(client: Client, vulnerability_exceptio
         )
 
     else:
-        vulnerability_exceptions = client.get_vulnerability_exception(
-            vulnerability_exception_id=vulnerability_exception_id,
-        )
-
+        vulnerability_exceptions = client.get_vulnerability_exception(vulnerability_exception_id)
         vulnerability_exceptions = [vulnerability_exceptions]
 
     if not vulnerability_exceptions:
@@ -3891,7 +3886,7 @@ def search_assets_command(client: Client, filter_query: Optional[str] = None, ip
             "assessedForVulnerabilities": "Assessed",
         },
         recursive=True,
-        no_copy=True,
+        use_reference=True,
     )
 
     result = []
