@@ -50,7 +50,7 @@ class BucketVerifier:
         Verify the pack is in the index, verify version 1.0.0 zip exists under the pack's path
         """
         version_exists = [self.gcp.is_in_index(pack_id), self.gcp.download_and_extract_pack(pack_id, '1.0.0')]
-        items_exists = [self.gcp.is_item_in_pack(pack_id, item_type, item_file_name) for item_type, item_file_name
+        items_exists = [self.gcp.is_item_in_pack(pack_id, item_type, item_file_path) for item_type, item_file_path
                         in pack_items.items()]
         return all(version_exists) and all(items_exists), pack_id
 
@@ -176,11 +176,12 @@ class GCP:
         metadata_path = os.path.join(self.extracting_destination, pack_id, 'metadata.json')
         return read_json(metadata_path)
 
-    def is_item_in_pack(self, pack_id, item_type, item_file_name, extension):
+    def is_item_in_pack(self, pack_id, item_type, item_file_path):
         """
-        Check if an item is inside the pack. this function is suitable for content items that
-        have a subfolder (for example: Integrations/ObjectName/integration-ObjectName.yml)
-        """
+        Check if an item is inside the pack.
+        """ # TODO: fix for difference of integrations and the rest
+        item_name = Path(item_file_path).stem
+        item_name_with_extestion = Path(item_file_path).name
         return os.path.exists(os.path.join(self.extracting_destination, pack_id, item_type, item_file_name,
                                            f'{item_type.lower()[:-1]}-{item_file_name}.{extension}'))
 

@@ -31,6 +31,7 @@ def add_changed_pack(func):
 def create_new_pack():
     """
         Creates new pack with given pack name
+        returns a dict with the created content items in the form of {item_type: item_path}
     """
     content_dict = {}
     content_path = Path(__file__).parent.parent.parent
