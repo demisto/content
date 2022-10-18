@@ -1,7 +1,7 @@
 # Marketplace Related
-/Tests/Marketplace/approved_tags.json @demisto/content-leaders @michalgold
-/Tests/Marketplace/approved_usecases.json @demisto/content-leaders @michalgold
-/Tests/Marketplace/landingPage_sections.json @demisto/content-leaders @michalgold
+/Tests/Marketplace/approved_tags.json @glicht @bakatzir @GuyLibermanPA
+/Tests/Marketplace/approved_usecases.json @glicht @bakatzir @GuyLibermanPA
+/Tests/Marketplace/landingPage_sections.json @glicht @bakatzir @GuyLibermanPA
 
 # Marketplace & Upload-Flow
 /Tests/Marketplace/upload_git_snapshot.py @Noy-Maimon
