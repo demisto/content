@@ -4,7 +4,7 @@ ADD createCerts.sh .
 RUN apt-get update && apt-get install dos2unix -y \
     && dos2unix /createCerts.sh \
     && chmod +x /createCerts.sh \ 
-    && /create_certs.sh /usr/local/share/ca-certificates/certs.crt \
+    && /createCerts.sh /usr/local/share/ca-certificates/certs.crt \
     && update-ca-certificates \
     && apt-get install python2 -y
 
