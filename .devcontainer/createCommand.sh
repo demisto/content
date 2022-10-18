@@ -5,7 +5,7 @@ set -e
 sudo chown demisto .venv
 sudo chown demisto node_modules
 sudo chown -R demisto $HOME
-sudo chown  -Rdemisto /worspaces
+sudo chown -R demisto /workspaces
 
 
 cp .devcontainer/settings.json .vscode/settings.json 
