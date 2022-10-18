@@ -2,6 +2,7 @@
     "name": "FalconHost (Deprecated)",
     "description": "Deprecated. Use CrowdStrike Falcon instead.",
     "support": "xsoar",
+    "hidden": true,
     "currentVersion": "1.1.7",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
