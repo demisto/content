@@ -23,7 +23,7 @@ args:
   - 'false'
 - auto: PREDEFINED
   default: false
-  defaultValue: true
+  defaultValue: 'true'
   description: If true, verify certificates when accessing github.
   isArray: false
   name: verify_cert
@@ -34,7 +34,7 @@ args:
   - 'false'
 - auto: PREDEFINED
   default: false
-  defaultValue: false
+  defaultValue: 'false'
   description: If true, skip system proxy settings.
   isArray: false
   name: skip_proxy
