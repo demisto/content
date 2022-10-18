@@ -41,21 +41,23 @@ def fetch_indicators_command(client: Taxii2FeedClient, limit: int, last_run_ctx:
     initial_interval = dateparser.parse(initial_interval, date_formats=[TAXII_TIME_FORMAT])
 
     if client.collection_to_fetch:
-        indicators, last_run_ctx = fetch_one_collection(client, limit, last_run_ctx, initial_interval, fetch_full_feed)
+        indicators, last_run_ctx = fetch_one_collection(client, limit, initial_interval, last_run_ctx, fetch_full_feed)
     else:
         indicators, last_run_ctx = fetch_all_collections(client, limit, initial_interval, last_run_ctx, fetch_full_feed)
 
     return indicators, last_run_ctx
 
 
-def fetch_one_collection(client: Taxii2FeedClient, limit: int, last_run_ctx: dict, initial_interval: str, fetch_full_feed: bool):
-    last_fetch_time = last_run_ctx.get(client.collection_to_fetch.id)
+def fetch_one_collection(client: Taxii2FeedClient, limit: int, initial_interval: str, last_run_ctx: Optional[dict] = None,
+                         fetch_full_feed: bool = False):
+    last_fetch_time = last_run_ctx.get(client.collection_to_fetch.id) if last_run_ctx else None
     added_after = get_added_after(fetch_full_feed, initial_interval, last_fetch_time)
 
     indicators = client.build_iterator(limit, added_after=added_after)
-    last_run_ctx[client.collection_to_fetch.id] = (client.last_fetched_indicator__modified
-                                                   if client.last_fetched_indicator__modified
-                                                   else added_after)
+    if last_run_ctx:
+        last_run_ctx[client.collection_to_fetch.id] = (client.last_fetched_indicator__modified
+                                                       if client.last_fetched_indicator__modified
+                                                       else added_after)
 
     return indicators, last_run_ctx
 
@@ -65,12 +67,8 @@ def fetch_all_collections(client: Taxii2FeedClient, limit: int, initial_interval
     indicators: list = []
     for collection in client.collections:
         client.collection_to_fetch = collection
-        added_after = get_added_after(fetch_full_feed, initial_interval,
-                                      last_run_ctx.get(collection.id) if last_run_ctx else None)
-        fetched_iocs = client.build_iterator(limit, added_after=added_after)
+        fetched_iocs, last_run_ctx = fetch_one_collection(client, limit, initial_interval, last_run_ctx, fetch_full_feed)
         indicators.extend(fetched_iocs)
-        if last_run_ctx:
-            last_run_ctx[collection.id] = client.last_fetched_indicator__modified
 
         if limit >= 0:
             limit -= len(fetched_iocs)
