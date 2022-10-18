@@ -970,7 +970,7 @@ class Taxii2FeedClient:
 
     def parse_dict_envelope(self, envelopes: Dict[str, Any],
                             parse_objects_func, limit: int = -1):
-        indicators = []
+        indicators: list = []
         relationships_list: List[Dict[str, Any]] = []
         for obj_type, envelope in envelopes.items():
             if exceeded_limit(limit, len(indicators) + len(relationships_list)):

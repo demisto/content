@@ -1,5 +1,6 @@
+import demistomock as demisto
+from CommonServerPython import *
 from TAXII2ApiModule import *  # noqa: E402
-import datetime
 
 ''' CONSTANTS '''
 
@@ -48,8 +49,8 @@ def fetch_indicators_command(client: Taxii2FeedClient, limit: int, last_run_ctx:
     return indicators, last_run_ctx
 
 
-def fetch_one_collection(client: Taxii2FeedClient, limit: int, initial_interval: str, last_run_ctx: Optional[dict] = None,
-                         fetch_full_feed: bool = False):
+def fetch_one_collection(client: Taxii2FeedClient, limit: int, initial_interval: Union[str, datetime],
+                         last_run_ctx: Optional[dict] = None, fetch_full_feed: bool = False):
     last_fetch_time = last_run_ctx.get(client.collection_to_fetch.id) if last_run_ctx else None
     added_after = get_added_after(fetch_full_feed, initial_interval, last_fetch_time)
 
@@ -62,10 +63,10 @@ def fetch_one_collection(client: Taxii2FeedClient, limit: int, initial_interval:
     return indicators, last_run_ctx
 
 
-def fetch_all_collections(client: Taxii2FeedClient, limit: int, initial_interval: str, last_run_ctx: Optional[dict] = None,
-                          fetch_full_feed: bool = False):
+def fetch_all_collections(client: Taxii2FeedClient, limit: int, initial_interval: Union[str, datetime],
+                          last_run_ctx: Optional[dict] = None, fetch_full_feed: bool = False):
     indicators: list = []
-    for collection in client.collections:
+    for collection in client.collections:  # type: ignore[attr-defined]
         client.collection_to_fetch = collection
         fetched_iocs, last_run_ctx = fetch_one_collection(client, limit, initial_interval, last_run_ctx, fetch_full_feed)
         indicators.extend(fetched_iocs)
@@ -78,14 +79,15 @@ def fetch_all_collections(client: Taxii2FeedClient, limit: int, initial_interval
     return indicators, last_run_ctx
 
 
-def get_added_after(fetch_full_feed: bool, initial_interval: Union[str, datetime.datetime], last_fetch_time: str = None):
+def get_added_after(fetch_full_feed: bool, initial_interval: Union[str, datetime], last_fetch_time: str = None):
     if fetch_full_feed:
         return initial_interval
 
     return last_fetch_time or initial_interval
 
 
-def get_indicators_command(client: Taxii2FeedClient, raw: str = 'false', limit: str = '10', added_after: str = '20 days'):
+def get_indicators_command(client: Taxii2FeedClient, raw: str = 'false', limit: str = '10', added_after: str = '20 days') \
+        -> Union[CommandResults, Dict[str, List[Optional[str]]]]:
     """
     Fetch indicators from TAXII 2 server
     :param client: Taxii2FeedClient
@@ -94,7 +96,7 @@ def get_indicators_command(client: Taxii2FeedClient, raw: str = 'false', limit: 
     :param (Optional) added_after: added after time string in parse_date_range format
     :return: indicators in cortex TIM format
     """
-    limit = arg_to_number(limit)
+    limit = arg_to_number(limit) or 10
     added_after = dateparser.parse(added_after, date_formats=[TAXII_TIME_FORMAT])
     raw = argToBoolean(raw)
 
@@ -116,12 +118,12 @@ def get_indicators_command(client: Taxii2FeedClient, raw: str = 'false', limit: 
     )
 
 
-def get_collections_command(client: Taxii2FeedClient):
+def get_collections_command(client: Taxii2FeedClient) -> CommandResults:
     """
     Get the available collections in the DHS server
     """
     collections = list()
-    for collection in client.collections:
+    for collection in client.collections:  # type: ignore[attr-defined]
         collections.append({'Name': collection.title, 'ID': collection.id})
     return CommandResults(
         outputs_prefix='DHS.Collections',
@@ -151,8 +153,8 @@ def main():
     initial_interval = params.get('initial_interval', '24 hours')
     fetch_full_feed = params.get('fetch_full_feed') or False
     is_incremental_feed = params.get('feedIncremental') or False
-    limit = arg_to_number(params.get('limit') or -1)
-    limit_per_request = arg_to_number(params.get('limit_per_request'))
+    limit = arg_to_number(params.get('limit')) or -1
+    limit_per_request = arg_to_number(params.get('limit_per_request')) or DFLT_LIMIT_PER_REQUEST
     objects_types = ['report', 'indicator', 'malware', 'campaign', 'attack-pattern',
                      'course-of-action', 'intrusion-set', 'tool', 'threat-actor', 'infrastructure']
     objects_to_fetch = argToList(params.get('objects_to_fetch') or objects_types)
@@ -160,10 +162,6 @@ def main():
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
-    commands = {
-        'dhs-get-indicators': get_indicators_command,
-        'dhs-get-collections': get_collections_command,
-    }
 
     try:
         assert_incremental_feed_params(fetch_full_feed, is_incremental_feed)
@@ -198,8 +196,11 @@ def main():
 
             set_feed_last_run(last_run_indicators)
 
-        elif command in commands:
-            return_results(commands[command](client, **args))
+        elif command == 'dhs-get-indicators':
+            return_results(get_indicators_command(client, **args))
+
+        elif command == 'dhs-get-collections':
+            return_results(get_collections_command(client))
 
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
