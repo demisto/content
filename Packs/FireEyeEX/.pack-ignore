@@ -1,6 +1,3 @@
-from pytz import UTC
-
-
 [file:classifier-FireEye_Email_Security_-_Phishing_Alerts_-_Classifier.json]
 ignore=BA101
 
