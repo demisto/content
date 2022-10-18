@@ -982,44 +982,6 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_scan_schedule(self, site_id: str, schedule_id: str) -> dict:
-        """
-        | Retrieve information about a specific scheduled scan from a specific site.
-        |
-        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getSiteScanSchedule
-
-        Args:
-            site_id (str): ID of the site to retrieve scheduled scan from.
-            schedule_id (str): ID of the scheduled scan to retrieve.
-
-        Returns:
-            dict: API response with information about a specific scheduled scans from the specific site.
-        """
-        return self._http_request(
-            url_suffix=f"/sites/{site_id}/scan_schedules/{schedule_id}",
-            method="GET",
-            resp_type="json",
-        )
-
-    def get_scan_schedules(self, site_id: str) -> dict:
-        """
-        | Retrieve information about all scheduled scans from a specific site.
-        |
-        | For more information see:
-            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getSiteScanSchedules
-
-        Args:
-            site_id (str): ID of the site to retrieve scheduled scans from.
-
-        Returns:
-            dict: API response with information about all scheduled scans from the specific site.
-        """
-        return self._http_request(
-            url_suffix=f"/sites/{site_id}/scan_schedules",
-            method="GET",
-            resp_type="json",
-        )
-
     def get_shared_credential(self, credential_id: str) -> dict:
         """
         | Retrieve information about a specific shared credential.
