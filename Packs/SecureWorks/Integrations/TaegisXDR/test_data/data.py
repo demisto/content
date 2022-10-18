@@ -42,10 +42,11 @@ TAEGIS_INVESTIGATION = {
     "url": f"{TAEGIS_URL}/investigations/c2e09554-833e-41a1-bc9d-8160aec0d70d",
 }
 
+TAEGIS_PLAYBOOK_EXECUTION_ID = "UGxheWJvb2tFeGVjdXRpb246ZjkxNWYzMjMtZDFlNS00MWQ2LTg4NzktYzE4ZTBhMmYzZmNh"
 TAEGIS_PLAYBOOK_EXECUTION = {
     "createdAt": "2022-02-10T13:51:24Z",
     "executionTime": 1442,
-    "id": "UGxheWJvb2tFeGVjdXRpb246ZjkxNWYzMjMtZDFlNS00MWQ2LTg4NzktYzE4ZTBhMmYzZmNh",
+    "id": TAEGIS_PLAYBOOK_EXECUTION_ID,
     "inputs": {
         "PagerDuty": {
             "dedup_key": "25f16f6c-dbc1-4efe-85a7-385e73f94efc"
@@ -67,7 +68,7 @@ TAEGIS_PLAYBOOK_EXECUTION = {
     "outputs": "25f16f6c-dbc1-4efe-85a7-385e73f94efc",
     "state": "Completed",
     "updatedAt": "2022-02-10T13:51:31Z",
-    "url": f"{TAEGIS_URL}/automations/playbook-executions/UGxheWJvb2tFeGVjdXRpb246ZjkxNWYzMjMtZDFlNS00MWQ2LTg4NzktYzE4ZTBhMmYzZmNh",
+    "url": f"{TAEGIS_URL}/automations/playbook-executions/{TAEGIS_PLAYBOOK_EXECUTION_ID}",
 }
 
 TAEGIS_PLAYBOOK_EXECUTION_ID = "UGxheWJvb2tFeGVjdXRpb246M2NiM2FmYWItYTZiNy00ZWNmLTk1NDUtY2JlNjg1OTdhODY1"

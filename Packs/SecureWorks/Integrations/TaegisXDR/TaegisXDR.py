@@ -323,7 +323,7 @@ def fetch_alerts_command(client: Client, env: str, args=None):
 
     if args.get("ids"):
         field = "alertsServiceRetrieveAlertsById"
-        ids = str(args["ids"]).replace("'", "\"") # Graphql will not accept single quotes
+        ids = str(args["ids"]).replace("'", "\"")  # Graphql will not accept single quotes
         query = """
         query alertsServiceRetrieveAlertsById {
             alertsServiceRetrieveAlertsById(
