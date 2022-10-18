@@ -498,7 +498,7 @@ def search_for_all_entities(entity_api: EntityAPI) -> list:
 
 
 def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: list = [], included_ids: list = [],
-                            dry_run: bool = True) -> Tuple[list, list]:
+                            dry_run: bool = True) -> Tuple[list, list, list]:
     """Search and delete entities with provided EntityAPI.
 
     Args:
@@ -513,11 +513,10 @@ def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: list = [], incl
     demisto.debug(f'Starting handling {entity_api.name} entities.')
     succesfully_deleted = []
     not_deleted = []
+    extended_excluded_ids = excluded_ids.copy()
 
     if not included_ids and not excluded_ids:
-        return [], []
-
-    extended_excluded_ids = excluded_ids.copy()
+        return [], [], extended_excluded_ids
 
     if hasattr(entity_api, 'always_excluded'):
         extended_excluded_ids += entity_api.always_excluded  # type: ignore
@@ -538,7 +537,7 @@ def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: list = [], incl
     else:
         all_entities = search_for_all_entities(entity_api=entity_api)
         if not all_entities:
-            return [], []
+            return [], [], extended_excluded_ids
 
         for entity_id in all_entities:
             if entity_id not in extended_excluded_ids:
@@ -551,7 +550,7 @@ def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: list = [], incl
             else:
                 not_deleted.append(entity_id)
 
-    return succesfully_deleted, not_deleted
+    return succesfully_deleted, not_deleted, extended_excluded_ids
 
 
 def get_deletion_status(excluded: list, included: list, deleted: list, undeleted: list) -> bool:
@@ -581,12 +580,12 @@ def handle_content_enitity(entity_api: EntityAPI,
     excluded_ids = excluded_ids_dict.get(entity_api.name, []) if excluded_ids_dict else []
     included_ids = included_ids_dict.get(entity_api.name, []) if included_ids_dict else []
 
-    deleted_ids, undeleted_ids = get_and_delete_entities(entity_api=entity_api,
-                                                         excluded_ids=excluded_ids,
-                                                         included_ids=included_ids,
-                                                         dry_run=dry_run)
+    deleted_ids, undeleted_ids, new_excluded_ids = get_and_delete_entities(entity_api=entity_api,
+                                                                           excluded_ids=excluded_ids,
+                                                                           included_ids=included_ids,
+                                                                           dry_run=dry_run)
 
-    deletion_status = get_deletion_status(excluded=excluded_ids, included=included_ids,
+    deletion_status = get_deletion_status(excluded=new_excluded_ids, included=included_ids,
                                           deleted=deleted_ids, undeleted=undeleted_ids)
 
     return deletion_status, {entity_api.name: deleted_ids}, {entity_api.name: undeleted_ids}
