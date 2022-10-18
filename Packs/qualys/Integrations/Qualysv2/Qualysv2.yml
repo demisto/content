@@ -2656,7 +2656,13 @@ script:
       name: asset_groups
     - description: The title of the compliance option profile to be used.
       name: option_title
-      required: true
+    - description: Filter IPs/ranges in “ip” parameter (valid when the networks feature 
+        is enabled).
+      name: ip_network_id
+    - description: The ID of the option profile to be used.
+      name: option_id
+    - description: End a scan after some number of hours. A valid value is from 0 to 119.
+      name: end_after
     - description: "The frequency (days) in which the scan occurs. The value is between\
         \ 1-365. For example: '1' indicates that the schedule will occur every day.\
         \ '2' indicates that the schedule will occur every 2 days. At most, one of\
