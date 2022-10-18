@@ -1,9 +1,9 @@
 FROM python:3.10-slim-bullseye
 
-ADD create_certs.sh .
+ADD createCerts.sh .
 RUN apt-get update && apt-get install dos2unix -y \
-    && dos2unix /create_certs.sh \
-    && chmod +x /create_certs.sh \ 
+    && dos2unix /createCerts.sh \
+    && chmod +x /createCerts.sh \ 
     && /create_certs.sh /usr/local/share/ca-certificates/certs.crt \
     && update-ca-certificates \
     && apt-get install python2 -y

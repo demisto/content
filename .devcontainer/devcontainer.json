@@ -79,5 +79,5 @@
 	// "overrideFeatureInstallOrder": [
 	// 	"ghcr.io/devcontainers/features/common-utils:1"
 	// ],
-	"onCreateCommand": "dos2unix .devcontainer/create_command.sh && chmod +x .devcontainer/create_command.sh && bash .devcontainer/create_command.sh"
+	"onCreateCommand": "dos2unix .devcontainer/createCommand.sh && chmod +x .devcontainer/createCommand.sh && bash .devcontainer/createCommand.sh"
 }
