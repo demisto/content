@@ -705,9 +705,9 @@ class Client:
                 'maintype': maintype,
                 'subtype': subtype,
                 'data': base64.b64decode(m.group(3)),
-                'name': 'image%d.%s' % (i, subtype)
+                'name': f'image{i}.{subtype}'
             }
-            att['cid'] = f"{att['name']}@{self.randomword(8)}.{self.randomword(8)}"
+            att['cid'] = f"{att['name']}@{self.randomword(8)}.{self.randomword(8)}"  # type: ignore[str-bytes-safe]
             attachments.append(att)
             cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + att['cid']
             lastIndex = m.end() - 1
