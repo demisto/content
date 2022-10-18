@@ -686,7 +686,7 @@
                         "y": 5
                     },
                     {
-                        "description": "In case a macro code was found in any of the attachments, the source code will show up here.",
+                        "description": "In case a macro code was found in any of the attachments, the source code will appear here.",
                         "displayType": "CARD",
                         "h": 5,
                         "hideName": false,
