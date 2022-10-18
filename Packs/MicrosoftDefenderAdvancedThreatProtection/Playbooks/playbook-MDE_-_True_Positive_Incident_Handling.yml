@@ -1865,7 +1865,7 @@ tasks:
       entryIDs:
         simple: ${lastCompletedTaskEntries}
       tags:
-        simple: Threat Hunting Results
+        simple: Found additional assets
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1889,7 +1889,7 @@ tasks:
     task:
       id: a79762f1-136f-4f4e-889b-127efbe67a01
       version: -1
-      name: Add 'Threat Hunting Results' tag to the incident
+      name: Add 'Found additional assets' tag to the incident
       description: commands.local.cmd.set.incident
       script: Builtin|||setIncident
       type: regular
@@ -1902,7 +1902,7 @@ tasks:
       appendTags:
         simple: "true"
       tags:
-        simple: Threat Hunting Results
+        simple: Found additional assets
     separatecontext: false
     continueonerrortype: ""
     view: |-

@@ -1634,7 +1634,7 @@ tasks:
       entryIDs:
         simple: ${lastCompletedTaskEntries}
       tags:
-        simple: Found additional hosts
+        simple: Found additional assets
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1658,7 +1658,7 @@ tasks:
     task:
       id: 00cbf3d6-d902-43bc-8143-2b9424c0921e
       version: -1
-      name: Add a 'Found additional hosts' tag to the incident
+      name: Add a 'Found additional assets' tag to the incident
       description: commands.local.cmd.set.incident
       script: Builtin|||setIncident
       type: regular
@@ -1671,7 +1671,7 @@ tasks:
       appendTags:
         simple: "true"
       tags:
-        simple: Found additional hosts
+        simple: Found additional assets
     separatecontext: false
     continueonerrortype: ""
     view: |-
