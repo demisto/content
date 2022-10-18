@@ -12,7 +12,7 @@ from Tests.scripts.collect_tests.collect_tests import (
     XSOARNightlyTestCollector)
 from Tests.scripts.collect_tests.constants import XSOAR_SANITY_TEST_NAMES
 from Tests.scripts.collect_tests.path_manager import PathManager
-from Tests.scripts.collect_tests.utils import PackManager
+from Tests.scripts.collect_tests.utils import PackManager, FilesToCollect
 
 os.environ['UNIT_TESTING'] = 'True'
 
@@ -324,9 +324,11 @@ def test_branch(
         expected_packs: tuple[str, ...],
         expected_machines: Optional[tuple[Machine, ...]],
         collector_class_args: tuple[str, ...],
-        mocked_changed_files: tuple[str, ...]
+        mocked_changed_files: tuple[str, ...],
+        mocked_packs_files_were_moved_from: tuple[str, ...] = tuple(),
 ):
-    mocker.patch.object(BranchTestCollector, '_get_changed_files', return_value=mocked_changed_files)
+    mocker.patch.object(BranchTestCollector, '_get_git_diff',
+                        return_value=FilesToCollect(mocked_changed_files, mocked_packs_files_were_moved_from))
     _test(monkeypatch, case_mocker, collector_class=BranchTestCollector,
           expected_tests=expected_tests, expected_packs=expected_packs, expected_machines=expected_machines,
           collector_class_args=collector_class_args)
@@ -334,8 +336,11 @@ def test_branch(
 
 def test_branch_test_missing_from_conf(mocker, monkeypatch):
     # Integration with support level == xsoar - should raise an exception
-    mocker.patch.object(BranchTestCollector, '_get_changed_files',
-                        return_value=('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',))
+    mocker.patch.object(BranchTestCollector, '_get_git_diff',
+                        return_value=FilesToCollect(
+                            changed_files=('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',),
+                            pack_ids_files_were_removed_from=()),
+                        )
     with pytest.raises(ValueError) as e:
         _test(monkeypatch, MockerCases.M1, BranchTestCollector, (), (), (), XSOAR_BRANCH_ARGS)
     assert 'is (1) missing from conf.json' in str(e.value)  # checking it's the right error
@@ -420,13 +425,13 @@ def test_file_types_with_specific_collection_logic_are_not_ignored():
 
 def test_no_file_type_and_non_content_dir_files_are_ignored(mocker, monkeypatch):
     """
-    give    a non content item and unknown file type which no tests should be collected
+    give    a non-content item and unknown file type which no tests should be collected
     when    collecting with a BranchTestCollector
     then    make sure no tests are collected
     """
     mocker.patch('Tests.scripts.collect_tests.collect_tests.find_type', return_value=None)
-    mocker.patch.object(BranchTestCollector, '_get_changed_files',
-                        return_value=('Packs/myXSOAROnlyPack/NonContentItems/Empty.json',))
+    mocker.patch.object(BranchTestCollector, '_get_git_diff',
+                        return_value=FilesToCollect(('Packs/myXSOAROnlyPack/NonContentItems/Empty.json',), ()))
 
     _test(monkeypatch, case_mocker=MockerCases.A_xsoar, collector_class=BranchTestCollector, expected_tests=(),
           expected_packs=(), expected_machines=None, collector_class_args=XSOAR_BRANCH_ARGS)
@@ -440,7 +445,8 @@ def test_only_collect_pack(mocker, monkeypatch, file_type: collect_tests.FileTyp
     then    make sure the pack is collected, but tests are not
     """
     # test mockers
-    mocker.patch.object(BranchTestCollector, '_get_changed_files', return_value=('Packs/myPack/some_file',))
+    mocker.patch.object(BranchTestCollector, '_get_git_diff',
+                        return_value=FilesToCollect(('Packs/myPack/some_file',), ()))
     mocker.patch('Tests.scripts.collect_tests.collect_tests.find_type', return_value=file_type)
 
     # noinspection PyTypeChecker
@@ -450,12 +456,13 @@ def test_only_collect_pack(mocker, monkeypatch, file_type: collect_tests.FileTyp
 
 def test_invalid_content_item(mocker, monkeypatch):
     """
-    given:  a changed file that _get_changed_files is not designed to collect
+    given:  a changed file that _get_git_diff is not designed to collect
     when:   collecting tests
     then:   make sure nothing is collected, and no exception is raised
     """
     # test mockers
-    mocker.patch.object(BranchTestCollector, '_get_changed_files', return_value=('Packs/myPack/some_file',))
+    mocker.patch.object(BranchTestCollector, '_get_git_diff',
+                        return_value=FilesToCollect(('Packs/myPack/some_file',), ()))
 
     _test(monkeypatch, case_mocker=MockerCases.H, collector_class=BranchTestCollector,
           expected_tests=(), expected_packs=(), expected_machines=None,
