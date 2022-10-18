@@ -1317,6 +1317,28 @@ class Client(BaseClient):
             resp_type="json",
         )
 
+    def set_assigned_shared_credential_status(self, site_id: str, shared_credential_id: str, enabled: bool) -> dict:
+        """
+        | Update the status of a shared credential.
+        |
+        | For more information see:
+            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/enableSharedCredentialOnSite
+
+        Args:
+            site_id (str): ID of the site to update the shared credential status on.
+            shared_credential_id (str): ID of the shared credential to update the status of.
+            enabled (bool): A flag indicating whether the shared credential should be enabled or not.
+
+        Returns:
+            dict: API response with information about the updated shared credential.
+        """
+        return self._http_request(
+            url_suffix=f"/sites/{site_id}/shared_credentials/{shared_credential_id}",
+            method="PUT",
+            data=str(enabled).lower(),  # type: ignore
+            resp_type="json",
+        )
+
     def start_site_scan(self, site_id: str, scan_name: str, hosts: list[str]) -> dict:
         """
         | Start a scan for a specific site.
@@ -3894,6 +3916,31 @@ def search_assets_command(client: Client, filter_query: Optional[str] = None, ip
     return result
 
 
+def set_assigned_shared_credential_status_command(client: Client, site: Site,
+                                                  shared_credential_id: str, enabled: bool) -> CommandResults:
+    """
+    Enable or disable a shared credential.
+
+    Args:
+        client (Client): Client to use for API requests.
+        site (Site): Site to use for API requests.
+        shared_credential_id (str): ID of the shared credential to enable or disable.
+        enabled (bool): Whether to enable or disable the shared credential.
+    """
+
+    response_data = client.set_assigned_shared_credential_status(
+        site_id=site.id,
+        shared_credential_id=shared_credential_id,
+        enabled=enabled,
+    )
+
+    return CommandResults(
+        readable_output=f"Shared credential \"{shared_credential_id}\" enablement \
+                          has been set to \"{str(enabled).lower()}\".",
+        raw_response=response_data,
+    )
+
+
 def start_assets_scan_command(client: Client, ips: Union[str, list, None] = None,
                               hostnames: Union[str, list, None] = None,
                               scan_name: Optional[str] = None) -> CommandResults:  # TODO: Add pagination args?
@@ -4412,6 +4459,17 @@ def main():
                     client=client,
                 ),
             )
+        elif command == "nexpose-disable-shared-credential":
+            results = set_assigned_shared_credential_status_command(
+                client=client,
+                site=Site(
+                    site_id=args.get("site_id"),
+                    site_name=args.get("site_name"),
+                    client=client,
+                ),
+                shared_credential_id=args["credential_id"],
+                enabled=False,
+            )
         elif command == "nexpose-download-report":
             report_format = None
 
@@ -4424,6 +4482,17 @@ def main():
                 instance_id=args["instance_id"],
                 report_name=args.get("name"),
                 report_format=report_format,
+            )
+        elif command == "nexpose-enable-shared-credential":
+            results = set_assigned_shared_credential_status_command(
+                client=client,
+                site=Site(
+                    site_id=args.get("site_id"),
+                    site_name=args.get("site_name"),
+                    client=client,
+                ),
+                shared_credential_id=args["credential_id"],
+                enabled=True,
             )
         elif command == "nexpose-get-asset":
             results = get_asset_command(

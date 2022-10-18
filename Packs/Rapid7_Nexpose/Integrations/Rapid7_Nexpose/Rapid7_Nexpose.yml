@@ -2002,6 +2002,27 @@ script:
     - contextPath: Nexpose.Scan.Status
       description: The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating
       type: string
+  - arguments:
+    - default: false
+      description: ID of the site.
+      isArray: false
+      name: site_id
+      required: false
+      secret: false
+    - default: false
+      description: Name of the site (can be used instead of `site_id`)
+      isArray: false
+      name: site_name
+      required: false
+      secret: false
+    - default: false
+      description: ID of the scan schedule to update.
+      isArray: false
+      name: credential_id
+      required: false
+      secret: false
+    name: nexpose-disable-shared-credential
+    description: Disable an assigned shared credential.
   - name: nexpose-download-report
     arguments:
     - name: report_id
@@ -2044,6 +2065,27 @@ script:
       description: Type of the report file.
       type: string
     description: Returns the generated report.
+  - arguments:
+    - default: false
+      description: ID of the site.
+      isArray: false
+      name: site_id
+      required: false
+      secret: false
+    - default: false
+      description: Name of the site (can be used instead of `site_id`)
+      isArray: false
+      name: site_name
+      required: false
+      secret: false
+    - default: false
+      description: ID of the scan schedule to update.
+      isArray: false
+      name: credential_id
+      required: false
+      secret: false
+    name: nexpose-enable-shared-credential
+    description: Enable an assigned shared credential.
   - name: nexpose-get-report-status
     arguments:
     - name: report_id
