@@ -13,7 +13,7 @@
 		"source=poetry-venv,target=/home/demisto/.cache/pypoetry,type=volume",
 		"source=node-modules,target=${containerWorkspaceFolder}/node_modules,type=volume",
 		"source=dind-var-lib-docker,target=/var/lib/docker,type=volume",
-		"source=${localWorkspaceFolder}/../demisto-sdk,target=${containerWorkspaceFolder}/../demisto-sdk,type=bind,consistency=cached"
+		"source=demisto-sdk,target=${containerWorkspaceFolder}/../demisto-sdk,type=volume"
 	],
 	"remoteUser": "demisto",
 	"settings": {
@@ -82,5 +82,4 @@
 	// 	"ghcr.io/devcontainers/features/common-utils:1"
 	// ],
 	"onCreateCommand": "dos2unix .devcontainer/createCommand.sh && chmod +x .devcontainer/createCommand.sh && bash .devcontainer/createCommand.sh",
-	"postAttachCommand": "git config --global http.sslCAInfo /usr/local/share/ca-certificates/certs.crt"
 }
