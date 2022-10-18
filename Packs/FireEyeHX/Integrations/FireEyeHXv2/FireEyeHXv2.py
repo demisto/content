@@ -3180,7 +3180,7 @@ def main() -> None:
             result = polling_commands[command](client, args)
             return_results(result)
         else:
-            if command in ["fireeye-hx-search", "fireeye-hx-data-acquisition",  ]:
+            if command in ["fireeye-hx-search", "fireeye-hx-data-acquisition", "fireeye-hx-file-acquisition"]:
                 args['cmd'] = command
             result = commands[command](client, args)
             return_results(result)
