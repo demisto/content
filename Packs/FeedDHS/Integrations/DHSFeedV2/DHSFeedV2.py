@@ -13,8 +13,7 @@ COMPLEX_OBSERVATION_MODE_SKIP = 'Skip indicators with more than a single observa
 def command_test_module(client: Taxii2FeedClient):
     if client.collections:
         return 'ok'
-    else:
-        return 'Could not connect to server'
+    return 'Could not connect to server'
 
 
 def fetch_indicators_command(client: Taxii2FeedClient, limit: int, last_run_ctx: dict, initial_interval: str = '24 hours') \
@@ -25,9 +24,9 @@ def fetch_indicators_command(client: Taxii2FeedClient, limit: int, last_run_ctx:
     :param limit: upper limit of indicators to fetch
     :param last_run_ctx: last run dict with {collection_id: last_run_time string}
     :param initial_interval: initial interval in human readable format
-    :return: indicators in cortex TIM format
+    :return: indicators in cortex TIM format, updated last_run_ctx
     """
-    initial_interval = dateparser.parse(initial_interval, date_formats=[TAXII_TIME_FORMAT])
+    initial_interval = dateparser.parse(initial_interval or '24 hours', date_formats=[TAXII_TIME_FORMAT])
 
     if client.collection_to_fetch:
         indicators, last_run_ctx = fetch_one_collection(client, limit, initial_interval, last_run_ctx)
@@ -67,19 +66,20 @@ def fetch_all_collections(client: Taxii2FeedClient, limit: int, initial_interval
     return indicators, last_run_ctx
 
 
-def get_indicators_command(client: Taxii2FeedClient, raw: str = 'false', limit: str = '10', added_after: str = '20 days') \
+def get_indicators_command(client: Taxii2FeedClient, args: Dict[str, Any]) \
         -> Union[CommandResults, Dict[str, List[Optional[str]]]]:
     """
     Fetch indicators from TAXII 2 server
     :param client: Taxii2FeedClient
-    :param raw: When set to 'true' will return only rawJSON
-    :param limit: upper limit of indicators to fetch
-    :param added_after: added after time string in parse_date_range format
+    :param args: Dict that holds
+        raw: When set to 'true' will return only rawJSON
+        limit: upper limit of indicators to fetch
+        added_after: added after time string in parse_date_range format
     :return: indicators in cortex TIM format
     """
-    limit = arg_to_number(limit) or 10
-    added_after = dateparser.parse(added_after, date_formats=[TAXII_TIME_FORMAT])
-    raw = argToBoolean(raw)
+    limit = arg_to_number(args.get('limit', '10'))
+    added_after = dateparser.parse(args.get('added_after', '20 days'), date_formats=[TAXII_TIME_FORMAT])
+    raw = argToBoolean(args.get('raw', 'false'))
 
     if client.collection_to_fetch:
         indicators = client.build_iterator(limit, added_after=added_after)
@@ -118,10 +118,8 @@ def get_collections_command(client: Taxii2FeedClient) -> CommandResults:
 
 def main():
     params = demisto.params()
-    args = demisto.args()
-
     url = params.get('url', 'https://ais2.cisa.dhs.gov/taxii2/')
-    key = params.get('key')
+    key = params.get('key', {}).get('password')
     certificate = params.get('certificate')
     verify_certificate = not params.get('insecure', False)
     proxies = handle_proxy()
@@ -171,7 +169,7 @@ def main():
             demisto.setLastRun(last_run_indicators)
 
         elif command == 'dhs-get-indicators':
-            return_results(get_indicators_command(client, **args))
+            return_results(get_indicators_command(client, demisto.args()))
 
         elif command == 'dhs-get-collections':
             return_results(get_collections_command(client))
