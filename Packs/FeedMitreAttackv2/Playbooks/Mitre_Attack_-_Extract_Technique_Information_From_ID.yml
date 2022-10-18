@@ -230,9 +230,9 @@ tasks:
     task:
       id: e013809e-88cf-4415-87cf-32fe291b92a7
       version: -1
-      name: Is there a Mitre Attack Technique ID?
+      name: Are MITRE Attack Technique IDs provided?
       type: condition
-      description: Is there a Mitre Attack Technique ID?
+      description: Are MITRE Attack Technique IDs provided?
       iscommand: false
       brand: ""
     nexttasks:
