@@ -4,7 +4,8 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+import urllib3
+urllib3.disable_warnings()
 
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 PRODUCT = 'threat_response'
