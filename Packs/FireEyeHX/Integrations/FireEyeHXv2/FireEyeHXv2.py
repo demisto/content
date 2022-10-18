@@ -1,3 +1,5 @@
+import base64
+import time
 import urllib.parse
 from json import JSONDecodeError
 from typing import Tuple, Pattern
@@ -963,11 +965,14 @@ class Client(BaseClient):
         ).get('data')
 
     def file_acquisition_package_request(self, acquisition_id):
-
-        return self._http_request(
+        headers = {'Accept': 'application/octet-stream'}
+        response = self._http_request(
             method='GET',
-            url_suffix=f"acqs/files/{acquisition_id}.zip"
-        )["content"]
+            url_suffix=f'acqs/files/{acquisition_id}.zip',
+            headers=headers,
+            resp_type='content'
+        )
+        return response
 
     def delete_file_acquisition_request(self, acquisition_id):
         """
@@ -1654,7 +1659,7 @@ def run_commands_without_polling(client: Client, args: Dict[str, Any]):
     if args.get('cmd') == 'fireeye-hx-data-acquisition':
         return data_acquisition_command(client, args)[0]
     if args.get('cmd') == 'fireeye-hx-file-acquisition':
-        return file_acquisition_command(client, args)[0]
+        return file_acquisition_command(client, args)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -2281,7 +2286,7 @@ def delete_data_acquisition_command(client: Client, args: Dict[str, Any]) -> Com
     )
 
 
-def file_acquisition_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandResults, bool, str]:
+def file_acquisition_command(client: Client, args: Dict[str, Any]) -> List:
     if "acquisition_id" not in args:
         if not args.get('hostName') and not args.get('agentId'):
             raise ValueError('Please provide either agentId or hostName')
@@ -2289,29 +2294,31 @@ def file_acquisition_command(client: Client, args: Dict[str, Any]) -> Tuple[Comm
         if args.get('hostName'):
             args['agentId'] = get_agent_id_by_host_name(client, args.get('hostName', ""))
 
-        use_api = args.get('acquireUsing') == 'API'
+    use_api = args.get('acquireUsing') == 'API'
 
-        acquisition_info = client.file_acquisition_request(
-            args.get('agentId'),
-            args.get('fileName'),
-            args.get('filePath'),
-            req_use_api=use_api
-        )
+    acquisition_info = client.file_acquisition_request(
+        args.get('agentId'),
+        args.get('fileName'),
+        args.get('filePath'),
+        req_use_api=use_api
+    )
 
-        acquisition_id = acquisition_info.get('_id')
+    acquisition_id = acquisition_info.get('_id')
+    acquisition_id = args.get('acquisition_id') if args.get('acquisition_id') else str(acquisition_id)
 
     demisto.debug('acquisition request was successful. Waiting for acquisition process to be complete.')
-
-    acquisition_id = args.get('acquisition_id') if args.get('acquisition_id') else str(acquisition_id)
-    acquisition_info = client.file_acquisition_information_request(acquisition_id)
-    state = acquisition_info.get('state')
-    if state not in ['COMPLETE', 'ERROR', 'FAILED']:
-        return CommandResults(
-            readable_output=f'acquisition request was successful, Acquisition Id: {acquisition_id}'), False, acquisition_id
+    while True:
+        acquisition_info = client.file_acquisition_information_request(acquisition_id)
+        state = acquisition_info.get('state')
+        if state in ['COMPLETE', 'ERROR', 'FAILED']:
+            break
+        time.sleep(10)  # pylint: disable=sleep-exists
 
     args['acquisition_info'] = acquisition_info
-    return CommandResults(
-        readable_output=f'acquisition request was successful, Acquisition Id: {acquisition_id}'), True, acquisition_id
+    args['acquisition_id'] = acquisition_id
+
+    result = result_file_acquisituon(client, args)
+    return result
 
 
 def file_acquisition_with_polling_command(client: Client, args: Dict[str, Any]):
@@ -2326,19 +2333,21 @@ def file_acquisition_with_polling_command(client: Client, args: Dict[str, Any]):
 
 def result_file_acquisituon(client: Client, args: Dict[str, Any]) -> List:
     demisto.debug('acquisition process has been complete. Fetching zip file.')
-
     acquired_file = client.file_acquisition_package_request(args.get('acquisition_id'))
 
     message = f"{args.get('fileName')} acquired successfully"
     if args.get('acquisition_info', {}).get('error_message'):
         message = args.get('acquisition_info', {}).get('error_message')
 
-    return [CommandResults(
+    zip_file = fileResult(f"{os.path.splitext(args.get('fileName', ''))[0]}.zip", acquired_file)
+    command_results = CommandResults(
         outputs_prefix="FireEyeHX.Acquisitions.Files",
         outputs_key_field="_id",
         outputs=args.get('acquisition_info'),
         readable_output=f"{message}\nacquisition ID: {args.get('acquisition_id')}"
-    ), fileResult(f"{os.path.splitext(args.get('fileName', ''))[0]}.zip", acquired_file)]
+    )
+
+    return [command_results, zip_file]
 
 
 def get_data_acquisition_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
@@ -3171,7 +3180,7 @@ def main() -> None:
             result = polling_commands[command](client, args)
             return_results(result)
         else:
-            if command in ["fireeye-hx-search", "fireeye-hx-data-acquisition", "fireeye-hx-file-acquisition"]:
+            if command in ["fireeye-hx-search", "fireeye-hx-data-acquisition",  ]:
                 args['cmd'] = command
             result = commands[command](client, args)
             return_results(result)
