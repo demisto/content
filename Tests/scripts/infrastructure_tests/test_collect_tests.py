@@ -36,6 +36,7 @@ Test Collection Unit-Test cases
 - `M1` has a pack with support level == xsoar, and tests missing from conf.json -- should raise an error.
 - `M2` has a pack with support level != xsoar, and tests missing from conf.json -- should collect pack but not tests.
 - `M3` has a pack with support level != xsoar -- should collect pack but not tests.
+- `P` has a Test Playbook which uses a skipped integration - should not be collected.
 """
 
 
@@ -91,6 +92,7 @@ class MockerCases:
     M1 = CollectTestsMocker(TEST_DATA / 'M1')
     M2 = CollectTestsMocker(TEST_DATA / 'M2')
     M3 = CollectTestsMocker(TEST_DATA / 'M3')
+    P = CollectTestsMocker(TEST_DATA / 'P')
     limited_nightly_packs = CollectTestsMocker(TEST_DATA / 'limited_nightly_packs')
     non_api_test = CollectTestsMocker(TEST_DATA / 'non_api_test')
     script_non_api_test = CollectTestsMocker(TEST_DATA / 'script_non_api_test')
@@ -306,7 +308,10 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
      (MockerCases.M3, None, ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
       ('Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml',)),
 
-     # Script changes (old format), expect its test playbook to be collected
+     # (22) Test Playbook using skipped integration - should not be collected.
+     (MockerCases.P, None, ('myPack',), None, XSOAR_BRANCH_ARGS, ('Packs/myPack/TestPlaybooks/myTestPlaybook.yml',)),
+
+     # (23) Old-formatted script changes, expecting its test playbook to be collected
      (MockerCases.F, ('myTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS,
       ('Packs/myPack/Scripts/script-myScript.yml',)),
 
@@ -375,6 +380,7 @@ ONLY_COLLECT_PACK_TYPES = {
     FileType.CONF_JSON,
     FileType.MODELING_RULE_SCHEMA,
     FileType.LAYOUTS_CONTAINER,
+    FileType.AGENT_CONFIG,
 }
 
 
