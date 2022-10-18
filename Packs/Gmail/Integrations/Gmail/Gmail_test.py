@@ -256,11 +256,8 @@ def test_template_params(params_str, expected_result):
     assert template_params(params_str) == expected_result
 
 
-title_test_users_to_entry = 'User 000000000000000000000:'
-
-
 @pytest.mark.parametrize('title, response, expected_result', [
-    (title_test_users_to_entry, input_data.response_test_users_to_entry,
+    ('User 000000000000000000000:', input_data.response_test_users_to_entry,
      input_data.expected_result_test_users_to_entry)
 ])
 def test_users_to_entry(title, response, expected_result):
@@ -282,13 +279,10 @@ def test_users_to_entry(title, response, expected_result):
     assert result.raw_response == expected_result.get('expected_raw_response')
 
 
-user_id_test_autoreply_to_entry = 'johndoe@test.com'
-title_test_autoreply_to_entry = 'User johndoe@test.com:'
-
 
 @pytest.mark.parametrize('title, response, user_id, expected_result', [
-    (title_test_autoreply_to_entry, [input_data.get_auto_replay_result],
-     user_id_test_autoreply_to_entry, input_data.expected_result_test_autoreply_to_entry)
+    ('User johndoe@test.com:', [input_data.get_auto_replay_result],
+     'johndoe@test.com', input_data.expected_result_test_autoreply_to_entry)
 ])
 def test_autoreply_to_entry(title, response, user_id, expected_result):
     """
@@ -309,11 +303,10 @@ def test_autoreply_to_entry(title, response, user_id, expected_result):
     assert result.raw_response == expected_result.get('expected_raw_response')
 
 
-title_test_role_to_entry = 'Role 00000000000000000 details:'
 
 
 @pytest.mark.parametrize('title, role, expected_result', [
-    (title_test_role_to_entry, input_data.role_test_role_to_entry, input_data.expected_result_test_role_to_entry)
+    ('Role 00000000000000000 details:', input_data.role_test_role_to_entry, input_data.expected_result_test_role_to_entry)
 ])
 def test_role_to_entry(title, role, expected_result):
     """
@@ -334,11 +327,9 @@ def test_role_to_entry(title, role, expected_result):
     assert result.raw_response == expected_result.get('expected_raw_response')
 
 
-title_test_user_roles_to_entry = 'User Roles of 222222222222222222222:'
-
 
 @pytest.mark.parametrize('title, response, expected_result', [
-    (title_test_user_roles_to_entry, input_data.get_user_role_mock_result,
+    ('User Roles of 222222222222222222222:', input_data.get_user_role_mock_result,
      input_data.expected_result_user_roles_to_entry)
 ])
 def test_user_roles_to_entry(title, response, expected_result):
@@ -360,11 +351,8 @@ def test_user_roles_to_entry(title, response, expected_result):
     assert result.raw_response == expected_result.get('expected_raw_response')
 
 
-title_test_tokens_to_entry = 'Tokens:'
-
-
 @pytest.mark.parametrize('title, response, expected_result', [
-    (title_test_tokens_to_entry, input_data.get_user_tokens_mock_result,
+    ('Tokens:', input_data.get_user_tokens_mock_result,
      input_data.expected_result_test_tokens_to_entry)
 ])
 def test_tokens_to_entry(title, response, expected_result):
@@ -386,16 +374,11 @@ def test_tokens_to_entry(title, response, expected_result):
     assert result.raw_response == expected_result.get('expected_raw_response')
 
 
-title_sent_mail_to_entry = 'Email sent:'
-to_sent_mail_to_to_entry = ['helloworld@gmail.com']
-email_from_sent_mail_to_to_entry = 'test@gmail.com'
-subject_sent_mail_to_to_entry = 'ls'
-
 
 @pytest.mark.parametrize('title, response, to, emailfrom, cc, bcc, body, subject, expected_result', [
-    (title_sent_mail_to_entry, [input_data.send_mail_mock_result], to_sent_mail_to_to_entry,
-     email_from_sent_mail_to_to_entry, [], [], None,
-     subject_sent_mail_to_to_entry, input_data.expected_result_test_sent_mail_to_entry)
+    ('Email sent:', [input_data.send_mail_mock_result], ['helloworld@gmail.com'],
+     'test@gmail.com', [], [], None,
+     'ls', input_data.expected_result_test_sent_mail_to_entry)
 ])
 def test_sent_mail_to_entry(title, response, to, emailfrom, cc, bcc, body, subject, expected_result):
     """
@@ -416,12 +399,8 @@ def test_sent_mail_to_entry(title, response, to, emailfrom, cc, bcc, body, subje
     assert result.raw_response == expected_result.get('expected_raw_response')
 
 
-title_test_filters_to_entry = 'filters:'
-mailbox_test_filters_to_entry = '111111111111111111111'
-
-
 @pytest.mark.parametrize('title, mailbox, response, expected_result', [
-    (title_test_filters_to_entry, mailbox_test_filters_to_entry,
+    ('filters:', '111111111111111111111',
      input_data.list_filters_mock_result, input_data.expected_result_test_filters_to_entry)
 ])
 def test_filters_to_entry(title, mailbox, response, expected_result):
@@ -463,14 +442,9 @@ def test_mailboxes_to_entry(mailboxes, expected_result):
     assert result.get("HumanReadable") == expected_result.get("expected_human_readable")
 
 
-title_test_emails_to_entry = 'Search in 111111111111111111111:\nquery: "subject:helloworld"'
-format_data_test_emails_to_entry = 'full'
-mailbox_test_emails_to_entry = '111111111111111111111'
-
-
 @pytest.mark.parametrize('title, raw_emails, format_data, mailbox, expected_result', [
-    (title_test_emails_to_entry, input_data.mails, format_data_test_emails_to_entry,
-     mailbox_test_emails_to_entry, input_data.expected_result_test_emails_to_entry)
+    ('Search in 111111111111111111111:\nquery: "subject:helloworld"', input_data.mails, 'full',
+     '111111111111111111111', input_data.expected_result_test_emails_to_entry)
 ])
 def test_emails_to_entry(title, raw_emails, format_data, mailbox, expected_result):
     """
