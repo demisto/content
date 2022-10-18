@@ -5202,6 +5202,7 @@
         }
     ],
     "skipped_tests": {
+        "get_original_email_-_gmail_-_test" : "Uses a deprecated playbook called get_original_email_-_gmail",
         "playbook-CheckPointSandBlast_Test" : "Checkpoint playbook no license",
         "playbook-BmcITSM-Test" : "issue with license CIAC-3776",
         "Panorama Query Logs - Test": "issues with firewall environment configuration - CIAC-3459",
