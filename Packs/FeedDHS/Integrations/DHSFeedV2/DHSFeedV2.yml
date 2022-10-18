@@ -85,18 +85,10 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-- additionalinfo: When enabled, fetch-indicators will try to fetch the entire feed
-    for every fetch. When disabled, fetch-indicators will try to fetch just the latest
-    entries (since the last fetch).
-  defaultvalue: 'true'
-  display: Full Feed Fetch
-  name: fetch_full_feed
-  required: false
-  type: 8
 - additionalinfo: The maximum number of indicators that can be fetched per fetch.
     If this field is left empty, there will be no limit on the number of indicators
     fetched.
-  display: Max Indicators Per Fetch (disabled for Full Feed Fetch)
+  display: Max Indicators Per Fetch
   hidden: false
   name: limit
   required: false
@@ -184,6 +176,7 @@ configuration:
     are labeled new or modified.
   defaultvalue: 'true'
   display: Incremental Feed
+  hidden: true
   name: feedIncremental
   required: false
   type: 8
