@@ -170,14 +170,14 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.24.89"
+version = "1.24.92"
 description = "The AWS SDK for Python"
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.27.89,<1.28.0"
+botocore = ">=1.27.92,<1.28.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -186,7 +186,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.27.89"
+version = "1.27.92"
 description = "Low-level, data-driven core of boto 3."
 category = "dev"
 optional = false
@@ -506,7 +506,7 @@ build = ["gsutil (==5.8)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "1.7.6-mypy-hotfix"
-resolved_reference = "ffdfd91a2f3090198dd38ab5b621444c01c46f76"
+resolved_reference = "99e215c6b8383f8c069e84aeaf10de18450e8709"
 
 [[package]]
 name = "deprecated"
@@ -693,7 +693,7 @@ grpcio-gcp = ["grpcio-gcp (>=0.2.2,<1.0dev)"]
 
 [[package]]
 name = "google-auth"
-version = "2.12.0"
+version = "2.13.0"
 description = "Google Authentication Library"
 category = "dev"
 optional = false
@@ -1782,7 +1782,7 @@ starkbank-ecdsa = ">=2.0.1"
 
 [[package]]
 name = "setuptools"
-version = "65.4.1"
+version = "65.5.0"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 category = "dev"
 optional = false
@@ -1932,7 +1932,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-cryptography"
-version = "3.3.23"
+version = "3.3.23.1"
 description = "Typing stubs for cryptography"
 category = "dev"
 optional = false
@@ -1948,7 +1948,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-decorator"
-version = "5.1.8"
+version = "5.1.8.1"
 description = "Typing stubs for decorator"
 category = "dev"
 optional = false
@@ -2023,7 +2023,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-pymysql"
-version = "1.0.19"
+version = "1.0.19.1"
 description = "Typing stubs for PyMySQL"
 category = "dev"
 optional = false
@@ -2031,7 +2031,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-python-dateutil"
-version = "2.8.19"
+version = "2.8.19.2"
 description = "Typing stubs for python-dateutil"
 category = "dev"
 optional = false
@@ -2047,7 +2047,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-pyvmomi"
-version = "7.0.8"
+version = "7.0.8.1"
 description = "Typing stubs for pyvmomi"
 category = "dev"
 optional = false
@@ -2074,7 +2074,7 @@ types-urllib3 = "<1.27"
 
 [[package]]
 name = "types-setuptools"
-version = "65.4.0.0"
+version = "65.5.0.1"
 description = "Typing stubs for setuptools"
 category = "dev"
 optional = false
@@ -2106,7 +2106,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-urllib3"
-version = "1.26.25"
+version = "1.26.25.1"
 description = "Typing stubs for urllib3"
 category = "dev"
 optional = false
@@ -2463,12 +2463,12 @@ blessings = [
     {file = "blessings-1.7.tar.gz", hash = "sha256:98e5854d805f50a5b58ac2333411b0482516a8210f23f43308baeb58d77c157d"},
 ]
 boto3 = [
-    {file = "boto3-1.24.89-py3-none-any.whl", hash = "sha256:346f8f0d101a4261dac146a959df18d024feda6431e1d9d84f94efd24d086cae"},
-    {file = "boto3-1.24.89.tar.gz", hash = "sha256:d0d8ffcdc10821c4562bc7f935cdd840033bbc342ac0e14b6bdd348b3adf4c04"},
+    {file = "boto3-1.24.92-py3-none-any.whl", hash = "sha256:3c6cc4e9e38cf4523267f89eb90c0b6084fa415cb4f44e3bf0cad6199340cc92"},
+    {file = "boto3-1.24.92.tar.gz", hash = "sha256:d28bcb98aee4d333b163c55b98341627d933dbf088832f7fc050893617be7dac"},
 ]
 botocore = [
-    {file = "botocore-1.27.89-py3-none-any.whl", hash = "sha256:238f1dfdb8d8d017c2aea082609a3764f3161d32745900f41bcdcf290d95a048"},
-    {file = "botocore-1.27.89.tar.gz", hash = "sha256:621f5413be8f97712b7e36c1b075a8791d1d1b9971a7ee060cdcdf5e2debf6c1"},
+    {file = "botocore-1.27.92-py3-none-any.whl", hash = "sha256:b49c34b80c782625905be75e669da4b42a99f074e0aa3007e15ccc6955682a07"},
+    {file = "botocore-1.27.92.tar.gz", hash = "sha256:70cf2cb04968794ed4688cc3b07874f6f4c932e325611be4e693a995fdb481be"},
 ]
 bracex = [
     {file = "bracex-2.3.post1-py3-none-any.whl", hash = "sha256:351b7f20d56fb9ea91f9b9e9e7664db466eb234188c175fd943f8f755c807e73"},
@@ -2781,8 +2781,8 @@ google-api-core = [
     {file = "google_api_core-2.10.2-py3-none-any.whl", hash = "sha256:34f24bd1d5f72a8c4519773d99ca6bf080a6c4e041b4e9f024fe230191dda62e"},
 ]
 google-auth = [
-    {file = "google-auth-2.12.0.tar.gz", hash = "sha256:f12d86502ce0f2c0174e2e70ecc8d36c69593817e67e1d9c5e34489120422e4b"},
-    {file = "google_auth-2.12.0-py2.py3-none-any.whl", hash = "sha256:98f601773978c969e1769f97265e732a81a8e598da3263895023958d456ee625"},
+    {file = "google-auth-2.13.0.tar.gz", hash = "sha256:9352dd6394093169157e6971526bab9a2799244d68a94a4a609f0dd751ef6f5e"},
+    {file = "google_auth-2.13.0-py2.py3-none-any.whl", hash = "sha256:99510e664155f1a3c0396a076b5deb6367c52ea04d280152c85ac7f51f50eb42"},
 ]
 google-cloud-bigquery = [
     {file = "google-cloud-bigquery-3.3.5.tar.gz", hash = "sha256:fbb65799c02754ddcaed981f4a8b6b021b69cc00d4cd9c35ca1d6cc272ead9d1"},
@@ -3704,8 +3704,8 @@ sendgrid = [
     {file = "sendgrid-6.9.7.tar.gz", hash = "sha256:fa30411c627690fecd0ef6b1d4e1783f2d0272aa14b5fffb133ebd1e31114f16"},
 ]
 setuptools = [
-    {file = "setuptools-65.4.1-py3-none-any.whl", hash = "sha256:1b6bdc6161661409c5f21508763dc63ab20a9ac2f8ba20029aaaa7fdb9118012"},
-    {file = "setuptools-65.4.1.tar.gz", hash = "sha256:3050e338e5871e70c72983072fe34f6032ae1cdeeeb67338199c2f74e083a80e"},
+    {file = "setuptools-65.5.0-py3-none-any.whl", hash = "sha256:f62ea9da9ed6289bfe868cd6845968a2c854d1427f8548d52cae02a42b4f0356"},
+    {file = "setuptools-65.5.0.tar.gz", hash = "sha256:512e5536220e38146176efb833d4a62aa726b7bbff82cfbc8ba9eaa3996e0b17"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
@@ -3785,16 +3785,16 @@ types-chardet = [
     {file = "types_chardet-5.0.4-py3-none-any.whl", hash = "sha256:6946e22f32789a473852570810b4afe632172fae03c04bdbffe670606cc4ac11"},
 ]
 types-cryptography = [
-    {file = "types-cryptography-3.3.23.tar.gz", hash = "sha256:b85c45fd4d3d92e8b18e9a5ee2da84517e8fff658e3ef5755c885b1c2a27c1fe"},
-    {file = "types_cryptography-3.3.23-py3-none-any.whl", hash = "sha256:913b3e66a502edbf4bfc3bb45e33ab476040c56942164a7ff37bd1f0ef8ef783"},
+    {file = "types-cryptography-3.3.23.1.tar.gz", hash = "sha256:f108e7a7161eedd9fe391e1a8ae5a98d40c1da2f0418bc0812a9119990272314"},
+    {file = "types_cryptography-3.3.23.1-py3-none-any.whl", hash = "sha256:b9f8aa93d9e4d7ff920961cdce3dc7cca479946890924d68356b66f15f4f35e3"},
 ]
 types-dateparser = [
     {file = "types-dateparser-1.1.4.tar.gz", hash = "sha256:0a4dadb9226ffef0ff52532c27eb7660ba72eea6e4f676a9a8fa90fa8b97d31a"},
     {file = "types_dateparser-1.1.4-py3-none-any.whl", hash = "sha256:cc4b371ef4176b367c1d43f40bf96f72df89dba79d369d69851dd928209251a0"},
 ]
 types-decorator = [
-    {file = "types-decorator-5.1.8.tar.gz", hash = "sha256:0cb0cc4ab6cd6f90981cf530376be5d01156c8f423a1dff1456bbc0259d3e393"},
-    {file = "types_decorator-5.1.8-py3-none-any.whl", hash = "sha256:b664ca986324ed8ad6e52b56022417556af265b7494fbd8e77d8a2856cdfb5e4"},
+    {file = "types-decorator-5.1.8.1.tar.gz", hash = "sha256:f9290cbe23d2674bb18a2d95f593c27547463ed459e0e604800c42099c3c6a44"},
+    {file = "types_decorator-5.1.8.1-py3-none-any.whl", hash = "sha256:da7218420e3efc8435c59654160300db43f685ef68709c933eaed124326b2755"},
 ]
 types-emoji = [
     {file = "types-emoji-1.7.4.tar.gz", hash = "sha256:1e1341399ed1dd10a54d348ec7bb0708a56cd04f79702941fef5db60d276ea46"},
@@ -3829,20 +3829,20 @@ types-protobuf = [
     {file = "types_protobuf-3.20.4-py3-none-any.whl", hash = "sha256:5082437afe64ce3b31c8db109eae86e02fda11e4d5f9ac59cb8578a8a138aa70"},
 ]
 types-pymysql = [
-    {file = "types-PyMySQL-1.0.19.tar.gz", hash = "sha256:f79a1f4d9df4a65db999537f9a47de419be162dfeab3b2c91bcba8bb1a362a65"},
-    {file = "types_PyMySQL-1.0.19-py3-none-any.whl", hash = "sha256:fc43dceda3f3fc4ac388db7dd57b157c13d94cb84e30cca4848df590c314bf68"},
+    {file = "types-PyMySQL-1.0.19.1.tar.gz", hash = "sha256:c24ce221cd76a24445b4614fff84b13644d7fb4966fc7a07a742e8546da29507"},
+    {file = "types_PyMySQL-1.0.19.1-py3-none-any.whl", hash = "sha256:6748b3d830b9fc0299bd85ebf0f4a29de8c51f452a11fee83690ee4b26deede8"},
 ]
 types-python-dateutil = [
-    {file = "types-python-dateutil-2.8.19.tar.gz", hash = "sha256:bfd3eb39c7253aea4ba23b10f69b017d30b013662bb4be4ab48b20bbd763f309"},
-    {file = "types_python_dateutil-2.8.19-py3-none-any.whl", hash = "sha256:6284df1e4783d8fc6e587f0317a81333856b872a6669a282f8a325342bce7fa8"},
+    {file = "types-python-dateutil-2.8.19.2.tar.gz", hash = "sha256:e6e32ce18f37765b08c46622287bc8d8136dc0c562d9ad5b8fd158c59963d7a7"},
+    {file = "types_python_dateutil-2.8.19.2-py3-none-any.whl", hash = "sha256:3f4dbe465e7e0c6581db11fd7a4855d1355b78712b3f292bd399cd332247e9c0"},
 ]
 types-pytz = [
     {file = "types-pytz-2022.4.0.0.tar.gz", hash = "sha256:17d66e4b16e80ceae0787726f3a22288df7d3f9fdebeb091dc64b92c0e4ea09d"},
     {file = "types_pytz-2022.4.0.0-py3-none-any.whl", hash = "sha256:950b0f3d64ed5b03a3e29c1e38fe2be8371c933c8e97922d0352345336eb8af4"},
 ]
 types-pyvmomi = [
-    {file = "types-pyvmomi-7.0.8.tar.gz", hash = "sha256:2e919d013b247ba989d19e5860877ab1616025dd3cec5cd554a27d2fe575bee3"},
-    {file = "types_pyvmomi-7.0.8-py3-none-any.whl", hash = "sha256:8390cefe4c904bad4ecd82dd1bce9788a740950f9578853a7c621ea1a3a14552"},
+    {file = "types-pyvmomi-7.0.8.1.tar.gz", hash = "sha256:bd6f30b8d143dcc8fe4a25d8b7a189e1c8351e79e740f3ba62e0aeab386e5cb1"},
+    {file = "types_pyvmomi-7.0.8.1-py3-none-any.whl", hash = "sha256:c84aa9c2922adefec8325dae7187b06537ac2517aa2c7d4abcfaefbbf4425fc4"},
 ]
 types-pyyaml = [
     {file = "types-PyYAML-6.0.12.tar.gz", hash = "sha256:f6f350418125872f3f0409d96a62a5a5ceb45231af5cc07ee0034ec48a3c82fa"},
@@ -3853,8 +3853,8 @@ types-requests = [
     {file = "types_requests-2.28.11-py3-none-any.whl", hash = "sha256:af5f55e803cabcfb836dad752bd6d8a0fc8ef1cd84243061c0e27dee04ccf4fd"},
 ]
 types-setuptools = [
-    {file = "types-setuptools-65.4.0.0.tar.gz", hash = "sha256:d9021d6a70690b34e7bd2947e7ab10167c646fbf062508cb56581be2e2a1615e"},
-    {file = "types_setuptools-65.4.0.0-py3-none-any.whl", hash = "sha256:ce178b3f7dbd6c0e67f8eee7ae29c1be280ade7e5188bdd9e620843de4060d85"},
+    {file = "types-setuptools-65.5.0.1.tar.gz", hash = "sha256:5b297081c8f1fbd992cd8b305a97ed96ee6ffc765e9115124029597dd10b8a71"},
+    {file = "types_setuptools-65.5.0.1-py3-none-any.whl", hash = "sha256:601d45b5e9979d2b931de5403aa11153626a1eadd1ce9727b21f24673ced5ceb"},
 ]
 types-six = [
     {file = "types-six-1.16.21.tar.gz", hash = "sha256:562b036de1a837eafe164827c5c53d7a8d703a44bb211642932dcd59e9e0f7c9"},
@@ -3869,8 +3869,8 @@ types-ujson = [
     {file = "types_ujson-5.5.0-py3-none-any.whl", hash = "sha256:6051e6b80d71382f1f85b0f97b475d84621eae3e2789ed24c5721f784b0846e1"},
 ]
 types-urllib3 = [
-    {file = "types-urllib3-1.26.25.tar.gz", hash = "sha256:5aef0e663724eef924afa8b320b62ffef2c1736c1fa6caecfc9bc6c8ae2c3def"},
-    {file = "types_urllib3-1.26.25-py3-none-any.whl", hash = "sha256:c1d78cef7bd581e162e46c20a57b2e1aa6ebecdcf01fd0713bb90978ff3e3427"},
+    {file = "types-urllib3-1.26.25.1.tar.gz", hash = "sha256:a948584944b2412c9a74b9cf64f6c48caf8652cb88b38361316f6d15d8a184cd"},
+    {file = "types_urllib3-1.26.25.1-py3-none-any.whl", hash = "sha256:f6422596cc9ee5fdf68f9d547f541096a20c2dcfd587e37c804c9ea720bf5cb2"},
 ]
 typing-extensions = [
     {file = "typing_extensions-4.4.0-py3-none-any.whl", hash = "sha256:16fa4864408f655d35ec496218b85f79b3437c829e93320c7c9215ccfd92489e"},
