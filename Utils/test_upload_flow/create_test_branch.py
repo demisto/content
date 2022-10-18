@@ -223,8 +223,9 @@ if __name__ == "__main__":
             repo.git.add(f"{p}/*")
 
         repo.git.commit(m="Added Test file", no_verify=True)
-        repo.git.push('--set-upstream', f'https://GITLAB_PUSH_TOKEN:{args.gitlab_mirror_token}@'
-                                        f'code.pan.run/xsoar/content.git', branch)  # disable-secrets-detection
+        repo.git.push('--set-upstream',
+                      f'https://GITLAB_PUSH_TOKEN:{args.gitlab_mirror_token}@'  # disable-secrets-detection
+                      f'code.pan.run/xsoar/content.git', branch)  # disable-secrets-detection
 
     except GitCommandError as e:
         logging.error(e)
