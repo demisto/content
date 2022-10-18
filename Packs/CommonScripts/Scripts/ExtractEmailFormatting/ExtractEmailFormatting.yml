@@ -6,8 +6,7 @@ script: '-'
 type: python
 tags:
 - indicator-format
-comment: Verifies that an email address is valid and only returns the address if it
-  is valid.
+comment: Verifies that an email address is valid and only returns the address if it is valid.
 enabled: true
 args:
 - name: input
@@ -17,7 +16,7 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.4.30607
+dockerimage: demisto/python3:3.10.7.33922
 fromversion: 5.5.0
 tests:
 - ExtractEmailV2-Test
