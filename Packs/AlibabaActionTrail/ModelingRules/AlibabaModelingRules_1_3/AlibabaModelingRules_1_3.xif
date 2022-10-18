@@ -6,7 +6,7 @@ filter
     _time = timestamp_seconds(to_integer(__time__)),
     xdm.target.cloud.region = event_acsregion,
     xdm.event.id = event_eventid,
-    xdm.event.operation_sub_type = event_eventname,
+    xdm.event.operation = event_eventname,
     xdm.target.resource.name = event_resourcename,
     xdm.target.resource.type = event_resourcetype,
     xdm.source.ipv4 = event_sourceipaddress,
