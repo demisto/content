@@ -36,4 +36,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Port Scan - External Source](../doc_files/Port_Scan_-_External_Source.png)
+![Port Scan - External Source](https://raw.githubusercontent.com/demisto/content/bb05893512788372848fd6c56f35b7cc7a0bc442/Packs/PortScan/doc_files/Port_Scan_-_External_Source.png)
