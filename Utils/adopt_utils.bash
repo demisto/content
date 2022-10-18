@@ -317,28 +317,21 @@ add_msg_to_readme(){
 
 	readme=$1
 	message=$2
-	os=$(detect_os)
+	os="$(detect_os)"
 
 	# Check if README exists, create if not
-	[ ! -f "$readme" ] && touch "$FILE"
+	[ ! -f "$readme" ] && touch "$readme"
 
-	if [ "$os" == "Mac OS" ]
-	then
-		if ! [[ -s "$readme" ]]; then
-        	# The file is empty.
-			echo "$message" > "$readme"
-		else
-			sed -i '' "1s/^/$message\n\n/" "$readme"
-		fi
+	# The file is empty
+	if ! [[ -s "$readme" ]]; then
+		echo "$message" > "$readme"
 	else
-		if ! [[ -s "$readme" ]]; then
-        	# The file is empty.
-			echo "$message" > "$readme"
+		if [ "$os" == "Mac OS" ]; then
+			sed -i '' "1s/^/$message\n\n/" "$readme"
 		else
 			sed -i "1s/^/$message\n\n/" "$readme"
 		fi
 	fi
-
 }
 
 #######################################
