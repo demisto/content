@@ -510,7 +510,8 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
         if alert_id not in last_alert_ids:  # check that event was not fetched in the last fetch
             incident = {
                 'name': f'{INTEGRATION_NAME} Alert: {alert_id}',
-                'occurred': dateparser.parse(alert.get('occurred'), settings={'TO_TIMEZONE': 'UTC'}).strftime(DATE_FORMAT),  # type: ignore
+                'occurred': dateparser.parse(alert.get('occurred'),
+                                             settings={'TO_TIMEZONE': 'UTC'}).strftime(DATE_FORMAT),  # type: ignore
                 'severity': alert_severity_to_dbot_score(alert.get('severity')),
                 'rawJSON': json.dumps(alert)
             }
