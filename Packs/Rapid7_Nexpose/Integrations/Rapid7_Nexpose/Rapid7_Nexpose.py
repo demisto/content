@@ -894,7 +894,7 @@ class Client(BaseClient):
             url_suffix=f"/sites/{site_id}/shared_credentials",
             method="GET",
             resp_type="json",
-        )
+        ).get("resources")
 
     def get_report_history(self, report_id: str, instance_id: str) -> dict:
         """
@@ -3566,6 +3566,47 @@ def list_shared_credential_command(client: Client, credential_id: Optional[str],
     )
 
 
+def list_assigned_shared_credential_command(client: Client, site: Site) -> CommandResults:
+    """
+    Retrieve information about shared credentials for a specific site.
+
+    Args:
+        client (Client): Client to use for API requests.
+        site (Site): Site to retrieve shared credentials from.
+    """
+    response_data = client.get_assigned_shared_credentials(site_id=site.id)
+
+    if not response_data:
+        site_id = site.name if site.name else site.id
+        return CommandResults(readable_output=f"No assigned shared credentials were found for site \"{site_id}\".")
+
+    headers = [
+        "Id",
+        "Name",
+        "Service",
+        "Enabled",
+    ]
+
+    assigned_shared_credentials_hr = replace_key_names(
+        data=response_data,
+        name_mapping={
+            "id": "Id",
+            "name": "Name",
+            "service": "Service",
+            "enabled": "Domain",
+        },
+        recursive=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="Nexpose.AssignedSharedCredential",
+        outputs_key_field="id",
+        outputs=response_data,
+        readable_output=tableToMarkdown("Nexpose Assigned Shared Credentials", assigned_shared_credentials_hr, headers, removeNull=True),
+        raw_response=response_data,
+    )
+
+
 def list_vulnerability_command(client: Client, vulnerability_id: Optional[str], page_size: Optional[int] = None,
                                page: Optional[int] = None, sort: Optional[str] = None,
                                limit: Optional[int] = None) -> CommandResults:
@@ -4434,6 +4475,15 @@ def main():
                 page=arg_to_number(args.get("page")),
                 sort=args.get("sort"),
                 limit=arg_to_number(args.get("limit")),
+            )
+        elif command == "nexpose-list-assigned-shared-credential":
+            results = list_assigned_shared_credential_command(
+                client=client,
+                site=Site(
+                    site_id=args.get("site_id"),
+                    site_name=args.get("site_name"),
+                    client=client,
+                ),
             )
         elif command == "nexpose-list-vulnerability":
             results = list_vulnerability_command(
