@@ -1515,9 +1515,13 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
 
                 _body = json.dumps(body)
                 try:
-                    response = requests.request("POST", f"{DEMISTO_URL}/entry/execute/sync", headers=headers, data=_body,
-                                                verify=VERIFY_CERT)
-                    response.raise_for_status()
+                    response = requests.request("POST",  # type: ignore
+                                                f"{DEMISTO_URL}/entry/execute/sync",
+                                                headers=headers,
+                                                data=_body,
+                                                verify=VERIFY_CERT
+                                                )
+                    response.raise_for_status()  # type: ignore
                 except requests.exceptions.ConnectionError as err:
                     err_message = f'Error submitting context command to server. Check your API Key: {err}'
                     demisto.updateModuleHealth(err_message)
