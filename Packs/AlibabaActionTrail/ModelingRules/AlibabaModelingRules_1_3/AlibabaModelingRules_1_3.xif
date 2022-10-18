@@ -20,7 +20,7 @@ filter
     _time = timestamp_seconds(to_integer(__time__)),
     xdm.source.location.region = event_acsregion,
     xdm.event.id = event_eventid,
-    xdm.event.operation_sub_type = event_eventname,
+    xdm.event.operation = event_eventname,
     xdm.source.ipv4 = event_sourceipaddress,
     xdm.source.user.user_type = event_useridentity_type,
     xdm.source.user.identifier = event_useridentity_principalid,
