@@ -51,14 +51,14 @@ google-cloud-bigquery = "^3.2.0"
 db-dtypes = "^1.0.1"
 
 [tool.poetry.group.check-contributor]
-# used in check-contributor actions
+# used in check-contributor github actions
 optional = true
 
 [tool.poetry.group.check-contributor.dependencies]
 sendgrid = "^6.6.0"
 
 [tool.poetry.group.jira]
-# used in jira actions
+# used in jira github actions
 optional = true
 
 [tool.poetry.group.jira.dependencies]
