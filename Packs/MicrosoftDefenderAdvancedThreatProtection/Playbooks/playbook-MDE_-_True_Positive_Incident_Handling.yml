@@ -88,7 +88,7 @@ inputs:
   description: |-
     This input will provide you the ability to select IOCs to be hunted using the Threat Hunting - generic playbook.
     If false, it will hunt for all IOCs detected in the incident.
-    Note: You can also insert "No Threat Hunting" to skip the Threat Hunting stage.
+    Note: You can also insert "No Threat Hunting" to skiping the Threat Hunting stage.
   playbookInputQuery:
 - key: IP
   value:
@@ -765,7 +765,7 @@ tasks:
       {
         "position": {
           "x": -800,
-          "y": 1990
+          "y": 2160
         }
       }
     note: false
@@ -837,47 +837,14 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "87":
-    id: "87"
-    taskid: dafe5d10-5a0d-4577-826b-fe79af9a28ef
-    type: title
-    task:
-      id: dafe5d10-5a0d-4577-826b-fe79af9a28ef
-      version: -1
-      name: Remediation
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "100"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -2530,
-          "y": 1230
-        }
-      }
-    note: false
-    timertriggers:
-    - fieldname: remediationsla
-      action: start
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "88":
     id: "88"
-    taskid: 3d470df5-7d71-4a09-8437-7540050c7ee1
+    taskid: 78da17e3-6fd2-4e69-84d9-08186d9a475b
     type: title
     task:
-      id: 3d470df5-7d71-4a09-8437-7540050c7ee1
+      id: 78da17e3-6fd2-4e69-84d9-08186d9a475b
       version: -1
-      name: True Positive Incident Closing
+      name: Done Remediation and Containment
       type: title
       iscommand: false
       brand: ""
@@ -897,6 +864,8 @@ tasks:
     note: false
     timertriggers:
     - fieldname: containmentsla
+      action: stop
+    - fieldname: remediationsla
       action: stop
     ignoreworker: false
     skipunavailable: false
@@ -1293,10 +1262,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "99":
     id: "99"
-    taskid: d95daf1f-7050-4139-8d74-ee2e3b689d9a
+    taskid: ee0faebe-729e-49ba-8232-f23073a469cc
     type: title
     task:
-      id: d95daf1f-7050-4139-8d74-ee2e3b689d9a
+      id: ee0faebe-729e-49ba-8232-f23073a469cc
       version: -1
       name: Done with isolating the infected device
       type: title
@@ -1316,9 +1285,7 @@ tasks:
         }
       }
     note: false
-    timertriggers:
-    - fieldname: remediationsla
-      action: start
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -1345,7 +1312,7 @@ tasks:
       {
         "position": {
           "x": -2530,
-          "y": 1380
+          "y": 1230
         }
       }
     note: false
@@ -1844,10 +1811,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "111":
     id: "111"
-    taskid: f4c03952-e400-471f-8901-d1cd59a9fc1e
+    taskid: f1a37638-ddb7-498d-8ba9-9e4b448ca969
     type: title
     task:
-      id: f4c03952-e400-471f-8901-d1cd59a9fc1e
+      id: f1a37638-ddb7-498d-8ba9-9e4b448ca969
       version: -1
       name: Remediation
       type: title
@@ -1857,8 +1824,8 @@ tasks:
     nexttasks:
       '#none#':
       - "110"
-      - "87"
       - "80"
+      - "100"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1869,7 +1836,9 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: remediationsla
+      action: start
     ignoreworker: false
     skipunavailable: false
     quietmode: 0

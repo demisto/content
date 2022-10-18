@@ -69,7 +69,7 @@ inputs:
   description: |-
     This input will provide you the ability to select IOCs to be hunted using the Threat Hunting - generic playbook.
     If false, it will hunt for all IOCs detected in the incident.
-    Note: You can also insert "No Threat Hunting" to skip the Threat Hunting stage.
+    Note: You can also insert "No Threat Hunting" to skiping the Threat Hunting stage.
   playbookInputQuery:
 - key: IP
   value:
@@ -818,10 +818,10 @@ tasks:
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      '#default#':
-      - '25'
       yes:
       - '54'
+      '#default#':
+      - "25"
     note: false
     quietmode: 0
     results:
@@ -857,10 +857,10 @@ tasks:
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      '#default#':
-      - '25'
       yes:
       - '55'
+      '#default#':
+      - "25"
     note: false
     quietmode: 0
     results:
@@ -948,7 +948,7 @@ tasks:
       {
         "position": {
           "x": -2240,
-          "y": 120
+          "y": -20
         }
       }
     continueonerrortype: ""
@@ -1016,7 +1016,7 @@ tasks:
           root: Confirm which File Path will be deleted.Answers
           accessor: "0"
           transformers:
-            - operator: uniq
+          - operator: uniq
       polling_timeout:
         simple: '10'
     separatecontext: true
@@ -1230,39 +1230,6 @@ tasks:
         }
       }
     continueonerrortype: ""
-  '77':
-    id: '77'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - "66"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: f3929ca1-f1fc-440b-8608-4389cf5780ba
-      iscommand: false
-      name: Remediation
-      type: title
-      version: -1
-      description: ''
-    taskid: f3929ca1-f1fc-440b-8608-4389cf5780ba
-    timertriggers:
-    - fieldname: remediationsla
-      action: start
-    type: title
-    view: |-
-      {
-        "position": {
-          "x": -2240,
-          "y": -20
-        }
-      }
-    continueonerrortype: ""
   "78":
     id: "78"
     taskid: 77f60012-6352-4ecf-881f-50a16d1a519e
@@ -1330,10 +1297,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: d800f749-a3e8-4295-801e-b00c787ffce4
+    taskid: b4819f01-6e95-4f60-844f-8c5c6dfa14c4
     type: title
     task:
-      id: d800f749-a3e8-4295-801e-b00c787ffce4
+      id: b4819f01-6e95-4f60-844f-8c5c6dfa14c4
       version: -1
       name: Remediation
       type: title
@@ -1343,8 +1310,8 @@ tasks:
     nexttasks:
       '#none#':
       - "21"
-      - "77"
       - "78"
+      - "66"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1355,7 +1322,9 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: remediationsla
+      action: start
     ignoreworker: false
     skipunavailable: false
     quietmode: 0

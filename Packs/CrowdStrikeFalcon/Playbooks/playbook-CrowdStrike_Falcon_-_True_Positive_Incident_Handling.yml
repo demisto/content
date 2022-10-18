@@ -54,8 +54,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1210,
-          "y": -130
+          "x": -150,
+          "y": -140
         }
       }
     note: false
@@ -121,8 +121,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1210,
-          "y": 60
+          "x": -150,
+          "y": 20
         }
       }
     note: false
@@ -159,8 +159,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1420,
-          "y": 920
+          "x": -360,
+          "y": 735
         }
       }
     note: false
@@ -190,8 +190,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1210,
-          "y": 1140
+          "x": -150,
+          "y": 920
         }
       }
     note: false
@@ -221,8 +221,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1270,
-          "y": 230
+          "x": 1330,
+          "y": 30
         }
       }
     note: false
@@ -266,8 +266,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 560,
-          "y": 960
+          "x": 620,
+          "y": 760
         }
       }
     note: false
@@ -303,8 +303,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1490,
-          "y": 710
+          "x": 1550,
+          "y": 510
         }
       }
     note: false
@@ -334,8 +334,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1270,
-          "y": 1140
+          "x": 1330,
+          "y": 930
         }
       }
     note: false
@@ -366,7 +366,7 @@ tasks:
       {
         "position": {
           "x": 730,
-          "y": 1290
+          "y": 1080
         }
       }
     note: false
@@ -398,7 +398,7 @@ tasks:
       {
         "position": {
           "x": 730,
-          "y": 1750
+          "y": 1540
         }
       }
     note: false
@@ -435,7 +435,7 @@ tasks:
       {
         "position": {
           "x": 530,
-          "y": 1580
+          "y": 1370
         }
       }
     note: false
@@ -474,7 +474,7 @@ tasks:
       {
         "position": {
           "x": 930,
-          "y": 1580
+          "y": 1370
         }
       }
     note: false
@@ -528,7 +528,7 @@ tasks:
       {
         "position": {
           "x": 730,
-          "y": 1410
+          "y": 1200
         }
       }
     note: false
@@ -553,10 +553,10 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
-      '#default#':
-      - '5'
       yes:
       - '3'
+      '#default#':
+      - "5"
     scriptarguments:
       brandname:
         simple: ServiceNow v2
@@ -566,8 +566,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1420,
-          "y": 400
+          "x": -360,
+          "y": 320
         }
       }
     note: false
@@ -592,10 +592,10 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
-      '#default#':
-      - '5'
       yes:
       - '38'
+      '#default#':
+      - "5"
     scriptarguments:
       brandname:
         simple: jira-v2
@@ -605,8 +605,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1000,
-          "y": 400
+          "x": 60,
+          "y": 320
         }
       }
     note: false
@@ -644,8 +644,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1960,
-          "y": 710
+          "x": 2050,
+          "y": 510
         }
       }
     note: false
@@ -675,8 +675,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2180,
-          "y": 230
+          "x": 1810,
+          "y": -140
         }
       }
     note: false
@@ -706,8 +706,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2180,
-          "y": 375
+          "x": 1810,
+          "y": 145
         }
       }
     note: false
@@ -777,8 +777,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2180,
-          "y": 1130
+          "x": 1810,
+          "y": 920
         }
       }
     note: false
@@ -817,8 +817,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -70,
-          "y": 590
+          "x": 550,
+          "y": 330
         }
       }
     note: false
@@ -848,8 +848,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 140,
-          "y": 230
+          "x": 300,
+          "y": 30
         }
       }
     note: false
@@ -893,8 +893,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 140,
-          "y": 350
+          "x": 300,
+          "y": 150
         }
       }
     note: false
@@ -924,8 +924,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 140,
-          "y": 1130
+          "x": 300,
+          "y": 930
         }
       }
     note: false
@@ -965,8 +965,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1000,
-          "y": 920
+          "x": 60,
+          "y": 735
         }
       }
     note: false
@@ -1028,8 +1028,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1050,
-          "y": 710
+          "x": 1110,
+          "y": 510
         }
       }
     note: false
@@ -1073,8 +1073,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 960,
-          "y": 960
+          "x": 1020,
+          "y": 760
         }
       }
     note: false
@@ -1104,8 +1104,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1270,
-          "y": 350
+          "x": 1330,
+          "y": 150
         }
       }
     note: false
@@ -1152,47 +1152,14 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
     continueonerrortype: ""
-  '46':
-    id: '46'
-    taskid: 65c339fc-ab0f-4e74-8efd-ffae5c159dc3
-    type: title
-    task:
-      id: 65c339fc-ab0f-4e74-8efd-ffae5c159dc3
-      version: -1
-      name: Remediation
-      type: title
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      '#none#':
-      - "24"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 2180,
-          "y": -130
-        }
-      }
-    note: false
-    timertriggers:
-    - fieldname: remediationsla
-      action: stop
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   '49':
     id: '49'
-    taskid: bea75fc0-ea15-4515-80d9-d8b09c67948e
+    taskid: 5fd58b06-c350-42d4-808e-3f60fd486eb0
     type: condition
     task:
-      id: bea75fc0-ea15-4515-80d9-d8b09c67948e
+      id: 5fd58b06-c350-42d4-808e-3f60fd486eb0
       version: -1
-      name: Were are values provided?
+      name: Were values provided?
       type: condition
       iscommand: false
       brand: ''
@@ -1218,8 +1185,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1270,
-          "y": 515
+          "x": 1330,
+          "y": 315
         }
       }
     note: false
@@ -1232,12 +1199,12 @@ tasks:
     continueonerrortype: ""
   '50':
     id: '50'
-    taskid: 4bfee436-6d61-427f-8c34-e17faa6ea6ba
+    taskid: 7c0e698e-f3ea-4023-8537-307b8686cdce
     type: condition
     task:
-      id: 4bfee436-6d61-427f-8c34-e17faa6ea6ba
+      id: 7c0e698e-f3ea-4023-8537-307b8686cdce
       version: -1
-      name: Were are values provided?
+      name: Were values provided?
       type: condition
       iscommand: false
       brand: ''
@@ -1256,11 +1223,13 @@ tasks:
             value:
               simple: Select the file path to remove.Answers.0
             iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
-          "x": 2180,
-          "y": 525
+          "x": 1810,
+          "y": 315
         }
       }
     note: false
@@ -1338,10 +1307,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 095d52cb-0155-4430-838c-065a446c3fa5
+    taskid: b6c24197-1552-453c-8a3f-90b64f028384
     type: title
     task:
-      id: 095d52cb-0155-4430-838c-065a446c3fa5
+      id: b6c24197-1552-453c-8a3f-90b64f028384
       version: -1
       name: Remediation
       type: title
@@ -1352,7 +1321,7 @@ tasks:
       '#none#':
       - "51"
       - "1"
-      - "46"
+      - "24"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1363,7 +1332,9 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: remediationsla
+      action: start
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -1644,10 +1615,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 4919925a-5a16-47f6-8a36-0380172d8581
+    taskid: 28b97ace-2059-4760-8159-ec1d11324b27
     type: regular
     task:
-      id: 4919925a-5a16-47f6-8a36-0380172d8581
+      id: 28b97ace-2059-4760-8159-ec1d11324b27
       version: -1
       name: Tag the threat hunting results as Evidence
       description: |
@@ -1663,7 +1634,7 @@ tasks:
       entryIDs:
         simple: ${lastCompletedTaskEntries}
       tags:
-        simple: Threat Hunting Results
+        simple: Found additional hosts
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1682,12 +1653,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: a2a3f389-41aa-44a8-8bf1-f4a89b860b36
+    taskid: 00cbf3d6-d902-43bc-8143-2b9424c0921e
     type: regular
     task:
-      id: a2a3f389-41aa-44a8-8bf1-f4a89b860b36
+      id: 00cbf3d6-d902-43bc-8143-2b9424c0921e
       version: -1
-      name: Add 'Threat Hunting Results' tag to the incident
+      name: Add a 'Found additional hosts' tag to the incident
       description: commands.local.cmd.set.incident
       script: Builtin|||setIncident
       type: regular
@@ -1700,7 +1671,7 @@ tasks:
       appendTags:
         simple: "true"
       tags:
-        simple: Threat Hunting Results
+        simple: Found additional hosts
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1834,9 +1805,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3355,
-        "width": 3980,
-        "x": -1420,
+        "height": 3145,
+        "width": 2790,
+        "x": -360,
         "y": -1540
       }
     }
@@ -1916,7 +1887,7 @@ inputs:
   description: |-
     This input will provide you the ability to select IOCs to be hunted using the Threat Hunting - generic playbook.
     If false, it will hunt for all IOCs detected in the incident.
-    Note: You can also insert "No Threat Hunting" to skip the Threat Hunting stage.
+    Note: You can also insert "No Threat Hunting" to skiping the Threat Hunting stage.
   playbookInputQuery:
 - key: IP
   value:
