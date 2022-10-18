@@ -1,0 +1,21 @@
+commonfields:
+  id: MyapprovalShowIdentity
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.5.31928
+enabled: true
+name: MyapprovalShowIdentity
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+type: python
+fromversion: 6.0.0
+comment: Automation to display identity objects from Splunk. 
+tests:
+- SplunkShowEnrichment

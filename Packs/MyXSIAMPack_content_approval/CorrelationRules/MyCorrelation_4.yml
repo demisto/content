@@ -1,0 +1,43 @@
+alert_category: User Defined
+alert_description: alert_desc UNION/JOIN eyal legacy correlation user mapping
+alert_fields:
+  actor_image: null
+  actor_path: null
+  cmd: null
+  domain: null
+  hash: null
+  hostname: null
+  local_ip: null
+  remote_ip: agent_id
+  remote_port: null
+  username: null
+alert_name: eyal legacy correlation user mapping
+alert_source: Some alert source
+crontab: '*/10 * * * *'
+dataset: alerts
+description: desc UNION/JOIN eyal legacy correlation user mapping
+drilldown_query_timeframe: ALERT
+execution_mode: SCHEDULED
+global_rule_id: B1B4290A-C252-48E4-ACB2-7C20F1B84773
+investigation_query_link: 'dataset = xdr_data | fields event_timestamp, _time  , agent_id , dst_agent_id | comp count(agent_id) as counter by agent_id  | union(dataset = xdr_data | fields event_timestamp, agent_id , dst_agent_id  | join (dataset = endpoints | fields endpoint_name , endpoint_status , endpoint_type ) as devices agent_id = devices.endpoint_name  | limit 5
+)'
+mapping_strategy: CUSTOM
+mitre_defs:
+  TA0001 - Initial Access:
+  - T1078 - Valid Accounts
+  - 'T1078.004 - Valid Accounts: Cloud Accounts'
+  TA0005 - Defense Evasion:
+  - 'T1027.001 - Obfuscated Files or Information: Binary Padding'
+  - T1006 - Direct Volume Access
+  TA0008 - Lateral Movement:
+  - 'T1021.001 - Remote Services: Remote Desktop Protocol'
+name: eyal UNION/JOIN legacy correlation user mapping
+search_window: 5 hours
+severity: User Defined
+suppression_duration: 5 hours
+suppression_enabled: true
+suppression_fields: dst_agent_id
+user_defined_category: dst_agent_id
+user_defined_severity: dst_agent_id
+xql_query: 'dataset = xdr_data | fields event_timestamp, _time  , agent_id , dst_agent_id | comp count(agent_id) as counter by agent_id  | union(dataset = xdr_data | fields event_timestamp, agent_id , dst_agent_id  | join (dataset = endpoints | fields endpoint_name , endpoint_status , endpoint_type ) as devices agent_id = devices.endpoint_name  | limit 5
+)'
