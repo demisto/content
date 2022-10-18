@@ -559,7 +559,7 @@ def list_activities_command(client: Client, args: dict):
     url_suffix = '/activities/'
     activity_id = args.get('activity_id')
     custom_filter = args.get('custom_filter')
-    is_scan = args.get('is_scan', False)
+    is_scan = argToBoolean(args.get('is_scan', 'false'))
     arguments = assign_params(**args)
     timeout = arg_to_number(arguments.get('timeout', 60)) or 60
     request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, custom_filter, arguments, activity_id, is_scan)
@@ -567,10 +567,14 @@ def list_activities_command(client: Client, args: dict):
     list_activities = []
     while has_next:
         activities_response_data = client.list_activities(url_suffix, request_data, timeout)
-        list_activities.append(
-            activities_response_data.get('data') if activities_response_data.get('data') else activities_response_data)
-        has_next = activities_response_data.get('data', {}).get('hasNext', False)
-        request_data['filters'] = activities_response_data.get('data', {}).get('nextQueryFilters')
+        list_activities.extend(
+            activities_response_data.get('data') if activities_response_data.get('data') else [activities_response_data]
+            )
+        has_next = activities_response_data.get('hasNext', False)
+        request_data['filters'] = activities_response_data.get('nextQueryFilters')
+        if is_scan is False:
+            # This is to prevent run-away iterations
+            break
     activities = arrange_entities_data(list_activities)
     return create_ip_command_results(activities)
 
