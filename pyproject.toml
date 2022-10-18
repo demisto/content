@@ -50,6 +50,15 @@ jsonschema = "^4.6.0"
 google-cloud-bigquery = "^3.2.0"
 db-dtypes = "^1.0.1"
 
+[tool.poetry.group.check-contributor]
+optional = true
+
+[tool.poetry.group.check-contributor.dependencies]
+sendgrid = "^6.6.0"
+
+
+
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
