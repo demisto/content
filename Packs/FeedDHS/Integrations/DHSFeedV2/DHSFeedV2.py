@@ -77,7 +77,7 @@ def get_indicators_command(client: Taxii2FeedClient, args: Dict[str, Any]) \
         added_after: added after time string in parse_date_range format
     :return: indicators in cortex TIM format
     """
-    limit = arg_to_number(args.get('limit', '10'))
+    limit = arg_to_number(args.get('limit')) or 10
     added_after = dateparser.parse(args.get('added_after', '20 days'), date_formats=[TAXII_TIME_FORMAT])
     raw = argToBoolean(args.get('raw', 'false'))
 
