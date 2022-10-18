@@ -11,7 +11,6 @@ RUN apt-get update && apt-get install dos2unix -y \
 ENV USERNAME demisto
 ENV HOME /home/$USERNAME
 ENV NODE_EXTRA_CA_CERTS /usr/local/share/ca-certificates/certs.crt
-ENV GIT_SSL_CAINFO /usr/local/share/ca-certificates/certs.crt
 ENV PATH $PATH:$HOME/.local/bin:/root/.local/bin:/usr/local/share/nvm/current/bin
 
 # This is a workaround for VSCode devcontainer features in self signed certificate
