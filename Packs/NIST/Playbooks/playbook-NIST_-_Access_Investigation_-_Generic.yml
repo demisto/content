@@ -1732,11 +1732,6 @@ inputs:
   required: false
   description: The Remediation SLA for the 'Containment, Eradication, and Recovery' stage (in minutes).
   playbookInputQuery:
-- key: IPBlacklistMiner
-  value: {}
-  required: false
-  description: The name of the IP block list miner in MineMeld.
-  playbookInputQuery:
 outputs:
 - contextPath: Account.Email.Address
   description: The email address object associated with the Account
