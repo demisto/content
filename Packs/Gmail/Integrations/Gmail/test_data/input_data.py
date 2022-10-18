@@ -170,17 +170,17 @@ expected_result_test_tokens_to_entry = {"expected_human_readable": expected_huma
 
 # test_sent_mail_to_entry #
 
-send_mail_mock_result = {'id': '1111111111111111', 'threadId': '1111111111111111', 'labelIds': ['SENT']}
+send_mail_mock_result = {'id': '11111', 'threadId': '11111', 'labelIds': ['SENT']}
 
 expected_human_readable_test_sent_mail_to_entry = '### Email sent:\n|Type|ID|To|From|Subject|Labels|ThreadId|\n\
 |---|---|---|---|---|---|---|\n|\
- Gmail | 1111111111111111 | helloworld@gmail.com | test@gmail.com | ls | SENT | 1111111111111111 |\n'
+ Gmail | 11111 | helloworld@gmail.com | test@gmail.com | ls | SENT | 11111 |\n'
 
-expected_raw_response_test_sent_mail_to_entry = [{'id': '1111111111111111', 'threadId': '1111111111111111', 'labelIds': ['SENT']}]
+expected_raw_response_test_sent_mail_to_entry = [{'id': '11111', 'threadId': '11111', 'labelIds': ['SENT']}]
 expected_outputs_test_sent_mail_to_entry = [{'Type': 'Gmail',
-                                             'ID': '1111111111111111',
+                                             'ID': '11111',
                                              'Labels': ['SENT'],
-                                             'ThreadId': '1111111111111111',
+                                             'ThreadId': '11111',
                                              'To': 'helloworld@gmail.com',
                                              'From': 'test@gmail.com',
                                              'Cc': None,
@@ -198,9 +198,9 @@ list_filters_mock_result = [{'id': 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', 'cr
                              'action': {'addLabelIds': ['TRASH']}},
                             {'id': 'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB', 'criteria': {'from': 'test2@gmail.com'},
                              'action': {'addLabelIds': ['TRASH']}}]
-except_contents = [{'ID': 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', 'Mailbox': '111111111111111111111',
+except_contents = [{'ID': 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', 'Mailbox': '1111111',
                     'Criteria': {'from': 'test1@gmail.com'}, 'Action': {'addLabelIds': ['TRASH']}},
-                   {'ID': 'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB', 'Mailbox': '111111111111111111111',
+                   {'ID': 'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB', 'Mailbox': '1111111',
                    'Criteria': {'from': 'test2@gmail.com'}, 'Action': {'addLabelIds': ['TRASH']}}]
 expected_human_readable_test_filters_to_entry = '### filters:\n|ID|Criteria|Action|\n\
 |---|---|---|\n| AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA | from: test1@gmail.com | addLabelIds: TRASH |\n|\
@@ -227,8 +227,8 @@ expected_result_test_mailboxes_to_entry = {"expected_human_readable": expected_h
 
 # test_emails_to_entry #
 
-expected_human_readable_test_emails_to_entry = '### Search in 111111111111111111111:\nquery: "subject:helloworld"\n\
-|Mailbox|ID|Labels|\n|---|---|---|\n| 111111111111111111111 | 183c702bfdbb3fc2 | UNREAD, IMPORTANT, CATEGORY_PERSONAL, INBOX |\n'
+expected_human_readable_test_emails_to_entry = '### Search in 11111:\nquery: "subject:helloworld"\n\
+|Mailbox|ID|Labels|\n|---|---|---|\n| 11111 | 183c702bfdbb3fc2 | UNREAD, IMPORTANT, CATEGORY_PERSONAL, INBOX |\n'
 mails = [{'id': '183c702bfdbb3fc2',
           'threadId': '183c702bfdbb3fc2',
           'labelIds': ['UNREAD', 'IMPORTANT', 'CATEGORY_PERSONAL', 'INBOX'],

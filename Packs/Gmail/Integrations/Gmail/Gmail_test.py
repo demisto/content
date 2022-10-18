@@ -438,8 +438,8 @@ def test_mailboxes_to_entry(mailboxes, expected_result):
 
 
 @pytest.mark.parametrize('title, raw_emails, format_data, mailbox, expected_result', [
-    ('Search in 111111111111111111111:\nquery: "subject:helloworld"', input_data.mails, 'full',
-     '111111111111111111111', input_data.expected_result_test_emails_to_entry)
+    ('Search in 11111:\nquery: "subject:helloworld"', input_data.mails, 'full',
+     '11111', input_data.expected_result_test_emails_to_entry)
 ])
 def test_emails_to_entry(title, raw_emails, format_data, mailbox, expected_result):
     """
