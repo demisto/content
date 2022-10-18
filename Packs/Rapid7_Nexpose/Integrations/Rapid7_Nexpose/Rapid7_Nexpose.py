@@ -725,6 +725,20 @@ class Client(BaseClient):
             resp_type="json",
         )
 
+    def delete_shared_credential(self, shared_credential_id: str) -> dict:
+        """
+        | Delete a shared credential.
+        |
+        | For more information see:
+            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/updateSharedCredential
+        """
+        return self._http_request(
+            url_suffix=f"/shared_credentials/{shared_credential_id}",
+            method="DELETE",
+            resp_type="json",
+        )
+
+
     def delete_vulnerability_exception(self, vulnerability_exception_id: str) -> dict:
         """
         | Delete a vulnerability exception.
@@ -2537,6 +2551,18 @@ def delete_site_command(client: Client, site: Site) -> CommandResults:
     )
 
 
+def delete_shared_credential_command(client: Client, shared_credential_id: str) -> CommandResults:
+    """
+    Delete a shared credential.
+
+    Args:
+        client (Client): Client to use for API requests.
+        shared_credential_id (str): ID of the shared credential to delete.
+    """
+    client.delete_shared_credential(shared_credential_id)
+    return CommandResults(readable_output=f"Shared credential with ID {shared_credential_id} has been deleted.")
+
+
 def delete_vulnerability_exception_command(client: Client, vulnerability_exception_id: str) -> CommandResults:
     """
     Delete a vulnerability exception.
@@ -4054,6 +4080,11 @@ def main():
                     client=client,
                 ),
                 scheduled_scan_id=args["schedule_id"],
+            )
+        elif command == "nexpose-delete-shared-credential":
+            results = delete_shared_credential_command(
+                client=client,
+                shared_credential_id=args["id"],
             )
         elif command == "nexpose-delete-vulnerability-exception":
             results = delete_vulnerability_exception_command(
