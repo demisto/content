@@ -200,6 +200,7 @@ def test_generate_auth_link_oob():
 def test_generate_auth_link_web(mocker):
     mocker.patch('GmailSingleUser.CLIENT_SECRET', 'test')
     mocker.patch('GmailSingleUser.CLIENT_ID', 'test_id')
+    mocker.patch('GmailSingleUser.REDIRECT_URI', 'http://localhost:9001')
     client = Client()
     link = client.generate_auth_link()
     assert link.startswith('https://accounts.google.com/o/oauth2/v2/auth?')

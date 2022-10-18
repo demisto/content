@@ -39,7 +39,7 @@ MAX_FETCH = int(params.get('fetch_limit') or 50)
 AUTH_CODE = params.get('code')
 AUTH_CODE_UNQUOTE_PREFIX = 'code='
 
-OOB_CLIENT_ID = "391797357217-pa6jda1554dbmlt3hbji2bivphl0j616.apps.googleusercontent.com"
+OOB_CLIENT_ID = "391797357217-pa6jda1554dbmlt3hbji2bivphl0j616.apps.googleusercontent.com"  # guardrails-disable-line
 CLIENT_ID = params.get('client_id') or OOB_CLIENT_ID
 CLIENT_SECRET = params.get('client_secret')
 REDIRECT_URI = params.get('redirect_uri')
@@ -964,7 +964,7 @@ class Client:
         """Generate an auth2 link.
 
         Returns:
-            Tuple[str, str] -- Return the link and the challenge used for generating the link.
+            str -- Return the link
         """
         url_params = {
             "scope": "https://www.googleapis.com/auth/gmail.compose https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/gmail.readonly",  # noqa: E501
@@ -973,8 +973,6 @@ class Client:
         }
         if EMAIL:
             url_params['login_hint'] = EMAIL
-        if not REDIRECT_URI.lower().startswith('http'):
-            raise DemistoException(f'Invalid redirect URI: "{REDIRECT_URI}". The URI should start with "http".')
         if not CLIENT_SECRET:
             # old OOB authentication
             verifier = secrets.token_hex(64)
@@ -988,6 +986,8 @@ class Client:
             integration_context['verifier'] = verifier
             demisto.setIntegrationContext(integration_context)
         else:
+            if not REDIRECT_URI.lower().startswith('http'):
+                raise DemistoException(f'Invalid redirect URI: "{REDIRECT_URI}". The URI should start with "http".')
             if CLIENT_ID == OOB_CLIENT_ID:
                 raise DemistoException('Client ID is not set. '
                                        'Make sure to set the Client ID param of the integration configuration.')

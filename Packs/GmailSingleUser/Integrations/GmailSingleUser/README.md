@@ -25,9 +25,8 @@ Use the Gmail Single User integration to send emails and fetch emails as inciden
 
 ## Application Authorization Flow
 
-* To allow Cortex XSOAR to access Gmail, you create your own OAuth2 app.
-* To create your own app, follow the steps in 'Create Your OAuth2 App'.
-* Once you have the app, follow the steps in 'Authorization Flow In Cortex XSOAR' to configure OAuth 2.0 authorization in Cortex XSOAR.
+* To allow Cortex XSOAR to access Gmail, you will need create your own OAuth2 app.
+* Once you have the app, follow the steps in [Authorization Flow In Cortex XSOAR](#authorization-flow-in-cortex-xsoar) to configure the OAuth 2.0 authorization.
 
 ### Create Your OAuth2 App
 
@@ -47,14 +46,14 @@ To use the GMail Single User integration, you will need to create your own OAuth
 9. Proceed to [Authorization Flow In Cortex XSOAR](#authorization-flow-in-cortex-xsoar) to configure OAuth 2.0 authorization in Cortex XSOAR.
 ### *Deprecated*: Use the Demisto App for GSuite Admins (OOB Authorization) 
 
-**Note**: This is an old method of authentication which was provided for GSuite Admins via the use of the Demisto App. This method used the OOB authentication flow which has been deprecated by Google. This method of authentication will stop working on Jan 31, 2023. See:
+**Note**: This is an old method of authentication which was provided for GSuite Admins via the use of the Demisto App. This method uses the OOB authentication flow which has been deprecated by Google. This method of authentication will stop working on Jan 31, 2023. Instructions are provided here for backwards compatibility until the official end of life of OOB authentication. All customers must migrate to the web app authorization flow using their own Google App as documented at [Create Your OAuth2 App](#create-your-oauth2-app). For further details See:
 
 * https://developers.google.com/identity/protocols/oauth2/resources/oob-migration
 * https://developers.googleblog.com/2022/02/making-oauth-flows-safer.html
 
 To configure the use of the Demisto App for GSuite Admins there is no need to create your own app (you will be using the predefined Demisto App). Thus, there is no need to fill in the Client ID and Client Secret configuration fields.
 
-You can choose to trust the Demisto App so users can configure the app:
+GSuite Admins can choose to trust the Demisto App so users can configure the app:
 1. Go to [App Access Control](https://admin.google.com/ac/owl/list?tab=apps).
 2. Choose: `Configure new app` -> `OAuth App Name Or Client ID`. 
   ![GSuite App Configurations](doc_imgs/gsuite-configure-app.png)
