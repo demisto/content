@@ -125,6 +125,7 @@ def main():
     nesting_level_to_return = args.get('nesting_level_to_return', 'All files')
 
     file_type, file_path, file_name = extract_file_info(entry_id)
+    demisto.log(f'{file_type=}, {file_path=}, {file_name=}')
 
     try:
         email_parser = EmailParser(file_path=file_path, max_depth=max_depth, parse_only_headers=parse_only_headers,
