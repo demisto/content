@@ -19,13 +19,11 @@ ADD https://raw.githubusercontent.com/devcontainers/features/main/src/common-uti
 ADD https://raw.githubusercontent.com/devcontainers/features/main/src/git/install.sh /install-git.sh
 ADD https://raw.githubusercontent.com/devcontainers/features/main/src/docker-in-docker/install.sh /install-dind.sh
 ADD https://raw.githubusercontent.com/devcontainers/features/main/src/node/install.sh /install-node.sh
-ADD https://raw.githubusercontent.com/devcontainers/features/main/src/powershell/install.sh /install-powershell.sh
 
 RUN UID="1000" GID="1000" bash install-common.sh 
 RUN VERSION="os-provided" bash install-git.sh
 RUN VERSION="latest" bash install-dind.sh
 RUN VERSION="lts" bash install-node.sh
-RUN VERSION="latest" bash install-powershell.sh
 
 # install poetry, configure certificate for git and tools for oh my zsh
 RUN curl -sSL https://install.python-poetry.org | python3 - \
