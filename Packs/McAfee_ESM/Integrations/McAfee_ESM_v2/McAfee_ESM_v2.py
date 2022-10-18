@@ -664,7 +664,7 @@ class McAfeeESMClient(BaseClient):
         else:
             current_run['time'] = start_time
             current_run['id'] = start_id
-            demisto.debug(f'all alarms is empty, setting current time to {start_time=}')
+            demisto.debug(f'No alarms were found, setting current time to {start_time=}')
         all_alarms = create_incident(all_alarms, alarms=True)
         return all_alarms, current_run
 
