@@ -279,7 +279,6 @@ def test_users_to_entry(title, response, expected_result):
     assert result.raw_response == expected_result.get('expected_raw_response')
 
 
-
 @pytest.mark.parametrize('title, response, user_id, expected_result', [
     ('User johndoe@test.com:', [input_data.get_auto_replay_result],
      'johndoe@test.com', input_data.expected_result_test_autoreply_to_entry)
@@ -303,8 +302,6 @@ def test_autoreply_to_entry(title, response, user_id, expected_result):
     assert result.raw_response == expected_result.get('expected_raw_response')
 
 
-
-
 @pytest.mark.parametrize('title, role, expected_result', [
     ('Role 00000000000000000 details:', input_data.role_test_role_to_entry, input_data.expected_result_test_role_to_entry)
 ])
@@ -325,7 +322,6 @@ def test_role_to_entry(title, role, expected_result):
     assert result.readable_output == expected_result.get("expected_human_readable")
     assert result.outputs == expected_result.get("expected_outputs")
     assert result.raw_response == expected_result.get('expected_raw_response')
-
 
 
 @pytest.mark.parametrize('title, response, expected_result', [
@@ -374,7 +370,6 @@ def test_tokens_to_entry(title, response, expected_result):
     assert result.raw_response == expected_result.get('expected_raw_response')
 
 
-
 @pytest.mark.parametrize('title, response, to, emailfrom, cc, bcc, body, subject, expected_result', [
     ('Email sent:', [input_data.send_mail_mock_result], ['helloworld@gmail.com'],
      'test@gmail.com', [], [], None,
@@ -400,7 +395,7 @@ def test_sent_mail_to_entry(title, response, to, emailfrom, cc, bcc, body, subje
 
 
 @pytest.mark.parametrize('title, mailbox, response, expected_result', [
-    ('filters:', '111111111111111111111',
+    ('filters:', '1111111',
      input_data.list_filters_mock_result, input_data.expected_result_test_filters_to_entry)
 ])
 def test_filters_to_entry(title, mailbox, response, expected_result):
