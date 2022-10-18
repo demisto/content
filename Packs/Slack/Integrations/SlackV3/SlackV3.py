@@ -369,7 +369,7 @@ def search_slack_users(users: Union[list, str]) -> list:
         users = [users]
 
     # Filter NoneType elements from the user list
-    users = list(filter(lambda x: x is not None, users))
+    users = list(filter(lambda x: x, users))
 
     for user in users:
         slack_user = get_user_by_name(user)
