@@ -1,5 +1,3 @@
-import base64
-import time
 import urllib.parse
 from json import JSONDecodeError
 from typing import Tuple, Pattern
