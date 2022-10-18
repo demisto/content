@@ -1,5 +1,5 @@
 {
-    "name": "Palo Alto Networks IoT 3rd Party Integrations",
+    "name": "IoT 3rd Party Integrations by Palo Alto Networks",
     "description": "Palo Alto Networks IoT 3rd Party Integrations",
     "support": "xsoar",
     "currentVersion": "1.1.3",
