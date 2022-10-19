@@ -1112,6 +1112,46 @@ There is no context output for this command.
 ##### Human Readable Output
 ##### Draft with: "" id was sent successfully.
 
+### Mark an email as read/unread
+***
+Marks an email as read or unread.
+
+##### Required Permissions
+**The following permissions are required for this command:**
+- Mail.ReadWrite (Application)
+
+##### Base Command
+
+`msgraph-mail-mark-as-read`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| message_id | The unique ID of the mail. | Required |
+| user_id | User ID or principal ID. | Required |
+| folder_id | The folder ID. | Optional |
+| operation | How to mark the item. Can be "read" or "unread". Default is "read". | Optional |
+
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+```!msgraph-mail-mark-as-read message_id=AAMkAGY4OWZlMGYxLTk4MmItNDg3ZS1hMzFlLWMxNDAwZDBiZjM4NwBGAAAAAAAQKx_02XbHRI0NNBiuLQEYBwA1DKL9E8G7R6M9gFD828sUAAAAAAEMAAA1DKL9E8G7R6M9gFD828sUAAAwU9WGAAA= user_id=dev@demistodev.onmicrosoft.com operation=read```
+
+##### Context Example
+```
+{}
+```
+
+##### Human Readable Output
+##### Message successfully marked as read.
+| Message ID | User ID | isRead |
+| --- | --- | --- |
+| AAMkAGY4OWZlMGYxLTk4MmItNDg3ZS1hMzFlLWMxNDAwZDBiZjM4NwBGAAAAAAAQKx_02XbHRI0NNBiuLQEYBwA1DKL9E8G7R6M9gFD828sUAAAAAAEMAAA1DKL9E8G7R6M9gFD828sUAAAwU9WGAAA= |admin@6khdck.onmicrosoft.com | true |
+
+
 ### reply-mail
 ***
 Replies to an email using Graph Mail.
