@@ -788,6 +788,7 @@ class STIX2Parser:
         for obj in objects:
             obj_type = obj.get('type')
             if obj_type not in STIX2Parser.OBJECTS_TO_PARSE:
+                demisto.debug(f'Cannot parse object of type {obj_type}, skipping.')
                 continue
             if obj_type not in types_envelopes:
                 types_envelopes[obj_type] = []
