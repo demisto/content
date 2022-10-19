@@ -4,7 +4,7 @@
         "MITRE ATT\u0026CK CoA"
     ],
     "caseInsensitive": true,
-    "cliName": "mitrecoahandledtechniques",
+    "cliName": "handledtechniques",
     "closeForm": false,
     "columns": [
         {
@@ -30,10 +30,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_mitrecoahandledtechniques",
+    "id": "incident_handledtechniques",
     "isReadOnly": false,
     "locked": false,
-    "name": "Mitre COA - Handled Techniques",
+    "name": "Handled Techniques",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
