@@ -379,6 +379,7 @@ def main() -> None:
         }
 
         proxy = params.get('proxy', False)
+        handle_proxy()
         verify_certificate = not params.get('insecure', False)
 
         url_suffix = "/public_api/v1"
