@@ -173,7 +173,7 @@ class Client:
             try:
                 if 'image' in res.headers.get('Content-Type', '') or 'text' in res.headers.get('Content-Type', ''):
                     filename_from_headers = res.headers.get('Content-Disposition')
-                    if 'filename=' in filename_from_headers:
+                    if filename_from_headers and 'filename=' in filename_from_headers:
                         filename = filename_from_headers.split('filename=')[-1]
                     else:
                         filename = str(uuid.uuid4())

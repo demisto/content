@@ -6,7 +6,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-import requests
+import urllib3
 import base64
 from datetime import datetime, timedelta
 from ipaddress import IPv4Address, AddressValueError, summarize_address_range
@@ -16,7 +16,7 @@ from typing import (
 
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 """ CONSTANTS """
