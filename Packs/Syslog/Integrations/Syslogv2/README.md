@@ -12,9 +12,9 @@ This integration was integrated and tested with RFC3164 and RFC5424 formats of S
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Port mapping | The listening port to receive Syslog message on (`<port> or <host port>:<docker port>`) | True |
-    | Certificate (Required for HTTPS) | Required for HTTPS if not using server rerouting | False |
-    | Private Key (Required for HTTPS) | Required for HTTPS if not using server rerouting | False |
+    | Port mapping | The listening port to receive Syslog message on (`<port> or <host port>:<docker port>`). Port 6514 is the default when using TLS. | True |
+    | Certificate | Required for TLS | False |
+    | Private Key | Required for TLS | False |
     | Message Regex Filter For Incidents Creation | Creates an incident in Cortex XSOAR for every received log message that matches this regex. | False |
 
 4. Click **Test** to validate the connection.
