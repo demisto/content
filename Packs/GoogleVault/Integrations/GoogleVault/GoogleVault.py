@@ -172,7 +172,7 @@ def timeframe_to_utc_zulu_range(timeframe_str):
     try:
         parsed_str = dateparser.parse(timeframe_str)
         end_time = datetime.utcnow().isoformat() + 'Z'  # Current time
-        start_time = parsed_str.isoformat() + 'Z'
+        start_time = parsed_str.isoformat() + 'Z'  # type: ignore
         return (start_time, end_time)
     except Exception as ex:
         err_msg = str(ex)
