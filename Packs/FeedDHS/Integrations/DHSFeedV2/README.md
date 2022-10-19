@@ -38,13 +38,14 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### dhs-get-indicators
+
 ***
 Allows you to test your feed and to make sure you can fetch indicators successfuly.
-
 
 #### Base Command
 
 `dhs-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -52,7 +53,6 @@ Allows you to test your feed and to make sure you can fetch indicators successfu
 | raw | Will return only the rawJSON of the indicator object. Possible values are: true, false. Default is false. | Optional | 
 | limit | Maximum number of indicators to return. Default is 10. | Optional | 
 | added_after | Fetch only indicators that were added to the server after the given time. Please provide a &lt;number&gt; and &lt;time unit&gt; of type minute/hour/day. For example, 1 minute, 12 hour, 24 days. Default is 20 days. | Optional | 
-
 
 #### Context Output
 
@@ -62,14 +62,131 @@ Allows you to test your feed and to make sure you can fetch indicators successfu
 | DHS.Indicators.type | String | Indicator type. | 
 | DHS.Indicators.rawJSON | String | Indicator rawJSON. | 
 
+#### Command Example
+
+```!dhs-get-indicators limit=3```
+
+#### Context Example
+
+```json
+{
+  "DHS.Indicators": [
+    {
+      "fields": {
+        "tags": [
+          "cisa-proprietary-false"
+        ]
+      },
+      "rawJSON": {
+        "created": "2021-08-09T00:42:54.000Z",
+        "created_by_ref": "identity--e8",
+        "id": "indicator--e0",
+        "indicator_types": [
+          "anomalous-activity",
+          "attribution"
+        ],
+        "labels": [
+          "cisa-proprietary-false"
+        ],
+        "modified": "2021-09-26T04:16:13.000Z",
+        "name": "sometimes",
+        "object_marking_refs": [
+          "marking-definition--633",
+          "marking-definition--f51"
+        ],
+        "pattern": "[domain-name:value = 'coronashop.jp']",
+        "pattern_type": "stix",
+        "pattern_version": "2.1",
+        "spec_version": "2.1",
+        "type": "Domain",
+        "valid_from": "2021-09-26T00:09:38Z",
+        "value": "coronashop.jp"
+      },
+      "type": "Domain",
+      "value": "coronashop.jp"
+    },
+    {
+      "fields": {
+        "description": "A totally famous IP Address",
+        "tags": [
+          "elevated"
+        ]
+      },
+      "rawJSON": {
+        "created": "2022-03-01T14:17:59.000Z",
+        "created_by_ref": "identity--a9",
+        "description": "A totally famous IP Address",
+        "id": "indicator--2f5",
+        "labels": [
+          "elevated"
+        ],
+        "modified": "2022-03-01T14:17:59.000Z",
+        "object_marking_refs": [
+          "marking-definition--633"
+        ],
+        "pattern": "[ipv4-addr:value = '1.1.1.1']",
+        "pattern_type": "stix",
+        "spec_version": "2.1",
+        "type": "IP",
+        "valid_from": "2022-03-01T14:17:59.000000Z",
+        "value": "1.1.1.1"
+      },
+      "type": "IP",
+      "value": "1.1.1.1"
+    },
+    {
+      "fields": {
+        "tags": [
+          "elevated"
+        ]
+      },
+      "rawJSON": {
+        "created": "2022-02-28T13:18:49.000Z",
+        "created_by_ref": "identity--8c4",
+        "id": "indicator--9a6",
+        "indicator_types": [
+          "file-hash-watchlist"
+        ],
+        "labels": [
+          "elevated"
+        ],
+        "modified": "2022-02-28T13:18:49.000Z",
+        "object_marking_refs": [
+          "marking-definition--633"
+        ],
+        "pattern": "[file:hashes.MD5 = 'e6ecb146f469d243945ad8a5451ba1129c5b190f7d50c64580dbad4b8246f88e']",
+        "pattern_type": "stix",
+        "spec_version": "2.1",
+        "type": "File",
+        "valid_from": "2022-02-28T13:18:49.000000Z",
+        "value": "e6ecb146f469d243945ad8a5451ba1129c5b190f7d50c64580dbad4b8246f88e"
+      },
+      "type": "File",
+      "value": "e6ecb146f469d243945ad8a5451ba1129c5b190f7d50c64580dbad4b8246f88e"
+    }
+  ]
+}
+```
+
+#### Human Readable Output
+
+> Found 3 results:
+>### DHS Indicators
+>|value|type|
+>|---|---|
+>| coronashop.jp | Domain |
+>| 1.1.1.1 | IP |
+>| e6ecb146f469d243945ad8a5451ba1129c5b190f7d50c64580dbad4b8246f88e | File |
+
 ### dhs-get-collections
+
 ***
 Gets the list of collections from the discovery service.
-
 
 #### Base Command
 
 `dhs-get-collections`
+
 #### Input
 
 There are no input arguments for this command.
@@ -81,25 +198,56 @@ There are no input arguments for this command.
 | DHS.Collections.ID | String | Collection ID. | 
 | DHS.Collections.Name | String | Collection Name. | 
 
+#### Command Example
+
+```!dhs-get-collections```
+
+#### Context Example
+
+```json
+{
+  "DHS.Collections": [
+    {
+      "ID": "3",
+      "Name": "Public Collection"
+    }
+  ]
+}
+```
+
+#### Human Readable Output
+
+> ### DHS Server Collections
+>|Name|ID|
+>|---|---|
+>| Public Collection | 3 |
+
 ## Breaking changes from the previous version of this integration - DHS Feed v2
+
 ### Arguments
+
 #### The following arguments were removed in this version:
 
 In the *dhs-get-indicators* command:
+
 * *tlp_color* - this argument was removed.
 
 #### The behavior of the following arguments was changed:
 
 In the *dhs-get-indicators* command:
+
 * *limit* - The default value changed to '10'.
 
 ### Outputs
+
 #### The following outputs were removed in this version:
 
 In the *dhs-get-indicators* command:
+
 * *DHS.type* - this output was replaced by *DHS.Indicators.type*.
 * *DHS.value* - this output was replaced by *DHS.Indicators.value*.
 * *DHS.tlp* - this output was removed.
 
 ## Additional Considerations for this version
+
 * Use this version if your certificate is supporting TAXII 2 protocol.

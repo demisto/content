@@ -90,12 +90,12 @@ def get_indicators_command(client: Taxii2FeedClient, args: Dict[str, Any]) \
         return {'indicators': [x.get('rawJSON') for x in indicators]}
 
     return CommandResults(
-        readable_output=f'Found {len(indicators)} results:\n' + tableToMarkdown(name='DHS indicators', t=indicators,
+        readable_output=f'Found {len(indicators)} results:\n' + tableToMarkdown(name='DHS Indicators', t=indicators,
                                                                                 headers=['value', 'type'], removeNull=True),
         outputs_prefix='DHS.Indicators',
         outputs_key_field='value',
         outputs=indicators,
-        raw_response=indicators
+        raw_response=indicators,
     )
 
 
@@ -107,10 +107,11 @@ def get_collections_command(client: Taxii2FeedClient) -> CommandResults:
     for collection in client.collections:  # type: ignore[attr-defined]
         collections.append({'Name': collection.title, 'ID': collection.id})
     return CommandResults(
+        readable_output=tableToMarkdown('DHS Server Collections', t=collections, headers=['Name', 'ID']),
         outputs_prefix='DHS.Collections',
         outputs_key_field='ID',
         outputs=collections,
-        readable_output=tableToMarkdown('DHS Server Collections:', collections))
+    )
 
 
 ''' MAIN FUNCTION '''
@@ -178,14 +179,15 @@ def main():
             raise NotImplementedError(f'{command} command is not implemented.')
 
     except Exception as error:
+        error_msg = str(error)
         if isinstance(error, requests.exceptions.SSLError):
-            return_error('Encountered an HTTPS certificate error. This error can be ignored by enabling '
-                         '"Trust any certificate (not secure)" in the instance configuration.', error)
+            error_msg = 'Encountered an HTTPS certificate error. This error can be ignored by enabling ' \
+                        '"Trust any certificate (not secure)" in the instance configuration.'
         elif isinstance(error, requests.HTTPError):
-            return_error('Encountered an HTTP error. Please check your certificate and key, and that you are trying to reach a '
-                         'valid URL and API root. If this occurs when the test works, change the "limit" in the instance '
-                         'configuration or command argument.', error)
-        return_error(str(error), error)
+            error_msg = 'Encountered an HTTP error. Please check your certificate and key, and that you are trying to reach a ' \
+                        'valid URL and API root. If this occurs when the test works, change the "limit" in the instance ' \
+                        'configuration or command argument.'
+        return_error(error_msg, error)
 
 
 ''' ENTRY POINT '''
