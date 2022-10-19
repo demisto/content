@@ -964,10 +964,14 @@ class Client(BaseClient):
 
     def file_acquisition_package_request(self, acquisition_id):
 
-        return self._http_request(
+        headers = {'Accept': 'application/octet-stream'}
+        response = self._http_request(
             method='GET',
-            url_suffix=f"acqs/files/{acquisition_id}.zip"
-        )["content"]
+            url_suffix=f'acqs/files/{acquisition_id}.zip',
+            headers=headers,
+            resp_type='content'
+        )
+        return response
 
     def delete_file_acquisition_request(self, acquisition_id):
         """
