@@ -3,19 +3,10 @@ commonfields:
   id: HelloWorldEventCollector
   version: -1
 configuration:
-- defaultvalue: https://soar.monstersofhack.com
-  display: Server URL (e.g. https://soar.monstersofhack.com)
+- defaultvalue: https://some_url.com
+  display: Server URL (e.g. https://some_url.com)
   name: url
   required: true
-  type: 0
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
-- defaultvalue: '10'
-  display: Maximum number of incidents per fetch
-  name: max_fetch
-  required: false
   type: 0
 - display: API Key
   name: apikey
@@ -29,11 +20,6 @@ configuration:
   - CLOSED
   required: false
   type: 15
-- display: Fetch alerts with type
-  additionalinfo: Comma-separated list of types of alerts to fetch. Types might change over time. Some examples are 'Bug' and 'Vulnerability'
-  name: alert_type
-  required: false
-  type: 0
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
@@ -73,21 +59,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filter by alert type
-      isArray: false
-      name: alert_type
-      required: false
-      secret: false
-    - default: false
       description: Maximum results to return.
       isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: "Filter by start time. \nExamples:\n  \"3 days ago\"\n  \"1 month\"\n  \"2019-10-10T12:22:00\"\n  \"2019-10-10\""
-      isArray: false
-      name: start_time
       required: false
       secret: false
     deprecated: false
