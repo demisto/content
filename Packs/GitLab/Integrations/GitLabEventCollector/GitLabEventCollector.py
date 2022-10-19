@@ -12,6 +12,7 @@ class Client(IntegrationEventsClient):
         self.last_run = last_run
         self.page = 1
         self.event_type = ''
+        self.login_error = None
 
     def set_request_filter(self, after: Any) -> None:  # noqa: F841  # pragma: no cover
         base_url = self.request.url.split("?")[0]
@@ -74,6 +75,8 @@ class GetEvents(IntegrationGetEvents):
             response = self.call()
         except Exception as exc:
             demisto.info(f'Failed to get a response from the endpoint: {self.client.request.url}.\nError:\n{str(exc)}')
+            if '403' in str(exc) or '401' in str(exc):
+                self.client.login_error = str(exc)
             return []
         events: list = response.json()
         events.sort(key=lambda k: k.get('created_at'))
@@ -155,6 +158,8 @@ def main() -> None:  # pragma: no cover
         audit = (get_events.run())
 
         if command == 'test-module':
+            if client.login_error:
+                return_error(client.login_error)
             return_results('ok')
             return
 
