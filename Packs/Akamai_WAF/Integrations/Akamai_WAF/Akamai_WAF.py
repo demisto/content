@@ -243,7 +243,7 @@ class Client(BaseClient):
 
     # Created by C.L.
 
-    def list_groups(self) -> dict:
+    def list_groups(self):
 
         all_groups = self._http_request(method='GET', url_suffix='/identity-management/v2/user-admin/groups')
 
@@ -438,7 +438,7 @@ class Client(BaseClient):
                     ]
                 }
             ]
-            trafficTargets = []
+            trafficTargets: List[Dict] = []
         elif property_type == "failover":
             staticRRSets = []
             trafficTargets = []
@@ -1153,7 +1153,7 @@ class Client(BaseClient):
                                network: str,
                                notify_emails: str,
                                property_version: int,
-                               ) -> str:
+                               ):
         """
             activate an property
         Args:
@@ -1200,7 +1200,7 @@ class Client(BaseClient):
                               create_from_security_policy: str,
                               policy_name: str,
                               policy_prefix: str
-                              ) -> str:
+                              ):
         """
             Clone a new security policy from template policy
         Args:
@@ -1233,12 +1233,12 @@ class Client(BaseClient):
                          config_id: int,
                          config_version: int,
                          match_type: str,
-                         bypass_network_lists: str,
+                         bypass_network_lists: list,
                          default_file: str,
                          file_paths: list,
                          hostnames: list,
-                         policy_id: dict
-                         ) -> str:
+                         policy_id: str
+                         ):
         """
             New match target
         Args:
@@ -1284,7 +1284,7 @@ class Client(BaseClient):
                                        action: str,
                                        network: str,
                                        note: str,
-                                       ) -> str:
+                                       ):
         """
         Activate AppSec Configuration version
         Args:
@@ -1325,8 +1325,8 @@ class Client(BaseClient):
 
     # created by D.S.
     def get_appsec_config_activation_status(self,
-                                            activation_id: int,
-                                            ) -> str:
+                                            activation_id: str,
+                                            ):
         """
             Get AppSec Configuration activation Status
         Args:
@@ -1341,7 +1341,7 @@ class Client(BaseClient):
                                   )
 
     # created by D.S.
-    def list_appsec_config(self) -> str:
+    def list_appsec_config(self):
         """
         List security configuration
         Args:
@@ -1357,7 +1357,7 @@ class Client(BaseClient):
 
     # created by D.S.
     def list_appsec_config_versions(self,
-                                    config_id: str) -> str:
+                                    config_id: str):
         """
             List security configuration versions
         Args:
@@ -1375,7 +1375,7 @@ class Client(BaseClient):
     # created by D.S.
     def list_security_policy(self,
                              config_id: str,
-                             config_version) -> str:
+                             config_version):
         """
             List security policy
         Args:
@@ -1546,14 +1546,15 @@ def new_papi_property_command_ec(raw_response: dict) -> Tuple[list, list]:
     entry_context = []
     human_readable = []
     if raw_response:
-        propertylink = raw_response.get('propertyLink')
+        propertylink = raw_response.get('propertyLink', '')
+        regex_match = re.search('prp_\d+', propertylink)
         entry_context.append(assign_params(**{
             "PropertyLink": propertylink,
-            "PropertyId": re.search('prp_\d+', propertylink).group(0),
+            "PropertyId": regex_match.group(0) if regex_match else '',
         }))
         human_readable.append(assign_params(**{
             "PropertyLink": propertylink,
-            "PropertyId": re.search('prp_\d+', propertylink).group(0),
+            "PropertyId": regex_match.group(0) if regex_match else '',
         }))
 
     return entry_context, human_readable
@@ -1602,17 +1603,18 @@ def clone_papi_property_command_ec(raw_response: dict) -> Tuple[list, list]:
     entry_context = []
     human_readable = []
     if raw_response:
-        propertylink = raw_response.get('propertyLink')
+        propertylink = raw_response.get('propertyLink', '')
         property_name = raw_response.get('propertyName')
+        regex_match = re.search('prp_\d+', propertylink)
         entry_context.append(assign_params(**{
             "PropertyLink": propertylink,
             "PropertyName": property_name,
-            "PropertyId": re.search('prp_\d+', propertylink).group(0),
+            "PropertyId": regex_match.group(0) if regex_match else '',
         }))
         human_readable.append(assign_params(**{
             "PropertyLink": propertylink,
             "PropertyName": property_name,
-            "PropertyId": re.search('prp_\d+', propertylink).group(0),
+            "PropertyId": regex_match.group(0) if regex_match else '',
         }))
 
     return entry_context, human_readable
@@ -1694,9 +1696,10 @@ def new_papi_edgehostname_command_ec(raw_response: dict) -> Tuple[list, list]:
     entry_context = []
     human_readable = []
     if raw_response:
-        edgeHostnameLink = raw_response.get('edgeHostnameLink')
+        edgeHostnameLink = raw_response.get('edgeHostnameLink', '')
         domain_prefix = raw_response.get('domainPrefix')
-        edge_hostname_id = re.search('ehn_\d+', edgeHostnameLink).group(0)
+        regex_match = re.search('ehn_\d+', edgeHostnameLink)
+        edge_hostname_id = regex_match.group(0) if regex_match else ''
         entry_context.append(assign_params(**{
             "EdgeHostnameLink": edgeHostnameLink,
             "DomainPrefix": domain_prefix,
@@ -1725,12 +1728,12 @@ def get_cps_enrollment_by_cnname(raw_response: dict, cnname: str) -> Dict:
         full enrollment info for given common name
     """
 
-    if raw_response:
-        for enrollment in raw_response.get("enrollments"):
-            if enrollment.get("csr").get("cn") == cnname:
-                return enrollment
-        err_msg = f'Error in {INTEGRATION_NAME} Integration - get_cps_enrollment_by_cnname'
-        return_error(err_msg, error=err_msg, outputs=err_msg)
+    for enrollment in raw_response.get("enrollments", []):
+        if enrollment.get("csr").get("cn") == cnname:
+            return enrollment
+
+    err_msg = f'Error in {INTEGRATION_NAME} Integration - get_cps_enrollment_by_cnname'
+    raise DemistoException(err_msg)
 
 # Created by D.S.
 
@@ -1749,7 +1752,7 @@ def get_cps_enrollment_by_cnname_ec(raw_response: dict) -> Tuple[list, list]:
     human_readable = []
     if raw_response:
         enrollmentId = raw_response.get('id')
-        cnname = raw_response.get("csr").get("cn")
+        cnname = raw_response.get("csr", {}).get("cn")
         entry_context.append(assign_params(**{
             "EnrollmentId": enrollmentId,
             "CN": cnname
@@ -1804,9 +1807,10 @@ def new_papi_cpcode_ec(raw_response: dict) -> Tuple[list, list]:
     entry_context = []
     human_readable = []
     if raw_response:
-        cpcodeLink = raw_response.get('cpcodeLink')
+        cpcodeLink = raw_response.get('cpcodeLink', '')
         cpcode_name = raw_response.get('cpcodeName')
-        cpcode_id = re.search('cpc_\d+', cpcodeLink).group(0)
+        regex_match = re.search('cpc_\d+', cpcodeLink)
+        cpcode_id = regex_match.group(0) if regex_match else ''
         entry_context.append(assign_params(**{
             "CpcodeLink": cpcodeLink,
             "CpcodeName": cpcode_name,
@@ -1862,15 +1866,15 @@ def activate_papi_property_command_ec(raw_response: dict) -> Tuple[list, list]:
     entry_context = []
     human_readable = []
     if raw_response:
-
-        activationLink = raw_response.get('activationLink')
+        activationLink = raw_response.get('activationLink', '')
+        regex_match = re.search('atv_\d+', activationLink)
         entry_context.append(assign_params(**{
             "ActivationLink": activationLink,
-            "ActivationId": re.search('atv_\d+', activationLink).group(0),
+            "ActivationId": regex_match.group(0) if regex_match else '',
         }))
         human_readable.append(assign_params(**{
             "ActivationLink": activationLink,
-            "ActivationId": re.search('atv_\d+', activationLink).group(0),
+            "ActivationId": regex_match.group(0) if regex_match else '',
         }))
 
     return entry_context, human_readable
@@ -1924,7 +1928,7 @@ def new_match_target_command_ec(raw_response: dict) -> Tuple[list, list]:
     if raw_response:
         config_id = raw_response.get('configId')
         targetId = raw_response.get('targetId')
-        policy_id = raw_response.get('securityPolicy')['policyId']
+        policy_id = raw_response.get('securityPolicy', {}).get('policyId')
         entry_context.append(assign_params(**{
             "Id": config_id,
             "TargetId": targetId,
@@ -2184,38 +2188,38 @@ def get_papi_edgehostname_creation_status_command_ec(raw_response: dict) -> Tupl
 
 
 @logger
-def check_group_command(client: Client, checking_group_name: str = '') -> Tuple[object, dict, Union[List, Dict]]:
+def check_group_command(client: Client, checking_group_name: str) -> Tuple[object, dict, Union[List, Dict]]:
     raw_response: Dict = client.list_groups()
     if raw_response:
         human_readable = f'{INTEGRATION_NAME} - List Groups'
-        if checking_group_name != '':
-            path = checking_group_name.split(">")
-            group_list = raw_response
-            for path_groupname in path:
-                found = False
-                for group in group_list:
-                    if path_groupname == group['groupName']:
-                        group_list = group['subGroups']
-                        found = True
-                        break
-                if not found:
-                    context = {"Akamai.CheckGroup": {
-                        'Found': False,
-                        'checking_group_name': checking_group_name,
-                        'groupName': "No Name",
-                        'parentGroupId': 0,
-                        'groupId': 0,
-                    }}
-                    return human_readable, context, raw_response
+        path = argToList(checking_group_name, separator='>')
+        group_list = raw_response
+        for path_groupname in path:
+            found = False
+            for group in group_list:
+                if path_groupname == group['groupName']:
+                    group_list = group['subGroups']
+                    found = True
+                    break
 
-            context = {"Akamai.CheckGroup": {
-                'Found': True,
-                'checking_group_name': checking_group_name,
-                'groupName': group['groupName'],
-                'parentGroupId': group.get('parentGroupId', 0),
-                'groupId': group.get('groupId', 0),
-            }}
-            return human_readable, context, raw_response
+            if not found:
+                context = {"Akamai.CheckGroup": {
+                    'Found': False,
+                    'checking_group_name': checking_group_name,
+                    'groupName': "No Name",
+                    'parentGroupId': 0,
+                    'groupId': 0,
+                }}
+                return human_readable, context, raw_response
+
+        context = {"Akamai.CheckGroup": {
+            'Found': True,
+            'checking_group_name': checking_group_name,
+            'groupName': group['groupName'],
+            'parentGroupId': group.get('parentGroupId', 0),
+            'groupId': group.get('groupId', 0),
+        }}
+        return human_readable, context, raw_response
     else:
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
@@ -2486,7 +2490,7 @@ def create_group_command(client: Client, group_path: str = '') -> Tuple[object, 
         Json response as dictionary
     """
 
-    raw_response_list: Dict = client.list_groups()
+    raw_response_list: List = client.list_groups()
     if raw_response_list:
         if group_path != '':
             path = group_path.split(">")
@@ -2502,7 +2506,7 @@ def create_group_command(client: Client, group_path: str = '') -> Tuple[object, 
                         break
                 if not found:
                     create_folder = client.create_group(found_groupId, path_groupname)
-                    found_groupId = create_folder.get('groupId')
+                    found_groupId = create_folder.get('groupId', 0)
                     group_list = [client.get_group(found_groupId)]
         human_readable = f'{INTEGRATION_NAME} - Group {group_path} is created successfully'
 
@@ -2976,19 +2980,20 @@ def clone_papi_property_command(client: Client,
         lookupKey = 'propertyName'
         lookupValue = property_name
         returnDict: Dict = next((item for item in raw_response["properties"]["items"]
-                                if item[lookupKey] == lookupValue), None)
+                                if item[lookupKey] == lookupValue), {})
         if returnDict is not None:
             isExistingOneFound = True
             title = f'{INTEGRATION_NAME} - new papi property command - found existing property'
             entry_context, human_readable_ec = list_papi_property_bygroup_ec(returnDict)
+
     if not isExistingOneFound:
-        raw_response: Dict = client.clone_papi_property(product_id=product_id,
-                                                        property_name=property_name,
-                                                        contract_id=contract_id,
-                                                        group_id=group_id,
-                                                        property_id=property_id,
-                                                        version=version
-                                                        )
+        raw_response = client.clone_papi_property(product_id=product_id,
+                                                  property_name=property_name,
+                                                  contract_id=contract_id,
+                                                  group_id=group_id,
+                                                  property_id=property_id,
+                                                  version=version,
+                                                  )
         if raw_response:
             title = f'{INTEGRATION_NAME} - Clone papi property {property_name} in group {group_id} from {property_id}'
             raw_response["propertyName"] = property_name
@@ -2999,6 +3004,7 @@ def clone_papi_property_command(client: Client,
     human_readable = tableToMarkdown(name=title,
                                      t=human_readable_ec,
                                      removeNull=True)
+
     return human_readable, context_entry, raw_response
 
 
@@ -3008,11 +3014,11 @@ def add_papi_property_hostname_command(client: Client,
                                        property_id: str,
                                        contract_id: str,
                                        group_id: str,
-                                       validate_hostnames: bool,
-                                       include_cert_status: bool,
+                                       validate_hostnames: str,
+                                       include_cert_status: str,
                                        cname_from: str,
                                        edge_hostname_id: str,
-                                       sleep_time: str = 30
+                                       sleep_time: str = '30'
                                        ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         add hostname papi property
@@ -3037,26 +3043,28 @@ def add_papi_property_hostname_command(client: Client,
         property_id=property_id,
         contract_id=contract_id,
         group_id=group_id,
-        validate_hostnames=validate_hostnames,
-        include_cert_status=include_cert_status,
+        validate_hostnames=argToBoolean(validate_hostnames),
+        include_cert_status=argToBoolean(include_cert_status),
         cname_from=cname_from,
         edge_hostname_id=edge_hostname_id,
     )
     time.sleep(int(sleep_time))
 
-    if raw_response:
-        title = f'{INTEGRATION_NAME} - Add hostname papi property'
-        raw_response["domainPrefix"] = cname_from
-        raw_response["edgeHostnameId"] = edge_hostname_id
-        entry_context, human_readable_ec = add_papi_property_hostname_command_ec(raw_response)
-        context_entry: Dict = {
-            f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.EdgeHostnames(val.DomainPrefix && val.DomainPrefix == obj.DomainPrefix)":
-                entry_context
-        }
-        human_readable = tableToMarkdown(name=title,
-                                         t=human_readable_ec,
-                                         removeNull=True)
-        return human_readable, context_entry, raw_response
+    title = f'{INTEGRATION_NAME} - Add hostname papi property'
+    raw_response["domainPrefix"] = cname_from
+    raw_response["edgeHostnameId"] = edge_hostname_id
+    entry_context, human_readable_ec = add_papi_property_hostname_command_ec(raw_response)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.EdgeHostnames(val.DomainPrefix && val.DomainPrefix == obj.DomainPrefix)":
+            entry_context
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
 
 
 # Created by D.S.
@@ -3082,19 +3090,22 @@ def list_papi_edgehostname_bygroup_command(client: Client,
     lookupKey = 'domainPrefix'
     lookupValue = domain_prefix
     returnDict: Dict = next((item for item in raw_response["edgeHostnames"]["items"]
-                             if item[lookupKey] == lookupValue), None)
-    if raw_response:
-        title = f'{INTEGRATION_NAME} - new papi edgeHostname command'
-        # raw_response["domainPrefix"] = domain_prefix
-        entry_context, human_readable_ec = list_papi_edgehostname_bygroup_ec(returnDict)
-        context_entry: Dict = {
-            f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.EdgeHostnames"
-            f"(val.DomainPrefix && val.DomainPrefix == obj.DomainPrefix)": entry_context
-        }
-        human_readable = tableToMarkdown(name=title,
-                                         t=human_readable_ec,
-                                         removeNull=True)
-        return human_readable, context_entry, raw_response
+                             if item[lookupKey] == lookupValue), {})
+
+    title = f'{INTEGRATION_NAME} - new papi edgeHostname command'
+    # raw_response["domainPrefix"] = domain_prefix
+    entry_context, human_readable_ec = list_papi_edgehostname_bygroup_ec(returnDict)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.EdgeHostnames"
+        f"(val.DomainPrefix && val.DomainPrefix == obj.DomainPrefix)": entry_context
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
 
 
 # Created by D.S.
@@ -3139,23 +3150,24 @@ def new_papi_edgehostname_command(client: Client,
         lookupKey = 'domainPrefix'
         lookupValue = domain_prefix
         returnDict: Dict = next((item for item in raw_response["edgeHostnames"]["items"]
-                                 if item[lookupKey] == lookupValue), None)
+                                 if item[lookupKey] == lookupValue), {})
         if returnDict is not None:
             isExistingOneFound = True
             title = f'{INTEGRATION_NAME} - new papi edgeHostname command - found existing edgeHostname'
             entry_context, human_readable_ec = list_papi_edgehostname_bygroup_ec(returnDict)
+
     if not isExistingOneFound:
-        raw_response: Dict = client.new_papi_edgehostname(product_id=product_id,
-                                                          contract_id=contract_id,
-                                                          group_id=group_id,
-                                                          options=options,
-                                                          domain_prefix=domain_prefix,
-                                                          domain_suffix=domain_suffix,
-                                                          ip_version_behavior=ip_version_behavior,
-                                                          secure=secure,
-                                                          secure_network=secure_network,
-                                                          cert_enrollment_id=cert_enrollment_id,
-                                                          )
+        raw_response = client.new_papi_edgehostname(product_id=product_id,
+                                                    contract_id=contract_id,
+                                                    group_id=group_id,
+                                                    options=options,
+                                                    domain_prefix=domain_prefix,
+                                                    domain_suffix=domain_suffix,
+                                                    ip_version_behavior=ip_version_behavior,
+                                                    secure=secure,
+                                                    secure_network=secure_network,
+                                                    cert_enrollment_id=cert_enrollment_id,
+                                                    )
         if raw_response:
             title = f'{INTEGRATION_NAME} - new papi edgeHostname command'
             raw_response["domainPrefix"] = domain_prefix
@@ -3164,9 +3176,12 @@ def new_papi_edgehostname_command(client: Client,
         f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.EdgeHostnames(val.DomainPrefix && val.DomainPrefix == obj.DomainPrefix)":
             entry_context
     }
-    human_readable = tableToMarkdown(name=title,
-                                     t=human_readable_ec,
-                                     removeNull=True)
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+
     return human_readable, context_entry, raw_response
 
 # Created by D.S.
@@ -3191,18 +3206,19 @@ def get_cps_enrollmentid_by_cnname_command(client: Client,
 
     raw_response: Dict = client.list_cps_enrollments(contract_id=contract_id)
 
-    if raw_response:
-        enrollment: Dict = get_cps_enrollment_by_cnname(raw_response=raw_response, cnname=cnname)
-        title = f'{INTEGRATION_NAME} - Get cps enrollmentid by cnname command'
-        entry_context, human_readable_ec = get_cps_enrollment_by_cnname_ec(enrollment)
-        context_entry: Dict = {
-            f"{INTEGRATION_CONTEXT_NAME}.Cps.Enrollment": entry_context
-        }
-        human_readable = tableToMarkdown(name=title,
-                                         t=human_readable_ec,
-                                         removeNull=True)
+    enrollment: Dict = get_cps_enrollment_by_cnname(raw_response=raw_response, cnname=cnname)
+    title = f'{INTEGRATION_NAME} - Get cps enrollmentid by cnname command'
+    entry_context, human_readable_ec = get_cps_enrollment_by_cnname_ec(enrollment)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.Cps.Enrollment": entry_context
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
 
-        return human_readable, context_entry, raw_response
+    return human_readable, context_entry, raw_response
 
 
 # Created by D.S.
@@ -3232,18 +3248,19 @@ def new_papi_cpcode_command(client: Client,
         lookupKey = 'cpcodeName'
         lookupValue = cpcode_name
         returnDict: Dict = next((item for item in raw_response["cpcodes"]["items"]
-                                 if item[lookupKey] == lookupValue), None)
+                                 if item[lookupKey] == lookupValue), {})
 
         if returnDict is not None:
             isExistingOneFound = True
             title = f'{INTEGRATION_NAME} - get papi cpcode command - found existing Cpcode'
             entry_context, human_readable_ec = list_papi_cpcodeid_bygroup_ec(returnDict)
     if not isExistingOneFound:
-        raw_response: Dict = client.new_papi_cpcode(contract_id=contract_id,
-                                                    group_id=group_id,
-                                                    product_id=product_id,
-                                                    cpcode_name=cpcode_name,
-                                                    )
+        raw_response = client.new_papi_cpcode(
+            contract_id=contract_id,
+            group_id=group_id,
+            product_id=product_id,
+            cpcode_name=cpcode_name,
+        )
         if raw_response:
             title = f'{INTEGRATION_NAME} - new papi cpcode command'
             raw_response["cpcodeName"] = cpcode_name
@@ -3255,6 +3272,7 @@ def new_papi_cpcode_command(client: Client,
     human_readable = tableToMarkdown(name=title,
                                      t=human_readable_ec,
                                      removeNull=True)
+
     return human_readable, context_entry, raw_response
 
 # Created by D.S.
@@ -3308,17 +3326,18 @@ def patch_papi_property_rule_cpcode_command(client: Client,
                                                          body=body,
                                                          )
 
-    if raw_response:
-        title = f'{INTEGRATION_NAME} - Patch papi property cpcode command'
-        entry_context, human_readable_ec = patch_papi_property_rule_ec(raw_response)
-        context_entry: Dict = {
-            f"{INTEGRATION_CONTEXT_NAME}.PapiProperty": entry_context
-        }
-        human_readable = tableToMarkdown(name=title,
-                                         t=human_readable_ec,
-                                         removeNull=True)
+    title = f'{INTEGRATION_NAME} - Patch papi property cpcode command'
+    entry_context, human_readable_ec = patch_papi_property_rule_ec(raw_response)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty": entry_context
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
 
-        return human_readable, context_entry, raw_response
+    return human_readable, context_entry, raw_response
 
 
 # Created by D.S.
@@ -3334,7 +3353,7 @@ def patch_papi_property_rule_origin_command(client: Client,
                                             origin: str,
                                             external_url: str,
                                             gzip_compression: str,
-                                            sleep_time: str = 30
+                                            sleep_time: str = '30',
                                             ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         get papi property All Versions by group_id and property_id command
@@ -3354,7 +3373,7 @@ def patch_papi_property_rule_origin_command(client: Client,
 
     time.sleep(int(sleep_time))
     if path == "/rules/behaviors":
-        body = [
+        body: List[Dict[str, Any]] = [
             {
                 "op": operation,
                 "path": path,
@@ -3434,16 +3453,18 @@ def patch_papi_property_rule_origin_command(client: Client,
                                                          body=body,
                                                          )
     raw_response = {"Origins added": origin}
-    if raw_response:
-        title = f'{INTEGRATION_NAME} - Patch papi property origin command'
-        entry_context, human_readable_ec = {"Origins added": origin}, {"Origins added": origin}
-        context_entry: Dict = {
-            f"{INTEGRATION_CONTEXT_NAME}.PapiProperty": entry_context
-        }
-        human_readable = tableToMarkdown(name=title,
-                                         t=human_readable_ec,
-                                         removeNull=True)
-        return human_readable, context_entry, raw_response
+    title = f'{INTEGRATION_NAME} - Patch papi property origin command'
+    entry_context, human_readable_ec = {"Origins added": origin}, {"Origins added": origin}
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty": entry_context
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
 
 
 # Created by D.S.
@@ -3454,7 +3475,7 @@ def activate_papi_property_command(client: Client,
                                    property_id: str,
                                    network: str,
                                    notify_emails: str,
-                                   property_version: int,
+                                   property_version: str,
                                    ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         activate an property command
@@ -3476,29 +3497,31 @@ def activate_papi_property_command(client: Client,
                                                        property_id=property_id,
                                                        network=network,
                                                        notify_emails=notify_emails,
-                                                       property_version=property_version,
+                                                       property_version=arg_to_number(property_version),  # type: ignore[arg-type]
                                                        )
-    if raw_response:
-        title = f'{INTEGRATION_NAME} - activate an property'
-        entry_context, human_readable_ec = activate_papi_property_command_ec(raw_response)
-        context_entry: Dict = {
-            f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.{network.capitalize()}": entry_context
-        }
-        human_readable = tableToMarkdown(name=title,
-                                         t=human_readable_ec,
-                                         removeNull=True)
 
-        return human_readable, context_entry, raw_response
+    title = f'{INTEGRATION_NAME} - activate an property'
+    entry_context, human_readable_ec = activate_papi_property_command_ec(raw_response)
+    context_entry = {
+        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.{network.capitalize()}": entry_context
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
 
 
 # Created by D.S.
 @logger
 def clone_security_policy_command(client: Client,
-                                  config_id: int,
-                                  config_version: int,
+                                  config_id: str,
+                                  config_version: str,
                                   create_from_security_policy: str,
                                   policy_name: str,
-                                  policy_prefix: str = None,
+                                  policy_prefix: str = '',
                                   check_existence_before_create="yes") -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         Clone security policy property command
@@ -3519,11 +3542,11 @@ def clone_security_policy_command(client: Client,
                                                          config_version=config_version)
         lookupKey = 'policyName'
         lookupValue = policy_name
-        returnDict: Dict = next((item for item in raw_response['policies'] if item[lookupKey] == lookupValue), None)
+        returnDict: Dict = next((item for item in raw_response['policies'] if item[lookupKey] == lookupValue), {})
         if returnDict is not None:
             title = f'{INTEGRATION_NAME} - clone security policy command - found existing Security Policy'
             entry_context, human_readable_ec = clone_security_policy_command_ec(returnDict)
-            context_entry: Dict = {
+            context_entry = {
                 f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyName && val.PolicyName == obj.PolicyName)":
                     entry_context
             }
@@ -3532,18 +3555,19 @@ def clone_security_policy_command(client: Client,
                                              removeNull=True)
             return human_readable, context_entry, raw_response
 
-    if policy_prefix is None:
+    if not policy_prefix:
         isDuplicated = True
         while isDuplicated:
             policy_prefix = generate_policy_prefix()
             isErrored = False
             try:
-                raw_response: Dict = client.clone_security_policy(config_id=config_id,
-                                                                  config_version=config_version,
-                                                                  create_from_security_policy=create_from_security_policy,
-                                                                  policy_name=policy_name,
-                                                                  policy_prefix=policy_prefix
-                                                                  )
+                raw_response = client.clone_security_policy(
+                    config_id=arg_to_number(config_id),  # type: ignore[arg-type]
+                    config_version=arg_to_number(config_version),  # type: ignore[arg-type]
+                    create_from_security_policy=create_from_security_policy,
+                    policy_name=policy_name,
+                    policy_prefix=policy_prefix,
+                )
             except Exception as e:
                 isErrored = True
                 if "You entered a Policy ID that already exists." not in str(e):
@@ -3554,7 +3578,7 @@ def clone_security_policy_command(client: Client,
         if raw_response:
             title = f'{INTEGRATION_NAME} - clone security policy'
             entry_context, human_readable_ec = clone_security_policy_command_ec(raw_response)
-            context_entry: Dict = {
+            context_entry = {
                 f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyName && val.PolicyName == obj.PolicyName)":
                     entry_context
             }
@@ -3563,37 +3587,41 @@ def clone_security_policy_command(client: Client,
                                              removeNull=True)
         return human_readable, context_entry, raw_response
     else:
-        raw_response: Dict = client.clone_security_policy(config_id=config_id,
-                                                          config_version=config_version,
-                                                          create_from_security_policy=create_from_security_policy,
-                                                          policy_name=policy_name,
-                                                          policy_prefix=policy_prefix
-                                                          )
-        if raw_response:
-            title = f'{INTEGRATION_NAME} - clone security policy'
-            entry_context, human_readable_ec = clone_security_policy_command_ec(raw_response)
-            context_entry: Dict = {
-                f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyName && val.PolicyName == obj.PolicyName)":
-                    entry_context
-            }
-            human_readable = tableToMarkdown(name=title,
-                                             t=human_readable_ec,
-                                             removeNull=True)
-            return human_readable, context_entry, raw_response
+        raw_response = client.clone_security_policy(
+            config_id=arg_to_number(config_id),  # type: ignore[arg-type]
+            config_version=arg_to_number(config_version),  # type: ignore[arg-type]
+            create_from_security_policy=create_from_security_policy,
+            policy_name=policy_name,
+            policy_prefix=policy_prefix
+        )
+
+        title = f'{INTEGRATION_NAME} - clone security policy'
+        entry_context, human_readable_ec = clone_security_policy_command_ec(raw_response)
+        context_entry = {
+            f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyName && val.PolicyName == obj.PolicyName)":
+                entry_context
+        }
+        human_readable = tableToMarkdown(
+            name=title,
+            t=human_readable_ec,
+            removeNull=True,
+        )
+
+        return human_readable, context_entry, raw_response
 
 # Created by D.S.
 
 
 @logger
 def new_match_target_command(client: Client,
-                             config_id: int,
-                             config_version: int,
+                             config_id: str,
+                             config_version: str,
                              match_type: str,
                              bypass_network_lists: str,
                              default_file: str,
-                             file_paths: list,
-                             hostnames: list,
-                             policy_id: dict
+                             file_paths: str,
+                             hostnames: str,
+                             policy_id: str
                              ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         New match target command
@@ -3612,43 +3640,46 @@ def new_match_target_command(client: Client,
         human readable (markdown format), entry context and raw response
     """
     networkList = []
-    for network in bypass_network_lists.split(','):
+    for network in argToList(bypass_network_lists):
         networkList.append({'id': network})
     hostnameList = []
     for hostname in hostnames.split(','):
         hostnameList.append(hostname)
 
-    raw_response: Dict = client.new_match_target(config_id=config_id,
-                                                 config_version=config_version,
+    raw_response: Dict = client.new_match_target(config_id=arg_to_number(config_id),  # type: ignore[arg-type]
+                                                 config_version=arg_to_number(config_version),  # type: ignore[arg-type]
                                                  match_type=match_type,
                                                  bypass_network_lists=networkList,
                                                  default_file=default_file,
-                                                 file_paths=file_paths,
-                                                 hostnames=hostnameList,
+                                                 file_paths=argToList(file_paths),
+                                                 hostnames=argToList(hostnameList),
                                                  policy_id=policy_id,
                                                  )
-    if raw_response:
-        title = f'{INTEGRATION_NAME} - create match target'
-        entry_context, human_readable_ec = new_match_target_command_ec(raw_response)
-        context_entry: Dict = {
-            f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyId && val.PolicyId == obj.PolicyId)": entry_context
-        }
-        human_readable = tableToMarkdown(name=title,
-                                         t=human_readable_ec,
-                                         removeNull=True)
-        return human_readable, context_entry, raw_response
+
+    title = f'{INTEGRATION_NAME} - create match target'
+    entry_context, human_readable_ec = new_match_target_command_ec(raw_response)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyId && val.PolicyId == obj.PolicyId)": entry_context
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
 
 
 # Created by D.S.
 @logger
 def activate_appsec_config_version_command(client: Client,
-                                           config_id: int,
-                                           config_version: int,
-                                           acknowledged_invalid_hosts: list,
-                                           notification_emails: list,
+                                           config_id: str,
+                                           config_version: str,
+                                           acknowledged_invalid_hosts: str,
+                                           notification_emails: str,
                                            action: str,
                                            network: str,
-                                           note: str,) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+                                           note: str) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         Activate appsec config version command
     Args:
@@ -3663,31 +3694,35 @@ def activate_appsec_config_version_command(client: Client,
         human readable (markdown format), entry context and raw response
     """
 
-    raw_response: Dict = client.activate_appsec_config_version(config_id=config_id,
-                                                               config_version=config_version,
-                                                               acknowledged_invalid_hosts=acknowledged_invalid_hosts,
-                                                               notification_emails=notification_emails,
-                                                               action=action,
-                                                               network=network,
-                                                               note=note,
-                                                               )
-    if raw_response:
-        title = f'{INTEGRATION_NAME} - activate appsec config version'
-        entry_context, human_readable_ec = activate_appsec_config_version_command_ec(raw_response)
-        context_entry: Dict = {
-            f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.{network.capitalize()}": entry_context
-        }
-        human_readable = tableToMarkdown(name=title,
-                                         t=human_readable_ec,
-                                         removeNull=True)
-        return human_readable, context_entry, raw_response
+    raw_response: Dict = client.activate_appsec_config_version(
+        config_id=arg_to_number(config_id),  # type: ignore[arg-type]
+        config_version=arg_to_number(config_version),  # type: ignore[arg-type]
+        acknowledged_invalid_hosts=argToList(acknowledged_invalid_hosts),
+        notification_emails=argToList(notification_emails),
+        action=action,
+        network=network,
+        note=note,
+    )
+
+    title = f'{INTEGRATION_NAME} - activate appsec config version'
+    entry_context, human_readable_ec = activate_appsec_config_version_command_ec(raw_response)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.{network.capitalize()}": entry_context
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
 
 # Created by D.S.
 
 
 @logger
 def get_appsec_config_activation_status_command(client: Client,
-                                                activation_id: int,
+                                                activation_id: str,
                                                 sleep_time: str,
                                                 retries: str) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
@@ -3709,18 +3744,20 @@ def get_appsec_config_activation_status_command(client: Client,
         raw_response: Dict = client.get_appsec_config_activation_status(activation_id=activation_id)
         if raw_response:
             if raw_response['status'] == 'ACTIVATED':
-                network = raw_response.get('network')
                 title = f'{INTEGRATION_NAME} - get appsec config version activation status'
                 entry_context, human_readable_ec = get_appsec_config_activation_status_command_ec(raw_response)
                 context_entry: Dict = {
-                    f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.{network.capitalize()}"
-                    f"(val.ActivationId && val.ActivationId == obj.ActivationId)": entry_context
+                    f'{INTEGRATION_CONTEXT_NAME}.AppSecConfig'
+                    '(val.ActivationId && val.ActivationId == obj.ActivationId &&'
+                    ' val.Network && val.Network == obj.Network)': entry_context
                 }
                 human_readable = tableToMarkdown(name=title,
                                                  t=human_readable_ec,
                                                  removeNull=True)
                 return human_readable, context_entry, raw_response
         retry += 1
+
+    raise DemistoException(f'Could not get activation status. Number of retries: {retry}', res=raw_response)
 
 # Created by D.S.
 
@@ -3751,8 +3788,8 @@ def get_appsec_config_latest_version_command(client: Client,
         lookupKey = 'name'
         lookupValue = sec_config_name
         appsec_config_latest: Dict = next(
-            (item for item in raw_response['configurations'] if item[lookupKey] == lookupValue), None)
-        latestVersion = appsec_config_latest.get("latestVersion")
+            (item for item in raw_response['configurations'] if item[lookupKey] == lookupValue), {})
+        latestVersion = appsec_config_latest.get("latestVersion", 0)
         stagingVersion = appsec_config_latest.get("stagingVersion")
         productionVersion = appsec_config_latest.get("productionVersion")
         if skip_consistency_check == 'yes' or (latestVersion == stagingVersion == productionVersion or int(latestVersion) == 1):
@@ -3768,14 +3805,15 @@ def get_appsec_config_latest_version_command(client: Client,
                                              removeNull=True)
             return human_readable, context_entry, appsec_config_latest
         time.sleep(int(sleep_time))
-    errorMsg = f'inconsistent latestVersion vs stagingVersion vs productionVersion for Security Configuration: {sec_config_name}'
-    return_error(errorMsg)
+
+    error_msg = f'inconsistent latestVersion vs stagingVersion vs productionVersion for Security Configuration: {sec_config_name}'
+    raise DemistoException(error_msg)
 
 
 # Created by D.S.
 @logger
 def get_security_policy_id_by_name_command(client: Client,
-                                           config_id: dict,
+                                           config_id: str,
                                            config_version: str,
                                            policy_name: str,
                                            is_baseline_policy: str) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
@@ -3796,33 +3834,35 @@ def get_security_policy_id_by_name_command(client: Client,
 
     lookupKey = "policyName"
     lookupValue = policy_name
-    returnDict: Dict = next((item for item in raw_response['policies'] if item[lookupKey] == lookupValue), None)
+    returnDict = next((item for item in raw_response['policies'] if item[lookupKey] == lookupValue), None)
     if returnDict is None:
         err_msg = f'Error in {INTEGRATION_NAME} - get a security policy ID by Policy name: Policy [{policy_name}] not found'
-        return_error(err_msg)
+        raise DemistoException(err_msg, res=raw_response)
+
+    title = f'{INTEGRATION_NAME} - get a security policy ID by Policy name'
+    entry_context, human_readable_ec = get_security_policy_id_by_name_command_ec(returnDict, is_baseline_policy)
+    entry_context[0]['Id'] = config_id
+    if is_baseline_policy == "yes":
+        context_entry = {
+            f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig(val.Id && val.Id == obj.Id)": entry_context
+        }
     else:
-        title = f'{INTEGRATION_NAME} - get a security policy ID by Policy name'
-        entry_context, human_readable_ec = get_security_policy_id_by_name_command_ec(returnDict, is_baseline_policy)
-        entry_context[0]['Id'] = config_id
-        if is_baseline_policy == "yes":
-            context_entry: Dict = {
-                f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig(val.Id && val.Id == obj.Id)": entry_context
-            }
-        else:
-            context_entry: Dict = {
-                f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyId && val.PolicyId == obj.PolicyId)": entry_context
-            }
-        human_readable = tableToMarkdown(name=title,
-                                         t=human_readable_ec,
-                                         removeNull=True)
-        return human_readable, context_entry, raw_response
+        context_entry = {
+            f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyId && val.PolicyId == obj.PolicyId)": entry_context
+        }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
 
 
 # Created by D.S.
 @logger
 def clone_appsec_config_version_command(client: Client,
-                                        config_id: int,
-                                        create_from_version: int,
+                                        config_id: str,
+                                        create_from_version: str,
                                         do_not_clone: str,
                                         ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
@@ -3836,23 +3876,27 @@ def clone_appsec_config_version_command(client: Client,
         human readable (markdown format), entry context and raw response
     """
     if do_not_clone == 'yes':
-        raw_response: Dict = {"version": create_from_version,
-                              "configId": config_id
-                              }
-    else:
-        raw_response: Dict = client.clone_appsec_config_version(config_id=config_id,
-                                                                create_from_version=create_from_version,
-                                                                )
-    if raw_response:
-        title = f'{INTEGRATION_NAME} - Appsec Configurtion - create a new version by clone the latest version'
-        entry_context, human_readable_ec = clone_appsec_config_version_command_ec(raw_response)
-        context_entry: Dict = {
-            f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig(val.Id && val.Id == obj.Id)": entry_context
+        raw_response = {
+            "version": create_from_version,
+            "configId": config_id
         }
-        human_readable = tableToMarkdown(name=title,
-                                         t=human_readable_ec,
-                                         removeNull=True)
-        return human_readable, context_entry, raw_response
+    else:
+        raw_response = client.clone_appsec_config_version(config_id=config_id,
+                                                          create_from_version=create_from_version,
+                                                          )
+
+    title = f'{INTEGRATION_NAME} - Appsec Configurtion - create a new version by clone the latest version'
+    entry_context, human_readable_ec = clone_appsec_config_version_command_ec(raw_response)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig(val.Id && val.Id == obj.Id)": entry_context
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
 
 
 # Created by D.S.
@@ -3903,17 +3947,18 @@ def patch_papi_property_rule_httpmethods_command(client: Client,
                                                          body=body,
                                                          )
 
-    if raw_response:
-        title = f'{INTEGRATION_NAME} - patch papi property rule httpmethods command'
-        entry_context, human_readable_ec = patch_papi_property_rule_ec(raw_response)
-        context_entry: Dict = {
-            f"{INTEGRATION_CONTEXT_NAME}.PapiProperty": entry_context
-        }
-        human_readable = tableToMarkdown(name=title,
-                                         t=human_readable_ec,
-                                         removeNull=True)
+    title = f'{INTEGRATION_NAME} - patch papi property rule httpmethods command'
+    entry_context, human_readable_ec = patch_papi_property_rule_ec(raw_response)
+    context_entry: Dict = {
+        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty": entry_context
+    }
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
 
-        return human_readable, context_entry, raw_response
+    return human_readable, context_entry, raw_response
 
 
 # Created by D.S.
