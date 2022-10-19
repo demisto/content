@@ -142,7 +142,7 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 14. Click on **Microsoft Teams** under **Available Channels**, click on the checkbox, click on **Agree**, then click on **Apply**.
 
 
-#### Using the Developer Portal
+#### Creating the Demisto Bot for development environment using the Developer Portal
 1. Navigate to the [Tools in the Microsoft Developer Portal](https://dev.teams.microsoft.com/tools).
 2. Navigate to **Bot management**.
 3. Click the **+New Bot** button.
@@ -155,7 +155,7 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 9. Store the generated secret securely for the next steps.
 
 
-#### Using the App Studio (Deprecated - Use `Developer Portal` instead.)
+#### Using the App Studio for development environment (Deprecated - Use `Developer Portal` instead.)
 1. Download the ZIP file located at the bottom of this article.
 2. In Microsoft Teams, access the Store.
 3. Search for and click **App Studio**.
