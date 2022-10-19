@@ -196,7 +196,7 @@ def get_external_service_command(client: Client, args: Dict[str, Any]) -> Comman
     return command_results
 
 
-def get_external_ip_address_ranges_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_external_ip_address_ranges_command(client: Client) -> CommandResults:
     """
     asm-get-external-ip-address-ranges command: Returns list of external ip ranges.
 
