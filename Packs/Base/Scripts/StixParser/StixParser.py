@@ -746,8 +746,7 @@ class STIX2Parser:
             "user-account": self.parse_sco_account_indicator,
             "windows-registry-key": self.parse_sco_windows_registry_key_indicator
         }
-        indicators = []
-        indicators.extend(self.parse_dict_envelope(envelopes, parse_stix_2_objects))
+        indicators = self.parse_dict_envelope(envelopes, parse_stix_2_objects)
         demisto.debug(
             f"{SCRIPT_NAME} has extracted {len(indicators)} indicators"
         )
@@ -786,6 +785,7 @@ class STIX2Parser:
         for obj in objects:
             obj_type = obj.get('type')
             if obj_type not in STIX2Parser.OBJECTS_TO_PARSE:
+                demisto.debug(f'Cannot parse object of type {obj_type}, skipping.')
                 continue
             if obj_type not in types_envelopes:
                 types_envelopes[obj_type] = []
