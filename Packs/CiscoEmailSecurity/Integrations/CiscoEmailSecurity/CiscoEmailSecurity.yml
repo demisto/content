@@ -25,9 +25,8 @@ configuration:
   name: timeout
   required: false
   type: 0
-deprecated: true
 description: Deprecated. Use CiscoSMA instead.
-display: CiscoEmailSecurity (Beta)
+display: CiscoEmailSecurity (Beta) (Deprecated)
 name: CiscoEmailSecurity
 script:
   commands:
@@ -1206,7 +1205,7 @@ script:
     description: Deletes a list entry.
     execution: false
     name: cisco-email-security-list-entry-delete
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.8.35482
   feed: false
   isfetch: false
   longRunning: false
