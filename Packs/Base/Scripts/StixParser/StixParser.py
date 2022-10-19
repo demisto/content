@@ -748,8 +748,7 @@ class STIX2Parser:
             "user-account": self.parse_sco_account_indicator,
             "windows-registry-key": self.parse_sco_windows_registry_key_indicator
         }
-        indicators = []
-        indicators.extend(self.parse_dict_envelope(envelopes, parse_stix_2_objects))
+        indicators = self.parse_dict_envelope(envelopes, parse_stix_2_objects)
         demisto.debug(
             f"{SCRIPT_NAME} has extracted {len(indicators)} indicators"
         )
