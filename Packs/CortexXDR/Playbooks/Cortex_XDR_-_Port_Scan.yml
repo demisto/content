@@ -831,7 +831,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1790,
+          "x": 1892.5,
           "y": 3020
         }
       }
@@ -1659,13 +1659,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "80":
     id: "80"
-    taskid: 11521065-d8aa-4e7e-8b53-2c77657f6ba7
+    taskid: 3e785ea7-54b3-44cc-89d1-d029a9d17f9f
     type: regular
     task:
-      id: 11521065-d8aa-4e7e-8b53-2c77657f6ba7
+      id: 3e785ea7-54b3-44cc-89d1-d029a9d17f9f
       version: -1
       name: Sync XDR event
-      description: Syncs a single incident between Demisto and XDR. This script uses the xdr-get-incident-extra-data command and outputs to the context the entire incident JSON. When the incident is updated in XDR, the Demisto incident will be updated accordingly. When an incident is updated in Demisto, the script executes the xdr-update-incident command and update the incident in XDR.
+      description: Syncs a single incident between XSOAR and XDR. This script uses the xdr-get-incident-extra-data command and outputs to the context the entire incident JSON. When the incident is updated in XDR, the XSOAR incident will be updated accordingly. When an incident is updated in XSOAR, the script executes the xdr-update-incident command and update the incident in XDR.
       scriptName: XDRSyncScript
       type: regular
       iscommand: false
@@ -1784,13 +1784,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: 0c124ca8-5d37-4e19-83a1-53f67beef180
+    taskid: f0f3ff70-0a3b-4863-8bca-3383bb3f6339
     type: regular
     task:
-      id: 0c124ca8-5d37-4e19-83a1-53f67beef180
+      id: f0f3ff70-0a3b-4863-8bca-3383bb3f6339
       version: -1
-      name: Close Demisto investigation
-      description: Close the current incident in Demisto.
+      name: Close XSOAR investigation
+      description: Close the current incident in XSOAR.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -1904,7 +1904,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3560
+          "y": 3545
         }
       }
     note: false
@@ -1935,7 +1935,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3210
+          "y": 3180
         }
       }
     note: false
@@ -1965,8 +1965,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1790,
-          "y": 2875
+          "x": 1892.5,
+          "y": 2885
         }
       }
     note: false
@@ -2435,7 +2435,7 @@ inputs:
 - key: RoleForEscalation
   value: {}
   required: false
-  description: The name of the Demisto role of the users that the incident can be escalated to in case of developments like lateral movement.
+  description: The name of the Cortex XSOAR role of the users that the incident can be escalated to in case of developments like lateral movement.
   playbookInputQuery:
 - key: BlockMaliciousFiles
   value:
