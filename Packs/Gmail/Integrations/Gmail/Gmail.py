@@ -568,7 +568,7 @@ def user_roles_to_entry(title, response):
         outputs=context,
         readable_output=human_readable,
         outputs_prefix='Gmail.Role',
-        outputs_key_field=['ID']
+        outputs_key_field='ID'
     )
 
 
@@ -643,7 +643,7 @@ def role_to_entry(title, role):
         outputs=context,
         readable_output=details_hr + privileges_hr,
         outputs_prefix='Gmail.Role',
-        outputs_key_field=['ID']
+        outputs_key_field='ID'
     )
 
 
