@@ -168,7 +168,8 @@ class Client(BaseClient):
             Please refer to https://techdocs.akamai.com/cps/reference/get-change-allowed-input-param
 
         Args:
-            enrollment_path: The path that includes enrollmentId and changeId : e.g. /cps/v2/enrollments/enrollmentId/changes/changeId
+            enrollment_path: The path that includes enrollmentId and changeId:
+                e.g. /cps/v2/enrollments/enrollmentId/changes/changeId
             allowed_input_type_param: Specify the contract on which to operate or view.
 
         Returns:
@@ -193,7 +194,7 @@ class Client(BaseClient):
             Please refer to https://techdocs.akamai.com/cps/reference/post-change-allowed-input-param
 
         Args:
-            change_path: The path that includes enrollmentId and changeId : e.g. /cps/v2/enrollments/enrollmentId/changes/changeId
+            change_path: The path that includes enrollmentId and changeId: e.g. /cps/v2/enrollments/enrollmentId/changes/changeId
             changeId: Specify the ChangeID on which to operate or view.
             enrollmentId: Specify the enrollmentID on which to operate or view.
             allowed_input_type_param: Specify the contract on which to operate or view.
@@ -216,35 +217,35 @@ class Client(BaseClient):
                                   data=payload
                                   )
 
-     #Created by C.L.
+    # Created by C.L.
 
     def acknowledge_warning(self, change_path: str) -> dict:
         """
             Acknowledge the warning message after updating a enrollment change
 
         Args:
-            change_path: The path that includes enrollmentId and changeId : e.g. /cps/v2/enrollments/enrollmentId/changes/changeId
+            change_path: The path that includes enrollmentId and changeId: e.g. /cps/v2/enrollments/enrollmentId/changes/changeId
 
         Returns:
             Json response as dictionary
         """
         headers = {
-        "Accept": "application/vnd.akamai.cps.change-id.v1+json",
-        "Content-Type":"application/vnd.akamai.cps.acknowledgement.v1+json"
-            }
+            "Accept": "application/vnd.akamai.cps.change-id.v1+json",
+            "Content-Type": "application/vnd.akamai.cps.acknowledgement.v1+json",
+        }
         payload = '{"acknowledgement": "acknowledge"}'
-        return self._http_request(method='POST',
-                          url_suffix=f"{change_path}/input/update/post-verification-warnings-ack",
-                          headers=headers,
-                          data=payload
-                          )
-
+        return self._http_request(
+            method='POST',
+            url_suffix=f"{change_path}/input/update/post-verification-warnings-ack",
+            headers=headers,
+            data=payload
+        )
 
     # Created by C.L.
 
     def list_groups(self) -> dict:
 
-        all_groups = self._http_request(method='GET', url_suffix=f'/identity-management/v2/user-admin/groups')
+        all_groups = self._http_request(method='GET', url_suffix='/identity-management/v2/user-admin/groups')
 
         return all_groups
 
@@ -683,7 +684,7 @@ class Client(BaseClient):
         }
         return self._http_request(method='POST',
                                   url_suffix=f'/network-list/v2/network-lists/{network_list_id}/environments/{env}'
-                                             f'/activate',
+                                             '/activate',
                                   json_data=body,
                                   resp_type='response')
 
@@ -804,7 +805,7 @@ class Client(BaseClient):
         }
 
         return self._http_request(method='GET',
-                                  url_suffix=f'papi/v1/properties',
+                                  url_suffix='papi/v1/properties',
                                   headers=headers,
                                   params=params)
 
@@ -850,7 +851,7 @@ class Client(BaseClient):
         }
 
         return self._http_request(method='POST',
-                                  url_suffix=f'papi/v1/properties',
+                                  url_suffix='papi/v1/properties',
                                   headers=headers,
                                   json_data=body,
                                   params=params
@@ -940,7 +941,7 @@ class Client(BaseClient):
         }
 
         return self._http_request(method='GET',
-                                  url_suffix=f'papi/v1/edgehostnames',
+                                  url_suffix='papi/v1/edgehostnames',
                                   headers=headers,
                                   params=params)
 
@@ -998,7 +999,7 @@ class Client(BaseClient):
         }
 
         return self._http_request(method='POST',
-                                  url_suffix=f'papi/v1/edgehostnames',
+                                  url_suffix='papi/v1/edgehostnames',
                                   headers=headers,
                                   json_data=body,
                                   params=params)
@@ -1028,7 +1029,7 @@ class Client(BaseClient):
         }
 
         return self._http_request(method='GET',
-                                  url_suffix=f'cps/v2/enrollments',
+                                  url_suffix='cps/v2/enrollments',
                                   headers=headers,
                                   params=params)
 
@@ -1056,7 +1057,7 @@ class Client(BaseClient):
         }
 
         return self._http_request(method='GET',
-                                  url_suffix=f'papi/v1/cpcodes',
+                                  url_suffix='papi/v1/cpcodes',
                                   headers=headers,
                                   params=params)
 
@@ -1096,7 +1097,7 @@ class Client(BaseClient):
         }
 
         return self._http_request(method='POST',
-                                  url_suffix=f'papi/v1/cpcodes',
+                                  url_suffix='papi/v1/cpcodes',
                                   headers=headers,
                                   json_data=body,
                                   params=params)
@@ -1351,7 +1352,7 @@ class Client(BaseClient):
         """
 
         return self._http_request(method='Get',
-                                  url_suffix=f'appsec/v1/configs',
+                                  url_suffix='appsec/v1/configs',
                                   )
 
     # created by D.S.
@@ -1396,7 +1397,7 @@ class Client(BaseClient):
     # created by D.S.
     def clone_appsec_config_version(self,
                                     config_id: str,
-                                    create_from_version: str) -> str:
+                                    create_from_version: str) -> Dict:
         """
         Create a new version of security configuration from a previous version
         Args:
@@ -1419,7 +1420,7 @@ class Client(BaseClient):
     def get_papi_property_activation_status(self,
                                             activation_id: int,
                                             property_id
-                                            ) -> str:
+                                            ):
         """
             Get papi property activation Status
         Args:
@@ -1445,7 +1446,7 @@ class Client(BaseClient):
                                               group_id: str,
                                               edgehostname_id: str,
                                               options: str
-                                              ) -> str:
+                                              ):
         """
             Get papi edgehostname creation Status
         Args:
@@ -1462,10 +1463,11 @@ class Client(BaseClient):
             "PAPI-Use-Prefixes": 'true'
         }
 
-        return self._http_request(method='Get',
-                                  url_suffix=f'papi/v1/edgehostnames/{edgehostname_id}?contractId={contract_id}&groupId={group_id}&options={options}',
-                                  headers=headers
-                                  )
+        return self._http_request(
+            method='Get',
+            url_suffix=f'papi/v1/edgehostnames/{edgehostname_id}?contractId={contract_id}&groupId={group_id}&options={options}',
+            headers=headers
+        )
 
 
 ''' HELPER FUNCTIONS '''
@@ -1728,7 +1730,7 @@ def get_cps_enrollment_by_cnname(raw_response: dict, cnname: str) -> Dict:
             if enrollment.get("csr").get("cn") == cnname:
                 return enrollment
         err_msg = f'Error in {INTEGRATION_NAME} Integration - get_cps_enrollment_by_cnname'
-        return_error(err_msg, error=err_msg, output=err_msg)
+        return_error(err_msg, error=err_msg, outputs=err_msg)
 
 # Created by D.S.
 
@@ -2173,6 +2175,7 @@ def get_papi_edgehostname_creation_status_command_ec(raw_response: dict) -> Tupl
             "EdgeHostnameId": edgehostname_id,
             "Status": status
         }))
+
     return entry_context, human_readable
 
 
@@ -2195,9 +2198,24 @@ def check_group_command(client: Client, checking_group_name: str = '') -> Tuple[
                         group_list = group['subGroups']
                         found = True
                         break
-                if found == False:
-                    return human_readable, {"Akamai.CheckGroup": {'Found': False, 'checking_group_name': checking_group_name, 'groupName': "No Name", 'parentGroupId': 0, 'groupId': 0}}, raw_response
-            return human_readable, {"Akamai.CheckGroup": {'Found': True, 'checking_group_name': checking_group_name, 'groupName': group['groupName'], 'parentGroupId': group.get('parentGroupId', 0), 'groupId': group.get('groupId', 0)}}, raw_response
+                if not found:
+                    context = {"Akamai.CheckGroup": {
+                        'Found': False,
+                        'checking_group_name': checking_group_name,
+                        'groupName': "No Name",
+                        'parentGroupId': 0,
+                        'groupId': 0,
+                    }}
+                    return human_readable, context, raw_response
+
+            context = {"Akamai.CheckGroup": {
+                'Found': True,
+                'checking_group_name': checking_group_name,
+                'groupName': group['groupName'],
+                'parentGroupId': group.get('parentGroupId', 0),
+                'groupId': group.get('groupId', 0),
+            }}
+            return human_readable, context, raw_response
     else:
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
@@ -2361,7 +2379,8 @@ def list_enrollments_command(client: Client, contract_id: str) -> Tuple[object, 
 
 # Created by C.L.
 @logger
-def get_enrollment_by_cn_command(client: Client, target_cn: str, contract_id: str = "") -> Tuple[object, dict, Union[List, Dict]]:
+def get_enrollment_by_cn_command(client: Client, target_cn: str, contract_id: str = ""
+                                 ) -> Tuple[object, dict, Union[List, Dict]]:
     """
         List enrollments
     Args:
@@ -2394,11 +2413,12 @@ def get_enrollment_by_cn_command(client: Client, target_cn: str, contract_id: st
 
 
 @logger
-def get_change_command(client: Client, enrollment_path: str, allowed_input_type_param: str = "third-party-csr") -> Tuple[object, dict, Union[List, Dict]]:
+def get_change_command(client: Client, enrollment_path: str, allowed_input_type_param: str = "third-party-csr"
+                       ) -> Tuple[object, dict, Union[List, Dict]]:
     """
         Get change
     Args:
-        enrollment_path: The path that includes enrollmentId and changeId : e.g. /cps/v2/enrollments/enrollmentId/changes/changeId
+        enrollment_path: The path that includes enrollmentId and changeId: e.g. /cps/v2/enrollments/enrollmentId/changes/changeId
         allowed_input_type_param: Specify the contract on which to operate or view.
 
     Returns:
@@ -2416,7 +2436,8 @@ def get_change_command(client: Client, enrollment_path: str, allowed_input_type_
 # Created by C.L.
 @logger
 def update_change_command(client: Client, change_path: str,
-                          certificate: str, trust_chain: str, allowed_input_type_param: str = "third-party-cert-and-trust-chain") -> Tuple[object, dict, Union[List, Dict]]:
+                          certificate: str, trust_chain: str, allowed_input_type_param: str = "third-party-cert-and-trust-chain"
+                          ) -> Tuple[object, dict, Union[List, Dict]]:
     """
         Update a change
     Args:
@@ -2438,6 +2459,7 @@ def update_change_command(client: Client, change_path: str,
     else:
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
+
 # Created by C.L.
 @logger
 def acknowledge_warning_command(client: Client, change_path: str) -> Tuple[object, dict, Union[List, Dict]]:
@@ -2447,7 +2469,7 @@ def acknowledge_warning_command(client: Client, change_path: str) -> Tuple[objec
     if raw_response:
         human_readable = f'{INTEGRATION_NAME} - Acknowledge_warning'
 
-        return human_readable, {"Akamai.Acknowledge":raw_response}, raw_response
+        return human_readable, {"Akamai.Acknowledge": raw_response}, raw_response
     else:
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
@@ -2478,7 +2500,7 @@ def create_group_command(client: Client, group_path: str = '') -> Tuple[object, 
                         found = True
                         found_groupId = group.get('groupId', 0)
                         break
-                if found == False:
+                if not found:
                     create_folder = client.create_group(found_groupId, path_groupname)
                     found_groupId = create_folder.get('groupId')
                     group_list = [client.get_group(found_groupId)]
@@ -2548,7 +2570,8 @@ def create_domain_command(client: Client, group_id: int, domain_name: str) -> Tu
 
 # Created by C.L.
 @logger
-def create_datacenter_command(client: Client, domain_name: str, dc_name: str = "", dc_country: str = "US") -> Tuple[object, dict, Union[List, Dict]]:
+def create_datacenter_command(client: Client, domain_name: str, dc_name: str = "", dc_country: str = "US"
+                              ) -> Tuple[object, dict, Union[List, Dict]]:
     """
     Updating or adding datacenter to existing GTM domain
     Args:
@@ -2575,7 +2598,8 @@ def create_datacenter_command(client: Client, domain_name: str, dc_name: str = "
 @logger
 def update_property_command(client: Client, property_type: str, domain_name: str, property_name: str,
                             static_type: str = "", static_server: str = "", server_1: str = "",
-                            server_2: str = "", weight_1: int = 50, weight_2: int = 50) -> Tuple[object, dict, Union[List, Dict]]:
+                            server_2: str = "", weight_1: int = 50, weight_2: int = 50
+                            ) -> Tuple[object, dict, Union[List, Dict]]:
     """
     Updating or adding properties to existing GTM domain
 
@@ -2802,7 +2826,9 @@ def activate_network_list_command(client: Client, network_list_ids: str, env: st
                                                         comment=comment,
                                                         notify=argToList(notify))
             if raw_response:
-                human_readable += f'{INTEGRATION_NAME} - network list **{network_list_id}** activated on {env} **successfully**\n'
+                human_readable += (
+                    f'{INTEGRATION_NAME} - network list **{network_list_id}** activated on {env} **successfully**\n'
+                )
         except DemistoException as e:
             if "This list version is already active" in e.args[0]:
                 human_readable += f'**{INTEGRATION_NAME} - network list {network_list_id} already active on {env}**\n'
@@ -2867,7 +2893,7 @@ def remove_element_from_network_list_command(client: Client, network_list_id: st
 
 @logger
 def get_activation_status_command(client: Client, network_list_ids: Union[str, list], env: str) \
-        -> Tuple[object, dict, Union[List, Dict]]:
+        -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """Get activation status
 
     Args:
@@ -2929,7 +2955,7 @@ def clone_papi_property_command(client: Client,
                                 group_id: str,
                                 property_id: str,
                                 version: str,
-                                check_existence_before_create="yes") -> dict:
+                                check_existence_before_create="yes") -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         Post clone property command
     Args:
@@ -2951,7 +2977,7 @@ def clone_papi_property_command(client: Client,
         lookupValue = property_name
         returnDict: Dict = next((item for item in raw_response["properties"]["items"]
                                 if item[lookupKey] == lookupValue), None)
-        if returnDict != None:
+        if returnDict is not None:
             isExistingOneFound = True
             title = f'{INTEGRATION_NAME} - new papi property command - found existing property'
             entry_context, human_readable_ec = list_papi_property_bygroup_ec(returnDict)
@@ -2987,7 +3013,7 @@ def add_papi_property_hostname_command(client: Client,
                                        cname_from: str,
                                        edge_hostname_id: str,
                                        sleep_time: str = 30
-                                       ) -> dict:
+                                       ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         add hostname papi property
 
@@ -3024,10 +3050,8 @@ def add_papi_property_hostname_command(client: Client,
         raw_response["edgeHostnameId"] = edge_hostname_id
         entry_context, human_readable_ec = add_papi_property_hostname_command_ec(raw_response)
         context_entry: Dict = {
-            f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.EdgeHostnames(val.DomainPrefix && val.DomainPrefix == obj.DomainPrefix)": entry_context
-        }
-        context_entry: Dict = {
-            f"{INTEGRATION_CONTEXT_NAME}.PapiProperty: entry_context": entry_context
+            f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.EdgeHostnames(val.DomainPrefix && val.DomainPrefix == obj.DomainPrefix)":
+                entry_context
         }
         human_readable = tableToMarkdown(name=title,
                                          t=human_readable_ec,
@@ -3039,7 +3063,7 @@ def add_papi_property_hostname_command(client: Client,
 def list_papi_edgehostname_bygroup_command(client: Client,
                                            contract_id: str,
                                            group_id: str,
-                                           domain_prefix: str) -> dict:
+                                           domain_prefix: str) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         add papi edge hostname command
     Args:
@@ -3085,7 +3109,7 @@ def new_papi_edgehostname_command(client: Client,
                                   secure: str,
                                   secure_network: str,
                                   cert_enrollment_id: str,
-                                  check_existence_before_create="yes") -> dict:
+                                  check_existence_before_create="yes") -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         add papi edge hostname command
 
@@ -3116,7 +3140,7 @@ def new_papi_edgehostname_command(client: Client,
         lookupValue = domain_prefix
         returnDict: Dict = next((item for item in raw_response["edgeHostnames"]["items"]
                                  if item[lookupKey] == lookupValue), None)
-        if returnDict != None:
+        if returnDict is not None:
             isExistingOneFound = True
             title = f'{INTEGRATION_NAME} - new papi edgeHostname command - found existing edgeHostname'
             entry_context, human_readable_ec = list_papi_edgehostname_bygroup_ec(returnDict)
@@ -3137,7 +3161,8 @@ def new_papi_edgehostname_command(client: Client,
             raw_response["domainPrefix"] = domain_prefix
             entry_context, human_readable_ec = new_papi_edgehostname_command_ec(raw_response)
     context_entry: Dict = {
-        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.EdgeHostnames(val.DomainPrefix && val.DomainPrefix == obj.DomainPrefix)": entry_context
+        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.EdgeHostnames(val.DomainPrefix && val.DomainPrefix == obj.DomainPrefix)":
+            entry_context
     }
     human_readable = tableToMarkdown(name=title,
                                      t=human_readable_ec,
@@ -3151,7 +3176,7 @@ def new_papi_edgehostname_command(client: Client,
 def get_cps_enrollmentid_by_cnname_command(client: Client,
                                            contract_id: str,
                                            cnname: str,
-                                           ) -> dict:
+                                           ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         get CPS EnrollmentID by Common Name
 
@@ -3188,7 +3213,7 @@ def new_papi_cpcode_command(client: Client,
                             group_id: str,
                             cpcode_name: str,
                             check_existence_before_create="yes"
-                            ) -> dict:
+                            ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         get papi property All Versions by group_id and property_id command
     Args:
@@ -3209,7 +3234,7 @@ def new_papi_cpcode_command(client: Client,
         returnDict: Dict = next((item for item in raw_response["cpcodes"]["items"]
                                  if item[lookupKey] == lookupValue), None)
 
-        if returnDict != None:
+        if returnDict is not None:
             isExistingOneFound = True
             title = f'{INTEGRATION_NAME} - get papi cpcode command - found existing Cpcode'
             entry_context, human_readable_ec = list_papi_cpcodeid_bygroup_ec(returnDict)
@@ -3246,7 +3271,7 @@ def patch_papi_property_rule_cpcode_command(client: Client,
                                             path: str,
                                             cpcode_id: str,
                                             name: str,
-                                            ) -> dict:
+                                            ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         get papi property All Versions by group_id and property_id command
     Args:
@@ -3310,7 +3335,7 @@ def patch_papi_property_rule_origin_command(client: Client,
                                             external_url: str,
                                             gzip_compression: str,
                                             sleep_time: str = 30
-                                            ) -> dict:
+                                            ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         get papi property All Versions by group_id and property_id command
     Args:
@@ -3430,7 +3455,7 @@ def activate_papi_property_command(client: Client,
                                    network: str,
                                    notify_emails: str,
                                    property_version: int,
-                                   ) -> str:
+                                   ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         activate an property command
     Args:
@@ -3474,7 +3499,7 @@ def clone_security_policy_command(client: Client,
                                   create_from_security_policy: str,
                                   policy_name: str,
                                   policy_prefix: str = None,
-                                  check_existence_before_create="yes") -> str:
+                                  check_existence_before_create="yes") -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         Clone security policy property command
     Args:
@@ -3495,11 +3520,12 @@ def clone_security_policy_command(client: Client,
         lookupKey = 'policyName'
         lookupValue = policy_name
         returnDict: Dict = next((item for item in raw_response['policies'] if item[lookupKey] == lookupValue), None)
-        if returnDict != None:
+        if returnDict is not None:
             title = f'{INTEGRATION_NAME} - clone security policy command - found existing Security Policy'
             entry_context, human_readable_ec = clone_security_policy_command_ec(returnDict)
             context_entry: Dict = {
-                f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyName && val.PolicyName == obj.PolicyName)": entry_context
+                f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyName && val.PolicyName == obj.PolicyName)":
+                    entry_context
             }
             human_readable = tableToMarkdown(name=title,
                                              t=human_readable_ec,
@@ -3520,7 +3546,7 @@ def clone_security_policy_command(client: Client,
                                                                   )
             except Exception as e:
                 isErrored = True
-                if "You entered a Policy ID that already exists." not in e.message:
+                if "You entered a Policy ID that already exists." not in str(e):
                     err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
                     return_error(err_msg, error=e)
             if not isErrored:
@@ -3529,7 +3555,8 @@ def clone_security_policy_command(client: Client,
             title = f'{INTEGRATION_NAME} - clone security policy'
             entry_context, human_readable_ec = clone_security_policy_command_ec(raw_response)
             context_entry: Dict = {
-                f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyName && val.PolicyName == obj.PolicyName)": entry_context
+                f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyName && val.PolicyName == obj.PolicyName)":
+                    entry_context
             }
             human_readable = tableToMarkdown(name=title,
                                              t=human_readable_ec,
@@ -3546,7 +3573,8 @@ def clone_security_policy_command(client: Client,
             title = f'{INTEGRATION_NAME} - clone security policy'
             entry_context, human_readable_ec = clone_security_policy_command_ec(raw_response)
             context_entry: Dict = {
-                f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyName && val.PolicyName == obj.PolicyName)": entry_context
+                f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyName && val.PolicyName == obj.PolicyName)":
+                    entry_context
             }
             human_readable = tableToMarkdown(name=title,
                                              t=human_readable_ec,
@@ -3566,7 +3594,7 @@ def new_match_target_command(client: Client,
                              file_paths: list,
                              hostnames: list,
                              policy_id: dict
-                             ) -> str:
+                             ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         New match target command
     Args:
@@ -3620,7 +3648,7 @@ def activate_appsec_config_version_command(client: Client,
                                            notification_emails: list,
                                            action: str,
                                            network: str,
-                                           note: str,) -> str:
+                                           note: str,) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         Activate appsec config version command
     Args:
@@ -3661,7 +3689,7 @@ def activate_appsec_config_version_command(client: Client,
 def get_appsec_config_activation_status_command(client: Client,
                                                 activation_id: int,
                                                 sleep_time: str,
-                                                retries: str) -> str:
+                                                retries: str) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         Get appsec config version activation status command
     Args:
@@ -3702,7 +3730,7 @@ def get_appsec_config_latest_version_command(client: Client,
                                              sec_config_name: str,
                                              sleep_time: str,
                                              retries: str,
-                                             skip_consistency_check: str) -> str:
+                                             skip_consistency_check: str) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         1) Get appsec config Id and latestVersion.
         2) Check latestVersion and stagingVersion, productionVersion consistency
@@ -3750,7 +3778,7 @@ def get_security_policy_id_by_name_command(client: Client,
                                            config_id: dict,
                                            config_version: str,
                                            policy_name: str,
-                                           is_baseline_policy: str) -> str:
+                                           is_baseline_policy: str) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         get a security policy ID by Policy name
                     It is also used to get the policy ID of "Baseline Security Policy"
@@ -3796,7 +3824,7 @@ def clone_appsec_config_version_command(client: Client,
                                         config_id: int,
                                         create_from_version: int,
                                         do_not_clone: str,
-                                        ) -> str:
+                                        ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         Appsec Configurtion - create a new version by clone the latest version
     Args:
@@ -3838,7 +3866,7 @@ def patch_papi_property_rule_httpmethods_command(client: Client,
                                                  operation: str,
                                                  path: str,
                                                  value: dict,
-                                                 ) -> dict:
+                                                 ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         Patch papi property All Versions by group_id and property_id command
     Args:
@@ -3894,7 +3922,7 @@ def get_papi_property_activation_status_command(client: Client,
                                                 activation_id: int,
                                                 property_id: int,
                                                 sleep_time: str,
-                                                retries: str) -> str:
+                                                retries: str) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         Get papi property activation status command - retry if the status is not "activate"
     Args:
@@ -3928,6 +3956,8 @@ def get_papi_property_activation_status_command(client: Client,
                 return human_readable, context_entry, raw_response
         retry += 1
 
+    raise DemistoException(f'Could not get activation status. Number of retries: {retry}', res=raw_response)
+
 
 # Created by D.S.
 @logger
@@ -3937,7 +3967,7 @@ def get_papi_edgehostname_creation_status_command(client: Client,
                                                   edgehostname_id: str,
                                                   options: str,
                                                   sleep_time: str,
-                                                  retries: str) -> str:
+                                                  retries: str) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         Get papi property activation status command - retry if the status is not "activate"
     Args:
@@ -3975,6 +4005,8 @@ def get_papi_edgehostname_creation_status_command(client: Client,
                                                  removeNull=True)
                 return human_readable, context_entry, raw_response
         retry += 1
+
+    raise DemistoException(f'Could not get creation status. Number of retries: {retry}', res=raw_response)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -4039,7 +4071,8 @@ def main():
         f'{INTEGRATION_COMMAND_NAME}-clone-appsec-config-version': clone_appsec_config_version_command,
         f'{INTEGRATION_COMMAND_NAME}-patch-papi-property-rule-httpmethods': patch_papi_property_rule_httpmethods_command,
         f'{INTEGRATION_COMMAND_NAME}-get-papi-property-activation-status-command': get_papi_property_activation_status_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-papi-edgehostname-creation-status-command': get_papi_edgehostname_creation_status_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-papi-edgehostname-creation-status-command':
+            get_papi_edgehostname_creation_status_command,
         f'{INTEGRATION_COMMAND_NAME}-acknowledge-warning-command': acknowledge_warning_command
     }
     try:
