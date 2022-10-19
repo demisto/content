@@ -860,7 +860,6 @@ def wildfire_get_url_webartifacts_command():
                         image_content = result.content
                         file_like_object = io.BytesIO(image_content)
                         tar = tarfile.open(fileobj=file_like_object)
-                        # tar = tarfile.open(fileobj=io.BytesIO(result.content))
                         # get the names of the files in the TAR
                         files = tar.getnames()
                         # we have a TAR file with entries to extract
@@ -1534,7 +1533,7 @@ def assert_upload_argument(args: dict):
         raise ValueError('Please specify the item you wish to upload using the \'upload\' argument.')
 
 
-def main():
+def main():     # pragma: no cover
     command = demisto.command()
     args = demisto.args()
     LOG(f'command is {command}')
