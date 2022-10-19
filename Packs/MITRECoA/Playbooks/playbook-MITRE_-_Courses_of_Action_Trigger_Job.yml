@@ -1,17 +1,7 @@
 id: MITRE ATT&CK - Courses of Action Trigger Job
 version: -1
 name: MITRE ATT&CK - Courses of Action Trigger Job
-description: "This is a wrapper playbook for the \"MITRE ATT&CK - Courses of Action\"
-  use-case.\n\nPossible playbook triggers:\n- Through a job, by a feed integration
-  fetching indicators that contain MITRE ATT&CK techniques as “Feed Related Indicators”,
-  or with custom inputs.\n- Through an incident, using custom playbook inputs.\n\nOnce
-  triggered, the playbook will create a new incident from type \"MITRE ATT&CK CoA\".
-  The incident will trigger the playbook \"MITRE ATT&CK - Courses of Action\", \nwhich
-  contains all phases and remediates MITRE ATT&CK techniques using intelligence-driven
-  Courses of Action (COA) defined by Palo Alto Networks Unit 42 team. \n \n***Disclaimer:
-  This playbook does not simulate an attack using the specified techniques, but follows
-  the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable
-  Threat Objects and Mitigations (ATOMs).\n"
+description: "This is a wrapper playbook for the \"MITRE ATT&CK - Courses of Action\" use-case.\n\nPossible playbook triggers:\n- Through a job, by a feed integration fetching indicators that contain MITRE ATT&CK techniques as “Feed Related Indicators”, or with custom inputs.\n- Through an incident, using custom playbook inputs.\n\nOnce triggered, the playbook will create a new incident from type \"MITRE ATT&CK CoA\". The incident will trigger the playbook \"MITRE ATT&CK - Courses of Action\", \nwhich contains all phases and remediates MITRE ATT&CK techniques using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team. \n \n***Disclaimer: This playbook does not simulate an attack using the specified techniques, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\n"
 starttaskid: "0"
 tasks:
   "0":
@@ -49,8 +39,7 @@ tasks:
       id: 3d9dc0f5-5121-459a-8b9e-368119465a10
       version: -1
       name: Is there a playbook query value?
-      description: Checks if the playbook was triggered by a feed integration and
-        if there are techniques to handle.
+      description: Checks if the playbook was triggered by a feed integration and if there are techniques to handle.
       type: condition
       iscommand: false
       brand: ""
@@ -440,14 +429,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: Please enter techniques list manually or update the playbook's query.
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -469,8 +458,7 @@ tasks:
         tooltip: A list of comma-separated MITRE ATT&CK technique IDs.
         readonly: false
       title: Manual - Enter techniques list
-      description: Please enter techniques list manually or update the playbook's
-        query.
+      description: Please enter techniques list manually or update the playbook's query.
       sender: ""
       expired: false
       totalanswers: 0
@@ -615,11 +603,7 @@ tasks:
       id: a0c08f83-f256-4b5f-8282-cfbe29fd49d0
       version: -1
       name: Get indicators relationships
-      description: This automation outputs the indicator relationships to context
-        according to the provided query, using the entities, entityTypes, and relationships
-        arguments. All arguments will use the AND operator. For example, using the
-        following arguments entities=8.8.8.8 entities_types=Domain will provide only
-        relationships that the 8.8.8.8 indicator has with indicators of type domain.
+      description: This automation outputs the indicator relationships to context according to the provided query, using the entities, entityTypes, and relationships arguments. All arguments will use the AND operator. For example, using the following arguments entities=8.8.8.8 entities_types=Domain will provide only relationships that the 8.8.8.8 indicator has with indicators of type domain.
       scriptName: SearchIndicatorRelationships
       type: regular
       iscommand: false
@@ -836,11 +820,7 @@ tasks:
       id: 142cdfb6-6615-43b9-8e60-700eee2c5850
       version: -1
       name: Get indicators relationships
-      description: This automation outputs the indicator relationships to context
-        according to the provided query, using the entities, entityTypes, and relationships
-        arguments. All arguments will use the AND operator. For example, using the
-        following arguments entities=8.8.8.8 entities_types=Domain will provide only
-        relationships that the 8.8.8.8 indicator has with indicators of type domain.
+      description: This automation outputs the indicator relationships to context according to the provided query, using the entities, entityTypes, and relationships arguments. All arguments will use the AND operator. For example, using the following arguments entities=8.8.8.8 entities_types=Domain will provide only relationships that the 8.8.8.8 indicator has with indicators of type domain.
       scriptName: SearchIndicatorRelationships
       type: regular
       iscommand: false
@@ -1129,9 +1109,8 @@ inputs:
 - key: techniqueByIncident
   value: {}
   required: false
-  description: MITRE ATT&CK ID of a technique, or comma-separated list of techniques
-    IDs.
-  playbookInputQuery: null
+  description: MITRE ATT&CK ID of a technique, or comma-separated list of techniques IDs.
+  playbookInputQuery:
 - key: ""
   value: {}
   required: false
@@ -1139,10 +1118,9 @@ inputs:
     Define a query that will retrieve indicators that contain MITRE ATT&CK techniques under the "Feed Related Indicators" field.
     (Possible query example: `feedrelatedindicators.type:"MITRE ATT&CK"`)
   playbookInputQuery:
-    query: type:"Attack Pattern" or type:Report and feedrelatedindicators.type:"MITRE
-      ATT&CK"
+    query: type:"Attack Pattern" or type:Report and feedrelatedindicators.type:"MITRE ATT&CK"
     queryEntity: indicators
-    results: null
+    results:
     daterange:
       fromdate: 0001-01-01T00:00:00Z
       todate: 0001-01-01T00:00:00Z
@@ -1150,8 +1128,8 @@ inputs:
         by: ""
         byto: ""
         byfrom: ""
-        tovalue: null
-        fromvalue: null
+        tovalue:
+        fromvalue:
         field: ""
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: false
@@ -1159,23 +1137,22 @@ inputs:
   value: {}
   required: false
   description: Template name to enforce WildFire best practices profile.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: pre_post
   value: {}
   required: false
-  description: Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory
-    for Panorama instances.
-  playbookInputQuery: null
+  description: Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances.
+  playbookInputQuery:
 - key: device-group
   value: {}
   required: false
   description: The device group for which to return addresses (Panorama instances).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: tag
   value: {}
   required: false
   description: Tag for which to filter the rules.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: query_type
   value: {}
   required: false
@@ -1183,7 +1160,7 @@ inputs:
     The type of the indicator query this playbook is running. Possible values can be:
     Direct - The playbook query returns a list of "STIX ATT&CK Pattern" indicators.
     ,relationship,unit42,other
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Handled.Techniques
   description: The techniques handled in this playbook
@@ -1191,4 +1168,4 @@ outputs:
 quiet: true
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
+fromversion: 6.5.0

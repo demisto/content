@@ -1,22 +1,6 @@
 id: Courses of Action - Collection
 name: Courses of Action - Collection
-description: "This playbook handles MITRE ATT&CK Techniques using intelligence-driven\
-  \ Courses of Action (COA) defined by Palo Alto Networks Unit 42 team.\n \n***Disclaimer:\
-  \ This playbook does not simulate an attack using the specified techniques, but\
-  \ follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s\
-  \ Actionable Threat Objects and Mitigations (ATOMs).\n \nTechniques Handled:\n-\
-  \ T1005 - Data from Local System\n- Kill Chain phase:\n- Collection\n\nMITRE ATT&CK\
-  \ Description: \nThe adversary is attempting to gather data of interest to accomplish\
-  \ their goal.\n \nCollection consists of techniques adversaries may use to gather\
-  \ information and the sources information is collected from that are relevant to\
-  \ following through on the adversary’s objectives. Frequently, the next goal after\
-  \ collecting data is to steal (exfiltrate) the data. Common target sources include\
-  \ various drive types, browsers, audio, video, and email. Common collection methods\
-  \ include capturing screenshots and keyboard input.\n\nPossible playbook triggers:\n\
-  - The playbook can be used as a part of the “Courses of Action - Collection” playbook\
-  \ to remediate techniques based on kill chain phase.\n- The playbook can be used\
-  \ as a part of the “MITRE ATT&CK - Courses of Action” playbook, that can be triggered\
-  \ by different sources and accepts the technique MITRE ATT&CK ID as an input.\n"
+description: "This playbook handles MITRE ATT&CK Techniques using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team.\n \n***Disclaimer: This playbook does not simulate an attack using the specified techniques, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\n \nTechniques Handled:\n- T1005 - Data from Local System\n- Kill Chain phase:\n- Collection\n\nMITRE ATT&CK Description: \nThe adversary is attempting to gather data of interest to accomplish their goal.\n \nCollection consists of techniques adversaries may use to gather information and the sources information is collected from that are relevant to following through on the adversary’s objectives. Frequently, the next goal after collecting data is to steal (exfiltrate) the data. Common target sources include various drive types, browsers, audio, video, and email. Common collection methods include capturing screenshots and keyboard input.\n\nPossible playbook triggers:\n- The playbook can be used as a part of the “Courses of Action - Collection” playbook to remediate techniques based on kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, that can be triggered by different sources and accepts the technique MITRE ATT&CK ID as an input.\n"
 inputs:
 - description: Mitre ATT&CK ID of a technique.
   key: technique
@@ -311,8 +295,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       id: cce8f4ba-f0ff-4421-80b8-835c499ff837
       iscommand: false
       name: Set techniques information to the layout
@@ -346,4 +329,4 @@ view: |-
   }
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
+fromversion: 6.5.0

@@ -20,8 +20,7 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
-- description: Determines whether the rule is a pre-rulebase or post-rulebase rule,
-    according to the rule structure. Exists only in panorama!
+- description: Determines whether the rule is a pre-rulebase or post-rulebase rule, according to the rule structure. Exists only in panorama!
   key: pre-post-rulebase
   playbookInputQuery:
   required: false
@@ -299,8 +298,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       id: 4661e733-bd5d-4f69-87e5-6dd1ba34646d
       iscommand: false
       name: Set existing Anti Spyware profile
@@ -524,10 +522,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "You are missing a DNS Security license which is a prerequisite\
-        \ for this \"PAN-OS -Enforce Anti-Spyware Best Practices Profile\" playbook,\
-        \ and for the related \"Courses of Action\" playbooks. \nPlease contact your\
-        \ Palo Alto Networks account manager for future guidance and assistance."
+      description: "You are missing a DNS Security license which is a prerequisite for this \"PAN-OS -Enforce Anti-Spyware Best Practices Profile\" playbook, and for the related \"Courses of Action\" playbooks. \nPlease contact your Palo Alto Networks account manager for future guidance and assistance."
       id: 0f9b2835-0ec5-4414-8470-0a4d483b0685
       iscommand: false
       name: Missing License - Please contact your Palo Alto Networks account manager
@@ -1061,7 +1056,7 @@ tasks:
       brand: ""
       id: be78f7b7-5fa6-4173-8aae-7d56844ffbbb
       iscommand: false
-      name: Palo Alto Networks BPA - Submit Scan
+      name: 629bfb7f-d719-4b74-8f1b-7f5a97b816db
       playbookId: 629bfb7f-d719-4b74-8f1b-7f5a97b816db
       type: playbook
       version: -1
@@ -1196,4 +1191,4 @@ view: |-
   }
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
+fromversion: 6.5.0

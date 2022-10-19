@@ -1,25 +1,6 @@
 id: Courses of Action - Impact
 name: Courses of Action - Impact
-description: "This playbook handles MITRE ATT&CK Techniques using intelligence-driven\
-  \ Courses of Action (COA) defined by Palo Alto Networks Unit 42 team. It utilizes\
-  \ each of the sub-playbooks for specific techniques that belong to this phase (tactic)\
-  \ according to the MITRE ATT&CK kill chain. The sub-playbook called depends on the\
-  \ technique input.\n \n***Disclaimer: This playbook does not simulate an attack\
-  \ using the specified techniques, but follows the steps to remediation as defined\
-  \ by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations\
-  \ (ATOMs).\n \nTactic:\n- TA0040: Impact\n\nMITRE ATT&CK Description: \nThe adversary\
-  \ is trying to manipulate, interrupt, or destroy your systems and data.\n\nImpact\
-  \ consists of techniques that adversaries use to disrupt availability or compromise\
-  \ integrity by manipulating business and operational processes. Techniques used\
-  \ for impact can include destroying or tampering with data. In some cases, business\
-  \ processes can look fine, but may have been altered to benefit the adversaries’\
-  \ goals. These techniques might be used by adversaries to follow through on their\
-  \ end goal or to provide cover for a confidentiality breach.\n\nPossible playbook\
-  \ triggers:\n- The playbook can be used as a part of the “Courses of Action - Collection”\
-  \ playbook to remediate techniques based on kill chain phase.\n- The playbook can\
-  \ be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, that can\
-  \ be triggered by different sources and accepts the technique MITRE ATT&CK ID as\
-  \ an input.\n"
+description: "This playbook handles MITRE ATT&CK Techniques using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team. It utilizes each of the sub-playbooks for specific techniques that belong to this phase (tactic) according to the MITRE ATT&CK kill chain. The sub-playbook called depends on the technique input.\n \n***Disclaimer: This playbook does not simulate an attack using the specified techniques, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\n \nTactic:\n- TA0040: Impact\n\nMITRE ATT&CK Description: \nThe adversary is trying to manipulate, interrupt, or destroy your systems and data.\n\nImpact consists of techniques that adversaries use to disrupt availability or compromise integrity by manipulating business and operational processes. Techniques used for impact can include destroying or tampering with data. In some cases, business processes can look fine, but may have been altered to benefit the adversaries’ goals. These techniques might be used by adversaries to follow through on their end goal or to provide cover for a confidentiality breach.\n\nPossible playbook triggers:\n- The playbook can be used as a part of the “Courses of Action - Collection” playbook to remediate techniques based on kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, that can be triggered by different sources and accepts the technique MITRE ATT&CK ID as an input.\n"
 inputs:
 - description: Mitre ATT&CK ID of a technique.
   key: technique
@@ -314,8 +295,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       id: a0b7d010-d62b-4a41-8b85-5f9b3c5736e7
       iscommand: false
       name: Set techniques information to the layout
@@ -349,4 +329,4 @@ view: |-
   }
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
+fromversion: 6.5.0

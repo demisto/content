@@ -25,8 +25,7 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
-- description: Determines whether the rule is a pre-rulebase or post-rulebase rule,
-    according to the rule structure. Exists only in panorama!
+- description: Determines whether the rule is a pre-rulebase or post-rulebase rule, according to the rule structure. Exists only in panorama!
   key: pre-post-rulebase
   playbookInputQuery:
   required: false
@@ -252,8 +251,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       id: cbe34cfd-168b-4709-8fe6-5bc0d161c038
       iscommand: false
       name: Set existing WildFire profile
@@ -421,8 +419,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Enforces wildfire best practices to upload files to the maximum
-        size, forwards all file types, and updates the schedule.
+      description: Enforces wildfire best practices to upload files to the maximum size, forwards all file types, and updates the schedule.
       id: fd128974-925c-4089-8a7c-76ea2a8566ec
       iscommand: true
       name: PAN-OS - Enforce WildFire best practice
@@ -507,10 +504,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "You are missing a WildFire license which is a prerequisite for\
-        \ this \"PAN-OS - Enforce WildFire Best Practices Profile\" playbook, and\
-        \ for the related \"Courses of Action\" playbooks. \nPlease contact your Palo\
-        \ Alto Networks account manager for future guidance and assistance."
+      description: "You are missing a WildFire license which is a prerequisite for this \"PAN-OS - Enforce WildFire Best Practices Profile\" playbook, and for the related \"Courses of Action\" playbooks. \nPlease contact your Palo Alto Networks account manager for future guidance and assistance."
       id: e260f7dd-8ed3-421f-8174-75f8807f76fe
       iscommand: false
       name: Missing License - Please contact your Palo Alto Networks account manager
@@ -1166,7 +1160,7 @@ tasks:
       brand: ""
       id: 55ed3638-4dea-43d1-8c90-915bc5167a5a
       iscommand: false
-      name: Palo Alto Networks BPA - Submit Scan
+      name: 629bfb7f-d719-4b74-8f1b-7f5a97b816db
       playbookId: 629bfb7f-d719-4b74-8f1b-7f5a97b816db
       type: playbook
       version: -1
@@ -1272,4 +1266,4 @@ view: |-
   }
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
+fromversion: 6.5.0

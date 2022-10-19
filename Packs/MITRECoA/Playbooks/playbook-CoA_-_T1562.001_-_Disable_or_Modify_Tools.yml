@@ -1,20 +1,4 @@
-description: "This playbook Remediates the Disable or Modify Tools technique using\
-  \ intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit\
-  \ 42 team.\n \n***Disclaimer: This playbook does not simulate an attack using the\
-  \ specified technique, but follows the steps to remediation as defined by Palo Alto\
-  \ Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\nTechniques\
-  \ Handled:\n- T1562.001: Impair Defenses: Disable or Modify Tools\n\nKill Chain\
-  \ phases:\n- Defense Evasion\n\nMITRE ATT&CK Description:\nAdversaries may disable\
-  \ security tools to avoid possible detection of their tools and activities. This\
-  \ can take the form of killing security software or event logging processes, deleting\
-  \ Registry keys so that tools do not start at run time, or other methods to interfere\
-  \ with security tools scanning or reporting information.\n\nPossible playbook uses:\n\
-  - The playbook can be used independently to handle and remediate the specific technique.\n\
-  - The playbook can be used as a part of the “Courses of Action - Defense Evasion”\
-  \ playbook to remediate techniques based on the kill chain phase.\n- The playbook\
-  \ can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, which\
-  \ can be triggered by different sources and accepts the technique MITRE ATT&CK ID\
-  \ as an input.\n\n"
+description: "This playbook Remediates the Disable or Modify Tools technique using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team.\n \n***Disclaimer: This playbook does not simulate an attack using the specified technique, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\nTechniques Handled:\n- T1562.001: Impair Defenses: Disable or Modify Tools\n\nKill Chain phases:\n- Defense Evasion\n\nMITRE ATT&CK Description:\nAdversaries may disable security tools to avoid possible detection of their tools and activities. This can take the form of killing security software or event logging processes, deleting Registry keys so that tools do not start at run time, or other methods to interfere with security tools scanning or reporting information.\n\nPossible playbook uses:\n- The playbook can be used independently to handle and remediate the specific technique.\n- The playbook can be used as a part of the “Courses of Action - Defense Evasion” playbook to remediate techniques based on the kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, which can be triggered by different sources and accepts the technique MITRE ATT&CK ID as an input.\n\n"
 id: MITRE ATT&CK CoA - T1562.001 - Disable or Modify Tools
 inputs: []
 name: MITRE ATT&CK CoA - T1562.001 - Disable or Modify Tools
@@ -63,12 +47,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Manual - Configure XDR Behavioral Threat Protection under the Malware
-        Security Profile.
+      description: Manual - Configure XDR Behavioral Threat Protection under the Malware Security Profile.
       id: f2802473-aa9a-4d7c-889b-4c32e7a24128
       iscommand: false
-      name: Manual - Configure XDR Behavioral Threat Protection under the Malware
-        Security Profile
+      name: Manual - Configure XDR Behavioral Threat Protection under the Malware Security Profile
       type: regular
       version: -1
     taskid: f2802473-aa9a-4d7c-889b-4c32e7a24128
@@ -160,8 +142,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       id: 8feaf870-e4ed-4ba6-8ad6-d5e312181c0b
       iscommand: false
       name: Is Cortex XDR integration Enabled?
@@ -266,4 +247,4 @@ view: |-
   }
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
+fromversion: 6.5.0

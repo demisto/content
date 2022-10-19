@@ -4,7 +4,7 @@
         "MITRE ATT\u0026CK CoA"
     ],
     "caseInsensitive": true,
-    "cliName": "antispywarerules",
+    "cliName": "mitrecoaantispywarerules",
     "closeForm": false,
     "content": true,
     "description": "The list of rules that the Anti-Spyware best practices profile is applied to.",
@@ -14,7 +14,7 @@
     "id": "incident_antispywarerules",
     "isReadOnly": false,
     "locked": false,
-    "name": "Anti-Spyware Rules",
+    "name": "Mitre COA - Anti-Spyware Rules",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [
@@ -26,8 +26,8 @@
     "threshold": 72,
     "type": "shortText",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "5.5.0"
+    "fromVersion": "6.5.0"
 }

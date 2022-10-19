@@ -4,7 +4,7 @@
         "MITRE ATT\u0026CK CoA"
     ],
     "caseInsensitive": true,
-    "cliName": "antispywareprofilename",
+    "cliName": "mitrecoaantispywareprofilename",
     "closeForm": false,
     "content": true,
     "description": "Anti-Spyware best practices profile name.",
@@ -14,7 +14,7 @@
     "id": "incident_antispywareprofilename",
     "isReadOnly": false,
     "locked": false,
-    "name": "Anti-Spyware Profile Name",
+    "name": "Mitre COA - Anti-Spyware Profile Name",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [
@@ -26,8 +26,8 @@
     "threshold": 72,
     "type": "shortText",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "5.5.0"
+    "fromVersion": "6.5.0"
 }

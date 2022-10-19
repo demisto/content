@@ -4,7 +4,7 @@
         "MITRE ATT\u0026CK CoA"
     ],
     "caseInsensitive": true,
-    "cliName": "techniqueslist",
+    "cliName": "mitrecoatechniqueslist",
     "closeForm": false,
     "content": true,
     "description": "The list of MITRE ATT\u0026CK techniques.",
@@ -14,7 +14,7 @@
     "id": "incident_techniqueslist",
     "isReadOnly": false,
     "locked": false,
-    "name": "Techniques List",
+    "name": "Mitre COA - Techniques List",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
@@ -23,8 +23,8 @@
     "threshold": 72,
     "type": "longText",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.5.0"
 }

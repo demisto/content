@@ -1,26 +1,4 @@
-description: "This playbook Remediates the Trusted Relationship technique using intelligence-driven\
-  \ Courses of Action (COA) defined by Palo Alto Networks Unit 42 team.\n \n***Disclaimer:\
-  \ This playbook does not simulate an attack using the specified technique, but follows\
-  \ the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable\
-  \ Threat Objects and Mitigations (ATOMs).\nTechniques Handled:\n- T1199: Trusted\
-  \ Relationship\n\nKill Chain phases:\n- Initial Access\n\nMITRE ATT&CK Description:\n\
-  \nAdversaries may breach or otherwise leverage organizations who have access to\
-  \ intended victims. Access through trusted third party relationship exploits an\
-  \ existing connection that may not be protected or receives less scrutiny than standard\
-  \ mechanisms of gaining access to a network.\n\nOrganizations often grant elevated\
-  \ access to second or third-party external providers in order to allow them to manage\
-  \ internal systems as well as cloud-based environments. Some examples of these relationships\
-  \ include IT services contractors, managed security providers, infrastructure contractors\
-  \ (e.g. HVAC, elevators, physical security). The third-party provider's access may\
-  \ be intended to be limited to the infrastructure being maintained, but may exist\
-  \ on the same network as the rest of the enterprise. As such, Valid Accounts used\
-  \ by the other party for access to internal network systems may be compromised and\
-  \ used.\n\nPossible playbook uses:\n- The playbook can be used independently to\
-  \ handle and remediate the specific technique.\n- The playbook can be used as a\
-  \ part of the “Courses of Action - Defense Evasion” playbook to remediate techniques\
-  \ based on the kill chain phase.\n- The playbook can be used as a part of the “MITRE\
-  \ ATT&CK - Courses of Action” playbook, which can be triggered by different sources\
-  \ and accepts the technique MITRE ATT&CK ID as an input."
+description: "This playbook Remediates the Trusted Relationship technique using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team.\n \n***Disclaimer: This playbook does not simulate an attack using the specified technique, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\nTechniques Handled:\n- T1199: Trusted Relationship\n\nKill Chain phases:\n- Initial Access\n\nMITRE ATT&CK Description:\n\nAdversaries may breach or otherwise leverage organizations who have access to intended victims. Access through trusted third party relationship exploits an existing connection that may not be protected or receives less scrutiny than standard mechanisms of gaining access to a network.\n\nOrganizations often grant elevated access to second or third-party external providers in order to allow them to manage internal systems as well as cloud-based environments. Some examples of these relationships include IT services contractors, managed security providers, infrastructure contractors (e.g. HVAC, elevators, physical security). The third-party provider's access may be intended to be limited to the infrastructure being maintained, but may exist on the same network as the rest of the enterprise. As such, Valid Accounts used by the other party for access to internal network systems may be compromised and used.\n\nPossible playbook uses:\n- The playbook can be used independently to handle and remediate the specific technique.\n- The playbook can be used as a part of the “Courses of Action - Defense Evasion” playbook to remediate techniques based on the kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, which can be triggered by different sources and accepts the technique MITRE ATT&CK ID as an input."
 id: MITRE ATT&CK CoA - T1199 - Trusted Relationship
 inputs: []
 name: MITRE ATT&CK CoA - T1199 - Trusted Relationship
@@ -203,4 +181,4 @@ view: |-
   }
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
+fromversion: 6.5.0

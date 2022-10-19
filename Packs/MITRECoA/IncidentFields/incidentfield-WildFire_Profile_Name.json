@@ -4,7 +4,7 @@
         "MITRE ATT\u0026CK CoA"
     ],
     "caseInsensitive": true,
-    "cliName": "wildfireprofilename",
+    "cliName": "mitrecoawildfireprofilename",
     "closeForm": false,
     "content": true,
     "description": "WildFire best practices profile name.",
@@ -14,7 +14,7 @@
     "id": "incident_wildfireprofilename",
     "isReadOnly": false,
     "locked": false,
-    "name": "WildFire Profile Name",
+    "name": "Mitre COA - WildFire Profile Name",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [
@@ -26,8 +26,8 @@
     "threshold": 72,
     "type": "shortText",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "5.5.0"
+    "fromVersion": "6.5.0"
 }

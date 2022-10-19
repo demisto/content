@@ -153,8 +153,7 @@ tasks:
       id: a8abd0f3-28ca-42d5-87f8-9339118e4fa4
       version: -1
       name: PAN-OS - Create Or Edit Rule
-      description: Creates or edits a Panorama rule and moves it into the desired
-        position
+      description: Creates or edits a Panorama rule and moves it into the desired position
       playbookName: PAN-OS - Create Or Edit Rule
       type: playbook
       iscommand: false
@@ -225,8 +224,7 @@ tasks:
       id: 366d79d0-5327-4af9-818b-679edda71f0f
       version: -1
       name: PAN-OS Apply security profile to a rule
-      description: Apply a security profile to specific rules or rules with a specific
-        tag.
+      description: Apply a security profile to specific rules or rules with a specific tag.
       script: '|||pan-os-apply-security-profile'
       type: regular
       iscommand: true
@@ -714,8 +712,7 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory
-          for Panorama instances.
+        tooltip: Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances.
         readonly: false
       - id: "1"
         label: ""
@@ -757,8 +754,7 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: 'The position of the rule in the ruleset. Valid values are:   * Top   *
-          Bottom   * Before   * After  The default is ''Bottom'''
+        tooltip: 'The position of the rule in the ruleset. Valid values are:   * Top   * Bottom   * Before   * After  The default is ''Bottom'''
         readonly: false
       - id: "4"
         label: ""
@@ -772,8 +768,7 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: If the rule-position that is chosen is before or after, specify the
-          rule name to which it is related.
+        tooltip: If the rule-position that is chosen is before or after, specify the rule name to which it is related.
         readonly: false
       - id: "5"
         label: ""
@@ -815,8 +810,7 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: 'The action that will be defined in the rule. Valid values are: *
-          allow * deny * drop'
+        tooltip: 'The action that will be defined in the rule. Valid values are: * allow * deny * drop'
         readonly: false
       title: Data for rule creation
       description: Please provide the necessary data for rule creation.
@@ -850,8 +844,7 @@ inputs:
 - key: profile_type
   value: {}
   required: true
-  description: Security profile type. Can be 'data-filtering', 'file-blocking', 'spyware',
-    'url-filtering', 'virus, 'vulnerability', or wildfire-analysis.'
+  description: Security profile type. Can be 'data-filtering', 'file-blocking', 'spyware', 'url-filtering', 'virus, 'vulnerability', or wildfire-analysis.'
   playbookInputQuery:
 - key: profile_name
   value: {}
@@ -861,8 +854,7 @@ inputs:
 - key: pre-post-rulebase
   value: {}
   required: false
-  description: Determines whether the rule is a pre-rulebase or post-rulebase rule,
-    according to the rule structure. Exists only in panorama!
+  description: Determines whether the rule is a pre-rulebase or post-rulebase rule, according to the rule structure. Exists only in panorama!
   playbookInputQuery:
 - key: tag
   value: {}
@@ -872,4 +864,4 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
+fromversion: 6.5.0

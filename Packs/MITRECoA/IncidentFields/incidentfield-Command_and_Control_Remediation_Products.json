@@ -4,7 +4,7 @@
         "MITRE ATT\u0026CK CoA"
     ],
     "caseInsensitive": true,
-    "cliName": "commandandcontrolremediationproducts",
+    "cliName": "mitrecoacommandandcontrolremediationproducts",
     "closeForm": false,
     "content": true,
     "description": "The list of products used for remediation of techniques that belong to the Command and Control MITRE ATT\u0026CK phase.",
@@ -14,7 +14,7 @@
     "id": "incident_commandandcontrolremediationproducts",
     "isReadOnly": false,
     "locked": false,
-    "name": "Command and Control Remediation Products",
+    "name": "Mitre COA - Command and Control Remediation Products",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [
@@ -26,8 +26,8 @@
     "threshold": 72,
     "type": "markdown",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "5.5.0"
+    "fromVersion": "6.5.0"
 }

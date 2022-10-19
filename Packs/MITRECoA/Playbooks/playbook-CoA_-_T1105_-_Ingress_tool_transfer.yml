@@ -1,20 +1,4 @@
-description: "This playbook Remediates the Ingress tool transfer technique using intelligence-driven\
-  \ Courses of Action (COA) defined by Palo Alto Networks Unit 42 team.\n \n***Disclaimer:\
-  \ This playbook does not simulate an attack using the specified technique, but follows\
-  \ the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable\
-  \ Threat Objects and Mitigations (ATOMs).\nTechniques Handled:\n- T1105: Ingress\
-  \ tool transfer\n\nKill Chain phases:\n- Command And Control\n\nMITRE ATT&CK Description:\n\
-  Adversaries may transfer tools or other files from an external system into a compromised\
-  \ environment. Files may be copied from an external adversary controlled system\
-  \ through the command and control channel to bring tools into the victim network\
-  \ or through alternate protocols with another tool such as FTP. Files can also be\
-  \ copied over on Mac and Linux with native tools like scp, rsync, and sftp.\n\n\
-  Possible playbook uses:\n- The playbook can be used independently to handle and\
-  \ remediate the specific technique.\n- The playbook can be used as a part of the\
-  \ “Courses of Action - Defense Evasion” playbook to remediate techniques based on\
-  \ the kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK\
-  \ - Courses of Action” playbook, which can be triggered by different sources and\
-  \ accepts the technique MITRE ATT&CK ID as an input.\n"
+description: "This playbook Remediates the Ingress tool transfer technique using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team.\n \n***Disclaimer: This playbook does not simulate an attack using the specified technique, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\nTechniques Handled:\n- T1105: Ingress tool transfer\n\nKill Chain phases:\n- Command And Control\n\nMITRE ATT&CK Description:\nAdversaries may transfer tools or other files from an external system into a compromised environment. Files may be copied from an external adversary controlled system through the command and control channel to bring tools into the victim network or through alternate protocols with another tool such as FTP. Files can also be copied over on Mac and Linux with native tools like scp, rsync, and sftp.\n\nPossible playbook uses:\n- The playbook can be used independently to handle and remediate the specific technique.\n- The playbook can be used as a part of the “Courses of Action - Defense Evasion” playbook to remediate techniques based on the kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, which can be triggered by different sources and accepts the technique MITRE ATT&CK ID as an input.\n"
 id: MITRE ATT&CK CoA - T1105 - Ingress tool transfer
 inputs:
 - description: Template name to enforce WildFire best practices profile.
@@ -22,8 +6,7 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
-- description: Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory
-    for Panorama instances.
+- description: Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances.
   key: pre_post
   playbookInputQuery:
   required: false
@@ -142,8 +125,7 @@ tasks:
       brand: ""
       id: 0f806e0f-6792-40cb-8992-340b38f5e87b
       iscommand: false
-      name: Cortex XDR monitors for behavioral events indicative of command and control
-        activity
+      name: Cortex XDR monitors for behavioral events indicative of command and control activity
       type: title
       version: -1
       description: ''
@@ -169,12 +151,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Cortex XDR monitors for behavioral events indicative of command
-        and control activity.
+      description: Cortex XDR monitors for behavioral events indicative of command and control activity.
       id: a274fe1b-1649-447c-880c-8fd5bb5b4561
       iscommand: false
-      name: Cortex XDR monitors for behavioral events indicative of command and control
-        activity
+      name: Cortex XDR monitors for behavioral events indicative of command and control activity
       type: regular
       version: -1
     taskid: a274fe1b-1649-447c-880c-8fd5bb5b4561
@@ -310,8 +290,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       id: 96e89b0c-fff8-48c1-8011-5265812777ed
       iscommand: false
       name: Is Cortex XDR integration Enabled?
@@ -468,4 +447,4 @@ view: |-
   }
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
+fromversion: 6.5.0

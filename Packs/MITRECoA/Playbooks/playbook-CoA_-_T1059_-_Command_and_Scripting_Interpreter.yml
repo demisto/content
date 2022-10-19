@@ -1,28 +1,4 @@
-description: "This playbook Remediates the Command and Scripting Interpreter technique\
-  \ using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks\
-  \ Unit 42 team.\n \n***Disclaimer: This playbook does not simulate an attack using\
-  \ the specified technique, but follows the steps to remediation as defined by Palo\
-  \ Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\n\
-  Techniques Handled:\n- T1059: Command and Scripting Interpreter\n\nKill Chain phases:\n\
-  - Execution\n\nMITRE ATT&CK Description:\n\nAdversaries may abuse command and script\
-  \ interpreters to execute commands, scripts, or binaries. These interfaces and languages\
-  \ provide ways of interacting with computer systems and are a common feature across\
-  \ many different platforms. Most systems come with some built-in command-line interface\
-  \ and scripting capabilities, for example, macOS and Linux distributions include\
-  \ some flavor of Unix Shell while Windows installations include the Windows Command\
-  \ Shell and PowerShell.\n\nThere are also cross-platform interpreters such as Python,\
-  \ as well as those commonly associated with client applications such as JavaScript/JScript\
-  \ and Visual Basic.\n\nAdversaries may abuse these technologies in various ways\
-  \ as a means of executing arbitrary commands. Commands and scripts can be embedded\
-  \ in Initial Access payloads delivered to victims as lure documents or as secondary\
-  \ payloads downloaded from an existing C2. Adversaries may also execute commands\
-  \ through interactive terminals/shells.\n\nPossible playbook uses:\n- The playbook\
-  \ can be used independently to handle and remediate the specific technique.\n- The\
-  \ playbook can be used as a part of the “Courses of Action - Defense Evasion” playbook\
-  \ to remediate techniques based on the kill chain phase.\n- The playbook can be\
-  \ used as a part of the “MITRE ATT&CK - Courses of Action” playbook, which can be\
-  \ triggered by different sources and accepts the technique MITRE ATT&CK ID as an\
-  \ input.\n"
+description: "This playbook Remediates the Command and Scripting Interpreter technique using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team.\n \n***Disclaimer: This playbook does not simulate an attack using the specified technique, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\nTechniques Handled:\n- T1059: Command and Scripting Interpreter\n\nKill Chain phases:\n- Execution\n\nMITRE ATT&CK Description:\n\nAdversaries may abuse command and script interpreters to execute commands, scripts, or binaries. These interfaces and languages provide ways of interacting with computer systems and are a common feature across many different platforms. Most systems come with some built-in command-line interface and scripting capabilities, for example, macOS and Linux distributions include some flavor of Unix Shell while Windows installations include the Windows Command Shell and PowerShell.\n\nThere are also cross-platform interpreters such as Python, as well as those commonly associated with client applications such as JavaScript/JScript and Visual Basic.\n\nAdversaries may abuse these technologies in various ways as a means of executing arbitrary commands. Commands and scripts can be embedded in Initial Access payloads delivered to victims as lure documents or as secondary payloads downloaded from an existing C2. Adversaries may also execute commands through interactive terminals/shells.\n\nPossible playbook uses:\n- The playbook can be used independently to handle and remediate the specific technique.\n- The playbook can be used as a part of the “Courses of Action - Defense Evasion” playbook to remediate techniques based on the kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, which can be triggered by different sources and accepts the technique MITRE ATT&CK ID as an input.\n"
 id: MITRE ATT&CK CoA - T1059 - Command and Scripting Interpreter
 inputs: []
 name: MITRE ATT&CK CoA - T1059 - Command and Scripting Interpreter
@@ -166,8 +142,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       id: d5859bf8-b2c5-4d93-8521-1c66d09e0df6
       iscommand: false
       name: Is Cortex XDR integration Enabled?
@@ -271,4 +246,4 @@ view: |-
   }
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
+fromversion: 6.5.0

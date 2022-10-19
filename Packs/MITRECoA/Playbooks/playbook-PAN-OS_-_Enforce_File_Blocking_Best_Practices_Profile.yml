@@ -19,8 +19,7 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
-- description: Determines whether the rule is a pre-rulebase or post-rulebase rule,
-    according to the rule structure. Exists only in panorama!
+- description: Determines whether the rule is a pre-rulebase or post-rulebase rule, according to the rule structure. Exists only in panorama!
   key: pre-post-rulebase
   playbookInputQuery:
   required: false
@@ -73,8 +72,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       id: 5fe876ca-a681-49c4-8ea4-4e6240bf2c11
       iscommand: false
       name: Is PAN-OS integration enabled?
@@ -196,8 +194,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       id: 9c2832f0-7495-4a39-8d39-e6fc35f603b0
       iscommand: false
       name: Set existing file blocking profile
@@ -895,7 +892,7 @@ tasks:
       brand: ""
       id: 117ebd0e-b5f6-43e0-88f8-b57c483b3914
       iscommand: false
-      name: Palo Alto Networks BPA - Submit Scan
+      name: 629bfb7f-d719-4b74-8f1b-7f5a97b816db
       playbookId: 629bfb7f-d719-4b74-8f1b-7f5a97b816db
       type: playbook
       version: -1
@@ -1030,4 +1027,4 @@ view: |-
   }
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
+fromversion: 6.5.0

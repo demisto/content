@@ -1,25 +1,4 @@
-description: "This playbook Remediates the Boot or Logon Autostart Execution technique\
-  \ using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks\
-  \ Unit 42 team.\n \n***Disclaimer: This playbook does not simulate an attack using\
-  \ the specified technique, but follows the steps to remediation as defined by Palo\
-  \ Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\n\
-  Techniques Handled:\n- T1547: Boot or Logon Autostart Execution\n\nKill Chain phases:\n\
-  - Persistence\n- Privilege Escalation\n\nMITRE ATT&CK Description:\n\nAdversaries\
-  \ may configure system settings to automatically execute a program during system\
-  \ boot or logon to maintain persistence or gain higher-level privileges on compromised\
-  \ systems. Operating systems may have mechanisms for automatically running a program\
-  \ on system boot or account logon.[1][2][3][4][5]  These mechanisms may include\
-  \ automatically executing programs that are placed in specially designated directories\
-  \ or are referenced by repositories that store configuration information, such as\
-  \ the Windows Registry. An adversary may achieve the same goal by modifying or extending\
-  \ features of the kernel.\n\nSince some boot or logon autostart programs run with\
-  \ higher privileges, an adversary may leverage these to elevate privileges.\n\n\
-  Possible playbook uses:\n- The playbook can be used independently to handle and\
-  \ remediate the specific technique.\n- The playbook can be used as a part of the\
-  \ “Courses of Action - Defense Evasion” playbook to remediate techniques based on\
-  \ the kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK\
-  \ - Courses of Action” playbook, which can be triggered by different sources and\
-  \ accepts the technique MITRE ATT&CK ID as an input."
+description: "This playbook Remediates the Boot or Logon Autostart Execution technique using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team.\n \n***Disclaimer: This playbook does not simulate an attack using the specified technique, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\nTechniques Handled:\n- T1547: Boot or Logon Autostart Execution\n\nKill Chain phases:\n- Persistence\n- Privilege Escalation\n\nMITRE ATT&CK Description:\n\nAdversaries may configure system settings to automatically execute a program during system boot or logon to maintain persistence or gain higher-level privileges on compromised systems. Operating systems may have mechanisms for automatically running a program on system boot or account logon.[1][2][3][4][5]  These mechanisms may include automatically executing programs that are placed in specially designated directories or are referenced by repositories that store configuration information, such as the Windows Registry. An adversary may achieve the same goal by modifying or extending features of the kernel.\n\nSince some boot or logon autostart programs run with higher privileges, an adversary may leverage these to elevate privileges.\n\nPossible playbook uses:\n- The playbook can be used independently to handle and remediate the specific technique.\n- The playbook can be used as a part of the “Courses of Action - Defense Evasion” playbook to remediate techniques based on the kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, which can be triggered by different sources and accepts the technique MITRE ATT&CK ID as an input."
 id: MITRE ATT&CK CoA - T1547 - Boot or Logon Autostart Execution
 inputs: []
 name: MITRE ATT&CK CoA - T1547 - Boot or Logon Autostart Execution
@@ -180,12 +159,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Manual - Configure Behavioral Threat Protection under the Malware
-        Security Profile.
+      description: Manual - Configure Behavioral Threat Protection under the Malware Security Profile.
       id: 6931f946-df0b-4cf4-8841-7fc3af134dd6
       iscommand: false
-      name: Manual - Configure Behavioral Threat Protection under the Malware Security
-        Profile
+      name: Manual - Configure Behavioral Threat Protection under the Malware Security Profile
       type: regular
       version: -1
     taskid: 6931f946-df0b-4cf4-8841-7fc3af134dd6
@@ -212,8 +189,7 @@ tasks:
       brand: ""
       id: 2ea509b7-549a-4348-8348-e821335f9a5f
       iscommand: false
-      name: Configure Behavioral Threat Protection under the Malware Security Profile
-        in Cortex XDR
+      name: Configure Behavioral Threat Protection under the Malware Security Profile in Cortex XDR
       type: title
       version: -1
       description: ''
@@ -306,8 +282,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       id: d196de01-ed78-487f-8db6-cf6b62117284
       iscommand: false
       name: Is Cortex XDR integration Enabled?
@@ -411,4 +386,4 @@ view: |-
   }
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
+fromversion: 6.5.0

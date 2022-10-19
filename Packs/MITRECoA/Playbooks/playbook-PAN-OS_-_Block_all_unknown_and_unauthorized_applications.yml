@@ -7,8 +7,7 @@ description: |
   - Commits the configuration.
 id: PAN-OS - Block all unknown and unauthorized applications
 inputs:
-- description: Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory
-    for Panorama instances.
+- description: Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances.
   key: pre_post
   playbookInputQuery:
   required: false
@@ -365,4 +364,4 @@ view: |-
   }
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
+fromversion: 6.5.0
