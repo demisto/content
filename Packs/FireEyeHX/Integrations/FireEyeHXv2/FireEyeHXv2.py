@@ -1,11 +1,12 @@
 import urllib.parse
+import urllib3
 from json import JSONDecodeError
 from typing import Tuple, Pattern
 
 from CommonServerPython import *
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
