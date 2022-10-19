@@ -852,7 +852,8 @@ def available_remediation_actions_command(client: Client, args: dict):
                 })
 
     return CommandResults(readable_output=tableToMarkdown(f'Cybereason available remediation actions for malop {malop_guid}:',
-                                                          cybereason_outputs, removeNull=False), outputs_prefix='Cybereason.Remediation',
+                                                          cybereason_outputs, removeNull=False),
+                          outputs_prefix='Cybereason.Remediation',
                           outputs_key_field='TargetID', outputs=cybereason_outputs)
 
 
@@ -888,7 +889,7 @@ def quarantine_file_command(client: Client, args: dict):
     comment = str(args.get('comment')) if args.get('comment') else 'Quarantine File Remediation Action Succeeded'
     remediation_action = 'QUARANTINE_FILE'
     is_machine_connected = is_probe_connected_command(client, args, is_remediation_command=True)
-    if is_machine_connected is False:
+    if is_machine_connected is True:
         response = get_remediation_action(client, malop_guid, machine_name, target_id, remediation_action)
         action_status = get_remediation_action_status(client, user_name, malop_guid, response, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
@@ -1736,7 +1737,8 @@ def download_fetchfile_command(client: Client, args: dict):
         file_download = fileResult('download.zip', response.content)
         return file_download
     else:
-        raise DemistoException("request failed with the following error: " + response.content + " Response Status code: " + str(response.status_code))
+        error_message = f"request failed with the following error: {response.content} Response Status code:{response.status_code}"
+        raise DemistoException(error_message)
 
 
 def download_fetchfile(client: Client, batch_id: str) -> Any:
@@ -1765,25 +1767,27 @@ def malware_query_command(client: Client, args: dict):
     malware_status = str(args.get('status'))
     time_stamp = str(args.get('timestamp'))
     limit_range = arg_to_number(args.get('limit'))
-    if limit_range > 0:
-        filter_response = malware_query_filter(client, needs_attention, malware_type, malware_status, time_stamp, limit_range)
-        return CommandResults(raw_response=filter_response)
+    if limit_range:
+        if limit_range > 0:
+            filter_response = malware_query_filter(client, needs_attention, malware_type, malware_status, time_stamp, limit_range)
+            return CommandResults(raw_response=filter_response)
     else:
         raise DemistoException("Limit cannot be zero or a negative number.")
 
 
 def malware_query_filter(
-        client: Client, needs_attention: bool, malware_type: str, malware_status: str, time_stamp: str, limit_range: Optional[int]) -> dict:
+        client: Client, needs_attention: bool, malware_type: str, malware_status: str, time_stamp: str,
+        limit_range: Optional[int]) -> dict:
     query = []
     if needs_attention:
         query.append({"fieldName": "needsAttention", "operator": "Is", "values": [bool(needs_attention)]})
-    if malware_type:
+    if malware_type != 'None':
         types = malware_type.split(",")
         query.append({"fieldName": "type", "operator": "Equals", "values": types})
-    if malware_status:
+    if malware_status != 'None':
         is_status = malware_status.split(",")
         query.append({"fieldName": "status", "operator": "Equals", "values": is_status})
-    if time_stamp:
+    if time_stamp != 'None':
         query.append({"fieldName": "timestamp", "operator": "GreaterThan", "values": [arg_to_number(time_stamp)]})
     response = malware_query(client, query, limit_range)
     return response
