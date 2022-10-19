@@ -2577,6 +2577,225 @@ script:
     name: nexpose-update-scan-schedule
   - arguments:
     - default: false
+      description: ID of the site.
+      isArray: false
+      name: site_id
+      required: false
+      secret: false
+    - default: false
+      description: Name of the site (can be used instead of `site_id`)
+      isArray: false
+      name: site_name
+      required: false
+      secret: false
+    - default: false
+      description: ID of the site scan credential to update.
+      isArray: false
+      name: credential_id
+      required: true
+      secret: false
+    - default: false
+      description: Name of the credential.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Credential service type.
+      isArray: false
+      name: service
+      predefined:
+        - AS400
+        - CIFS
+        - CIFSHash
+        - CVS
+        - DB2
+        - FTP
+        - HTTP
+        - MS-SQL
+        - MySQL
+        - Notes
+        - Oracle
+        - POP
+        - PostgresSQL
+        - Remote Exec
+        - SNMP
+        - SNMPv3
+        - SSH
+        - SSH Key
+        - Sybase
+        - Telnet
+      required: true
+      secret: false
+    - default: false
+      description: Database name.
+      isArray: false
+      name: database
+      required: false
+      secret: false
+    - default: false
+      description: Description for the credential.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: Domain address.
+      isArray: false
+      name: domain
+      required: false
+      secret: false
+    - default: false
+      description: Hostname or IP address to restrict the credentials to.
+      isArray: false
+      name: host_restriction
+      required: false
+      secret: false
+    - default: false
+      description: HTTP realm.
+      isArray: false
+      name: http_realm
+      required: false
+      secret: false
+    - default: false
+      description: Password for the notes account that will be used for authenticating.
+      isArray: false
+      name: notes_id_password
+      required: false
+      secret: false
+    - default: false
+      description: NTLM password hash.
+      isArray: false
+      name: ntlm_hash
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether the scan engine should attempt to enumerate SIDs from the environment.
+      isArray: false
+      name: oracle_enumerate_sids
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: The Oracle Net Listener password. Used to enumerate SIDs from your environment.
+      isArray: false
+      name: oracle_listener_password
+      required: false
+      secret: false
+    - default: false
+      description: Oracle database name.
+      isArray: false
+      name: oracle_sid
+      required: false
+      secret: false
+    - default: false
+      description: Password for the credential.
+      isArray: false
+      name: password
+      required: false
+      secret: false
+    - default: false
+      description: Further restricts the credential to attempt to authenticate on a specific port. Can be used only if `host_restriction` is used.
+      isArray: false
+      name: port_restriction
+      required: false
+      secret: false
+    - default: false
+      description: SNMP community for authentication.
+      isArray: false
+      name: community_name
+      required: false
+    - auto: PREDEFINED
+      default: false
+      description: SNMPv3 authentication type for the credential.
+      isArray: false
+      name: authentication_type
+      predefined:
+        - No Authentication
+        - MD5
+        - SHA
+      required: false
+      secret: false
+    - default: false
+      description: SNMPv3 privacy password to use.
+      isArray: false
+      name: privacy_password
+      required: false
+    - auto: PREDEFINED
+      default: false
+      description: SNMPv3 Privacy protocol to use.
+      isArray: false
+      name: privacy_type
+      predefined:
+        - No Privacy
+        - DES
+        - AES-128
+        - AES-192
+        - AES-192 With 3 DES Key Extension
+        - AES-256
+        - AES-256 with 3 DES Key Extension
+      required: false
+      secret: false
+    - default: false
+      description: PEM formatted private key.
+      isArray: false
+      name: ssh_key_pem
+      required: false
+    - auto: PREDEFINED
+      default: false
+      description: Elevation type to use for scans.
+      isArray: false
+      name: ssh_permission_elevation
+      predefined:
+        - None
+        - sudo
+        - sudosu
+        - su
+        - pbrun
+        - Privileged Exec
+      required: false
+      secret: false
+    - default: false
+      description: Password to use for elevation.
+      isArray: false
+      name: ssh_permission_elevation_password
+      required: false
+    - default: false
+      description: Username to use for elevation.
+      isArray: false
+      name: ssh_permission_elevation_username
+      required: false
+    - default: false
+      description: Password for the private key.
+      isArray: false
+      name: ssh_private_key_password
+      required: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to use Windows authentication.
+      isArray: false
+      name: use_windows_authentication
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Username for the credential.
+      isArray: false
+      name: username
+      required: false
+    deprecated: false
+    description: "Update an existing site scan credential. For detailed explanation of all parameters of this command,
+      please see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/setSiteCredentials"
+    execution: false
+    name: nexpose-update-site-scan-credential
+  - arguments:
+    - default: false
       description: The ID of the vulnerability exception to update.
       isArray: false
       name: id
