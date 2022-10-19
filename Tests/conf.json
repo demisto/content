@@ -5353,7 +5353,7 @@
         "TruSTAR v2-Test": "No credentials",
         "Process Email - Generic - Test - Incident Starter": "Issue CIAC-4161",
         "AD v2 - debug-mode": "No credentials",
-        "CortexAttackSurfaceManagement_Test": "No instance - "
+        "CortexAttackSurfaceManagement_Test": "No instance"
     },
     "skipped_integrations": {
         "AbuseIPDB": "License expired",
