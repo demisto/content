@@ -227,7 +227,7 @@ def get_machine_guid(client: Client, machine_name: str) -> str:
 ''' FUNCTIONS '''
 
 
-def is_probe_connected_command(client: Client, args: dict, is_remediation_commmand: bool = False) -> Any:
+def is_probe_connected_command(client: Client, args: dict, is_remediation_command: bool = False) -> Any:
     machine = str(args.get('machine'))
     is_connected = False
 
