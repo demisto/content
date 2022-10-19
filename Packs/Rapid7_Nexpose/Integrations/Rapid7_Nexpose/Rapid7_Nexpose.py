@@ -3625,19 +3625,23 @@ def list_shared_credential_command(client: Client, credential_id: Optional[str],
     )
 
 
-def list_assigned_shared_credential_command(client: Client, site: Site) -> CommandResults:
+def list_assigned_shared_credential_command(client: Client, site: Site, limit: Optional[int] = None) -> CommandResults:
     """
     Retrieve information about shared credentials for a specific site.
 
     Args:
         client (Client): Client to use for API requests.
         site (Site): Site to retrieve shared credentials from.
+        limit (int | None, optional): Limit the number of credentials to return. None means to not use a limit.
     """
     response_data = client.get_assigned_shared_credentials(site_id=site.id)
 
     if not response_data:
         site_id = site.name if site.name else site.id
         return CommandResults(readable_output=f"No assigned shared credentials were found for site \"{site_id}\".")
+
+    if limit is not None and limit < len(response_data):
+        response_data = response_data[:limit]
 
     headers = [
         "Id",
@@ -3687,7 +3691,8 @@ def list_site_scan_credential_command(client: Client, site: Site, credential_id:
         site_scan_credentials = client.get_site_scan_credentials(site_id=site.id)
 
     if not site_scan_credentials:
-        return CommandResults(readable_output="No site scan credentials were found.")
+        site_id = site.name if site.name else site.id
+        return CommandResults(readable_output=f"No site scan credentials were found for site \"{site_id}\".")
 
     if limit and len(site_scan_credentials) > limit:
         site_scan_credentials = site_scan_credentials[:limit]
@@ -4643,6 +4648,7 @@ def main():
                     site_name=args.get("site_name"),
                     client=client,
                 ),
+                limit=arg_to_number(args.get("limit")),
             )
         elif command == "nexpose-list-site-scan-credential":
             results = list_site_scan_credential_command(

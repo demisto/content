@@ -1327,6 +1327,12 @@ script:
       name: site_name
       required: false
       secret: false
+    - default: false
+      description: The number of records retrieve.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Retrieve information about shared credentials for a specific site.
     execution: false
