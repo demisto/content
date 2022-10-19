@@ -6,9 +6,11 @@ from CommonServerPython import *  # noqa: F401
 
 import tarfile
 import io
+import urllib3
+
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 BRAND = 'WildFire-v2'
