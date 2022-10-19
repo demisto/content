@@ -1180,7 +1180,7 @@ function SetJunkRulesCommand([ExchangeOnlineClient]$client, [hashtable]$kwargs) 
         $contacts_trusted = ConvertTo-Boolean $kwargs.contacts_trusted
     }
     if ($kwargs.enabled) {
-        $kwargs.enabled = ConvertTo-Boolean $kwargs.enabled
+        $enabled = ConvertTo-Boolean $kwargs.enabled
     }
 
     # Execute commands - No output for the command
