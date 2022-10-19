@@ -11,7 +11,7 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_remediatedtechniques",
+    "id": "incident_mitrecoaremediatedtechniques",
     "isReadOnly": false,
     "locked": false,
     "name": "Mitre COA - Remediated Techniques",

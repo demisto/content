@@ -11,7 +11,7 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_antispywarerules",
+    "id": "incident_mitrecoaantispywarerules",
     "isReadOnly": false,
     "locked": false,
     "name": "Mitre COA - Anti-Spyware Rules",

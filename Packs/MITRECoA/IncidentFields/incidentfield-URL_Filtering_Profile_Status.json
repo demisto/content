@@ -11,7 +11,7 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_urlfilteringprofilestatus",
+    "id": "incident_mitrecoaurlfilteringprofilestatus",
     "isReadOnly": false,
     "locked": false,
     "name": "Mitre COA - URL Filtering Profile Status",

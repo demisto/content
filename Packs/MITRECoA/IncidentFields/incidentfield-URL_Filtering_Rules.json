@@ -11,7 +11,7 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_urlfilteringrules",
+    "id": "incident_mitrecoaurlfilteringrules",
     "isReadOnly": false,
     "locked": false,
     "name": "Mitre COA - URL Filtering Rules",

@@ -11,7 +11,7 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_commandandcontrolremediationproducts",
+    "id": "incident_mitrecoacommandandcontrolremediationproducts",
     "isReadOnly": false,
     "locked": false,
     "name": "Mitre COA - Command and Control Remediation Products",

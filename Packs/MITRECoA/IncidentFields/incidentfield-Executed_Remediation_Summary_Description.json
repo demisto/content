@@ -11,7 +11,7 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_executedremediationsummarydescription",
+    "id": "incident_mitrecoaexecutedremediationsummarydescription",
     "isReadOnly": false,
     "locked": false,
     "name": "Mitre COA - Executed Remediation Summary Description",

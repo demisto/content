@@ -11,7 +11,7 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_antivirusprofilestatus",
+    "id": "incident_mitrecoaantivirusprofilestatus",
     "isReadOnly": false,
     "locked": false,
     "name": "Mitre COA - Anti-Virus Profile Status",

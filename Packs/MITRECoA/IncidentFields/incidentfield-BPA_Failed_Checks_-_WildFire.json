@@ -11,7 +11,7 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_bpafailedcheckswildfire",
+    "id": "incident_mitrecoabpafailedcheckswildfire",
     "isReadOnly": false,
     "locked": false,
     "name": "Mitre COA - BPA Failed Checks - WildFire",

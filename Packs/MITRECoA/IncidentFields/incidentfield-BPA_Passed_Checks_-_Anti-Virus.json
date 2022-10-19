@@ -11,7 +11,7 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_bpapassedchecksantivirus",
+    "id": "incident_mitrecoabpapassedchecksantivirus",
     "isReadOnly": false,
     "locked": false,
     "name": "Mitre COA - BPA Passed Checks - Anti-Virus",

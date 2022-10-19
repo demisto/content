@@ -30,7 +30,7 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_handledtechniques",
+    "id": "incident_mitrecoahandledtechniques",
     "isReadOnly": false,
     "locked": false,
     "name": "Mitre COA - Handled Techniques",

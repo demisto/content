@@ -11,7 +11,7 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_bpapassedchecksurlfiltering",
+    "id": "incident_mitrecoabpapassedchecksurlfiltering",
     "isReadOnly": false,
     "locked": false,
     "name": "Mitre COA - BPA Passed Checks - URL Filtering",

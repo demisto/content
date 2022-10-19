@@ -11,7 +11,7 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_bpafailedchecksantivirus",
+    "id": "incident_mitrecoabpafailedchecksantivirus",
     "isReadOnly": false,
     "locked": false,
     "name": "Mitre COA - BPA Failed Checks - Anti-Virus",

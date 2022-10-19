@@ -11,7 +11,7 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_techniquestohandle",
+    "id": "incident_mitrecoatechniquestohandle",
     "isReadOnly": false,
     "locked": false,
     "name": "Mitre COA - Techniques to Handle",
