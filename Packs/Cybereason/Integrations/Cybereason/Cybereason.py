@@ -242,7 +242,7 @@ def is_probe_connected_command(client: Client, args: dict, is_remediation_comman
             is_connected = True
             break
 
-    if is_remediation_commmand:
+    if is_remediation_command:
         return is_connected
 
     return CommandResults(
