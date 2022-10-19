@@ -2216,7 +2216,7 @@ def list_groups_command(client: Client) -> Tuple[object, dict, Union[List, Dict]
     if raw_response:
         human_readable = f'{INTEGRATION_NAME} - List Groups'
 
-        return human_readable, {"Akamai.Groups": raw_response}, raw_response
+        return human_readable, {"Akamai.Group": raw_response}, raw_response
     else:
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
@@ -2502,7 +2502,7 @@ def get_domains_command(client: Client) -> Tuple[object, dict, Union[List, Dict]
     if raw_response:
         human_readable = f'{INTEGRATION_NAME} - Domains are listed successfully'
 
-        return human_readable, {"Akamai.Domains": raw_response}, {}
+        return human_readable, {'Akamai.Domain': raw_response}, {}
     else:
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
@@ -2520,7 +2520,7 @@ def get_domain_command(client: Client, domain_name: str) -> Tuple[object, dict, 
     if raw_response:
         human_readable = f'{INTEGRATION_NAME} - The domain is listed successfully'
 
-        return human_readable, {"Akamai.Domain": raw_response}, {}
+        return human_readable, {'Akamai.Domain': raw_response}, {}
     else:
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
