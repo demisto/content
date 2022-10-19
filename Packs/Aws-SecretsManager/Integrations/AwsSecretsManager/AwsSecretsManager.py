@@ -4,7 +4,7 @@ from CommonServerUserPython import *  # noqa
 import json
 from datetime import datetime, date
 
-import requests
+import urllib3
 from typing import Dict, Any
 
 from AWSApiModule import *  # noqa: E402
@@ -12,7 +12,7 @@ from AWSApiModule import *  # noqa: E402
 SERVICE = 'secretsmanager'
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
