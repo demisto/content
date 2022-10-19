@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: SplunkPy
+  id: SplunkPy_debug
   version: -1
 sectionOrder:
 - Connect
@@ -251,8 +251,8 @@ configuration:
   section: Collect
   advanced: true
 description: Runs queries on Splunk servers.
-display: SplunkPy
-name: SplunkPy
+display: SplunkPy (Debug 19/10/22)
+name: SplunkPy_debug
 script:
   commands:
   - arguments:
