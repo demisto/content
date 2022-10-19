@@ -912,7 +912,11 @@ tasks:
       endpoint_id:
         simple: ${inputs.HostID}
       file_path:
-        simple: ${Confirm which SHA1 should be deleted.Answers.0}
+        complex:
+          root: Confirm which File Path will be deleted.Answers
+          accessor: "0"
+          transformers:
+            - operator: uniq
       polling_timeout:
         simple: '10'
     separatecontext: true

@@ -1,0 +1,270 @@
+id: Example-Delinea-Folder Operations
+version: -1
+name: Example-Delinea-Folder Operations
+description: Example for usage integration REST API Folder object  for Delinea Secret
+  Server.
+starttaskid: "0"
+fromversion: 6.0.0
+tasks:
+  "0":
+    id: "0"
+    taskid: fa1e3ee3-d44f-48db-81d9-e166c60ecfb7
+    type: start
+    task:
+      id: fa1e3ee3-d44f-48db-81d9-e166c60ecfb7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 018dbd15-2bfc-48c3-808e-0b5f53a8b341
+    type: regular
+    task:
+      id: 018dbd15-2bfc-48c3-808e-0b5f53a8b341
+      version: -1
+      name: Create new folder
+      description: Create a new secret folder
+      script: DelineaSS|||delinea-folder-create
+      type: regular
+      iscommand: true
+      brand: Delinea
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      foldername: {}
+      foldertypeid: {}
+      inheritPermissions: {}
+      inheritSecretPolicy: {}
+      parentfolderid: {}
+      secretPolicyId: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: fb373111-4760-4545-8e38-581b47b02025
+    type: regular
+    task:
+      id: fb373111-4760-4545-8e38-581b47b02025
+      version: -1
+      name: Search folder
+      description: Search folder by name folder
+      script: DelineaSS|||delinea-folder-search
+      type: regular
+      iscommand: true
+      brand: Delinea
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      foldername:
+        complex:
+          root: Delinea.Folder.Create
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: folderName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 668e941e-a985-4dc9-8aeb-e176afc6b2c0
+    type: regular
+    task:
+      id: 668e941e-a985-4dc9-8aeb-e176afc6b2c0
+      version: -1
+      name: Update folder
+      description: Update a single secret folder by ID
+      script: DelineaSS|||delinea-folder-update
+      type: regular
+      iscommand: true
+      brand: Delinea
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      folderName:
+        simple: xsoarAddUpdate
+      folderTypeId: {}
+      id:
+        complex:
+          root: Delinea.Folder
+          accessor: Id
+          transformers:
+          - operator: FirstArrayElement
+      inheritPermissions: {}
+      inheritSecretPolicy: {}
+      parentFolderId: {}
+      secretPolicyId: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 21a1de18-6246-4451-8bd1-58b658cc9c62
+    type: regular
+    task:
+      id: 21a1de18-6246-4451-8bd1-58b658cc9c62
+      version: -1
+      name: Search folder updated
+      description: Search folder by name folder
+      script: DelineaSS|||delinea-folder-search
+      type: regular
+      iscommand: true
+      brand: Delinea
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      foldername:
+        complex:
+          root: Delinea.Folder
+          accessor: Update
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: folderName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 223a9277-0fa8-4a76-8407-c8c9fab54358
+    type: regular
+    task:
+      id: 223a9277-0fa8-4a76-8407-c8c9fab54358
+      version: -1
+      name: Delete modify folder
+      description: Delete a folder by ID
+      script: DelineaSS|||delinea-folder-delete
+      type: regular
+      iscommand: true
+      brand: Delinea
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      folder_id:
+        complex:
+          root: Delinea.Folder
+          accessor: Id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 3ba9c5a7-6e98-45f4-87cc-10795fb81c04
+    type: title
+    task:
+      id: 3ba9c5a7-6e98-45f4-87cc-10795fb81c04
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      type: title
+      iscommand: false
+      brand: builtin
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- Delinea-Test
