@@ -1378,7 +1378,7 @@ def message_details_get_command(client: Client, args: Dict[str, Any]) -> Command
     response["timestamp"] = format_timestamp(response.get("timestamp"))
     response["unique_message_id"] = "".join(map(str, response.get("mid")))
 
-    for event in response.get("summary"):
+    for event in response.get("summary", ()):
         event["timestamp"] = format_timestamp(event.get("timestamp"))
 
     readable_output = tableToMarkdown(
