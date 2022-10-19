@@ -246,7 +246,7 @@ def main() -> None:
     try:
         command = demisto.command()
         demisto.debug(f'Orca Command being called is {command}')
-        api_token = demisto.params().get('api_token')
+        api_token = demisto.params().get('api_token').get('password')
         api_host = demisto.params().get('api_host')
         fetch_informational = demisto.params().get('fetch_informational')
         max_fetch = int(demisto.params().get('max_fetch', '200'))

@@ -3,7 +3,8 @@ commonfields:
   id: Orca
   version: -1
 configuration:
-- display: API Token
+- displaypassword: API Token
+  hiddenusername: true
   name: api_token
   required: true
   type: 9
