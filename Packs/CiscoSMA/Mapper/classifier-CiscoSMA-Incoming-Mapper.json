@@ -94,7 +94,7 @@
             "internalMapping": {}
         }
     },
-    "name": "CiscoSMA-incoming-mapper",
+    "name": "CiscoSMA - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.2.0"
