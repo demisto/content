@@ -1,6 +1,6 @@
 import json
 import time
-import urlparse
+import urllib.parse
 import httplib2
 
 import googleapiclient
@@ -30,7 +30,7 @@ AUTH_JSON = {
     'type': 'service_account',  # guardrails-disable-line
     'project_id': SERVICE_ACT_PROJECT_ID,
     'private_key_id': PRIVATE_KEY_ID,
-    'private_key': PRIVATE_KEY.replace('\\n', '\n'),
+    'private_key': PRIVATE_KEY.replace('\\n'.encode('utf-8'), '\n'.encode('utf-8')),
     'client_email': CLIENT_EMAIL,
     'client_id': CLIENT_ID,
     'auth_uri': 'https://accounts.google.com/o/oauth2/auth',
@@ -56,7 +56,7 @@ def get_http_client_with_proxy():
     https_proxy = proxies['https']
     if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
         https_proxy = 'https://' + https_proxy
-    parsed_proxy = urlparse.urlparse(https_proxy)
+    parsed_proxy = urllib.parse.urlparse(https_proxy)
     proxy_info = httplib2.ProxyInfo(
         proxy_type=httplib2.socks.PROXY_TYPE_HTTP,  # disable-secrets-detection
         proxy_host=parsed_proxy.hostname,
@@ -111,7 +111,7 @@ def make_project_body(project_body):
     returns: (dict) body
         dict object formatted to be used in the create or update API call
     """
-    keys = project_body.keys()
+    keys = list(project_body.keys())
     body = {}
     if 'project_id' in keys:
         body['projectId'] = project_body['project_id']
@@ -641,7 +641,7 @@ def main():
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
             test_module()
-        elif demisto.command() in commands.keys():
+        elif demisto.command() in list(commands.keys()):
             service = build_and_authenticate()
             commands[demisto.command()](service)
 
