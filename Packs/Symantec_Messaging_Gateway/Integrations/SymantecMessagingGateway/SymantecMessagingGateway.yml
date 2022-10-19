@@ -28,7 +28,7 @@ configuration:
 script:
   script: ''
   type: python
-  subtype: python2
+  subtype: python3
   commands:
   - name: smg-block-email
     arguments:
@@ -119,5 +119,5 @@ script:
   - name: smg-get-blocked-ips
     arguments: []
     description: Returns a list of all blocked IP addresses.
-  dockerimage: demisto/bs4:1.0.0.24033
+  dockerimage: demisto/bs4-py3:1.0.0.36286
 fromversion: 5.0.0

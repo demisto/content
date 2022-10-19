@@ -1,5 +1,5 @@
 {
-    "name": "Palo Alto Networks Security Advisories",
+    "name": "Security Advisories by Palo Alto Networks",
     "description": "Search CVE details from the Palo Alto Security Advisories website.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
