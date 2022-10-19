@@ -38,7 +38,7 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      description: The network list type by which to filter the results. 
+      description: The network list type by which to filter the results.
       name: list_type
       predefined:
       - IP
@@ -152,7 +152,7 @@ script:
       name: list_name
       required: true
     - auto: PREDEFINED
-      description: The network list type. 
+      description: The network list type.
       name: list_type
       predefined:
       - IP
@@ -195,7 +195,7 @@ script:
       name: network_list_ids
       required: true
     - auto: PREDEFINED
-      description: The environment type to activate the network list. 
+      description: The environment type to activate the network list.
       name: env
       predefined:
       - STAGING
@@ -234,7 +234,7 @@ script:
       name: network_list_ids
       required: true
     - auto: PREDEFINED
-      description: The environment type. 
+      description: The environment type.
       name: env
       predefined:
       - PRODUCTION
@@ -263,7 +263,8 @@ script:
     description: Updates list elements of a network list.
     name: akamai-update-network-list-elements
   - arguments:
-    - name: checking_group_name
+    - description: Group Name
+      name: checking_group_name
       type: textArea
     description: Check an existing group within the context of your account.
     name: akamai-check-group
@@ -271,7 +272,7 @@ script:
     - contextPath: Akamai.CheckGroup
       description: Group ID.
     - contextPath: Akamai.CheckGroup.Found
-      description: Was the group found?  
+      description: Was the group found?
     - contextPath: Akamai.CheckGroup.groupName
       description: The parent group name.
     - contextPath: Akamai.CheckGroup.parentGroupId
@@ -300,7 +301,8 @@ script:
       name: organizational_unit
       required: true
       type: textArea
-    - name: city
+    - description: The city of the admin contact.
+      name: city
       required: true
     - description: Contract ID.
       name: contract_id
@@ -385,7 +387,8 @@ script:
       description: Enrollment path.
       type: string
   - arguments:
-    - name: contract_id
+    - description: Contract ID
+      name: contract_id
       required: true
     description: List enrollments of a specific contract.
     name: akamai-list-enrollments
@@ -424,9 +427,11 @@ script:
     description: Update a property for a specific domain.
     name: akamai-update-property
   - arguments:
-    - name: enrollment_path
+    - description: Enrollment path.
+      name: enrollment_path
       required: true
     - defaultValue: third-party-csr
+      description: ''
       name: allowed_input_type_param
     description: Get the CPS code.
     name: akamai-get-change
@@ -434,21 +439,25 @@ script:
     - contextPath: Akamai.Change
       description: Certificate Signing Request (CSR).
   - arguments:
-    - name: change_path
+    - description: The path of the changed certificate.
+      name: change_path
       required: true
       type: textArea
     - defaultValue: third-party-cert-and-trust-chain
       description: Allowed input type parameter.
       name: allowed_input_type_param
       type: textArea
-    - name: certificate
+    - description: The updated certificate.
+      name: certificate
       type: textArea
-    - name: trust_chain
+    - description: The updated trust chain.
+      name: trust_chain
       type: textArea
     description: Update the certs and trust chains.
     name: akamai-update-change
   - arguments:
-    - name: contract_id
+    - description: Contract ID
+      name: contract_id
       required: true
       type: textArea
     - description: Target common name.
@@ -465,9 +474,11 @@ script:
     description: Lists groups of Akamai.
     name: akamai-list-groups
     outputs:
-    - contextPath: Akamai.Groups
+    - contextPath: Akamai.Group
+      description: Akmai Group
   - arguments:
     - defaultValue: '0'
+      description: Group ID.
       name: group_id
       required: true
     description: Get group.
@@ -476,7 +487,7 @@ script:
     description: Get Google Tag Manager (GTM) domains.
     name: akamai-get-domains
     outputs:
-    - contextPath: Akamai.Domains
+    - contextPath: Akamai.Domain
       description: Domains.
   - arguments:
     - description: Domain name to get.
@@ -748,6 +759,7 @@ script:
     name: akamai-patch-papi-property-rule-origin
     outputs:
     - contextPath: Akamai.PapiProperty.Etag
+      description: Etag for Concurrency Control.
   - arguments:
     - description: Contract ID.
       name: contract_id
@@ -875,15 +887,19 @@ script:
     - description: Security configuration activation ID.
       name: activation_id
       required: true
-    - name: sleep_time
+    - description: Sleep time in seconds between each iteration.
+      name: sleep_time
       required: true
-    - name: retries
+    - description: Number of retries of the consistency check to be conducted.
+      name: retries
       required: true
     description: AppSec get appsec config activation status.
     name: akamai-get-appsec-config-activation-status
     outputs:
     - contextPath: Akamai.AppSecConfig.Staging
+      description: Staging Security Configration.
     - contextPath: Akamai.AppSecConfig.Production
+      description: Production Security Configration.
   - arguments:
     - description: Name of the security configuration.
       name: sec_config_name
@@ -947,22 +963,32 @@ script:
     - contextPath: Akamai.AppSecConfig.Name
       description: AppSec configuration name.
     - contextPath: Akamai.AppSecConfig.Id
+      description: AppSec Configration ID
     - contextPath: Akamai.AppSecConfig.NewVersion
+      description: AppSec Configration New Version
   - arguments:
-    - name: contract_id
+    - description: Contract ID
+      name: contract_id
       required: true
-    - name: group_id
+    - description: Group ID
+      name: group_id
       required: true
-    - name: property_id
+    - description: Property ID
+      name: property_id
       required: true
-    - name: property_version
-    - name: validate_rules
+    - description: Property Version
+      name: property_version
+    - description: Whether to validate the Rules.
+      name: validate_rules
       required: true
-    - name: operation
+    - description: The operation to execute.
+      name: operation
       required: true
-    - name: path
+    - description: The path of the rule.
+      name: path
       required: true
-    - name: value
+    - description: ''
+      name: value
       required: true
     description: Patch PAPI property rule HTTP methods.
     name: akamai-patch-papi-property-rule-httpmethods
@@ -1007,11 +1033,12 @@ script:
     name: akamai-get-papi-edgehostname-creation-status-command
   - name: akamai-acknowledge-warning-command
     arguments:
-    - name: change_path
+    - description: The path of the changed certificate.
+      name: change_path
       required: true
       type: textArea
-    description: Acknowledge the warning message for uploading the certs and trust chains of enrollments.  
-  dockerimage: demisto/akamai:1.0.0.33348
+    description: Acknowledge the warning message for uploading the certs and trust chains of enrollments.
+  dockerimage: demisto/akamai:1.0.0.34769
   runonce: false
   script: ''
   subtype: python3
