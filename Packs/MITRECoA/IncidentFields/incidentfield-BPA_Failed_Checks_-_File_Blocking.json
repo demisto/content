@@ -4,7 +4,7 @@
         "MITRE ATT\u0026CK CoA"
     ],
     "caseInsensitive": true,
-    "cliName": "bpafailedchecksfileblocking",
+    "cliName": "mitrecoabpafailedchecksfileblocking",
     "closeForm": false,
     "content": true,
     "description": "Results returned from a BPA triggered job.",
