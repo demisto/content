@@ -45,7 +45,10 @@ class Client(BaseClient):
             'created_time': datetime.now().isoformat(),
             'description': f'This is test description {prev_id + 1}',
             'alert_status': alert_status,
-            'custom_details': {'name': ''}
+            'custom_details': {'triggered_by_name': f'Name for id: {prev_id + 1}',
+                               'triggered_by_uuid': 'uuid',
+                               '?': '?',
+                               'type': 'customType'}
         }]
 
 
