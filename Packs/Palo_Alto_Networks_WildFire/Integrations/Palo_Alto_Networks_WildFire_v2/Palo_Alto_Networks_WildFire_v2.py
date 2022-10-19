@@ -8,7 +8,7 @@ import tarfile
 import io
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' GLOBALS/PARAMS '''
 BRAND = 'WildFire-v2'
@@ -868,8 +868,8 @@ def wildfire_get_url_webartifacts_command():
                             # first element is the folder name screenshot
 
                             members = tar.getmembers()
-                            data = tar.extractfile(members[1])   # type:ignore
-                            fdata = data.read()   # type:ignore
+                            data = tar.extractfile(members[1])  # type:ignore
+                            fdata = data.read()  # type:ignore
                             exported_files.append(members[1].name)
                             stored_img = fileResult(f'screenshot_{url}.png', fdata)
 
@@ -947,7 +947,8 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                     if '@ip' in udp_obj and udp_obj['@ip']:
                         udp_ip.append(udp_obj["@ip"])
                         feed_related_indicators.append({'value': udp_obj["@ip"], 'type': 'IP'})
-                        relationships.extend(create_relationship('related-to', (file_hash, udp_obj["@ip"]), ('file', 'ip')))
+                        relationships.extend(
+                            create_relationship('related-to', (file_hash, udp_obj["@ip"]), ('file', 'ip')))
                     if '@port' in udp_obj:
                         udp_port.append(udp_obj["@port"])
                     if extended_data:
@@ -965,7 +966,8 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                     if '@ip' in tcp_obj and tcp_obj['@ip']:
                         tcp_ip.append(tcp_obj["@ip"])
                         feed_related_indicators.append({'value': tcp_obj["@ip"], 'type': 'IP'})
-                        relationships.extend(create_relationship('related-to', (file_hash, tcp_obj["@ip"]), ('file', 'ip')))
+                        relationships.extend(
+                            create_relationship('related-to', (file_hash, tcp_obj["@ip"]), ('file', 'ip')))
                     if '@port' in tcp_obj:
                         tcp_port.append(tcp_obj['@port'])
                     if extended_data:
@@ -986,7 +988,8 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                         dns_response.append(dns_obj['@response'])
                     if extended_data:
                         if network_dns_dict := parse_wildfire_object(report=dns_obj,
-                                                                     keys=[('@query', 'Query'), ('@response', 'Response'),
+                                                                     keys=[('@query', 'Query'),
+                                                                           ('@response', 'Response'),
                                                                            ('@type', 'Type')]):
                             network_dns.append(network_dns_dict)
 
@@ -1002,11 +1005,13 @@ def parse_file_report(file_hash, reports, file_info, extended_data: bool):
                         url += url_obj['@uri']
                     if url:
                         feed_related_indicators.append({'value': url, 'type': 'URL'})
-                        relationships.extend(create_relationship('related-to', (file_hash, url.rstrip('/')), ('file', 'url')))
+                        relationships.extend(
+                            create_relationship('related-to', (file_hash, url.rstrip('/')), ('file', 'url')))
                     if extended_data:
                         if network_url_dict := parse_wildfire_object(report=url_obj,
                                                                      keys=[('@host', 'Host'), ('@uri', 'URI'),
-                                                                           ('@method', 'Method'), ('@user_agent', 'UserAgent')]):
+                                                                           ('@method', 'Method'),
+                                                                           ('@user_agent', 'UserAgent')]):
                             network_url.append(network_url_dict)
 
         if 'evidence' in report and report["evidence"]:
@@ -1220,7 +1225,6 @@ def create_behaviors_object(behaviors):
 
 def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
                        verbose: bool = False, extended_data: bool = False):
-
     outputs, feed_related_indicators, behavior, relationships = parse_file_report(file_hash, reports,
                                                                                   file_info, extended_data)
 
@@ -1237,7 +1241,8 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
                        file_type=file_info.get('filetype'), md5=file_info.get('md5'), sha1=file_info.get('sha1'),
                        sha256=file_info.get('sha256'), size=file_info.get('size'),
                        feed_related_indicators=feed_related_indicators, tags=tags,
-                       digital_signature__publisher=file_info.get('file_signer'), behaviors=behavior, relationships=relationships)
+                       digital_signature__publisher=file_info.get('file_signer'), behaviors=behavior,
+                       relationships=relationships)
 
     if format_ == 'pdf':
         get_report_uri = URL + URL_DICT["report"]
@@ -1533,7 +1538,7 @@ def assert_upload_argument(args: dict):
         raise ValueError('Please specify the item you wish to upload using the \'upload\' argument.')
 
 
-def main():     # pragma: no cover
+def main():  # pragma: no cover
     command = demisto.command()
     args = demisto.args()
     LOG(f'command is {command}')
@@ -1549,7 +1554,8 @@ def main():     # pragma: no cover
         if len(TOKEN) > 32:
             # the token is longer than 32 so either PPC or Prismaaccessapi needs to be set
             if API_KEY_SOURCE not in ['pcc', 'prismaaccessapi', 'xsoartim']:
-                raise DemistoException('API Key longer than 32 chars, agent value must be selected in the intergration instance.')
+                raise DemistoException(
+                    'API Key longer than 32 chars, agent value must be selected in the intergration instance.')
 
         if command == 'test-module':
             test_module()
