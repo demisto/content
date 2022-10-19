@@ -36,10 +36,10 @@ def prepare_query_params(params: dict, last_run: dict = {}) -> dict:
     """
     query_params = {
         'limit': arg_to_number(params.get('limit', DEFAULT_LIMIT)),
-        'since': arg_to_strtime(last_run.get('since', None) or params.get('since')),
+        'since': arg_to_strtime(last_run.get('since') or params.get('since')),
         'until': arg_to_strtime(params.get('until')),
         'event_type_id': params.get('event_type_id'),
-        'after_cursor': last_run.get('after_cursor', None) or params.get('after_cursor')
+        'after_cursor': last_run.get('after_cursor') or params.get('after_cursor')
     }
 
     return query_params
@@ -146,7 +146,8 @@ class Client(BaseClient):
             demisto.debug('Reached API rate limit, storing last used cursor.')
             cursor = query_params['after_cursor']
 
-        since = query_params['since'] if cursor else increase_time_with_second(aggregated_events[-1].get('created_at'))
+        since = query_params['since'] if cursor or not aggregated_events else increase_time_with_second(
+            aggregated_events[-1].get('created_at'))
         last_run.update({
             'after_cursor': cursor,
             'since': since
@@ -193,6 +194,7 @@ def get_events_command(client: Client, args: dict) -> Tuple[list, CommandResults
             events,
             metadata=f'Cursor: {cursor}' if cursor else None,
             date_fields=['created_at'],
+            removeNull=True
         ),
     )
     return events, results
