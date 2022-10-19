@@ -25,7 +25,8 @@ configuration:
   name: timeout
   required: false
   type: 0
-description: Cisco Email Security is an email security gateway . It detects and blocks a wide variety of email-borne threats, such as malware, spam and phishing.
+deprecated: true
+description: Deprecated. Use CiscoSMA instead.
 display: CiscoEmailSecurity (Beta)
 name: CiscoEmailSecurity
 script:
