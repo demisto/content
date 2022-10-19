@@ -11,7 +11,7 @@ Gamma Enterprise DLP provides 1-click automatic discovery and remediation of dat
 | --- | --- | --- |
 | api_key | Gamma Discovery API Key | True |
 | url | URL of the Gamma API | True |
-| first_fetch | The violation ID (offset) to begin fetching from | False |
+| first_fetch | The violation ID (offset) to begin fetching from. The value must be a number equal to or greater than 1. If empty, the fetch will default to the first violation that exists. You can retrieve a list of violation IDs by running the gamma-get-violation-list command.  | False |
 | max_fetch | Max results to return | False |
 | insecure | Trust any certificate (not secure) | False |
 | proxy | Use system proxy settings | False |
