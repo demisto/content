@@ -5,8 +5,6 @@ import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
 
-requests.packages.urllib3.disable_warnings()
-
 
 quarantineName = demisto.params()['quarantineName']
 userName = demisto.params()['userName']
