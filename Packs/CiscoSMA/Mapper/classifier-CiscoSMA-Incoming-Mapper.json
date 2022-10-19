@@ -1,7 +1,7 @@
 {
     "description": "",
     "feed": false,
-    "id": "CiscoSMA-incoming-mapper",
+    "id": "CiscoSMA - Incoming Mapper",
     "mapping": {
         "Cisco SMA Spam Quarantine": {
             "dontMapEventToLabels": false,
