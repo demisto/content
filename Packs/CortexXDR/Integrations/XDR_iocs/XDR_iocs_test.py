@@ -842,4 +842,3 @@ def test_overriding_severity_xdr_to_demisto():
     Client.override_severity = True
     Client.severity = severity_value_backup
     Client.xsoar_severity_field = xsoar_severity_field_backup
-
