@@ -681,6 +681,7 @@ class STIX2Parser:
             b_object = self.parsed_object_id_to_object.get(b_stixid, {})
 
             if not a_object or not b_object:
+                demisto.debug(f'Cant find {a_object=} or {b_object=}.')
                 continue
 
             a_value, a_type = a_object.get('value'), a_object.get('indicator_type')
@@ -713,13 +714,10 @@ class STIX2Parser:
         Polls the taxii server and builds a list of cortex indicators objects from the result
         :return: Cortex indicators list
         """
-        if js_content.get('id', '').startswith('bundle--') and not js_content.get('objects'):
-            raise Exception('STIX2 Indicators bundle json file should contain `objects` key, where the value is the'
-                            ' array with indicators.')
-        elif not js_content.get('id', '').startswith('bundle--'):
-            envelopes = STIX2Parser.create_envelopes_by_type([js_content])
-        else:
+        if js_content.get('objects'):
             envelopes = STIX2Parser.create_envelopes_by_type(js_content['objects'])
+        else:
+            envelopes = STIX2Parser.create_envelopes_by_type([js_content])
         indicators = self.load_stix_objects_from_envelope(envelopes)
 
         return indicators
@@ -737,11 +735,11 @@ class STIX2Parser:
             "tool": self.parse_tool,
             "threat-actor": self.parse_threat_actor,
             "infrastructure": self.parse_infrastructure,
-            "domain-name": STIX2Parser.parse_general_sco_indicator,
-            "ipv4-addr": STIX2Parser.parse_general_sco_indicator,
-            "ipv6-addr": STIX2Parser.parse_general_sco_indicator,
-            "email-addr": STIX2Parser.parse_general_sco_indicator,
-            "url": STIX2Parser.parse_general_sco_indicator,
+            "domain-name": self.parse_general_sco_indicator,
+            "ipv4-addr": self.parse_general_sco_indicator,
+            "ipv6-addr": self.parse_general_sco_indicator,
+            "email-addr": self.parse_general_sco_indicator,
+            "url": self.parse_general_sco_indicator,
             "autonomous-system": self.parse_sco_autonomous_system_indicator,
             "file": self.parse_sco_file_indicator,
             "mutex": self.parse_sco_mutex_indicator,
