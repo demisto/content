@@ -636,6 +636,200 @@ class Client(BaseClient):
             resp_type="json",
         )
 
+    def create_site_scan_credential(self, site_id: str, name: str,
+                                    service: CredentialService,
+                                    database_name: Optional[str] = None,
+                                    description: Optional[str] = None,
+                                    domain: Optional[str] = None,
+                                    host_restriction: Optional[str] = None,
+                                    http_realm: Optional[str] = None,
+                                    notes_id_password: Optional[str] = None,
+                                    ntlm_hash: Optional[str] = None,
+                                    oracle_enumerate_sids: Optional[bool] = None,
+                                    oracle_listener_password: Optional[str] = None,
+                                    oracle_sid: Optional[str] = None,
+                                    password: Optional[str] = None,
+                                    port_restriction: Optional[str] = None,
+                                    snmp_community_name: Optional[str] = None,
+                                    snmpv3_authentication_type: Optional[SNMPv3AuthenticationType] = None,
+                                    snmpv3_privacy_password: Optional[str] = None,
+                                    snmpv3_privacy_type: Optional[SNMPv3PrivacyType] = None,
+                                    ssh_key_pem: Optional[str] = None,
+                                    ssh_permission_elevation: Optional[SSHElevationType] = None,
+                                    ssh_permission_elevation_password: Optional[str] = None,
+                                    ssh_permission_elevation_username: Optional[str] = None,
+                                    ssh_private_key_password: Optional[str] = None,
+                                    use_windows_authentication: Optional[bool] = None,
+                                    username: Optional[str] = None):
+        """
+        | Create a new site scan credential.
+        |
+        | For more information see:
+            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createSiteCredential
+
+        Args:
+            name (str): Name of the credential.
+                Assign the shared scan credential either to be available to all sites, or a specific list of sites.
+            site_id (str): ID of the site to create the credential for.
+            service (CredentialService): Credential service type.
+            database_name (str, optional): Database name.
+            description (str, optional): Description for the credential.
+            domain (str, optional): Domain address.
+            host_restriction (str, optional): Hostname or IP address to restrict the credentials to.
+            http_realm (str, optional): HTTP realm.
+            notes_id_password (str, optional): Password for the notes account that will be used for authenticating.
+            ntlm_hash (str, optional): NTLM password hash.
+            oracle_enumerate_sids (bool, optional): Whether the scan engine should attempt to enumerate
+                SIDs from the environment.
+            oracle_listener_password (str, optional): The Oracle Net Listener password.
+                Used to enumerate SIDs from the environment.
+            oracle_sid (str, optional): Oracle database name.
+            password (str, optional): Password for the credential.
+            port_restriction (str, optional): Further restricts the credential to attempt to authenticate
+                on a specific port. Can be used only if `host_restriction` is used.
+            snmp_community_name (str, optional): SNMP community for authentication.
+            snmpv3_authentication_type (SNMPv3AuthenticationType): SNMPv3 authentication type for the credential.
+            snmpv3_privacy_password (str, optional): SNMPv3 privacy password to use.
+            snmpv3_privacy_type (SNMPv3PrivacyType, optional): SNMPv3 Privacy protocol to use.
+            ssh_key_pem (str, optional): PEM formatted private key.
+            ssh_permission_elevation (SSHElevationType, optional): Elevation type to use for scans.
+            ssh_permission_elevation_password (str, optional): Password to use for elevation.
+            ssh_permission_elevation_username (str, optional): Username to use for elevation.
+            ssh_private_key_password (str, optional): Password for the private key.
+            use_windows_authentication (bool, optional): Whether to use Windows authentication.
+            username (str, optional): Username for the credential.
+
+        Returns:
+            dict: API response with information about the newly created shared credential.
+        """
+        account_data = {}
+
+        with CredentialService as S:  # type: CredentialService
+            # Services where "username" field is required
+            if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL, S.ORACLE,
+                           S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SNMPV3, S.SSH, S.SSH_KEY, S.SYBASE, S.TELNET):
+                if username is None:
+                    raise ValueError(f"Username is required for \"{service.value}\" services.")
+
+                account_data["username"] = username
+
+            # Services where "password" field is required
+            if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL,
+                           S.ORACLE, S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SSH, S.SYBASE, S.TELNET):
+                if password is None:
+                    raise ValueError(f"Password is required for \"{service.value}\" services.")
+
+                account_data["password"] = password
+
+            # Services with optional "useWindowsAuthentication" field.
+            if service in (S.MS_SQL, S.SYBASE) and use_windows_authentication is not None:
+                account_data["useWindowsAuthentication"] = use_windows_authentication
+
+            # Services with optional "domain" field.
+            if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.MS_SQL, S.SYBASE) and domain is not None:
+                if service in (S.MS_SQL, S.SYBASE):
+                    if use_windows_authentication:
+                        account_data["domain"] = domain
+
+                else:
+                    account_data["domain"] = domain
+
+            # Services with optional "database" field.
+            if service in (S.DB2, S.MS_SQL, S.MYSQL, S.POSTGRESQL, S.SYBASE) and database_name is not None:
+                account_data["database"] = database_name
+
+            if service == S.CIFSHASH:
+                if ntlm_hash is None:
+                    raise ValueError(f"NTLM hash is required for \"{service.value}\" services.")
+
+                account_data["ntlmHash"] = ntlm_hash
+
+            if service == S.HTTP and http_realm is not None:
+                account_data["realm"] = http_realm
+
+            if service == S.NOTES and notes_id_password is not None:
+                account_data["notesIDPassword"] = notes_id_password
+
+            if service == S.ORACLE:
+                if oracle_sid is not None:
+                    account_data["sid"] = oracle_sid
+
+                if oracle_enumerate_sids is not None:
+                    account_data["enumerateSids"] = oracle_enumerate_sids
+
+                    if oracle_enumerate_sids and oracle_listener_password is None:
+                        raise ValueError("Oracle listener password is required when enumerating SIDs.")
+
+                    account_data["oracleListenerPassword"] = oracle_listener_password
+
+            if service == S.SNMP:
+                if snmp_community_name is None:
+                    raise ValueError(f"Community name is required for \"{service.value}\" services.")
+
+                account_data["community"] = snmp_community_name
+
+            if service == S.SNMPV3:
+                if snmpv3_authentication_type is None:
+                    raise ValueError(f"Authentication type is required for \"{service.value}\" services.")
+
+                account_data["authenticationType"] = snmpv3_authentication_type.value
+
+                if snmpv3_authentication_type != SNMPv3AuthenticationType.NO_AUTHENTICATION:
+                    if password is None:
+                        raise ValueError(f"Password is required for \"{service.value}\" services when authentication "
+                                         f"is md5 to anything other than \"no-authentication\".")
+
+                    account_data["password"] = password
+
+                if snmpv3_privacy_type is not None:
+                    account_data["privacyType"] = snmpv3_privacy_type.value
+
+                    if snmpv3_privacy_type != SNMPv3PrivacyType.NO_PRIVACY and snmpv3_privacy_password is None:
+                        raise ValueError(f"Privacy password is required for \"{service.value}\" services when the "
+                                         f"authentication type is set to a value other than \"no-authentication\", "
+                                         f"and privacy type is set to a value other than \"no-privacy\".")
+
+                    account_data["privacyPassword"] = snmpv3_privacy_password
+
+            if service in (S.SSH, S.SSH_KEY):
+                if ssh_permission_elevation:
+                    account_data["permissionElevation"] = ssh_permission_elevation
+
+                if ssh_permission_elevation not in (SSHElevationType.NONE, SSHElevationType.PBRUN):
+                    if None in (ssh_permission_elevation_username, ssh_permission_elevation_password):
+                        raise ValueError(f"Elevation username and password are required for \"{service.value}\" "
+                                         f"services when permission elevation is not \"none\" or \"pbrun\".")
+
+                    account_data["permissionElevationUsername"] = ssh_permission_elevation_username
+                    account_data["permissionElevationPassword"] = ssh_permission_elevation_password
+
+            if service == S.SSH_KEY:
+                if ssh_key_pem is None:
+                    raise ValueError(f"SSH private key password is required for \"{service.value}\" services.")
+
+                account_data["pemKey"] = ssh_key_pem
+
+                if ssh_private_key_password is None:
+                    account_data["privateKeyPassword"] = ssh_private_key_password
+
+        post_data = find_valid_params(
+            description=description,
+            hostRestriction=host_restriction,
+            name=name,
+        )
+
+        if port_restriction is not None and host_restriction is not None:
+            post_data["portRestriction"] = port_restriction
+
+        post_data["account"] = account_data
+
+        return self._http_request(
+            method="POST",
+            url_suffix=f"sites/{site_id}/site_credentials",
+            json_data=post_data,
+            resp_type="json",
+        )
+
     def create_vulnerability_exception(self, vulnerability_id: str, scope_type: VulnerabilityExceptionScopeType,
                                        state: VulnerabilityExceptionState, reason: VulnerabilityExceptionReason,
                                        expires: Optional[str] = None, comment: Optional[str] = None):
@@ -2700,6 +2894,104 @@ def create_sites_report_command(client: Client, sites: list[Site],
     )
 
 
+def create_site_scan_credential_command(client: Client, site: Site, name: str,
+                                        service: CredentialService,
+                                        database_name: Optional[str] = None,
+                                        description: Optional[str] = None,
+                                        domain: Optional[str] = None,
+                                        host_restriction: Optional[str] = None,
+                                        http_realm: Optional[str] = None,
+                                        notes_id_password: Optional[str] = None,
+                                        ntlm_hash: Optional[str] = None,
+                                        oracle_enumerate_sids: Optional[bool] = None,
+                                        oracle_listener_password: Optional[str] = None,
+                                        oracle_sid: Optional[str] = None,
+                                        password: Optional[str] = None,
+                                        port_restriction: Optional[str] = None,
+                                        snmp_community_name: Optional[str] = None,
+                                        snmpv3_authentication_type: Optional[SNMPv3AuthenticationType] = None,
+                                        snmpv3_privacy_password: Optional[str] = None,
+                                        snmpv3_privacy_type: Optional[SNMPv3PrivacyType] = None,
+                                        ssh_key_pem: Optional[str] = None,
+                                        ssh_permission_elevation: Optional[SSHElevationType] = None,
+                                        ssh_permission_elevation_password: Optional[str] = None,
+                                        ssh_permission_elevation_username: Optional[str] = None,
+                                        ssh_private_key_password: Optional[str] = None,
+                                        use_windows_authentication: Optional[bool] = None,
+                                        username: Optional[str] = None) -> CommandResults:
+    """
+    Create a new site scan credential.
+
+    Args:
+        client (Client): Client to use for API requests.
+        site (Site): Site to create the credential for.
+        name (str): Name of the credential.
+        service (CredentialService): Credential service type.
+        database_name (str, optional): Database name.
+        description (str, optional): Description for the credential.
+        domain (str, optional): Domain address.
+        host_restriction (str, optional): Hostname or IP address to restrict the credentials to.
+        http_realm (str, optional): HTTP realm.
+        notes_id_password (str, optional): Password for the notes account that will be used for authenticating.
+        ntlm_hash (str, optional): NTLM password hash.
+        oracle_enumerate_sids (bool, optional): Whether the scan engine should attempt to enumerate
+            SIDs from the environment.
+        oracle_listener_password (str, optional): The Oracle Net Listener password.
+            Used to enumerate SIDs from the environment.
+        oracle_sid (str, optional): Oracle database name.
+        password (str, optional): Password for the credential.
+        port_restriction (str, optional): Further restricts the credential to attempt to authenticate
+            on a specific port. Can be used only if `host_restriction` is used.
+        snmp_community_name (str, optional): SNMP community for authentication.
+        snmpv3_authentication_type (SNMPv3AuthenticationType): SNMPv3 authentication type for the credential.
+        snmpv3_privacy_password (str, optional): SNMPv3 privacy password to use.
+        snmpv3_privacy_type (SNMPv3PrivacyType, optional): SNMPv3 Privacy protocol to use.
+        ssh_key_pem (str, optional): PEM formatted private key.
+        ssh_permission_elevation (SSHElevationType, optional): Elevation type to use for scans.
+        ssh_permission_elevation_password (str, optional): Password to use for elevation.
+        ssh_permission_elevation_username (str, optional): Username to use for elevation.
+        ssh_private_key_password (str, optional): Password for the private key.
+        use_windows_authentication (bool, optional): Whether to use Windows authentication.
+        username (str, optional): Username for the credential.
+    """
+    response_data = client.create_site_scan_credential(
+            site_id=site.id,
+            name=name,
+            service=service,
+            database_name=database_name,
+            description=description,
+            domain=domain,
+            host_restriction=host_restriction,
+            http_realm=http_realm,
+            notes_id_password=notes_id_password,
+            ntlm_hash=ntlm_hash,
+            oracle_enumerate_sids=oracle_enumerate_sids,
+            oracle_listener_password=oracle_listener_password,
+            oracle_sid=oracle_sid,
+            password=password,
+            port_restriction=port_restriction,
+            snmp_community_name=snmp_community_name,
+            snmpv3_authentication_type=snmpv3_authentication_type,
+            snmpv3_privacy_password=snmpv3_privacy_password,
+            snmpv3_privacy_type=snmpv3_privacy_type,
+            ssh_key_pem=ssh_key_pem,
+            ssh_permission_elevation=ssh_permission_elevation,
+            ssh_permission_elevation_password=ssh_permission_elevation_password,
+            ssh_permission_elevation_username=ssh_permission_elevation_username,
+            ssh_private_key_password=ssh_private_key_password,
+            use_windows_authentication=use_windows_authentication,
+            username=username,
+        )
+
+    return CommandResults(
+        readable_output=f"New site scan credential has been created with ID {response_data['id']}.",
+        outputs_prefix="Nexpose.SiteScanCredential",
+        outputs_key_field="id",
+        outputs={"id": response_data['id']},
+        raw_response=response_data,
+    )
+
+
 def create_vulnerability_exception_command(client: Client, vulnerability_id: str,
                                            scope_type: VulnerabilityExceptionScopeType,
                                            state: VulnerabilityExceptionState, reason: VulnerabilityExceptionReason,
@@ -4509,6 +4801,49 @@ def main():
                 report_name=args.get("name"),
                 report_format=report_format,
                 download_immediately=argToBoolean(args.get("download_immediately")),
+            )
+        elif command == "nexpose-create-site-scan-credential":
+            snmpv3_privacy_type = None
+            ssh_permission_elevation = None
+
+            if args.get("snmpv3_privacy_type") is not None:
+                snmpv3_privacy_type = SNMPv3PrivacyType[args["snmpv3_privacy_type"]]
+
+            if args.get("ssh_permission_elevation") is not None:
+                ssh_permission_elevation = SSHElevationType[args["ssh_permission_elevation"]]
+
+            results = create_site_scan_credential_command(
+                client=client,
+                site=Site(
+                    site_id=args.get("site_id"),
+                    site_name=args.get("site_name"),
+                    client=client,
+                ),
+                name=args["name"],
+                service=CredentialService[args["service"]],
+                database_name=args.get("database"),
+                description=args.get("description"),
+                domain=args.get("domain"),
+                host_restriction=args.get("host_restriction"),
+                http_realm=args.get("http_realm"),
+                notes_id_password=args.get("notes_id_password"),
+                ntlm_hash=args.get("ntlm_hash"),
+                oracle_enumerate_sids=argToBoolean(args.get("oracle_enumerate_sids")),
+                oracle_listener_password=args.get("oracle_listener_password"),
+                oracle_sid=args.get("oracle_sid"),
+                password=args.get("password"),
+                port_restriction=args.get("port_restriction"),
+                snmp_community_name=args.get("community_name"),
+                snmpv3_authentication_type=args.get("authentication_type"),
+                snmpv3_privacy_password=args.get("privacy_password"),
+                snmpv3_privacy_type=snmpv3_privacy_type,
+                ssh_key_pem=args.get("ssh_key_pem"),
+                ssh_permission_elevation=ssh_permission_elevation,
+                ssh_permission_elevation_password=args.get("ssh_permission_elevation_password"),
+                ssh_permission_elevation_username=args.get("ssh_permission_elevation_username"),
+                ssh_private_key_password=args.get("ssh_private_key_password"),
+                use_windows_authentication=argToBoolean(args.get("use_windows_authentication")),
+                username=args.get("username"),
             )
         elif command == "nexpose-create-vulnerability-exception":
             scope_type = VulnerabilityExceptionScopeType[args["scope_type"]]
