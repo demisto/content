@@ -1,0 +1,108 @@
+category: Data Enrichment & Threat Intelligence ## not done
+commonfields:
+  id: Palo Alto Networks Threat Vault v2 ## not done
+  version: -1
+configuration:
+- additionalinfo: TIM customers that upgraded to version 6.2 or above, can have this value pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
+  display: API Key
+  name: api_key
+  required: false
+  type: 4
+- display: Source Reliability
+  name: integrationReliability
+  type: 15
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: D - Not usually reliable
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Deprecated. No available replacement. ## not done
+display: Palo Alto Networks Threat Vault v2 ## not done
+name: Palo Alto Networks Threat Vault v2 ## not done
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: The SHA256 or MD5 hash of the antivirus signature.
+      isArray: true
+      name: file
+      required: true
+      secret: false
+    deprecated: false
+    description: Checks the reputation of an antivirus in Threat Vault.
+    execution: false
+    name: file
+    outputs:
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: String
+  - arguments:
+    - default: true
+      description: The cve of the antivirus signature. ## not done
+      isArray: true
+      name: cve
+      required: true
+      secret: false
+    deprecated: false
+    description: Checks the reputation of an antivirus in Threat Vault. ## not done
+    execution: false
+    name: cve
+    outputs:
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: CVE.ID
+      description: The CVE id.
+      type: String
+    - contextPath: CVE.Description
+      description: A description of the cve.
+      type: String
+  dockerimage: demisto/python3:3.10.1.26972
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- PANW Threat Vault - Signature Search - Test
+fromversion: 5.0.0
+deprecated: false ## not done
