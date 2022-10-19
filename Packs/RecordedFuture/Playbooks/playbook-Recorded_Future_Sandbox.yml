@@ -1,6 +1,6 @@
-id: Recorded Future Hatching Sandbox
+id: Recorded Future Sandbox
 version: -1
-name: Recorded Future Hatching Sandbox
+name: Recorded Future Sandbox
 description: "Template playbook utilizing Hatching.io to sandbox a given file and generate an analysis report. Indicators from the given report are then extracted and enriched with Recorded Future data."
 starttaskid: "0"
 tasks:
