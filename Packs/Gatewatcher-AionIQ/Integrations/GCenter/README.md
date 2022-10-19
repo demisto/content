@@ -1037,7 +1037,7 @@ Send malware
 
 ##### Command Example
 
-```!gw-send-malware filename="test" file_id="azerty"```
+```!gw-send-malware filename="test" file_id="331@dfca9ea2-5198-4d64-8c36-5282ac3b2dc5"```
 
 ##### Context Example
 
@@ -1105,7 +1105,7 @@ Send powershell
 
 ##### Command Example
 
-```!gw-send-powershell filename="test" file_id="azerty"```
+```!gw-send-powershell filename="test" file_id="331@dfca9ea2-5198-4d64-8c36-5282ac3b2dc5"```
 
 ##### Context Example
 
@@ -1171,7 +1171,7 @@ Send shellcode
 
 ##### Command Example
 
-```!gw-send-shellcode filename="test" file_id="azerty" deep=false timeout=120```
+```!gw-send-shellcode filename="test" file_id="331@dfca9ea2-5198-4d64-8c36-5282ac3b2dc5" deep=false timeout=120```
 
 ##### Context Example
 

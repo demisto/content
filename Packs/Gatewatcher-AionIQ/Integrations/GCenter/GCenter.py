@@ -708,15 +708,16 @@ class GwClient(GwRequests):
             GwAPIException: If status_code != 201.
         """
         file = demisto.getFilePath(file_id)
-        response = self._post(
-            endpoint="/api/gscan/malcore/",
-            files={
-                "file": (
-                    filename,
-                    open(file.get("path"), "rb")
-                )
-            }
-        )
+        with open(file.get("path"), "rb") as fo:
+            response = self._post(
+                endpoint="/api/gscan/malcore/",
+                files={
+                    "file": (
+                        filename,
+                        fo
+                    )
+                }
+            )
         if response.status_code == 201:
             demisto.info(
                 f"Send malcore file {filename} on GCenter {self.ip}: [OK]"
@@ -744,17 +745,18 @@ class GwClient(GwRequests):
             GwAPIException: If status_code != 201.
         """
         file = demisto.getFilePath(file_id)
-        response = self._post(
-            endpoint="/api/gscan/shellcode/",
-            files={
-                "file": (
-                    filename,
-                    open(file.get("path"), "rb")
-                ),
-                "deep": deep,
-                "timeout": timeout
-            }
-        )
+        with open(file.get("path"), "rb") as fo:
+            response = self._post(
+                endpoint="/api/gscan/shellcode/",
+                files={
+                    "file": (
+                        filename,
+                        fo
+                    ),
+                    "deep": deep,
+                    "timeout": timeout
+                }
+            )
         if response.status_code == 201:
             demisto.info(
                 f"Send shellcode file {filename} on GCenter {self.ip}: [OK]"
@@ -780,15 +782,16 @@ class GwClient(GwRequests):
             GwAPIException: If status_code != 201.
         """
         file = demisto.getFilePath(file_id)
-        response = self._post(
-            endpoint="/api/gscan/powershell/",
-            files={
-                "file": (
-                    filename,
-                    open(file.get("path"), "rb")
-                )
-            }
-        )
+        with open(file.get("path"), "rb") as fo:
+            response = self._post(
+                endpoint="/api/gscan/powershell/",
+                files={
+                    "file": (
+                        filename,
+                        fo
+                    )
+                }
+            )
         if response.status_code == 201:
             demisto.info(
                 f"Send powershell file {filename} on GCenter {self.ip}: [OK]"
@@ -872,13 +875,14 @@ def gw_add_malcore_list_entry(client: GwClient, args: Optional[Dict[Any, Any]]) 
     Returns:
         CommandResults object with the "GCenter.Malcore" prefix.
     """
+    ltype=args.get("type")
     result = client.add_malcore_list_entry(
-        ltype=args.get("type"),  # type: ignore
+        ltype=ltype,  # type: ignore
         sha256=args.get("sha256"),  # type: ignore
         comment=args.get("comment", "added by cortex"),  # type: ignore
         threat=args.get("threat", "unknown")  # type: ignore
     )
-    readable_result = tableToMarkdown("Malcore whitelist/blacklist entry", result)
+    readable_result = tableToMarkdown(f"Malcore {ltype}list entry", result)
     return CommandResults(
         readable_output=readable_result,
         outputs_prefix="GCenter.Malcore",
@@ -921,12 +925,13 @@ def gw_add_dga_list_entry(client: GwClient, args: Optional[Dict[Any, Any]]) -> C
     Returns:
         CommandResults object with the "GCenter.Dga" prefix.
     """
+    ltype=args.get("type")
     result = client.add_dga_list_entry(
-        ltype=args.get("type"),  # type: ignore
+        ltype=ltype,  # type: ignore
         domain=args.get("domain"),  # type: ignore
         comment=args.get("comment", "added by cortex")  # type: ignore
     )
-    readable_result = tableToMarkdown("DGA whitelist/blacklist entry", result)
+    readable_result = tableToMarkdown(f"DGA {ltype}list entry", result)
     return CommandResults(
         readable_output=readable_result,
         outputs_prefix="GCenter.Dga",
