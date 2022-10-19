@@ -44,4 +44,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Recorded Future Hatching Sandbox](../doc_files/hatching_sandbox.png)
+![Recorded Future Sandbox](../doc_files/sandbox.png)
