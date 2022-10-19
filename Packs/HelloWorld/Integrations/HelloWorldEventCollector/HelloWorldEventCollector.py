@@ -13,7 +13,7 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = 'hello'
-PRODUCT = 'worlds'
+PRODUCT = 'world'
 
 ''' CLIENT CLASS '''
 
@@ -42,9 +42,10 @@ class Client(BaseClient):
         """
         return [{
             'id': prev_id + 1,
-            'created_time': datetime.now(),
+            'created_time': datetime.now().isoformat(),
             'description': f'This is test description {prev_id + 1}',
             'alert_status': alert_status,
+            'custom_details': {'name': ''}
         }]
 
 
