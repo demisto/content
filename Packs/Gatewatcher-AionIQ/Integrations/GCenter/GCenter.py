@@ -1,15 +1,13 @@
 """Base Integration for Cortex XSOAR (aka Demisto)"""
-import requests
 from typing import (
     Any,
-    Dict,
-    Optional
+    Dict
 )
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-
+import urllib3
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 class GwAPIException(Exception):
@@ -820,7 +818,7 @@ def test_module(client: GwClient) -> str:  # noqa: E501
         return "Authentication error, please check ip/user/password/token: [ERROR]"
 
 
-def gw_list_alerts(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+def gw_list_alerts(client: GwClient, args: Dict[str, Any]) -> CommandResults:  # noqa: E501
     """Get the latest elasticsearch alerts sorted by date in
     descending order (most recent first in the list) command.
 
@@ -842,7 +840,7 @@ def gw_list_alerts(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandR
     )
 
 
-def gw_get_alert(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+def gw_get_alert(client: GwClient, args: Dict[str, Any]) -> CommandResults:  # noqa: E501
     """Get an elasticsearch alert by uid command.
 
     Args:
@@ -865,7 +863,7 @@ def gw_get_alert(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandRes
     )
 
 
-def gw_add_malcore_list_entry(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+def gw_add_malcore_list_entry(client: GwClient, args: Dict[str, Any]) -> CommandResults:  # noqa: E501
     """Add malcore whitelist/blacklist entry command.
 
     Args:
@@ -875,7 +873,7 @@ def gw_add_malcore_list_entry(client: GwClient, args: Optional[Dict[Any, Any]]) 
     Returns:
         CommandResults object with the "GCenter.Malcore" prefix.
     """
-    ltype=args.get("type")
+    ltype = args.get("type")
     result = client.add_malcore_list_entry(
         ltype=ltype,  # type: ignore
         sha256=args.get("sha256"),  # type: ignore
@@ -892,7 +890,7 @@ def gw_add_malcore_list_entry(client: GwClient, args: Optional[Dict[Any, Any]]) 
     )
 
 
-def gw_del_malcore_list_entry(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+def gw_del_malcore_list_entry(client: GwClient, args: Dict[str, Any]) -> CommandResults:  # noqa: E501
     """Del malcore whitelist/blacklist entry command.
 
     Args:
@@ -915,7 +913,7 @@ def gw_del_malcore_list_entry(client: GwClient, args: Optional[Dict[Any, Any]]) 
     )
 
 
-def gw_add_dga_list_entry(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+def gw_add_dga_list_entry(client: GwClient, args: Dict[str, Any]) -> CommandResults:  # noqa: E501
     """Add dga whitelist/blacklist entry command.
 
     Args:
@@ -925,7 +923,7 @@ def gw_add_dga_list_entry(client: GwClient, args: Optional[Dict[Any, Any]]) -> C
     Returns:
         CommandResults object with the "GCenter.Dga" prefix.
     """
-    ltype=args.get("type")
+    ltype = args.get("type")
     result = client.add_dga_list_entry(
         ltype=ltype,  # type: ignore
         domain=args.get("domain"),  # type: ignore
@@ -941,7 +939,7 @@ def gw_add_dga_list_entry(client: GwClient, args: Optional[Dict[Any, Any]]) -> C
     )
 
 
-def gw_del_dga_list_entry(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+def gw_del_dga_list_entry(client: GwClient, args: Dict[str, Any]) -> CommandResults:  # noqa: E501
     """Del dga whitelist/blacklist entry command.
 
     Args:
@@ -964,7 +962,7 @@ def gw_del_dga_list_entry(client: GwClient, args: Optional[Dict[Any, Any]]) -> C
     )
 
 
-def gw_es_query(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+def gw_es_query(client: GwClient, args: Dict[str, Any]) -> CommandResults:  # noqa: E501
     """Get results of an elasticsearch query command.
 
     Args:
@@ -988,7 +986,7 @@ def gw_es_query(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResu
     )
 
 
-def gw_add_ignore_asset_name(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+def gw_add_ignore_asset_name(client: GwClient, args: Dict[str, Any]) -> CommandResults:  # noqa: E501
     """Ignore asset name command.
 
     Args:
@@ -1013,7 +1011,7 @@ def gw_add_ignore_asset_name(client: GwClient, args: Optional[Dict[Any, Any]]) -
     )
 
 
-def gw_add_ignore_kuser_ip(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+def gw_add_ignore_kuser_ip(client: GwClient, args: Dict[str, Any]) -> CommandResults:  # noqa: E501
     """Ignore Kerberos ip command.
 
     Args:
@@ -1036,7 +1034,7 @@ def gw_add_ignore_kuser_ip(client: GwClient, args: Optional[Dict[Any, Any]]) -> 
     )
 
 
-def gw_add_ignore_kuser_name(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+def gw_add_ignore_kuser_name(client: GwClient, args: Dict[str, Any]) -> CommandResults:  # noqa: E501
     """Ignore Kerberos username command.
 
     Args:
@@ -1061,7 +1059,7 @@ def gw_add_ignore_kuser_name(client: GwClient, args: Optional[Dict[Any, Any]]) -
     )
 
 
-def gw_add_ignore_mac_address(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+def gw_add_ignore_mac_address(client: GwClient, args: Dict[str, Any]) -> CommandResults:  # noqa: E501
     """Ignore mac address command.
 
     Args:
@@ -1085,7 +1083,7 @@ def gw_add_ignore_mac_address(client: GwClient, args: Optional[Dict[Any, Any]]) 
     )
 
 
-def gw_del_ignore_asset_name(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+def gw_del_ignore_asset_name(client: GwClient, args: Dict[str, Any]) -> CommandResults:  # noqa: E501
     """Delete ignore asset name command.
 
     Args:
@@ -1108,7 +1106,7 @@ def gw_del_ignore_asset_name(client: GwClient, args: Optional[Dict[Any, Any]]) -
     )
 
 
-def gw_del_ignore_kuser_ip(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+def gw_del_ignore_kuser_ip(client: GwClient, args: Dict[str, Any]) -> CommandResults:  # noqa: E501
     """Delete ignore Kerberos ip command.
 
     Args:
@@ -1131,7 +1129,7 @@ def gw_del_ignore_kuser_ip(client: GwClient, args: Optional[Dict[Any, Any]]) -> 
     )
 
 
-def gw_del_ignore_kuser_name(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+def gw_del_ignore_kuser_name(client: GwClient, args: Dict[str, Any]) -> CommandResults:  # noqa: E501
     """Delete ignore Kerberos username command.
 
     Args:
@@ -1154,7 +1152,7 @@ def gw_del_ignore_kuser_name(client: GwClient, args: Optional[Dict[Any, Any]]) -
     )
 
 
-def gw_del_ignore_mac_address(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+def gw_del_ignore_mac_address(client: GwClient, args: Dict[str, Any]) -> CommandResults:  # noqa: E501
     """Delete ignore mac address command.
 
     Args:
@@ -1177,7 +1175,7 @@ def gw_del_ignore_mac_address(client: GwClient, args: Optional[Dict[Any, Any]]) 
     )
 
 
-def gw_send_malware(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+def gw_send_malware(client: GwClient, args: Dict[str, Any]) -> CommandResults:  # noqa: E501
     """Send file to the GScan malcore analysis.
 
     Args:
@@ -1201,7 +1199,7 @@ def gw_send_malware(client: GwClient, args: Optional[Dict[Any, Any]]) -> Command
     )
 
 
-def gw_send_powershell(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+def gw_send_powershell(client: GwClient, args: Dict[str, Any]) -> CommandResults:  # noqa: E501
     """Send file to the GScan shellcode analysis command.
 
     Args:
@@ -1225,7 +1223,7 @@ def gw_send_powershell(client: GwClient, args: Optional[Dict[Any, Any]]) -> Comm
     )
 
 
-def gw_send_shellcode(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+def gw_send_shellcode(client: GwClient, args: Dict[str, Any]) -> CommandResults:  # noqa: E501
     """Send file to the GScan powershell analysis command.
 
     Args:
