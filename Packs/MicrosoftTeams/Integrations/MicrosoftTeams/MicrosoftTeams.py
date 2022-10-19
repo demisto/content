@@ -623,10 +623,13 @@ def validate_auth_header(headers: dict) -> bool:
         return False
 
     integration_context: dict = get_integration_context()
+    demisto.debug(f"integration context is: {integration_context}")
     open_id_metadata: dict = json.loads(integration_context.get('open_id_metadata', '{}'))
+    demisto.debug(f"open_id_metadata from integration context is: {open_id_metadata}")
     keys: list = open_id_metadata.get('keys', [])
 
     unverified_headers: dict = jwt.get_unverified_header(jwt_token)
+    demisto.debug(f"unverified headers are: {unverified_headers}")
     key_id: str = unverified_headers.get('kid', '')
     key_object: dict = dict()
 
@@ -635,7 +638,7 @@ def validate_auth_header(headers: dict) -> bool:
         if key.get('kid') == key_id:
             key_object = key
             break
-
+    demisto.debug(f"first key_object is: {key_object}")
     if not key_object:
         # Didn't find requested key in cache, getting new keys
         try:
@@ -661,7 +664,7 @@ def validate_auth_header(headers: dict) -> bool:
         # Didn't get new keys
         demisto.info('Authorization header validation - failed to get keys')
         return False
-
+    demisto.debug(f"keys are: {keys}")
     # Find requested key in new keys
     for key in keys:
         if key.get('kid') == key_id:
@@ -672,7 +675,7 @@ def validate_auth_header(headers: dict) -> bool:
         # Didn't find requested key in new keys
         demisto.info('Authorization header validation - failed to find relevant key')
         return False
-
+    demisto.debug(f"now key object is: {key_object}")
     endorsements: list = key_object.get('endorsements', [])
     if not endorsements or 'msteams' not in endorsements:
         demisto.info('Authorization header validation - failed to verify endorsements')

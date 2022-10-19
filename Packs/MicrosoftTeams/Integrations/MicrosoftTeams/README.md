@@ -125,6 +125,23 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 ### Create the Demisto Bot in Microsoft Teams
 
 
+#### Creating the Demisto Bot for Production environment using Microsoft Azure Portal
+1. Navigate to the [Create an Azure Bot page](https://portal.azure.com/#create/Microsoft.AzureBot).
+2. Fill in `Demisto Bot` in the Bot Handle field.
+3. Fill in the required Subscription and Resource Group.
+4. Select `Multi Tenant` for Type of App.
+5. Select `Create new Microsoft App ID` for Creation Type if you don't already have an app registration, otherwise, select `Use existing app registration`, and fill in you App ID.
+6. Click on **Review + Create**, and wait for the validation to pass.
+7. Click on **create** if validation has passed, and wait for deployment to finish.
+8. Click on **Go to resource** under Next Steps.
+9. Navigate to **Configuration** on the left bar, and fill in the **Messaging Endpoint**.
+10. Store the **Microsoft App ID** value for the next steps, and Navigate to  **Manage** next to it.
+11. Click on **New Client Secret**, fill in the **Description** and **Expires** fields as desired, then click on **Add**.
+12. Copy the client secret from the **value** and store it for next steps.
+13. Go back to the previous Page, and navigate to **Channels** on the left bar.
+14. Click on **Microsoft Teams** under **Available Channels**, click on the checkbox, click on **Agree**, then click on **Apply**.
+
+
 #### Using the Developer Portal
 1. Navigate to the [Tools in the Microsoft Developer Portal](https://dev.teams.microsoft.com/tools).
 2. Navigate to **Bot management**.
