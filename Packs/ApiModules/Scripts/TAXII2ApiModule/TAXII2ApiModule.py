@@ -25,8 +25,6 @@ HEADER_USERNAME = "_header:"
 
 ERR_NO_COLL = "No collection is available for this user, please make sure you entered the configuration correctly"
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
-
 # Pattern Regexes - used to extract indicator type and value
 INDICATOR_OPERATOR_VAL_FORMAT_PATTERN = r"(\w.*?{value}{operator})'(.*?)'"
 INDICATOR_EQUALS_VAL_PATTERN = INDICATOR_OPERATOR_VAL_FORMAT_PATTERN.format(

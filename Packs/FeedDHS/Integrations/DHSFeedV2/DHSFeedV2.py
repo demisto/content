@@ -29,9 +29,9 @@ def fetch_indicators_command(client: Taxii2FeedClient, limit: int, last_run_ctx:
     initial_interval = dateparser.parse(initial_interval or '24 hours', date_formats=[TAXII_TIME_FORMAT])
 
     if client.collection_to_fetch:
-        indicators, last_run_ctx = fetch_one_collection(client, limit, initial_interval, last_run_ctx)
+        indicators, last_run_ctx = fetch_one_collection(client, limit, initial_interval, last_run_ctx)  # type: ignore[arg-type]
     else:
-        indicators, last_run_ctx = fetch_all_collections(client, limit, initial_interval, last_run_ctx)
+        indicators, last_run_ctx = fetch_all_collections(client, limit, initial_interval, last_run_ctx)  # type: ignore[arg-type]
 
     return indicators, last_run_ctx
 
@@ -84,7 +84,7 @@ def get_indicators_command(client: Taxii2FeedClient, args: Dict[str, Any]) \
     if client.collection_to_fetch:
         indicators = client.build_iterator(limit, added_after=added_after)
     else:
-        indicators, _ = fetch_all_collections(client, limit, added_after)
+        indicators, _ = fetch_all_collections(client, limit, added_after)  # type: ignore[arg-type]
 
     if raw:
         return {'indicators': [x.get('rawJSON') for x in indicators]}
