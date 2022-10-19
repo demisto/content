@@ -368,6 +368,9 @@ def search_slack_users(users: Union[list, str]) -> list:
     if not isinstance(users, list):
         users = [users]
 
+    # Filter NoneType elements from the user list
+    users = list(filter(lambda x: x, users))
+
     for user in users:
         slack_user = get_user_by_name(user)
         if not slack_user:
@@ -1512,9 +1515,13 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
 
                 _body = json.dumps(body)
                 try:
-                    response = requests.request("POST", f"{DEMISTO_URL}/entry/execute/sync", headers=headers, data=_body,
-                                                verify=VERIFY_CERT)
-                    response.raise_for_status()
+                    response = requests.request("POST",  # type: ignore
+                                                f"{DEMISTO_URL}/entry/execute/sync",
+                                                headers=headers,
+                                                data=_body,
+                                                verify=VERIFY_CERT
+                                                )
+                    response.raise_for_status()  # type: ignore
                 except requests.exceptions.ConnectionError as err:
                     err_message = f'Error submitting context command to server. Check your API Key: {err}'
                     demisto.updateModuleHealth(err_message)
@@ -2347,7 +2354,7 @@ def create_channel():
 def invite_to_channel():
     channel = demisto.args().get('channel')
     channel_id = demisto.args().get('channel_id', '')
-    users = argToList(demisto.args().get('users', []))
+    users = argToList(demisto.args().get('users', '[]').rstrip(', '))
 
     if not users:
         # Not raising an error here to preserve BC
