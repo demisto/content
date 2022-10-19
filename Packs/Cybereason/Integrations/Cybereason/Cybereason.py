@@ -852,7 +852,8 @@ def available_remediation_actions_command(client: Client, args: dict):
                 })
 
     return CommandResults(readable_output=tableToMarkdown(f'Cybereason available remediation actions for malop {malop_guid}:',
-                                                          cybereason_outputs, removeNull=False), outputs_prefix='Cybereason.Remediation',
+                                                          cybereason_outputs, removeNull=False),
+                          outputs_prefix='Cybereason.Remediation',
                           outputs_key_field='TargetID', outputs=cybereason_outputs)
 
 
@@ -1736,7 +1737,8 @@ def download_fetchfile_command(client: Client, args: dict):
         file_download = fileResult('download.zip', response.content)
         return file_download
     else:
-        raise DemistoException("request failed with the following error: " + response.content + " Response Status code: " + str(response.status_code))
+        error_message = f"request failed with the following error: {response.content} Response Status code:{response.status_code}"
+        raise DemistoException(error_message)
 
 
 def download_fetchfile(client: Client, batch_id: str) -> Any:
@@ -1773,7 +1775,8 @@ def malware_query_command(client: Client, args: dict):
 
 
 def malware_query_filter(
-        client: Client, needs_attention: bool, malware_type: str, malware_status: str, time_stamp: str, limit_range: Optional[int]) -> dict:
+        client: Client, needs_attention: bool, malware_type: str, malware_status: str, time_stamp: str,
+        limit_range: Optional[int]) -> dict:
     query = []
     if needs_attention:
         query.append({"fieldName": "needsAttention", "operator": "Is", "values": [bool(needs_attention)]})
