@@ -1,0 +1,26 @@
+{
+    "organization": {
+        "created_at": "2018-11-14T00:14:52Z",
+        "details": "test",
+        "domain_names": [
+            "test.com"
+        ],
+        "external_id": null,
+        "group_id": 1835962,
+        "id": 100,
+        "name": "single_organization",
+        "organization_fields": {
+            "datepudding": "2018-11-04T00:00:00+00:00",
+            "org_field_1": "happy happy",
+            "org_field_2": "teapot_kettle"
+        },
+        "shared_comments": false,
+        "shared_tickets": false,
+        "tags": [
+            "smiley",
+            "teapot_kettle"
+        ],
+        "updated_at": "2018-11-14T00:54:22Z",
+        "url": "https://test.zendesk.com/api/v2/organizations/100.json"
+    }
+}
