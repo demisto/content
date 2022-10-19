@@ -1,12 +1,8 @@
 #!/bin/bash
 
-set -e
-
 sudo chown demisto .venv
 sudo chown demisto node_modules
-sudo chown -R demisto $HOME
-
-sudo git config --system http.sslCAInfo /usr/local/share/ca-certificates/certs.crt
+sudo chwon demisto $HOME
 
 cp .devcontainer/settings.json .vscode/settings.json 
 touch CommonServerUserPython.py
