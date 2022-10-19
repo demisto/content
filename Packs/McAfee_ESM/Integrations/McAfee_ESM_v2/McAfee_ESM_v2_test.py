@@ -1,5 +1,4 @@
 import datetime
-import CommonServerPython
 
 from freezegun import freeze_time
 import pytest
@@ -251,12 +250,20 @@ def test_edit_case(mocker):
 
 @freeze_time('2022-10-18T16:46:25Z')
 def test_alarm_to_incidents(mocker):
+    """
+    Given: last run object.
+
+    When: running fetch incidents.
+
+    Then: return correct incidents based on alerts time.
+
+    """
     def fetch_alarams(since: str = None, start_time: str = None, end_time: str = None, raw: bool = False):
         if type(start_time) == str:
             start_time = datetime.strptime(start_time, McAfeeESMClient.demisto_format)
         all_alarms = [alarm for alarm in alarms if
-                      datetime.strptime(alarm.get('triggeredDate'), McAfeeESMClient.demisto_format) >
-                      start_time]
+                      datetime.strptime(alarm.get('triggeredDate'), McAfeeESMClient.demisto_format)
+                      > start_time]
         return None, None, all_alarms
 
     params = {
@@ -276,7 +283,7 @@ def test_alarm_to_incidents(mocker):
         {
             'id': 2,
             'triggeredDate': '2022-10-18T11:06:26Z'
-        }
+    }
     ]
 
     mocker.patch('McAfee_ESM_v2.parse_date_range', return_value=['', ''])
