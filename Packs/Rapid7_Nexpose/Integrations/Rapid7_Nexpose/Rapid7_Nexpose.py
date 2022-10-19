@@ -1076,6 +1076,43 @@ class Client(BaseClient):
             resp_type="json",
         )
 
+    def get_site_scan_credential(self, site_id: str, credential_id: str) -> dict:
+        """
+        | Retrieve information about a specific site scan credential.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getSiteCredential
+
+        Args:
+            site_id (str): ID of the site to retrieve scan credentials from.
+            credential_id (str): ID of the scan credential to retrieve.
+
+        Returns:
+            dict: API response with information about a specific site scan credential.
+        """
+        return self._http_request(
+            url_suffix=f"/sites/{site_id}/site_credentials/{credential_id}",
+            method="GET",
+            resp_type="json",
+        )
+
+    def get_site_scan_credentials(self, site_id: str) -> list[dict]:
+        """
+        | Retrieve information about a specific site scan credential.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getSiteCredentials
+
+        Args:
+            site_id (str): ID of the site to retrieve scan credentials from.
+
+        Returns:
+            list[dict]: A list with information about all site scan credentials.
+        """
+        return self._http_request(
+            url_suffix=f"/sites/{site_id}/site_credentials",
+            method="GET",
+            resp_type="json",
+        ).get("resources")
+
     def get_site_scans(self, site_id: str, page_size: Optional[int] = DEFAULT_PAGE_SIZE,
                        page: Optional[int] = None, sort: Optional[str] = None,
                        limit: Optional[int] = None) -> list[dict]:
@@ -3630,6 +3667,64 @@ def list_assigned_shared_credential_command(client: Client, site: Site) -> Comma
     )
 
 
+def list_site_scan_credential_command(client: Client, site: Site, credential_id: Optional[str] = None,
+                                      limit: Optional[int] = None) -> CommandResults:
+    """
+    Retrieve information about all or a specific scan credential.
+
+    Args:
+        client (Client): Client to use for API requests.
+        site (Site): Site to retrieve scan credentials from.
+        credential_id (str | None, optional): ID of a specific scan credential to retrieve.
+        limit (int | None, optional): Limit the number of credentials to return. None means to not use a limit.
+            Defaults to None.
+    """
+    if credential_id is not None:
+        site_scan_credentials = client.get_site_scan_credential(site_id=site.id, credential_id=credential_id)
+        site_scan_credentials = [site_scan_credentials]
+
+    else:
+        site_scan_credentials = client.get_site_scan_credentials(site_id=site.id)
+
+    if not site_scan_credentials:
+        return CommandResults(readable_output="No site scan credentials were found.")
+
+    if limit and len(site_scan_credentials) > limit:
+        site_scan_credentials = site_scan_credentials[:limit]
+
+    headers = [
+        "Id",
+        "Enabled",
+        "Name",
+        "Service",
+        "UserName",
+        "RestrictToHostName",
+        "RestrictToPort",
+    ]
+
+    site_scan_credentials_hr = replace_key_names(
+        data=site_scan_credentials,
+        name_mapping={
+            "id": "Id",
+            "enabled": "Enabled",
+            "name": "Name",
+            "account.service": "Service",
+            "account.username": "UserName",
+            "hostRestriction": "RestrictToHostName",
+            "portRestriction": "RestrictToPort",
+        },
+        recursive=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="Nexpose.SiteScanCredential",
+        outputs_key_field="id",
+        outputs=site_scan_credentials,
+        readable_output=tableToMarkdown("Nexpose Site Scan Credentials", site_scan_credentials_hr, headers, removeNull=True),
+        raw_response=site_scan_credentials,
+    )
+
+
 def list_vulnerability_command(client: Client, vulnerability_id: Optional[str], page_size: Optional[int] = None,
                                page: Optional[int] = None, sort: Optional[str] = None,
                                limit: Optional[int] = None) -> CommandResults:
@@ -4548,6 +4643,17 @@ def main():
                     site_name=args.get("site_name"),
                     client=client,
                 ),
+            )
+        elif command == "nexpose-list-site-scan-credential":
+            results = list_site_scan_credential_command(
+                client=client,
+                site=Site(
+                    site_id=args.get("site_id"),
+                    site_name=args.get("site_name"),
+                    client=client,
+                ),
+                credential_id=args.get("credential_id"),
+                limit=arg_to_number(args.get("limit")),
             )
         elif command == "nexpose-list-vulnerability":
             results = list_vulnerability_command(
