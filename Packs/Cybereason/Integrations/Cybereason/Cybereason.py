@@ -959,8 +959,8 @@ def delete_registry_key_command(client: Client, args: dict):
     user_name = str(args.get('userName'))
     comment = str(args.get('comment')) if args.get('comment') else 'Delete Registry Key Remediation Action Succeeded'
     remediation_action = 'DELETE_REGISTRY_KEY'
-    is_machine_conntected = is_probe_connected_command(client, args, is_remediation_commmand=True)
-    if is_machine_conntected is True:
+    is_machine_connected = is_probe_connected_command(client, args, is_remediation_command=True)
+    if is_machine_connected is True:
         response = get_remediation_action(client, malop_guid, machine_name, target_id, remediation_action)
         action_status = get_remediation_action_status(client, user_name, malop_guid, response, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
