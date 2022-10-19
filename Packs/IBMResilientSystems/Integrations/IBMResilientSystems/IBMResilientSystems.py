@@ -2,7 +2,7 @@ import json
 import logging
 import time
 
-import requests
+import urllib3
 
 import demistomock as demisto
 import resilient
@@ -12,7 +12,7 @@ from CommonServerPython import *
 logging.basicConfig()
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 try:
     # disable 'warning' logs from 'resilient.co3'
     logging.getLogger('resilient.co3').setLevel(logging.ERROR)
