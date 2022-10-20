@@ -1,7 +1,7 @@
 {
     "description": "",
     "feed": false,
-    "id": "CiscoESA-incoming-mapper",
+    "id": "CiscoESA - Incoming Mapper",
     "mapping": {
         "Cisco ESA Spam Quarantine": {
             "dontMapEventToLabels": false,
@@ -94,7 +94,7 @@
             "internalMapping": {}
         }
     },
-    "name": "CiscoESA-incoming-mapper",
+    "name": "CiscoESA - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.2.0"
