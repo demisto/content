@@ -264,6 +264,15 @@ ignore=IF100
 [file:incidentfield-Alert_Action.json]
 ignore=IF100
 
+[file:incidentfield-Detection_End_Time.json]
+ignore=IF115
+
+[file:incidentfield-Detection_ID.json]
+ignore=IF115
+
+[file:incidentfield-Detection_Update_Time.json]
+ignore=IF115
+
 [file:incidentfield-Alert_Attack_Time.json]
 ignore=IF100
 
@@ -297,6 +306,18 @@ longText
 XSOAR
 mutex
 urlRep
+Vectra
+sAMAccountName
+Dst
+domainRepUnified
+hostRep
+ipRep
+unifiedFileRep
+registryKey
+emailRep
+accountRep
+cveRep
+VerifyCIDR
 
 [file:classifier-Mail-listener.json]
 ignore=BA101

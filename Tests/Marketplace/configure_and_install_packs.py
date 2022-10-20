@@ -176,7 +176,7 @@ def main():
         branch_name: str = options.branch
         build_number: str = options.build_number
 
-        if options.ami_env in ["XSIAM Master"]:
+        if options.ami_env in ["XSIAM Master", "XSIAM 1.2"]:
             xsiam_configure_and_install_flow(options, branch_name, build_number)
         elif options.override_all_packs:
             xsoar_configure_and_install_all_packs(options, branch_name, build_number)

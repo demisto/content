@@ -1321,7 +1321,7 @@ def fetch_incidents():
             simple_values.pop('iconBase64', None)
             simple_values.pop('malopActivityTypes', None)
             malop_update_time = dict_safe_get(simple_values, ['malopLastUpdateTime', 'values', 0])
-            if malop_update_time > max_update_time:
+            if int(malop_update_time) > int(max_update_time):
                 max_update_time = malop_update_time
 
             incident = malop_to_incident(malop)
