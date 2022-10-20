@@ -1,0 +1,20 @@
+{
+  "id": "xxxx",
+  "ownerName": "xxx",
+  "type": "URL",
+  "dateAdded": "2019-06-27T18:37:55Z",
+  "lastModified": "2019-06-27T18:37:55Z",
+  "rating": 2.0,
+  "confidence": 75,
+  "threatAssessRating": 2.06,
+  "threatAssessConfidence": 75.0,
+  "threatAssessScore": 229,
+  "webLink": "https://app.threatconnect.com/",
+  "summary": "https://google.com",
+  "observationCount": 0,
+  "falsePositiveCount": 0,
+  "privateFlag": false,
+  "active": true,
+  "activeLocked": true,
+  "associatedIndicators": {"data": [{"summary": "summary", "type": "type"}]}
+}

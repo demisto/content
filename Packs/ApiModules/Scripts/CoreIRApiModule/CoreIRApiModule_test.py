@@ -108,10 +108,21 @@ def test_get_endpoints(requests_mock):
 
 
 def test_get_all_endpoints_using_limit(requests_mock):
+    """
+    Given:
+        The default arguments for the get endpoints command: limit = 1, page = 0, sort_order = 'asc'.
+    When:
+        Calling the get_endpoints_command function
+    Then:
+        a. Make sure the 'get_endpoints' API is not called (not to be confused with get_endpoint - see last comment
+            here: https://jira-hq.paloaltonetworks.local/browse/XSUP-15995)
+        b. Make sure the returned result as in the expected format.
+    """
     from CoreIRApiModule import get_endpoints_command, CoreClient
 
     get_endpoints_response = load_test_data('./test_data/get_all_endpoints.json')
-    requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/get_endpoints/', json=get_endpoints_response)
+    requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/get_endpoint/', json=get_endpoints_response)
+    get_endpoints_mock = requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/get_endpoints/')
 
     client = CoreClient(
         base_url=f'{Core_URL}/public_api/v1', headers={}
@@ -122,9 +133,10 @@ def test_get_all_endpoints_using_limit(requests_mock):
         'sort_order': 'asc'
     }
     res = get_endpoints_command(client, args)
-    expected_endpoint = get_endpoints_response.get('reply')[0]
+    expected_endpoint = get_endpoints_response.get('reply').get('endpoints')
 
-    assert [expected_endpoint] == res.outputs['CoreApiModule.Endpoint(val.endpoint_id == obj.endpoint_id)']
+    assert not get_endpoints_mock.called
+    assert res.outputs['CoreApiModule.Endpoint(val.endpoint_id == obj.endpoint_id)'] == expected_endpoint
 
 
 def test_endpoint_command(requests_mock):
