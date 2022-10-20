@@ -1129,10 +1129,6 @@
             "timeout": 3600
         },
         {
-            "playbookID": "Luminate-TestPlaybook",
-            "integrations": "Luminate"
-        },
-        {
             "integrations": "MxToolBox",
             "playbookID": "MxToolbox-test"
         },
