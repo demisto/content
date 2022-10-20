@@ -2986,7 +2986,12 @@ def search_result_get_command(client: Client, args: Dict[str, Any]) -> List[Comm
                 message = "The search was deleted successfully"
         except Exception as e:
             demisto.debug(f'{message}\n{e}')
-        commandsResults[0].readable_output += f"\n\n{message}"
+        if len(commandsResults) > 0:
+            commandsResults[0].readable_output += f"\n\n{message}"
+        else:
+            commandsResults.append(CommandResults(
+                readable_output=message
+            ))
 
     return commandsResults if commandsResults else [CommandResults(readable_output="No Results")]
 
