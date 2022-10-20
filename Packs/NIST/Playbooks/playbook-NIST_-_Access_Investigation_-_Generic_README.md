@@ -71,4 +71,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![Access Investigation - Generic - NIST](https://raw.githubusercontent.com/demisto/content/de09fc15c5851cdf9e3036cb4bd70099bcff2650/Packs/NIST/doc_files/NIST_-_Access_Investigation_-_Generic.png)
+![Access Investigation - Generic - NIST](../doc_files/NIST_-_Access_Investigation_-_Generic.png)
