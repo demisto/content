@@ -47,6 +47,11 @@
             "playbookID": "LogRhythmRestV2-test"
         },
         {
+            "fromversion": "6.6.0",
+            "integrations": "Zendesk v2",
+            "playbookID": "Zendesk V2 TEST"
+        },
+        {
             "playbookID": "Base64Decode - Test"
         },
         {
@@ -1384,14 +1389,6 @@
             "instance_names": "virus_total_preferred_vendors",
             "playbookID": "virusTotaI-test-preferred-vendors",
             "timeout": 1400
-        },
-        {
-            "integrations": "Preempt",
-            "playbookID": "Preempt Test"
-        },
-        {
-            "integrations": "Gmail",
-            "playbookID": "get_original_email_-_gmail_-_test"
         },
         {
             "integrations": [
@@ -3004,9 +3001,9 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "QRadar_v2",
+            "integrations": "QRadar v3",
             "playbookID": "QRadar Indicator Hunting Test",
-            "timeout": 600,
+            "timeout": 12000,
             "fromversion": "6.0.0"
         },
         {
@@ -5191,6 +5188,9 @@
             "integrations": [
                 "Panorama"
             ]
+        },
+        {
+            "playbookID": "VerifyCIDR-Test"
         }
     ],
     "skipped_tests": {
@@ -5275,6 +5275,9 @@
         "Feed iDefense Test": "Issue 34035",
         "McAfee ESM v2 - Test v11.1.3": "Issue 43825",
         "MicrosoftGraphMail-Test_prod": "Issue 40125",
+        "MicrosoftGraphMail-Test": "Issue CIAC-4222",
+        "MicrosoftGraphMail-Test_dev": "Issue CIAC-4223",
+        "MicrosoftGraphMail-Test_dev_no_oproxy": "Issue CIAC-512",
         "Detonate URL - WildFire v2.1 - Test": "Issue 40834",
         "Domain Enrichment - Generic v2 - Test": "Issue 40862",
         "TestIPQualityScorePlaybook": "Issue 40915",
@@ -5404,7 +5407,6 @@
         "Check Point": "Issue 18643",
         "CheckPointFirewall_v2": "Issue 18643",
         "CTIX v3": "No instance - developed by partner",
-        "Preempt": "Issue 20268",
         "Jask": "Issue 18879",
         "vmray": "Issue 18752",
         "SCADAfence CNM": "Issue 18376",
