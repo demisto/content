@@ -2,7 +2,7 @@ commonfields:
   id: CiscoSMA
   version: -1
 name: CiscoSMA
-display: Cisco SMA
+display: Cisco Security Management Appliance
 category: Email Gateway
 description: The Security Management Appliance (SMA) is used to centralize services from Email Security Appliances (ESAs) and Web Security Appliances (WSAs).
 configuration:
