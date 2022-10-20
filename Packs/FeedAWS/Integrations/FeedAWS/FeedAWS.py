@@ -34,7 +34,7 @@ def get_feed_config(services: list, regions: list):
         'KINESIS_VIDEO_STREAMS',
         'ROUTE53_HEALTHCHECKS_PUBLISHING',
         'ROUTE53_RESOLVER',
-        'WORKSPACES_GATEWAYS'
+        'WORKSPACES_GATEWAYS',
     }
 
     region_path = ''
