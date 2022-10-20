@@ -2,7 +2,7 @@ id: Detonate and Analyze File - Generic
 version: -1
 fromversion: 6.5.0
 name: Detonate and Analyze File - Generic
-description: 'This playbook uploads, detonates, and analyzes files for supported sandboxes. Currently supported sandboxes are Falcon X, Wildfire and Joe Security. '
+description: 'This playbook uploads, detonates, and analyzes files for supported sandboxes. Currently supported sandboxes are Falcon X and Wildfire. '
 starttaskid: "0"
 tasks:
   "0":
@@ -145,7 +145,7 @@ tasks:
       {
         "position": {
           "x": 1590,
-          "y": 1430
+          "y": 1630
         }
       }
     note: false
@@ -401,7 +401,7 @@ tasks:
       '#default#':
       - "3"
       "yes":
-      - "13"
+      - "20"
     scriptarguments:
       brandname:
         simple: JoeSecurityV2
@@ -420,55 +420,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: f8d385fb-9037-4edb-8613-e5e6fe4026e2
-    type: playbook
-    task:
-      id: f8d385fb-9037-4edb-8613-e5e6fe4026e2
-      version: -1
-      name: Detonate and Analyze File - JoeSecurity
-      description: |-
-        Detonates one or more files using the Joe Security - Joe Sandbox integration.
-        Returns relevant reports to the War Room and file reputations to the context data.
-        All file types are supported.
-      playbookName: Detonate and Analyze File - JoeSecurity
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      File:
-        simple: ${inputs.File}
-      InternetAccess:
-        simple: "True"
-      Interval:
-        simple: "1"
-      Timeout:
-        simple: "15"
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 510,
-          "y": 580
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -643,7 +594,7 @@ tasks:
       {
         "position": {
           "x": 500,
-          "y": 1250
+          "y": 1450
         }
       }
     note: false
@@ -672,7 +623,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "19"
+      - "21"
     scriptarguments:
       entryID:
         complex:
@@ -741,13 +692,107 @@ tasks:
       {
         "position": {
           "x": 70,
-          "y": 1250
+          "y": 1450
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 59b9b222-8339-41b5-88f5-410d11ad9a20
+    type: playbook
+    task:
+      id: 59b9b222-8339-41b5-88f5-410d11ad9a20
+      version: -1
+      name: Detonate and Analyze File - JoeSecurity
+      description: |-
+        Detonates one or more files using the Joe Security - Joe Sandbox integration.
+        Returns relevant reports to the War Room and file reputations to the context data.
+        All file types are supported.
+      playbookName: Detonate and Analyze File - JoeSecurity
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      File:
+        complex:
+          root: inputs.File
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: baac5ee9-b37f-4ad7-80fe-b7021e116faf
+    type: condition
+    task:
+      id: baac5ee9-b37f-4ad7-80fe-b7021e116faf
+      version: -1
+      name: Are there MITRE findings?
+      description: Are there MITRE findings?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ExtractedIndicators.Attack_Pattern
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: ExtractedIndicators.Attack_Pattern
+                      iscontext: true
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -758,7 +803,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1425,
+        "height": 1625,
         "width": 1900,
         "x": 70,
         "y": 70

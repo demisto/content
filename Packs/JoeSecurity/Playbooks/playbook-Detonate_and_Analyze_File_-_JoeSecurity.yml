@@ -158,14 +158,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 0c4766e4-850d-4689-80ea-7660af50b261
+    taskid: cd5393f4-1aef-4a2e-8bf0-07add4cd9b58
     type: regular
     task:
-      id: 0c4766e4-850d-4689-80ea-7660af50b261
+      id: cd5393f4-1aef-4a2e-8bf0-07add4cd9b58
       version: -1
       name: 'Detonate File - Joe Security Sandbox '
       script: '|||joe-submit-sample'
-      description: Submit file for anlysis in Joe Security Sandbox system.
+      description: Submit a sample for sandbox analysis.
       type: regular
       iscommand: true
       brand: ""
@@ -452,7 +452,7 @@ inputs:
   playbookInputQuery:
 - key: Timeout
   value:
-    simple: "15"
+    simple: "1200"
   required: false
   description: The duration after which to stop pooling and to resume the playbook (in minutes)
   playbookInputQuery:
@@ -483,28 +483,31 @@ inputs:
   description: Uploads a cookbook together with the sample. Needs to be a file-like object or a tuple in the shape (filename, file-like object)
   playbookInputQuery:
 - key: FullDisplay
-  value: {}
+  value:
+    simple: "True"
   required: false
   description: If set to true, will display the full indicators and dbot_scores. If set to false, will display only the summary.
   playbookInputQuery:
 - key: Tags
-  value:
-    simple: A comma-separated list of tags to be added to the analysis.
+  value: {}
   required: false
-  description: "A comma-separated list of tags to be added to the analysis."
+  description: A comma-separated list of tags to be added to the analysis.
   playbookInputQuery:
 - key: SSLInspection
-  value: {}
+  value:
+    simple: "False"
   required: false
   description: Whether to enable SSL inspection.
   playbookInputQuery:
 - key: HybridCodeAnalysis
-  value: {}
+  value:
+    simple: "True"
   required: false
   description: Whether to enable hybrid code analysis.
   playbookInputQuery:
 - key: FastMode
-  value: {}
+  value:
+    simple: "false"
   required: false
   description: Whether to enable fast mode, focuses on fast analysis and detection versus deep forensic analysis.
   playbookInputQuery:
@@ -514,7 +517,8 @@ inputs:
   description: A command line argument is to be passed to the sample.
   playbookInputQuery:
 - key: LiveInteraction
-  value: {}
+  value:
+    simple: "False"
   required: false
   description: Whether to enable live interaction.
   playbookInputQuery:
@@ -529,12 +533,14 @@ inputs:
   description: An archive password.
   playbookInputQuery:
 - key: EmailNotification
-  value: {}
+  value:
+    simple: "False"
   required: false
   description: Send an email notification once the analysis completes.
   playbookInputQuery:
 - key: StartAsNormalUser
-  value: {}
+  value:
+    simple: "False"
   required: false
   description: Whether to start the analysis as a normal user.
   playbookInputQuery:
