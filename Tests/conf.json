@@ -5199,6 +5199,9 @@
         },
         {
             "playbookID": "GridFieldSetup_test"
+        },
+        {
+            "playbookID": "VerifyCIDR-Test"
         }
     ],
     "skipped_tests": {
