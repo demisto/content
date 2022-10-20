@@ -83,6 +83,6 @@ Classifier and Incoming Mapper allows you to classify and map fetched incident o
 ### Available classifier and incoming mapper
 
 * Recorded Future - Classifier
-* Recorded Future Recorded Future - Incoming Mapper
+* Recorded Future - Incoming Mapper
 
 ---
