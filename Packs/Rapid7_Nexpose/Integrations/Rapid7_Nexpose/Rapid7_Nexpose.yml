@@ -823,6 +823,17 @@ script:
         type: number
   - arguments:
     - default: false
+      description: ID of the asset to delete.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete an asset.
+    execution: false
+    name: nexpose-delete-asset
+  - arguments:
+    - default: false
       description: Id of the site to delete
       isArray: false
       name: site_id

@@ -921,6 +921,25 @@ class Client(BaseClient):
             resp_type="json",
         )
 
+    def delete_asset(self, asset_id: str) -> dict:
+        """
+        | Delete an asset.
+        |
+        | For more information see:
+            https://help.rapid7.com/insightvm/en-us/api/index.html
+
+        Args:
+            asset_id (str): ID of the asset to delete.
+
+        Returns:
+            dict: API response.
+        """
+        return self._http_request(
+                    method="DELETE",
+                    url_suffix=f"assets/{asset_id}",
+                    resp_type="json",
+                )
+
     def delete_scan_schedule(self, site_id: str, scheduled_scan_id: str) -> dict:
         """
         | Delete a scheduled scan.
@@ -3313,6 +3332,22 @@ def create_vulnerability_exception_command(client: Client, vulnerability_id: str
     )
 
 
+def delete_asset_command(client: Client, asset_id: str) -> CommandResults:
+    """
+    Delete an asset.
+
+    Args:
+        client (Client): Client to use for API requests.
+        asset_id (str): ID of the asset to delete.
+    """
+    response_data = client.delete_asset(asset_id=asset_id)
+
+    return CommandResults(
+        readable_output=f"Asset {asset_id} has been deleted.",
+        raw_response=response_data,
+    )
+
+
 def delete_scheduled_scan_command(client: Client, site: Site, scheduled_scan_id: str) -> CommandResults:
     """
     Delete a scheduled scan.
@@ -5278,6 +5313,11 @@ def main():
                 expires=args.get("expires"),
                 comment=args.get("comment"),
 
+            )
+        elif command == "nexpose-delete-asset":
+            results = delete_asset_command(
+                client=client,
+                asset_id=args["id"],
             )
         elif command == "nexpose-delete-scan-schedule":
             results = delete_scheduled_scan_command(
