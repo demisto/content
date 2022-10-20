@@ -1,6 +1,6 @@
-Parse Stix files to Demisto indicators using `Upload STIX File` button. This script is used for the button only. 
-This script is not supporting indicators relationships creation.
-In order to create indicators from STIX files using automation, please use `CreateIndicatorsFromSTIX`, this automation supports indicators relationships creation. 
+Parse STIX files to Cortex XSOAR indicators by clicking the **Upload STIX File** button. This script is used for the button only. 
+This script does not support indicators relationships creation.
+In order to create indicators from STIX files using an automation, use **CreateIndicatorsFromSTIX**. This automation supports indicators relationships creation. 
 
 
 ## Script Data
@@ -17,8 +17,8 @@ In order to create indicators from STIX files using automation, please use `Crea
 
 | **Argument Name** | **Description** |
 |-------------------| --- |
-| iocXml            | ioc xml or json in stix format. |
-| entry_id          | ioc file entry id. |
+| iocXml            | IOC XML or JSON in STIX format. |
+| entry_id          | IOC file entry ID. |
 
 ## Outputs
 ---
