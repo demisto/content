@@ -1,15 +1,15 @@
 args:
 - default: true
-  description: ioc xml or json in stix format.
+  description: IOC XML or JSON in STIX format.
   isArray: false
   name: iocXml
   required: false
 - default: true
-  description: ioc file entry id.
+  description: IOC file entry ID.
   isArray: false
   name: entry_id
   required: false
-comment: Parse Stix files to Demisto indicators using `Upload STIX File` button.
+comment: Parse STIX files to Cortex XSOAR indicators by clicking the **Upload STIX File** button.
 commonfields:
   id: StixParser
   version: -1
