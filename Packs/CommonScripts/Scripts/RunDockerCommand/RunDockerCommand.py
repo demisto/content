@@ -15,14 +15,15 @@ def main():
     if sysargs is None:
         output = None
         try:
-            output = subprocess.check_output(cmdarg, shell=True)
+            cmd_list = cmdarg.split()
+            output = subprocess.check_output(cmd_list, shell=False)
         except subprocess.CalledProcessError as e:
             output = e.output
         ret.append(output)
     else:
         ret.append(subprocess.check_output([cmdarg, sysargs]))
 
-    ret = [r.decode() for r in ret]     # type:ignore[union-attr]
+    ret = [r.decode('utf-8') for r in ret]     # type:ignore[union-attr]
     ec = {'Command': cmdarg, 'Results': ret[0]}
 
     demisto.results({
