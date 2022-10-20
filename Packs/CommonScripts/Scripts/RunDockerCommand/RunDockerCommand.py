@@ -33,8 +33,8 @@ def main():
         'HumanReadable': ret[0],
         'EntryContext': {'CommandResults': ec}
     })
-    sys.exit(0)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+    sys.exit(0)
