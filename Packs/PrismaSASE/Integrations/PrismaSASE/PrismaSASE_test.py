@@ -53,7 +53,12 @@ def test_create_security_rule_command(mocker, requests_mock, args, default_tsg_i
                     client_secret='clientsecret',
                     oauth_url='oauthurl',
                     verify='false',
-                    proxy='false')
+                    proxy='false',
+                    headers={
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                    )
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
 
@@ -82,7 +87,11 @@ def test_list_security_rules_command(mocker, requests_mock, args, default_tsg_id
                     client_secret='clientsecret',
                     oauth_url='oauthurl',
                     verify='false',
-                    proxy='false')
+                    proxy='false',
+                    headers={
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    })
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
     result = list_security_rules_command(client, args, default_tsg_id)
@@ -109,7 +118,11 @@ def test_push_candidate_config_command(mocker, requests_mock, args, default_tsg_
                     client_secret='clientsecret',
                     oauth_url='oauthurl',
                     verify='false',
-                    proxy='false')
+                    proxy='false',
+                    headers={
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    })
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
     result = push_candidate_config_command(client, args, default_tsg_id)
@@ -141,10 +154,10 @@ def test_push_candidate_config_command(mocker, requests_mock, args, default_tsg_
           "tsg_id": "1234567"}, "1234567")
     ]
 )
-def test_update_security_rule_command(mocker, requests_mock, args, default_tsg_id):
+def test_edit_security_rule_command(mocker, requests_mock, args, default_tsg_id):
 
-    from PrismaSASE import update_security_rule_command
-    mock_response = json.loads(load_mock_response('update-security-rule.json'))
+    from PrismaSASE import edit_security_rule_command
+    mock_response = json.loads(load_mock_response('edit-security-rule.json'))
     mock_url = f'http://base_url/sse/config/v1/security-rules/{args.get("id")}?folder=Shared&position=pre'
 
     requests_mock.put(mock_url, json=mock_response)
@@ -153,11 +166,15 @@ def test_update_security_rule_command(mocker, requests_mock, args, default_tsg_i
                     client_secret='clientsecret',
                     oauth_url='oauthurl',
                     verify='false',
-                    proxy='false')
+                    proxy='false',
+                    headers={
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    })
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
-    result = update_security_rule_command(client, args, default_tsg_id)
-    assert result.outputs_prefix == 'PrismaAccess.UpdatedSecurityRule'
+    result = edit_security_rule_command(client, args, default_tsg_id)
+    assert result.outputs_prefix == 'PrismaAccess.EditedSecurityRule'
     assert result.outputs == mock_response
 
 
@@ -215,7 +232,11 @@ def test_query_agg_monitor_api_command(mocker, requests_mock, args, default_tsg_
                     client_secret='clientsecret',
                     oauth_url='oauthurl',
                     verify='false',
-                    proxy='false')
+                    proxy='false',
+                    headers={
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    })
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
     result = query_agg_monitor_api_command(client, args, default_tsg_id)
@@ -245,7 +266,11 @@ def test_get_security_rule_by_name_command(mocker, requests_mock, args, default_
                     client_secret='clientsecret',
                     oauth_url='oauthurl',
                     verify='false',
-                    proxy='false')
+                    proxy='false',
+                    headers={
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    })
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
     result = get_security_rule_by_name_command(client, args, default_tsg_id)
@@ -273,7 +298,11 @@ def test_get_config_jobs_by_id_command(mocker, requests_mock, args, default_tsg_
                     client_secret='clientsecret',
                     oauth_url='oauthurl',
                     verify='false',
-                    proxy='false')
+                    proxy='false',
+                    headers={
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    })
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
     result = get_config_jobs_by_id_command(client, args, default_tsg_id)
@@ -301,7 +330,11 @@ def test_list_config_jobs_command(mocker, requests_mock, args, default_tsg_id):
                     client_secret='clientsecret',
                     oauth_url='oauthurl',
                     verify='false',
-                    proxy='false')
+                    proxy='false',
+                    headers={
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    })
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
     result = list_config_jobs_command(client, args, default_tsg_id)
@@ -329,7 +362,11 @@ def test_delete_security_rule_command(mocker, requests_mock, args, default_tsg_i
                     client_secret='clientsecret',
                     oauth_url='oauthurl',
                     verify='false',
-                    proxy='false')
+                    proxy='false',
+                    headers={
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    })
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
     result = delete_security_rule_command(client, args, default_tsg_id)
@@ -364,7 +401,11 @@ def test_create_address_object_command(mocker, requests_mock, args, default_tsg_
                     client_secret='clientsecret',
                     oauth_url='oauthurl',
                     verify='false',
-                    proxy='false')
+                    proxy='false',
+                    headers={
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    })
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
 
@@ -405,7 +446,11 @@ def test_edit_address_object_command(mocker, requests_mock, args, default_tsg_id
                     client_secret='clientsecret',
                     oauth_url='oauthurl',
                     verify='false',
-                    proxy='false')
+                    proxy='false',
+                    headers={
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    })
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
 
@@ -442,7 +487,11 @@ def test_delete_address_object_command(mocker, requests_mock, args, default_tsg_
                     client_secret='clientsecret',
                     oauth_url='oauthurl',
                     verify='false',
-                    proxy='false')
+                    proxy='false',
+                    headers={
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    })
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
 
@@ -471,7 +520,11 @@ def test_list_address_objects_command(mocker, requests_mock, args, default_tsg_i
                     client_secret='clientsecret',
                     oauth_url='oauthurl',
                     verify='false',
-                    proxy='false')
+                    proxy='false',
+                    headers={
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    })
 
     mocker.patch.object(client, 'get_access_token', return_value='access_token')
     result = list_address_objects_command(client, args, default_tsg_id)

@@ -11,8 +11,6 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 SEARCH_LIMIT = 200
 PA_OUTPUT_PREFIX = "PrismaAccess."
-
-# API URI Prefixes
 CONFIG_URI_PREFIX = "/sse/config/v1/"
 
 SECURITYRULE_FIELDS = {
@@ -51,12 +49,13 @@ class Client(BaseClient):
     :param proxy (bool): specifies if to use XSOAR proxy settings.
     """
 
-    def __init__(self, base_url: str, client_id: str, client_secret: str, oauth_url: str, verify: bool, proxy: bool, **kwargs):
+    def __init__(self, base_url: str, client_id: str,
+                 client_secret: str, oauth_url: str, verify: bool, proxy: bool, headers: dict, **kwargs):
         self.client_id = client_id
         self.client_secret = client_secret
         self.oauth_url = oauth_url
 
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy, **kwargs)
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers, **kwargs)
 
     @staticmethod
     def build_security_rule(args: dict):
@@ -98,7 +97,7 @@ class Client(BaseClient):
         Returns:
             Outputs.
         """
-        uri = '/sse/config/v1/security-rules'
+        uri = f'{CONFIG_URI_PREFIX}security-rules'
         access_token = self.get_access_token(tsg_id)
 
         query_params = {
@@ -106,11 +105,8 @@ class Client(BaseClient):
             'position': encode_string_results(position)
         }
 
-        headers = {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': f"Bearer {access_token}"
-        }
+        headers = self._headers
+        headers['Authorization'] = f"Bearer {access_token}"
 
         return self._http_request(
             method="POST",
@@ -120,7 +116,7 @@ class Client(BaseClient):
             headers=headers
         )
 
-    def update_security_rule(self, rule: dict, ruleid: str, tsg_id: str):
+    def edit_security_rule(self, rule: dict, ruleid: str, tsg_id: str):
         """Edit existing Prisma Access security rule
         Args:
             rule: Security rule dictionary
@@ -134,11 +130,8 @@ class Client(BaseClient):
         uri = f'/sse/config/v1/security-rules/{ruleid}'
         access_token = self.get_access_token(tsg_id)
 
-        headers = {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': f"Bearer {access_token}"
-        }
+        headers = self._headers
+        headers['Authorization'] = f"Bearer {access_token}"
 
         return self._http_request(
             method="PUT",
@@ -157,11 +150,8 @@ class Client(BaseClient):
         """
         uri = f'/sse/config/v1/security-rules/{rule_id}'
         access_token = self.get_access_token(tsg_id)
-        headers = {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': f"Bearer {access_token}"
-        }
+        headers = self._headers
+        headers['Authorization'] = f"Bearer {access_token}"
 
         return self._http_request(
             method="DELETE",
@@ -178,18 +168,15 @@ class Client(BaseClient):
         Returns:
             Outputs.
         """
-        uri = '/sse/config/v1/addresses'
+        uri = f'{CONFIG_URI_PREFIX}addresses'
         access_token = self.get_access_token(tsg_id)
 
         query_params = {
             'folder': encode_string_results(folder)
         }
 
-        headers = {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': f"Bearer {access_token}"
-        }
+        headers = self._headers
+        headers['Authorization'] = f"Bearer {access_token}"
 
         return self._http_request(
             method="POST",
@@ -211,11 +198,8 @@ class Client(BaseClient):
         uri = f'/sse/config/v1/addresses/{addressid}'
         access_token = self.get_access_token(tsg_id)
 
-        headers = {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': f"Bearer {access_token}"
-        }
+        headers = self._headers
+        headers['Authorization'] = f"Bearer {access_token}"
 
         return self._http_request(
             method="PUT",
@@ -234,11 +218,8 @@ class Client(BaseClient):
         """
         uri = f'/sse/config/v1/addresses/{address_id}'
         access_token = self.get_access_token(tsg_id)
-        headers = {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': f"Bearer {access_token}"
-        }
+        headers = self._headers
+        headers['Authorization'] = f"Bearer {access_token}"
 
         return self._http_request(
             method="DELETE",
@@ -254,15 +235,12 @@ class Client(BaseClient):
         Returns:
             Outputs.
         """
-        uri = '/sse/config/v1/addresses'
+        uri = f'{CONFIG_URI_PREFIX}addresses'
 
         access_token = self.get_access_token(tsg_id)
 
-        headers = {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': f"Bearer {access_token}"
-        }
+        headers = self._headers
+        headers['Authorization'] = f"Bearer {access_token}"
 
         return self._http_request(
             method="GET",
@@ -279,15 +257,12 @@ class Client(BaseClient):
         Returns:
             Outputs.
         """
-        uri = '/sse/config/v1/security-rules'
+        uri = f'{CONFIG_URI_PREFIX}security-rules'
 
         access_token = self.get_access_token(tsg_id)
 
-        headers = {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': f"Bearer {access_token}"
-        }
+        headers = self._headers
+        headers['Authorization'] = f"Bearer {access_token}"
 
         return self._http_request(
             method="GET",
@@ -311,11 +286,8 @@ class Client(BaseClient):
 
         access_token = self.get_access_token(tsg_id)
 
-        headers = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Authorization': f"Bearer {access_token}"
-        }
+        headers = self._headers
+        headers['Authorization'] = f"Bearer {access_token}"
 
         if query is not None:
             return self._http_request(
@@ -342,15 +314,12 @@ class Client(BaseClient):
         Returns:
             Outputs.
         """
-        uri = '/sse/config/v1/config-versions/candidate:push'
+        uri = f'{CONFIG_URI_PREFIX}config-versions/candidate:push'
 
         access_token = self.get_access_token(tsg_id)
 
-        headers = {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': f"Bearer {access_token}"
-        }
+        headers = self._headers
+        headers['Authorization'] = f"Bearer {access_token}"
 
         body = {"folders": folders}
 
@@ -375,11 +344,8 @@ class Client(BaseClient):
         uri = f'/sse/config/v1/jobs/{job_id}'
         access_token = self.get_access_token(tsg_id)
 
-        headers = {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': f"Bearer {access_token}"
-        }
+        headers = self._headers
+        headers['Authorization'] = f"Bearer {access_token}"
 
         return self._http_request(
             method="GET",
@@ -394,13 +360,10 @@ class Client(BaseClient):
         Returns:
             Outputs.
         """
-        uri = '/sse/config/v1/jobs'
+        uri = f'{CONFIG_URI_PREFIX}jobs'
         access_token = self.get_access_token(tsg_id)
-        headers = {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': f"Bearer {access_token}"
-        }
+        headers = self._headers
+        headers['Authorization'] = f"Bearer {access_token}"
         return self._http_request(
             method="GET",
             url_suffix=uri,
@@ -485,7 +448,7 @@ def test_module(client: Client, default_tsg_id: str):
 
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
     """
-    uri = 'sse/config/v1/config-versions?limit=1'
+    uri = f'{CONFIG_URI_PREFIX}config-versions?limit=1'
 
     access_token = client.get_access_token(default_tsg_id)
     headers = {
@@ -648,13 +611,14 @@ def list_address_objects_command(client: Client, args: dict, default_tsg_id: str
 
     raw_response = client.list_address_objects(query_params, tsg_id)  # type: ignore
 
-    outputs = (raw_response).get('data')
+    outputs = raw_response.get('data')
 
     return CommandResults(
         outputs_prefix=f'{PA_OUTPUT_PREFIX}FoundAddressObjects',
         outputs_key_field='id',
         outputs=outputs,
-        readable_output=tableToMarkdown('Address Objects', outputs),
+        readable_output=tableToMarkdown('Address Objects', outputs, headers=[
+                                        'name', 'description', 'ip_netmask', 'fqdn'], removeNull=True),
         raw_response=raw_response
     )
 
@@ -712,7 +676,7 @@ def query_agg_monitor_api_command(client: Client, args: dict, default_tsg_id: st
     )
 
 
-def update_security_rule_command(client: Client, args: dict, default_tsg_id: str):
+def edit_security_rule_command(client: Client, args: dict, default_tsg_id: str):
     """Command to Update / Edit an existing Prisma Access security rule
     Args:
         client: Client object with request
@@ -726,11 +690,11 @@ def update_security_rule_command(client: Client, args: dict, default_tsg_id: str
 
     tsg_id = args.get('tsg_id') or default_tsg_id
 
-    raw_response = client.update_security_rule(rule, args.get('id'), tsg_id)  # type: ignore
+    raw_response = client.edit_security_rule(rule, args.get('id'), tsg_id)  # type: ignore
     outputs = raw_response
 
     return CommandResults(
-        outputs_prefix=f'{PA_OUTPUT_PREFIX}UpdatedSecurityRule',
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}EditedSecurityRule',
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Security Rule Updated', outputs),
@@ -797,7 +761,8 @@ def list_security_rules_command(client: Client, args: dict, default_tsg_id: str)
         outputs_prefix=f'{PA_OUTPUT_PREFIX}FoundSecurityRule',
         outputs_key_field='id',
         outputs=outputs,
-        readable_output=tableToMarkdown('Security Rules', outputs),
+        readable_output=tableToMarkdown('Security Rules', outputs, headers=[
+                                        'id', 'name', 'description', 'action', 'destination', 'folder'], removeNull=True),
         raw_response=raw_response
     )
 
@@ -863,7 +828,8 @@ def get_config_jobs_by_id_command(client: Client, args: dict, default_tsg_id: st
         outputs_prefix=f'{PA_OUTPUT_PREFIX}ConfigJob',
         outputs_key_field='id',
         outputs=outputs,
-        readable_output=tableToMarkdown('Config Jobs', outputs),
+        readable_output=tableToMarkdown('Config Jobs', outputs, headers=[
+                                        'id', 'type_str', 'description', 'summary'], removeNull=True),
         raw_response=raw_response
     )
 
@@ -896,7 +862,7 @@ def list_config_jobs_command(client: Client, args: dict, default_tsg_id: str):
         outputs_prefix=f'{PA_OUTPUT_PREFIX}ConfigJob',
         outputs_key_field='id',
         outputs=outputs,
-        readable_output=tableToMarkdown('Config Job', outputs),
+        readable_output=tableToMarkdown('Config Job', outputs, headers=['id', 'type_str', 'description', 'summary']),
         raw_response=raw_response
     )
 
@@ -925,9 +891,9 @@ def main():
         'prisma-access-push-candidate-config': push_candidate_config_command,
         'prisma-access-get-config-jobs-by-id': get_config_jobs_by_id_command,
         'prisma-access-list-config-jobs': list_config_jobs_command,
-        'prisma-access-update-security-rule': update_security_rule_command,
+        'prisma-access-edit-security-rule': edit_security_rule_command,
         'prisma-access-get-security-rule-by-name': get_security_rule_by_name_command,
-        'prisma-access-query-agg-monitor-api': query_agg_monitor_api_command,
+        'prisma-sase-query-agg-monitor-api': query_agg_monitor_api_command,
         'prisma-access-delete-security-rule': delete_security_rule_command,
         'prisma-access-create-address-object': create_address_object_command,
         'prisma-access-edit-address-object': edit_address_object_command,
