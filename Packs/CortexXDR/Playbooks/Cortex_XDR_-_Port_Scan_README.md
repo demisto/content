@@ -61,4 +61,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cortex XDR - Port Scan](https://raw.githubusercontent.com/demisto/content/0d732cbc4d9a4c06cb5266cca4acf5747e1663c0/Packs/CortexXDR/doc_files/Cortex_XDR_-_Port_Scan.png)
+![Cortex XDR - Port Scan](../doc_files/Cortex_XDR_-_Port_Scan.png)
