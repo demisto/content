@@ -284,6 +284,7 @@ script:
       isArray: true
       name: content_hash
     - auto: PREDEFINED
+      default: false
       description: A comma-separated list of mitigation statuses.
       isArray: true
       name: mitigation_status
