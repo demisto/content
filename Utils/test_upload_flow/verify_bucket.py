@@ -106,12 +106,13 @@ class BucketVerifier:
         return self.gcp.get_flow_commit_hash() != self.gcp.get_pack_metadata(pack_id).get('commit'), pack_id
 
     @logger
-    def verify_modified_path(self, pack_id, item_type, item_file_name, extension):
+    def verify_modified_path(self, item_type, pack_id, item_file_path):
         """
         Verify the path of the item is modified
         """
+
         gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
-        return self.gcp.is_item_in_pack(pack_id, item_type, item_file_name, extension), pack_id
+        return self.gcp.is_item_in_pack(pack_id, item_type, item_file_path), pack_id
 
     @logger
     def verify_dependency(self, pack_id, dependency_id):
@@ -179,11 +180,20 @@ class GCP:
     def is_item_in_pack(self, pack_id, item_type, item_file_path):
         """
         Check if an item is inside the pack.
-        """ # TODO: fix for difference of integrations and the rest
+        """
         item_name = Path(item_file_path).stem
-        item_name_with_extestion = Path(item_file_path).name
-        return os.path.exists(os.path.join(self.extracting_destination, pack_id, item_type, item_file_name,
-                                           f'{item_type.lower()[:-1]}-{item_file_name}.{extension}'))
+        item_name_with_extension = Path(item_file_path).name
+        if item_type in ['Integrations', 'Scripts']:
+            # for integrations and scripts, add the sub-folder hierarchy
+            extracted_item_path = os.path.join(pack_id, item_type, item_name,
+                                               f'{item_type.lower()[:-1]}-{item_name_with_extension}')
+        elif item_type == 'IndicatorTypes':
+            # for indicator types, use the 'reputation' prefix
+            extracted_item_path = os.path.join(pack_id, item_type, f'reputation-{item_name_with_extension}')
+        else:
+            extracted_item_path = os.path.join(self.extracting_destination, pack_id, item_type,
+                                               f'{item_type.lower()[:-1]}-{item_name_with_extension}')
+        return os.path.exists(extracted_item_path)
 
     def get_index_json(self):
         index_json_path = os.path.join(storage_base_path, 'index.json')
@@ -228,7 +238,7 @@ def get_args():
     parser.add_argument('-a', '--artifacts-path', help="path to artifacts from the script creating the test branch, "
                                                        "should contain json with dict of pack names and items to verify"
                                                        "and json with dict of pack names and versions to verify",
-                        required=False)
+                        required=False, default='.')
 
     return parser.parse_args()
 
@@ -283,9 +293,12 @@ if __name__ == "__main__":
 
     # verify path modification
     if 'v2' in gcp.storage_bucket.name:
-        bv.verify_modified_path('AlibabaActionTrail', 'ModelingRule', 'Alibaba', 'yml')
-        bv.verify_modified_path('AlibabaActionTrail', 'ModelingRule', 'Alibaba', 'jsom')
-        bv.verify_modified_path('AlibabaActionTrail', 'ModelingRule', 'Alibaba', 'xif')
+        bv.verify_modified_path('ModelingRule', 'AlibabaActionTrail', os.path.join('AlibabaActionTrail',
+                                                                                   'ModelingRule', 'Alibaba.yml'))
+        bv.verify_modified_path('ModelingRule', 'AlibabaActionTrail', os.path.join('AlibabaActionTrail',
+                                                                                   'ModelingRule', 'Alibaba.jsom'))
+        bv.verify_modified_path('ModelingRule', 'AlibabaActionTrail', os.path.join('AlibabaActionTrail',
+                                                                                   'ModelingRule', 'Alibaba.xif'))
 
     # verify modified pack
     bv.verify_modified_pack('Grafana', items_dict.get('Grafana'))
