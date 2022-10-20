@@ -974,8 +974,7 @@ This is visible
     def test_create_filtered_changelog_entry_modified_unrelated_entities(self, dummy_pack: Pack):
         """
            Given:
-               - Release notes entries for two differente entities types.
-               - Modified files data given from id-set.
+               - Release notes entries for two different entities types.
            When:
                - Release notes for one entity is irrelevant for the current marketplace.
            Then:
@@ -991,8 +990,8 @@ This is visible
 - Fixed dashboard'''
         version_display_name = "1.2.3"
         build_number = "5555"
-        modified_data = {
-            "Integrations": [
+        id_set = {
+            "integrations": [
                 {
                     'integration_id':
                         {
@@ -1000,14 +999,14 @@ This is visible
                             "display_name": "Integration Display Name"
                         }
                 }
-            ]
-
+            ],
+            "Dashboards": []
         }
         dummy_pack._is_modified = True
         version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                   version_display_name=version_display_name,
                                                                   build_number=build_number,
-                                                                  modified_files_data=modified_data)
+                                                                  id_set=id_set)
 
         assert version_changelog['releaseNotes'] == "#### Integrations\n##### Integration Display Name\n- Fixed an issue"
 
@@ -1015,7 +1014,6 @@ This is visible
         """
            Given:
                - Release notes entries for two entities of the same type.
-               - Modified files data given from id-set.
            When:
                - Release notes for one entity is irrelevant for the current marketplace.
            Then:
@@ -1029,8 +1027,8 @@ This is visible
 - Fixed another issue'''
         version_display_name = "1.2.3"
         build_number = "5555"
-        modified_data = {
-            "Integrations": [
+        id_set = {
+            "integrations": [
                 {
                     'id':
                         {
@@ -1044,7 +1042,7 @@ This is visible
         version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                   version_display_name=version_display_name,
                                                                   build_number=build_number,
-                                                                  modified_files_data=modified_data)
+                                                                  id_set=id_set)
 
         assert version_changelog['releaseNotes'] == \
                "#### Integrations\n##### Integration 2 Display Name\n- Fixed another issue"
@@ -1053,20 +1051,23 @@ This is visible
         """
            Given:
                - Release notes entries.
-               - Modified files data given from id-set.
            When:
                - Release notes are irrelevant for the current marketplace.
            Then:
-               - Ensure the returned entry is empty.
+               - Ensure the returned entry a 'not relevant to marketplace' message.
         """
         release_notes = '''
 #### Integrations
 ##### Integration Display Name
-- Fixed an issue'''
+- Fixed an issue
+
+#### Incident Fields
+- **Field Name 1**
+- **Field Name 2**'''
         version_display_name = "1.2.3"
         build_number = "5555"
-        modified_data = {
-            "Integrations": [
+        id_set = {
+            "integrations": [
                 {
                     'id':
                         {
@@ -1075,18 +1076,20 @@ This is visible
                             "marketplaces": []
                         }
                 }
-            ]
+            ],
+            "IncidentFields": []
         }
         dummy_pack._is_modified = True
         version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                   version_display_name=version_display_name,
                                                                   build_number=build_number,
-                                                                  modified_files_data=modified_data)
+                                                                  id_set=id_set)
 
         assert version_changelog['releaseNotes'] == "Changes are not relevant for XSOAR marketplace."
 
     @pytest.mark.parametrize('release_notes, upload_marketplace, expected_result', [
-        ('''
+        (  # Case 1
+            '''
 <~XSIAM>
 #### Integrations
 ##### Integration Display Name
@@ -1096,7 +1099,8 @@ This is visible
 #### Scripts
 ##### Script Name
 - Fixed script.''', 'xsoar', "#### Scripts\n##### Script Name\n- Fixed script."),
-        ('''
+        (
+            '''
 #### Integrations
 <~XSIAM>
 ##### Integration Display Name
@@ -1133,19 +1137,19 @@ This is visible
 - **Field Name 2**
 </~XSOAR>
 - **Field Name 3**
-''', 'marketplacev2', "#### Incident Fields\n- **Field Name 1**\n\n\n#### Scripts\n##### Script Name\n- Fixed script"),
-        #         ('''
-        # #### Integrations
-        # ##### Integration Display Name
-        # <~XSIAM>
-        # - Fixed an issue
-        # </~XSIAM>
+''', 'marketplacev2', "#### Incident Fields\n- **Field Name 1**\n#### Scripts\n##### Script Name\n- Fixed script"),
+        ('''
+#### Integrations
+##### Integration Display Name
+<~XSIAM>
+- Fixed an issue
+</~XSIAM>
 
-        # #### Scripts
-        # ##### Script Name
-        # <~XSIAM>
-        # - Fixed script
-        # </~XSIAM>''', 'xsoar', ''),
+#### Scripts
+##### Script Name
+<~XSIAM>
+- Fixed script
+</~XSIAM>''', 'xsoar', 'Changes are not relevant for XSOAR marketplace.'),
         ('''
 #### Integrations
 ##### Integration Display Name
@@ -1194,7 +1198,19 @@ This is visible
 - Fixed script''', 'xsoar',
             "#### Integrations\n##### New: Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### New: "
             "Script Name\n\
-- Fixed script")
+- Fixed script"),
+        ('''
+#### Integrations
+##### Integration Display Name
+<~XSIAM>
+- Fixed an issue
+</~XSIAM>
+
+#### Incident Fields
+<~XSIAM>
+- **Field Name 1**
+- **Field Name 2**
+</~XSIAM>''', 'xsoar', 'Changes are not relevant for XSOAR marketplace.')
     ])
     def test_create_filtered_changelog_entry_by_mp_tags(self, dummy_pack: Pack, release_notes, upload_marketplace,
                                                         expected_result):
@@ -1210,6 +1226,7 @@ This is visible
                  Case 7: Same as case 6 but for XSOAR tags and xsoar marketplace.
                  Case 8: Test for new entities with the 'New' in display name for the same marketplace.
                  Case 9: Same as case 8 but for the other marketplace.
+                 Case 5: Eentities like incident fields in RN have wrapping tags in their entries and not relevant for MP.
            When:
                - Creating changelog entry and filtering the entries by the tags.
            Then:
@@ -1218,8 +1235,8 @@ This is visible
         """
         version_display_name = "1.2.3"
         build_number = "5555"
-        modified_data = {
-            "Integrations": [
+        id_set = {
+            "integrations": [
                 {
                     'id':
                         {
@@ -1229,7 +1246,7 @@ This is visible
                         }
                 }
             ],
-            "Scripts": [
+            "scripts": [
                 {
                     'id':
                         {
@@ -1254,8 +1271,8 @@ This is visible
         version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                   version_display_name=version_display_name,
                                                                   build_number=build_number,
-                                                                  modified_files_data=modified_data,
-                                                                  marketplace=upload_marketplace)
+                                                                  marketplace=upload_marketplace,
+                                                                  id_set=id_set)
 
         if not expected_result:
             assert not version_changelog
@@ -1447,15 +1464,21 @@ class TestFilterChangelog:
 
         assert result == expected_result
 
-    @pytest.mark.parametrize('files_data, expected_result', [
-        ({"Integrations": [{'id': {"display_name": "Display Name 2"}}],
+    @pytest.mark.parametrize('id_set, expected_result', [
+        ({"integrations": [{'id': {"display_name": "Display Name 2"}}],
           "IncidentFields": [{'id': {"display_name": "Field name 1"}}, {'id': {"display_name": "Field name 3"}}]},
          {"Integrations": {"Display Name 2": "- Some entry1."},
           "Incident Fields": {"[special_msg]": "- **Field name 1**\n\n- **Field name 3**"}}),
-        ({"IncidentFields": [{'id': {"display_name": "Field name 1"}}, {'id': {"display_name": "Field name 2"}}]},
-         {"Incident Fields": {"[special_msg]": "- **Field name 1**\n- **Field name 2**\n"}})
+        ({"IncidentFields": [{'id': {"display_name": "Field name 1"}}, {'id': {"display_name": "Field name 2"}}],
+          "integrations": []},
+         {"Incident Fields": {"[special_msg]": "- **Field name 1**\n- **Field name 2**"}}),
+        ({"integrations": [{'id': {"display_name": "Display Name 2"}}],
+          "IncidentFields": [{'id': {"display_name": "Field name 1"}}, {'id': {"display_name": "Field name 3"}}]},
+         {"Integrations": {"Display Name 2": "- Some entry1."},
+          "Incident Fields": {"[special_msg]": "- **Field name 1**\n\n- **Field name 3**"}}),
+        ({"integrations": [{'id': {"display_name": "Other Display Name"}}], "IncidentFields": []}, {})
     ])
-    def test_filter_by_display_name(self, dummy_pack: Pack, files_data, expected_result):
+    def test_filter_by_display_name(self, dummy_pack: Pack, id_set, expected_result):
         """
             Given:
                 - Release notes entries.
@@ -1464,27 +1487,26 @@ class TestFilterChangelog:
             Then:
                 - Ensure the filtered entries resulte is as expected.
         """
-        assert dummy_pack.filter_release_notes_by_entities_display_name(self.RN_ENTRIES_DICTIONARY, files_data, {}) == \
+        assert dummy_pack.filter_entries_by_display_name(self.RN_ENTRIES_DICTIONARY, id_set) == \
                expected_result
-    
-    @pytest.mark.parametrize('changelog_entry, modified_files, marketplace, id_set, expected_rn', [
+
+    @pytest.mark.parametrize('changelog_entry, marketplace, id_set, expected_rn', [
         ({Changelog.RELEASE_NOTES: '#### Integrations\n##### Display Name\n- Some entry 1.\n- Some entry 2.'},
-         {}, 'xsoar', {"integrations": [{'id': {'display_name': 'Display Name'}}]},
+         'xsoar', {"integrations": [{'id': {'display_name': 'Display Name'}}]},
          '#### Integrations\n##### Display Name\n- Some entry 1.\n- Some entry 2.')
     ])
-    def test_changes_not_relevant_message_in_rn(self, dummy_pack: Pack, changelog_entry, modified_files,
+    def test_changes_not_relevant_message_in_rn(self, dummy_pack: Pack, changelog_entry,
                                                 marketplace, id_set, expected_rn):
         """
             Given:
-                - Release notes in a pack without modified files.
+                - Release notes in a pack.
             When:
                 - Filtering release notes with the filter_changelog_entries method.
             Then:
                 - Ensure the release notes does not contain the non relevant message.
         """
-        assert dummy_pack.filter_changelog_entries(changelog_entry, dummy_pack.current_version, modified_files,
+        assert dummy_pack.filter_changelog_entries(changelog_entry, dummy_pack.current_version,
                                                    marketplace, id_set)[0][Changelog.RELEASE_NOTES] == expected_rn
-
 
 
 class TestImagesUpload:

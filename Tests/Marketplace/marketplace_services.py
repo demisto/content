@@ -26,8 +26,8 @@ from google.cloud import storage
 import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
     PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, PACK_FOLDERS_TO_ID_SET_KEYS, \
-    RN_HEADER_BY_PACK_FOLDER, CONTENT_ROOT_PATH, XSOAR_MP, XSIAM_MP, TAGS_BY_MP, CONTENT_ITEM_NAME_MAPPING, \
-    ITEMS_NAMES_TO_DISPLAY_MAPPING
+    CONTENT_ROOT_PATH, XSOAR_MP, XSIAM_MP, TAGS_BY_MP, CONTENT_ITEM_NAME_MAPPING, \
+    ITEMS_NAMES_TO_DISPLAY_MAPPING, RN_HEADER_TO_ID_SET_KEYS
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -788,7 +788,6 @@ class Pack(object):
             return self.filter_changelog_entries(
                 entry_result,
                 version_display_name,
-                modified_files_data,
                 marketplace, id_set
             )
 
@@ -1670,8 +1669,7 @@ class Pack(object):
         finally:
             return task_status, not_updated_build
 
-    def filter_changelog_entries(self, changelog_entry: dict, version: str, modified_files_data: dict,
-                                 marketplace: str, id_set: dict):
+    def filter_changelog_entries(self, changelog_entry: dict, version: str, marketplace: str, id_set: dict):
         """
         Filters the changelog entries by the entities that are given from id-set.
         This is to avoid RN entries/changes/messages that are not relevant to the current marketplace.
@@ -1708,9 +1706,8 @@ class Pack(object):
             return changelog_entry, False
 
         filtered_release_notes_from_tags = self.filter_headers_without_entries(release_notes_dict)  # type: ignore[arg-type]
-        filtered_release_notes = self.filter_release_notes_by_entities_display_name(filtered_release_notes_from_tags,
-                                                                                    modified_files_data, id_set)
-
+        filtered_release_notes = self.filter_entries_by_display_name(filtered_release_notes_from_tags, id_set)
+        print(filtered_release_notes)
         # if not filtered_release_notes and self.are_all_changes_relevant_to_more_than_one_marketplace(modified_files_data):
         #     # In case all release notes were filtered out, verify that it also makes sense - by checking that the
         #     # modified files are actually relevant for the other marketplace.
@@ -1719,7 +1716,7 @@ class Pack(object):
         #     return {}, True
 
         # Convert the RN dict to string
-
+        print(filtered_release_notes)
         final_release_notes = construct_entities_block(filtered_release_notes).strip()
         if not final_release_notes:
             final_release_notes = f"Changes are not relevant for {'XSOAR' if marketplace == 'xsoar' else 'XSIAM'} marketplace."
@@ -1728,61 +1725,67 @@ class Pack(object):
         logging.debug(f"Finall release notes - \n{changelog_entry[Changelog.RELEASE_NOTES]}")
         return changelog_entry, False
 
-    def are_all_changes_relevant_to_more_than_one_marketplace(self, modified_files_data):
-        """
-        Returns true if all the modified files are also relevant to another marketplace besides the current one
-         this upload is done for.
+    # def are_all_changes_relevant_to_more_than_one_marketplace(self, modified_files_data):
+    #     """
+    #     Returns true if all the modified files are also relevant to another marketplace besides the current one
+    #      this upload is done for.
 
-        Args:
-            modified_files_data (dict): The modified files data that are given from id-set.
+    #     Args:
+    #         modified_files_data (dict): The modified files data that are given from id-set.
 
-        Return:
-            (bool) True, if all the files are relevant to more than one marketplace.
-                   False, if there is an item that is relevant only to the current marketplace.
-        """
-        modified_items = []
+    #     Return:
+    #         (bool) True, if all the files are relevant to more than one marketplace.
+    #                False, if there is an item that is relevant only to the current marketplace.
+    #     """
+    #     modified_items = []
 
-        for entities_data in modified_files_data.values():
-            modified_items.extend([list(item.values())[0] for item in entities_data])
+    #     for entities_data in modified_files_data.values():
+    #         modified_items.extend([list(item.values())[0] for item in entities_data])
 
-        for item in modified_items:
-            if len(item['marketplaces']) == 1:
-                return False
+    #     for item in modified_items:
+    #         if len(item['marketplaces']) == 1:
+    #             return False
 
-        return True
+    #     return True
 
-    def filter_release_notes_by_entities_display_name(self, release_notes, modified_files_data, id_set):
-        """
-        Filters the RN entries by the modified files display names given from id-set.
+    # def filter_release_notes_by_entities_display_name(self, release_notes, modified_files_data, id_set):
+    #     """
+    #     Filters the RN entries by the modified files display names given from id-set.
 
-        Args:
-            release_notes (dict): The release notes in a dict object.
-            modified_files_data (dict): The modified files data that are given from id-set.
+    #     Args:
+    #         release_notes (dict): The release notes in a dict object.
+    #         modified_files_data (dict): The modified files data that are given from id-set.
 
-        Return:
-            (dict) The filtered release notes.
-        """
-        filtered_release_notes: dict = {}
-        for pack_folder, entities_data in modified_files_data.items():
+    #     Return:
+    #         (dict) The filtered release notes.
+    #     """
+    #     filtered_release_notes: dict = {}
+    #     for pack_folder, entities_data in modified_files_data.items():
 
-            rn_header = RN_HEADER_BY_PACK_FOLDER[pack_folder]
+    #         rn_header = RN_HEADER_BY_PACK_FOLDER[pack_folder]
 
-            # This might be if the entity was filtered by the tags
-            if rn_header not in release_notes:
-                continue
+    #         # This might be if the entity was filtered by the tags
+    #         if rn_header not in release_notes:
+    #             continue
 
-            # Filters the RN entries by the entity display name
-            display_names = [list(entity.values())[0]['display_name'] for entity in entities_data]
-            filtered_release_notes_entries = self.filter_entries_by_display_name(release_notes, display_names, rn_header,
-                                                                                 pack_folder, id_set)
+    #         # Filters the RN entries by the entity display name
+    #         display_names = [list(entity.values())[0]['display_name'] for entity in entities_data]
+    #         filtered_release_notes_entries = self.filter_entries_by_display_name(release_notes, rn_header,
+    #                                                                              id_set, pack_folder, display_names)
 
-            if filtered_release_notes_entries:
-                filtered_release_notes[rn_header] = filtered_release_notes_entries
+    #         if filtered_release_notes_entries:
+    #             filtered_release_notes[rn_header] = filtered_release_notes_entries
 
-        return filtered_release_notes
+    #     if not filtered_release_notes:
+    #         for header in release_notes:
+    #             filtered_release_notes_entries = self.filter_entries_by_display_name(release_notes, header,
+    #                                                                                  id_set)
+    #             filtered_release_notes[header] = filtered_release_notes_entries
+
+    #     return filtered_release_notes
 
     @staticmethod
-    def filter_entries_by_display_name(release_notes: dict, display_names: list, rn_header: str, pack_folder: str, id_set: dict):
+    def filter_entries_by_display_name(release_notes: dict, id_set: dict):
         """
         Filters the entries by display names and also handles special entities that their display name is not an header.
 
@@ -1794,26 +1797,37 @@ class Pack(object):
         Returns:
             (dict) The filtered release notes entries.
         """
-        filtered_entries: dict = {}
-        for display_name, rn_entry in release_notes[rn_header].items():
+        filtered_release_notes: dict = {}
+        for rn_header in release_notes:
+            filtered_entries: dict = {}
 
-            logging.debug(f"Searching display name '{display_name}' in '{display_names}'.")
-            # TODO: The third condition should be removed after the refactoring. (Also the function)
-            if display_name != '[special_msg]' and display_name.replace("New: ", "") not in display_names \
-                    and not get_id_set_entity_by_display_name(display_name.replace("New: ", ""),
-                                                              pack_folder, id_set):
-                continue
+            for display_name, rn_entry in release_notes[rn_header].items():
 
-            if display_name == '[special_msg]':
-                extracted_names_from_rn = SPECIAL_DISPLAY_NAMES_PATTERN.findall(rn_entry)
+                logging.debug(f"Searching display name '{display_name}' with rn header '{rn_header}' in in id set.")
+                if display_name != '[special_msg]' and not get_id_set_entity_by_display_name(
+                        display_name.replace("New: ", ""), rn_header, id_set):
+                    continue
 
-                for name in extracted_names_from_rn:
-                    if name not in display_names:
-                        rn_entry = rn_entry.replace(f'- **{name}**', '')
+                if display_name == '[special_msg]':
+                    extracted_names_from_rn = SPECIAL_DISPLAY_NAMES_PATTERN.findall(rn_entry)
 
-            filtered_entries[display_name] = rn_entry
+                    for name in extracted_names_from_rn:
+                        if not get_id_set_entity_by_display_name(name.replace("New: ", ""), rn_header, id_set):
+                            rn_entry = rn_entry.replace(f'- **{name}**', '').strip()
 
-        return filtered_entries
+                    if not rn_entry:
+                        continue
+
+                filtered_entries[display_name] = rn_entry
+
+            if filtered_entries:
+                filtered_release_notes[rn_header] = filtered_entries
+
+        if not filtered_release_notes:
+            logging.debug(f"Didn't find relevant release notes entries after filtering by display name.\n \
+                            Release notes: {release_notes}")
+
+        return filtered_release_notes
 
     @staticmethod
     def filter_headers_without_entries(release_notes_dict: dict):
@@ -3895,31 +3909,27 @@ def get_id_set_entity_by_path(entity_path: Path, pack_folder: str, id_set: dict)
     return {}
 
 
-def get_id_set_entity_by_display_name(display_name: str, pack_folder: str, id_set: dict):
+def get_id_set_entity_by_display_name(display_name: str, rn_header: str, id_set: dict):
     """
     Get the full entity dict from the id set of the entity given it's display name, if it does not exist in the id set
     return None.
 
     Args:
-        display_name: The display name of the entity (content item)
-        pack_folder: containing folder of that item
-        id_set: id set dict
+        display_name: The display name of the entity (content item).
+        rn_header: The release notes header of the entity.
+        id_set: id set dict.
 
     Returns:
-        id set dict entity if exists, otherwise None
+        id set dict entity if exists, otherwise None.
     """
     logging.debug(f"Checking if the entity with the display name {display_name} is present in the id set")
 
     if not id_set:
         return None
 
-    for id_set_entity in id_set[PACK_FOLDERS_TO_ID_SET_KEYS[pack_folder]]:
+    for id_set_entity in id_set[RN_HEADER_TO_ID_SET_KEYS[rn_header]]:
 
         if list(id_set_entity.values())[0]['display_name'] == display_name:
             return id_set_entity
 
-    if pack_folder == PackFolders.CLASSIFIERS.value:  # For Classifiers, check also in Mappers
-        for id_set_entity in id_set['Mappers']:
-            if list(id_set_entity.values())[0]['display_name'] == display_name:
-                return id_set_entity
     return None
