@@ -1000,6 +1000,12 @@ script:
       required: false
       secret: false
     - default: false
+      description: The date the data was collected on the asset in an ISO 8601 format.
+      isArray: false
+      name: date
+      required: false
+      secret: false
+    - default: false
       description: The primary IPv4 or IPv6 address of the asset.
       isArray: true
       name: ip

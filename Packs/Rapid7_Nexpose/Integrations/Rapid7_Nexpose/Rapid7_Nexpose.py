@@ -266,7 +266,7 @@ class Client(BaseClient):
 
         return result
 
-    def create_asset(self, site_id: str, ip_address: Optional[str] = None,
+    def create_asset(self, site_id: str, date: str, ip_address: Optional[str] = None,
                      hostname: Optional[str] = None, hostname_source: Optional[HostnameSource] = None) -> dict:
         """
         | Create a new asset on a site.
@@ -279,6 +279,7 @@ class Client(BaseClient):
 
         Args:
             site_id (str): ID of the site to create the asset on.
+            date (str): The date the data was collected on the asset.
             ip_address (str | None, optional): IP address of the asset to create.
             hostname (str | None, optional): Hostname of the asset to create.
             hostname_source (HostnameSource | None, optional): Source of the hostname.
@@ -290,6 +291,7 @@ class Client(BaseClient):
             method="POST",
             url_suffix=f"/sites/{site_id}/assets",
             json_data=find_valid_params(
+                date=date,
                 ip_address=ip_address,
                 hostname=hostname,
                 hostname_source=hostname_source.value,
@@ -2870,13 +2872,15 @@ def replace_key_names(data: Union[dict, list, tuple], name_mapping: dict[str, st
 
 
 # --- Command Functions --- #
-def create_asset_command(client: Client, site: Site, ip_address: Optional[str] = None, hostname: Optional[str] = None,
+def create_asset_command(client: Client, site: Site, date: str,
+                         ip_address: Optional[str] = None, hostname: Optional[str] = None,
                          hostname_source: Optional[HostnameSource] = None) -> CommandResults:
     """
     Create a new asset.
 
     Args:
         client (Client): The client to use.
+        date (str): The date the data was collected on the asset.
         site (Site): The site to create the asset in.
         ip_address (str, optional): The IP address of the asset.
         hostname (str, optional): The hostname of the asset.
@@ -2884,6 +2888,7 @@ def create_asset_command(client: Client, site: Site, ip_address: Optional[str] =
     """
     response_data = client.create_asset(
         site_id=site.id,
+        date=date,
         ip_address=ip_address,
         hostname=hostname,
         hostname_source=hostname_source,
@@ -5122,6 +5127,7 @@ def main():
                     site_name=args.get("site_name"),
                     client=client,
                 ),
+                date=args.get("date"),
                 ip_address=args.get("ip"),
                 hostname=args.get("host_name"),
                 hostname_source=hostname_source,
