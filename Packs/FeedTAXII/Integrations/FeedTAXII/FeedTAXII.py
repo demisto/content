@@ -1,27 +1,29 @@
+import collections
 import tempfile
+import uuid
 from typing import Dict, Optional
 
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
-''' IMPORTS '''
-import urllib3
-import collections
-
 import cabby
-import requests
-from lxml import etree
+import dateutil
 import dateutil.parser
+import demistomock as demisto  # noqa: F401
+import pytz
+import requests
+import urllib3
 from bs4 import BeautifulSoup
+from CommonServerPython import *  # noqa: F401
+from lxml import etree
 from netaddr import IPNetwork
 from six import string_types
 
+''' testtttt '''
+
+
+''' IMPORTS '''
+
+
 # TAXII11 import
 
-import uuid
-import dateutil
-import pytz
 
 # disable insecure warnings
 urllib3.disable_warnings()
