@@ -8,17 +8,14 @@ description: The Active Directory Query integration enables you to access and ma
 configuration:
 - display: Server IP address (for example, 192.168.0.1)
   name: server_ip
-  defaultvalue: ""
   type: 0
   required: true
 - display: Port. If not specified, the default port is 389, or 636 for LDAPS.
   name: port
-  defaultvalue: ""
   type: 0
   required: false
 - display: Credentials
   name: credentials
-  defaultvalue: ""
   type: 9
   required: true
 - display: NTLM authentication
@@ -27,7 +24,6 @@ configuration:
   required: false
 - display: Base DN (for example "dc=company,dc=com")
   name: base_dn
-  defaultvalue: ""
   type: 0
   required: true
 - display: Page size
@@ -62,7 +58,6 @@ configuration:
   type: 0
 - display: Group CN for terminated employees
   name: group-cn
-  defaultvalue: ""
   type: 0
   required: false
 - additionalinfo: If true, the user is created if the user profile doesn't exist in AD. Used in IAM commands only.
@@ -129,10 +124,6 @@ script:
       - "no"
       defaultValue: "yes"
       description: Whether to output the search results to the context.
-    - name: page-size
-      description: The page size to query. The size-limit value will be ignored.
-    - name: page-cookie
-      description: An opaque string received in a paged search, used for requesting subsequent entries.
     outputs:
     - contextPath: 'ActiveDirectory.Search.dn'
       description: The distinguished names that match the query.
@@ -140,9 +131,6 @@ script:
     - contextPath: 'ActiveDirectory.Search'
       description: The result of the search.
       type: unknown
-    - contextPath: ActiveDirectory.SearchPageCookie
-      description: An opaque string received in a paged search, used for requesting subsequent entries.
-      type: string
     description: Runs Active Directory queries.
   - name: ad-add-to-group
     arguments:
@@ -234,7 +222,6 @@ script:
     - name: base-dn
       description: Root. For example, DC=domain,DC=com). By default, the Base DN configured for the instance is used.
     - name: restore_user
-      default: false
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -277,8 +264,6 @@ script:
       description: The name of the user to return information.
     - name: attributes
       description: Adds AD attributes of the resulting objects to the default attributes.
-    - name: attributes-to-exclude
-      description: Removes AD attributes of the resulting objects from the attributes.
     - name: custom-field-type
       description: Queries users by custom field type.
     - name: custom-field-data
@@ -287,6 +272,9 @@ script:
       description: Queries users by the samAccountName attribute.
     - name: sAMAccountName
       description: Queries users by the samAccountName attribute.
+    - name: limit
+      description: The maximum number of objects to return.
+      defaultValue: '20'
     - name: email
       description: Queries by the user's email address.
     - name: user-account-control-out
@@ -296,13 +284,6 @@ script:
       - "false"
       description: Whether to include verbose translation for UserAccountControl flags. Default is false.
       defaultValue: "false"
-    - name: limit
-      description: The maximum number of objects to return.
-      defaultValue: "20"
-    - name: page-size
-      description: The page size to query. The limit value will be ignored.
-    - name: page-cookie
-      description: An opaque string received in a paged search, used for requesting subsequent entries.
     outputs:
     - contextPath: 'ActiveDirectory.Users.dn'
       description: The user distinguished name.
@@ -394,20 +375,17 @@ script:
     - contextPath: ActiveDirectory.Users.userAccountControlFields.PARTIAL_SECRETS_ACCOUNT
       description: Whether the account is a read-only domain controller (RODC).
       type: bool
-    - contextPath: 'ActiveDirectory.UsersPageCookie'
-      description: An opaque string received in a paged search, used for requesting subsequent entries.
-      type: string
     - contextPath: 'Account.DisplayName'
       description: The user display name.
       type: string
     - contextPath: 'Account.Groups'
-      description: "Groups for which the user is a member."
+      description: Groups for which the user is a member.
       type: string
     - contextPath: 'Account.Manager'
       description: "The user manager."
       type: string
     - contextPath: 'Account.ID'
-      description: The user distinguished name.
+      description: "The user distinguished name."
       type: string
     - contextPath: 'Account.Username'
       description: The user samAccountName.
@@ -428,12 +406,6 @@ script:
       description: Search computers by custom field data (relevant only if the `customFieldType` argument is provided).
     - name: custom-field-type
       description: Search the computer by custom field type.
-    - name: limit
-      description: The maximum number of records to return.
-    - name: page-size
-      description: The page size to query. The limit value will be ignored.
-    - name: page-cookie
-      description: An opaque string received in a paged search, used for requesting subsequent entries.
     outputs:
     - contextPath: 'ActiveDirectory.Computers.dn'
       description: The computer distinguished name.
@@ -447,9 +419,6 @@ script:
       description: The computer host name.
     - contextPath: 'Endpoint.Groups'
       description: Groups for which the computer is listed as a member.
-    - contextPath: ActiveDirectory.ComputersPageCookie
-      description: An opaque string received in a paged search, used for requesting subsequent entries.
-      type: string
     description: 'Retrieves detailed information about a computer account. The computer can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filters are provided, all computers are returned.'
   - name: ad-get-group-members
     arguments:
@@ -467,34 +436,19 @@ script:
       defaultValue: person
     - name: attributes
       description: CSV list of attributes to include in the results, in addition to the default attributes.
-    - default: false
-      defaultValue: '180'
+    - defaultValue: '180'
       description: Time limit (in seconds) for the search to run.
-      isArray: false
       name: time_limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Whether to disable recursive retrieval of group memberships of a user.
-      isArray: false
       name: disable-nested-search
       predefined:
       - 'false'
       - 'true'
-      required: false
-      secret: false
     - name: sAMAccountName
       description: Queries results by the samAccountName attribute.
-      required: false
       defaultValue: '*'
-    - name: limit
-      description: The maximum number of records to return.
-    - name: page-size
-      description: The page size to query. The limit value will be ignored.
-    - name: page-cookie
-      description: An opaque string received in a paged search, used for requesting subsequent entries.
     outputs:
     - contextPath: 'ActiveDirectory.Groups.dn'
       description: The group DN.
@@ -504,9 +458,6 @@ script:
       type: string
     - contextPath: 'ActiveDirectory.Groups.members.category'
       description: The group members category.
-      type: string
-    - contextPath: ActiveDirectory.GroupsPageCookie
-      description: An opaque string received in a paged search, used for requesting subsequent entries.
       type: string
     description: Retrieves the list of users or computers that are members of the specified group.
   - name: ad-create-group
@@ -537,26 +488,17 @@ script:
     description: Deletes an existing Active Directory security or distribution group.
     execution: true
   - arguments:
-    - default: false
-      isArray: false
-      name: user-profile
+    - name: user-profile
       required: true
-      secret: false
       description: A User Profile indicator that contains user information, such as name, email address, etc.
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: When set to true, after the command execution the status of the user in the 3rd-party integration will be active.
-      isArray: false
       name: allow-enable
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Creates an Active Directory user. This command requires a secure connection (SSL,TLS).
-    execution: false
     name: iam-create-user
     outputs:
     - contextPath: IAM.UserProfile
@@ -596,14 +538,9 @@ script:
       description: The command name.
       type: String
   - arguments:
-    - default: false
-      isArray: false
-      name: user-profile
+    - name: user-profile
       required: true
-      secret: false
       description: A User Profile indicator that contains user information, such as name and email address.
-    deprecated: false
-    execution: false
     description: "Retrieves a single user resource."
     name: iam-get-user
     outputs:
@@ -644,25 +581,16 @@ script:
       description: The command name.
       type: String
   - arguments:
-    - default: false
-      isArray: false
-      name: user-profile
+    - name: user-profile
       required: true
-      secret: false
       description: A User Profile indicator that contains user information, such as name and email address.
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: When set to true, after the command executes the user status in the 3rd-party integration is active.
-      isArray: false
       name: allow-enable
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
-    execution: false
     description: 'Updates an existing user with the data in the User Profile indicator that is passed in the user-profile argument.'
     name: iam-update-user
     outputs:
@@ -703,13 +631,9 @@ script:
       description: The command name.
       type: String
   - arguments:
-    - default: false
-      isArray: false
-      name: user-profile
+    - name: user-profile
       required: true
-      secret: false
       description: "A User Profile indicator that contains user information, such as name and email address."
-    deprecated: false
     description: Disables a user.
     execution: true
     name: iam-disable-user
@@ -750,10 +674,9 @@ script:
     - contextPath: IAM.Vendor.action
       description: The command name.
       type: String
-  - deprecated: false
-    description: Retrieves a User Profile schema which holds all of the user fields in the application. Used for outgoing mapping through the Get Schema option.
-    execution: false
+  - description: Retrieves a User Profile schema which holds all of the user fields in the application. Used for outgoing mapping through the Get Schema option.
     name: get-mapping-fields
+    arguments: []
   - arguments:
     - description: The group name of the group to update (sAMAccountName).
       name: groupname
@@ -781,7 +704,7 @@ script:
       description: Value to set "Password Never Expire".
     description: 'Modifies the AD account attribute "Password Never Expire".'
     execution: true
-  dockerimage: demisto/py3-tools:1.0.0.35208
+  dockerimage: demisto/py3-tools:1.0.0.36436
   runonce: false
   ismappable: true
   isremotesyncout: true
