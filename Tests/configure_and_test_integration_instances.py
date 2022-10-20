@@ -1773,7 +1773,7 @@ def main():
         modified_packs_names = get_non_added_packs_ids(build)
         packs_not_to_install, packs_to_install_in_post_update = get_packs_not_to_install(modified_packs_names, build)
         packs_to_install = modified_packs_names - packs_not_to_install
-        # build.install_packs(pack_ids=packs_to_install)
+        build.install_packs(pack_ids=packs_to_install)
         new_integrations_names, modified_integrations_names = build.get_changed_integrations(packs_to_install_in_post_update)
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations_names,
                                                                                             modified_integrations_names)
