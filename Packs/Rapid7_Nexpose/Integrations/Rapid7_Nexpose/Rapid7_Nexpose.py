@@ -930,6 +930,26 @@ class Client(BaseClient):
             resp_type="json",
         )
 
+    def delete_site_scan_credential(self, site_id: str, site_credential_id: str) -> dict:
+        """
+        | Delete a site scan credential.
+        |
+        | For more information see:
+            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/deleteSiteCredential
+
+        Args:
+            site_id (str): ID of the site to delete the scan credential from.
+            site_credential_id (str): ID of the scan credential to delete.
+
+        Returns:
+            dict: API response with information about the deleted site scan credential.
+        """
+        return self._http_request(
+            url_suffix=f"/sites/{site_id}/site_credentials/{site_credential_id}",
+            method="DELETE",
+            resp_type="json",
+        )
+
     def delete_vulnerability_exception(self, vulnerability_exception_id: str) -> dict:
         """
         | Delete a vulnerability exception.
@@ -3281,6 +3301,26 @@ def delete_shared_credential_command(client: Client, shared_credential_id: str) 
     )
 
 
+def delete_site_scan_credential_command(client: Client, site: Site, site_credential_id: str) -> CommandResults:
+    """
+    Delete a site scan credential.
+
+    Args:
+        client (Client): Client to use for API requests.
+        site (Site): Site to delete the site scan credential from.
+        site_credential_id (str): ID of the site scan credential to delete.
+    """
+    response_data = client.delete_site_scan_credential(
+        site_id=site.id,
+        site_credential_id=site_credential_id,
+    )
+
+    return CommandResults(
+        readable_output=f"Site scan credential with ID {site_credential_id} has been deleted.",
+        raw_response=response_data,
+    )
+
+
 def delete_vulnerability_exception_command(client: Client, vulnerability_exception_id: str) -> CommandResults:
     """
     Delete a vulnerability exception.
@@ -5167,6 +5207,16 @@ def main():
             results = delete_shared_credential_command(
                 client=client,
                 shared_credential_id=args["id"],
+            )
+        elif command == "nexpose-delete-site-scan-credential":
+            results = delete_site_scan_credential_command(
+                client=client,
+                site=Site(
+                    site_id=args.get("site_id"),
+                    site_name=args.get("site_name"),
+                    client=client,
+                ),
+                site_credential_id=args["credential_id"],
             )
         elif command == "nexpose-delete-vulnerability-exception":
             results = delete_vulnerability_exception_command(

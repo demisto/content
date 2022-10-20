@@ -857,6 +857,29 @@ script:
     name: nexpose-delete-shared-credential
   - arguments:
     - default: false
+      description: ID of the site.
+      isArray: false
+      name: site_id
+      required: false
+      secret: false
+    - default: false
+      description: Name of the site (can be used instead of `site_id`)
+      isArray: false
+      name: site_name
+      required: false
+      secret: false
+    - default: false
+      description: ID of the site scan credential to delete.
+      isArray: false
+      name: credential_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a site scan credential.
+    execution: false
+    name: nexpose-delete-site-scan-credential
+  - arguments:
+    - default: false
       description: Id of the site to delete
       isArray: false
       name: id
