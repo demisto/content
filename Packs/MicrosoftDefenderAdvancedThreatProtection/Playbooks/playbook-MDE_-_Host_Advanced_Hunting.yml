@@ -1296,7 +1296,7 @@ tasks:
     note: false
     evidencedata:
       description:
-        simple: Results for the custom batch queries in Advanced Hunting feature - Microsoft Defender For Endpoint
+        simple: Results for the custom batch queries in Advanced Hunting feature - Microsoft Defender For Endpoint.
       tags:
         simple: Custom Queries
       customfields: {}
