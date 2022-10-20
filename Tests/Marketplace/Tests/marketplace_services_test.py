@@ -21,7 +21,7 @@ from Tests.Marketplace.marketplace_services import Pack, input_to_list, get_vali
     get_updated_server_version, load_json, \
     store_successful_and_failed_packs_in_ci_artifacts, is_ignored_pack_file, \
     is_the_only_rn_in_block, get_pull_request_numbers_from_file
-from Tests.Marketplace.marketplace_constants import PackStatus, PackFolders, Metadata, GCPConfig, BucketUploadFlow, \
+from Tests.Marketplace.marketplace_constants import Changelog, PackStatus, PackFolders, Metadata, GCPConfig, BucketUploadFlow, \
     PACKS_FOLDER, PackTags, BASE_PACK_DEPENDENCY_DICT
 
 CHANGELOG_DATA_INITIAL_VERSION = {
@@ -1466,6 +1466,25 @@ class TestFilterChangelog:
         """
         assert dummy_pack.filter_release_notes_by_entities_display_name(self.RN_ENTRIES_DICTIONARY, files_data, {}) == \
                expected_result
+    
+    @pytest.mark.parametrize('changelog_entry, modified_files, marketplace, id_set, expected_rn', [
+        ({Changelog.RELEASE_NOTES: '#### Integrations\n##### Display Name\n- Some entry 1.\n- Some entry 2.'},
+         {}, 'xsoar', {"integrations": [{'id': {'display_name': 'Display Name'}}]},
+         '#### Integrations\n##### Display Name\n- Some entry 1.\n- Some entry 2.')
+    ])
+    def test_changes_not_relevant_message_in_rn(self, dummy_pack: Pack, changelog_entry, modified_files,
+                                                marketplace, id_set, expected_rn):
+        """
+            Given:
+                - Release notes in a pack without modified files.
+            When:
+                - Filtering release notes with the filter_changelog_entries method.
+            Then:
+                - Ensure the release notes does not contain the non relevant message.
+        """
+        assert dummy_pack.filter_changelog_entries(changelog_entry, dummy_pack.current_version, modified_files,
+                                                   marketplace, id_set)[0][Changelog.RELEASE_NOTES] == expected_rn
+
 
 
 class TestImagesUpload:
