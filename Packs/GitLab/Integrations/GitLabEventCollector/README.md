@@ -8,6 +8,7 @@ An event collector for Gitlab audit events and events using Gitlab's API.
 2. Search for Gitlab Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
+
 | **Parameter** | **Description** | **Required** |
 |-------|-----------|-------|
 | Server Host   | Gitlab Git URL. | True     |
@@ -17,7 +18,9 @@ An event collector for Gitlab audit events and events using Gitlab's API.
 | First fetch from API time     | The time to first fetch from the API.  | True         |                                           | True         |
 
 
-4. Click **Test** to validate the URLs, tokens, and connection.
+4. Click **Test** to validate the URLs, tokens, and connection.  
+##
+**In order to be able to get the audit log you must use a premium account**
 ## Commands
 You can execute these commands in a playbook.
 
