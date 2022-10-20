@@ -111,9 +111,10 @@ class GitMock:
 #         with open('test_data/readme_images_test_data/Retrieve_Asset_Details_-_Lansweeper.png', 'rb') as f:
 #             data = f.read()
 #         return MockResponse(200, data, False)
-
-def shutilcopyobj_mock(raw, f):
-    f.write(raw)
+#
+#
+# def shutilcopyobj_mock(raw, f):
+#     f.write(raw)
 
 
 class TestMetadataParsing:
@@ -1707,7 +1708,7 @@ class TestImagesUpload:
     #     mocker.patch('shutil.copyfileobj', side_effect=shutilcopyobj_mock)
     #     dummy_pack.download_readme_image_from_url_and_upload_to_gcs(mock_readme_url, gcs_storage_path, image_name,
     #                                                                 storage_bucket)
-    # def test_the_upload_flow(self, mocker, dummy_pack):
+    #def test_the_upload_flow(self, mocker, dummy_pack):
     #     mocker.patch("Tests.Marketplace.marketplace_services.logging")
     #     dummy_storage_bucket = mocker.MagicMock()
     #     dummy_pack.upload_readme_images(dummy_storage_bucket, GCPConfig.CONTENT_PACKS_PATH)
