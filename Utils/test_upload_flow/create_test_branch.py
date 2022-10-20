@@ -41,9 +41,21 @@ def create_new_pack():
         shutil.rmtree(dest_path)
     shutil.copytree(source_path, dest_path)
 
-    for top_dir, sub_dir, file_path in os.walk(source_path):
-        if sub_dir and sub_dir[0] not in ['ReleaseNotes', 'TestPlaybooks']:  # get only uploaded content items from pack
-            content_dict[Path(top_dir).name] = file_path
+    sub_dirs = os.listdir(source_path)
+    sub_dirs = [str(sub_dir) for sub_dir in sub_dirs if '.' not in str(sub_dir)]
+    prefix_dict = {content_item: content_item.lower()[:-1] for content_item in sub_dirs}
+    prefix_dict['Layouts'] = 'layoutscontainer'
+    prefix_dict['IndicatorTypes'] = 'reputation'
+
+    for content_item in sub_dirs:
+        if content_item in ['Integrations', 'Scripts']:
+            content_dict[content_item] = os.path.join('TestUploadFlow', content_item, 'TestUploadFlow',
+                                                      f'{prefix_dict[content_item]}-TestUploadFlow.yml')
+        elif content_item not in ['ReleaseNotes', 'TestPlaybooks']:
+            extension = 'yml' if content_item == 'Playbooks' else 'json'
+            content_dict[content_item] = os.path.join('TestUploadFlow', content_item,
+                                                      f'{prefix_dict[content_item]}-TestUploadFlow.{extension}')
+
     return dest_path, '1.0.0', content_dict
 
 
@@ -197,6 +209,7 @@ if __name__ == "__main__":
         repo.git.checkout(original_branch)
     else:
         original_branch = repo.active_branch
+        pass
     try:
         new_branch_name = f"{original_branch}_upload_test_branch_{time.time()}"
         content_path = Path(__file__).parent.parent.parent

@@ -12,3 +12,12 @@ ignore=IM111
 
 [known_words]
 MISP
+
+[file:1_0_1.md]
+ignore=RM104
+
+[file:1_0_1.md]
+ignore=RM104
+
+[file:1_0_1.md]
+ignore=RM104
