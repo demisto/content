@@ -977,6 +977,54 @@ script:
       type: string
   - arguments:
     - default: false
+      description: ID of the site.
+      isArray: false
+      name: site_id
+      required: false
+      secret: false
+    - default: false
+      description: Name of the site (can be used instead of `site_id`)
+      isArray: false
+      name: site_name
+      required: false
+      secret: false
+    - default: false
+      description: The primary IPv4 or IPv6 address of the asset.
+      isArray: true
+      name: ip
+      required: true
+      secret: false
+    - default: false
+      description: Hostname of the asset.
+      isArray: false
+      name: host_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The source used to detect the host name. "user" indicates the host name source is user-supplied.
+      isArray: false
+      name: host_name_source
+      predefined:
+        - User
+        - DNS
+        - NetBIOS
+        - DCE
+        - EPSEC
+        - LDAP
+        - Other
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new asset.
+    execution: false
+    name: nexpose-create-asset
+    outputs:
+      - contextPath: Nexpose.Site.Asset.id
+        description: ID of the newly created asset.
+        type: string
+  - arguments:
+    - default: false
       description: Multiple criteria of integer<int64> Asset ids to create the report on, comma separated.
       isArray: true
       name: assets

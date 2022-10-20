@@ -62,6 +62,17 @@ class CredentialService(Enum, metaclass=FlexibleEnum):
     TELNET = "telnet"
 
 
+class HostnameSource(Enum, metaclass=FlexibleEnum):
+    """An Enum of possible hostname source values."""
+    USER = "user"
+    DNS = "dns"
+    NETBIOS = "netbios"
+    DCE = "dce"
+    EPSC = "epsc"
+    LDAP = "ldap"
+    OTHER = "other"
+
+
 class ReportFileFormat(Enum, metaclass=FlexibleEnum):
     """An Enum of possible file formats to use for reports."""
     PDF = "pdf"
@@ -254,6 +265,36 @@ class Client(BaseClient):
             return result[:limit]
 
         return result
+
+    def create_asset(self, site_id: str, ip_address: Optional[str] = None,
+                     hostname: Optional[str] = None, hostname_source: Optional[HostnameSource] = None) -> dict:
+        """
+        | Create a new asset on a site.
+        |
+        | https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getAssets
+
+        Note:
+            The API endpoint that's used has additional parameters, and can be also used to update existing assets.
+            These options are currently not supported.
+
+        Args:
+            site_id (str): ID of the site to create the asset on.
+            ip_address (str | None, optional): IP address of the asset to create.
+            hostname (str | None, optional): Hostname of the asset to create.
+            hostname_source (HostnameSource | None, optional): Source of the hostname.
+
+        Returns:
+            dict: API response from POST /sites/{siteId}/assets.
+        """
+        return self._http_request(
+            method="POST",
+            url_suffix=f"/sites/{site_id}/assets",
+            json_data=find_valid_params(
+                ip_address=ip_address,
+                hostname=hostname,
+                hostname_source=hostname_source.value,
+            ),
+        )
 
     def create_report(self, report_id: str) -> dict:
         """
@@ -2810,6 +2851,34 @@ def replace_key_names(data: Union[dict, list, tuple], name_mapping: dict[str, st
 
 
 # --- Command Functions --- #
+def create_asset_command(client: Client, site: Site, ip_address: Optional[str] = None, hostname: Optional[str] = None,
+                         hostname_source: Optional[HostnameSource] = None) -> CommandResults:
+    """
+    Create a new asset.
+
+    Args:
+        client (Client): The client to use.
+        site (Site): The site to create the asset in.
+        ip_address (str, optional): The IP address of the asset.
+        hostname (str, optional): The hostname of the asset.
+        hostname_source (HostnameSource, optional): The source of the hostname.
+    """
+    response_data = client.create_asset(
+        site_id=site.id,
+        ip_address=ip_address,
+        hostname=hostname,
+        hostname_source=hostname_source,
+    )
+
+    return CommandResults(
+        readable_output=f"New asset has been created with ID {response_data['id']}.",
+        outputs_prefix="Nexpose.Site.Asset",
+        outputs_key_field="id",
+        outputs={"id": response_data['id']},
+        raw_response=response_data,
+    )
+
+
 def create_assets_report_command(client: Client, asset_ids: list[str], template_id: Optional[str] = None,
                                  report_name: Optional[str] = None,
                                  report_format: Optional[ReportFileFormat] = None,
@@ -5005,6 +5074,23 @@ def main():
         if command == "test-module":
             client.get_assets(page_size=1, limit=1)
             results = "ok"
+        elif command == "nexpose-create-asset":
+            hostname_source = None
+
+            if args.get("host_name_source"):
+                hostname_source = HostnameSource[args["host_name_source"]]
+
+            results = create_asset_command(
+                client=client,
+                site=Site(
+                    site_id=args.get("site_id"),
+                    site_name=args.get("site_name"),
+                    client=client,
+                ),
+                ip_address=args.get("ip"),
+                hostname=args.get("host_name"),
+                hostname_source=hostname_source,
+            )
         elif command == "nexpose-create-assets-report":
             report_format = None
 
