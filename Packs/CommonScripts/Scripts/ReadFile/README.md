@@ -23,6 +23,7 @@ This script is used in the following playbooks and scripts.
 | entryID | War room entryID of the file to read. |
 | maxFileSize | Maximal file size to load, in bytes. Default is 1MB. |
 | encoding | The character encoding of the file |
+| output_data_type | The data type to which the output data is converted. |
 
 ## Outputs
 ---
