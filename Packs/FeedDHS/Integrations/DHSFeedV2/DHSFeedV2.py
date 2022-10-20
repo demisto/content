@@ -1,3 +1,5 @@
+from taxii2client.common import _ensure_datetime_to_string
+
 import demistomock as demisto
 from CommonServerPython import *
 from TAXII2ApiModule import *  # noqa: E402
@@ -42,10 +44,10 @@ def fetch_one_collection(client: Taxii2FeedClient, limit: int, initial_interval:
     added_after = last_fetch_time or initial_interval
 
     indicators = client.build_iterator(limit, added_after=added_after)
-    if last_run_ctx:
-        last_run_ctx[client.collection_to_fetch.id] = (client.last_fetched_indicator__modified
-                                                       if client.last_fetched_indicator__modified
-                                                       else added_after)
+    if last_run_ctx is not None:  # in case we got {}, we want to set it because we are in fetch incident run
+        last_run_ctx[client.collection_to_fetch.id] = _ensure_datetime_to_string(client.last_fetched_indicator__modified
+                                                                                 if client.last_fetched_indicator__modified
+                                                                                 else added_after)
 
     return indicators, last_run_ctx
 
