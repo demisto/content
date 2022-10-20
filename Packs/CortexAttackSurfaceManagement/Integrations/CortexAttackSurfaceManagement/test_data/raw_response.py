@@ -9,10 +9,10 @@ EXTERNAL_SERVICES_RESPONSE = {
         "external_services": [
             {
                 "service_id": "8b8f9d0a-4acd-3d88-9042-c7d17c2b44e9",
-                "service_name": "DNS Server at 104.207.249.74:53",
+                "service_name": "DNS Server at 1.1.1.1:53",
                 "service_type": "DnsServer",
                 "ip_address": [
-                    "104.207.249.74"
+                    "1.1.1.1"
                 ],
                 "domain": [],
                 "externally_detected_providers": [
@@ -36,10 +36,10 @@ EXTERNAL_SERVICES_RESPONSE = {
             },
             {
                 "service_id": "7a4ce6ec-9ce3-3002-ac66-862854b2d7f7",
-                "service_name": "DNS Server at 112.95.160.91:53",
+                "service_name": "DNS Server at 1.1.1.1:53",
                 "service_type": "DnsServer",
                 "ip_address": [
-                    "112.95.160.91"
+                    "1.1.1.1"
                 ],
                 "domain": [],
                 "externally_detected_providers": [
@@ -104,10 +104,10 @@ EXTERNAL_SERVICE_RESPONSE = {
         "details": [
             {
                 "service_id": "94232f8a-f001-3292-aa65-63fa9d981427",
-                "service_name": "SSH Server at 52.22.120.51:22",
+                "service_name": "SSH Server at 1.1.1.1:22",
                 "service_type": "SshServer",
                 "ip_address": [
-                    "52.22.120.51"
+                    "1.1.1.1"
                 ],
                 "domain": [],
                 "externally_detected_providers": [
@@ -143,7 +143,7 @@ EXTERNAL_SERVICE_RESPONSE = {
                     "CVE-2021-36368"
                 ],
                 "details": {
-                    "serviceKey": "52.22.120.51:22",
+                    "serviceKey": "1.1.1.1:22",
                     "serviceKeyType": "IP",
                     "businessUnits": [
                         {
@@ -445,8 +445,8 @@ EXTERNAL_RANGES_RESPONSE = {
         "external_ip_address_ranges": [
             {
                 "range_id": "4da29b7f-3086-3b52-981b-aa8ee5da1e60",
-                "first_ip": "220.241.52.192",
-                "last_ip": "220.241.52.255",
+                "first_ip": "1.1.1.1",
+                "last_ip": "1.1.1.1",
                 "ips_count": 64,
                 "active_responsive_ips_count": 0,
                 "date_added": 1662988031334,
@@ -461,8 +461,8 @@ EXTERNAL_RANGES_RESPONSE = {
             },
             {
                 "range_id": "6ef4638e-7788-3ef5-98a5-ad5b7f4e02f5",
-                "first_ip": "217.206.176.80",
-                "last_ip": "217.206.176.95",
+                "first_ip": "1.1.1.1",
+                "last_ip": "1.1.1.1",
                 "ips_count": 16,
                 "active_responsive_ips_count": 0,
                 "date_added": 1662988031334,
@@ -485,8 +485,8 @@ EXTERNAL_RANGE_RESPONSE = {
         "details": [
             {
                 "range_id": "4da29b7f-3086-3b52-981b-aa8ee5da1e60",
-                "first_ip": "220.241.52.192",
-                "last_ip": "220.241.52.255",
+                "first_ip": "1.1.1.1",
+                "last_ip": "1.1.1.1",
                 "ips_count": 64,
                 "active_responsive_ips_count": 0,
                 "date_added": 1662988031334,
@@ -501,9 +501,9 @@ EXTERNAL_RANGE_RESPONSE = {
                 "details": {
                     "networkRecords": [
                         {
-                            "handle": "220.241.52.192 - 220.241.52.255",
-                            "firstIp": "220.241.52.192",
-                            "lastIp": "220.241.52.255",
+                            "handle": "1.1.1.1 - 1.1.1.1",
+                            "firstIp": "1.1.1.1",
+                            "lastIp": "1.1.1.1",
                             "name": "SEARS-HK",
                             "whoIsServer": "whois.apnic.net",
                             "lastChanged": 1662987151163,

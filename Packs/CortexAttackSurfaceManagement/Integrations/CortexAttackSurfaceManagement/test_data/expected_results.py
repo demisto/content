@@ -20,14 +20,14 @@ EXTERNAL_SERVICES_RESULTS = [
             "DnsServer"
         ],
         "ip_address": [
-            "104.207.249.74"
+            "1.1.1.1"
         ],
         "is_active": "Inactive",
         "last_observed": 1661357820000,
         "port": 53,
         "protocol": "UDP",
         "service_id": "8b8f9d0a-4acd-3d88-9042-c7d17c2b44e9",
-        "service_name": "DNS Server at 104.207.249.74:53",
+        "service_name": "DNS Server at 1.1.1.1:53",
         "service_type": "DnsServer"
     },
     {
@@ -81,14 +81,14 @@ EXTERNAL_SERVICES_RESULTS = [
         "first_observed": 1661298300000,
         "inactive_classifications": [],
         "ip_address": [
-            "112.95.160.91"
+            "1.1.1.1"
         ],
         "is_active": "Active",
         "last_observed": 1662536820000,
         "port": 53,
         "protocol": "UDP",
         "service_id": "7a4ce6ec-9ce3-3002-ac66-862854b2d7f7",
-        "service_name": "DNS Server at 112.95.160.91:53",
+        "service_name": "DNS Server at 1.1.1.1:53",
         "service_type": "DnsServer"
     }
 ]
@@ -390,7 +390,7 @@ EXTERNAL_SERVICE_RESULTS = [
                     "name": "AWS"
                 }
             ],
-            "serviceKey": "52.22.120.51:22",
+            "serviceKey": "1.1.1.1:22",
             "serviceKeyType": "IP",
             "tlsVersions": []
         },
@@ -416,14 +416,14 @@ EXTERNAL_SERVICE_RESULTS = [
         "first_observed": 1662774120000,
         "inactive_classifications": [],
         "ip_address": [
-            "52.22.120.51"
+            "1.1.1.1"
         ],
         "is_active": "Active",
         "last_observed": 1662967560000,
         "port": 22,
         "protocol": "TCP",
         "service_id": "94232f8a-f001-3292-aa65-63fa9d981427",
-        "service_name": "SSH Server at 52.22.120.51:22",
+        "service_name": "SSH Server at 1.1.1.1:22",
         "service_type": "SshServer"
     }
 ]
@@ -435,9 +435,9 @@ EXTERNAL_RANGES_RESULTS = [
             "VanDelay Industries"
         ],
         "date_added": 1662988031334,
-        "first_ip": "220.241.52.192",
+        "first_ip": "1.1.1.12",
         "ips_count": 64,
-        "last_ip": "220.241.52.255",
+        "last_ip": "1.1.1.1",
         "organization_handles": [
             "MAINT-HK-PCCW-BIA-CS",
             "TA66-AP",
@@ -451,9 +451,9 @@ EXTERNAL_RANGES_RESULTS = [
             "VanDelay Industries"
         ],
         "date_added": 1662988031334,
-        "first_ip": "217.206.176.80",
+        "first_ip": "1.1.1.1",
         "ips_count": 16,
-        "last_ip": "217.206.176.95",
+        "last_ip": "1.1.1.1",
         "organization_handles": [
             "EH92-RIPE",
             "EASYNET-UK-MNT",
@@ -474,10 +474,10 @@ EXTERNAL_RANGE_RESULTS = [
         "details": {
             "networkRecords": [
                 {
-                    "firstIp": "220.241.52.192",
-                    "handle": "220.241.52.192 - 220.241.52.255",
+                    "firstIp": "1.1.1.1",
+                    "handle": "1.1.1.1 - 1.1.1.1",
                     "lastChanged": 1662987151163,
-                    "lastIp": "220.241.52.255",
+                    "lastIp": "1.1.1.1",
                     "name": "SEARS-HK",
                     "organizationRecords": [
                         {
@@ -534,9 +534,9 @@ EXTERNAL_RANGE_RESULTS = [
                 }
             ]
         },
-        "first_ip": "220.241.52.192",
+        "first_ip": "1.1.1.1",
         "ips_count": 64,
-        "last_ip": "220.241.52.255",
+        "last_ip": "1.1.1.1",
         "organization_handles": [
             "MAINT-HK-PCCW-BIA-CS",
             "TA66-AP",
