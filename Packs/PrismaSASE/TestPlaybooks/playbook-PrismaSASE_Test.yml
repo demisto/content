@@ -1,0 +1,1432 @@
+id: PrismaSASE
+name: PrismaSASE
+version: -1
+fromversion: 4.5.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '0'
+    type: start
+    task:
+      id: '0'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '1'
+    type: regular
+    task:
+      id: '1'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position":{"x":50,"y":200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '2'
+    type: regular
+    task:
+      id: '2'
+      version: -1
+      name: prisma-access-create-security-rule
+      description: ''
+      script: Prisma SASE|||prisma-access-create-security-rule
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '3'
+    type: condition
+    task:
+      id: '3'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.CreatedSecurityRule
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.CreatedSecurityRule.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.CreatedSecurityRule.application
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.CreatedSecurityRule.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.CreatedSecurityRule.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.CreatedSecurityRule.destination
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.CreatedSecurityRule.folder
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.CreatedSecurityRule.from
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.CreatedSecurityRule.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.CreatedSecurityRule.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.CreatedSecurityRule.position
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.CreatedSecurityRule.profile_setting.group
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.CreatedSecurityRule.service
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.CreatedSecurityRule.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.CreatedSecurityRule.source_user
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.CreatedSecurityRule.to
+            iscontext: true
+    view: '{"position":{"x":50,"y":600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '4'
+    type: regular
+    task:
+      id: '4'
+      version: -1
+      name: prisma-access-list-security-rules
+      description: ''
+      script: Prisma SASE|||prisma-access-list-security-rules
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: '5'
+    type: condition
+    task:
+      id: '5'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.application
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.destination
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.folder
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.from
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.log_setting
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.position
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.service
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.source_user
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.tag
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.to
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.negate_destination
+            iscontext: true
+    view: '{"position":{"x":50,"y":1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: '6'
+    type: regular
+    task:
+      id: '6'
+      version: -1
+      name: prisma-access-push-candidate-config
+      description: ''
+      script: Prisma SASE|||prisma-access-push-candidate-config
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: '7'
+    type: condition
+    task:
+      id: '7'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigPush
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigPush.job_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigPush.message
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: PrismaAccess.ConfigPush.success
+            iscontext: true
+    view: '{"position":{"x":50,"y":1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: '8'
+    type: regular
+    task:
+      id: '8'
+      version: -1
+      name: prisma-access-edit-security-rule
+      description: ''
+      script: Prisma SASE|||prisma-access-edit-security-rule
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: '9'
+    taskid: '9'
+    type: condition
+    task:
+      id: '9'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.EditedSecurityRule
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.UpdatedSecurityRule.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.UpdatedSecurityRule.application
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.UpdatedSecurityRule.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.UpdatedSecurityRule.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.UpdatedSecurityRule.destination
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.UpdatedSecurityRule.folder
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.UpdatedSecurityRule.from
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.UpdatedSecurityRule.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.UpdatedSecurityRule.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.UpdatedSecurityRule.profile_setting.group
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.UpdatedSecurityRule.service
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.UpdatedSecurityRule.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.UpdatedSecurityRule.source_user
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.UpdatedSecurityRule.to
+            iscontext: true
+    view: '{"position":{"x":50,"y":1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: '10'
+    type: regular
+    task:
+      id: '10'
+      version: -1
+      name: prisma-sase-query-agg-monitor-api
+      description: ''
+      script: Prisma SASE|||prisma-sase-query-agg-monitor-api
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: '11'
+    taskid: '11'
+    type: condition
+    task:
+      id: '11'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSASE.AggregateQueryResponse
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaSASE.AggregateQueryResponse.header.dataCount
+            iscontext: true
+    view: '{"position":{"x":50,"y":2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: 12
+    taskid: '12'
+    type: regular
+    task:
+      id: '12'
+      version: -1
+      name: prisma-access-get-security-rule-by-name
+      description: ''
+      script: Prisma SASE|||prisma-access-get-security-rule-by-name
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: '13'
+    taskid: '13'
+    type: condition
+    task:
+      id: '13'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.application
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.destination
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.folder
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.from
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.position
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.profile_setting.group
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.service
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.source_user
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule.to
+            iscontext: true
+    view: '{"position":{"x":50,"y":2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: 14
+    taskid: '14'
+    type: regular
+    task:
+      id: '14'
+      version: -1
+      name: prisma-access-get-config-jobs-by-id
+      description: ''
+      script: Prisma SASE|||prisma-access-get-config-jobs-by-id
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: '15'
+    taskid: '15'
+    type: condition
+    task:
+      id: '15'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.details
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.end_ts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.insert_ts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.job_result
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.job_status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.job_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.last_update
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.opaque_int
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.opaque_str
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.owner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.parent_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.percent
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.result_i
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.result_str
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.session_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.start_ts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.status_i
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.status_str
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.summary
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.type_i
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.type_str
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.uname
+            iscontext: true
+    view: '{"position":{"x":50,"y":3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: 16
+    taskid: '16'
+    type: regular
+    task:
+      id: '16'
+      version: -1
+      name: prisma-access-list-config-jobs
+      description: ''
+      script: Prisma SASE|||prisma-access-list-config-jobs
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '17':
+    id: '17'
+    taskid: '17'
+    type: condition
+    task:
+      id: '17'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '18'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.end_ts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.job_result
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.job_status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.job_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.parent_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.percent
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.result_str
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.start_ts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.status_str
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.summary
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.type_str
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.ConfigJob.uname
+            iscontext: true
+    view: '{"position":{"x":50,"y":3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '18':
+    id: 18
+    taskid: '18'
+    type: regular
+    task:
+      id: '18'
+      version: -1
+      name: prisma-access-delete-security-rule
+      description: ''
+      script: Prisma SASE|||prisma-access-delete-security-rule
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '19':
+    id: '19'
+    taskid: '19'
+    type: condition
+    task:
+      id: '19'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '20'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.DeletedSecurityRule
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.DeletedSecurityRule.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.DeletedSecurityRule.application
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.DeletedSecurityRule.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.DeletedSecurityRule.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.DeletedSecurityRule.destination
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.DeletedSecurityRule.folder
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.DeletedSecurityRule.from
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.DeletedSecurityRule.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.DeletedSecurityRule.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.DeletedSecurityRule.profile_setting.group
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.DeletedSecurityRule.service
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.DeletedSecurityRule.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.DeletedSecurityRule.source_user
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.DeletedSecurityRule.to
+            iscontext: true
+    view: '{"position":{"x":50,"y":3800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '20':
+    id: 20
+    taskid: '20'
+    type: regular
+    task:
+      id: '20'
+      version: -1
+      name: prisma-access-create-address-object
+      description: ''
+      script: Prisma SASE|||prisma-access-create-address-object
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '21':
+    id: '21'
+    taskid: '21'
+    type: condition
+    task:
+      id: '21'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '22'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.CreatedAddressObject
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.CreatedAddress.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.CreatedAddress.folder
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.CreatedAddress.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.CreatedAddress.ip_netmask
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.CreatedAddress.name
+            iscontext: true
+    view: '{"position":{"x":50,"y":4200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '22':
+    id: 22
+    taskid: '22'
+    type: regular
+    task:
+      id: '22'
+      version: -1
+      name: prisma-access-edit-address-object
+      description: ''
+      script: Prisma SASE|||prisma-access-edit-address-object
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '23'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '23':
+    id: '23'
+    taskid: '23'
+    type: condition
+    task:
+      id: '23'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '24'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.EditedAddressObject
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.EditedAddress.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.EditedAddress.folder
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.EditedAddress.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.EditedAddress.ip_netmask
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.EditedAddress.name
+            iscontext: true
+    view: '{"position":{"x":50,"y":4600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '24':
+    id: 24
+    taskid: '24'
+    type: regular
+    task:
+      id: '24'
+      version: -1
+      name: prisma-access-delete-address-object
+      description: ''
+      script: Prisma SASE|||prisma-access-delete-address-object
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '25':
+    id: '25'
+    taskid: '25'
+    type: condition
+    task:
+      id: '25'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '26'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.DeletedAddressObject
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.DeletedAddress.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.DeletedAddress.folder
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.DeletedAddress.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.DeletedAddress.ip_netmask
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.DeletedAddress.name
+            iscontext: true
+    view: '{"position":{"x":50,"y":5000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '26':
+    id: 26
+    taskid: '26'
+    type: regular
+    task:
+      id: '26'
+      version: -1
+      name: prisma-access-list-address-objects
+      description: ''
+      script: Prisma SASE|||prisma-access-list-address-objects
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '27'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":5200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '27':
+    id: '27'
+    taskid: '27'
+    type: condition
+    task:
+      id: '27'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '28'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundSecurityRule
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundAddressObjects.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundAddressObjects.folder
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundAddressObjects.fqdn
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundAddressObjects.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundAddressObjects.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaAccess.FoundAddressObjects.ip_netmask
+            iscontext: true
+    view: '{"position":{"x":50,"y":5400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '28':
+    id: '28'
+    taskid: '28'
+    type: title
+    task:
+      id: '28'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position":{"x":50,"y":5600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition":{},"paper":{"dimensions":{"height":200,"width":380,"x":50,"y":50}}}'
+inputs: []
+outputs: []
