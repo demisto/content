@@ -435,7 +435,7 @@ EXTERNAL_RANGES_RESULTS = [
             "VanDelay Industries"
         ],
         "date_added": 1662988031334,
-        "first_ip": "1.1.1.12",
+        "first_ip": "1.1.1.1",
         "ips_count": 64,
         "last_ip": "1.1.1.1",
         "organization_handles": [
