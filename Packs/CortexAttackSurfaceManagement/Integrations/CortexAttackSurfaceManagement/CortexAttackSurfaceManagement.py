@@ -6,6 +6,7 @@ from typing import Dict, Any, List
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+DEFAULT_SEARCH_LIMIT = 100
 
 class Client(BaseClient):
     """
@@ -27,7 +28,7 @@ class Client(BaseClient):
         Returns:
             dict: dict containing list of external services.
         """
-        data = {"request_data": {"filters": search_params, "search_to": 100}}
+        data = {"request_data": {"filters": search_params, "search_to": DEFAULT_SEARCH_LIMIT}}
         headers = self._headers
 
         response = self._http_request('POST', '/assets/get_external_services/',
@@ -58,7 +59,7 @@ class Client(BaseClient):
         Returns:
             dict: dict containing list of external ip address ranges.
         """
-        data = {"request_data": {"search_to": 100}}
+        data = {"request_data": {"search_to": DEFAULT_SEARCH_LIMIT}}
         headers = self._headers
 
         response = self._http_request('POST', '/assets/get_external_ip_address_ranges/',
@@ -92,7 +93,7 @@ class Client(BaseClient):
         Returns:
             dict: dict containing list of internet exposure assets.
         """
-        data = {"request_data": {"filters": search_params, "search_to": 100}}
+        data = {"request_data": {"filters": search_params, "search_to": DEFAULT_SEARCH_LIMIT}}
         headers = self._headers
 
         response = self._http_request('POST', '/assets/get_assets_internet_exposure/',
@@ -150,7 +151,7 @@ def get_external_services_command(client: Client, args: Dict[str, Any]) -> Comma
 
     response = client.get_external_services_request(search_params)
     parsed = response.get('reply', {}).get('external_services')
-    markdown = tableToMarkdown('External Services', parsed, removeNull=True)
+    markdown = tableToMarkdown('External Services', parsed, removeNull=True, headerTransform=string_to_table_header)
     command_results = CommandResults(
         outputs_prefix='ASM.GetExternalServices',
         outputs_key_field='service_id',
@@ -184,7 +185,7 @@ def get_external_service_command(client: Client, args: Dict[str, Any]) -> Comman
 
     response = client.get_external_service_request(service_id_list)
     parsed = response.get('reply', {}).get('details')
-    markdown = tableToMarkdown('External Service', parsed, removeNull=True)
+    markdown = tableToMarkdown('External Service', parsed, removeNull=True, headerTransform=string_to_table_header)
     command_results = CommandResults(
         outputs_prefix='ASM.GetExternalService',
         outputs_key_field='service_id',
@@ -210,7 +211,7 @@ def get_external_ip_address_ranges_command(client: Client, args: Dict[str, Any])
     """
     response = client.get_external_ip_address_ranges_request()
     parsed = response.get('reply', {}).get('external_ip_address_ranges')
-    markdown = tableToMarkdown('External IP Address Ranges', parsed)
+    markdown = tableToMarkdown('External IP Address Ranges', parsed, removeNull=True, headerTransform=string_to_table_header)
     command_results = CommandResults(
         outputs_prefix='ASM.GetExternalIpAddressRanges',
         outputs_key_field='range_id',
@@ -244,7 +245,7 @@ def get_external_ip_address_range_command(client: Client, args: Dict[str, Any]) 
 
     response = client.get_external_ip_address_range_request(range_id_list)
     parsed = response.get('reply', {}).get('details')
-    markdown = tableToMarkdown('External IP Address Range', parsed, removeNull=True)
+    markdown = tableToMarkdown('External IP Address Range', parsed, removeNull=True, headerTransform=string_to_table_header)
     command_results = CommandResults(
         outputs_prefix='ASM.GetExternalIpAddressRange',
         outputs_key_field='range_id',
@@ -289,7 +290,7 @@ def get_assets_internet_exposure_command(client: Client, args: Dict[str, Any]) -
 
     response = client.get_assets_internet_exposure_request(search_params)
     parsed = response.get('reply', {}).get('assets_internet_exposure')
-    markdown = tableToMarkdown('Asset Internet Exposures', parsed, removeNull=True)
+    markdown = tableToMarkdown('Asset Internet Exposures', parsed, removeNull=True, headerTransform=string_to_table_header)
     command_results = CommandResults(
         outputs_prefix='ASM.GetAssetsInternetExposure',
         outputs_key_field='asm_ids',
@@ -323,7 +324,7 @@ def get_asset_internet_exposure_command(client: Client, args: Dict[str, Any]) ->
 
     response = client.get_asset_internet_exposure_request(asm_id_list)
     parsed = response.get('reply', {}).get('details')
-    markdown = tableToMarkdown('Asset Internet Exposure', parsed, removeNull=True)
+    markdown = tableToMarkdown('Asset Internet Exposure', parsed, removeNull=True, headerTransform=string_to_table_header)
     command_results = CommandResults(
         outputs_prefix='ASM.GetAssetInternetExposure',
         outputs_key_field='asm_ids',

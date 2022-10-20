@@ -4,11 +4,11 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: The web UI with `api-` appended to front.
-  display: Server URL (e.g., https://api-xsiam.paloaltonetworks.com)
+  display: Server URL
   name: url
   required: true
   type: 0
-- additionalinfo: See https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis
+- additionalinfo: (e.g., https://api-xsiam.paloaltonetworks.com) See https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis
   display: API Key ID
   displaypassword: API Key
   name: credentials
@@ -334,4 +334,4 @@ script:
   type: python
 fromversion: 6.5.0
 tests:
-- No tests (auto formatted)
+- CortexAttackSurfaceManagement_Test
