@@ -36,7 +36,7 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
-- description: Enter the File Sha256 you would like to block. Also, this input can be used in the Threat Hunting step.
+- description: Enter the File SHA256 you would like to block. Also, this input can be used in the Threat Hunting step.
   key: FileSha256
   playbookInputQuery:
   required: false
@@ -69,7 +69,7 @@ inputs:
   description: |-
     This input will provide you the ability to select IOCs to be hunted using the Threat Hunting - generic playbook.
     If false, it will hunt for all IOCs detected in the incident.
-    Note: You can also insert "No Threat Hunting" to skiping the Threat Hunting stage.
+    Note: You can also insert "No Threat Hunting" to skip the Threat Hunting stage.
   playbookInputQuery:
 - key: IP
   value:
@@ -84,7 +84,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: IP value to be hunt on
+  description: IP value to hunt for.
   playbookInputQuery:
 - key: MD5
   value:
@@ -99,7 +99,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: MD5 file value to be hunt upon
+  description: MD5 file value to hunt for.
   playbookInputQuery:
 - key: URL_or_Domain
   value:
@@ -119,7 +119,7 @@ inputs:
               simple: URL
       - operator: uniq
   required: false
-  description: URL or Domain to be hunt upon
+  description: URL or domain to hunt for.
   playbookInputQuery:
 - key: FileSha1
   value:
@@ -135,7 +135,7 @@ inputs:
             iscontext: true
       - operator: uniq
   required: false
-  description: File SHA1 value to be hunt upon.
+  description: File SHA1 value to hunt on.
   playbookInputQuery:
 name: Cortex XDR - True Positive Incident Handling
 outputs: []
@@ -833,7 +833,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'.
       id: 741f883d-a6f0-408a-89fe-f326e39cc9da
       iscommand: false
       name: Is ServiceNow Available?
@@ -872,7 +872,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'.
       id: b6bda6ab-a83f-4e7d-804a-7c7c255db9d7
       iscommand: false
       name: Is Jira Available?
@@ -1465,7 +1465,7 @@ tasks:
       id: 35d1b2c6-b7ea-4861-8fe1-6d915ce0bc0b
       version: -1
       name: Specify IOCs to hunt upon
-      description: Specify IOCs to hunt upon
+      description: Specify the IOCs to hunt for.
       type: collection
       iscommand: false
       brand: ""
@@ -1488,7 +1488,7 @@ tasks:
       to:
         simple: Analyst
       subject:
-        simple: Specify IOCs to hunt upon
+        simple: Specify the IOCs to hunt for.
       body:
       methods:
       - email
@@ -1594,7 +1594,7 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
-      title: Specify IOCs to hunt upon
+      title: Specify the IOCs to hunt upon.
       description: ""
       sender: ""
       expired: false
@@ -1612,7 +1612,7 @@ tasks:
       version: -1
       name: Tag the threat hunting results as Evidence
       description: |
-        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+        Adds provided entries to the incident Evidence Board. In a playbook, this can be positioned after a task to add the previous task's entries to the Evidence Board automatically (with no need to provide arguments).
       scriptName: AddEvidence
       type: regular
       iscommand: false
