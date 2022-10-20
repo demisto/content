@@ -1,0 +1,20 @@
+{
+  "hello_world_raw": {
+    "id": {
+      "type": "string",
+      "is_array": false
+    },
+    "created_time": {
+      "type": "string",
+      "is_array": false
+    },
+    "description": {
+      "type": "string",
+      "is_array": false
+    },
+    "custom_details": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}
