@@ -761,8 +761,10 @@ class STIX2Parser:
                 for obj in stix_objects:
                     # we currently don't support extension object
                     if obj.get('type') == 'extension-definition':
+                        # todo: ceck if taxii2 extension
                         continue
                     self.id_to_object[obj.get('id')] = obj
+                    # todo: save the extention, parse it at the end.
                     result = parse_objects_func[obj_type](obj)
                     if not result:
                         continue
@@ -1514,6 +1516,7 @@ def parse_stix(file_name):
             indicator_obj = {
                 'value': indicator.strip(),
                 'indicator_type': item.get('type'),
+                # todo: change to customfields
                 'title': item.get('stix_title'),
                 'description': item.get('stix_description'),
                 'name': item.get('stix_indicator_name'),
@@ -1536,6 +1539,7 @@ def parse_stix(file_name):
                 'value': indicator.strip(),
                 'indicator_type': item.get('type'),
                 'title': item.get('title'),
+                # todo: change to customfields
                 'description': item.get('description'),
                 'shortdescription': item.get('short_description'),
                 'stixdescription': item.get('ttp_description'),
