@@ -482,7 +482,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Joe.Analysis.comments
+              simple: Joe.Analysis.Comments
             iscontext: true
           right:
             value:
@@ -817,7 +817,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Joe.Analysis.comments
+              simple: Joe.Analysis.Comments
             iscontext: true
           right:
             value:

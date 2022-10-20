@@ -62,7 +62,7 @@ script:
         description: The analysis ID.
         required: true
       - name: full_display
-        description: If set to true, will display the full indicators and dbot_scores. If set to false, will display only the summary.
+        description: When is set to true indicators information , including their DBot Scores, will be displayed.
         defaultValue: "false"
         auto: PREDEFINED
         predefined:
@@ -105,13 +105,13 @@ script:
       - contextPath: URL.Data
         description: The URL.
         type: String
-      - contextPath: Joe.Analysis.analysisid
+      - contextPath: Joe.Analysis.AnalysisID
         description: The analysis id from joe security.
         type: String
-      - contextPath: Joe.Analysis.classification
+      - contextPath: Joe.Analysis.Classification
         description: The classification of the analysis.
         type: String
-      - contextPath: Joe.Analysis.comments
+      - contextPath: Joe.Analysis.Comments
         description: Comments regarding the analysis.
         type: String
       - contextPath: Joe.Analysis.detection
@@ -188,7 +188,7 @@ script:
         defaultValue: '50'
         required: false
       - name: full_display
-        description: If set to true, will display the full indicators and dbot_scores. If set to false, will display only the summary.
+        description: When is set to true indicators information , including their DBot Scores, will be displayed.
         isArray: false
         required: false
         defaultValue: "false"
@@ -233,13 +233,13 @@ script:
       - contextPath: URL.Data
         description: The URL.
         type: String
-      - contextPath: Joe.Analysis.analysisid
+      - contextPath: Joe.Analysis.AnalysisID
         description: The analysis id.
         type: String
-      - contextPath: Joe.Analysis.classification
+      - contextPath: Joe.Analysis.Classification
         description: The classification of the analysis.
         type: String
-      - contextPath: Joe.Analysis.comments
+      - contextPath: Joe.Analysis.Comments
         description: Comments regarding the analysis.
         type: String
       - contextPath: Joe.Analysis.detection
@@ -387,7 +387,7 @@ script:
         description: 'Search string which will search in the following fields only: md5, sha1, sha256, filename, URL, comments.'
         required: true
       - name: full_display
-        description: If set to true, will display the full indicators and dbot_scores. If set to false, will display only the summary.
+        description: When is set to true indicators information , including their DBot Scores, will be displayed.
         defaultValue: "false"
         auto: PREDEFINED
         predefined:
@@ -431,13 +431,13 @@ script:
       - contextPath: URL.Data
         description: The URL.
         type: String
-      - contextPath: Joe.Analysis.analysisid
+      - contextPath: Joe.Analysis.AnalysisID
         description: The analysis id.
         type: String
-      - contextPath: Joe.Analysis.classification
+      - contextPath: Joe.Analysis.Classification
         description: The classification of the analysis.
         type: String
-      - contextPath: Joe.Analysis.comments
+      - contextPath: Joe.Analysis.Comments
         description: Comments regarding the analysis.
         type: String
       - contextPath: Joe.Analysis.detection
@@ -633,7 +633,7 @@ script:
       - name: submission_ids
         description: A comma-separated list of submission ids.
       - name: full_display
-        description: If set to true, will display the full indicators and dbot_scores. If set to false, will display only the summary.
+        description: When is set to true indicators information , including their DBot Scores, will be displayed.
         isArray: false
         required: false
         defaultValue: "true"
@@ -679,13 +679,13 @@ script:
       - contextPath: URL.Data
         description: The URL.
         type: String
-      - contextPath: Joe.Analysis.analysisid
+      - contextPath: Joe.Analysis.AnalysisID
         description: The analysis id.
         type: String
-      - contextPath: Joe.Analysis.classification
+      - contextPath: Joe.Analysis.Classification
         description: The classification.
         type: String
-      - contextPath: Joe.Analysis.comments
+      - contextPath: Joe.Analysis.Comments
         description: The comments.
         type: String
       - contextPath: Joe.Analysis.detection
@@ -762,11 +762,14 @@ script:
         type: Date
   - name: joe-submit-sample
     arguments:
+      - name: submission_id
+        description: The submission id.
+        deprecated: true
       - name: entry_id
         description: The war room entry id of the file to submit.
         required: true
       - name: full_display
-        description: If set to true, will display the full indicators and dbot_scores. If set to false, will display only the summary.
+        description: When is set to true indicators information , including their DBot Scores, will be displayed.
         isArray: false
         required: false
         defaultValue: "true"
@@ -936,13 +939,13 @@ script:
       - contextPath: File.SHA256
         description: The SHA256 hash of the file.
         type: String
-      - contextPath: Joe.Analysis.analysisid
+      - contextPath: Joe.Analysis.AnalysisID
         description: The analysis id.
         type: String
-      - contextPath: Joe.Analysis.classification
+      - contextPath: Joe.Analysis.Classification
         description: The classification.
         type: String
-      - contextPath: Joe.Analysis.comments
+      - contextPath: Joe.Analysis.Comments
         description: The comments.
         type: String
       - contextPath: Joe.Analysis.detection
@@ -1019,6 +1022,9 @@ script:
         type: Date
   - name: joe-submit-url
     arguments:
+      - name: submission_id
+        description: The submission id.
+        deprecated: true
       - name: url
         description: The URL to submit.
         required: true
@@ -1030,7 +1036,7 @@ script:
           - "true"
           - "false"
       - name: full_display
-        description: If set to true, will display the full indicators and dbot_scores. If set to false, will display only the summary.
+        description: When is set to true indicators information , including their DBot Scores, will be displayed.
         isArray: false
         required: false
         defaultValue: "true"
@@ -1183,13 +1189,13 @@ script:
       - contextPath: URL.Data
         description: The URL.
         type: String
-      - contextPath: Joe.Analysis.analysisid
+      - contextPath: Joe.Analysis.AnalysisID
         description: The analysis id.
         type: String
-      - contextPath: Joe.Analysis.classification
+      - contextPath: Joe.Analysis.Classification
         description: The classification.
         type: String
-      - contextPath: Joe.Analysis.comments
+      - contextPath: Joe.Analysis.Comments
         description: The comments.
         type: String
       - contextPath: Joe.Analysis.detection

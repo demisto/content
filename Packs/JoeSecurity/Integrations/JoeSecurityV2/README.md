@@ -20,6 +20,10 @@ This integration was integrated and tested with version 3.18.0 of [jbxapi](https
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+**Note**: Most of the commands have the *full_display* boolean argument that when is set to true, indicators information , including their DBot Scores, will be displayed.   
+
+
 ### joe-is-online
 ***
 Check if the Joe Sandbox analysis server is online or in maintenance mode.
@@ -70,7 +74,7 @@ Get information about an analysis.
 | **Argument Name** | **Description**                                                                                                                                                       | **Required** |
 | --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
 | webid | The analysis web id.                                                                                                                                                  | Required | 
-| full_display | If set to true, will display the full indicators and dbot_scores. If set to false, will display only the summary. Possible values are: true, false. Default is false. | Optional | 
+| full_display | When is set to true indicators information , including their DBot Scores, will be displayed. Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
@@ -89,9 +93,9 @@ Get information about an analysis.
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | File.MD5 | String | The MD5 hash of the file. | 
 | URL.Data | String | The URL. | 
-| Joe.Analysis.analysisid | String | The analysis id from joe security. | 
-| Joe.Analysis.classification | String | The classification of the analysis. | 
-| Joe.Analysis.comments | String | Comments regarding the analysis. | 
+| Joe.Analysis.AnalysisID | String | The analysis id from joe security. | 
+| Joe.Analysis.Classification | String | The classification of the analysis. | 
+| Joe.Analysis.Comments | String | Comments regarding the analysis. | 
 | Joe.Analysis.detection | String | The analysis detection. Can be one of unknown, clean, suspicious, malicious. | 
 | Joe.Analysis.duration | Number | The duration field contains the duration of the analysis in seconds. | 
 | Joe.Analysis.encrypted | Boolean | The encrypted field is true if the analysis data is encrypted. | 
@@ -187,7 +191,7 @@ Lists all analyses.
 | page | Page number to display. | Optional | 
 | page_size | Determine how many entries to display on each page. | Optional | 
 | limit | Limit the number of entries to display. Default is 50. | Optional | 
-| full_display | If set to true, will display the full indicators and dbot_scores. If set to false, will display only the summary. Possible values are: true, false. Default is false. | Optional | 
+| full_display | When is set to true indicators information , including their DBot Scores, will be displayed. Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
@@ -206,9 +210,9 @@ Lists all analyses.
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | File.MD5 | String | The MD5 hash of the file. | 
 | URL.Data | String | The URL. | 
-| Joe.Analysis.analysisid | String | The analysis id. | 
-| Joe.Analysis.classification | String | The classification of the analysis. | 
-| Joe.Analysis.comments | String | Comments regarding the analysis. | 
+| Joe.Analysis.AnalysisID | String | The analysis id. | 
+| Joe.Analysis.Classification | String | The classification of the analysis. | 
+| Joe.Analysis.Comments | String | Comments regarding the analysis. | 
 | Joe.Analysis.detection | String | The analysis detection. Can be one of unknown, clean, suspicious, malicious. | 
 | Joe.Analysis.duration | Number | The duration field contains the duration of the analysis in seconds. | 
 | Joe.Analysis.encrypted | Boolean | The encrypted field is true if the analysis data is encrypted. | 
@@ -711,7 +715,7 @@ Retrieve the submission info.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | submission_ids | A comma-separated list of submission ids. | Optional | 
-| full_display | If set to true, will display the full indicators and dbot_scores. If set to false, will display only the summary. Possible values are: true, false. Default is true. | Optional | 
+| full_display | When is set to true indicators information , including their DBot Scores, will be displayed. Possible values are: true, false. Default is true. | Optional | 
 
 
 #### Context Output
@@ -730,9 +734,9 @@ Retrieve the submission info.
 | File.SHA1 | String | The SHA1 hash of the file. | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | URL.Data | String | The URL. | 
-| Joe.Analysis.analysisid | String | The analysis id. | 
-| Joe.Analysis.classification | String | The classification. | 
-| Joe.Analysis.comments | String | The comments. | 
+| Joe.Analysis.AnalysisID | String | The analysis id. | 
+| Joe.Analysis.Classification | String | The classification. | 
+| Joe.Analysis.Comments | String | The comments. | 
 | Joe.Analysis.detection | String | The detection. | 
 | Joe.Analysis.duration | Number | The duration. | 
 | Joe.Analysis.encrypted | Boolean | Whether the analysis is encrypted. | 
@@ -759,7 +763,7 @@ Retrieve the submission info.
 | Joe.Submission.time | Date | The time. | 
 
 #### Command example
-```!joe-submission-info submission_ids=2784371```
+```!joe-submission-info submission_ids=1111111```
 #### Context Example
 ```json
 {
@@ -844,7 +848,7 @@ Retrieve the submission info.
             },
             "name": "example.zip",
             "status": "finished",
-            "submission_id": "2784371",
+            "submission_id": "1111111",
             "time": "2022-09-15T10:57:14+02:00"
         }
     }
@@ -872,7 +876,7 @@ Retrieve the submission info.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entry_id | The war room entry id of the file to submit. | Required | 
-| full_display | If set to true, will display the full indicators and dbot_scores. If set to false, will display only the summary. Possible values are: true, false. Default is true. | Optional | 
+| full_display | When is set to true indicators information , including their DBot Scores, will be displayed. Possible values are: true, false. Default is true. | Optional | 
 | timeout | The timeout for the polling in seconds. Default is 1200. | Optional | 
 | hide_polling_output | Hide polling output. | Optional | 
 | report_type | The report type. Possible values are: html, json, pcap, pdf, xml, iocjson. Default is html. | Optional | 
@@ -922,9 +926,9 @@ Retrieve the submission info.
 | File.Name | String | The full file name. | 
 | File.SHA1 | String | The SHA1 hash of the file. | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
-| Joe.Analysis.analysisid | String | The analysis id. | 
-| Joe.Analysis.classification | String | The classification. | 
-| Joe.Analysis.comments | String | The comments. | 
+| Joe.Analysis.AnalysisID | String | The analysis id. | 
+| Joe.Analysis.Classification | String | The classification. | 
+| Joe.Analysis.Comments | String | The comments. | 
 | Joe.Analysis.detection | String | The detection. | 
 | Joe.Analysis.duration | Number | The duration. | 
 | Joe.Analysis.encrypted | Boolean | Whether the analysis is encrypted. | 
@@ -950,6 +954,99 @@ Retrieve the submission info.
 | Joe.Submission.submission_id | String | The submission id. | 
 | Joe.Submission.time | Date | The time. | 
 
+
+#### Command example
+```!joe-submit-sample entry_id=1111@1111111111-1111-1111-1111-1 systems=w10x64```
+#### Context Example
+```json
+{
+    "DBotScore": [
+        {
+            "Indicator": "example.txt",
+            "Reliability": "C - Fairly reliable",
+            "Score": 1,
+            "Type": "file",
+            "Vendor": "JoeSecurityV2"
+        }
+    ],
+    "File": [
+        {
+            "Hashes": [
+                {
+                    "type": "MD5",
+                    "value": "11111111111111111111111111111111"
+                },
+                {
+                    "type": "SHA1",
+                    "value": "1111111111111111111111111111111111111111"
+                },
+                {
+                    "type": "SHA256",
+                    "value": "1111111111111111111111111111111111111111111111111111111111111111"
+                }
+            ],
+            "MD5": "11111111111111111111111111111111",
+            "Name": "example.txt",
+            "SHA1": "1111111111111111111111111111111111111111",
+            "SHA256": "1111111111111111111111111111111111111111111111111111111111111111"
+        }
+    ],
+    "Joe": {
+        "Analysis": [
+            {
+                "analysisid": "1",
+                "classification": "",
+                "comments": "example comment",
+                "detection": "clean",
+                "duration": 500,
+                "encrypted": false,
+                "filename": "example.txt",
+                "md5": "11111111111111111111111111111111",
+                "runs": [
+                    {
+                        "detection": "clean",
+                        "error": null,
+                        "score": 1,
+                        "sigma": false,
+                        "snort": false,
+                        "system": "w10x64",
+                        "yara": false
+                    }
+                ],
+                "score": 1,
+                "scriptname": "example.jbs",
+                "sha1": "1111111111111111111111111111111111111111",
+                "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+                "status": "finished",
+                "tags": [],
+                "threatname": "Unknown",
+                "time": "2022-09-15T10:57:20+02:00",
+                "webid": "1"
+            }
+        ],
+        "Submission": {
+            "most_relevant_analysis": {
+                "detection": "clean",
+                "score": 1,
+                "webid": "1"
+            },
+            "name": "example.txt",
+            "status": "finished",
+            "submission_id": "1111111",
+            "time": "2022-09-15T10:57:14+02:00"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Submission Results:
+>|Submission Id|Sample Name|Time|Status|Web Id|Encrypted|Analysis Id|Classification|Threat Name|Score|Detection|SHA256|MD5|SHA1|File Name|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 1 | example.zip | 2022-09-15T10:57:14+02:00 | finished | 1 | false | 1 |  | Unknown | 1 | clean | 1111111111111111111111111111111111111111111111111111111111111111 | 11111111111111111111111111111111 | 1111111111111111111111111111111111111111 | example.txt |
+
+
 ### joe-submit-url
 ***
  
@@ -964,7 +1061,7 @@ Retrieve the submission info.
 | --- | --- | --- |
 | url | The URL to submit. | Required | 
 | url_reputation | The URL reputation. Possible values are: true, false. Default is false. | Optional | 
-| full_display | If set to true, will display the full indicators and dbot_scores. If set to false, will display only the summary. Possible values are: true, false. Default is true. | Optional | 
+| full_display | When is set to true indicators information , including their DBot Scores, will be displayed. Possible values are: true, false. Default is true. | Optional | 
 | timeout | The timeout for the polling in seconds. Default is 1200. | Optional | 
 | hide_polling_output | Hide polling output. | Optional | 
 | report_type | The report type. Possible values are: html, json, pcap, pdf, xml, iocjson. Default is html. | Optional | 
@@ -1008,9 +1105,9 @@ Retrieve the submission info.
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | URL.Data | String | The URL. | 
-| Joe.Analysis.analysisid | String | The analysis id. | 
-| Joe.Analysis.classification | String | The classification. | 
-| Joe.Analysis.comments | String | The comments. | 
+| Joe.Analysis.AnalysisID | String | The analysis id. | 
+| Joe.Analysis.Classification | String | The classification. | 
+| Joe.Analysis.Comments | String | The comments. | 
 | Joe.Analysis.detection | String | The detection. | 
 | Joe.Analysis.duration | Number | The duration. | 
 | Joe.Analysis.encrypted | Boolean | Whether the analysis is encrypted. | 
@@ -1035,6 +1132,84 @@ Retrieve the submission info.
 | Joe.Submission.status | String | The status. | 
 | Joe.Submission.submission_id | String | The submission id. | 
 | Joe.Submission.time | Date | The time. | 
+
+
+
+#### Command example
+```!joe-submit-url url=http://example.com```
+#### Context Example
+
+```json
+{
+  "DBotScore": [
+    {
+      "Indicator": "example.txt",
+      "Reliability": "C - Fairly reliable",
+      "Score": 1,
+      "Type": "url",
+      "Vendor": "JoeSecurityV2"
+    }
+  ],
+  "URL": [
+    {
+      "Data": "http://example.com"
+    }
+  ],
+  "Joe": {
+    "Analysis": [
+      {
+        "analysisid": "1",
+        "classification": "",
+        "comments": "example comment",
+        "detection": "clean",
+        "duration": 500,
+        "encrypted": false,
+        "filename": "http://example.com",
+        "md5": "",
+        "runs": [
+          {
+            "detection": "clean",
+            "error": null,
+            "score": 0,
+            "sigma": false,
+            "snort": false,
+            "system": "w7",
+            "yara": false
+          }
+        ],
+        "score": 1,
+        "scriptname": "example.jbs",
+        "sha1": "",
+        "sha256": "",
+        "status": "finished",
+        "tags": [],
+        "threatname": "Unknown",
+        "time": "2022-09-15T10:57:20+02:00",
+        "webid": "1"
+      }
+    ],
+    "Submission": {
+      "most_relevant_analysis": {
+        "detection": "clean",
+        "score": 0,
+        "webid": "1"
+      },
+      "name": "http://example.com",
+      "status": "finished",
+      "submission_id": "1111111",
+      "time": "2022-09-15T10:57:14+02:00"
+    }
+  }
+}
+```
+
+#### Human Readable Output
+
+>### Submission Results:
+>|Submission Id|Sample Name|Time|Status|Web Id|Encrypted|Analysis Id|Classification|Threat Name|Score|Detection|URL|
+> |---|---|---|---|---|---|---|---|---|---|---|---|
+> | 1 | http://example.com | 2022-09-15T10:57:14+02:00 | finished | 1 | false | 1 | | Unknown | 1 | clean | http://example.com |
+
 
 
 ### Commands

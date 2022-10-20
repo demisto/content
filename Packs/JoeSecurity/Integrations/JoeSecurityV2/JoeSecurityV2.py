@@ -47,15 +47,16 @@ def update_metrics(exception: Exception, exe_metrics: ExecutionMetrics):
             None
     """
     if isinstance(exception, jbxapi.ApiError):
-        match API_ERRORS.get(exception.code):
-            case 'Quota':
-                exe_metrics.quota_error += 1
-            case 'InvalidApiKeyError' | 'PermissionError':
-                exe_metrics.auth_error += 1
-            case 'ServerOfflineError' | 'InternalServerError':
-                exe_metrics.connection_error += 1
-            case _:
-                exe_metrics.general_error += 1
+        pass
+        # match API_ERRORS.get(exception.code):
+        #     case 'Quota':
+        #         exe_metrics.quota_error += 1
+        #     case 'InvalidApiKeyError' | 'PermissionError':
+        #         exe_metrics.auth_error += 1
+        #     case 'ServerOfflineError' | 'InternalServerError':
+        #         exe_metrics.connection_error += 1
+        #     case _:
+        #         exe_metrics.general_error += 1
     else:
         exe_metrics.general_error += 1
 
@@ -554,7 +555,7 @@ def polling_submission_command(args: Dict[str, Any], client: Client, params: Dic
             response=CommandResults(outputs=res,  # this is what the response will be in case job has finished
                                     outputs_prefix='Joe.Submission', outputs_key_field='submission_id',
                                     readable_output=f'Waiting for submission "{res.get("submission_id")}" to finish...'),
-            continue_to_poll=True, args_for_next_run=args)
+            continue_to_poll=True, args_for_next_run={'submission_id': args.get('submission_id'), **args})
     else:
         if file := args.get('entry_id'):
             return file_submission(client, args, params, file, exe_metrics)
@@ -584,15 +585,16 @@ def test_module(client: Client) -> str:
         client.server_online()
     except Exception as e:
         if isinstance(e, jbxapi.ApiError):
-            match API_ERRORS.get(e.code):
-                case 'InvalidApiKeyError':
-                    return "Invalid Api Key"
-                case 'PermissionError':
-                    return "Permission Error"
-                case 'ServerOfflineError' | 'InternalServerError':
-                    return "Server error, please verify the Server URL or check if the server is offline"
-        else:
-            return "Server error, please verify the server url or check if the server is online"
+            pass
+        #     match API_ERRORS.get(e.code):
+        #         case 'InvalidApiKeyError':
+        #             return "Invalid Api Key"
+        #         case 'PermissionError':
+        #             return "Permission Error"
+        #         case 'ServerOfflineError' | 'InternalServerError':
+        #             return "Server error, please verify the Server URL or check if the server is offline"
+        # else:
+        #     return "Server error, please verify the server url or check if the server is online"
     return 'ok'
 
 
