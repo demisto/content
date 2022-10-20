@@ -10709,7 +10709,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
         'content-encoding': 'gzip'
     }
 
-    header_msg = 'Error sending new events into XSIAM. \n'
+    header_msg = 'Error sending new events into XSIAM.\n'
 
     def events_error_handler(res):
         """
@@ -10723,14 +10723,18 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
                 error += ": " + xsiam_server_err_msg
 
         except ValueError:
-            error = '\n{}'.format(res.text)
+            if res.text:
+                error = '\n{}'.format(res.text)
+            else:
+                error = "Received empty response from the server"
 
         api_call_info = (
             'Parameters used:\n'
             '\tURL: {xsiam_url}\n'
             '\tHeaders: {headers}\n\n'
+            'Response status code: {status_code}\n'
             'Error received:\n\t{error}'
-        ).format(xsiam_url=xsiam_url, headers=json.dumps(headers, indent=4), error=error)
+        ).format(xsiam_url=xsiam_url, headers=json.dumps(headers, indent=8), status_code=res.status_code, error=error)
 
         demisto.error(header_msg + api_call_info)
         raise DemistoException(header_msg + error, DemistoException)

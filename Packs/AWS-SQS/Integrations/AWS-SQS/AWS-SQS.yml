@@ -278,7 +278,7 @@ script:
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
     description: Deletes the messages in a queue specified by the QueueURL parameter.
-  dockerimage: demisto/boto3py3:1.0.0.34383
+  dockerimage: demisto/boto3py3:1.0.0.35343
   isfetch: true
   runonce: false
 tests:
