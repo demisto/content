@@ -34,7 +34,7 @@ def mock_access_token(client):
 
 
 @pytest.fixture(autouse=True)
-@patch("CiscoESA.Client.handle_request_headers", mock_access_token)
+@patch("CiscoEmailSecurityApplianceIronPortV2.Client.handle_request_headers", mock_access_token)
 def mock_client():
     """
     Mock client
