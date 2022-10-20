@@ -1,9 +1,8 @@
 id: Endpoint Enrichment By Hostname - XM Cyber
-version: 3
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
+fromversion: 6.0.0
 name: Endpoint Enrichment By Hostname - XM Cyber
-description: Enrich an endpoint by hostname using XM Cyber integration. Outputs include
-  affected assets, affected entities, complexity of compromise, and more
+description: Enrich an endpoint by hostname using XM Cyber integration. Outputs include affected assets, affected entities, complexity of compromise, and more
 starttaskid: "0"
 tasks:
   "0":
@@ -21,7 +20,6 @@ tasks:
       '#none#':
       - "3"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -34,6 +32,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "1":
@@ -52,7 +51,6 @@ tasks:
       '#none#':
       - "6"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -65,6 +63,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
@@ -99,7 +98,6 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -112,6 +110,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "4":
@@ -127,7 +126,6 @@ tasks:
       iscommand: false
       brand: ""
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -140,6 +138,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "5":
@@ -150,8 +149,7 @@ tasks:
       id: a78aa70b-faa0-4873-8d90-1aae37c5ef3a
       version: -1
       name: Is XM Cyber Available
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -167,7 +165,6 @@ tasks:
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -180,6 +177,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "6":
@@ -202,7 +200,6 @@ tasks:
       hostname:
         simple: ${inputs.Hostname}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -246,6 +243,7 @@ tasks:
         simple: ${XMCyber.Entity.compromisingTechniques}
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "7":
@@ -256,8 +254,7 @@ tasks:
       id: e5ead8d1-bfe6-43f3-84c9-f029c20e1ada
       version: -1
       name: Get Critical Assets At Risk
-      description: List critical assets at risk from an entity and the complexity
-        of the attack
+      description: List critical assets at risk from an entity and the complexity of the attack
       script: '|||xmcyber-affected-critical-assets-list'
       type: regular
       iscommand: true
@@ -269,7 +266,6 @@ tasks:
       entityId:
         simple: ${XMCyber.Entity.id}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -286,6 +282,7 @@ tasks:
         simple: ${XMCyber.Entity.criticalAssetsAtRiskList}
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "8":
@@ -296,8 +293,7 @@ tasks:
       id: 8acc159a-1724-4d5b-8cf0-7494e5601516
       version: -1
       name: Get Entities At Risk
-      description: List all entities at risk from an entity and the complexity of
-        the attack
+      description: List all entities at risk from an entity and the complexity of the attack
       script: '|||xmcyber-affected-entities-list'
       type: regular
       iscommand: true
@@ -309,7 +305,6 @@ tasks:
       entityId:
         simple: ${XMCyber.Entity.id}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -326,6 +321,7 @@ tasks:
         simple: ${XMCyber.Entity.entitiesAtRiskList}
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "9":
@@ -336,10 +332,10 @@ tasks:
       id: 1e3fc050-f8bd-4e3d-8f5a-7617304e3b5b
       version: -1
       name: Found Entity?
-      description: Does the endpoint match an XM Cyber entity?
       type: condition
       iscommand: false
       brand: ""
+      description: Does the endpoint match an XM Cyber entity?
     nexttasks:
       '#default#':
       - "4"
@@ -354,7 +350,6 @@ tasks:
             value:
               simple: ${XMCyber.Entity.id}
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -367,6 +362,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
 view: |-
@@ -393,7 +389,7 @@ inputs:
       - operator: uniq
   required: false
   description: The hostname of the endpoint to enrich.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Endpoint
   description: The endpoint object of the endpoint that was enriched.
@@ -431,3 +427,5 @@ outputs:
 - contextPath: XMCyber.Entity.entitiesAtRiskList
   description: Entities at risk from this entity
   type: unknown
+tests:
+- XMCyberIntegration-Test
