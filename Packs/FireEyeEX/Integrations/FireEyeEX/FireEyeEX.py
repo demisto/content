@@ -2,7 +2,9 @@ from typing import Tuple
 
 from CommonServerPython import *
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 INTEGRATION_NAME = 'FireEye Email Security'
@@ -510,7 +512,8 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
         if alert_id not in last_alert_ids:  # check that event was not fetched in the last fetch
             incident = {
                 'name': f'{INTEGRATION_NAME} Alert: {alert_id}',
-                'occurred': dateparser.parse(alert.get('occurred')).strftime(DATE_FORMAT),  # type: ignore
+                'occurred': dateparser.parse(alert.get('occurred'),
+                                             settings={'TO_TIMEZONE': 'UTC'}).strftime(DATE_FORMAT),  # type: ignore
                 'severity': alert_severity_to_dbot_score(alert.get('severity')),
                 'rawJSON': json.dumps(alert)
             }
@@ -573,7 +576,7 @@ def main() -> None:
             f'{INTEGRATION_COMMAND_NAME}-list-blockedlist': list_blockedlist,
             f'{INTEGRATION_COMMAND_NAME}-create-blockedlist': create_blockedlist,
             f'{INTEGRATION_COMMAND_NAME}-update-blockedlist': update_blockedlist,
-            f'{INTEGRATION_COMMAND_NAME}-delete-blocklist': delete_blockedlist,
+            f'{INTEGRATION_COMMAND_NAME}-delete-blockedlist': delete_blockedlist,
         }
         if command == 'test-module':
             return_results(run_test_module(client))

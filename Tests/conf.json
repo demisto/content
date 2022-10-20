@@ -47,6 +47,11 @@
             "playbookID": "LogRhythmRestV2-test"
         },
         {
+            "fromversion": "6.6.0",
+            "integrations": "Zendesk v2",
+            "playbookID": "Zendesk V2 TEST"
+        },
+        {
             "playbookID": "Base64Decode - Test"
         },
         {
@@ -1388,10 +1393,6 @@
         {
             "integrations": "Preempt",
             "playbookID": "Preempt Test"
-        },
-        {
-            "integrations": "Gmail",
-            "playbookID": "get_original_email_-_gmail_-_test"
         },
         {
             "integrations": [
@@ -5191,6 +5192,9 @@
             "integrations": [
                 "Panorama"
             ]
+        },
+        {
+            "playbookID": "VerifyCIDR-Test"
         }
     ],
     "skipped_tests": {
