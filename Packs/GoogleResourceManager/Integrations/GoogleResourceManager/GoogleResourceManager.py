@@ -17,12 +17,12 @@ from CommonServerPython import *  # noqa: F401
 
 # Params for assembling object of the Service Account Credentials File Contents
 PARAMS = demisto.params()
-SERVICE_ACT_PROJECT_ID = PARAMS.get('project_id').encode('utf-8')
-PRIVATE_KEY_ID = PARAMS.get('private_key_id').encode('utf-8')
-PRIVATE_KEY = PARAMS.get('private_key').encode('utf-8')
-CLIENT_EMAIL = PARAMS.get('client_email').encode('utf-8')
-CLIENT_ID = PARAMS.get('client_id').encode('utf-8')
-CLIENT_X509_CERT_URL = PARAMS.get('client_x509_cert_url').encode('utf-8')
+SERVICE_ACT_PROJECT_ID = PARAMS.get('project_id')
+PRIVATE_KEY_ID = PARAMS.get('private_key_id')
+PRIVATE_KEY = PARAMS.get('private_key')
+CLIENT_EMAIL = PARAMS.get('client_email')
+CLIENT_ID = PARAMS.get('client_id')
+CLIENT_X509_CERT_URL = PARAMS.get('client_x509_cert_url')
 PROXY = PARAMS.get('proxy')
 DISABLE_SSL = PARAMS.get('insecure')
 
@@ -30,7 +30,7 @@ AUTH_JSON = {
     'type': 'service_account',  # guardrails-disable-line
     'project_id': SERVICE_ACT_PROJECT_ID,
     'private_key_id': PRIVATE_KEY_ID,
-    'private_key': PRIVATE_KEY.replace('\\n'.encode('utf-8'), '\n'.encode('utf-8')),
+    'private_key': PRIVATE_KEY.replace('\\n', '\n'),
     'client_email': CLIENT_EMAIL,
     'client_id': CLIENT_ID,
     'auth_uri': 'https://accounts.google.com/o/oauth2/auth',

@@ -464,7 +464,7 @@ script:
     - contextPath: GRM.Project.Parent.Type
       description: Type of the parent resource.
       type: String
-  dockerimage: devdemisto/googleapi-python3:1.0.0.36418
+  dockerimage: demisto/googleapi-python3:1.0.0.36486
   isfetch: false
   runonce: false
   script: ''
