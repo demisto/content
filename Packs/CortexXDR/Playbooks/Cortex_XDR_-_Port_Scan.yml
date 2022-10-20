@@ -2458,6 +2458,6 @@ inputs:
 outputs: []
 fromversion: 5.0.0
 tests:
-- Test XDR Playbook
+- no test
 contentitemexportablefields:
   contentitemfields: {}
