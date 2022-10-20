@@ -70,4 +70,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Impossible Traveler](https://raw.githubusercontent.com/demisto/content/8178e2818f856c4494d50e5308023ec272ca2878/Packs/ImpossibleTraveler/doc_files/Impossible_Traveler.png)
+![Impossible Traveler](../doc_files/Impossible_Traveler.png)
