@@ -553,7 +553,7 @@ def populate_matter_with_export(current_matter, current_export):
         exports = [exports]
 
     # remove duplicate export after new updated exports were entered
-    filtered_export = list([export for export in exports if export['ExportID'] != current_export['ExportID']])
+    filtered_export = [export for export in exports if export['ExportID'] != current_export['ExportID']]
     filtered_export.append(current_export)
     current_matter['Export'] = filtered_export
 
