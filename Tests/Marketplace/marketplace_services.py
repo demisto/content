@@ -3369,7 +3369,7 @@ class Pack(object):
                     pack_image_blob = storage_bucket.blob(image_storage_path)
                     with open(file.a_path, "rb") as image_file:
                         pack_image_blob.upload_from_file(image_file)
-                    self._uploaded_preview_images.append(image_file)
+                    self._uploaded_preview_images.append(file.a_path)
             logging.info(f"yuval {self._uploaded_preview_images}")
             return True
         except Exception as e:
