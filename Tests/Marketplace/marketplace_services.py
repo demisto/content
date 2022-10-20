@@ -358,6 +358,12 @@ class Pack(object):
         return self._uploaded_integration_images
 
     @property
+    def uploaded_preview_images(self):
+        """ str: the list of uploaded integration images
+        """
+        return self._uploaded_preview_images
+
+    @property
     def is_missing_dependencies(self):
         return self._is_missing_dependencies
 
@@ -3364,7 +3370,7 @@ class Pack(object):
                     with open(file.a_path, "rb") as image_file:
                         pack_image_blob.upload_from_file(image_file)
                     self._uploaded_preview_images.append(image_file)
-            logging.info(f"yuval {self._uploaded_preview_images.append(image_file)}")
+            logging.info(f"yuval {self._uploaded_preview_images}")
             return True
         except Exception as e:
             logging.exception(f"Failed uploading {self.name} pack preview image. Additional info: {e}")

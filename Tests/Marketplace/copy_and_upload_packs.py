@@ -405,13 +405,6 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, skipped_pack_uploading = pack.copy_and_upload_to_storage(
-            production_bucket, build_bucket, pc_successful_packs_dict, production_base_path, build_bucket_base_path)
-        if skipped_pack_uploading:
-            pack.status = PackStatus.PACK_ALREADY_EXISTS.name
-            pack.cleanup()
-            continue
-
         task_status = pack.copy_preview_images(
             production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
         if not task_status:
@@ -419,6 +412,12 @@ def main():
             pack.cleanup()
             continue
 
+        task_status, skipped_pack_uploading = pack.copy_and_upload_to_storage(
+            production_bucket, build_bucket, pc_successful_packs_dict, production_base_path, build_bucket_base_path)
+        if skipped_pack_uploading:
+            pack.status = PackStatus.PACK_ALREADY_EXISTS.name
+            pack.cleanup()
+            continue
         if not task_status:
             pack.status = PackStatus.FAILED_UPLOADING_PACK.name
             pack.cleanup()
