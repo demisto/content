@@ -8,6 +8,7 @@ urllib3.disable_warnings()
 
 DEFAULT_SEARCH_LIMIT = 100
 
+
 class Client(BaseClient):
     """
     Client class to interact with the service API.
