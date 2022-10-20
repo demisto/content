@@ -88,7 +88,7 @@ inputs:
   description: |-
     This input will provide you the ability to select IOCs to be hunted using the Threat Hunting - generic playbook.
     If false, it will hunt for all IOCs detected in the incident.
-    Note: You can also insert "No Threat Hunting" to skiping the Threat Hunting stage.
+    Note: You can also insert "No Threat Hunting" to skip the Threat Hunting stage.
   playbookInputQuery:
 - key: IP
   value:
@@ -103,7 +103,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: IP value to be hunt on
+  description: IP value to be hunt on.
   playbookInputQuery:
 - key: MD5
   value:
@@ -118,7 +118,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: MD5 file value to be hunt upon
+  description: MD5 file value to be hunt upon.
   playbookInputQuery:
 - key: URL_or_Domain
   value:
@@ -139,7 +139,7 @@ inputs:
             iscontext: true
       - operator: uniq
   required: false
-  description: URL or Domain to be hunt upon
+  description: URL or domain to be hunt upon.
   playbookInputQuery:
 name: MDE - True Positive Incident Handling
 outputs: []
@@ -561,7 +561,7 @@ tasks:
       id: 3792dd28-29b8-431c-83f7-26577d7f3e4c
       version: -1
       name: Approve isolation
-      description: Approve isolation
+      description: Approve isolation.
       type: condition
       iscommand: false
       brand: ""
@@ -1136,7 +1136,7 @@ tasks:
       id: d5fc2714-02c0-4e47-80ae-5e2a4e2a6a5b
       version: -1
       name: Additional Duplicate IDs were provided?
-      description: Additional duplicate IDs were provided?
+      description: Were additional duplicate IDs provided?
       type: condition
       iscommand: false
       brand: ""
@@ -1637,7 +1637,7 @@ tasks:
       id: 61158fa1-fcd4-4b00-83ea-00702a7f103f
       version: -1
       name: Specify IOCs to hunt upon
-      description: Specify IOCs to hunt upon
+      description: Specify IOCs to hunt upon.
       type: collection
       iscommand: false
       brand: ""
@@ -1853,7 +1853,7 @@ tasks:
       version: -1
       name: Tag the threat hunting results as Evidence
       description: |
-        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+        Adds provided entries to the incident Evidence Board. In a playbook, can be positioned after a task to add the previous task's entries to the Evidence Board automatically (with no need to provide arguments).
       scriptName: AddEvidence
       type: regular
       iscommand: false
