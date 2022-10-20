@@ -35,7 +35,7 @@ This playbook does not use any scripts.
 | FileName | A comma-separated list of file names to hunt. |  | Optional |
 | DeviceID | A comma-separated list of device ID to hunt. |  | Optional |
 | FileMd5 | A comma-separated list of file MD5 hashes to hunt. |  | Optional |
-| QueryBatch | Define the custom queries you would like to run as a part of the 'MDE - Host Advanced Hunting' playbook.  This input will be passed to the 'query_batch' argument in the '\!microsoft-atp-advanced-hunting' command. For more information and examples, check the command's hints. |  | Optional |
+| QueryBatch | Define the custom queries you would like to run as a part of the 'MDE - Host Advanced Hunting' playbook. This input will be passed to the 'query_batch' argument in the '\!microsoft-atp-advanced-hunting' command. For more information and examples, check the command's hints. |  | Optional |
 
 ## Playbook Outputs
 ---
