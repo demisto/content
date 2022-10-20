@@ -1,5 +1,6 @@
 <!-- HTML_DOC -->
 <h2>Overview</h2>
+<p>Deprecated. No available replacement.</p>
 <p>Use the Preempt integration to eliminate security breaches and internal threats. Preempt is an Adaptive Threat Prevention platform based on identity, behavior, and risk.</p>
 <p>This integration was integrated and tested with Preempt v2.3.1086.</p>
 <hr>
