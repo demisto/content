@@ -94,7 +94,7 @@ script:
     - contextPath: Orca.Manager.Asset
       description: Asset description
       type: String
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.8.35482
   feed: false
   isfetch: true
   longRunning: false
