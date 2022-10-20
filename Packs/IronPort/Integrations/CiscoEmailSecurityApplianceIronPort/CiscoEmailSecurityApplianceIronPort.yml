@@ -3,7 +3,7 @@ commonfields:
   version: -1
 deprecated: true
 name: Cisco Email Security Appliance (IronPort)
-display: Cisco Email Security Appliance (IronPort)
+display: Cisco Email Security Appliance (IronPort) (Deprecated)
 category: Network Security
 description: Deprecated. Use Cisco Email Security Appliance (IronPort) V2 instead.
 configuration:

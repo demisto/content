@@ -39,7 +39,7 @@ def mock_client():
     """
     Mock client
     """
-    from CiscoESA import Client
+    from Packs.IronPort.Integrations.CiscoEmailSecurityApplianceIronPortV2.CiscoEmailSecurityApplianceIronPortV2 import Client
 
     return Client(BASE_URL, USERNAME, PASSWORD, verify=False, proxy=False)
 
@@ -97,7 +97,7 @@ def test_spam_quarantine_message_search_command(
      - Ensure number of items is correct.
      - Validate outputs' fields.
     """
-    from CiscoESA import spam_quarantine_message_search_command
+    from Packs.IronPort.Integrations.CiscoEmailSecurityApplianceIronPortV2.CiscoEmailSecurityApplianceIronPortV2 import spam_quarantine_message_search_command
 
     mock_response = load_mock_response(response_file_name)
     url = f"{BASE_URL}/quarantine/messages"
@@ -140,7 +140,7 @@ def test_spam_quarantine_message_get_command(
      - Ensure outputs prefix is correct.
      - Validate outputs' fields.
     """
-    from CiscoESA import spam_quarantine_message_get_command
+    from Packs.IronPort.Integrations.CiscoEmailSecurityApplianceIronPortV2.CiscoEmailSecurityApplianceIronPortV2 import spam_quarantine_message_get_command
 
     mock_response = load_mock_response(response_file_name)
     url = f"{BASE_URL}/quarantine/messages/details"
@@ -177,7 +177,7 @@ def test_spam_quarantine_message_release_command(
     Then:
      - Ensure the human readable message is correct.
     """
-    from CiscoESA import spam_quarantine_message_release_command
+    from Packs.IronPort.Integrations.CiscoEmailSecurityApplianceIronPortV2.CiscoEmailSecurityApplianceIronPortV2 import spam_quarantine_message_release_command
 
     mock_response = load_mock_response(response_file_name)
     url = f"{BASE_URL}/quarantine/messages"
@@ -224,7 +224,7 @@ def test_spam_quarantine_message_delete_command(
     Then:
      - Ensure the human readable message is correct.
     """
-    from CiscoESA import spam_quarantine_message_delete_command
+    from Packs.IronPort.Integrations.CiscoEmailSecurityApplianceIronPortV2.CiscoEmailSecurityApplianceIronPortV2 import spam_quarantine_message_delete_command
 
     mock_response = load_mock_response(response_file_name)
     url = f"{BASE_URL}/quarantine/messages"
@@ -281,7 +281,7 @@ def test_list_entry_get_command(
      - Ensure number of items is correct.
      - Validate outputs' fields.
     """
-    from CiscoESA import list_entry_get_command
+    from Packs.IronPort.Integrations.CiscoEmailSecurityApplianceIronPortV2.CiscoEmailSecurityApplianceIronPortV2 import list_entry_get_command
 
     mock_response = load_mock_response(response_file_name)
     entry_type = command_arguments.get("entry_type")
@@ -324,7 +324,7 @@ def test_list_entry_add_command(
     Then:
      - Ensure the human readable message is correct.
     """
-    from CiscoESA import list_entry_add_command
+    from Packs.IronPort.Integrations.CiscoEmailSecurityApplianceIronPortV2.CiscoEmailSecurityApplianceIronPortV2 import list_entry_add_command
 
     entry_type = command_arguments.get("entry_type")
     url = f"{BASE_URL}/quarantine/{entry_type}"
@@ -363,7 +363,7 @@ def test_list_entry_append_command(
     Then:
      - Ensure the human readable message is correct.
     """
-    from CiscoESA import list_entry_append_command
+    from Packs.IronPort.Integrations.CiscoEmailSecurityApplianceIronPortV2.CiscoEmailSecurityApplianceIronPortV2 import list_entry_append_command
 
     entry_type = command_arguments.get("entry_type")
     url = f"{BASE_URL}/quarantine/{entry_type}"
@@ -402,7 +402,7 @@ def test_list_entry_edit_command(
     Then:
      - Ensure the human readable message is correct.
     """
-    from CiscoESA import list_entry_edit_command
+    from Packs.IronPort.Integrations.CiscoEmailSecurityApplianceIronPortV2.CiscoEmailSecurityApplianceIronPortV2 import list_entry_edit_command
 
     entry_type = command_arguments.get("entry_type")
     url = f"{BASE_URL}/quarantine/{entry_type}"
@@ -440,7 +440,7 @@ def test_list_entry_delete_command(
     Then:
      - Ensure the human readable message is correct.
     """
-    from CiscoESA import list_entry_delete_command
+    from Packs.IronPort.Integrations.CiscoEmailSecurityApplianceIronPortV2.CiscoEmailSecurityApplianceIronPortV2 import list_entry_delete_command
 
     entry_type = command_arguments.get("entry_type")
     url = f"{BASE_URL}/quarantine/{entry_type}"
@@ -503,7 +503,7 @@ def test_message_search_command(
      - Ensure number of items is correct.
      - Validate outputs' fields.
     """
-    from CiscoESA import message_search_command
+    from Packs.IronPort.Integrations.CiscoEmailSecurityApplianceIronPortV2.CiscoEmailSecurityApplianceIronPortV2 import message_search_command
 
     mock_response = load_mock_response(response_file_name)
     url = f"{BASE_URL}/message-tracking/messages"
@@ -555,7 +555,7 @@ def test_message_details_get_command(
      - Ensure outputs prefix is correct.
      - Validate outputs' fields.
     """
-    from CiscoESA import message_details_get_command
+    from Packs.IronPort.Integrations.CiscoEmailSecurityApplianceIronPortV2.CiscoEmailSecurityApplianceIronPortV2 import message_details_get_command
 
     mock_response = load_mock_response(response_file_name)
     url = f"{BASE_URL}/message-tracking/details"
@@ -606,7 +606,7 @@ def test_message_amp_details_get_command(
      - Ensure outputs prefix is correct.
      - Validate outputs' fields.
     """
-    from CiscoESA import message_amp_details_get_command
+    from Packs.IronPort.Integrations.CiscoEmailSecurityApplianceIronPortV2.CiscoEmailSecurityApplianceIronPortV2 import message_amp_details_get_command
 
     mock_response = load_mock_response(response_file_name)
     url = f"{BASE_URL}/message-tracking/amp-details"
@@ -657,7 +657,7 @@ def test_message_dlp_details_get_command(
      - Ensure outputs prefix is correct.
      - Validate outputs' fields.
     """
-    from CiscoESA import message_dlp_details_get_command
+    from Packs.IronPort.Integrations.CiscoEmailSecurityApplianceIronPortV2.CiscoEmailSecurityApplianceIronPortV2 import message_dlp_details_get_command
 
     mock_response = load_mock_response(response_file_name)
     url = f"{BASE_URL}/message-tracking/dlp-details"
@@ -708,7 +708,7 @@ def test_message_url_details_get_command(
      - Ensure outputs prefix is correct.
      - Validate outputs' fields.
     """
-    from CiscoESA import message_url_details_get_command
+    from Packs.IronPort.Integrations.CiscoEmailSecurityApplianceIronPortV2.CiscoEmailSecurityApplianceIronPortV2 import message_url_details_get_command
 
     mock_response = load_mock_response(response_file_name)
     url = f"{BASE_URL}/message-tracking/url-details"
@@ -758,7 +758,7 @@ def test_message_report_get_command(
      - Ensure outputs prefix is correct.
      - Validate outputs' fields.
     """
-    from CiscoESA import report_get_command
+    from Packs.IronPort.Integrations.CiscoEmailSecurityApplianceIronPortV2.CiscoEmailSecurityApplianceIronPortV2 import report_get_command
 
     mock_response = load_mock_response(response_file_name)
     url = f'{BASE_URL}/reporting/{command_arguments.get("report_type")}'
@@ -794,7 +794,7 @@ def test_format_number_list_argument(number_list_argument, expected_result):
     Then:
      - Ensure result is correct.
     """
-    from CiscoESA import format_number_list_argument
+    from Packs.IronPort.Integrations.CiscoEmailSecurityApplianceIronPortV2.CiscoEmailSecurityApplianceIronPortV2 import format_number_list_argument
 
     result = format_number_list_argument(number_list_argument)
 
@@ -820,7 +820,7 @@ def test_format_custom_query_args(custom_query_argument, expected_result):
     Then:
      - Ensure result is correct.
     """
-    from CiscoESA import format_custom_query_args
+    from Packs.IronPort.Integrations.CiscoEmailSecurityApplianceIronPortV2.CiscoEmailSecurityApplianceIronPortV2 import format_custom_query_args
 
     result = format_custom_query_args(custom_query_argument)
 
