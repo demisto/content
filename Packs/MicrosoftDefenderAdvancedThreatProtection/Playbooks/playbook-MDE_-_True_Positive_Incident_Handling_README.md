@@ -45,10 +45,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | HostID | The ID of the host for running an isolation process. | ${incident.deviceid} | Optional |
 | FileSha256 | Enter the File SHA256 you want to block. | ${incident.filesha256} | Optional |
 | FileSha1 | Enter the File SHA1 you want to remove from your protected endpoints. | ${incident.filesha1} | Optional |
-| ManuallyChooseIOCForHunting | This input will provide you the ability to select IOCs to be hunted using the Threat Hunting - generic playbook.<br/>If false, it will hunt for all IOCs detected in the incident.<br/>Note: You can also insert "No Threat Hunting" to skiping the Threat Hunting stage. | True | Optional |
+| ManuallyChooseIOCForHunting | This input will provide you the ability to select IOCs to be hunted using the Threat Hunting - generic playbook.<br/>If false, it will hunt for all IOCs detected in the incident.<br/>Note: You can also insert "No Threat Hunting" to skip the Threat Hunting stage. | True | Optional |
 | IP | IP value to be hunt on | IP.None | Optional |
-| MD5 | MD5 file value to be hunt upon | File.MD5.None | Optional |
-| URL_or_Domain | URL or Domain to be hunt upon | Domain.Name.None | Optional |
+| MD5 | MD5 file value to be hunt upon. | File.MD5.None | Optional |
+| URL_or_Domain | URL or domain to be hunt upon. | Domain.Name.None | Optional |
 
 ## Playbook Outputs
 ---
