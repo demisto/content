@@ -3397,10 +3397,19 @@ class Pack(object):
         pc_uploaded_preview_images = images_data.get(self._pack_name, {}).get(BucketUploadFlow.PREVIEW_IMAGES, [])
 
         for image_name in pc_uploaded_preview_images:
+            logging.info("yuval in for image ")
             image_folder = os.path.dirname(image_name.a_path).split('/')[-1] or ''
-            image_name = os.path.basename(image_name.a_path)
-            image_storage_path = os.path.join(build_bucket_base_path, image_folder, image_name)
-            build_bucket_image_path = os.path.join(image_storage_path, self._pack_name, image_name)
+            image_file_name = os.path.basename(image_name.a_path)
+            # pack_storage_root_path = os.path.join(storage_base_path, self.name, self.current_version)
+            # image_folder = os.path.dirname(file.a_path).split('/')[-1] or ''
+            # image_name = os.path.basename(file.a_path)
+            # image_storage_path = os.path.join(pack_storage_root_path, image_folder, image_name)
+            # pack_image_blob = storage_bucket.blob(image_storage_path)
+            # with open(file.a_path, "rb") as image_file:
+            #     pack_image_blob.upload_from_file(image_file)
+            build_bucket_image_path = os.path.join(build_bucket_base_path, self._pack_name,
+                                                   self.current_version ,image_folder, image_file_name)
+            # build_bucket_image_path = os.path.join(image_storage_path, self._pack_name, image_name)
             build_bucket_image_blob = build_bucket.blob(build_bucket_image_path)
 
             if not build_bucket_image_blob.exists():
@@ -3412,7 +3421,8 @@ class Pack(object):
                 try:
                     copied_blob = build_bucket.copy_blob(
                         blob=build_bucket_image_blob, destination_bucket=production_bucket,
-                        new_name=os.path.join(storage_base_path, self._pack_name, image_name)
+                        new_name=os.path.join(storage_base_path, self._pack_name, self.current_version,
+                                              image_folder, image_name)
                     )
                     if not copied_blob.exists():
                         logging.error(f"Copy {self._pack_name} preview image: {build_bucket_image_blob.name} "
