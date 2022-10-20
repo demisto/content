@@ -3429,7 +3429,7 @@ class Pack(object):
             logging.error(err_msg)
         else:
             if num_copied_images == 0:
-                logging.info(f"No added/modified integration images were detected in {self._pack_name} pack.")
+                logging.info(f"No added/modified preview images were detected in {self._pack_name} pack.")
             else:
                 logging.success(f"Copied {num_copied_images} images for {self._pack_name} pack.")
 
