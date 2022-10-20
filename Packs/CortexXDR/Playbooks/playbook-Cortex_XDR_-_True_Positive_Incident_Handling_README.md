@@ -10,7 +10,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Cortex XDR - delete file
 
 ### Integrations
-* CortexXDRIR
+CortexXDRIR
 
 ### Scripts
 * IsIntegrationAvailable
@@ -30,18 +30,18 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Comment | Add comment to close this incident. | XSOAR Incident #${incident.id} | Optional |
-| Classification | Choose From - "Unknown" / "TruePositive" | TruePositive | Optional |
-| BlockTag | Specify the banning tag name for founded indicators. | BlockTag | Optional |
+| Classification | Choose From - "Unknown" / "TruePositive". | TruePositive | Optional |
+| BlockTag | Specify the banning tag name for found indicators. | BlockTag | Optional |
 | AutoIsolation | Indicates if automatic host isolation is allowed.<br/>True/False | False | Optional |
-| TicketProjectName | For ticketing systems such as Jira a project name is required. |  | Optional |
-| TicketingSystemToUse | The name of the ticketing system to use, for example Jira or ServiceNow |  | Optional |
-| FileSha256 | Enter the File Sha256 you would like to block. Also, this input can be used in the Threat Hunting step. | incident.filesha256 | Optional |
+| TicketProjectName | For ticketing systems such as Jira, a project name is required. |  | Optional |
+| TicketingSystemToUse | The name of the ticketing system to use, for example Jira or ServiceNow. |  | Optional |
+| FileSha256 | Enter the file SHA256 you would like to block. Also, this input can be used in the Threat Hunting step. | incident.filesha256 | Optional |
 | HostID | The ID of the host for running an isolation process. | ${incident.deviceid} | Optional |
-| FilePaths | Enter the File paths you would like to delete. | incident.processpaths | Optional |
-| ManuallyChooseIOCForHunting | This input will provide you the ability to select IOCs to be hunted using the Threat Hunting - generic playbook.<br/>If false, it will hunt for all IOCs detected in the incident.<br/>Note: You can also insert "No Threat Hunting" to skiping the Threat Hunting stage. | True | Optional |
-| IP | IP value to be hunt on | IP.None | Optional |
-| MD5 | MD5 file value to be hunt upon | File.MD5.None | Optional |
-| URL_or_Domain | URL or Domain to be hunt upon | Domain.None | Optional |
+| FilePaths | Enter the file paths you would like to delete. | incident.processpaths | Optional |
+| ManuallyChooseIOCForHunting | This input will provide you the ability to select IOCs to be hunted using the Threat Hunting - generic playbook.<br/>If false, it will hunt for all IOCs detected in the incident.<br/>Note: You can also insert "No Threat Hunting" to skip the Threat Hunting stage. | True | Optional |
+| IP | IP value to be hunt upon. | IP.None | Optional |
+| MD5 | MD5 file value to be hunt upon. | File.MD5.None | Optional |
+| URL_or_Domain | URL or Domain to be hunt upon. | Domain.None | Optional |
 | FileSha1 | File SHA1 value to be hunt upon. | File.SHA1 | Optional |
 
 ## Playbook Outputs
