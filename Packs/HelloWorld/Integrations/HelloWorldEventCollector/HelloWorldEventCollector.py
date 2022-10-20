@@ -121,9 +121,11 @@ def fetch_events(client: Client, last_run: Dict[str, int],
         prev_id=prev_id,
         alert_status=alert_status
     )
+    demisto.info(f'Fetched event with id: {prev_id + 1}.')
 
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {'prev_id': prev_id + 1}
+    demisto.info(f'Setting next run {next_run}.')
     return next_run, events
 
 
