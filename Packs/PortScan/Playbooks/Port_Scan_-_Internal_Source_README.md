@@ -48,4 +48,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Port Scan - Internal Source](https://raw.githubusercontent.com/demisto/content/2211150450f1bc50c6e4b1244fe19e5fa8b4ead5/Packs/PortScan/doc_files/Port_Scan_-_Internal_Source.png)
+![Port Scan - Internal Source](../doc_files/Port_Scan_-_Internal_Source.png)
