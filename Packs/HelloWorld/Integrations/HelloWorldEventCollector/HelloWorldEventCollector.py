@@ -1,3 +1,5 @@
+import uuid
+
 from requests import Response
 
 import demistomock as demisto
@@ -45,10 +47,11 @@ class Client(BaseClient):
             'created_time': datetime.now().isoformat(),
             'description': f'This is test description {prev_id + 1}',
             'alert_status': alert_status,
-            'custom_details': {'triggered_by_name': f'Name for id: {prev_id + 1}',
-                               'triggered_by_uuid': 'uuid',
-                               '?': '?',
-                               'type': 'customType'}
+            'custom_details': {
+                               'triggered_by_name': f'Name for id: {prev_id + 1}',
+                               'triggered_by_uuid': str(uuid.uuid4()),
+                               'type': 'customType'
+            }
         }]
 
 

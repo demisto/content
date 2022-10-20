@@ -1,8 +1,0 @@
-[MODEL: dataset="hello_world", model="Audit"]
-filter json_extract_scalar(details, "$.type") in ("AUDIT")
-| alter
-    XDM.Audit.original_event_id = id,
-    XDM.Audit.event_timestamp = parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", created_time),
-    XDM.Audit.original_event_description = description,
-    XDM.Audit.operation_type = json_extract_scalar(custom_details, "$.customType");
-
