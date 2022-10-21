@@ -397,7 +397,7 @@ tasks:
       version: -1
       name: Set Internet Message ID and Recipient Address
       description: 'Set a value in context for internetMessageId and recipient.address fields in a following format: ```internet_message_id:recipient_address``` '
-      scriptName: Set
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ''
@@ -424,14 +424,6 @@ tasks:
                 value:
                   simple: Cofense.Search.Message
                 iscontext: true
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty:
-                value:
-                  simple: 'true'
-              defaultValue:
-                value:
-                  simple: '""'
     separatecontext: false
     view: |-
       {
@@ -703,7 +695,97 @@ inputs:
 
     Default value is '50'
   playbookInputQuery:
-outputs: []
+outputs:
+- contextPath: Cofense.Search.Message.id
+  description: The ID of the message.
+- contextPath: Cofense.Search.Message.subject
+  description: The subject of the message.
+- contextPath: Cofense.Search.Message.receivedOn
+  description: The date and time when the message was received by the recipient.
+- contextPath: Cofense.Search.Message.sentOn
+  description: The date and time when the message was sent by the sender.
+- contextPath: Cofense.Search.Message.md5
+  description: The MD5 hash of the message.
+- contextPath: Cofense.Search.Message.internetMessageId
+  description: Unique identifier of the email.
+- contextPath: Cofense.Search.Message.from.address
+  description: The email address of the sender.
+- contextPath: Cofense.Search.Message.headers.value
+  description: The value of the header key.
+- contextPath: Cofense.Search.Message.headers.name
+  description: The name of the header key.
+- contextPath: Cofense.Search.Message.recipients.address
+  description: The email address of the recipient.
+- contextPath: Cofense.Search.Message.attachments.filename
+  description: The name of the attachment file.
+- contextPath: Cofense.Search.Message.attachments.md5
+  description: The MD5 hash of the attachment.
+- contextPath: Cofense.Search.Message.attachments.id
+  description: The ID of the attachment.
+- contextPath: Cofense.Message.id
+  description: ID of the message in cofense vision.
+- contextPath: Cofense.Message.subject
+  description: Subject of the email.
+- contextPath: Cofense.Message.receivedOn
+  description: Date and time an email was received by the recipient.
+- contextPath: Cofense.Message.sentOn
+  description: Date and time an email was sent to the recipient.
+- contextPath: Cofense.Message.md5
+  description: MD5 hash of the message.
+- contextPath: Cofense.Message.internetMessageId
+  description: ID of an email assigned by the message transfer agent.
+- contextPath: Cofense.Message.matchingIOCs
+  description: MD5 hash of one or more matching IOCs.
+- contextPath: Cofense.Message.matchingSources
+  description: One or more matching IOC sources.
+- contextPath: Cofense.Message.from.address
+  description: An email address of the sender.
+- contextPath: Cofense.Message.headers.name
+  description: The name of the key in the header.
+- contextPath: Cofense.Message.headers.value
+  description: The value of the key in the header.
+- contextPath: Cofense.Message.recipients.address
+  description: Email address of the recipient.
+- contextPath: Cofense.Message.attachments.filename
+  description: The name of the attachment file.
+- contextPath: Cofense.Message.attachments.md5
+  description: The MD5 hash of the attachment.
+- contextPath: Cofense.Message.attachments.id
+  description: The ID of the attachment.
+- contextPath: Cofense.QuarantineJob.id
+  description: ID of the quarantine job in cofense vision.
+- contextPath: Cofense.QuarantineJob.emailCount
+  description: Number of emails quarantined.
+- contextPath: Cofense.QuarantineJob.matchingIOCs
+  description: MD5 hash of one or more matching IOCs.
+- contextPath: Cofense.QuarantineJob.matchingSources
+  description: One or more IOC sources.
+- contextPath: Cofense.QuarantineJob.quarantineEmails.id
+  description: ID in cofense vision.
+- contextPath: Cofense.QuarantineJob.quarantineEmails.internetMessageID
+  description: ID of the email assigned by the message transfer agent.
+- contextPath: Cofense.QuarantineJob.quarantineEmails.recipientAddress
+  description: Email address of the account containing the emails to be quarantined.
+- contextPath: Cofense.QuarantineJob.quarantineEmails.status
+  description: Status of the email.
+- contextPath: Cofense.QuarantineJob.quarantineJobRuns.id
+  description: ID of the quarantine job in Cofense Vision.
+- contextPath: Cofense.QuarantineJob.quarantineJobRuns.status
+  description: Status of the quarantine job.
+- contextPath: Cofense.QuarantineJob.quarantineJobRuns.total
+  description: Total number of emails in the quarantine job.
+- contextPath: Cofense.Search.Message.from.id
+  description: The ID of the sender.
+- contextPath: Cofense.Search.Message.headers.id
+  description: The ID of the header.
+- contextPath: Cofense.QuarantineJob.matchingIocInfo.id
+  description: MD5 hash composed of the UTF-8 concatenation of "threat_type" and "threat_value" attributes.
+- contextPath: Cofense.QuarantineJob.matchingIocInfo.attributes.threat_type
+  description: Threat type of the IOC match.
+- contextPath: Cofense.QuarantineJob.matchingIocInfo.attributes.threat_value
+  description: Actual value of the IOC match in the email.
+- contextPath: Cofense.QuarantineJob.matchingIocInfo.metadata.source
+  description: Data that the IOC source reads and writes.
 tests:
 - CofenseVision-Test
 fromversion: 6.2.0

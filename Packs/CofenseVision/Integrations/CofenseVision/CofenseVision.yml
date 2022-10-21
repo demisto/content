@@ -350,7 +350,7 @@ script:
         Supported values for propertyName are: id, createdBy, createdDate, modifiedBy, modifiedDate, stopRequested.
 
         Supported values for sortOrder are: asc, desc.
-      isArray: false
+      isArray: true
       name: sort
       required: false
       secret: false
@@ -378,7 +378,7 @@ script:
         RUNNING: Job is currently running.
         COMPLETED: Job run finished and emails were quarantined or restored.
         FAILED: Job run finished but some emails to be quarantined or restored are in an error state. Cofense Vision retries failed jobs until the retry limit is reached.
-      isArray: false
+      isArray: true
       name: include_status
       required: false
       secret: false
@@ -395,7 +395,7 @@ script:
         RUNNING: Job is currently running.
         COMPLETED: Job run finished and emails were quarantined or restored.
         FAILED: Job run finished but some emails to be quarantined or restored are in an error state. Cofense Vision retries failed jobs until the retry limit is reached.
-      isArray: false
+      isArray: true
       name: exclude_status
       required: false
       secret: false
@@ -405,7 +405,7 @@ script:
         
         Example: 
         07fa1e91f99050521a87edc784e83fd5,07123459050525189160784e83fd5
-      isArray: false
+      isArray: true
       name: iocs
       required: false
       secret: false
@@ -424,7 +424,7 @@ script:
         One or more configured IOC sources. Comma separated values are supported.
 
         Example: Intelligence, Triage-1
-      isArray: false
+      isArray: true
       name: sources
       required: false
       secret: false
@@ -585,7 +585,7 @@ script:
 
         Note: Users can get the internet message ID and recipient address by
         executing the "cofense-message-search-results-get" command.
-      isArray: false
+      isArray: true
       name: quarantine_emails
       required: true
       secret: false
@@ -742,7 +742,7 @@ script:
         modifiedDate, receivedAfterDate, receivedBeforeDate.
 
         Supported values for sortOrder are: asc, desc.
-      isArray: false
+      isArray: true
       name: sort
       required: false
       secret: false
@@ -1166,7 +1166,7 @@ script:
         htmlBody, md5, sha1, sha256.
 
         Supported values for sortOrder are: asc, desc.
-      isArray: false
+      isArray: true
       name: sort
       required: false
       secret: false
@@ -1581,7 +1581,7 @@ script:
         in any position of a subject.
 
         Note: The search can only have a maximum of 3 values.
-      isArray: false
+      isArray: true
       name: subjects
       required: false
       secret: false
@@ -1592,7 +1592,7 @@ script:
         in any position of a sender's email address.
 
         Note: The search can only have a maximum of 3 values.
-      isArray: false
+      isArray: true
       name: senders
       required: false
       secret: false
@@ -1603,7 +1603,7 @@ script:
         characters (*) in any position of an attachment name.
 
         Note: The search can only have a maximum of 3 values.
-      isArray: false
+      isArray: true
       name: attachment_names
       required: false
       secret: false
@@ -1634,7 +1634,7 @@ script:
         Example: md5:938c2cc0dcc05f2b68c4287040cfcf71
 
         Note: The search can only have a maximum of 3 values.
-      isArray: false
+      isArray: true
       name: attachment_hashes
       required: false
       secret: false
@@ -1643,7 +1643,7 @@ script:
         A comma-separated string of MIME types to create a search for an email's attachment MIME type.
 
         Note: The search can only have a maximum of 3 values.
-      isArray: false
+      isArray: true
       name: attachment_mime_types
       required: false
       secret: false
@@ -1652,7 +1652,7 @@ script:
         A comma-separated string of MIME types to create a search for excluding an email's attachment MIME type.
 
         Note: The search can only have a maximum of 3 values.
-      isArray: false
+      isArray: true
       name: attachment_exclude_mime_types
       required: false
       secret: false
@@ -1679,7 +1679,7 @@ script:
         that happens on the specified domains using the domain_match_criteria argument.
 
         Note: The search can only have a maximum of 3 values.
-      isArray: false
+      isArray: true
       name: domains
       required: false
       secret: false
@@ -1688,7 +1688,7 @@ script:
         A comma-separated string of URLs to be whitelisted.
 
         Note: The search can only have a maximum of 3 values.
-      isArray: false
+      isArray: true
       name: whitelist_urls
       required: false
       secret: false
@@ -1705,7 +1705,7 @@ script:
         using the command "cofense-searchable-headers-list".
 
         Note: The search can only have a maximum of 3 values.
-      isArray: false
+      isArray: true
       name: headers
       required: false
       secret: false
@@ -2420,7 +2420,7 @@ script:
     - contextPath: Cofense.Config.value
       description: List of headers that are available to create a message search.
       type: Unknown
-  dockerimage: demisto/python3:3.10.7.35188
+  dockerimage: demisto/python3:3.10.8.35482
   feed: false
   isfetch: false
   longRunning: false
