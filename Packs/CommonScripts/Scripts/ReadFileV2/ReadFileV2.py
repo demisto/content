@@ -51,7 +51,7 @@ def main():
                                       outputs={
                                           'Data': data,
                                           'EntryID': entry_id,
-                                          'Size': file_size,
+                                          'FileSize': file_size,
                                           'EOF': eof
                                       },
                                       readable_output=message))

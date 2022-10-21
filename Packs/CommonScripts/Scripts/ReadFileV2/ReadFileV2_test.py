@@ -22,7 +22,7 @@ def test_read_file_default(mocker):
     file_info = {
         'Data': 'abcabcabc',
         'EntryID': '1',
-        'Size': 9,
+        'FileSize': 9,
         'EOF': True
     }
 
@@ -65,7 +65,7 @@ def test_read_file_as_binary(mocker):
     file_info = {
         'Data': 'abcabcabc',
         'EntryID': '1',
-        'Size': 9,
+        'FileSize': 9,
         'EOF': True
     }
 
@@ -108,7 +108,7 @@ def test_read_file_incomplete(mocker):
     file_info = {
         'Data': 'abc',
         'EntryID': '1',
-        'Size': 9,
+        'FileSize': 9,
         'EOF': False
     }
 
@@ -150,7 +150,7 @@ def test_read_empty_file(mocker):
     file_info = {
         'Data': '',
         'EntryID': '1',
-        'Size': 0,
+        'FileSize': 0,
         'EOF': True
     }
 
@@ -194,7 +194,7 @@ def test_read_binary_to_base64(mocker):
     file_info = {
         'Data': 'ASNFZ4k=',
         'EntryID': '1',
-        'Size': 5,
+        'FileSize': 5,
         'EOF': True
     }
 
@@ -240,7 +240,7 @@ def test_read_utf8_to_json(mocker):
             'a': 'b'
         },
         'EntryID': '1',
-        'Size': 9,
+        'FileSize': 9,
         'EOF': True
     }
 
@@ -286,7 +286,7 @@ def test_read_utf16be_to_json(mocker):
             'a': 'b'
         },
         'EntryID': '1',
-        'Size': 22,
+        'FileSize': 22,
         'EOF': True
     }
 
@@ -332,7 +332,7 @@ def test_read_utf16le_to_json(mocker):
             'a': 'b'
         },
         'EntryID': '1',
-        'Size': 22,
+        'FileSize': 22,
         'EOF': True
     }
 

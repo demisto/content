@@ -39,7 +39,7 @@ outputs:
 - contextPath: ReadFile.EntryID
   description: File Entry ID
   type: string
-- contextPath: ReadFile.Size
+- contextPath: ReadFile.FileSize
   description: File Size
   type: number
 - contextPath: ReadFile.EOF
