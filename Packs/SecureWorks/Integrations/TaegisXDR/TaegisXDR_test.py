@@ -107,11 +107,19 @@ def test_fetch_alerts_by_id(requests_mock):
     """Tests taegis-fetch-alert command function
     """
     client = mock_client(requests_mock, FETCH_ALERTS_BY_ID_RESPONSE)
-    args = {
-        "ids": ["c4f33b53-eaba-47ac-8272-199af0f7935b"]
-    }
 
-    # Test with IDs set
+    # Test with IDs set (list)
+    args = {
+        "ids": ["alert://priv:crowdstrike:11772:1666247222095:4e41ec02-ca53-5ff7-95cc-eda434221ba6"]
+    }
+    response = fetch_alerts_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs[0] == TAEGIS_ALERT
+    assert len(response.outputs) == len([TAEGIS_ALERT])
+
+    # Test with IDs set (comma separated list)
+    args = {
+        "ids": "alert://priv:crowdstrike:11772:1666247222095:4e41ec02-ca53-5ff7-95cc-eda434221ba6"
+    }
     response = fetch_alerts_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
     assert response.outputs[0] == TAEGIS_ALERT
     assert len(response.outputs) == len([TAEGIS_ALERT])

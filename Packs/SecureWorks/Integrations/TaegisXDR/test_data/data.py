@@ -1,13 +1,13 @@
 TAEGIS_URL = "https://ctpx.secureworks.com"
 
 TAEGIS_ALERT = {
-    "id": "c4f33b53-eaba-47ac-8272-199af0f7935b",
+    "id": "alert://priv:crowdstrike:11772:1666247222095:4e41ec02-ca53-5ff7-95cc-eda434221ba6",
     "metadata": {
         "title": "Test Alert",
         "description": "This is a test alert",
         "severity": 0.5,
     },
-    "url": f"{TAEGIS_URL}/alerts/c4f33b53-eaba-47ac-8272-199af0f7935b",
+    "url": f"{TAEGIS_URL}/alerts/alert:%2F%2Fpriv:crowdstrike:11772:1666247222095:4e41ec02-ca53-5ff7-95cc-eda434221ba6",
 }
 
 TAEGIS_COMMENT = {

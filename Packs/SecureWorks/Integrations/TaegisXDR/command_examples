@@ -3,7 +3,7 @@
 !taegis-execute-playbook id=UGxheWJvb2tJbnN0YW5jZTphZDNmNzBlZi1mN2U0LTQ0OWYtODJiMi1hYWQwMjQzZTA2NTg= inputs=`{'myvar': 'myval'}`
 !taegis-fetch-alerts
 !taegis-fetch-alerts offset=5 limit=5 cql_query="from alert status='OPEN' and severity >= 0.6"
-!taegis-fetch-alerts ids=`["6594e97f-a898-5b28-82b2-ea03293cdaa1"]`
+!taegis-fetch-alerts ids="alert://priv:crowdstrike:11772:1666269058114:59284e28-4ec8-542b-a4a1-452c3688bc1a,alert://priv:crowdstrike:11772:1666269058114:59284e28-4ec8-542b-a4a1-452c3688b123"
 !taegis-fetch-comment id=ff9ca818-4749-4ccb-883a-2ccc6f6c9e0f
 !taegis-fetch-comments parent_id=c2e09554-833e-41a1-bc9d-8160aec0d70d
 !taegis-fetch-investigation

@@ -266,6 +266,7 @@ def fetch_alerts_command(client: Client, env: str, args=None):
         "cql_query": args.get("cql_query", "from alert severity >= 0.6 and status='OPEN'"),
         "limit": args.get("limit", 10),
         "offset": args.get("offset", 0),
+        "ids": args.get("ids", []),  # ["alerts://id1", "alerts://id2"]
     }
     fields: str = """
             status
@@ -323,18 +324,21 @@ def fetch_alerts_command(client: Client, env: str, args=None):
 
     if args.get("ids"):
         field = "alertsServiceRetrieveAlertsById"
-        ids = str(args["ids"]).replace("'", "\"")  # Graphql will not accept single quotes
         query = """
-        query alertsServiceRetrieveAlertsById {
+        query alertsServiceRetrieveAlertsById($ids: [String!]) {
             alertsServiceRetrieveAlertsById(
                 in: {
-                    iDs: %s
+                    iDs: $ids
                 }
             ) {
                 %s
             }
         }
-        """ % (ids, fields)
+        """ % (fields)
+
+        if type(variables["ids"]) == str:
+            variables["ids"] = variables["ids"].split(",")  # alerts://id1,alerts://id2
+        variables["ids"] = [x.strip() for x in variables["ids"]]  # Ensure no whitespace
     else:
         field = "alertsServiceSearch"
         query = """
