@@ -7,7 +7,6 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-import datetime
 from typing import Dict, Any
 
 # Disable insecure warnings
@@ -68,7 +67,7 @@ class Client(BaseClient):
 
         return response.json()
 
-    def test_module(self, ip: str) -> Dict:
+    def test_module(self, ip: str):
         return self._http_request(
             method="GET", url_suffix=f"/smoke/{ip}", resp_type="response"
         )
@@ -104,7 +103,7 @@ def format_readable(ip: str, data: dict, status: int) -> str:
             "CrowdSec Score": f'{data["scores"]["overall"]["total"]}/5',
             "Background Noise Score": f'{data["background_noise_score"]}/10',
             "CrowdSec Console Link": f"https://app.crowdsec.net/cti/{ip}",
-            "CrowdSec Taxonomy" : "https://docs.crowdsec.net/docs/next/cti_api/taxonomy"
+            "CrowdSec Taxonomy": "https://docs.crowdsec.net/docs/next/cti_api/taxonomy"
         }
     ]
     if status == Common.DBotScore.NONE:
@@ -220,13 +219,13 @@ def ip_command(
                     Common.Publications(
                         title="CrowdSec CTI",
                         source="CrowdSec",
-                        timestamp=datetime.datetime.now().strftime(DATE_FORMAT),
+                        timestamp=datetime.now().strftime(DATE_FORMAT),
                         link=f"https://app.crowdsec.net/cti/{ip}",
                     ),
                     Common.Publications(
                         title="CrowdSec CTI Taxonomy",
                         source="CrowdSec",
-                        timestamp=datetime.datetime.now().strftime(DATE_FORMAT),
+                        timestamp=datetime.now().strftime(DATE_FORMAT),
                         link="https://docs.crowdsec.net/docs/next/cti_api/taxonomy",
                     )
                 ],
