@@ -34,6 +34,7 @@ TABLE_HEADERS = [
     "CrowdSec Score",
     "Background Noise Score",
     "CrowdSec Console Link",
+    "CrowdSec Taxonomy"
 ]
 
 CROWDSEC_CTI_API_URL = "https://cti.api.crowdsec.net/v2/"
@@ -46,7 +47,7 @@ class Client(BaseClient):
     Client class to interact with the service API
     """
 
-    def get_ip_information(self, ip: str) -> Dict[str, str]:
+    def get_ip_information(self, ip: str) -> Dict:
         """
         Returns a simple python dict with the enriched information
         about the provided IP.
@@ -76,7 +77,7 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def format_readable(ip: str, data: dict, status: str) -> dict:
+def format_readable(ip: str, data: dict, status: int) -> str:
     behaviors_readable = ""
     for behavior in data.get("behaviors", list()):
         behaviors_readable += behavior["label"] + "\n"
@@ -103,6 +104,7 @@ def format_readable(ip: str, data: dict, status: str) -> dict:
             "CrowdSec Score": f'{data["scores"]["overall"]["total"]}/5',
             "Background Noise Score": f'{data["background_noise_score"]}/10',
             "CrowdSec Console Link": f"https://app.crowdsec.net/cti/{ip}",
+            "CrowdSec Taxonomy" : "https://docs.crowdsec.net/docs/next/cti_api/taxonomy"
         }
     ]
     if status == Common.DBotScore.NONE:
@@ -158,7 +160,7 @@ def test_module(client: Client) -> str:
 
 def ip_command(
     client: Client, reliability: str, args: Dict[str, Any]
-) -> CommandResults:
+) -> List[CommandResults]:
 
     ips = argToList(args.get('ip'))
     if not ips or len(ips) == 0:
@@ -220,6 +222,12 @@ def ip_command(
                         source="CrowdSec",
                         timestamp=datetime.datetime.now().strftime(DATE_FORMAT),
                         link=f"https://app.crowdsec.net/cti/{ip}",
+                    ),
+                    Common.Publications(
+                        title="CrowdSec CTI Taxonomy",
+                        source="CrowdSec",
+                        timestamp=datetime.datetime.now().strftime(DATE_FORMAT),
+                        link="https://docs.crowdsec.net/docs/next/cti_api/taxonomy",
                     )
                 ],
             )

@@ -17,6 +17,7 @@ client = Client(
 )
 RELIABILITY = "B - Usually reliable"
 
+
 def util_load_json(path):
     with io.open(path, mode="r", encoding="utf-8") as f:
         return json.loads(f.read())
@@ -29,7 +30,8 @@ def test_ip_command(mocker):
     test_data = util_load_json("test_data/test_ip_command.json")
 
     mocker.patch(
-        "CrowdSec.Client.get_ip_information", return_value=test_data.get("crowdsec_result")
+        "CrowdSec.Client.get_ip_information",
+        return_value=test_data.get("crowdsec_result"),
     )
 
     response = ip_command(client, RELIABILITY, args)
@@ -49,10 +51,9 @@ def test_ip_command(mocker):
 def test_ip_command_no_ip(mocker):
     from CrowdSec import ip_command
 
-    args = {}
     expected_error = "'ip' argument not specified"
     with pytest.raises(ValueError, match=expected_error):
-        ip_command(client, RELIABILITY, args)
+        ip_command(client, RELIABILITY, {})
 
 
 def test_ip_command_invalid_ip(mocker):
@@ -67,19 +68,17 @@ def test_ip_command_invalid_ip(mocker):
 def test_rate_limit(mocker):
     from CrowdSec import ip_command
 
-    args = {
-        "ip" : "1.2.3.4"
-    }
+    args = {"ip": "1.2.3.4"}
     mock_response = MagicMock()
     mock_response.status_code = 429
     mock_response.json.return_value = {
-        'message': "Rate limited",
-    }    
-    mocker.patch(
-        "CrowdSec.Client._http_request", return_value=mock_response
-    )
+        "message": "Rate limited",
+    }
+    mocker.patch("CrowdSec.Client._http_request", return_value=mock_response)
 
-    expected_error = "You have been rate limited by CrowdSec CTI API. Please upgrade to Pro or wait."
+    expected_error = (
+        "You have been rate limited by CrowdSec CTI API. Please upgrade to Pro or wait."
+    )
     with pytest.raises(Exception, match=expected_error):
         ip_command(client, RELIABILITY, args)
 
@@ -89,13 +88,8 @@ def test_test_module(mocker):
 
     mock_response = MagicMock()
     mock_response.status_code = 200
-    mock_response.json.return_value = {
-        "ip": "1.1.1.1",
-        "ip_range" : "1.1.1.0/24"
-    }    
-    mocker.patch(
-        "CrowdSec.Client.test_module", return_value=mock_response
-    )
+    mock_response.json.return_value = {"ip": "1.1.1.1", "ip_range": "1.1.1.0/24"}
+    mocker.patch("CrowdSec.Client.test_module", return_value=mock_response)
 
     resp = test_module(client)
 
@@ -107,12 +101,8 @@ def test_test_module_bad_apikey(mocker):
 
     mock_response = MagicMock()
     mock_response.status_code = 403
-    mock_response.json.return_value = {
-        "message": "Forbidden"
-    }    
-    mocker.patch(
-        "CrowdSec.Client.test_module", return_value=mock_response
-    )
+    mock_response.json.return_value = {"message": "Forbidden"}
+    mocker.patch("CrowdSec.Client.test_module", return_value=mock_response)
 
     resp = test_module(client)
 
