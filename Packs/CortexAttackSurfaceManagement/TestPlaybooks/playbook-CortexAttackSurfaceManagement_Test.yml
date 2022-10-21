@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f15f2ca0-e822-4207-8c2d-84a2861e2e07
+    taskid: 3bda6329-4551-4ab0-8a57-a4fda148ceac
     type: start
     task:
-      id: f15f2ca0-e822-4207-8c2d-84a2861e2e07
+      id: 3bda6329-4551-4ab0-8a57-a4fda148ceac
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 7d10ff06-878b-4ba9-8aa2-37ad13629101
+    taskid: 9a79ff43-d949-4a56-8553-f196e1767363
     type: regular
     task:
-      id: 7d10ff06-878b-4ba9-8aa2-37ad13629101
+      id: 9a79ff43-d949-4a56-8553-f196e1767363
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -69,10 +69,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: f1307474-3248-4246-8468-05cdea25705e
+    taskid: 5b3f3479-2039-48c0-89be-fe48310c1c9c
     type: regular
     task:
-      id: f1307474-3248-4246-8468-05cdea25705e
+      id: 5b3f3479-2039-48c0-89be-fe48310c1c9c
       version: -1
       name: asm-list-external-service
       script: Cortex Attack Surface Management|||asm-list-external-service
@@ -100,10 +100,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 0556fc41-6a06-48b5-8592-10c29430eabd
+    taskid: 6050cd9b-4c4a-4552-83ed-b71f00bed7df
     type: condition
     task:
-      id: 0556fc41-6a06-48b5-8592-10c29430eabd
+      id: 6050cd9b-4c4a-4552-83ed-b71f00bed7df
       version: -1
       name: Verify Outputs
       type: condition
@@ -203,10 +203,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 195d6c10-159a-4a0d-8dbc-d7312c722a18
+    taskid: 8af3914c-9aa7-4dab-877b-ddd7269fe02d
     type: regular
     task:
-      id: 195d6c10-159a-4a0d-8dbc-d7312c722a18
+      id: 8af3914c-9aa7-4dab-877b-ddd7269fe02d
       version: -1
       name: asm-get-external-service
       script: Cortex Attack Surface Management|||asm-get-external-service
@@ -237,10 +237,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 7eae2dca-8882-4cd4-87f0-d8a9b9913c60
+    taskid: 48c85ab7-82c2-4cd9-8606-15bda686002d
     type: condition
     task:
-      id: 7eae2dca-8882-4cd4-87f0-d8a9b9913c60
+      id: 48c85ab7-82c2-4cd9-8606-15bda686002d
       version: -1
       name: Verify Outputs
       type: condition
@@ -277,10 +277,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 5ae254da-ff48-407f-8dfd-c9dfdc0f2c57
+    taskid: 012d1b96-e5a4-4f2b-8a43-1a4d2c7e59c4
     type: regular
     task:
-      id: 5ae254da-ff48-407f-8dfd-c9dfdc0f2c57
+      id: 012d1b96-e5a4-4f2b-8a43-1a4d2c7e59c4
       version: -1
       name: asm-list-external-ip-address-range
       script: Cortex Attack Surface Management|||asm-list-external-ip-address-range
@@ -308,10 +308,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 26646ab3-e2be-4dec-8ea6-5d91320d8d92
+    taskid: 28f41a87-92c1-40f4-86e5-f7d920fdbe95
     type: condition
     task:
-      id: 26646ab3-e2be-4dec-8ea6-5d91320d8d92
+      id: 28f41a87-92c1-40f4-86e5-f7d920fdbe95
       version: -1
       name: Verify Outputs
       type: condition
@@ -381,22 +381,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: ac835050-d067-4aeb-8f66-9fcb9fbc800f
+    taskid: 14b82f70-0430-4cdc-8cc8-8128d67f2827
     type: regular
     task:
-      id: ac835050-d067-4aeb-8f66-9fcb9fbc800f
+      id: 14b82f70-0430-4cdc-8cc8-8128d67f2827
       version: -1
       name: asm-get-external-ip-address-range
       script: Cortex Attack Surface Management|||asm-get-external-ip-address-range
       type: regular
       iscommand: true
-      brand: ""
+      brand: Cortex Attack Surface Management
     nexttasks:
       '#none#':
       - "9"
     scriptarguments:
       range_id:
-        simple: 1093124c-ce26-33ba-8fb8-937fecb4c7b6
+        simple: 4da29b7f-3086-3b52-981b-aa8ee5da1e60
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -415,10 +415,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: d4bba88b-3468-4207-8c69-76f2be378481
+    taskid: 7445f71c-715b-45bc-8d95-f0dc05663162
     type: condition
     task:
-      id: d4bba88b-3468-4207-8c69-76f2be378481
+      id: 7445f71c-715b-45bc-8d95-f0dc05663162
       version: -1
       name: Verify Outputs
       type: condition
@@ -493,10 +493,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 21288f85-551e-4b2c-8829-ef5de5e69558
+    taskid: 8d07cf51-ecc3-4906-861d-66ecf380c010
     type: regular
     task:
-      id: 21288f85-551e-4b2c-8829-ef5de5e69558
+      id: 8d07cf51-ecc3-4906-861d-66ecf380c010
       version: -1
       name: asm-list-asset-internet-exposure
       script: Cortex Attack Surface Management|||asm-list-asset-internet-exposure
@@ -524,10 +524,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 77f8818c-04e9-4e5e-89a9-c953e3d88a07
+    taskid: 0fde5143-663e-481d-82c4-d49e231e5935
     type: condition
     task:
-      id: 77f8818c-04e9-4e5e-89a9-c953e3d88a07
+      id: 0fde5143-663e-481d-82c4-d49e231e5935
       version: -1
       name: Verify Outputs
       type: condition
@@ -562,22 +562,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: ac59e488-6ff6-4a00-812e-6eb8d0231d60
+    taskid: 6d706f2c-ef65-437a-8aaa-03f7161a92e7
     type: regular
     task:
-      id: ac59e488-6ff6-4a00-812e-6eb8d0231d60
+      id: 6d706f2c-ef65-437a-8aaa-03f7161a92e7
       version: -1
       name: asm-get-asset-internet-exposure
       script: Cortex Attack Surface Management|||asm-get-asset-internet-exposure
       type: regular
       iscommand: true
-      brand: ""
+      brand: Cortex Attack Surface Management
     nexttasks:
       '#none#':
       - "13"
     scriptarguments:
       asm_id:
-        simple: e06f15ce-9ab1-3460-8a31-000ac6d2d37e
+        simple: 3c176460-8735-333c-b618-8262e2fb660c
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -596,10 +596,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: edeb5e9d-4e5f-4cb0-88c7-bd1f9d0cacc5
+    taskid: 3d8f5d79-4a6e-483c-8377-c58c6d8b1c6b
     type: condition
     task:
-      id: edeb5e9d-4e5f-4cb0-88c7-bd1f9d0cacc5
+      id: 3d8f5d79-4a6e-483c-8377-c58c6d8b1c6b
       version: -1
       name: Verify Outputs
       type: condition
@@ -636,10 +636,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 481985bd-ea6a-4087-82ad-afe2e3999672
+    taskid: e57e2fc0-e300-4d58-870b-ec4d7de4ea69
     type: title
     task:
-      id: 481985bd-ea6a-4087-82ad-afe2e3999672
+      id: e57e2fc0-e300-4d58-870b-ec4d7de4ea69
       version: -1
       name: Test Done
       type: title
@@ -664,10 +664,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 00ee6d8f-c3c1-42fd-8eeb-287a752692de
+    taskid: 927246df-14c2-4875-8231-7f2900b3afe8
     type: regular
     task:
-      id: 00ee6d8f-c3c1-42fd-8eeb-287a752692de
+      id: 927246df-14c2-4875-8231-7f2900b3afe8
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -698,10 +698,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 0a6b1ab8-d0c2-449a-882a-d3d01e03c38f
+    taskid: 13fd1729-43bd-4c36-8eea-332ec1627a72
     type: regular
     task:
-      id: 0a6b1ab8-d0c2-449a-882a-d3d01e03c38f
+      id: 13fd1729-43bd-4c36-8eea-332ec1627a72
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -732,10 +732,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 44fc7793-f33e-419e-8658-84b377d3b1b8
+    taskid: c2a17860-493e-40a1-8430-9781fa160bee
     type: regular
     task:
-      id: 44fc7793-f33e-419e-8658-84b377d3b1b8
+      id: c2a17860-493e-40a1-8430-9781fa160bee
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -766,10 +766,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 69182862-01d0-406c-8e1f-4b49ba7e441b
+    taskid: 5ed0a658-1647-4c8b-8bdb-1a902eba648a
     type: regular
     task:
-      id: 69182862-01d0-406c-8e1f-4b49ba7e441b
+      id: 5ed0a658-1647-4c8b-8bdb-1a902eba648a
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -800,10 +800,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 668a6736-114c-46a3-8f53-e9e94591cfeb
+    taskid: 1b97a566-b545-44d9-821d-a130c991a1dc
     type: regular
     task:
-      id: 668a6736-114c-46a3-8f53-e9e94591cfeb
+      id: 1b97a566-b545-44d9-821d-a130c991a1dc
       version: -1
       name: DeleteContext
       script: DeleteContext
