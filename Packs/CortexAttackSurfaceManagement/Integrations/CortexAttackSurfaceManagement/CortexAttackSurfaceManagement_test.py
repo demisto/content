@@ -3,18 +3,18 @@ Tests module for Cortex Attack Surface Management integration.
 """
 
 
-def test_get_external_services_command(requests_mock):
-    """Tests get_external_services_command command function.
+def test_list_external_service_command(requests_mock):
+    """Tests list_external_service_command command function.
 
         Given:
-            - requests_mock instance to generate the appropriate get_external_services_command API response,
+            - requests_mock instance to generate the appropriate list_external_service_command API response,
               loaded from a local JSON file.
         When:
-            - Running the 'get_external_services_command'.
+            - Running the 'list_external_service_command'.
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from CortexAttackSurfaceManagement import Client, get_external_services_command
+    from CortexAttackSurfaceManagement import Client, list_external_service_command
 
     from test_data.raw_response import EXTERNAL_SERVICES_RESPONSE
     from test_data.expected_results import EXTERNAL_SERVICES_RESULTS
@@ -36,10 +36,10 @@ def test_get_external_services_command(requests_mock):
         'domain': 'testdomain.com',
     }
 
-    response = get_external_services_command(client, args)
+    response = list_external_service_command(client, args)
 
     assert response.outputs == EXTERNAL_SERVICES_RESULTS
-    assert response.outputs_prefix == 'ASM.GetExternalServices'
+    assert response.outputs_prefix == 'ASM.ExternalService'
     assert response.outputs_key_field == 'service_id'
 
 
@@ -79,22 +79,22 @@ def test_get_external_service_command(requests_mock):
     response = get_external_service_command(client, args)
 
     assert response.outputs == EXTERNAL_SERVICE_RESULTS
-    assert response.outputs_prefix == 'ASM.GetExternalService'
+    assert response.outputs_prefix == 'ASM.ExternalService'
     assert response.outputs_key_field == 'service_id'
 
 
-def test_get_external_ip_address_ranges_command(requests_mock):
-    """Tests get_external_ip_address_ranges_command function.
+def test_list_external_ip_address_range_command(requests_mock):
+    """Tests list_external_ip_address_range_command function.
 
         Given:
-            - requests_mock instance to generate the appropriate get_external_ip_address_ranges_command( API response,
+            - requests_mock instance to generate the appropriate list_external_ip_address_range_command( API response,
               loaded from a local JSON file.
         When:
-            - Running the 'get_external_ip_address_ranges_command'.
+            - Running the 'list_external_ip_address_range_command'.
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from CortexAttackSurfaceManagement import Client, get_external_ip_address_ranges_command
+    from CortexAttackSurfaceManagement import Client, list_external_ip_address_range_command
 
     from test_data.raw_response import EXTERNAL_RANGES_RESPONSE
     from test_data.expected_results import EXTERNAL_RANGES_RESULTS
@@ -113,10 +113,10 @@ def test_get_external_ip_address_ranges_command(requests_mock):
         auth=None)
     args = {}
 
-    response = get_external_ip_address_ranges_command(client, args)
+    response = list_external_ip_address_range_command(client, args)
 
     assert response.outputs == EXTERNAL_RANGES_RESULTS
-    assert response.outputs_prefix == 'ASM.GetExternalIpAddressRanges'
+    assert response.outputs_prefix == 'ASM.ExternalIpAddressRange'
     assert response.outputs_key_field == 'range_id'
 
 
@@ -155,22 +155,22 @@ def test_get_external_ip_address_range_command(requests_mock):
     response = get_external_ip_address_range_command(client, args)
 
     assert response.outputs == EXTERNAL_RANGE_RESULTS
-    assert response.outputs_prefix == 'ASM.GetExternalIpAddressRange'
+    assert response.outputs_prefix == 'ASM.ExternalIpAddressRange'
     assert response.outputs_key_field == 'range_id'
 
 
-def test_get_assets_internet_exposure_command(requests_mock):
-    """Tests get_assets_internet_exposure_command function.
+def test_list_asset_internet_exposure_command(requests_mock):
+    """Tests list_asset_internet_exposure_command function.
 
         Given:
-            - requests_mock instance to generate the appropriate get_assets_internet_exposure_command( API response,
+            - requests_mock instance to generate the appropriate list_asset_internet_exposure_command( API response,
               loaded from a local JSON file.
         When:
-            - Running the 'get_assets_internet_exposure_command'.
+            - Running the 'list_asset_internet_exposure_command'.
         Then:
             - Checks the output of the command function with the expected output.
     """
-    from CortexAttackSurfaceManagement import Client, get_assets_internet_exposure_command
+    from CortexAttackSurfaceManagement import Client, list_asset_internet_exposure_command
 
     from test_data.raw_response import EXTERNAL_EXPOSURES_RESPONSE
     from test_data.expected_results import EXTERNAL_EXPOSURES_RESULTS
@@ -191,10 +191,10 @@ def test_get_assets_internet_exposure_command(requests_mock):
         'name': 'testdomain.com'
     }
 
-    response = get_assets_internet_exposure_command(client, args)
+    response = list_asset_internet_exposure_command(client, args)
 
     assert response.outputs == EXTERNAL_EXPOSURES_RESULTS
-    assert response.outputs_prefix == 'ASM.GetAssetsInternetExposure'
+    assert response.outputs_prefix == 'ASM.AssetInternetExposure'
     assert response.outputs_key_field == 'asm_ids'
 
 
@@ -233,5 +233,5 @@ def test_get_asset_internet_exposure_command(requests_mock):
     response = get_asset_internet_exposure_command(client, args)
 
     assert response.outputs == EXTERNAL_EXPOSURE_RESULTS
-    assert response.outputs_prefix == 'ASM.GetAssetInternetExposure'
+    assert response.outputs_prefix == 'ASM.AssetInternetExposure'
     assert response.outputs_key_field == 'asm_ids'

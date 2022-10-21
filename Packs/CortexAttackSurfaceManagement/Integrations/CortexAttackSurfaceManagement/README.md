@@ -17,14 +17,14 @@ This integration was integrated and tested with version 1.2.0 of Cortex Attack S
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### asm-get-external-services
+### asm-list-external-service
 ***
 Get a list of all your external services filtered by business units, externally detected providers, domain, externally inferred CVEs, active classifications, inactive classifications, service name, service type, protocol, IP address, is active, and discovery type. Maximum result limit is 100 assets.
 
 
 #### Base Command
 
-`asm-get-external-services`
+`asm-list-external-service`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -39,28 +39,28 @@ Get a list of all your external services filtered by business units, externally 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.GetExternalServices.service_id | String | External service UUID. | 
-| ASM.GetExternalServices.service_name | String | Name of the external service. | 
-| ASM.GetExternalServices.service_type | String | Type of the external service. | 
-| ASM.GetExternalServices.ip_address | String | IP address of the external service. | 
-| ASM.GetExternalServices.externally_detected_providers | String | Providers of the external service. | 
-| ASM.GetExternalServices.is_active | String | Whether the external service is active. | 
-| ASM.GetExternalServices.first_observed | Date | Date of the first observation of the external service. | 
-| ASM.GetExternalServices.last_observed | Date | Date of the last observation of the external service. | 
-| ASM.GetExternalServices.port | Number | Port number of the external service. | 
-| ASM.GetExternalServices.protocol | String | Protocol number of the external service. | 
-| ASM.GetExternalServices.inactive_classifications | String | External service classifications that are no longer active. | 
-| ASM.GetExternalServices.discovery_type | String | How the external service was discovered. | 
-| ASM.GetExternalServices.business_units | String | External service associated business units. | 
-| ASM.GetExternalServices.externally_inferred_vulnerability_score | Unknown | External service vulnerability score. | 
+| ASM.ExternalService.service_id | String | External service UUID. | 
+| ASM.ExternalService.service_name | String | Name of the external service. | 
+| ASM.ExternalService.service_type | String | Type of the external service. | 
+| ASM.ExternalService.ip_address | String | IP address of the external service. | 
+| ASM.ExternalService.externally_detected_providers | String | Providers of the external service. | 
+| ASM.ExternalService.is_active | String | Whether the external service is active. | 
+| ASM.ExternalService.first_observed | Date | Date of the first observation of the external service. | 
+| ASM.ExternalService.last_observed | Date | Date of the last observation of the external service. | 
+| ASM.ExternalService.port | Number | Port number of the external service. | 
+| ASM.ExternalService.protocol | String | Protocol number of the external service. | 
+| ASM.ExternalService.inactive_classifications | String | External service classifications that are no longer active. | 
+| ASM.ExternalService.discovery_type | String | How the external service was discovered. | 
+| ASM.ExternalService.business_units | String | External service associated business units. | 
+| ASM.ExternalService.externally_inferred_vulnerability_score | Unknown | External service vulnerability score. | 
 
 #### Command example
-```!asm-get-external-services domain=acme.com is_active=yes discovery_type=directly_discovery```
+```!asm-list-external-service domain=acme.com is_active=yes discovery_type=directly_discovery```
 #### Context Example
 ```json
 {
     "ASM": {
-        "GetExternalServices": [
+        "ExternalService": [
             {
                 "active_classifications": [
                     "HttpServer",
@@ -202,21 +202,21 @@ Get service details according to the service ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.GetExternalService.service_id | String | External service UUID. | 
-| ASM.GetExternalService.service_name | String | Name of the external service. | 
-| ASM.GetExternalService.service_type | String | Type of the external service. | 
-| ASM.GetExternalService.ip_address | String | IP address of the external service. | 
-| ASM.GetExternalService.externally_detected_providers | String | Providers of the external service. | 
-| ASM.GetExternalService.is_active | String | Whether the external service is active. | 
-| ASM.GetExternalService.first_observed | Date | Date of the first observation of the external service. | 
-| ASM.GetExternalService.last_observed | Date | Date of the last observation of the external service. | 
-| ASM.GetExternalService.port | Number | Port number of the external service. | 
-| ASM.GetExternalService.protocol | String | Protocol of the external service. | 
-| ASM.GetExternalService.inactive_classifications | String | External service classifications that are no longer active. | 
-| ASM.GetExternalService.discovery_type | String | How the external service was discovered. | 
-| ASM.GetExternalService.business_units | String | External service associated business units. | 
-| ASM.GetExternalService.externally_inferred_vulnerability_score | Unknown | External service vulnerability score. | 
-| ASM.GetExternalService.details | String | Additional details. | 
+| ASM.ExternalService.service_id | String | External service UUID. | 
+| ASM.ExternalService.service_name | String | Name of the external service. | 
+| ASM.ExternalService.service_type | String | Type of the external service. | 
+| ASM.ExternalService.ip_address | String | IP address of the external service. | 
+| ASM.ExternalService.externally_detected_providers | String | Providers of the external service. | 
+| ASM.ExternalService.is_active | String | Whether the external service is active. | 
+| ASM.ExternalService.first_observed | Date | Date of the first observation of the external service. | 
+| ASM.ExternalService.last_observed | Date | Date of the last observation of the external service. | 
+| ASM.ExternalService.port | Number | Port number of the external service. | 
+| ASM.ExternalService.protocol | String | Protocol of the external service. | 
+| ASM.ExternalService.inactive_classifications | String | External service classifications that are no longer active. | 
+| ASM.ExternalService.discovery_type | String | How the external service was discovered. | 
+| ASM.ExternalService.business_units | String | External service associated business units. | 
+| ASM.ExternalService.externally_inferred_vulnerability_score | Unknown | External service vulnerability score. | 
+| ASM.ExternalService.details | String | Additional details. | 
 
 #### Command example
 ```!asm-get-external-service service_id=94232f8a-f001-3292-aa65-63fa9d981427```
@@ -224,7 +224,7 @@ Get service details according to the service ID.
 ```json
 {
     "ASM": {
-        "GetExternalService": {
+        "ExternalService": {
             "active_classifications": [
                 "SSHWeakMACAlgorithmsEnabled",
                 "SshServer",
@@ -568,14 +568,14 @@ Get service details according to the service ID.
 >| SSHWeakMACAlgorithmsEnabled,<br/>SshServer,<br/>OpenSSH | Acme | serviceKey: 1.1.1.1:22<br/>serviceKeyType: IP<br/>businessUnits: {'name': 'Acme'}<br/>providerDetails: {'name': 'AWS', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000}<br/>certificates: <br/>domains: <br/>ips: {'ip': 873887795, 'protocol': 'TCP', 'provider': 'AWS', 'geolocation': {'latitude': 39.0438, 'longitude': -77.4879, 'countryCode': 'US', 'city': 'ASHBURN', 'regionCode': 'VA', 'timeZone': None}, 'activityStatus': 'Active', 'lastObserved': 1663026500000, 'firstObserved': 1662774169000}<br/>classifications: {'name': 'SshServer', 'activityStatus': 'Active', 'values': [{'jsonValue': '{"version":"2.0","serverVersion":"OpenSSH_7.6p1","extraInfo":"Ubuntu-4ubuntu0.7"}', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000}], 'firstObserved': 1662774120000, 'lastObserved': 1663026480000},<br/>{'name': 'SSHWeakMACAlgorithmsEnabled', 'activityStatus': 'Active', 'values': [{'jsonValue': '{}', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000}], 'firstObserved': 1662774120000, 'lastObserved': 1663026480000},<br/>{'name': 'OpenSSH', 'activityStatus': 'Active', 'values': [{'jsonValue': '{"version":"7.6"}', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000}], 'firstObserved': 1662774120000, 'lastObserved': 1663026480000}<br/>tlsVersions: <br/>inferredCvesObserved: {'inferredCve': {'cveId': 'CVE-2020-15778', 'cvssScoreV2': 6.8, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 7.8, 'cveSeverityV3': 'HIGH', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2021-41617', 'cvssScoreV2': 4.4, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 7.0, 'cveSeverityV3': 'HIGH', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2019-6110', 'cvssScoreV2': 4.0, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 6.8, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2019-6109', 'cvssScoreV2': 4.0, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 6.8, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2020-14145', 'cvssScoreV2': 4.3, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 5.9, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2019-6111', 'cvssScoreV2': 5.8, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 5.9, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2018-20685', 'cvssScoreV2': 2.6, 'cveSeverityV2': 'LOW', 'cvssScoreV3': 5.3, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2018-15919', 'cvssScoreV2': 5.0, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 5.3, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2016-20012', 'cvssScoreV2': 4.3, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 5.3, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2018-15473', 'cvssScoreV2': 5.0, 'cveSeverityV2': 'MEDIUM', 'cvssScoreV3': 5.3, 'cveSeverityV3': 'MEDIUM', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000},<br/>{'inferredCve': {'cveId': 'CVE-2021-36368', 'cvssScoreV2': 2.6, 'cveSeverityV2': 'LOW', 'cvssScoreV3': 3.7, 'cveSeverityV3': 'LOW', 'inferredCveMatchMetadata': {'inferredCveMatchType': 'ExactVersionMatch', 'product': 'openssh', 'confidence': 'High', 'vendor': 'openbsd', 'version': '7.6'}}, 'activityStatus': 'Active', 'firstObserved': 1662774169000, 'lastObserved': 1663026500000}<br/>enrichedObservationSource: CLOUD<br/>ip_ranges: {} | ColocatedOnIp | Amazon Web Services | CVE-2020-15778,<br/>CVE-2021-41617,<br/>CVE-2019-6110,<br/>CVE-2019-6109,<br/>CVE-2020-14145,<br/>CVE-2019-6111,<br/>CVE-2018-20685,<br/>CVE-2018-15919,<br/>CVE-2016-20012,<br/>CVE-2018-15473,<br/>CVE-2021-36368 | 7.8 | 1662774120000 | 1.1.1.1 | Active | 1663026480000 | 22 | TCP | 94232f8a-f001-3292-aa65-63fa9d981427 | SSH Server at 1.1.1.1:22 | SshServer |
 
 
-### asm-get-external-ip-address-ranges
+### asm-list-external-ip-address-range
 ***
 Get a list of all your internet exposure filtered by business units and organization handles. Maximum result limit is 100 ranges.
 
 
 #### Base Command
 
-`asm-get-external-ip-address-ranges`
+`asm-list-external-ip-address-range`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -586,22 +586,22 @@ Get a list of all your internet exposure filtered by business units and organiza
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.GetExternalIpAddressRanges.range_id | String | External IP address range UUID. | 
-| ASM.GetExternalIpAddressRanges.first_ip | String | First IP address of the external IP address range. | 
-| ASM.GetExternalIpAddressRanges.last_ip | String | Last IP address of the external IP address range. | 
-| ASM.GetExternalIpAddressRanges.ips_count | Number | Number of IP addresses of the external IP address range. | 
-| ASM.GetExternalIpAddressRanges.active_responsive_ips_count | Number | The number of IPs in the external address range that are actively responsive. | 
-| ASM.GetExternalIpAddressRanges.date_added | Date | Date the external IP address range was added. | 
-| ASM.GetExternalIpAddressRanges.business_units | String | External IP address range associated business units. | 
-| ASM.GetExternalIpAddressRanges.organization_handles | String | External IP address range associated organization handles. | 
+| ASM.ExternalIpAddressRange.range_id | String | External IP address range UUID. | 
+| ASM.ExternalIpAddressRange.first_ip | String | First IP address of the external IP address range. | 
+| ASM.ExternalIpAddressRange.last_ip | String | Last IP address of the external IP address range. | 
+| ASM.ExternalIpAddressRange.ips_count | Number | Number of IP addresses of the external IP address range. | 
+| ASM.ExternalIpAddressRange.active_responsive_ips_count | Number | The number of IPs in the external address range that are actively responsive. | 
+| ASM.ExternalIpAddressRange.date_added | Date | Date the external IP address range was added. | 
+| ASM.ExternalIpAddressRange.business_units | String | External IP address range associated business units. | 
+| ASM.ExternalIpAddressRange.organization_handles | String | External IP address range associated organization handles. | 
 
 #### Command example
-```!asm-get-external-ip-address-ranges```
+```!asm-list-external-ip-address-range```
 #### Context Example
 ```json
 {
     "ASM": {
-        "GetExternalIpAddressRanges": [
+        "ExternalIpAddressRange": [
             {
                 "active_responsive_ips_count": 0,
                 "business_units": [
@@ -668,15 +668,15 @@ Get external IP address range details according to the range IDs.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.GetExternalIpAddressRange.range_id | String | External IP address range UUID. | 
-| ASM.GetExternalIpAddressRange.first_ip | String | First IP address of the external IP address range. | 
-| ASM.GetExternalIpAddressRange.last_ip | String | Last IP address of the external IP address range. | 
-| ASM.GetExternalIpAddressRange.ips_count | Number | Number of IP addresses of the external IP address range. | 
-| ASM.GetExternalIpAddressRange.active_responsive_ips_count | Number | The number of IPs in the external address range that are actively responsive. | 
-| ASM.GetExternalIpAddressRange.date_added | Date | Date the external IP address range was added. | 
-| ASM.GetExternalIpAddressRange.business_units | String | External IP address range associated business units. | 
-| ASM.GetExternalIpAddressRange.organization_handles | String | External IP address range associated organization handles. | 
-| ASM.GetExternalIpAddressRange.details | String | Additional information. | 
+| ASM.ExternalIpAddressRange.range_id | String | External IP address range UUID. | 
+| ASM.ExternalIpAddressRange.first_ip | String | First IP address of the external IP address range. | 
+| ASM.ExternalIpAddressRange.last_ip | String | Last IP address of the external IP address range. | 
+| ASM.ExternalIpAddressRange.ips_count | Number | Number of IP addresses of the external IP address range. | 
+| ASM.ExternalIpAddressRange.active_responsive_ips_count | Number | The number of IPs in the external address range that are actively responsive. | 
+| ASM.ExternalIpAddressRange.date_added | Date | Date the external IP address range was added. | 
+| ASM.ExternalIpAddressRange.business_units | String | External IP address range associated business units. | 
+| ASM.ExternalIpAddressRange.organization_handles | String | External IP address range associated organization handles. | 
+| ASM.ExternalIpAddressRange.details | String | Additional information. | 
 
 #### Command example
 ```!asm-get-external-ip-address-range range_id=4da29b7f-3086-3b52-981b-aa8ee5da1e60```
@@ -684,7 +684,7 @@ Get external IP address range details according to the range IDs.
 ```json
 {
     "ASM": {
-        "GetExternalIpAddressRange": {
+        "ExternalIpAddressRange": {
             "active_responsive_ips_count": 0,
             "business_units": [
                 "VanDelay Industries"
@@ -775,14 +775,14 @@ Get external IP address range details according to the range IDs.
 >| 0 | VanDelay Industries | 1663031000145 | networkRecords: {'handle': '1.1.1.1 - 1.1.1.1', 'firstIp': '1.1.1.1', 'lastIp': '1.1.1.1', 'name': 'SEARS-HK', 'whoIsServer': 'whois.apnic.net', 'lastChanged': 1663030241931, 'organizationRecords': [{'handle': 'MAINT-HK-PCCW-BIA-CS', 'dateAdded': 1663029346957, 'address': '', 'email': 'noc@acme.com', 'phone': '', 'org': '', 'formattedName': '', 'kind': 'group', 'roles': ['registrant'], 'lastChanged': None, 'firstRegistered': None, 'remarks': ''}, {'handle': 'BNA2-AP', 'dateAdded': 1663029346957, 'address': "27/F, PCCW Tower, Taikoo Place,\n979 King's Road, Quarry Bay, HK          ", 'email': 'cs@acme.com', 'phone': '+852-2888-6932', 'org': '', 'formattedName': 'BIZ NETVIGATOR ADMINISTRATORS', 'kind': 'group', 'roles': ['administrative'], 'lastChanged': 1514892767000, 'firstRegistered': 1220514857000, 'remarks': ''}, {'handle': 'TA66-AP', 'dateAdded': 1663029346957, 'address': 'HKT Limited\nPO Box 9896 GPO          ', 'email': 'noc@acme.com', 'phone': '+852-2883-5151', 'org': '', 'formattedName': 'TECHNICAL ADMINISTRATORS', 'kind': 'group', 'roles': ['technical'], 'lastChanged': 1468555410000, 'firstRegistered': 1220514856000, 'remarks': ''}], 'remarks': 'Sears Holdings Global Sourcing Ltd'} | 1.1.1.1 | 64 | 1.1.1.1 | MAINT-HK-PCCW-BIA-CS,<br/>BNA2-AP,<br/>TA66-AP | 4da29b7f-3086-3b52-981b-aa8ee5da1e60 |
 
 
-### asm-get-assets-internet-exposure
+### asm-list-asset-internet-exposure
 ***
 Get a list of all your internet exposure filtered by ip address, domain, type, and/or if there is an active external service. Maximum result limit is 100 assets.
 
 
 #### Base Command
 
-`asm-get-assets-internet-exposure`
+`asm-list-asset-internet-exposure`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -797,31 +797,31 @@ Get a list of all your internet exposure filtered by ip address, domain, type, a
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.GetAssetsInternetExposure.asm_ids | String | Attack surface management UUID. | 
-| ASM.GetAssetsInternetExposure.name | String | Name of the exposed asset. | 
-| ASM.GetAssetsInternetExposure.asset_type | String | Type of the exposed asset. | 
-| ASM.GetAssetsInternetExposure.cloud_provider | Unknown | The cloud provider used to collect these cloud assets as either GCP, AWS, or Azure. | 
-| ASM.GetAssetsInternetExposure.region | Unknown | Displays the region as provided by the cloud provider. | 
-| ASM.GetAssetsInternetExposure.last_observed | Unknown | Last time the exposure was observed. | 
-| ASM.GetAssetsInternetExposure.first_observed | Unknown | First time the exposure was observed. | 
-| ASM.GetAssetsInternetExposure.has_active_externally_services | Boolean | Whether the internet exposure is associated with an active external service\(s\). | 
-| ASM.GetAssetsInternetExposure.has_xdr_agent | String | Whether the internet exposure asset has an XDR agent. | 
-| ASM.GetAssetsInternetExposure.cloud_id | Unknown | Displays the resource ID as provided from the cloud provider. | 
-| ASM.GetAssetsInternetExposure.domain_resolves | Boolean | Whether the asset domain is resolvable. | 
-| ASM.GetAssetsInternetExposure.operation_system | Unknown | The operating system reported by the source for this asset. | 
-| ASM.GetAssetsInternetExposure.agent_id | Unknown | If there is an endpoint installed on this asset, this is the endpoint ID. | 
-| ASM.GetAssetsInternetExposure.externally_detected_providers | String | The provider of the asset as determined by an external assessment. | 
-| ASM.GetAssetsInternetExposure.service_type | String | Type of the asset. | 
-| ASM.GetAssetsInternetExposure.externally_inferred_cves | String | If the internet exposure has associated CVEs. | 
-| ASM.GetAssetsInternetExposure.ips | String | IP addresses associated with the internet exposure. | 
+| ASM.AssetInternetExposure.asm_ids | String | Attack surface management UUID. | 
+| ASM.AssetInternetExposure.name | String | Name of the exposed asset. | 
+| ASM.AssetInternetExposure.asset_type | String | Type of the exposed asset. | 
+| ASM.AssetInternetExposure.cloud_provider | Unknown | The cloud provider used to collect these cloud assets as either GCP, AWS, or Azure. | 
+| ASM.AssetInternetExposure.region | Unknown | Displays the region as provided by the cloud provider. | 
+| ASM.AssetInternetExposure.last_observed | Unknown | Last time the exposure was observed. | 
+| ASM.AssetInternetExposure.first_observed | Unknown | First time the exposure was observed. | 
+| ASM.AssetInternetExposure.has_active_externally_services | Boolean | Whether the internet exposure is associated with an active external service\(s\). | 
+| ASM.AssetInternetExposure.has_xdr_agent | String | Whether the internet exposure asset has an XDR agent. | 
+| ASM.AssetInternetExposure.cloud_id | Unknown | Displays the resource ID as provided from the cloud provider. | 
+| ASM.AssetInternetExposure.domain_resolves | Boolean | Whether the asset domain is resolvable. | 
+| ASM.AssetInternetExposure.operation_system | Unknown | The operating system reported by the source for this asset. | 
+| ASM.AssetInternetExposure.agent_id | Unknown | If there is an endpoint installed on this asset, this is the endpoint ID. | 
+| ASM.AssetInternetExposure.externally_detected_providers | String | The provider of the asset as determined by an external assessment. | 
+| ASM.AssetInternetExposure.service_type | String | Type of the asset. | 
+| ASM.AssetInternetExposure.externally_inferred_cves | String | If the internet exposure has associated CVEs. | 
+| ASM.AssetInternetExposure.ips | String | IP addresses associated with the internet exposure. | 
 
 #### Command example
-```!asm-get-assets-internet-exposure name="acme.com" type=certificate has_active_external_services=no```
+```!asm-list-asset-internet-exposure name="acme.com" type=certificate has_active_external_services=no```
 #### Context Example
 ```json
 {
     "ASM": {
-        "GetAssetsInternetExposure": [
+        "AssetInternetExposure": [
             {
                 "agent_id": null,
                 "asm_ids": [
@@ -939,20 +939,20 @@ Get internet exposure asset details according to the asset ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ASM.GetAssetInternetExposure.asm_ids | String | Attack surface management UUID. | 
-| ASM.GetAssetInternetExposure.name | String | Name of the exposed asset. | 
-| ASM.GetAssetInternetExposure.type | String | Type of the exposed asset. | 
-| ASM.GetAssetInternetExposure.last_observed | Unknown | Last time the exposure was observed. | 
-| ASM.GetAssetInternetExposure.first_observed | Unknown | First time the exposure was observed. | 
-| ASM.GetAssetInternetExposure.created | Date | Date the ASM issue was created. | 
-| ASM.GetAssetInternetExposure.business_units | String | Asset associated business units. | 
-| ASM.GetAssetInternetExposure.domain | Unknown | Asset associated domain. | 
-| ASM.GetAssetInternetExposure.certificate_issuer | String | Asset certificate issuer. | 
-| ASM.GetAssetInternetExposure.certificate_algorithm | String | Asset certificate algorithm. | 
-| ASM.GetAssetInternetExposure.certificate_classifications | String | Asset certificate classifications. | 
-| ASM.GetAssetInternetExposure.resolves | Boolean | Whether the asset has DNS resolution. | 
-| ASM.GetAssetInternetExposure.details | Unknown | Additional details. | 
-| ASM.GetAssetInternetExposure.externally_inferred_vulnerability_score | Unknown | Asset vulnerability score. | 
+| ASM.AssetInternetExposure.asm_ids | String | Attack surface management UUID. | 
+| ASM.AssetInternetExposure.name | String | Name of the exposed asset. | 
+| ASM.AssetInternetExposure.type | String | Type of the exposed asset. | 
+| ASM.AssetInternetExposure.last_observed | Unknown | Last time the exposure was observed. | 
+| ASM.AssetInternetExposure.first_observed | Unknown | First time the exposure was observed. | 
+| ASM.AssetInternetExposure.created | Date | Date the ASM issue was created. | 
+| ASM.AssetInternetExposure.business_units | String | Asset associated business units. | 
+| ASM.AssetInternetExposure.domain | Unknown | Asset associated domain. | 
+| ASM.AssetInternetExposure.certificate_issuer | String | Asset certificate issuer. | 
+| ASM.AssetInternetExposure.certificate_algorithm | String | Asset certificate algorithm. | 
+| ASM.AssetInternetExposure.certificate_classifications | String | Asset certificate classifications. | 
+| ASM.AssetInternetExposure.resolves | Boolean | Whether the asset has DNS resolution. | 
+| ASM.AssetInternetExposure.details | Unknown | Additional details. | 
+| ASM.AssetInternetExposure.externally_inferred_vulnerability_score | Unknown | Asset vulnerability score. | 
 
 #### Command example
 ```!asm-get-asset-internet-exposure asm_id=3c176460-8735-333c-b618-8262e2fb660c```
@@ -960,7 +960,7 @@ Get internet exposure asset details according to the asset ID.
 ```json
 {
     "ASM": {
-        "GetAssetInternetExposure": {
+        "AssetInternetExposure": {
             "active_external_services_types": [],
             "active_service_ids": [],
             "all_service_ids": [],

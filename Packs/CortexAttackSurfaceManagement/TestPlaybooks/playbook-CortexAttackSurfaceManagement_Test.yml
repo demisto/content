@@ -74,8 +74,8 @@ tasks:
     task:
       id: f1307474-3248-4246-8468-05cdea25705e
       version: -1
-      name: asm-get-external-services
-      script: Cortex Attack Surface Management|||asm-get-external-services
+      name: asm-list-external-service
+      script: Cortex Attack Surface Management|||asm-list-external-service
       type: regular
       iscommand: true
       brand: Cortex Attack Surface Management
@@ -119,72 +119,72 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalServices.service_id
+              simple: ASM.ExternalService.service_id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalServices.service_name
+              simple: ASM.ExternalService.service_name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalServices.service_type
+              simple: ASM.ExternalService.service_type
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalServices.ip_address
+              simple: ASM.ExternalService.ip_address
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalServices.externally_detected_providers
+              simple: ASM.ExternalService.externally_detected_providers
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalServices.is_active
+              simple: ASM.ExternalService.is_active
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalServices.first_observed
+              simple: ASM.ExternalService.first_observed
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalServices.last_observed
+              simple: ASM.ExternalService.last_observed
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalServices.port
+              simple: ASM.ExternalService.port
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalServices.protocol
+              simple: ASM.ExternalService.protocol
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalServices.inactive_classifications
+              simple: ASM.ExternalService.inactive_classifications
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalServices.discovery_type
+              simple: ASM.ExternalService.discovery_type
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalServices.business_units
+              simple: ASM.ExternalService.business_units
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalServices.externally_inferred_vulnerability_score
+              simple: ASM.ExternalService.externally_inferred_vulnerability_score
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -256,7 +256,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalService
+              simple: ASM.ExternalService
             iscontext: true
           right:
             value: {}
@@ -282,8 +282,8 @@ tasks:
     task:
       id: 5ae254da-ff48-407f-8dfd-c9dfdc0f2c57
       version: -1
-      name: asm-get-external-ip-address-ranges
-      script: Cortex Attack Surface Management|||asm-get-external-ip-address-ranges
+      name: asm-list-external-ip-address-range
+      script: Cortex Attack Surface Management|||asm-list-external-ip-address-range
       type: regular
       iscommand: true
       brand: ""
@@ -327,42 +327,42 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalIpAddressRanges.range_id
+              simple: ASM.ExternalIpAddressRange.range_id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalIpAddressRanges.first_ip
+              simple: ASM.ExternalIpAddressRange.first_ip
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalIpAddressRanges.last_ip
+              simple: ASM.ExternalIpAddressRange.last_ip
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalIpAddressRanges.ips_count
+              simple: ASM.ExternalIpAddressRange.ips_count
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalIpAddressRanges.active_responsive_ips_count
+              simple: ASM.ExternalIpAddressRange.active_responsive_ips_count
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalIpAddressRanges.date_added
+              simple: ASM.ExternalIpAddressRange.date_added
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalIpAddressRanges.business_units
+              simple: ASM.ExternalIpAddressRange.business_units
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalIpAddressRanges.organization_handles
+              simple: ASM.ExternalIpAddressRange.organization_handles
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -434,47 +434,47 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalIpAddressRange.range_id
+              simple: ASM.ExternalIpAddressRange.range_id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalIpAddressRange.first_ip
+              simple: ASM.ExternalIpAddressRange.first_ip
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalIpAddressRange.last_ip
+              simple: ASM.ExternalIpAddressRange.last_ip
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalIpAddressRange.ips_count
+              simple: ASM.ExternalIpAddressRange.ips_count
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalIpAddressRange.active_responsive_ips_count
+              simple: ASM.ExternalIpAddressRange.active_responsive_ips_count
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalIpAddressRange.date_added
+              simple: ASM.ExternalIpAddressRange.date_added
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalIpAddressRange.business_units
+              simple: ASM.ExternalIpAddressRange.business_units
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalIpAddressRange.organization_handles
+              simple: ASM.ExternalIpAddressRange.organization_handles
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetExternalIpAddressRange.details
+              simple: ASM.ExternalIpAddressRange.details
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -498,8 +498,8 @@ tasks:
     task:
       id: 21288f85-551e-4b2c-8829-ef5de5e69558
       version: -1
-      name: asm-get-assets-internet-exposure
-      script: Cortex Attack Surface Management|||asm-get-assets-internet-exposure
+      name: asm-list-asset-internet-exposure
+      script: Cortex Attack Surface Management|||asm-list-asset-internet-exposure
       type: regular
       iscommand: true
       brand: Cortex Attack Surface Management
@@ -543,7 +543,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ASM.GetAssetsInternetExposure
+              simple: ASM.AssetInternetExposure
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -617,7 +617,7 @@ tasks:
             value:
               complex:
                 root: ASM
-                accessor: GetAssetInternetExposure
+                accessor: AssetInternetExposure
             iscontext: true
     continueonerrortype: ""
     view: |-

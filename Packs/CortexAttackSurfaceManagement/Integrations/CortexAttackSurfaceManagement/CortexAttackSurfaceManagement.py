@@ -20,7 +20,7 @@ class Client(BaseClient):
         """
         super().__init__(base_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
-    def get_external_services_request(self, search_params: List[Dict]) -> Dict[str, Any]:
+    def list_external_service_request(self, search_params: List[Dict]) -> Dict[str, Any]:
         """Get a list of all your external services using the '/assets/get_external_services/' endpoint.
 
         Args:
@@ -54,7 +54,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_external_ip_address_ranges_request(self) -> Dict[str, Any]:
+    def list_external_ip_address_range_request(self) -> Dict[str, Any]:
         """Get a list of all your internet exposure IP ranges using the '/assets/get_external_ip_address_ranges/' endpoint.
 
         Returns:
@@ -85,7 +85,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_assets_internet_exposure_request(self, search_params: List[dict]) -> Dict[str, Any]:
+    def list_asset_internet_exposure_request(self, search_params: List[dict]) -> Dict[str, Any]:
         """Get a list of all your internet exposure assets using the '/assets/get_assets_internet_exposure/' endpoint.
 
         Args:
@@ -120,9 +120,9 @@ class Client(BaseClient):
         return response
 
 
-def get_external_services_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_external_service_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
-    asm-get-external-services command: Returns list of external services.
+    asm-list-external-service command: Returns list of external services.
 
     Args:
         client (Client): CortexAttackSurfaceManagment client to use.
@@ -150,11 +150,11 @@ def get_external_services_command(client: Client, args: Dict[str, Any]) -> Comma
     if discovery_type:
         search_params.append({"field": "discovery_type", "operator": "in", "value": [discovery_type]})
 
-    response = client.get_external_services_request(search_params)
+    response = client.list_external_service_request(search_params)
     parsed = response.get('reply', {}).get('external_services')
     markdown = tableToMarkdown('External Services', parsed, removeNull=True, headerTransform=string_to_table_header)
     command_results = CommandResults(
-        outputs_prefix='ASM.GetExternalServices',
+        outputs_prefix='ASM.ExternalService',
         outputs_key_field='service_id',
         outputs=parsed,
         raw_response=response,
@@ -188,7 +188,7 @@ def get_external_service_command(client: Client, args: Dict[str, Any]) -> Comman
     parsed = response.get('reply', {}).get('details')
     markdown = tableToMarkdown('External Service', parsed, removeNull=True, headerTransform=string_to_table_header)
     command_results = CommandResults(
-        outputs_prefix='ASM.GetExternalService',
+        outputs_prefix='ASM.ExternalService',
         outputs_key_field='service_id',
         outputs=parsed,
         raw_response=response,
@@ -198,9 +198,9 @@ def get_external_service_command(client: Client, args: Dict[str, Any]) -> Comman
     return command_results
 
 
-def get_external_ip_address_ranges_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_external_ip_address_range_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
-    asm-get-external-ip-address-ranges command: Returns list of external ip ranges.
+    asm-list-external-ip-address-range command: Returns list of external ip ranges.
 
     Args:
         client (Client): CortexAttackSurfaceManagment client to use.
@@ -210,11 +210,11 @@ def get_external_ip_address_ranges_command(client: Client, args: Dict[str, Any])
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
         that contains external IP address ranges.
     """
-    response = client.get_external_ip_address_ranges_request()
+    response = client.list_external_ip_address_range_request()
     parsed = response.get('reply', {}).get('external_ip_address_ranges')
     markdown = tableToMarkdown('External IP Address Ranges', parsed, removeNull=True, headerTransform=string_to_table_header)
     command_results = CommandResults(
-        outputs_prefix='ASM.GetExternalIpAddressRanges',
+        outputs_prefix='ASM.ExternalIpAddressRange',
         outputs_key_field='range_id',
         outputs=parsed,
         raw_response=response,
@@ -248,7 +248,7 @@ def get_external_ip_address_range_command(client: Client, args: Dict[str, Any]) 
     parsed = response.get('reply', {}).get('details')
     markdown = tableToMarkdown('External IP Address Range', parsed, removeNull=True, headerTransform=string_to_table_header)
     command_results = CommandResults(
-        outputs_prefix='ASM.GetExternalIpAddressRange',
+        outputs_prefix='ASM.ExternalIpAddressRange',
         outputs_key_field='range_id',
         outputs=parsed,
         raw_response=response,
@@ -258,9 +258,9 @@ def get_external_ip_address_range_command(client: Client, args: Dict[str, Any]) 
     return command_results
 
 
-def get_assets_internet_exposure_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_asset_internet_exposure_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
-    asm-get-assets-internet-exposure command: Returns list of external internet exposures.
+    asm-list-asset-internet-exposure command: Returns list of external internet exposures.
 
     Args:
         client (Client): CortexAttackSurfaceManagment client to use.
@@ -289,11 +289,11 @@ def get_assets_internet_exposure_command(client: Client, args: Dict[str, Any]) -
     if has_active_external_services:
         search_params.append({"field": "has_active_external_services", "operator": "in", "value": [has_active_external_services]})
 
-    response = client.get_assets_internet_exposure_request(search_params)
+    response = client.list_asset_internet_exposure_request(search_params)
     parsed = response.get('reply', {}).get('assets_internet_exposure')
     markdown = tableToMarkdown('Asset Internet Exposures', parsed, removeNull=True, headerTransform=string_to_table_header)
     command_results = CommandResults(
-        outputs_prefix='ASM.GetAssetsInternetExposure',
+        outputs_prefix='ASM.AssetInternetExposure',
         outputs_key_field='asm_ids',
         outputs=parsed,
         raw_response=response,
@@ -327,7 +327,7 @@ def get_asset_internet_exposure_command(client: Client, args: Dict[str, Any]) ->
     parsed = response.get('reply', {}).get('details')
     markdown = tableToMarkdown('Asset Internet Exposure', parsed, removeNull=True, headerTransform=string_to_table_header)
     command_results = CommandResults(
-        outputs_prefix='ASM.GetAssetInternetExposure',
+        outputs_prefix='ASM.AssetInternetExposure',
         outputs_key_field='asm_ids',
         outputs=parsed,
         raw_response=response,
@@ -351,7 +351,7 @@ def test_module(client: Client) -> None:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
     try:
-        client.get_external_services_request([])
+        client.list_external_service_request([])
     except DemistoException as e:
         if 'Forbidden' in str(e):
             raise DemistoException('Authorization Error: make sure API Key is correctly set')
@@ -396,11 +396,11 @@ def main() -> None:
             auth=None)
 
         commands = {
-            'asm-get-external-services': get_external_services_command,
+            'asm-list-external-service': list_external_service_command,
             'asm-get-external-service': get_external_service_command,
-            'asm-get-external-ip-address-ranges': get_external_ip_address_ranges_command,
+            'asm-list-external-ip-address-range': list_external_ip_address_range_command,
             'asm-get-external-ip-address-range': get_external_ip_address_range_command,
-            'asm-get-assets-internet-exposure': get_assets_internet_exposure_command,
+            'asm-list-asset-internet-exposure': list_asset_internet_exposure_command,
             'asm-get-asset-internet-exposure': get_asset_internet_exposure_command
         }
 

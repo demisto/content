@@ -46,48 +46,48 @@ script:
       - directly_discovery
       - unknown
     description: Get a list of all your external services filtered by business units, externally detected providers, domain, externally inferred CVEs, active classifications, inactive classifications, service name, service type, protocol, IP address, is active, and discovery type. Maximum result limit is 100 assets.
-    name: asm-get-external-services
+    name: asm-list-external-service
     outputs:
-    - contextPath: ASM.GetExternalServices.service_id
+    - contextPath: ASM.ExternalService.service_id
       description: External service UUID.
       type: String
-    - contextPath: ASM.GetExternalServices.service_name
+    - contextPath: ASM.ExternalService.service_name
       description: Name of the external service.
       type: String
-    - contextPath: ASM.GetExternalServices.service_type
+    - contextPath: ASM.ExternalService.service_type
       description: Type of the external service.
       type: String
-    - contextPath: ASM.GetExternalServices.ip_address
+    - contextPath: ASM.ExternalService.ip_address
       description: IP address of the external service.
       type: String
-    - contextPath: ASM.GetExternalServices.externally_detected_providers
+    - contextPath: ASM.ExternalService.externally_detected_providers
       description: Providers of external service.
       type: String
-    - contextPath: ASM.GetExternalServices.is_active
+    - contextPath: ASM.ExternalService.is_active
       description: Whether the external service is active.
       type: String
-    - contextPath: ASM.GetExternalServices.first_observed
+    - contextPath: ASM.ExternalService.first_observed
       description: Date of the first observation of the external service.
       type: Date
-    - contextPath: ASM.GetExternalServices.last_observed
+    - contextPath: ASM.ExternalService.last_observed
       description: Date of the last observation of the external service.
       type: Date
-    - contextPath: ASM.GetExternalServices.port
+    - contextPath: ASM.ExternalService.port
       description: Port number of the external service.
       type: Number
-    - contextPath: ASM.GetExternalServices.protocol
+    - contextPath: ASM.ExternalService.protocol
       description: Protocol number of the external service.
       type: String
-    - contextPath: ASM.GetExternalServices.inactive_classifications
+    - contextPath: ASM.ExternalService.inactive_classifications
       description: External service classifications that are no longer active.
       type: String
-    - contextPath: ASM.GetExternalServices.discovery_type
+    - contextPath: ASM.ExternalService.discovery_type
       description: How the external service was discovered.
       type: String
-    - contextPath: ASM.GetExternalServices.business_units
+    - contextPath: ASM.ExternalService.business_units
       description: External service associated business units.
       type: String
-    - contextPath: ASM.GetExternalServices.externally_inferred_vulnerability_score
+    - contextPath: ASM.ExternalService.externally_inferred_vulnerability_score
       description: External service vulnerability score.
       type: Unknown
   - arguments:
@@ -97,77 +97,77 @@ script:
     description: Get service details according to the service ID.
     name: asm-get-external-service
     outputs:
-    - contextPath: ASM.GetExternalService.service_id
+    - contextPath: ASM.ExternalService.service_id
       description: External service UUID.
       type: String
-    - contextPath: ASM.GetExternalService.service_name
+    - contextPath: ASM.ExternalService.service_name
       description: Name of the external service.
       type: String
-    - contextPath: ASM.GetExternalService.service_type
+    - contextPath: ASM.ExternalService.service_type
       description: Type of the external service.
       type: String
-    - contextPath: ASM.GetExternalService.ip_address
+    - contextPath: ASM.ExternalService.ip_address
       description: IP address of the external service.
       type: String
-    - contextPath: ASM.GetExternalService.externally_detected_providers
+    - contextPath: ASM.ExternalService.externally_detected_providers
       description: Providers of the external service.
       type: String
-    - contextPath: ASM.GetExternalService.is_active
+    - contextPath: ASM.ExternalService.is_active
       description: Whether the external service is active.
       type: String
-    - contextPath: ASM.GetExternalService.first_observed
+    - contextPath: ASM.ExternalService.first_observed
       description: Date of the first observation of the external service.
       type: Date
-    - contextPath: ASM.GetExternalService.last_observed
+    - contextPath: ASM.ExternalService.last_observed
       description: Date of the last observation of the external service.
       type: Date
-    - contextPath: ASM.GetExternalService.port
+    - contextPath: ASM.ExternalService.port
       description: Port number of the external service.
       type: Number
-    - contextPath: ASM.GetExternalService.protocol
+    - contextPath: ASM.ExternalService.protocol
       description: Protocol of the external service.
       type: String
-    - contextPath: ASM.GetExternalService.inactive_classifications
+    - contextPath: ASM.ExternalService.inactive_classifications
       description: External service classifications that are no longer active.
       type: String
-    - contextPath: ASM.GetExternalService.discovery_type
+    - contextPath: ASM.ExternalService.discovery_type
       description: How the external service was discovered.
       type: String
-    - contextPath: ASM.GetExternalService.business_units
+    - contextPath: ASM.ExternalService.business_units
       description: External service associated business units.
       type: String
-    - contextPath: ASM.GetExternalService.externally_inferred_vulnerability_score
+    - contextPath: ASM.ExternalService.externally_inferred_vulnerability_score
       description: External service vulnerability score.
       type: Unknown
-    - contextPath: ASM.GetExternalService.details
+    - contextPath: ASM.ExternalService.details
       description: Additional details.
       type: String
   - arguments: []
     description: Get a list of all your internet exposure filtered by business units and organization handles. Maximum result limit is 100 ranges.
-    name: asm-get-external-ip-address-ranges
+    name: asm-list-external-ip-address-range
     outputs:
-    - contextPath: ASM.GetExternalIpAddressRanges.range_id
+    - contextPath: ASM.ExternalIpAddressRange.range_id
       description: External IP address range UUID.
       type: String
-    - contextPath: ASM.GetExternalIpAddressRanges.first_ip
+    - contextPath: ASM.ExternalIpAddressRange.first_ip
       description: First IP address of the external IP address range.
       type: String
-    - contextPath: ASM.GetExternalIpAddressRanges.last_ip
+    - contextPath: ASM.ExternalIpAddressRange.last_ip
       description: Last IP address of the external IP address range.
       type: String
-    - contextPath: ASM.GetExternalIpAddressRanges.ips_count
+    - contextPath: ASM.ExternalIpAddressRange.ips_count
       description: Number of IP addresses of the external IP address range.
       type: Number
-    - contextPath: ASM.GetExternalIpAddressRanges.active_responsive_ips_count
+    - contextPath: ASM.ExternalIpAddressRange.active_responsive_ips_count
       description: The number of IPs in the external address range that are actively responsive.
       type: Number
-    - contextPath: ASM.GetExternalIpAddressRanges.date_added
+    - contextPath: ASM.ExternalIpAddressRange.date_added
       description: Date the external IP address range was added.
       type: Date
-    - contextPath: ASM.GetExternalIpAddressRanges.business_units
+    - contextPath: ASM.ExternalIpAddressRange.business_units
       description: External IP address range associated business units.
       type: String
-    - contextPath: ASM.GetExternalIpAddressRanges.organization_handles
+    - contextPath: ASM.ExternalIpAddressRange.organization_handles
       description: External IP address range associated organization handles.
       type: String
   - arguments:
@@ -177,31 +177,31 @@ script:
     description: Get the external IP address range details according to the range IDs.
     name: asm-get-external-ip-address-range
     outputs:
-    - contextPath: ASM.GetExternalIpAddressRange.range_id
+    - contextPath: ASM.ExternalIpAddressRange.range_id
       description: External IP address range UUID.
       type: String
-    - contextPath: ASM.GetExternalIpAddressRange.first_ip
+    - contextPath: ASM.ExternalIpAddressRange.first_ip
       description: First IP address of the external IP address range.
       type: String
-    - contextPath: ASM.GetExternalIpAddressRange.last_ip
+    - contextPath: ASM.ExternalIpAddressRange.last_ip
       description: Last IP address of the external IP address range.
       type: String
-    - contextPath: ASM.GetExternalIpAddressRange.ips_count
+    - contextPath: ASM.ExternalIpAddressRange.ips_count
       description: Number of IP addresses of the external IP address range.
       type: Number
-    - contextPath: ASM.GetExternalIpAddressRange.active_responsive_ips_count
+    - contextPath: ASM.ExternalIpAddressRange.active_responsive_ips_count
       description: The number of IPs in the external address range that are actively responsive.
       type: Number
-    - contextPath: ASM.GetExternalIpAddressRange.date_added
+    - contextPath: ASM.ExternalIpAddressRange.date_added
       description: Date the external IP address range was added.
       type: Date
-    - contextPath: ASM.GetExternalIpAddressRange.business_units
+    - contextPath: ASM.ExternalIpAddressRange.business_units
       description: External IP address range associated business units.
       type: String
-    - contextPath: ASM.GetExternalIpAddressRange.organization_handles
+    - contextPath: ASM.ExternalIpAddressRange.organization_handles
       description: External IP address range associated organization handles.
       type: String
-    - contextPath: ASM.GetExternalIpAddressRange.details
+    - contextPath: ASM.ExternalIpAddressRange.details
       description: Additional information.
       type: String
   - arguments:
@@ -225,57 +225,57 @@ script:
       - "yes"
       - "no"
     description: Get a list of all your internet exposure filtered by IP address, domain, type, and/or if there is an active external service. Maximum result limit is 100 assets.
-    name: asm-get-assets-internet-exposure
+    name: asm-list-asset-internet-exposure
     outputs:
-    - contextPath: ASM.GetAssetsInternetExposure.asm_ids
+    - contextPath: ASM.AssetInternetExposure.asm_ids
       description: Attack surface management UUID.
       type: String
-    - contextPath: ASM.GetAssetsInternetExposure.name
+    - contextPath: ASM.AssetInternetExposure.name
       description: Name of the exposed asset.
       type: String
-    - contextPath: ASM.GetAssetsInternetExposure.asset_type
+    - contextPath: ASM.AssetInternetExposure.asset_type
       description: Type of the exposed asset.
       type: String
-    - contextPath: ASM.GetAssetsInternetExposure.cloud_provider
+    - contextPath: ASM.AssetInternetExposure.cloud_provider
       description: The cloud provider used to collect these cloud assets as either GCP, AWS, or Azure.
       type: Unknown
-    - contextPath: ASM.GetAssetsInternetExposure.region
+    - contextPath: ASM.AssetInternetExposure.region
       description: Displays the region as provided by the cloud provider.
       type: Unknown
-    - contextPath: ASM.GetAssetsInternetExposure.last_observed
+    - contextPath: ASM.AssetInternetExposure.last_observed
       description: Last time the exposure was observed.
       type: Unknown
-    - contextPath: ASM.GetAssetsInternetExposure.first_observed
+    - contextPath: ASM.AssetInternetExposure.first_observed
       description: First time the exposure was observed.
       type: Unknown
-    - contextPath: ASM.GetAssetsInternetExposure.has_active_externally_services
+    - contextPath: ASM.AssetInternetExposure.has_active_externally_services
       description: Whether the internet exposure is associated with an active external service(s).
       type: Boolean
-    - contextPath: ASM.GetAssetsInternetExposure.has_xdr_agent
+    - contextPath: ASM.AssetInternetExposure.has_xdr_agent
       description: Whether the internet exposure asset has an XDR agent.
       type: String
-    - contextPath: ASM.GetAssetsInternetExposure.cloud_id
+    - contextPath: ASM.AssetInternetExposure.cloud_id
       description: Displays the resource ID as provided from the cloud provider.
       type: Unknown
-    - contextPath: ASM.GetAssetsInternetExposure.domain_resolves
+    - contextPath: ASM.AssetInternetExposure.domain_resolves
       description: Whether the asset domain is resolvable.
       type: Boolean
-    - contextPath: ASM.GetAssetsInternetExposure.operation_system
+    - contextPath: ASM.AssetInternetExposure.operation_system
       description: The operating system reported by the source for this asset.
       type: Unknown
-    - contextPath: ASM.GetAssetsInternetExposure.agent_id
+    - contextPath: ASM.AssetInternetExposure.agent_id
       description: If there is an endpoint installed on this asset, this is the endpoint ID.
       type: Unknown
-    - contextPath: ASM.GetAssetsInternetExposure.externally_detected_providers
+    - contextPath: ASM.AssetInternetExposure.externally_detected_providers
       description: The provider of the asset as determined by an external assessment.
       type: String
-    - contextPath: ASM.GetAssetsInternetExposure.service_type
+    - contextPath: ASM.AssetInternetExposure.service_type
       description: Type of the asset.
       type: String
-    - contextPath: ASM.GetAssetsInternetExposure.externally_inferred_cves
+    - contextPath: ASM.AssetInternetExposure.externally_inferred_cves
       description: If the internet exposure has associated CVEs.
       type: String
-    - contextPath: ASM.GetAssetsInternetExposure.ips
+    - contextPath: ASM.AssetInternetExposure.ips
       description: IP addresses associated with the internet exposure.
       type: String
   - arguments:
@@ -285,46 +285,46 @@ script:
     description: Get internet exposure asset details according to the asset ID.
     name: asm-get-asset-internet-exposure
     outputs:
-    - contextPath: ASM.GetAssetInternetExposure.asm_ids
+    - contextPath: ASM.AssetInternetExposure.asm_ids
       description: Attack surface management UUID.
       type: String
-    - contextPath: ASM.GetAssetInternetExposure.name
+    - contextPath: ASM.AssetInternetExposure.name
       description: Name of the exposed asset.
       type: String
-    - contextPath: ASM.GetAssetInternetExposure.type
+    - contextPath: ASM.AssetInternetExposure.type
       description: Type of the exposed asset.
       type: String
-    - contextPath: ASM.GetAssetInternetExposure.last_observed
+    - contextPath: ASM.AssetInternetExposure.last_observed
       description: Last time the exposure was observed.
       type: Unknown
-    - contextPath: ASM.GetAssetInternetExposure.first_observed
+    - contextPath: ASM.AssetInternetExposure.first_observed
       description: First time the exposure was observed.
       type: Unknown
-    - contextPath: ASM.GetAssetInternetExposure.created
+    - contextPath: ASM.AssetInternetExposure.created
       description: Date the ASM issue was created.
       type: Date
-    - contextPath: ASM.GetAssetInternetExposure.business_units
+    - contextPath: ASM.AssetInternetExposure.business_units
       description: Asset associated business units.
       type: String
-    - contextPath: ASM.GetAssetInternetExposure.domain
+    - contextPath: ASM.AssetInternetExposure.domain
       description: Asset associated domain.
       type: Unknown
-    - contextPath: ASM.GetAssetInternetExposure.certificate_issuer
+    - contextPath: ASM.AssetInternetExposure.certificate_issuer
       description: Asset certificate issuer.
       type: String
-    - contextPath: ASM.GetAssetInternetExposure.certificate_algorithm
+    - contextPath: ASM.AssetInternetExposure.certificate_algorithm
       description: Asset certificate algorithm.
       type: String
-    - contextPath: ASM.GetAssetInternetExposure.certificate_classifications
+    - contextPath: ASM.AssetInternetExposure.certificate_classifications
       description: Asset certificate.classifications
       type: String
-    - contextPath: ASM.GetAssetInternetExposure.resolves
+    - contextPath: ASM.AssetInternetExposure.resolves
       description: Whether the asset has a DNS resolution.
       type: Boolean
-    - contextPath: ASM.GetAssetInternetExposure.details
+    - contextPath: ASM.AssetInternetExposure.details
       description: Additional details.
       type: Unknown
-    - contextPath: ASM.GetAssetInternetExposure.externally_inferred_vulnerability_score
+    - contextPath: ASM.AssetInternetExposure.externally_inferred_vulnerability_score
       description: Asset vulnerability score.
       type: Unknown
   dockerimage: demisto/python3:3.10.8.35482
