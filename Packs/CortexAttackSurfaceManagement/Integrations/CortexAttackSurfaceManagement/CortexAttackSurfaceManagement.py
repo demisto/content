@@ -120,6 +120,29 @@ class Client(BaseClient):
         return response
 
 
+''' HELPER FUNCTIONS '''
+
+
+def format_asm_id(formatted_response: List[dict]) -> List[dict]:
+    """
+    Takes the response from the asm-list-asset-internet-exposure command and converts `asm_id` key from list to str
+
+    Args:
+        formatted_response (list): response from asm-list-asset-internet-exposure command (json)
+
+    Returns:
+        list: list of dictionaries of parsed/formatted json object
+    """
+
+    if formatted_response:
+        for entry in formatted_response:
+            entry["asm_ids"] = entry["asm_ids"][0]
+    return(formatted_response)
+
+
+''' COMMAND FUNCTIONS '''
+
+
 def list_external_service_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     asm-list-external-service command: Returns list of external services.
@@ -290,7 +313,8 @@ def list_asset_internet_exposure_command(client: Client, args: Dict[str, Any]) -
         search_params.append({"field": "has_active_external_services", "operator": "in", "value": [has_active_external_services]})
 
     response = client.list_asset_internet_exposure_request(search_params)
-    parsed = response.get('reply', {}).get('assets_internet_exposure')
+    formatted_response = response.get('reply', {}).get('assets_internet_exposure')
+    parsed = format_asm_id(formatted_response)
     markdown = tableToMarkdown('Asset Internet Exposures', parsed, removeNull=True, headerTransform=string_to_table_header)
     command_results = CommandResults(
         outputs_prefix='ASM.AssetInternetExposure',

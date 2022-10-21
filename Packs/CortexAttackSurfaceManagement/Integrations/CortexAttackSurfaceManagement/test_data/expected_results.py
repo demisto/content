@@ -549,9 +549,7 @@ EXTERNAL_RANGE_RESULTS = [
 EXTERNAL_EXPOSURES_RESULTS = [
     {
         "agent_id": null,
-        "asm_ids": [
-            "3c176460-8735-333c-b618-8262e2fb660c"
-        ],
+        "asm_ids": "3c176460-8735-333c-b618-8262e2fb660c",
         "asm_va_score": null,
         "asset_type": "CERTIFICATE",
         "business_units": [
@@ -590,9 +588,7 @@ EXTERNAL_EXPOSURES_RESULTS = [
     },
     {
         "agent_id": null,
-        "asm_ids": [
-            "43164fde-8e87-3d1e-8530-82f14cd3ae9a"
-        ],
+        "asm_ids": "43164fde-8e87-3d1e-8530-82f14cd3ae9a",
         "asm_va_score": null,
         "asset_type": "CERTIFICATE",
         "business_units": [
