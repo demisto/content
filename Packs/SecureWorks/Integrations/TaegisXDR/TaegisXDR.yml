@@ -236,7 +236,7 @@ script:
     - contextPath: TaegisXDR.CommentUpdate
       description: The comment update results
     description: Update an existing comment
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.8.35482
   runonce: false
   subtype: python3
   isfetch: true
