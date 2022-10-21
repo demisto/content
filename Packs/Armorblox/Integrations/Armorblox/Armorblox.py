@@ -7,6 +7,7 @@ import dateparser
 import requests
 import json
 import collections
+from enum import Enum, unique
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -167,6 +168,22 @@ def fetch_incidents_command(client):
     return incidents
 
 
+def get_incident_by_id(client, incident_id):
+    incident_response = client.incidents.get(incident_id)
+    return incident_response
+
+def get_threat_incidents(client, params):
+    threats_incidents, next_page_token, total_count = client.threats.list(params=params)
+    return threats_incidents
+
+def get_dlp_incidents(client, params):
+    dlp_incidents, next_page_token, total_count = client.dlp_incidents.list(params=params)
+    return dlp_incidents
+
+def get_abuse_incidents(client, params):
+    abuse_incidents, next_page_token, total_count = client.abuse_incidents.list(params=params)
+    return abuse_incidents
+
 def main():  # pragma: no coverage
     ''' EXECUTION '''
     demisto.info(f'Command being called is {demisto.command()}')
@@ -184,7 +201,20 @@ def main():  # pragma: no coverage
         if demisto.command() == "armorblox-check-remediation-action":
             incident_id = demisto.args().get('incident_id')
             return_results(get_remediation_action(client, incident_id))
-
+        if demisto.command() == "armorblox-get-incident":
+            incident_id = demisto.args().get('incident_id')
+            # return_results(get_incident_by_id(client, incident_id))
+            return_results(client.get_incident_details(incident_id))
+        if demisto.command() == "armorblox-get-threats-incidents":
+            incident_type = "THREAT_INCIDENT_TYPE"
+            return_results(get_threat_incidents(client, demisto.args()))
+            # return_results(demisto.args())
+        if demisto.command() == "armorblox-get-dlp-incidents":
+            incident_type = "DLP_INCIDENT_TYPE"
+            return_results(get_dlp_incidents(client, demisto.args()))
+        if demisto.command() == "armorblox-get-abuse-incidents":
+            incident_type = "ABUSE_INCIDENT_TYPE"
+            return_results(get_abuse_incidents(client, demisto.args()))
         elif demisto.command() == 'test-module':
             result = test_module(client)
             return_results(result)

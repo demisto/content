@@ -1,0 +1,77 @@
+{
+    "incidents": [
+        {
+            "priority": "HIGH",
+            "tagged": false,
+            "date": "2022-04-18T10:40:06.541066Z",
+            "users": [
+                {
+                    "name": "Adam",
+                    "email": "adam@armorblox.dev",
+                    "is_vip": false
+                }
+            ],
+            "policy_names": [
+                "Email Account Compromise"
+            ],
+            "title": "N/A",
+            "remediation_actions": [
+                "ALERT"
+            ],
+            "resolution_state": "OPEN_INCIDENT_RESOLUTION_STATE",
+            "object_type": "CONTENT_SECURITY_ALERT",
+            "id": "165",
+            "research_status": "TRUE_POSITIVE",
+            "app_name": "MICROSOFT_OUTLOOK",
+            "engagements": {
+                "fwd_mail_count": "0",
+                "reply_mail_count": "0"
+            },
+            "earliest_event_date": "2022-01-28T05:23:32.513185Z"
+        },
+        {
+            "priority": "HIGH",
+            "tagged": false,
+            "date": "2022-10-21T09:57:09Z",
+            "users": [
+                {
+                    "name": "Admin",
+                    "email": "admin@armorblox.dev",
+                    "is_vip": false
+                }
+            ],
+            "policy_names": [
+                "Credential Phishing"
+            ],
+            "title": "This is XZ test 2022-10-21 15:27",
+            "remediation_actions": [
+                "WILL_AUTO_REMEDIATE"
+            ],
+            "resolution_state": "OPEN_INCIDENT_RESOLUTION_STATE",
+            "object_type": "CONTENT_MAIL",
+            "id": "77702",
+            "research_status": "TRUE_POSITIVE",
+            "app_name": "MICROSOFT_OUTLOOK",
+            "external_users": [
+                {
+                    "name": "Cheryl Durham",
+                    "email": "cheryl_durham@faketest-garcia.com",
+                    "is_vip": false
+                }
+            ],
+            "external_senders": [
+                "cheryl_durham@faketest-garcia.com"
+            ],
+            "folder_categories": [
+                "SPAM"
+            ],
+            "scl_score": 5,
+            "engagements": {
+                "fwd_mail_count": "0",
+                "reply_mail_count": "0"
+            },
+            "earliest_event_date": "2022-10-21T09:57:09Z"
+        }
+    ],
+    "total_count": "1"
+}

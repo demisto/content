@@ -1,0 +1,648 @@
+{
+    "incident_id": "12846",
+    "date": "2022-10-17T12:08:11Z",
+    "policy_names": [
+        "Abuse Report"
+    ],
+    "remediation_actions": [
+        "ALERT"
+    ],
+    "users": [
+        {
+            "user_name": "Admin",
+            "user_address": "admin@armorblox.dev",
+            "is_vip": false,
+            "department_name": "Engineering",
+            "job_title": "Manager"
+        }
+    ],
+    "events": [
+        {
+            "event_id": "113325",
+            "object_id": "8895dcb12c9265f783fde9df0b9a1b350d5df1f80514c2ef6b149ac1c3fc2cfb",
+            "from_name": "Pitchbook News",
+            "from_address": "news@pitchbook.com",
+            "date": "2022-10-17T12:08:11Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "A new look at fund performance",
+            "to_users": [
+                "Admin"
+            ],
+            "to_address": [
+                "admin@armorblox.dev"
+            ],
+            "affected_user": "Admin",
+            "folder_category": "UNCATEGORIZED",
+            "scl_score": 1,
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "1884525273.580282.1666008491750@app-newsletter-1.prod.local",
+            "abuse_match_types": [
+                "SENDER"
+            ]
+        },
+        {
+            "event_id": "113211",
+            "object_id": "713c9847ff45fc6620686a44920c85da4d431a44c3b9c5a616d6dd8dd15ea9e4",
+            "from_name": "Pitchbook News",
+            "from_address": "news@pitchbook.com",
+            "date": "2022-10-16T11:26:29Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "Is PE a Ponzi scheme?",
+            "to_users": [
+                "Admin"
+            ],
+            "to_address": [
+                "admin@armorblox.dev"
+            ],
+            "affected_user": "Admin",
+            "folder_category": "UNCATEGORIZED",
+            "scl_score": 1,
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "1310126121.14752056.1665919589382@app-newsletter-1.prod.local",
+            "abuse_match_types": [
+                "SENDER"
+            ]
+        },
+        {
+            "event_id": "113203",
+            "object_id": "21b6b54c88f6fdf6ff37eeb1b7a16c1ea640eca0312dbf1f4f755c5202c9651b",
+            "from_name": "Pitchbook Research",
+            "from_address": "news@pitchbook.com",
+            "date": "2022-10-15T10:01:10Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "VC data reveals distress",
+            "to_users": [
+                "Admin"
+            ],
+            "to_address": [
+                "admin@armorblox.dev"
+            ],
+            "affected_user": "Admin",
+            "folder_category": "UNCATEGORIZED",
+            "scl_score": 1,
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "1823097668.12299197.1665828070102@app-newsletter-1.prod.local",
+            "abuse_match_types": [
+                "SENDER"
+            ]
+        },
+        {
+            "event_id": "113042",
+            "object_id": "43bed7b77a2c7e471994f1fe3d33b7fa04b2b41c9fcfe69c678591ca422af83a",
+            "from_name": "Pitchbook News",
+            "from_address": "news@pitchbook.com",
+            "date": "2022-10-14T13:42:19Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "Global approaches to sustainable investing",
+            "to_users": [
+                "Admin"
+            ],
+            "to_address": [
+                "admin@armorblox.dev"
+            ],
+            "affected_user": "Admin",
+            "folder_category": "UNCATEGORIZED",
+            "scl_score": 1,
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "1299049848.11213167.1665754939465@app-newsletter-1.prod.local",
+            "abuse_match_types": [
+                "SENDER"
+            ]
+        },
+        {
+            "event_id": "112286",
+            "object_id": "2de971d969315b21348a983013da6ed75fd6623d60227635660f08bd17f6a714",
+            "from_name": "Pitchbook News",
+            "from_address": "news@pitchbook.com",
+            "date": "2022-10-13T13:47:55Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "US VC sends mixed signals",
+            "to_users": [
+                "Admin"
+            ],
+            "to_address": [
+                "admin@armorblox.dev"
+            ],
+            "affected_user": "Admin",
+            "folder_category": "UNCATEGORIZED",
+            "scl_score": 1,
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "554784552.9552446.1665668875627@app-newsletter-1.prod.local",
+            "abuse_match_types": [
+                "SENDER"
+            ]
+        },
+        {
+            "event_id": "112191",
+            "object_id": "0975d7a884588411fbb5f8d01ca7f5a5b4c73e59adcf0530c958d4ae0cd8643c",
+            "from_name": "Pitchbook News",
+            "from_address": "news@pitchbook.com",
+            "date": "2022-10-12T12:43:55Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "US PE deal value tops $819B",
+            "to_users": [
+                "Admin"
+            ],
+            "to_address": [
+                "admin@armorblox.dev"
+            ],
+            "affected_user": "Admin",
+            "folder_category": "UNCATEGORIZED",
+            "scl_score": 1,
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "1308775663.7523760.1665578635211@app-newsletter-1.prod.local",
+            "abuse_match_types": [
+                "SENDER"
+            ]
+        },
+        {
+            "event_id": "112064",
+            "object_id": "7548d4d366950087b7cfa4cf1f6c3fac9eb8719296f3f7bf63f741e624b2d723",
+            "from_name": "Admin",
+            "from_address": "admin@armorblox.dev",
+            "date": "2022-10-11T21:26:26Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "Fw: Succession plans aid in attractive GP stakes",
+            "to_users": [
+                "Armorblox Abuse Mailbox"
+            ],
+            "to_address": [
+                "abuse@armorblox.dev"
+            ],
+            "affected_user": "Admin",
+            "folder_category": "UNCATEGORIZED",
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "SJ0PR02MB7743DAD58C406BA08465CE5DB6239@SJ0PR02MB7743.namprd02.prod.outlook.com",
+            "abuse_match_types": [
+                "SENDER"
+            ]
+        },
+        {
+            "event_id": "112059",
+            "object_id": "306a3ae472a92a367a56b03c4f233b0732d868eb1002da61d839e544dbf2fc2d",
+            "from_name": "Admin",
+            "from_address": "admin@armorblox.dev",
+            "date": "2022-10-11T21:14:58Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "Fw: Can PE ride the UK's race to the bottom?",
+            "to_users": [
+                "Armorblox Abuse Mailbox"
+            ],
+            "to_address": [
+                "abuse@armorblox.dev"
+            ],
+            "affected_user": "Admin",
+            "folder_category": "UNCATEGORIZED",
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "SJ0PR02MB77439B7E79E4193715207B22B6239@SJ0PR02MB7743.namprd02.prod.outlook.com",
+            "abuse_match_types": [
+                "SENDER"
+            ]
+        },
+        {
+            "event_id": "112016",
+            "object_id": "93a32bb97fadeb976fd778782ce69a51c1ea7bc300aaf770e8d19ffd4fa2790c",
+            "from_name": "Admin",
+            "from_address": "admin@armorblox.dev",
+            "date": "2022-10-11T18:00:13Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "Fw: 78 charts on the US markets",
+            "to_users": [
+                "Armorblox Abuse Mailbox"
+            ],
+            "to_address": [
+                "abuse@armorblox.dev"
+            ],
+            "affected_user": "Admin",
+            "folder_category": "UNCATEGORIZED",
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "SJ0PR02MB774350493B8EFB11E4F53715B6239@SJ0PR02MB7743.namprd02.prod.outlook.com",
+            "abuse_match_types": [
+                "SENDER"
+            ]
+        },
+        {
+            "event_id": "111993",
+            "object_id": "e51323b4abee9e6ad448f48edf3a828aa6c4450910c0e0e26d5a623a5d339b7f",
+            "from_name": "Pitchbook News",
+            "from_address": "news@pitchbook.com",
+            "date": "2022-10-11T13:57:42Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "Tech impatient for patient capital",
+            "to_users": [
+                "Admin"
+            ],
+            "to_address": [
+                "admin@armorblox.dev"
+            ],
+            "affected_user": "Admin",
+            "folder_category": "UNCATEGORIZED",
+            "scl_score": 1,
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "591600547.6172344.1665496662898@app-newsletter-1.prod.local",
+            "abuse_match_types": [
+                "SENDER"
+            ]
+        },
+        {
+            "event_id": "111830",
+            "object_id": "7ce952eea11d6a4a55ffb6147bd7f9751985087d10e4999db908c66b111aa117",
+            "from_name": "Pitchbook News",
+            "from_address": "news@pitchbook.com",
+            "date": "2022-10-10T13:46:44Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "Big Tech's hunt for cheap startups",
+            "to_users": [
+                "Admin"
+            ],
+            "to_address": [
+                "admin@armorblox.dev"
+            ],
+            "affected_user": "Admin",
+            "folder_category": "UNCATEGORIZED",
+            "scl_score": 1,
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "1796112408.4535176.1665409604639@app-newsletter-1.prod.local",
+            "abuse_match_types": [
+                "SENDER"
+            ]
+        },
+        {
+            "event_id": "111776",
+            "object_id": "b5ef96d6268573e19a302632cbb0a03559cad353fad781127569fca1f598ad6c",
+            "from_name": "Pitchbook News",
+            "from_address": "news@pitchbook.com",
+            "date": "2022-10-09T11:31:24Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "Raining on the dry powder parade",
+            "to_users": [
+                "Admin"
+            ],
+            "to_address": [
+                "admin@armorblox.dev"
+            ],
+            "affected_user": "Admin",
+            "folder_category": "UNCATEGORIZED",
+            "scl_score": 1,
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "1152787851.2789134.1665315084982@app-newsletter-1.prod.local",
+            "abuse_match_types": [
+                "SENDER"
+            ]
+        },
+        {
+            "event_id": "111775",
+            "object_id": "2958887a19c5016659bf24c08201d38507cac449b8b56ba91fefd06fc1245707",
+            "from_name": "Pitchbook Research",
+            "from_address": "news@pitchbook.com",
+            "date": "2022-10-08T11:45:29Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "The politicization of ESG",
+            "to_users": [
+                "Admin"
+            ],
+            "to_address": [
+                "admin@armorblox.dev"
+            ],
+            "affected_user": "Admin",
+            "folder_category": "UNCATEGORIZED",
+            "scl_score": 1,
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "1920084427.1181525.1665229529441@app-newsletter-1.prod.local",
+            "abuse_match_types": [
+                "SENDER"
+            ]
+        },
+        {
+            "event_id": "111723",
+            "object_id": "a42c6f0b0270584a75b615583456800b3ef6c70d6789ecb3b5e3490aa95359ae",
+            "from_name": "Pitchbook News",
+            "from_address": "news@pitchbook.com",
+            "date": "2022-10-07T14:13:25Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "Are down rounds really company killers?",
+            "to_users": [
+                "Admin"
+            ],
+            "to_address": [
+                "admin@armorblox.dev"
+            ],
+            "affected_user": "Admin",
+            "folder_category": "UNCATEGORIZED",
+            "scl_score": 1,
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "1444104017.2973396.1665152005086@app-newsletter-1.prod.local",
+            "abuse_match_types": [
+                "SENDER"
+            ]
+        },
+        {
+            "event_id": "111771",
+            "object_id": "9e7725f3593629a937a3ed84d61ccd429770aef41cee7fcd30129725916a9548",
+            "from_name": "Pitchbook News",
+            "from_address": "news@pitchbook.com",
+            "date": "2022-10-06T10:37:03Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "US VC trudges through Q3",
+            "to_users": [
+                "Admin"
+            ],
+            "to_address": [
+                "admin@armorblox.dev"
+            ],
+            "affected_user": "Admin",
+            "folder_category": "SPAM",
+            "scl_score": 1,
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "2089017489.307892.1665052623936@app-newsletter-1.prod.local",
+            "abuse_match_types": [
+                "SENDER"
+            ]
+        },
+        {
+            "event_id": "111772",
+            "object_id": "f4919981408c0e79b20087557aa9a5140deaa0eeca8ae20e56ed7032b4055bca",
+            "from_name": "Pitchbook News",
+            "from_address": "news@pitchbook.com",
+            "date": "2022-10-05T11:31:42Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "Do investors care about ESG?",
+            "to_users": [
+                "Admin"
+            ],
+            "to_address": [
+                "admin@armorblox.dev"
+            ],
+            "affected_user": "Admin",
+            "folder_category": "SPAM",
+            "scl_score": 1,
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "87817149.463325.1664969502302@app-newsletter-1.prod.local",
+            "abuse_match_types": [
+                "SENDER"
+            ]
+        },
+        {
+            "event_id": "111664",
+            "object_id": "a55b0be6bcf0415c7999db2f4ec41229b370f3e1efeb020420d2b7a77a961f7b",
+            "from_name": "Pitchbook News",
+            "from_address": "news@pitchbook.com",
+            "date": "2022-10-03T13:28:48Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "[SPAM-Office365] Large investors flock to venture debt",
+            "to_users": [
+                "Admin"
+            ],
+            "to_address": [
+                "admin@armorblox.dev"
+            ],
+            "affected_user": "Admin",
+            "folder_category": "SPAM",
+            "scl_score": 5,
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "1473619947.6078806.1664803728862@app-newsletter-1.prod.local",
+            "abuse_match_types": [
+                "SENDER"
+            ]
+        },
+        {
+            "event_id": "111655",
+            "object_id": "614c0d8f7d10d890d361cfe5130532bbd444c94ba86e94e0a234bb52771958ce",
+            "from_name": "Pitchbook News",
+            "from_address": "news@pitchbook.com",
+            "date": "2022-10-02T10:35:57Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "Can PE ride the UK's race to the bottom?",
+            "to_users": [
+                "Admin"
+            ],
+            "to_address": [
+                "admin@armorblox.dev"
+            ],
+            "affected_user": "Admin",
+            "folder_category": "UNCATEGORIZED",
+            "scl_score": 1,
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "1722555514.3892239.1664706957063@app-newsletter-1.prod.local",
+            "abuse_match_types": [
+                "SENDER"
+            ]
+        },
+        {
+            "event_id": "111653",
+            "object_id": "0b5ca09222568e5e9707c75c3f6fd03110f3baf352b42c94f3e6669ea28b38ae",
+            "from_name": "Pitchbook Research",
+            "from_address": "news@pitchbook.com",
+            "date": "2022-10-01T10:58:52Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "78 charts on the US markets",
+            "to_users": [
+                "Admin"
+            ],
+            "to_address": [
+                "admin@armorblox.dev"
+            ],
+            "affected_user": "Admin",
+            "folder_category": "UNCATEGORIZED",
+            "scl_score": 1,
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "1319792230.2386226.1664621932138@app-newsletter-1.prod.local",
+            "abuse_match_types": [
+                "SENDER"
+            ]
+        },
+        {
+            "event_id": "111641",
+            "object_id": "3582578b524ca975c7e63f74026ad1ea1abce93ee4c6e769a599662ee2d56d15",
+            "from_name": "Pitchbook News",
+            "from_address": "news@pitchbook.com",
+            "date": "2022-09-30T12:50:19Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "[SPAM-Office365] SoftBank exodus grows",
+            "to_users": [
+                "Admin"
+            ],
+            "to_address": [
+                "admin@armorblox.dev"
+            ],
+            "affected_user": "Admin",
+            "folder_category": "SPAM",
+            "scl_score": 5,
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "1232225273.767990.1664542219272@app-newsletter-1.prod.local",
+            "abuse_match_types": [
+                "SENDER"
+            ]
+        }
+    ],
+    "total_count": "176",
+    "resolutionState": "OPEN_INCIDENT_RESOLUTION_STATE",
+    "tagged": false,
+    "object_type": "CONTENT_MAIL",
+    "reporters": [
+        {
+            "user_name": "Admin",
+            "user_address": "admin@armorblox.dev",
+            "is_vip": false,
+            "department_name": "Engineering",
+            "job_title": "Manager"
+        }
+    ],
+    "created_date": "2022-04-22T19:55:41Z",
+    "incident_type": "ABUSE_INCIDENT_TYPE",
+    "research_status": "TRUE_POSITIVE",
+    "page_token": "20",
+    "earliest_subject": "Small funds, big opportunity",
+    "earliest_abuse_subject": "Fw: European PE holds strong in Q1",
+    "abuse_events": [
+        {
+            "event_id": "13644",
+            "object_id": "04ac5f25514be66ffa58c624d3badec3b363265733f2ef54c41c78ebbad5b067",
+            "from_name": "Admin",
+            "from_address": "admin@armorblox.dev",
+            "date": "2022-04-22T19:55:41Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "Fw: European PE holds strong in Q1",
+            "to_users": [
+                "Armorblox Abuse Mailbox"
+            ],
+            "to_address": [
+                "abuse@armorblox.dev"
+            ],
+            "affected_user": "Armorblox Abuse Mailbox",
+            "scl_score": -1,
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "SJ0PR02MB7743480B3144540040D3FCFAB6F79@SJ0PR02MB7743.namprd02.prod.outlook.com"
+        }
+    ],
+    "abuse_total_count": "1",
+    "app_name": "MICROSOFT_OUTLOOK",
+    "senders": [
+        "news@pitchbook.com",
+        "admin@armorblox.dev"
+    ],
+    "external_senders": [
+        "news@pitchbook.com"
+    ],
+    "match_types": [
+        {
+            "match": "THREAD",
+            "configured": true,
+            "count": "2",
+            "value": "1146547438.6558208.1650625899739@app-newsletter-1.prod.local"
+        },
+        {
+            "match": "SAME_CONTENT",
+            "configured": true,
+            "count": "1"
+        },
+        {
+            "match": "SENDER",
+            "configured": true,
+            "count": "176",
+            "value": "news@pitchbook.com"
+        }
+    ],
+    "pause_match": false,
+    "status_counts": {
+        "done_count": "0",
+        "process_count": "0",
+        "error_count": "0"
+    },
+    "policy_enablement_info": [
+        {
+            "name": "Abuse Report",
+            "is_enabled": true
+        }
+    ],
+    "original_object_info": {
+        "object_id": "3b8c39321bc5099d8000ab394d0dca3e1b06092e83e27203bd364f5d6639bb6a",
+        "date": "2022-04-22T11:11:39Z",
+        "abuse_object_id": "04ac5f25514be66ffa58c624d3badec3b363265733f2ef54c41c78ebbad5b067",
+        "reported_date": "2022-04-22T19:55:41Z"
+    }
+}

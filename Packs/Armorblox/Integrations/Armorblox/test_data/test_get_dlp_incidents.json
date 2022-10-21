@@ -1,0 +1,40 @@
+{
+    "incidents": [{
+        "priority": "HIGH",
+        "tagged": false,
+        "date": "2022-10-21T06:48:03Z",
+        "users": [
+            {
+                "name": "Admin",
+                "email": "admin@armorblox.dev",
+                "is_vip": false
+            }
+        ],
+        "policy_names": [
+            "PII Social Security Number"
+        ],
+        "title": "test DLp exception ",
+        "remediation_actions": [
+            "ALERT"
+        ],
+        "resolution_state": "OPEN_INCIDENT_RESOLUTION_STATE",
+        "object_type": "CONTENT_MAIL",
+        "id": "77648",
+        "research_status": "TRUE_POSITIVE",
+        "app_name": "MICROSOFT_OUTLOOK",
+        "external_users": [
+            {
+                "name": "Guestethanz",
+                "email": "ethanz@securerockets.com",
+                "is_vip": false
+            }
+        ],
+        "engagements": {
+            "fwd_mail_count": "0",
+            "reply_mail_count": "0"
+        },
+        "earliest_event_date": "2022-10-21T06:48:03Z"
+    }
+    ],
+    "total_count": "1"
+  }

@@ -73,7 +73,100 @@ script:
     - contextPath: Armorblox.Threat.remediation_actions
       description: Should be the remediation action name for the incident under inspection
       type: string
-  dockerimage: demisto/armorblox:1.0.0.33173
+  - arguments:
+    - description: Incident ID
+      name: incident_id
+      required: true
+    description: Get details of the incident
+    name: armorblox-get-incident
+  - arguments:
+    - description: Custom time filter parameter
+      name: fromDate
+    - description: Custom time filter parameter
+      name: toDate
+    - description: Sorts the incidents
+      name: sortBy
+      auto: PREDEFINED
+      predefined:
+      - DATE
+      - TITLE
+      - PRIORITY
+      defaultValue: DATE
+    - description: Order the fetched incidents
+      name: orderBy
+      auto: PREDEFINED
+      predefined:
+      - ASC
+      - DESC
+      defaultValue: DESC
+    - description: Sets the severity to be fetched
+      name: priorityTypesFilter
+      auto: PREDEFINED
+      predefined:
+      - HIGH
+      - MEDIUM
+      - LOW
+    description: Get threat incidents
+    name: armorblox-get-threats-incidents
+  - arguments:
+    - description: Custom time filter parameter
+      name: fromDate
+    - description: Custom time filter parameter
+      name: toDate
+    - description: Sorts the incidents
+      name: sortBy
+      auto: PREDEFINED
+      predefined:
+      - DATE
+      - TITLE
+      - PRIORITY
+      defaultValue: DATE
+    - description: Order the fetched incidents
+      name: orderBy
+      auto: PREDEFINED
+      predefined:
+      - ASC
+      - DESC
+      defaultValue: DESC
+    - description: Sets the severity to be fetched
+      name: priorityTypesFilter
+      auto: PREDEFINED
+      predefined:
+      - HIGH
+      - MEDIUM
+      - LOW
+    description: Get dlp incidents
+    name: armorblox-get-dlp-incidents
+  - arguments:
+    - description: Custom time filter parameter
+      name: fromDate
+    - description: Custom time filter parameter
+      name: toDate
+    - description: Sorts the incidents
+      name: sortBy
+      auto: PREDEFINED
+      predefined:
+      - DATE
+      - TITLE
+      - PRIORITY
+      defaultValue: DATE
+    - description: Order the fetched incidents
+      name: orderBy
+      auto: PREDEFINED
+      predefined:
+      - ASC
+      - DESC
+      defaultValue: DESC
+    - description: Sets the severity to be fetched
+      name: priorityTypesFilter
+      auto: PREDEFINED
+      predefined:
+      - HIGH
+      - MEDIUM
+      - LOW
+    description: Get abuse incidents
+    name: armorblox-get-abuse-incidents
+  dockerimage: demisto/armorblox:1.0.0.35677
   isfetch: true
   runonce: false
   script: ''

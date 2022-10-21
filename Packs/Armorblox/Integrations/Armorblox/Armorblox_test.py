@@ -1,6 +1,6 @@
-# import demistomock as demisto
-# from CommonServerPython import *
-# from CommonServerUserPython import *
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 """Base Integration for Cortex XSOAR - Unit Tests file
 
 Pytest Unit Tests: all function names must start with "test_"
@@ -12,7 +12,7 @@ you are implementing with your integration
 """
 from CommonServerPython import *
 from Armorblox import Client, get_incident_message_ids, get_remediation_action, get_incidents_list, \
-    fetch_incidents_command
+    fetch_incidents_command, get_incident_by_id, get_threat_incidents, get_dlp_incidents, get_abuse_incidents
 import io
 import json
 
@@ -113,3 +113,62 @@ def test_fetch_incidents_command(requests_mock):
     response = fetch_incidents_command(client)
     assert ('rawJSON' in response[0].keys()) is True
     assert ('details' in response[0].keys()) is True
+
+
+def test_get_incident_by_id(requests_mock):
+    """Tests the get_incident_by_id command function.
+    Configures requests_mock instance to generate the appropriate
+    get_alert API response, loaded from a local JSON file. Checks
+    the output of the command function with the expected output.
+    """
+    incidents_response = util_load_json("test_data/test_get_incidents_list.json")
+    requests_mock.get(url + '?orderBy=ASC&pageSize=1', json=incidents_response)
+    requests_mock.get(url + '?orderBy=ASC', json=incidents_response)
+    # get incident response by id
+    mock_response = util_load_json("test_data/test_get_incident_by_id.json")
+    requests_mock.get(url + '/12846', json=mock_response)
+    client = Client(api_key=API_KEY, instance_name=TENANT_NAME)
+    response = get_incident_by_id(client, "12846")
+    assert response == util_load_json("test_data/test_get_incident_by_id.json")
+
+
+def test_get_threat_incidents(requests_mock):
+    """Tests the get_threat_incidents command function.
+    Configures requests_mock instance to generate the appropriate
+    get_alert API response, loaded from a local JSON file. Checks
+    the output of the command function with the expected output."""
+
+    mock_response = util_load_json("test_data/test_get_threat_incidents.json")
+    requests_mock.get(url + '?incidentTypesFilter=THREAT_INCIDENT_TYPE', json=mock_response)
+    # response for the incident_type , to populate threat incidents.
+    client = Client(api_key=API_KEY, instance_name=TENANT_NAME)
+    response = get_threat_incidents(client, params={})
+    assert response == util_load_json("test_data/test_get_threat_incidents.json")['incidents']
+
+
+def test_get_dlp_incidents(requests_mock):
+    """Tests the get_dlp_incidents command function.
+    Configures requests_mock instance to generate the appropriate
+    get_alert API response, loaded from a local JSON file. Checks
+    the output of the command function with the expected output."""
+
+    mock_response = util_load_json("test_data/test_get_dlp_incidents.json")
+    requests_mock.get(url + '?incidentTypesFilter=DLP_INCIDENT_TYPE', json=mock_response)
+    # response for the incident_type , to populate dlp incidents.
+    client = Client(api_key=API_KEY, instance_name=TENANT_NAME)
+    response = get_dlp_incidents(client, params={})
+    assert response == util_load_json("test_data/test_get_dlp_incidents.json")['incidents']
+
+
+def test_get_abuse_incidents(requests_mock):
+    """Tests the get_abuse_incidents command function.
+    Configures requests_mock instance to generate the appropriate
+    get_alert API response, loaded from a local JSON file. Checks
+    the output of the command function with the expected output."""
+
+    mock_response = util_load_json("test_data/test_get_abuse_incidents.json")
+    requests_mock.get(url + '?incidentTypesFilter=ABUSE_INCIDENT_TYPE', json=mock_response)
+    # response for the incident_type , to populate dlp incidents.
+    client = Client(api_key=API_KEY, instance_name=TENANT_NAME)
+    response = get_abuse_incidents(client, params={})
+    assert response == util_load_json("test_data/test_get_abuse_incidents.json")['incidents']
