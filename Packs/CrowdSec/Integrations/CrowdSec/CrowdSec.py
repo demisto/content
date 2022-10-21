@@ -7,6 +7,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import urllib3
+import datetime
 from typing import Dict, Any
 
 # Disable insecure warnings
@@ -217,7 +218,7 @@ def ip_command(
                     Common.Publications(
                         title="CrowdSec CTI",
                         source="CrowdSec",
-                        timestamp="2019-01-01T00:00:00",
+                        timestamp=datetime.datetime.now().strftime(DATE_FORMAT),
                         link=f"https://app.crowdsec.net/cti/{ip}",
                     )
                 ],
