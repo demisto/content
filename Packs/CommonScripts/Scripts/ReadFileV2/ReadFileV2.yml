@@ -1,0 +1,55 @@
+commonfields:
+  id: ReadFileV2
+  version: -1
+name: ReadFileV2
+script: ''
+type: python
+tags:
+- Utility
+- ingestion
+comment: Load the contents of a file into context.
+enabled: true
+args:
+- name: entry_id
+  required: true
+  default: true
+  description: War room entryID of the file to read.
+- name: max_file_size
+  description: Maximal file size to load, in bytes. Default is 1MB.
+- name: input_encoding
+  auto: PREDEFINED
+  predefined:
+  - binary
+  - utf-8
+  - utf-16
+  - ascii
+  description: The character encoding of the file
+- name: output_data_type
+  auto: PREDEFINED
+  predefined:
+  - raw
+  - base64
+  - json
+  description: The data type to which the output data is converted
+  defaultValue: raw
+outputs:
+- contextPath: FileInfo.Data
+  description: Data read from war room file
+  type: Unknown
+- contextPath: FileInfo.EntryID
+  description: File Entry ID
+  type: string
+- contextPath: FileInfo.Size
+  description: File Size
+  type: number
+- contextPath: FileInfo.EOF
+  description: Whether the file has reached end-of-file.
+  type: boolean
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.8.35482
+runas: DBotWeakRole
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
