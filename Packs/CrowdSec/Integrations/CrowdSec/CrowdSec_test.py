@@ -26,8 +26,33 @@ def util_load_json(path):
 def test_ip_command(mocker):
     from CrowdSec import ip_command
 
-    args = {"ip": "1.2.3.4"}
     test_data = util_load_json("test_data/test_ip_command.json")
+    args = test_data.get("args")
+    mocker.patch(
+        "CrowdSec.Client.get_ip_information",
+        return_value=test_data.get("crowdsec_result"),
+    )
+
+    response = ip_command(client, RELIABILITY, args)
+    mock_response = test_data.get("mock_response")
+
+    mock_outputs = mock_response.get("outputs")
+    mock_readable_output = mock_response.get("readable_output")
+    mock_outputs_prefix = mock_response.get("outputs_prefix")
+    mock_outputs_key_field = mock_response.get("outputs_key_field")
+
+    assert mock_outputs == response[0].outputs
+    assert mock_readable_output == response[0].readable_output
+    assert mock_outputs_prefix == response[0].outputs_prefix
+    assert mock_outputs_key_field == response[0].outputs_key_field
+
+
+def test_unknown_ip_command(mocker):
+    from CrowdSec import ip_command
+
+    test_data = util_load_json("test_data/test_unknown_ip_command.json")
+
+    args = test_data.get("args")
 
     mocker.patch(
         "CrowdSec.Client.get_ip_information",
@@ -107,3 +132,16 @@ def test_test_module_bad_apikey(mocker):
     resp = test_module(client)
 
     assert resp == "Authorization Error: make sure API Key is correctly set"
+
+
+def test_test_module_no_connection(mocker):
+    from CrowdSec import test_module
+
+    mock_response = MagicMock()
+    mock_response.status_code = 500
+    mock_response.json.return_value = {"message": "Something went wrong"}
+    mocker.patch("CrowdSec.Client.test_module", return_value=mock_response)
+
+    resp = test_module(client)
+
+    assert resp == "Something went wrong"

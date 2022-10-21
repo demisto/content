@@ -57,7 +57,7 @@ class Client(BaseClient):
         :return: dict as {"ip": ip, "ip_range": ip_range ...}
         """
         response = self._http_request(
-            method="GET", url_suffix=f"/smoke/{ip}", resp_type="response"
+            method="GET", url_suffix=f"/smoke/{ip}", resp_type="response", ok_codes=(200, 404)
         )
 
         if response.status_code == 429:
@@ -85,6 +85,8 @@ def format_readable(ip: str, data: dict, status: int) -> str:
     for attack_detail in data.get("attack_details", list()):
         cves_readable += attack_detail["label"] + "\n"
 
+    history = data.get("history", {})
+    overall_score = data.get("scores", {}).get("overall", {})
     table_data = [
         {
             "IP": ip,
@@ -95,22 +97,19 @@ def format_readable(ip: str, data: dict, status: int) -> str:
             "AS Country": data.get("location", {}).get("country"),
             "Reverse DNS": data.get("reverse_dns"),
             "Behaviors": behaviors_readable,
-            "First Seen": data["history"].get("first_seen"),
-            "Last Seen": data["history"].get("last_seen"),
-            "Activity in days": data["history"].get("days_age"),
+            "First Seen": history.get("first_seen", None),
+            "Last Seen": history.get("last_seen", None),
+            "Activity in days": history.get("days_age", None),
             "Attacks Details": cves_readable,
-            "Confidence": f'{data["scores"]["overall"]["trust"]}/5',
-            "CrowdSec Score": f'{data["scores"]["overall"]["total"]}/5',
-            "Background Noise Score": f'{data["background_noise_score"]}/10',
+            "Confidence": f'{overall_score.get("trust", "0")}/5',
+            "CrowdSec Score": f'{overall_score.get("total", "0")}/5',
+            "Background Noise Score": f'{data.get("background_noise_score", 0)}/10',
             "CrowdSec Console Link": f"https://app.crowdsec.net/cti/{ip}",
             "CrowdSec Taxonomy": "https://docs.crowdsec.net/docs/next/cti_api/taxonomy"
         }
     ]
-    if status == Common.DBotScore.NONE:
-        ret = f"### IP {ip} is UNKNOWN\n"
-    else:
-        ret = f"### IP {ip} status: {scoreToReputation(status)}\n"
 
+    ret = f"### IP {ip} status: {scoreToReputation(status)}\n"
     ret += tableToMarkdown(
         name="CrowdSec IP Enrichment",
         t=table_data,
@@ -146,14 +145,9 @@ def test_module(client: Client) -> str:
         elif response.status_code == 403:
             message = "Authorization Error: make sure API Key is correctly set"
         else:
-            message = "Unable to connect to CrowdSec API (https://cti.api.crowdsec.net)"
+            message = "Something went wrong"
     except DemistoException as e:
-        if "Forbidden" in str(e) or "Authorization" in str(
-            e
-        ):  # TODO: make sure you capture authentication errors
-            message = "Authorization Error: make sure API Key is correctly set"
-        else:
-            raise e
+        raise e
     return message
 
 

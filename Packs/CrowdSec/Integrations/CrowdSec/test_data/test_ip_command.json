@@ -1,4 +1,7 @@
 {
+    "args": {
+        "ip": "1.2.3.4"
+    },
     "crowdsec_result": {
         "ip_range_score": 1,
         "ip": "1.2.3.4",
@@ -212,8 +215,8 @@
             },
             "references": []
         },
-        "readable_output" : "### IP 1.2.3.4 status: Good\n### CrowdSec IP Enrichment\n|IP|AS Name|AS Num|Behaviors|First Seen|Last Seen|Activity in days|Attacks Details|Confidence|CrowdSec Score|Background Noise Score|CrowdSec Console Link|CrowdSec Taxonomy|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| 1.2.3.4 | N/A | 0 | SSH Bruteforce<br>HTTP Scan<br> | 2021-12-04T10:45:00+00:00 | 2022-10-18T15:45:00+00:00 | 318 | SSH Bruteforce<br>Slow SSH Bruteforce<br>HTTP Scanner<br> | 2/5 | 1/5 | 1/10 | https://app.crowdsec.net/cti/1.2.3.4 | https://docs.crowdsec.net/docs/next/cti_api/taxonomy |\n",
-        "outputs_prefix" : "CrowdSec.Info",
+        "readable_output": "### IP 1.2.3.4 status: Good\n### CrowdSec IP Enrichment\n|IP|AS Name|AS Num|Behaviors|First Seen|Last Seen|Activity in days|Attacks Details|Confidence|CrowdSec Score|Background Noise Score|CrowdSec Console Link|CrowdSec Taxonomy|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| 1.2.3.4 | N/A | 0 | SSH Bruteforce<br>HTTP Scan<br> | 2021-12-04T10:45:00+00:00 | 2022-10-18T15:45:00+00:00 | 318 | SSH Bruteforce<br>Slow SSH Bruteforce<br>HTTP Scanner<br> | 2/5 | 1/5 | 1/10 | https://app.crowdsec.net/cti/1.2.3.4 | https://docs.crowdsec.net/docs/next/cti_api/taxonomy |\n",
+        "outputs_prefix": "CrowdSec.Info",
         "outputs_key_field": "ip"
     }
 }
