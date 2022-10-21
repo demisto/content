@@ -327,7 +327,7 @@ script:
     - contextPath: ASM.AssetInternetExposure.externally_inferred_vulnerability_score
       description: Asset vulnerability score.
       type: Unknown
-  dockerimage: demisto/python3:3.10.8.35482
+  dockerimage: demisto/python3:3.10.8.36650
   runonce: false
   script: ''
   subtype: python3
