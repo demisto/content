@@ -155,7 +155,7 @@ def test_module(client: Client) -> str:
     return message
 
 
-def get_ip_command(
+def ip_command(
     client: Client, reliability: str, args: Dict[str, Any]
 ) -> CommandResults:
 
@@ -272,7 +272,7 @@ def main() -> None:
             return_results(result)
 
         elif demisto.command() == "ip":
-            return_results(get_ip_command(client, reliability, demisto.args()))
+            return_results(ip_command(client, reliability, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
