@@ -47,7 +47,7 @@ def main():
         else:
             raise ValueError(f'Invalid data encoding name: {output_data_type}')
 
-        return_results(CommandResults(outputs_prefix='FileInfo(obj.EntryID===val.EntryID)',
+        return_results(CommandResults(outputs_prefix='ReadFile(obj.EntryID===val.EntryID)',
                                       outputs={
                                           'Data': data,
                                           'EntryID': entry_id,

@@ -24,7 +24,7 @@ Load the contents of a file into context.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| FileInfo.Data | Data read from war room file | Unknown |
-| FileInfo.EntryID | File Entry ID | string |
-| FileInfo.Size | File Size | number |
-| FileInfo.EOF | Whether the file has reached end-of-file. | boolean |
+| ReadFile.Data | Data read from war room file | Unknown |
+| ReadFile.EntryID | File Entry ID | string |
+| ReadFile.Size | File Size | number |
+| ReadFile.EOF | Whether the file has reached end-of-file. | boolean |

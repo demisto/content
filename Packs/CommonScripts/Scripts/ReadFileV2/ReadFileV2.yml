@@ -33,22 +33,22 @@ args:
   description: The data type to which the output data is converted
   defaultValue: raw
 outputs:
-- contextPath: FileInfo.Data
+- contextPath: ReadFile.Data
   description: Data read from war room file
   type: Unknown
-- contextPath: FileInfo.EntryID
+- contextPath: ReadFile.EntryID
   description: File Entry ID
   type: string
-- contextPath: FileInfo.Size
+- contextPath: ReadFile.Size
   description: File Size
   type: number
-- contextPath: FileInfo.EOF
+- contextPath: ReadFile.EOF
   description: Whether the file has reached end-of-file.
   type: boolean
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.8.35482
+dockerimage: demisto/python3:3.10.8.36650
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:

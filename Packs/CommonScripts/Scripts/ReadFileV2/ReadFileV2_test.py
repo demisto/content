@@ -32,7 +32,7 @@ def test_read_file_default(mocker):
         'Contents': file_info,
         'HumanReadable': 'Read 9 charactors from file.',
         'EntryContext': {
-            'FileInfo(obj.EntryID===val.EntryID)': file_info
+            'ReadFile(obj.EntryID===val.EntryID)': file_info
         }
     }
 
@@ -75,7 +75,7 @@ def test_read_file_as_binary(mocker):
         'Contents': file_info,
         'HumanReadable': 'Read 9 bytes from file.',
         'EntryContext': {
-            'FileInfo(obj.EntryID===val.EntryID)': file_info
+            'ReadFile(obj.EntryID===val.EntryID)': file_info
         }
     }
 
@@ -118,7 +118,7 @@ def test_read_file_incomplete(mocker):
         'Contents': file_info,
         'HumanReadable': 'Read 3 charactors from file.',
         'EntryContext': {
-            'FileInfo(obj.EntryID===val.EntryID)': file_info
+            'ReadFile(obj.EntryID===val.EntryID)': file_info
         }
     }
 
@@ -160,7 +160,7 @@ def test_read_empty_file(mocker):
         'Contents': file_info,
         'HumanReadable': 'Read 0 charactors from file.',
         'EntryContext': {
-            'FileInfo(obj.EntryID===val.EntryID)': file_info
+            'ReadFile(obj.EntryID===val.EntryID)': file_info
         }
     }
 
@@ -204,7 +204,7 @@ def test_read_binary_to_base64(mocker):
         'Contents': file_info,
         'HumanReadable': 'Read 5 bytes from file.',
         'EntryContext': {
-            'FileInfo(obj.EntryID===val.EntryID)': file_info
+            'ReadFile(obj.EntryID===val.EntryID)': file_info
         }
     }
 
@@ -250,7 +250,7 @@ def test_read_utf8_to_json(mocker):
         'Contents': file_info,
         'HumanReadable': 'Read 9 charactors from file.',
         'EntryContext': {
-            'FileInfo(obj.EntryID===val.EntryID)': file_info
+            'ReadFile(obj.EntryID===val.EntryID)': file_info
         }
     }
 
@@ -296,7 +296,7 @@ def test_read_utf16be_to_json(mocker):
         'Contents': file_info,
         'HumanReadable': 'Read 10 charactors from file.',
         'EntryContext': {
-            'FileInfo(obj.EntryID===val.EntryID)': file_info
+            'ReadFile(obj.EntryID===val.EntryID)': file_info
         }
     }
 
@@ -342,7 +342,7 @@ def test_read_utf16le_to_json(mocker):
         'Contents': file_info,
         'HumanReadable': 'Read 10 charactors from file.',
         'EntryContext': {
-            'FileInfo(obj.EntryID===val.EntryID)': file_info
+            'ReadFile(obj.EntryID===val.EntryID)': file_info
         }
     }
 
