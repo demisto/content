@@ -47,6 +47,11 @@
             "playbookID": "LogRhythmRestV2-test"
         },
         {
+            "fromversion": "6.6.0",
+            "integrations": "Zendesk v2",
+            "playbookID": "Zendesk V2 TEST"
+        },
+        {
             "playbookID": "Base64Decode - Test"
         },
         {
@@ -1384,14 +1389,6 @@
             "instance_names": "virus_total_preferred_vendors",
             "playbookID": "virusTotaI-test-preferred-vendors",
             "timeout": 1400
-        },
-        {
-            "integrations": "Preempt",
-            "playbookID": "Preempt Test"
-        },
-        {
-            "integrations": "Gmail",
-            "playbookID": "get_original_email_-_gmail_-_test"
         },
         {
             "integrations": [
@@ -5191,6 +5188,9 @@
             "integrations": [
                 "Panorama"
             ]
+        },
+        {
+            "playbookID": "VerifyCIDR-Test"
         }
     ],
     "skipped_tests": {
@@ -5407,7 +5407,6 @@
         "Check Point": "Issue 18643",
         "CheckPointFirewall_v2": "Issue 18643",
         "CTIX v3": "No instance - developed by partner",
-        "Preempt": "Issue 20268",
         "Jask": "Issue 18879",
         "vmray": "Issue 18752",
         "SCADAfence CNM": "Issue 18376",
