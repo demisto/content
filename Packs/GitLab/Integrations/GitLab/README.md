@@ -244,7 +244,7 @@ Get a list of a project's issues.
 | updated_before | Return issues updated on or before the given time. | Optional | 
 | limit | Maximum number of results to return. Default is 50. | Optional | 
 | page | The number of page to retrieve results from. Default is 1. | Optional | 
-
+| partial_response | Return partial API response in context data if true, otherwise returns full API response. | Optional |
 
 #### Context Output
 
@@ -260,7 +260,7 @@ Get a list of a project's issues.
 | GitLab.Issue.assignee.name | String | The name of the assignee. | 
 
 #### Command Example
-`!gitlab-issue-list limit=1 page=1 assignee_id=1 assignee_username=Assignusername author_id=4 author_username=usernameAuthoe confidential=False created_after=2000-09-15T17:22:42.246Z created_before=2022-09-15T17:22:42.246Z due_date=2023-09-15T17:22:42.246Z epic_id=1 issue_type=Issue labels=label2 milestone=PR order_by=Weight`
+`!gitlab-issue-list limit=1 page=1 assignee_id=1 assignee_username=Assignusername author_id=4 author_username=usernameAuthoe confidential=False created_after=2000-09-15T17:22:42.246Z created_before=2022-09-15T17:22:42.246Z due_date=2023-09-15T17:22:42.246Z epic_id=1 issue_type=Issue labels=label2 milestone=PR order_by=Weight partial_response=false`
 
 #### Human Readable Output
 ## List Issues:
@@ -293,7 +293,7 @@ Updates an existing project issue. This call is also used to mark an issue as cl
 | remove_labels | Comma-separated label names to remove from an issue. | Optional | 
 | state_event | The state event of an issue. Set close to close the issue and reopen to reopen it. | Optional | 
 | title | The title of an issue. | Optional | 
-
+| partial_response | Return partial API response in context data if true, otherwise returns full API response. | Optional |
 
 #### Context Output
 
@@ -350,7 +350,7 @@ Updates an existing project issue. This call is also used to mark an issue as cl
 | GitLab.Issue.task_completion_status.completed_count | Number | dictionary of status. | 
 
 #### Command Example
-`!gitlab-issue-update issue_iid=20 add_labels=label3 assignee_ids=2 confidential=False description=UpdateDesc discussion_locked=False due_date=2022-09-15T17:22:42.246Z epic_id=1 epic_iid=2 issue_type=Issue milestone_id=16 remove_labels=label1 state_event=Close title=updateTitle`
+`!gitlab-issue-update issue_iid=20 add_labels=label3 assignee_ids=2 confidential=False description=UpdateDesc discussion_locked=False due_date=2022-09-15T17:22:42.246Z epic_id=1 epic_iid=2 issue_type=Issue milestone_id=16 remove_labels=label1 state_event=Close title=updateTitle partial_response=false`
 
 #### Human Readable Output
 ## Update Issue:
@@ -381,9 +381,10 @@ Get a list of repository commits in a project.
 | order | List commits in order. Possible values- default, topo. Defaults to default, the commits are shown in reverse chronological order. Possible values are: default, topo. | Optional | 
 | limit | Total commits to show. Default is 50. | Optional | 
 | page | Present commits from page. Default is 1. | Optional | 
+| partial_response | Return partial API response in context data if true, otherwise returns full API response. | Optional |
 
 #### Command Example
-`!gitlab-commit-list limit=1 page=1 commit_id=c156b66b ref_name=main created_before=2022-09-15T17:22:42.246Z created_after=2000-09-15T17:22:42.246Z path=./ all=True with_stats=True first_parent=True order=Default`
+`!gitlab-commit-list limit=1 page=1 commit_id=c156b66b ref_name=main created_before=2022-09-15T17:22:42.246Z created_after=2000-09-15T17:22:42.246Z path=./ all=True with_stats=True first_parent=True order=Default partial_response=false`
 
 #### Human Readable Output
 ## List Commits:
@@ -442,6 +443,7 @@ Get all merge requests for this project.
 | search | Search merge requests against their title and description. | Optional | 
 | limit | Total merge requests to show. Default is 50. | Optional | 
 | page | Present merge requests from page. Default is 1. | Optional | 
+| partial_response | Return partial API response in context data if true, otherwise returns full API response. | Optional |
 
 
 #### Context Output
@@ -459,7 +461,7 @@ Get all merge requests for this project.
 | GitLab.MergeRequest.reviewers | Number | The reviewer of the merge requests. | 
 
 #### Command Example
-`!gitlab-merge-request-list limit=1 page=1 state=Opened order_by=title sort=asc milestone=Any labels=label1 created_before=2022-11-15T17:22:42.246Z created_after=2000-09-15T17:22:42.246Z updated_after=2000-09-15T17:22:42.246Z updated_before=2022-09-15T17:22:42.246Z scope=All author_id=1 author_username=usernameAuthor assignee_id=1 reviewer_id=6 reviewer_username=username source_branch=sourceBranceName target_branch=main search=gitlab`
+`!gitlab-merge-request-list limit=1 page=1 state=Opened order_by=title sort=asc milestone=Any labels=label1 created_before=2022-11-15T17:22:42.246Z created_after=2000-09-15T17:22:42.246Z updated_after=2000-09-15T17:22:42.246Z updated_before=2022-09-15T17:22:42.246Z scope=All author_id=1 author_username=usernameAuthor assignee_id=1 reviewer_id=6 reviewer_username=username source_branch=sourceBranceName target_branch=main search=gitlab partial_response=false`
 
 #### Human Readable Output
 ## List Merge requests :
@@ -493,6 +495,7 @@ Creates a new merge request.
 | allow_maintainer_to_push | Alias of allow_collaboration. | Optional | 
 | approvals_before_merge | Number of approvals required before this can be merged. | Optional | 
 | squash | Squash commits into a single commit when merging. | Optional | 
+| partial_response | Return partial API response in context data if true, otherwise returns full API response. | Optional |
 
 
 #### Context Output
@@ -577,7 +580,7 @@ Creates a new merge request.
 | GitLab.MergeRequest.user.can_merge | Boolean | If the user can merge. | 
 
 #### Command Example
-`!gitlab-merge-request-create  source_branch=NewName target_branch=main title=titleName assignee_ids=1 reviewer_ids2 description=description target_project_id=3320 labels=label1 milestone_id=1 remove_source_branch=False allow_collaboration=False allow_maintainer_to_push=False approvals_before_merge=2 squash=False`
+`!gitlab-merge-request-create  source_branch=NewName target_branch=main title=titleName assignee_ids=1 reviewer_ids2 description=description target_project_id=3320 labels=label1 milestone_id=1 remove_source_branch=False allow_collaboration=False allow_maintainer_to_push=False approvals_before_merge=2 squash=False partial_response=false`
 
 #### Human Readable Output
 ## Merge request created successfully.
@@ -611,7 +614,7 @@ Updates an existing merge request. You can change the target branch, title, or e
 | discussion_locked | Flag indicating if the merge request's discussion is locked. If the discussion is locked only project members can add, edit or resolve comments. | Optional | 
 | allow_collaboration | Allow commits from members who can merge to the target branch. | Optional | 
 | allow_maintainer_to_push | Alias of allow_collaboration. | Optional | 
-
+| partial_response | Return partial API response in context data if true, otherwise returns full API response. | Optional |
 
 #### Context Output
 
@@ -720,7 +723,7 @@ Updates an existing merge request. You can change the target branch, title, or e
 | GitLab.MergeRequest.task_completion_status.completed_count | Integer | The number of task completed completion. | 
 
 #### Command Example
-`!gitlab-merge-request-update merge_request_id target_branch=NewName title=newTitle assignee_ids=1 reviewer_ids=2 description=UpdateDesc target_project_id=3003 add_labels=label2 remove_labels=label1 milestone_id=1 state_event=Close remove_source_branch=True squash=True discussion_locked=True allow_collaboration=True allow_maintainer_to_push=True`
+`!gitlab-merge-request-update merge_request_id target_branch=NewName title=newTitle assignee_ids=1 reviewer_ids=2 description=UpdateDesc target_project_id=3003 add_labels=label2 remove_labels=label1 milestone_id=1 state_event=Close remove_source_branch=True squash=True discussion_locked=True allow_collaboration=True allow_maintainer_to_push=True partial_response=false`
 
 #### Human Readable Output
 ## Merge request updated successfully.
@@ -740,7 +743,7 @@ Creates a new note to a single project issue.
 | issue_iid | The IID of an issue. | Required | 
 | body | The content of a note. Limited to 1,000,000 characters. | Required | 
 | confidential | will be removed in GitLab 16.0 and renamed to internal. The confidential flag of a note. Default is false. | Optional | 
-
+| partial_response | Return partial API response in context data if true, otherwise returns full API response. | Optional |
 
 #### Context Output
 
@@ -767,7 +770,7 @@ Creates a new note to a single project issue.
 | GitLab.IssueNote.noteable_iid | Number | The noteable IID. | 
 
 #### Command example
-```!gitlab-issue-note-create issue_iid=4 body=body confidential=True```
+```!gitlab-issue-note-create issue_iid=4 body=body confidential=True partial_response=false```
 #### Context Example
 ```json
 {
@@ -847,7 +850,7 @@ Modify existing note of an issue.
 | issue_iid | The issue internal Id. | Required | 
 | note_id | The note Id. | Required | 
 | body | The content of a note. | Required | 
-
+| partial_response | Return partial API response in context data if true, otherwise returns full API response. | Optional |
 
 #### Context Output
 
@@ -874,7 +877,7 @@ Modify existing note of an issue.
 | GitLab.IssueNote.noteable_iid | Number | The notable internal ID. | 
 
 #### Command Example
-`!gitlab-issue-note-update issue_iid=4 note_id=1045951925 body=UpdatedBody`
+`!gitlab-issue-note-update issue_iid=4 note_id=1045951925 body=UpdatedBody partial_response=false`
 
 #### Human Readable Output
 ## Issue note updated was updated successfully.
@@ -896,7 +899,7 @@ Gets a list of all notes for a single issue.
 | sort | Return issue noted ordered by created_at, updated_at fields. Possible values are: desc, asc. Default is desc. | Optional | 
 | limit | Maximum number of results to return. Default is 50. | Optional | 
 | page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
-
+| partial_response | Return partial API response in context data if true, otherwise returns full API response. | Optional |
 
 #### Context Output
 
@@ -923,7 +926,7 @@ Gets a list of all notes for a single issue.
 | GitLab.IssueNote.noteable_iid | Number | The notable internal ID. | 
 
 #### Command Example
-`!gitlab-issue-note-list limit=1 page=1`
+`!gitlab-issue-note-list limit=1 page=1 partial_response=false`
 
 #### Human Readable Output
 ## List Issue notes:
@@ -948,7 +951,7 @@ Gets a list of all notes for a single merge request.
 | order_by | Return merge request notes ordered by created_at or updated_at fields. Default is created_at. Possible values are: created_at, updated_at. Default is created_at. | Optional | 
 | limit | Total merge requests to show. Default is 50. | Optional | 
 | page | Present merge requests from page. Default is 1. | Optional | 
-
+| partial_response | Return partial API response in context data if true, otherwise returns full API response. | Optional |
 
 #### Context Output
 
@@ -975,7 +978,7 @@ Gets a list of all notes for a single merge request.
 | GitLab.MergeRequestNote.noteable_iid | Number | The merge request's noteable IID. | 
 
 #### Command example
-```!gitlab-merge-request-note-list limit=1 page=1 merge_request_iid=5 sort=asc order_by=created_at```
+```!gitlab-merge-request-note-list limit=1 page=1 merge_request_iid=5 sort=asc order_by=created_at partial_response=false```
 #### Human Readable Output
 >### List Merge Issue Notes
 |Id|Author|Text|CreatedAt|UpdatedAt|
@@ -996,7 +999,7 @@ Creates a new note for a single merge request.
 | --- | --- | --- |
 | merge_request_iid | The IID of a project merge request. | Required | 
 | body | The content of a note. Limited to 1,000,000 characters. | Required | 
-
+| partial_response | Return partial API response in context data if true, otherwise returns full API response. | Optional |
 
 #### Context Output
 
@@ -1023,7 +1026,7 @@ Creates a new note for a single merge request.
 | GitLab.MergeRequestNote.noteable_iid | Number | The merge request's noteable IID. | 
 
 #### Command example
-```!gitlab-merge-request-note-create merge_request_iid=5 body=body```
+```!gitlab-merge-request-note-create merge_request_iid=5 body=body partial_response=false```
 #### Context Example
 ```json
 {
@@ -1148,6 +1151,7 @@ Create an issue.
 | labels | Comma separated values of labels to add to the issue. | Optional | 
 | title | The issue title. | Required | 
 | description | The issue description. | Required | 
+| partial_response | Return partial API response in context data if true, otherwise returns full API response. | Optional |
 
 
 #### Context Output
@@ -1199,7 +1203,7 @@ Create an issue.
 | GitLab.Issue.task_completion_status.completed_count | Number | The issue's completion status completed counter. | 
 
 #### Command example
-```!gitlab-issue-create description=issueDescription title=issueTitle labels=label1,label2 ```
+```!gitlab-issue-create description=issueDescription title=issueTitle labels=label1,label2 partial_response=false```
 #### Context Example
 ```json
 {
@@ -1303,7 +1307,7 @@ Get a list of all visible projects across GitLab for the authenticated user. Whe
 | with_merge_requests_enabled | Limit by enabled merge requests feature. | Optional | 
 | page | The page number. Default is 1. | Optional | 
 | limit | Maximum number of results to return. Default is 50. | Optional | 
-
+| partial_response | Return partial API response in context data if true, otherwise returns full API response. | Optional |
 
 #### Context Output
 
@@ -1421,7 +1425,7 @@ Get a list of all visible projects across GitLab for the authenticated user. Whe
 | GitLab.Project.permissions.project_access | Unknown | The project access\(permissions\). | 
 
 #### Command Example
-`!gitlab-project-list limit=1 page=1 membership=True order_by=Name owned=True sort=desc visibillity=public with_issues_enabled=True with_merge_requests_enabled=True`
+`!gitlab-project-list limit=1 page=1 membership=True order_by=Name owned=True sort=desc visibillity=public with_issues_enabled=True with_merge_requests_enabled=True partial_response=false`
 
 #### Human Readable Output
 ## List Projects:
@@ -1608,7 +1612,7 @@ Creates a new branch in the repository.
 | --- | --- | --- |
 | branch | The name of the branch. | Required | 
 | ref | Branch name, or commit SHA to create a branch from. | Required | 
-
+| partial_response | Return partial API response in context data if true, otherwise returns full API response. | Optional |
 
 #### Context Output
 
@@ -1635,7 +1639,7 @@ Creates a new branch in the repository.
 | GitLab.Branch.web_url | String | The branch's web url. | 
 
 #### Command example
-```!gitlab-branch-create  branch=newBranch ref=main```
+```!gitlab-branch-create  branch=newBranch ref=main partial_response=true```
 #### Context Example
 ```json
 {
@@ -1750,7 +1754,7 @@ Get a list of repository branches from a project, sorted by name alphabetically.
 | search | Return list of branches containing the search string. You can use ^term and term$ to find branches that begin and end with term respectively. | Optional | 
 | limit | Maximum number of results to return. Default is 50. | Optional | 
 | page | The number of results on the page. Default is 1. | Optional | 
-
+| partial_response | Return partial API response in context data if true, otherwise returns full API response. | Optional |
 
 #### Context Output
 
@@ -1777,7 +1781,7 @@ Get a list of repository branches from a project, sorted by name alphabetically.
 | GitLab.Branch.commit.parent_ids | String | The branch commit's parent ids. | 
 
 #### Command Example
-`!gitlab-branch-list limit=1 page=1 branch_name=branchName search=searchString`
+`!gitlab-branch-list limit=1 page=1 branch_name=branchName search=searchString partial_response=false`
 
 #### Human Readable Output
 ## Branch details:
