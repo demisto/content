@@ -165,7 +165,7 @@ script:
       required: false
       isArray: false
     - name: entry_id
-      description: Entry id of the file.if the user uploaded a file, he can provide the entry id. If he did, we need to read the content from the file and set the value in the file_content argument.
+      description: Entry id of the file.
       required: false
       isArray: false
     - name: file_content
@@ -244,6 +244,15 @@ script:
       description: Return issues created on or before the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z)
       required: false
       isArray: false
+    - auto: PREDEFINED
+      name: partial_response
+      defaultValue: 'true'
+      description: Return partial API response in context data if true, otherwise returns full API response. 
+      required: false
+      isArray: false
+      predefined:
+      - 'true'
+      - 'false'
     - auto: PREDEFINED
       name: due_date
       description: Return issues that have no due date, are overdue, or whose due date is this week, this month, or between two weeks ago and next month.
@@ -436,6 +445,15 @@ script:
       description: The title of an issue
       required: false
       isArray: false
+    - auto: PREDEFINED
+      name: partial_response
+      defaultValue: 'true'
+      description: Return partial API response in context data if true, otherwise returns full API response. 
+      required: false
+      isArray: false
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - contextPath: GitLab.Issue.id
       description: The issue id.
@@ -617,6 +635,15 @@ script:
       description: Present commits from page.
       required: false
       isArray: false
+    - auto: PREDEFINED
+      name: partial_response
+      defaultValue: 'true'
+      description: Return partial API response in context data if true, otherwise returns full API response. 
+      required: false
+      isArray: false
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - contextPath: GitLab.Commit.id
       description: The commit ID.
@@ -762,6 +789,15 @@ script:
       description: Present merge requests from page.
       required: false
       isArray: false
+    - auto: PREDEFINED
+      name: partial_response
+      defaultValue: 'true'
+      description: Return partial API response in context data if true, otherwise returns full API response. 
+      required: false
+      isArray: false
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - type: Number
       contextPath: GitLab.MergeRequest.iid
@@ -849,6 +885,15 @@ script:
       description: Squash commits into a single commit when merging.
       required: false
       isArray: false
+    - auto: PREDEFINED
+      name: partial_response
+      defaultValue: 'true'
+      description: Return partial API response in context data if true, otherwise returns full API response. 
+      required: false
+      isArray: false
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - type: Number
       contextPath: GitLab.MergeRequest.id
@@ -1154,6 +1199,15 @@ script:
       required: false
       isArray: false
       type: Boolean
+    - auto: PREDEFINED
+      name: partial_response
+      defaultValue: 'true'
+      description: Return partial API response in context data if true, otherwise returns full API response. 
+      required: false
+      isArray: false
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - type: Number
       contextPath: GitLab.MergeRequest.id
@@ -1475,6 +1529,15 @@ script:
       required: false
       isArray: false
       type: Boolean
+    - auto: PREDEFINED
+      name: partial_response
+      defaultValue: 'true'
+      description: Return partial API response in context data if true, otherwise returns full API response. 
+      required: false
+      isArray: false
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - contextPath: GitLab.IssueNote.id
       description: The issue note ID.
@@ -1563,6 +1626,15 @@ script:
       description: The content of a note.
       required: true
       isArray: false
+    - auto: PREDEFINED
+      name: partial_response
+      defaultValue: 'true'
+      description: Return partial API response in context data if true, otherwise returns full API response. 
+      required: false
+      isArray: false
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - type: Number
       contextPath: GitLab.IssueNote.id
@@ -1655,6 +1727,15 @@ script:
       name: page
       required: false
       secret: false
+    - auto: PREDEFINED
+      name: partial_response
+      defaultValue: 'true'
+      description: Return partial API response in context data if true, otherwise returns full API response. 
+      required: false
+      isArray: false
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - type: Number
       contextPath: GitLab.IssueNote.id
@@ -1748,6 +1829,15 @@ script:
       description: Present merge requests from page.
       required: false
       isArray: false
+    - auto: PREDEFINED
+      name: partial_response
+      defaultValue: 'true'
+      description: Return partial API response in context data if true, otherwise returns full API response. 
+      required: false
+      isArray: false
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - type: Number
       contextPath: GitLab.MergeRequestNote.id
@@ -1817,6 +1907,15 @@ script:
       description: The content of a note. Limited to 1,000,000 characters.
       required: true
       isArray: false
+    - auto: PREDEFINED
+      name: partial_response
+      defaultValue: 'true'
+      description: Return partial API response in context data if true, otherwise returns full API response. 
+      required: false
+      isArray: false
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - type: Number
       contextPath: GitLab.MergeRequestNote.id
@@ -1890,6 +1989,15 @@ script:
       description: The content of a note. Limited to 1,000,000 characters.
       required: true
       isArray: false
+    - auto: PREDEFINED
+      name: partial_response
+      defaultValue: 'true'
+      description: Return partial API response in context data if true, otherwise returns full API response. 
+      required: false
+      isArray: false
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - type: Number
       contextPath: GitLab.MergeRequestNote.id
@@ -1975,6 +2083,15 @@ script:
       description: The issue description.
       required: true
       isArray: false
+    - auto: PREDEFINED
+      name: partial_response
+      defaultValue: 'true'
+      description: Return partial API response in context data if true, otherwise returns full API response. 
+      required: false
+      isArray: false
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - contextPath: GitLab.Issue.iid
       description: The issue's IID.
@@ -2167,6 +2284,15 @@ script:
       isArray: false
       name: limit
       required: false
+    - auto: PREDEFINED
+      name: partial_response
+      defaultValue: 'true'
+      description: Return partial API response in context data if true, otherwise returns full API response. 
+      required: false
+      isArray: false
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - type: Number
       contextPath: GitLab.Project.id
@@ -2870,6 +2996,15 @@ script:
       isArray: false
       name: ref
       required: true
+    - auto: PREDEFINED
+      name: partial_response
+      defaultValue: 'true'
+      description: Return partial API response in context data if true, otherwise returns full API response. 
+      required: false
+      isArray: false
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - contextPath: GitLab.Branch.commit.author_email
       description: The branch commit's author's email.
@@ -2958,6 +3093,15 @@ script:
       description: The number of results on the page.
       required: false
       isArray: false
+    - auto: PREDEFINED
+      name: partial_response
+      defaultValue: 'true'
+      description: Return partial API response in context data if true, otherwise returns full API response. 
+      required: false
+      isArray: false
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
     - contextPath: GitLab.Branch.name
       description: The branch's name.

@@ -88,7 +88,6 @@ class Client(BaseClient):
         suffix = f'/projects/{self.project_id}/users'
         response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202])
         return response
-# §§§§§§§§§§§§§§§§§
 
     def create_issue_request(self, labels: str, title: str, description: str) -> dict:
         headers = self._headers
@@ -328,6 +327,110 @@ def response_according_pagination(client_function: Any, limit: int, page_number:
     return response
 
 
+def partial_response_fields(object_name: str):
+    '''
+    This function returns the fields for context data after filtring them. If a wanted field
+    is inside a dict it the name of the dict would be his data, otherwise the data is empty,
+    input: name of object
+    returns: wanted fields.
+    '''
+    if object_name == 'Branch':
+        return {
+            'name': None,
+            'commit': ['id', 'short_id', 'commited_date', 'author_name'],
+            'merged': None
+        }
+    if object_name == 'Issue':
+        return{
+            'id': None,
+            'iid': None,
+            'title': None,
+            'description': None,
+            'author': ['name', 'id'],
+            'assignee': ['name', 'id'],
+            'created_at': None,
+            'updated_at': None,
+            'closed_at': None,
+            'state': None,
+            'severity': None
+        }
+
+    if object_name == 'Merge Request':
+        return{
+            'id': None,
+            'iid': None,
+            'title': None,
+            'description': None,
+            'state': None,
+            'author': ['name', 'id'],
+            'created_at': None,
+            'closed_at': None,
+            'source_branch': None,
+            'target_branch': None
+        }
+    if object_name == 'Commit':
+        return{
+            'id': None,
+            'iid': None,
+            'title': None,
+            'message': None,
+            'author': ['name'],
+            'created_at': None
+        }
+
+    if object_name == 'Issue Note':
+        return{
+            'id': None,
+            'created_at': None,
+            'updated_at': None,
+            'body': None,
+            'issue_iid': None,
+            'author': ['name', 'id']
+        }
+
+    if object_name == 'Merge Request Note':
+        return{
+            'id': None,
+            'created_at': None,
+            'updated_at': None,
+            'body': None,
+            'merge_request_id': None,
+            'author': ['name', 'id']
+        }
+
+    if object_name == 'Project':
+        return{
+            'id': None,
+            'description': None,
+            'name': None,
+            'created_at': None,
+            'default_branch': None,
+            'namespace': ['name', 'id']
+        }
+
+
+def partial_response(response: list, object_type: str):
+    '''
+    This function filters the raw response from the API accroding to the dict of fields given.
+    input: raw response which is a list of dictionaries, fields for the context data dispaly.
+    output: parital dictonary results.
+    '''
+    partial_response: List[Dict[str, Any]] = []
+    fields = partial_response_fields(object_type)
+    for raw_dict in response:
+        partial_dict: Dict[str, Any] = {}
+        for field_key, field_dict_vals in fields.items():
+            if not(field_dict_vals):
+                partial_dict[field_key] = raw_dict.get(field_key, '')
+            elif raw_dict.get(field_key):
+                temp_dict_vals: Dict[str, Any] = {}
+                for val in field_dict_vals:
+                    temp_dict_vals[val] = raw_dict.get(field_key, {}).get(val, '')
+                partial_dict[field_key] = temp_dict_vals
+        partial_response.append(partial_dict)
+    return partial_response
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -437,7 +540,6 @@ def issue_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                            state=args.get('state'), updated_after=args.get('updated_after'),
                            updated_before=args.get('updated_before'))
     response = response_according_pagination(client.issue_list_request, limit, page_number, params, None)
-
     for issue in response:
         issue_details = {'Issue_iid': issue.get('iid'),
                          'Title': issue.get('title'),
@@ -450,12 +552,14 @@ def issue_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         if issue.get('milestone'):
             issue_details['Milestone'] = issue.get('milestone', {}).get('title')
         response_to_hr.append(issue_details)
+    return_partial = args.get('partial_response') == 'true'
+    outputs = partial_response(response, 'Issue') if return_partial else response
     human_readable = tableToMarkdown('List Issues', response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
         outputs_prefix='GitLab.Issue',
         outputs_key_field='iid',
         readable_output=human_readable,
-        outputs=response,
+        outputs=outputs,
         raw_response=response
     )
 
@@ -490,12 +594,14 @@ def create_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults
         human_readable_dict['Assignee'] = response.get('assignee', {}).get('name', '')
     if response.get('milestone'):
         human_readable_dict['Milestone'] = response.get('milestone', {}).get('title', '')
+    return_partial = args.get('partial_response') == 'true'
+    outputs = partial_response([response], 'Issue') if return_partial else response
     human_readable = tableToMarkdown('Created Issue', human_readable_dict, headers=headers, removeNull=True)
     return CommandResults(
         outputs_prefix='GitLab.Issue',
         outputs_key_field='iid',
         readable_output=human_readable,
-        outputs=response,
+        outputs=outputs,
         raw_response=response
     )
 
@@ -525,11 +631,13 @@ def branch_create_command(client: Client, args: Dict[str, Any]) -> CommandResult
         'IsProtected': response.get('protected', 'False')
     }
     human_readable = tableToMarkdown('Create Branch', human_readable_dict, headers=headers)
+    return_partial = args.get('partial_response') == 'true'
+    outputs = partial_response([response], 'Branch') if return_partial else response
     command_results = CommandResults(
         outputs_prefix='GitLab.Branch',
         outputs_key_field='short_id',
         readable_output=human_readable,
-        outputs=response,
+        outputs=outputs,
         raw_response=response
     )
     return command_results
@@ -644,12 +752,14 @@ def issue_update_command(client: Client, args: Dict[str, Any]) -> CommandResults
         human_readable_dict['CreatedBy'] = response['author'].get('name', '')
     if response.get('milestone'):
         human_readable_dict['Milstone'] = response['milestone'].get('title', '')
+    return_partial = args.get('partial_response') == 'true'
+    outputs = partial_response([response], 'Issue') if return_partial else response
     human_readable = tableToMarkdown('Update Issue', human_readable_dict, removeNull=True, headers=headers)
     return CommandResults(
         outputs_prefix='GitLab.Issue',
         outputs_key_field='iid',
         readable_output=human_readable,
-        outputs=response,
+        outputs=outputs,
         raw_response=response
     )
 
@@ -896,13 +1006,14 @@ def branch_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                                'CreatedAt': branch.get('commit', {}).get('created_at', ''),
                                'CommitShortId': branch.get('commit', {}).get('short_id', ''),
                                'CommitTitle': branch.get('commit', {}).get('title', '')})
-
+    return_partial = args.get('partial_response') == 'true'
+    outputs = partial_response(response, 'Branch') if return_partial else response
     human_readable = tableToMarkdown(response_title, response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
         outputs_prefix='GitLab.Branch',
         outputs_key_field='short_id',
         readable_output=human_readable,
-        outputs=response,
+        outputs=outputs,
         raw_response=response
     )
 
@@ -1431,5 +1542,5 @@ def main() -> None:  # pragma: no cover
 ''' ENTRY POINT '''
 
 
-if __name__ in ("builtins", "__builtin__", "__main__"):  # pragma: no cover
+if __name__ in ("builtins", "__builtin__", "__main__"):
     main()
