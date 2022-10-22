@@ -10,11 +10,7 @@
         "Authentication"
     ],
     "tags": [],
-    "useCases": [
-        "Access",
-        "Identity and Access Management",
-        "IT Services"
-    ],
+    "useCases": [],
     "keywords": [
         "PingIdentity",
         "PingOne",
