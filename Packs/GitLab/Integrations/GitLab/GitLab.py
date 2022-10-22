@@ -371,7 +371,7 @@ def partial_response_fields(object_name: str):
     if object_name == 'Commit':
         return{
             'id': None,
-            'iid': None,
+            'short_id': None,
             'title': None,
             'message': None,
             'author': ['name'],
@@ -384,7 +384,7 @@ def partial_response_fields(object_name: str):
             'created_at': None,
             'updated_at': None,
             'body': None,
-            'issue_iid': None,
+            'noteable_iid': None,
             'author': ['name', 'id']
         }
 
@@ -507,12 +507,14 @@ def get_project_list_command(client: Client, args: Dict[str, Any]) -> CommandRes
                                'Name': project.get('name'),
                                'Description': project.get('description'),
                                'Path': project.get('path')})
+    return_partial = args.get('partial_response') == 'true'
+    outputs = partial_response(response, 'Project') if return_partial else response
     human_readable = tableToMarkdown('List Projects', response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
         outputs_prefix='GitLab.Project',
         outputs_key_field='id',
         readable_output=human_readable,
-        outputs=response,
+        outputs=outputs,
         raw_response=response
     )
 
@@ -966,12 +968,14 @@ def commit_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                                'ShortId': commit.get('short_id', ''),
                                'Author': commit.get('author_name', ''),
                                'CreatedAt': commit.get('created_at', '')})
+    return_partial = args.get('partial_response') == 'true'
+    outputs = partial_response(response, 'Commit') if return_partial else response
     human_readable = tableToMarkdown(response_title, response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
         outputs_prefix='GitLab.Commit',
         outputs_key_field='short_id',
         readable_output=human_readable,
-        outputs=response,
+        outputs=outputs,
         raw_response=response
     )
 
@@ -1071,12 +1075,14 @@ def issue_note_create_command(client: Client, args: Dict[str, Any]) -> CommandRe
     body = args.get('body', '')
     confidential = args.get('confidential')
     response = client.issue_note_create_request(issue_iid, body, confidential)
+    return_partial = args.get('partial_response') == 'true'
+    outputs = partial_response([response], 'Issue Note') if return_partial else response
     human_readable_str = 'Issue note created successfully'
     return CommandResults(
         outputs_prefix='GitLab.IssueNote',
         outputs_key_field='id',
         readable_output=human_readable_str,
-        outputs=response,
+        outputs=outputs,
         raw_response=response
     )
 
@@ -1119,12 +1125,14 @@ def issue_note_update_command(client: Client, args: Dict[str, Any]) -> CommandRe
     note_id = args.get('note_id')
     body = args.get('body')
     response = client.issue_note_update_request(issue_iid, note_id, body)
+    return_partial = args.get('partial_response') == 'true'
+    outputs = partial_response([response], 'Issue Note') if return_partial else response
     human_readable_str = 'Issue note updated was updated successfully.'
     return CommandResults(
         outputs_prefix='GitLab.IssueNote',
         outputs_key_field='id',
         readable_output=human_readable_str,
-        outputs=response,
+        outputs=outputs,
         raw_response=response
     )
 
@@ -1154,12 +1162,14 @@ def issue_note_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
                            'CreatedAt': issue_note.get('created_at', ''),
                            }
         response_to_hr.append(issue_note_edit)
+    return_partial = args.get('partial_response') == 'true'
+    outputs = partial_response([response], 'Issue Note') if return_partial else response
     human_readable = tableToMarkdown('List Issue notes', response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
         outputs_prefix='GitLab.IssueNote',
         outputs_key_field='id',
         readable_output=human_readable,
-        outputs=response,
+        outputs=outputs,
         raw_response=response
     )
 
@@ -1200,13 +1210,14 @@ def merge_request_list_command(client: Client, args: Dict[str, Any]) -> CommandR
         if merge_request.get('merge_user'):
             merge_request_edit['MergeBy'] = merge_request.get('merge_user', {}).get('username', '')
         response_to_hr.append(merge_request_edit)
-
+    return_partial = args.get('partial_response') == 'true'
+    outputs = partial_response(response, 'Merge Request') if return_partial else response
     human_readable = tableToMarkdown('List Merge requests', response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
         outputs_prefix='GitLab.MergeRequest',
         outputs_key_field='iid',
         readable_output=human_readable,
-        outputs=response,
+        outputs=outputs,
         raw_response=response
     )
 
@@ -1242,11 +1253,13 @@ def merge_request_create_command(client: Client, args: Dict[str, Any]) -> Comman
                                                    reviewer_ids, description, target_project_id, labels,
                                                    milestone_id, remove_source_branch, allow_collaboration,
                                                    allow_maintainer_to_push, approvals_before_merge, squash)
+    return_partial = args.get('partial_response') == 'true'
+    outputs = partial_response([response], 'Merge Request') if return_partial else response
     human_readable_str = 'Merge request created successfully.'
     return CommandResults(
         outputs_prefix='GitLab.MergeRequest',
         readable_output=human_readable_str,
-        outputs=response,
+        outputs=outputs,
         raw_response=response
     )
 
@@ -1284,12 +1297,14 @@ def merge_request_update_command(client: Client, args: Dict[str, Any]) -> Comman
                                                    milestone_id, state_event, remove_source_branch, allow_collaboration,
                                                    allow_maintainer_to_push, approvals_before_merge, discussion_locked,
                                                    squash)
+    return_partial = args.get('partial_response') == 'true'
+    outputs = partial_response([response], 'Merge Request') if return_partial else response
     human_readable_str = 'Merge request was updated successfully.'
     return CommandResults(
         outputs_prefix='GitLab.MergeRequest',
         outputs_key_field='merge_request_id',
         readable_output=human_readable_str,
-        outputs=response,
+        outputs=outputs,
         raw_response=response
     )
 
@@ -1321,12 +1336,14 @@ def merge_request_note_list_command(client: Client, args: Dict[str, Any]) -> Com
         if merge_request_note.get('author'):
             merge_request_note_edit['Autor'] = merge_request_note.get('author', {}).get('name', '')
         response_to_hr.append(merge_request_note_edit)
+    return_partial = args.get('partial_response') == 'true'
+    outputs = partial_response(response, 'Merge Request Note') if return_partial else response
     human_readable = tableToMarkdown('List Merge Issue Notes', response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
         outputs_prefix='GitLab.MergeRequestNote',
         outputs_key_field='id',
         readable_output=human_readable,
-        outputs=response,
+        outputs=outputs,
         raw_response=response
     )
 
@@ -1346,11 +1363,13 @@ def merge_request_note_create_command(client: Client, args: Dict[str, Any]) -> C
     body = args.get('body')
     response = client.merge_request_note_create_request(merge_request_iid, body)
     human_readable_str = 'Merge request note created successfully.'
+    return_partial = args.get('partial_response') == 'true'
+    outputs = partial_response([response], 'Merge Request Note') if return_partial else response
     return CommandResults(
         outputs_prefix='GitLab.MergeRequestNote',
         outputs_key_field='id',
         readable_output=human_readable_str,
-        outputs=response,
+        outputs=outputs,
         raw_response=response
     )
 
@@ -1372,12 +1391,14 @@ def merge_request_note_update_command(client: Client, args: Dict[str, Any]) -> C
     note_id = args.get('note_id')
     body = args.get('body')
     response = client.merge_request_note_update_request(merge_request_iid, note_id, body)
+    return_partial = args.get('partial_response') == 'true'
+    outputs = partial_response([response], 'Merge Request Note') if return_partial else response
     human_readable_str = 'Merge request note was updated successfully'
     return CommandResults(
         outputs_prefix='GitLab.MergeRequestNote',
         outputs_key_field='id',
         readable_output=human_readable_str,
-        outputs=response,
+        outputs=outputs,
         raw_response=response
     )
 
