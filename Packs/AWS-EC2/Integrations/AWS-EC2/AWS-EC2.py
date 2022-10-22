@@ -1580,7 +1580,23 @@ def revoke_security_group_ingress_command(args, aws_client):
     )
     kwargs = {'GroupId': args.get('groupId')}
 
-    kwargs.update(create_policy_kwargs_dict(args))
+    if args.get('cidrIp') is not None:
+        kwargs.update(create_policy_kwargs_dict(args))
+    elif args.get('cidrIpv6') is not None:
+        IpPermissions_dict = {}
+        if args.get('fromPort') is not None:
+            IpPermissions_dict.update({"FromPort": int(args.get('fromPort'))})
+        if args.get('toPort') is not None:
+            IpPermissions_dict.update({"ToPort": int(args.get('toPort'))})
+        if args.get('ipProtocol') is not None:
+            IpPermissions_dict.update({"IpProtocol": args.get('ipProtocol')})
+        if args.get('sourceSecurityGroupName') is not None:
+            IpPermissions_dict.update({"SourceSecurityGroupName": args.get('sourceSecurityGroupName')})
+        Ipv6Ranges = [{
+            'CidrIpv6': args['cidrIpv6']
+        }]
+        IpPermissions_dict.update({'Ipv6Ranges': Ipv6Ranges})
+        kwargs['IpPermissions'] = [IpPermissions_dict]
 
     response = client.revoke_security_group_ingress(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']:

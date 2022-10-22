@@ -3944,6 +3944,12 @@ script:
       required: false
       secret: false
     - default: false
+      description: The IPv6 address range.
+      isArray: false
+      name: cidrIpv6
+      required: false
+      secret: false
+    - default: false
       description: The IP protocol name (tcp , udp , icmp) or number. Use -1 to specify
         all protocols.
       isArray: false
