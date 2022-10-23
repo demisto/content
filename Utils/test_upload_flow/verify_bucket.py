@@ -127,7 +127,7 @@ class BucketVerifier:
         Verify the new image was uploaded
         """
         image_in_bucket_path = gcp.download_image(pack_id)
-        return open(image_in_bucket_path, "rb").read() == open(str(new_image_path), "rb").read()
+        return open(image_in_bucket_path, "rb").read() == open(str(new_image_path), "rb").read(), pack_id
 
 
 class GCP:
