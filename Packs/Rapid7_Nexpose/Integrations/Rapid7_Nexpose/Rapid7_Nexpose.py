@@ -30,7 +30,7 @@ class ScanStatus(Enum):
 
 class FlexibleEnum(EnumMeta):
     """A custom EnumMeta to allow easy and flexible conversion to and from strings."""
-    def __getitem__(self, item):
+    def __getitem__(self, item: Any):
         try:
             return super().__getitem__(item)
 
@@ -447,7 +447,7 @@ class Client(BaseClient):
         Returns:
             dict: API response with information about the newly created shared credential.
         """
-        account_data = {}
+        account_data: dict = {}
 
         S = CredentialService  # Simplify object name for shorter lines
 
@@ -544,7 +544,7 @@ class Client(BaseClient):
             if ssh_permission_elevation not in (SSHElevationType.NONE, SSHElevationType.PBRUN):
                 if None in (ssh_permission_elevation_username, ssh_permission_elevation_password):
                     raise ValueError(f"Elevation username and password are required for \"{service.value}\" "
-                                     f"services when permission elevation is not \"none\" or \"pbrun\".")
+                                     "services when permission elevation is not \"none\" or \"pbrun\".")
 
                 account_data["permissionElevationUsername"] = ssh_permission_elevation_username
                 account_data["permissionElevationPassword"] = ssh_permission_elevation_password
@@ -623,8 +623,8 @@ class Client(BaseClient):
         Returns:
             dict: API response with information about the newly created scan schedule.
         """
-        assets = {}
-        repeat = {}
+        assets: dict = {}
+        repeat: dict = {}
 
         if excluded_asset_groups:
             assets["excludedAssetGroups"] = {"assetGroupIDs": excluded_asset_groups}
@@ -783,7 +783,7 @@ class Client(BaseClient):
         Returns:
             dict: API response with information about the newly created shared credential.
         """
-        account_data = {}
+        account_data: dict = {}
 
         S = CredentialService  # Simplify object name for shorter lines
 
@@ -1807,7 +1807,7 @@ class Client(BaseClient):
         Returns:
             dict: API response with information about the newly created shared credential.
         """
-        account_data = {}
+        account_data: dict = {}
 
         S = CredentialService  # Simplify object name for shorter lines
 
@@ -2007,7 +2007,7 @@ class Client(BaseClient):
         Returns:
             dict: API response with information about the newly created shared credential.
         """
-        account_data = {}
+        account_data: dict = {}
 
         S = CredentialService  # Simplify object name for shorter lines
 
@@ -2182,8 +2182,8 @@ class Client(BaseClient):
         Returns:
             str: ID of the newly created scan schedule.
         """
-        assets = {}
-        repeat = {}
+        assets: dict = {}
+        repeat: dict = {}
 
         if excluded_asset_groups:
             assets["excludedAssetGroups"] = {"assetGroupIDs": excluded_asset_groups}
@@ -2200,14 +2200,21 @@ class Client(BaseClient):
             if not interval:
                 raise ValueError("'interval' parameter must be set if frequency is used.")
 
-            if frequency == RepeatFrequencyType.DATE_OF_MONTH and not date_of_month:
+            if frequency is not None and frequency == RepeatFrequencyType.DATE_OF_MONTH and not date_of_month:
                 raise ValueError("'date-of-month' parameter must be set if frequency is set to 'Date of month'.")
 
-            repeat = find_valid_params(
-                every=frequency.value,
+            repeat = {}
+
+            if frequency is not None:
+                repeat["every"] = frequency.value
+
+            repeat.update(find_valid_params(
                 interval=interval,
                 dateOfMonth=date_of_month,
-            )
+            ))
+
+        if repeat_behaviour is not None:
+            repeat_behaviour = repeat_behaviour.value
 
         post_data = find_valid_params(
             assets=assets,
@@ -2700,19 +2707,19 @@ def generate_duration_time(years: Optional[int] = None, months: Optional[int] = 
     return duration_str
 
 
-def normalize_scan_data(scan: dict) -> dict:
+def normalize_scan_data(scan_data: dict) -> dict:
     """
     Normalizes scan data received from the API to a HumanReadable format that will be displayed in the UI.
     NOTE: This function alters the original data that's passed under the `scan` parameter, and does not create a copy.
 
     Args:
-        scan (dict): Scan data as it was received from the API.
+        scan_data (dict): Scan data as it was received from the API.
 
     Returns:
         dict: Scan data in a normalized format that will be displayed in the UI.
     """
-    scan_output = replace_key_names(
-        data=scan,
+    scan_output: dict = replace_key_names(
+        data=scan_data,
         name_mapping={
             "id": "Id",
             "scanType": "ScanType",
@@ -2831,7 +2838,7 @@ def replace_key_names(data: Union[dict, list, tuple], name_mapping: dict[str, st
     if not use_reference:
         data = deepcopy(data)
 
-    if isinstance(data, Union[list, tuple]):
+    if isinstance(data, (list, tuple)):
         return [replace_key_names(
             data=data[i],
             name_mapping=name_mapping,
@@ -2860,7 +2867,7 @@ def replace_key_names(data: Union[dict, list, tuple], name_mapping: dict[str, st
 
         if recursive:
             for item in data:
-                if isinstance(data[item], Union[dict, list, tuple]):
+                if isinstance(data[item], (dict, list, tuple)):
                     data[item] = replace_key_names(
                         data=data[item],
                         name_mapping=name_mapping,
@@ -3514,7 +3521,7 @@ def get_asset_command(client: Client, asset_id: str) -> Union[CommandResults, Li
         "RiskScore"
     ]
 
-    asset_output = replace_key_names(
+    asset_output: dict = replace_key_names(
         data=asset_data,
         name_mapping={
             "id": "AssetId",
@@ -3805,7 +3812,7 @@ def get_asset_vulnerability_command(client: Client, asset_id: str, vulnerability
     vulnerability_extra_data = client.get_vulnerability(asset_id)
     vulnerability_data.update(vulnerability_extra_data)
 
-    vulnerability_outputs = replace_key_names(
+    vulnerability_outputs: dict = replace_key_names(
         data=vulnerability_extra_data,
         name_mapping={
             "id": "Id",
@@ -3863,7 +3870,7 @@ def get_asset_vulnerability_command(client: Client, asset_id: str, vulnerability
     ]
 
     # Add solutions data
-    solutions_output = None
+    solutions_output: dict = {}
     solutions = client.get_asset_vulnerability_solution(asset_id, vulnerability_id)
     vulnerability_data["solutions"] = solutions
 
@@ -3895,9 +3902,7 @@ def get_asset_vulnerability_command(client: Client, asset_id: str, vulnerability
     cves = []
 
     if vulnerability_outputs["CVES"] is not None and len(vulnerability_outputs["CVES"]) > 0:
-        cves = [{
-            "ID": cve
-        } for cve in vulnerability_outputs["CVES"]]
+        cves = [{"ID": cve} for cve in vulnerability_outputs["CVES"]]
 
     vulnerability_outputs["Check"] = results_output
     vulnerability_outputs["Solution"] = solutions_output
@@ -4010,12 +4015,15 @@ def get_scan_command(client: Client, scan_ids: Union[str, list[str]]) -> Union[C
     scans = []
 
     for scan_id in scan_ids:
-        scan = client.get_scan(scan_id)
+        scan_data = client.get_scan(scan_id)
 
-        if not scan:
-            return CommandResults(readable_output="Scan not found")
+        if not scan_data:
+            return CommandResults(
+                readable_output="Scan not found",
+                raw_response=scan_data,
+            )
 
-        scan_entry = get_scan_entry(scan)
+        scan_entry = get_scan_entry(scan_data)
         scans.append(scan_entry)
 
     if len(scans) == 1:
@@ -4055,7 +4063,7 @@ def get_scans_command(client: Client, active: Optional[bool] = None, page_size: 
             raw_response=scans_data,
         )
 
-    normalized_scans = [normalize_scan_data(scan) for scan in scans_data]
+    normalized_scans = [normalize_scan_data(scan) for scan in scans_data]  # TODO: Use get_scan_entry function and modify it to make vulnerability optional
 
     scan_hr = tableToMarkdown(
         name="Nexpose scans",
@@ -4607,7 +4615,7 @@ def search_assets_command(client: Client, filter_query: Optional[str] = None, ip
         for ip in ips:
             filters_data.append("ip-address is " + ip)  # TODO: Change to `in <list of comma separated ip addresses>` instead of multiple filters?
 
-    if hostnames:
+    if hostnames is not None:
         hostnames = argToList(hostnames)
 
         for hostname in hostnames:
@@ -4713,7 +4721,7 @@ def set_assigned_shared_credential_status_command(client: Client, site: Site,
 
 def start_assets_scan_command(client: Client, ips: Union[str, list, None] = None,
                               hostnames: Union[str, list, None] = None,
-                              scan_name: Optional[str] = None) -> CommandResults:  # TODO: Add pagination args?
+                              scan_name: Optional[str] = None) -> CommandResults:
     """
     | Start a scan on the provided assets.
     |
@@ -4786,7 +4794,7 @@ def start_assets_scan_command(client: Client, ips: Union[str, list, None] = None
 
 
 def start_site_scan_command(client: Client, site: Site,
-                            scan_name: Optional[str], hosts: Optional[list[str]]) -> CommandResults:  # TODO: Add pagination args?
+                            scan_name: Optional[str], hosts: Optional[list[str]]) -> CommandResults:
     """
     Start a scan for a specific site.
 
@@ -5165,6 +5173,8 @@ def main():
             token=params.get("token"),
             verify=not params.get("unsecure")
         )
+
+        results: Union[CommandResults, List[CommandResults], dict, str]
 
         if command == "test-module":
             client.get_assets(page_size=1, limit=1)
