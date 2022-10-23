@@ -407,6 +407,7 @@ def partial_response_fields(object_name: str):
             'default_branch': None,
             'namespace': ['name', 'id']
         }
+    return {}
 
 
 def partial_response(response: list, object_type: str):

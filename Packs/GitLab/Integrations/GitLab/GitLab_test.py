@@ -673,6 +673,7 @@ def test_get_raw_file_command(mocker):
         - The http request is called with the right arguments, and returns the right command result.
     """
     from GitLab import Client, get_raw_file_command
+    import CommonServerPython
     client = Client(project_id=1234,
                     base_url="base_url",
                     verify=False,
@@ -681,6 +682,7 @@ def test_get_raw_file_command(mocker):
     args = {'ref': 'main', 'file_path': 'unit'}
     response_client = util_load_json('test_data/commands_test_data.json').get('raw_file')
     mocker.patch.object(Client, '_http_request', return_value=response_client)
+    mocker.patch.object(CommonServerPython, 'fileResult', return_value="/command_examples.txt")
     result = get_raw_file_command(client, args)
     expected_hr = '### Raw file\n' \
                   '|path|refrence|content|\n' \
@@ -711,3 +713,84 @@ def test_code_search_command(mocker):
     mocker.patch.object(Client, '_http_request', return_value=response_client)
     result = code_search_command(client, args)
     assert result.raw_response[0]['data'] == expected_raw
+
+
+ARGS_FOR_PARTIAL_RESPONSE = [
+    (
+        [], "",  # args empty both
+        []
+    ),
+    (
+        [{
+            "name": "Test",
+            "commit": {
+                "id": "7d",
+                "short_id": "7d",
+                "created_at": "2022-10-11T09:05:11.000+00:00",
+                "parent_ids": [
+                    "01"
+                ],
+                "title": "title",
+                "message": "delete file via playbook",
+                "author_name": "Test Account",
+                "author_email": "test@dem.com",
+                "authored_date": "2022-10-11T09:05:11.000+00:00",
+                "committer_name": "Test Account",
+                "committer_email": "test@dem.com",
+                "committed_date": "2022-10-11T09:05:11.000+00:00",
+                "trailers": {},
+                "web_url": "url"
+            },
+            "merged": 'false',
+            "protected": 'false'
+        }], "",  # args empty object_name
+        [{}]
+    ),
+    (
+        [], {"Branch"},  # args empty response
+        []
+    ),
+    (
+        [
+            {
+                "name": "Test",
+                "commit": {
+                    "id": "7d",
+                    "short_id": "7d",
+                    "created_at": "2022-10-11T09:05:11.000+00:00",
+                    "parent_ids": [
+                        "01"
+                    ],
+                    "title": "title",
+                    "message": "delete file via playbook",
+                    "author_name": "Test Account",
+                    "author_email": "test@dem.com",
+                    "authored_date": "2022-10-11T09:05:11.000+00:00",
+                    "committer_name": "Test Account",
+                    "committer_email": "test@dem.com",
+                    "committed_date": "2022-10-11T09:05:11.000+00:00",
+                    "trailers": {},
+                    "web_url": "url"
+                },
+                "merged": 'false',
+                "protected": 'false'
+            }], "Branch",  # branch
+        [{'name': 'Test', 'commit': {'id': '7d', 'short_id': '7d', 'commited_date': '',
+         'author_name': 'Test Account'}, 'merged': 'false'}]
+    )
+]
+
+
+@pytest.mark.parametrize('response, object_name, expected_response', ARGS_FOR_PARTIAL_RESPONSE)
+def test_partial_response(response, object_name, expected_response):
+    """
+    Given:
+        - optinal params, arguments
+    When:
+        - running partial_response
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from GitLab import partial_response
+    result = partial_response(response, object_name)
+    assert result == expected_response
