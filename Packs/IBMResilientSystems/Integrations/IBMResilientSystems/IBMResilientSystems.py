@@ -2,7 +2,7 @@ import json
 import logging
 import time
 
-import requests
+import urllib3
 
 import demistomock as demisto
 import resilient
@@ -12,7 +12,7 @@ from CommonServerPython import *
 logging.basicConfig()
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 try:
     # disable 'warning' logs from 'resilient.co3'
     logging.getLogger('resilient.co3').setLevel(logging.ERROR)
@@ -128,7 +128,7 @@ def prettify_incidents(client, incidents):
     phases = get_phases(client)['entities']
     for incident in incidents:
         incident['id'] = str(incident['id'])
-        if isinstance(incident['description'], unicode):
+        if isinstance(incident['description'], str):
             incident['description'] = incident['description'].replace('<div>', '').replace('</div>', '')
         incident['discovered_date'] = normalize_timestamp(incident['discovered_date'])
         incident['created_date'] = normalize_timestamp(incident['create_date'])
@@ -379,7 +379,7 @@ def extract_data_form_other_fields_argument(other_fields, incident, changes):
 
 
 def update_incident_command(client, args):
-    if len(args.keys()) == 1:
+    if len(list(args.keys())) == 1:
         raise Exception('No fields to update were given')
     incident_id = args['incident-id']
     incident = get_incident(client, incident_id, True)
@@ -1053,7 +1053,7 @@ def fetch_incidents(client):
                 attachments = incident_attachments(client, str(incident.get('id', '')))
                 if attachments:
                     incident['attachments'] = attachments
-                if isinstance(incident.get('description'), unicode):
+                if isinstance(incident.get('description'), str):
                     incident['description'] = incident['description'].replace('<div>', '').replace('</div>', '')
 
                 incident['discovered_date'] = normalize_timestamp(incident.get('discovered_date'))
@@ -1164,7 +1164,7 @@ def main():
             demisto.results(add_artifact_command(client, args['incident-id'], args['artifact-type'],
                                                  args['artifact-value'], args.get('artifact-description')))
     except Exception as e:
-        LOG(e.message)
+        LOG(str(e))
         LOG.print_log()
         raise
 

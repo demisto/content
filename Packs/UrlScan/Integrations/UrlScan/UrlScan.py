@@ -5,10 +5,10 @@ from CommonServerPython import *  # noqa: F401
 import collections
 import json as JSON
 import time
+from urllib.parse import urlparse
 
 import requests
 from requests.utils import quote  # type: ignore
-from urllib.parse import urlparse
 
 """ POLLING FUNCTIONS"""
 try:
@@ -302,7 +302,7 @@ def create_list_relationships(scans_dict, url, reliability):
     return relationships_list
 
 
-def format_results(client, uuid):
+def format_results(client, uuid, use_url_as_name):
     # Scan Lists sometimes returns empty
     num_of_attempts = 0
     relationships = []
@@ -488,7 +488,11 @@ def format_results(client, uuid):
         human_readable['Screenshot'] = scan_tasks['screenshotURL']
         screen_path = scan_tasks['screenshotURL']
         response_img = requests.request("GET", screen_path, verify=client.use_ssl)
-        stored_img = fileResult('screenshot.png', response_img.content)
+        if use_url_as_name:
+            screenshot_name = cont['EffectiveURL'].replace('http://', '').replace('https://', '').replace('/', '_')
+        else:
+            screenshot_name = 'screenshot'
+        stored_img = fileResult('{}.png'.format(screenshot_name), response_img.content)
 
     dbot_score = Common.DBotScore(indicator=dbot_score.get('Indicator'), indicator_type=dbot_score.get('Type'),
                                   integration_name=BRAND, score=dbot_score.get('Score'),
@@ -539,10 +543,10 @@ def urlscan_submit_request(client, uuid):
     return response, metrics, _
 
 
-def get_urlscan_submit_results_polling(client, uuid):
+def get_urlscan_submit_results_polling(client, uuid, use_url_as_name):
     ready = polling(client, uuid)
     if ready is True:
-        format_results(client, uuid)
+        format_results(client, uuid, use_url_as_name)
 
 
 def urlscan_submit_command(client):
@@ -569,7 +573,8 @@ def urlscan_submit_command(client):
             items_to_schedule.append(url)
             continue
         uuid = response.get('uuid')
-        get_urlscan_submit_results_polling(client, uuid)
+        use_url_as_name = True if demisto.args()['use_url_as_name'] == 'true' else False
+        get_urlscan_submit_results_polling(client, uuid, use_url_as_name)
         execution_metrics.success += 1
     schedule_and_report(command_results=command_results, items_to_schedule=items_to_schedule,
                         execution_metrics=execution_metrics, rate_limit_reset_after=rate_limit_reset_after)

@@ -156,11 +156,11 @@ def return_error_message(results_json):
     error_message = results_json.get("message", None)
     if error_message is None:
         return_error("Error: An error occured")
-    return_error("Error: {0}".format(error_message))
+    return_error(f"Error: {error_message}")
 
 
 def http_request(method, url, params_dict=None, data=None, use_format_instead_of_raw=False):
-    LOG('running %s request with url=%s\nparams=%s' % (method, url, json.dumps(params_dict)))
+    LOG(f'running {method} request with url={url}\nparams={json.dumps(params_dict)}')
 
     headers = {
         'Content-Type': 'application/json',
@@ -243,16 +243,16 @@ def validate_update_list_args(method, description):
 
 def validate_create_list_args(list_type, description):
     if not is_legal_list_type(list_type):
-        return_error("Error: {0} is not a legal type for a list. Legal types are IP, String, "
-                     "Country or Wildcard".format(list_type))
+        return_error(f"Error: {list_type} is not a legal type for a list. Legal types are IP, String, "
+                     "Country or Wildcard")
     validate_list_description_length(description)
 
 
 def validate_alert_args(siteName, long_name, tag_name, interval, threshold, enabled, action):
     if not represents_int(threshold):
-        return_error("Error: {0} is not a valid threshold value. Threshold must be an integer".format(threshold))
+        return_error(f"Error: {threshold} is not a valid threshold value. Threshold must be an integer")
     if not is_legal_interval_for_alert(interval):
-        return_error("Error: {0} is not a valid interval value. Interval value must be 1, 10 or 60".format(interval))
+        return_error(f"Error: {interval} is not a valid interval value. Interval value must be 1, 10 or 60")
     if len(long_name) < 3 or len(long_name) > 25:
         return_error("Error: Illegal value for long_name argument - long_name must be between 3 and 25 characters long")
     if not (enabled.lower() == 'true' or enabled.lower() == 'false'):
@@ -418,7 +418,7 @@ def adjust_alert_human_readable(entry_context_with_spaces, entry_context):
 
 def check_ip_is_valid(ip):
     if not is_ip_valid(ip):
-        return_error("Error: {} is invalid IP. Please enter a valid IP address".format(ip))
+        return_error(f"Error: {ip} is invalid IP. Please enter a valid IP address")
 
 
 def gen_entries_data_for_update_list_request(entries_list, method):
@@ -486,8 +486,8 @@ def add_ip_to_whitelist_or_blacklist(url, ip, note, expires=None):
             # handle exceptions in return_error
             pass
         except Exception as e:
-            error_list.append('failed adding ip: {} to balcklist error: {}'.format(single_ip, e))
-            demisto.error('failed adding ip: {} to balcklist\n{}'.format(single_ip, traceback.format_exc()))
+            error_list.append(f'failed adding ip: {single_ip} to balcklist error: {e}')
+            demisto.error(f'failed adding ip: {single_ip} to balcklist\n{traceback.format_exc()}')
     return res_list, error_list
 
 
@@ -546,7 +546,7 @@ def test_module():
         url = SERVER_URL + 'corps'
         http_request('GET', url)
     except Exception as e:
-        raise Exception(e.message)
+        raise Exception(e)
     demisto.results("ok")
 
 
@@ -610,7 +610,7 @@ def get_corp_list_command():
     args = demisto.args()
     response_data = get_corp_list(args['list_id'])
     entry_context = list_entry_context_from_response(response_data)
-    title = "Found data about list with ID: {0}".format(args['list_id'])
+    title = f"Found data about list with ID: {args['list_id']}"
     entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
     adjust_list_human_readable(entry_context_with_spaces, entry_context)
     human_readable = tableToMarkdown(title, entry_context_with_spaces, headers=LIST_HEADERS, removeNull=True)
@@ -686,7 +686,7 @@ def get_all_corp_lists_command():
         cur_corp_list_context = list_entry_context_from_response(corp_list_data)
         corp_lists_contexts.append(cur_corp_list_context)
 
-    sidedata = "Number of corp lists in corp: {0}".format(len(list_of_corp_lists))
+    sidedata = f"Number of corp lists in corp: {len(list_of_corp_lists)}"
     corp_lists_contexts_with_spaces = return_list_of_dicts_with_spaces(corp_lists_contexts)
 
     for i in range(len(corp_lists_contexts)):
@@ -710,7 +710,7 @@ def get_events(siteName, from_time=None, until_time=None, sort=None, since_id=No
     url = SERVER_URL + GET_EVENTS_SUFFIX.format(CORPNAME, siteName)
     data_for_request = create_get_event_data_from_args(from_time, until_time, sort, since_id, max_id,
                                                        limit, page, action, tag, ip, status)
-    events_data_response = http_request('GET', url, data=data_for_request)
+    events_data_response = http_request('GET', url, params_dict=data_for_request)
 
     return events_data_response
 
@@ -735,7 +735,7 @@ def get_events_command():
     for i in range(len(events_contexts)):
         adjust_list_human_readable(events_contexts_with_spaces[i], events_contexts[i])
 
-    sidedata = "Number of events in site: {0}".format(len(list_of_events))
+    sidedata = f"Number of events in site: {len(list_of_events)}"
     human_readable = tableToMarkdown(LIST_OF_EVENTS_TITLE, events_contexts_with_spaces, removeNull=True,
                                      headers=EVENT_HEADERS, metadata=sidedata)
     return_outputs(
@@ -757,7 +757,7 @@ def get_event_by_id_command():
     args = demisto.args()
     response_data = get_event_by_id(args['siteName'], args['event_id'])
     entry_context = event_entry_context_from_response(response_data)
-    title = "Found data about event with ID: {0}".format(args['event_id'])
+    title = f"Found data about event with ID: {args['event_id']}"
 
     entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
     adjust_event_human_readable(entry_context_with_spaces, entry_context)
@@ -819,7 +819,7 @@ def get_requests_command():
     for i in range(len(requests_contexts)):
         adjust_list_human_readable(requests_contexts_with_spaces[i], requests_contexts[i])
 
-    sidedata = "Number of requests in site: {0}".format(len(list_of_requests))
+    sidedata = f"Number of requests in site: {len(list_of_requests)}"
     human_readable = tableToMarkdown(LIST_OF_REQUESTS_TITLE, requests_contexts_with_spaces, headers=REQUEST_HEADER,
                                      removeNull=True, metadata=sidedata)
     return_outputs(
@@ -841,7 +841,7 @@ def get_request_by_id_command():
     args = demisto.args()
     response_data = get_request_by_id(args['siteName'], args['request_id'])
     entry_context = request_entry_context_from_response(response_data)
-    title = "Found data about request with ID: {0}".format(args['request_id'])
+    title = f"Found data about request with ID: {args['request_id']}"
 
     entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
     adjust_request_human_readable(entry_context_with_spaces, entry_context)
@@ -904,7 +904,7 @@ def get_site_list_command():
     entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
     adjust_list_human_readable(entry_context_with_spaces, entry_context)
 
-    title = "Found data about list with ID: {0}".format(args['list_id'])
+    title = f"Found data about list with ID: {args['list_id']}"
     human_readable = tableToMarkdown(title, entry_context_with_spaces, headers=LIST_HEADERS, removeNull=True)
     return_outputs(
         raw_response=response_data,
@@ -986,7 +986,7 @@ def get_all_site_lists_command():
     for i in range(len(site_lists_contexts)):
         adjust_list_human_readable(site_lists_contexts_with_spaces[i], site_lists_contexts[i])
 
-    sidedata = "Number of site lists in site: {0}".format(len(list_of_site_lists))
+    sidedata = f"Number of site lists in site: {len(list_of_site_lists)}"
     human_readable = tableToMarkdown(LIST_OF_SITE_LISTS_TITLE, site_lists_contexts_with_spaces, headers=LIST_HEADERS,
                                      removeNull=True, metadata=sidedata)
     return_outputs(
@@ -1048,7 +1048,7 @@ def get_alert_command():
     # changing key of Interval to Interval (In Minutes) for human readable
     adjust_alert_human_readable(entry_context_with_spaces, entry_context)
 
-    title = "Data found for alert id: {0}".format(args['alert_id'])
+    title = f"Data found for alert id: {args['alert_id']}"
     human_readable = tableToMarkdown(title, entry_context_with_spaces, headers=ALERT_HEADERS, removeNull=True)
     return_outputs(
         raw_response=response_data,
@@ -1068,7 +1068,7 @@ def delete_alert(siteName, alert_id):
 def delete_alert_command():
     args = demisto.args()
     response_data = delete_alert(args['siteName'], args['alert_id'])
-    title = "Alert {0} deleted succesfully".format(args['alert_id'])
+    title = f"Alert {args['alert_id']} deleted succesfully"
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['markdown'],
@@ -1096,7 +1096,7 @@ def update_alert_command():
     args = demisto.args()
     response_data = update_alert(args['siteName'], args['alert_id'], args['tag_name'], args['long_name'],
                                  args['interval'], args['threshold'], args['enabled'], args['action'])
-    title = "Updated alert {0}. new values:".format(args['alert_id'])
+    title = f"Updated alert {args['alert_id']}. new values:"
     entry_context = alert_entry_context_from_response(response_data)
     entry_context_with_spaces = dict_keys_from_camelcase_to_spaces(entry_context)
 
@@ -1134,7 +1134,7 @@ def get_all_alerts_command():
     for i in range(len(alerts_contexts)):
         adjust_alert_human_readable(alerts_contexts_with_spaces[i], alerts_contexts[i])
 
-    sidedata = "Number of alerts in site: {0}".format(len(alerts_list))
+    sidedata = f"Number of alerts in site: {len(alerts_list)}"
     return_outputs(
         raw_response=response_data,
         readable_output=tableToMarkdown(ALERT_LIST_TITLE, alerts_contexts_with_spaces,
@@ -1159,7 +1159,7 @@ def get_whitelist_command():
     whitelist_ips_contexts = gen_context_for_add_to_whitelist_or_blacklist(data)
     whitelist_ips_contexts_with_spaces = return_list_of_dicts_with_spaces(whitelist_ips_contexts)
 
-    sidedata = "Number of IPs in the Whitelist {0}".format(len(data))
+    sidedata = f"Number of IPs in the Whitelist {len(data)}"
     return_outputs(
         raw_response=site_whitelist,
         readable_output=tableToMarkdown(WHITELIST_TITLE, whitelist_ips_contexts_with_spaces,
@@ -1184,7 +1184,7 @@ def get_blacklist_command():
     blacklist_ips_contexts = gen_context_for_add_to_whitelist_or_blacklist(data)
     blacklist_ips_contexts_with_spaces = return_list_of_dicts_with_spaces(blacklist_ips_contexts)
 
-    sidedata = "Number of IPs in the Blacklist {0}".format(len(data))
+    sidedata = f"Number of IPs in the Blacklist {len(data)}"
     return_outputs(
         raw_response=site_blacklist,
         readable_output=tableToMarkdown(BLACKLIST_TITLE, blacklist_ips_contexts_with_spaces,
@@ -1256,7 +1256,7 @@ def whitelist_remove_ip(siteName, ip):
             res = http_request('DELETE', url)
 
     if 'res' not in locals():
-        return_error("The IP {0} was not found on the Whitelist".format(ip))
+        return_error(f"The IP {ip} was not found on the Whitelist")
 
     return site_whitelist
 
@@ -1284,7 +1284,7 @@ def blacklist_remove_ip(siteName, ip):
             res = http_request('DELETE', url)
 
     if 'res' not in locals():
-        return_error("The IP {0} was not found on the Blacklist".format(ip))
+        return_error(f"The IP {ip} was not found on the Blacklist")
 
     return site_blacklist
 
@@ -1367,7 +1367,7 @@ def fetch_incidents():
 
 ''' EXECUTION CODE '''
 
-LOG('command is %s' % (demisto.command(),))
+LOG(f'command is {demisto.command()}')
 try:
     if not re.match(r'[0-9a-z_.-]+', CORPNAME):
         raise ValueError('Corporation Name should match the pattern [0-9a-z_.-]+')
@@ -1431,4 +1431,4 @@ try:
     elif demisto.command() == 'sigsci-get-request-by-id':
         get_request_by_id_command()
 except Exception as e:
-    return_error(e.message)
+    return_error(e)

@@ -2470,14 +2470,14 @@ script:
       description: Specifies whether the user is required to set a new password on
         next sign-in.
       type: Boolean
-  dockerimage: demisto/boto3:2.0.0.24033
+  dockerimage: demisto/boto3py3:1.0.0.35343
   feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python2
+  subtype: python3
   type: python
 tests:
 - AWS - IAM Test Playbook

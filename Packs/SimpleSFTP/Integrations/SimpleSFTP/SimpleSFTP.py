@@ -1,8 +1,14 @@
-import demistomock as demisto
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+''' IMPORTS '''
+
+
+import traceback
 
 import paramiko
-import traceback
+
+''' MAIN FUNCTION '''
 
 
 def main():
@@ -33,15 +39,15 @@ def main():
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['text'],
                 'Contents': res,
-                'ReadableContentsFormat': formats['text'],
-                'HumanReadable': tableToMarkdown('The directory files:', res),
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown('The directory files:', res, ["Directory Files"]),
                 'EntryContext': {"SFTP.ListDir": res}
             }
             demisto.results(entry)
             sftp.close()
         except Exception as ex:
             demisto.error(traceback.format_exc())  # print the traceback
-            return_error(f'Error occurred - Error: {str(ex)}')
+            return_error(f'Error occurred - Error: {str(ex)}. Please verify directory path to list files')
 
     elif demisto.command() == "sftp-copyfrom":
         try:
@@ -68,6 +74,9 @@ def main():
         except Exception as ex:
             demisto.error(traceback.format_exc())  # print the traceback
             return_error(f'Error occurred - Error: {str(ex)}')
+
+
+''' ENTRY POINT '''
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

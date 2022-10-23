@@ -22,9 +22,20 @@ ignore=auto-test
 [file:PCAP_Parsing_And_Indicator_Enrichment_Test.yml]
 ignore=auto-test
 
+[file:playbook-PAN-OS_-_Block_URL_-_Custom_URL_Category.yml]
+ignore=PB121
+
+[file:playbook-PAN-OS_-_Block_IP_-_Static_Address_Group.yml]
+ignore=PB121
+
 [known_words]
 pcaps
 FW
 dst
 feedExpirationPolicy
 feedExpirationInterval
+pan-os-list-edls
+EDLs
+finanical
+ransomeware
+pbf

@@ -1,4 +1,7 @@
-from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
+from demisto_sdk.commands.common.constants import (SAMPLES_DIR,
+                                                   TESTS_AND_DOC_DIRECTORIES,
+                                                   FileType,
+                                                   MarketplaceVersions)
 
 XSOAR_SANITY_TEST_NAMES: tuple[str, ...] = (
     'Sanity Test - Playbook with integration',
@@ -73,6 +76,7 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.CONF_JSON,
     FileType.MODELING_RULE_SCHEMA,
     FileType.LAYOUTS_CONTAINER,
+    FileType.AGENT_CONFIG,
 }
 
 IGNORED_FILE_TYPES: set[FileType] = {
@@ -87,4 +91,9 @@ IGNORED_FILE_TYPES: set[FileType] = {
     FileType.WHITE_LIST,
     FileType.TEST_SCRIPT,
     FileType.LANDING_PAGE_SECTIONS_JSON,
+    FileType.AGENT_CONFIG_YML,
+    FileType.XSIAM_DASHBOARD_IMAGE,
+    FileType.XSIAM_REPORT_IMAGE,
 }
+
+NON_CONTENT_FOLDERS: set[str] = set(TESTS_AND_DOC_DIRECTORIES) | {SAMPLES_DIR}
