@@ -293,7 +293,7 @@ def test_alarm_to_incidents(mocker):
         {
             'id': 2,
             'triggeredDate': create_time_difference_string(hours=5)
-        }
+    }
     ]
 
     def mock_fetch_alarams(since: str = None, start_time: str = None, end_time: str = None, raw: bool = False):
