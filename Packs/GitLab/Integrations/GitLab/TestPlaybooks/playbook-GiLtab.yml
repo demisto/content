@@ -1,6 +1,7 @@
-id: GitLab-Test
-version: -1
-name: GitLab-Test
+id: d84642ca-065b-4bd5-86ca-dbdf63746d48
+version: 410
+vcShouldKeepItemLegacyProdMachine: false
+name: 'gitlab '
 starttaskid: "0"
 tasks:
   "0":
@@ -13,7 +14,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "86"
@@ -35,17 +35,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 7089f6bb-e284-4111-87e5-0910c826996c
+    taskid: 5155d9eb-bdb8-4d6d-826d-03d8612027cc
     type: regular
     task:
-      id: 7089f6bb-e284-4111-87e5-0910c826996c
+      id: 5155d9eb-bdb8-4d6d-826d-03d8612027cc
       version: -1
       name: gitlab-issue-list
       description: Get a list of a project's issues.
-      script: GitLab|||gitlab-issue-list
+      script: '|||gitlab-issue-list'
       type: regular
       iscommand: true
-      brand: GitLab
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
@@ -57,8 +57,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": -640
+          "x": 860,
+          "y": -600
         }
       }
     note: false
@@ -70,17 +70,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 0e5392c2-9cf2-4407-82e5-91dd2551d86c
+    taskid: aa47615c-38bf-4c39-8734-e507b23187c2
     type: regular
     task:
-      id: 0e5392c2-9cf2-4407-82e5-91dd2551d86c
+      id: aa47615c-38bf-4c39-8734-e507b23187c2
       version: -1
       name: issue-update
-      description: Updates an existing project issue. This call is also used to mark an issue as closed. The id can be taken from gitlab-issue-list.
-      script: '|||gitlab-issue-update'
+      description: Updates an existing project issue. This call is also used to mark
+        an issue as closed. The iid can be taken from gitlab-issue-list.
+      script: GitLab v2|||gitlab-issue-update
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "9"
@@ -91,6 +92,8 @@ tasks:
         simple: desc after change by playbook
       issue_iid:
         simple: ${GitLab.Issue.iid}
+      partial_response:
+        simple: "false"
       title:
         simple: whatnu
     separatecontext: false
@@ -196,7 +199,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -215,17 +217,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 9eedb138-8f83-4377-8427-ca99e0983cc4
+    taskid: ed12ccc2-c08c-4d08-8253-27a4d9f0596b
     type: regular
     task:
-      id: 9eedb138-8f83-4377-8427-ca99e0983cc4
+      id: ed12ccc2-c08c-4d08-8253-27a4d9f0596b
       version: -1
       name: issue-note-create
       description: Creates a new note to a single project issue.
-      script: '|||gitlab-issue-note-create'
+      script: GitLab v2|||gitlab-issue-note-create
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "12"
@@ -328,10 +330,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: b36ef0c3-53a5-48c3-8327-506a61df531c
+    taskid: e52b8987-41f0-4614-891c-56692da9931e
     type: regular
     task:
-      id: b36ef0c3-53a5-48c3-8327-506a61df531c
+      id: e52b8987-41f0-4614-891c-56692da9931e
       version: -1
       name: issue-note-list
       description: Gets a list of all notes for a single issue.
@@ -403,17 +405,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 1b7dd3b5-7d08-4545-82ce-e597e0cffcc5
+    taskid: 8b6a22ed-d28e-4741-88a6-e41091e03344
     type: regular
     task:
-      id: 1b7dd3b5-7d08-4545-82ce-e597e0cffcc5
+      id: 8b6a22ed-d28e-4741-88a6-e41091e03344
       version: -1
       name: Get Version
-      description: Retrieve version information for this GitLab instance. Responds 200 OK for authenticated users.
-      script: '|||gitlab-version-get'
+      description: Retrieve version information for this GitLab instance.
+      script: GitLab v2|||gitlab-version-get
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "19"
@@ -478,17 +480,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: e01bf462-811e-4d96-8ec7-fdc5628553f1
+    taskid: cfa7dcd1-f23c-44f1-824f-66b1c52ce0f9
     type: regular
     task:
-      id: e01bf462-811e-4d96-8ec7-fdc5628553f1
+      id: cfa7dcd1-f23c-44f1-824f-66b1c52ce0f9
       version: -1
       name: list commit
       description: Get a list of repository commits in a project.
-      script: '|||gitlab-commit-list'
+      script: GitLab v2|||gitlab-commit-list
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "21"
@@ -551,17 +553,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: d46c60c1-2831-4b2b-8472-353d4e3fc7ff
+    taskid: b50ef0a0-210d-4178-8ed4-ebfd1712c91b
     type: regular
     task:
-      id: d46c60c1-2831-4b2b-8472-353d4e3fc7ff
+      id: b50ef0a0-210d-4178-8ed4-ebfd1712c91b
       version: -1
       name: 'get commit '
       description: Get a list of repository commits in a project.
-      script: '|||gitlab-commit-list'
+      script: GitLab v2|||gitlab-commit-list
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "23"
@@ -624,17 +626,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 978f401a-11f7-46d9-882e-c4549ce4e647
+    taskid: 22425883-8647-4aae-8eaf-ae59eb300edd
     type: regular
     task:
-      id: 978f401a-11f7-46d9-882e-c4549ce4e647
+      id: 22425883-8647-4aae-8eaf-ae59eb300edd
       version: -1
       name: delete issue-note
       description: Deletes an existing note of an issue.
-      script: '|||gitlab-issue-note-delete'
+      script: GitLab v2|||gitlab-issue-note-delete
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "25"
@@ -661,17 +663,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 3263dfdd-0089-4e21-8189-d1512666eca7
+    taskid: 64e66385-aa0b-423b-8682-0a53f5b0734b
     type: regular
     task:
-      id: 3263dfdd-0089-4e21-8189-d1512666eca7
+      id: 64e66385-aa0b-423b-8682-0a53f5b0734b
       version: -1
       name: branch create
       description: Creates a new branch in the repository.
-      script: '|||gitlab-branch-create'
+      script: GitLab v2|||gitlab-branch-create
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "27"
@@ -698,17 +700,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 15f19a6f-8b40-42f4-8a9e-b99366b7a76b
+    taskid: 58bd8e57-08aa-4c25-893e-c337dd0961e5
     type: regular
     task:
-      id: 15f19a6f-8b40-42f4-8a9e-b99366b7a76b
+      id: 58bd8e57-08aa-4c25-893e-c337dd0961e5
       version: -1
       name: ' get branch'
-      description: Get a list of repository branches from a project, sorted by name alphabetically.
-      script: '|||gitlab-branch-list'
+      description: Get a list of repository branches from a project, sorted by name
+        alphabetically.
+      script: GitLab v2|||gitlab-branch-list
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "28"
@@ -809,17 +812,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 40c06018-eabd-48bd-8c28-f333d804a81d
+    taskid: 19ce0ff4-107d-4003-831a-496a02c78cd5
     type: regular
     task:
-      id: 40c06018-eabd-48bd-8c28-f333d804a81d
+      id: 19ce0ff4-107d-4003-831a-496a02c78cd5
       version: -1
       name: branch delete
       description: Deletes a branch from the repository.
-      script: '|||gitlab-branch-delete'
+      script: GitLab v2|||gitlab-branch-delete
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "65"
@@ -844,17 +847,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 470bf3c0-dfe6-4f24-8406-2aa6dc266e94
+    taskid: 9ed71aab-1977-496e-8ebf-ef8ff846f266
     type: regular
     task:
-      id: 470bf3c0-dfe6-4f24-8406-2aa6dc266e94
+      id: 9ed71aab-1977-496e-8ebf-ef8ff846f266
       version: -1
       name: merge request create
       description: Creates a new merge request.
-      script: '|||gitlab-merge-request-create'
+      script: GitLab v2|||gitlab-merge-request-create
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "31"
@@ -923,17 +926,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: ae449056-95fe-47c4-8934-9589d4c209c8
+    taskid: 67a51341-bd02-4156-89d5-e1f5d8705e0d
     type: regular
     task:
-      id: ae449056-95fe-47c4-8934-9589d4c209c8
+      id: 67a51341-bd02-4156-89d5-e1f5d8705e0d
       version: -1
       name: merge update
-      description: Updates an existing merge request. You can change the target branch, title, or even close the MR.
-      script: '|||gitlab-merge-request-update'
+      description: Updates an existing merge request. You can change the target branch,
+        title, or even close the MR.
+      script: GitLab v2|||gitlab-merge-request-update
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "33"
@@ -966,10 +970,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 413e20da-8251-4eb4-8017-b612bbe1c69a
+    taskid: 0c363781-e6db-4a55-8cd2-28ffdf2db7f7
     type: condition
     task:
-      id: 413e20da-8251-4eb4-8017-b612bbe1c69a
+      id: 0c363781-e6db-4a55-8cd2-28ffdf2db7f7
       version: -1
       name: VERIFY merge update
       type: condition
@@ -982,13 +986,6 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: GitLab.MergeRequest.labels
-            iscontext: true
-          right:
-            value: {}
       - - operator: isNotEmpty
           left:
             value:
@@ -1011,23 +1008,25 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: bd3651d9-9d4f-45b8-894b-e7c5bb35efa9
+    taskid: b5cb5a39-ce43-40d5-868c-a2a3e1e13672
     type: regular
     task:
-      id: bd3651d9-9d4f-45b8-894b-e7c5bb35efa9
+      id: b5cb5a39-ce43-40d5-868c-a2a3e1e13672
       version: -1
       name: issue-create
       description: Create an issue.
-      script: '|||gitlab-issue-create'
+      script: GitLab v2|||gitlab-issue-create
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "42"
     scriptarguments:
       description:
         simple: very issue
+      partial_response:
+        simple: "false"
       title:
         simple: I'm a issue
     separatecontext: false
@@ -1086,17 +1085,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 5241325c-bc7d-4488-89d4-17a93a8a8684
+    taskid: ac0cce78-e257-4880-8802-47732750d85f
     type: regular
     task:
-      id: 5241325c-bc7d-4488-89d4-17a93a8a8684
+      id: ac0cce78-e257-4880-8802-47732750d85f
       version: -1
       name: group list
-      description: Get a list of visible groups for the authenticated user. When accessed without authentication, only public groups are returned. By default, this request returns 20 results at a time because the API results are paginated
-      script: '|||gitlab-group-list'
+      description: Get a list of visible groups for the authenticated user. When accessed
+        without authentication, only public groups are returned. By default, this
+        request returns 20 results at a time because the API results are paginated
+      script: GitLab v2|||gitlab-group-list
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "45"
@@ -1159,17 +1160,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: e0628c3c-f912-491b-834a-1ff76337ed3b
+    taskid: c171a576-eefe-4881-8e98-cb6dd08dfde7
     type: regular
     task:
-      id: e0628c3c-f912-491b-834a-1ff76337ed3b
+      id: c171a576-eefe-4881-8e98-cb6dd08dfde7
       version: -1
       name: group member
-      description: Gets a list of group or project members viewable by the authenticated user.
-      script: '|||gitlab-group-member-list'
+      description: Gets a list of group or project members viewable by the authenticated
+        user.
+      script: GitLab v2|||gitlab-group-member-list
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "47"
@@ -1232,17 +1234,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: e2300d70-3fda-436d-8d65-3dd265805ef7
+    taskid: f7e9e49e-3d0b-4ac9-8716-dbe1f71b4f98
     type: regular
     task:
-      id: e2300d70-3fda-436d-8d65-3dd265805ef7
+      id: f7e9e49e-3d0b-4ac9-8716-dbe1f71b4f98
       version: -1
       name: project list
-      description: Get a list of all visible projects across GitLab for the authenticated user. When accessed without authentication, only public projects with simple fields are returned.
-      script: '|||gitlab-project-list'
+      description: Get a list of all visible projects across GitLab for the authenticated
+        user. When accessed without authentication, only public projects with simple
+        fields are returned.
+      script: GitLab v2|||gitlab-project-list
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "49"
@@ -1305,17 +1309,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 172b6826-4a8a-4ce4-8d49-73148cef849c
+    taskid: b0c126d7-f8d1-47e9-867d-a336f43e1873
     type: regular
     task:
-      id: 172b6826-4a8a-4ce4-8d49-73148cef849c
+      id: b0c126d7-f8d1-47e9-867d-a336f43e1873
       version: -1
       name: group project list
       description: Get the list of projects of a given group.
-      script: '|||gitlab-group-project-list'
+      script: GitLab v2|||gitlab-group-project-list
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "61"
@@ -1423,17 +1427,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: 59d60a03-3f33-480a-8a7e-7178844be05e
+    taskid: 61229892-41ca-4da5-87d8-df832c1726a4
     type: regular
     task:
-      id: 59d60a03-3f33-480a-8a7e-7178844be05e
+      id: 61229892-41ca-4da5-87d8-df832c1726a4
       version: -1
       name: File get
-      description: Allows to receive information about file in repository like name, size, content.
-      script: '|||gitlab-file-get'
+      description: Allows to receive information about file in repository like name,
+        size, content.
+      script: GitLab v2|||gitlab-file-get
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "74"
@@ -1460,17 +1465,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: ba15cd72-6eb9-4338-8da0-b220361b1729
+    taskid: 78ae73ad-e65e-4940-8efe-31ba1bd6f3d6
     type: regular
     task:
-      id: ba15cd72-6eb9-4338-8da0-b220361b1729
+      id: 78ae73ad-e65e-4940-8efe-31ba1bd6f3d6
       version: -1
       name: Get raw file
-      description: Get raw file.
-      script: '|||gitlab-raw-file-get'
+      description: Get file the file in a raw format.
+      script: GitLab v2|||gitlab-raw-file-get
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "88"
@@ -1537,17 +1542,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: e1e73c4c-bc19-4619-8c0c-8a24b7dc5ca1
+    taskid: 292d8278-8527-4dec-893f-bf169c1fce24
     type: regular
     task:
-      id: e1e73c4c-bc19-4619-8c0c-8a24b7dc5ca1
+      id: 292d8278-8527-4dec-893f-bf169c1fce24
       version: -1
       name: merge request note create
       description: Creates a new note for a single merge request.
-      script: '|||gitlab-merge-request-note-create'
+      script: GitLab v2|||gitlab-merge-request-note-create
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "67"
@@ -1614,17 +1619,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: ea1017e3-0b49-41a0-8f7e-cebff0ffc9b5
+    taskid: d4400891-104c-4802-8f43-f7f13fd772e3
     type: regular
     task:
-      id: ea1017e3-0b49-41a0-8f7e-cebff0ffc9b5
+      id: d4400891-104c-4802-8f43-f7f13fd772e3
       version: -1
       name: 'merge request note update '
       description: Modify existing note of a merge request.
-      script: '|||gitlab-merge-request-note-update'
+      script: GitLab v2|||gitlab-merge-request-note-update
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "78"
@@ -1653,17 +1658,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: 06328d19-89de-4e33-84ff-a81b0e7d5d90
+    taskid: 23032100-d24a-4165-8501-1345dbe96673
     type: regular
     task:
-      id: 06328d19-89de-4e33-84ff-a81b0e7d5d90
+      id: 23032100-d24a-4165-8501-1345dbe96673
       version: -1
       name: 'merge request note delete '
       description: Deletes an existing note of a merge request.
-      script: '|||gitlab-merge-request-note-delete'
+      script: GitLab v2|||gitlab-merge-request-note-delete
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "64"
@@ -1690,17 +1695,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: 000cac27-7048-4b15-8e4a-bf042e565f68
+    taskid: 6b0be0b8-f78f-4256-8c4c-1c0a3a06019e
     type: regular
     task:
-      id: 000cac27-7048-4b15-8e4a-bf042e565f68
+      id: 6b0be0b8-f78f-4256-8c4c-1c0a3a06019e
       version: -1
       name: merge request note list
       description: Gets a list of all notes for a single merge request.
-      script: '|||gitlab-merge-request-note-list'
+      script: GitLab v2|||gitlab-merge-request-note-list
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "71"
@@ -1765,17 +1770,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "72":
     id: "72"
-    taskid: a5ddc8e8-8e6d-42ba-8d35-af1262897cb3
+    taskid: a68649fe-8811-401d-830b-854749b77217
     type: regular
     task:
-      id: a5ddc8e8-8e6d-42ba-8d35-af1262897cb3
+      id: a68649fe-8811-401d-830b-854749b77217
       version: -1
       name: file update
       description: Editing existing file in repository.
-      script: '|||gitlab-file-update'
+      script: GitLab v2|||gitlab-file-update
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "73"
@@ -1884,17 +1889,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: cda89375-22ff-4fa2-866e-0aee54c88722
+    taskid: 063a6929-d57e-4944-85a2-2ad4d0ff4bc0
     type: regular
     task:
-      id: cda89375-22ff-4fa2-866e-0aee54c88722
+      id: 063a6929-d57e-4944-85a2-2ad4d0ff4bc0
       version: -1
       name: file-create
-      description: This allows you to create a single file. File path or entry_id must be specified.
-      script: '|||gitlab-file-create'
+      description: This allows you to create a single file. File path or entry_id
+        must be specified.
+      script: GitLab v2|||gitlab-file-create
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "76"
@@ -1933,7 +1939,8 @@ tasks:
       id: e3b17a82-e88c-4fe8-8f44-4fccbdb43a80
       version: -1
       name: VERIFY  file create
-      description: This allows you to create a single file. File path or entry_id must be specified.
+      description: This allows you to create a single file. File path or entry_id
+        must be specified.
       type: condition
       iscommand: false
       brand: ""
@@ -1973,17 +1980,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: fb550f2d-455e-436c-8885-215c09041d3b
+    taskid: f1941520-5370-4acd-8674-22a488c8d68d
     type: regular
     task:
-      id: fb550f2d-455e-436c-8885-215c09041d3b
+      id: f1941520-5370-4acd-8674-22a488c8d68d
       version: -1
       name: file delete
       description: Editing existing file in repository.
-      script: '|||gitlab-file-delete'
+      script: GitLab v2|||gitlab-file-delete
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "84"
@@ -2050,17 +2057,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "81":
     id: "81"
-    taskid: 7a3a78e2-3e43-437e-8b30-d92e63a737a7
+    taskid: fe154548-e13c-4cfe-89c0-1c47994605af
     type: regular
     task:
-      id: 7a3a78e2-3e43-437e-8b30-d92e63a737a7
+      id: fe154548-e13c-4cfe-89c0-1c47994605af
       version: -1
       name: issue note update
       description: Modify existing note of an issue.
-      script: '|||gitlab-issue-note-update'
+      script: GitLab v2|||gitlab-issue-note-update
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "14"
@@ -2089,17 +2096,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: 782ae94e-2a81-45e5-8d32-e7b579a99846
+    taskid: 43ac7937-ad6b-4087-8375-51202657acfa
     type: regular
     task:
-      id: 782ae94e-2a81-45e5-8d32-e7b579a99846
+      id: 43ac7937-ad6b-4087-8375-51202657acfa
       version: -1
       name: Code search
-      description: Using Scope blobs. Blobs searches are performed on both filenames and contents.
-      script: '|||gitlab-code-search'
+      description: Using Scope blobs. Blobs searches are performed on both filenames
+        and contents.
+      script: GitLab v2|||gitlab-code-search
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "85"
@@ -2162,17 +2170,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "86":
     id: "86"
-    taskid: 0386f5aa-b455-4785-8796-b3341b0da323
+    taskid: e6e3a714-8d56-4e2c-8f7a-6edf23119a25
     type: regular
     task:
-      id: 0386f5aa-b455-4785-8796-b3341b0da323
+      id: e6e3a714-8d56-4e2c-8f7a-6edf23119a25
       version: -1
       name: list users
       description: Get the users list of a project.
-      script: '|||gitlab-project-user-list'
+      script: GitLab v2|||gitlab-project-user-list
       type: regular
       iscommand: true
-      brand: ""
+      brand: GitLab v2
     nexttasks:
       '#none#':
       - "87"
@@ -2287,5 +2295,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.5.0
-description: GitLab playbbok

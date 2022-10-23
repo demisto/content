@@ -659,11 +659,10 @@ def branch_delete_command(client: Client, args: Dict[str, Any]) -> CommandResult
     """
     branch = str(args.get('branch', ''))
     response = client.branch_delete_request(branch)
-    human_readable_string = 'Branch deleted successfully'
     command_results = CommandResults(
         outputs_prefix='GitLab.Branch',
         outputs_key_field='short_id',
-        readable_output=human_readable_string,
+        readable_output='Branch deleted successfully',
         outputs=response,
         raw_response=response
     )
@@ -682,9 +681,8 @@ def merged_branch_delete_command(client: Client, args: Dict[str, Any]) -> Comman
         (CommandResults).
     """
     response = client.delete_merged_branches_request()
-    human_readable_string = 'Merged branches Deleted successfully'
     command_results = CommandResults(
-        readable_output=human_readable_string,
+        readable_output='Merged branches Deleted successfully',
         outputs=response,
         raw_response=response
     )
@@ -783,10 +781,9 @@ def version_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     response = client.version_get_request()
     version = response.get('version', '')
     revision = response.get('revision', '')
-    human_readable_string = f'GitLab version {version}\n reversion: {revision} '
     command_results = CommandResults(
         outputs_prefix='GitLab.Version',
-        readable_output=human_readable_string,
+        readable_output=f'GitLab version {version}\n reversion: {revision} ',
         outputs_key_field='revision',
         outputs=response,
         raw_response=response
@@ -853,15 +850,13 @@ def file_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         file_path_entry_id = demisto.getFilePath(entry_id).get('path')
         with open(file_path_entry_id, 'rb') as f:
             file_content = f.read()
-    else:
-        file_content = bytes(file_content, encoding='utf8')
+
     response = client.file_create_request(file_path, branch, commit_msg, author_email, author_name,
                                           file_content, execute_filemode)
-    human_readable_string = 'File created successfully.'
     return CommandResults(
         outputs_prefix='GitLab.File',
         outputs_key_field='path',
-        readable_output=human_readable_string,
+        readable_output='File created successfully.',
         outputs=response,
         raw_response=response
     )
@@ -928,11 +923,10 @@ def file_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     file_path = args.get('file_path', '')
     commit_message = args.get('commit_message', '')
     response = client.file_delete_request(file_path, branch, commit_message)
-    human_readable_string = 'File deleted successfully'
     command_results = CommandResults(
         outputs_prefix='GitLab.File',
         outputs_key_field='path',
-        readable_output=human_readable_string,
+        readable_output='File deleted successfully',
         outputs=response,
         raw_response=response
     )
@@ -1166,7 +1160,7 @@ def issue_note_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
                            }
         response_to_hr.append(issue_note_edit)
     return_partial = args.get('partial_response') == 'true'
-    outputs = partial_response([response], 'Issue Note') if return_partial else response
+    outputs = partial_response(response, 'Issue Note') if return_partial else response
     human_readable = tableToMarkdown('List Issue notes', response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
         outputs_prefix='GitLab.IssueNote',
