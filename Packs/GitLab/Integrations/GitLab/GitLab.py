@@ -109,11 +109,8 @@ class Client(BaseClient):
 
     def branch_delete_request(self, branch: str) -> dict:
         headers = self._headers
-        self._http_request('DELETE', f'projects/{self.project_id}/repository/branches/{branch}', headers=headers,
-                           resp_type='text', ok_codes=[200, 202, 204])
-        response = {
-            'message': f'Branch \'{branch}\' is deleted.',
-        }
+        response = self._http_request('DELETE', f'projects/{self.project_id}/repository/branches/{branch}', headers=headers,
+                                      resp_type='text', ok_codes=[200, 202, 204])
         return response
 
     def delete_merged_branches_request(self) -> dict:
@@ -296,7 +293,7 @@ def check_args_for_update(args: dict, optinal_params: list) -> dict:
 
 def validate_pagination_values(limit: int, page_number: int) -> tuple[int, int, int]:
     if limit < 0 or page_number < 0:
-        raise DemistoException('Pagination values must be positive')
+        raise DemistoException('limit and page arguments must be positive')
     if limit < 100:
         per_page = limit
     else:
@@ -308,7 +305,10 @@ def response_according_pagination(client_function: Any, limit: int, page_number:
                                   params: dict, suffix_id: str | None):
     '''
     This function gets results accoring to the pagination values.
-    input: The paramters for the client function,suffix_id , and the name of the client function.
+    input: 1. paramters for the client function
+           2. suffix_id- if the suffix contain id(issue id for example) suffix_id would contain it,
+            otherwise None.
+           3. name of the client function.
     output: list(representing the pages) of list of raw dictonary results.
     '''
     limit, per_page, page_number = validate_pagination_values(limit, page_number)
@@ -468,7 +468,7 @@ def group_project_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     response_to_hr, headers, human_readable = [], ['Id', 'Name', 'Description', 'Path'], ''
     page_number = arg_to_number(args.get('page')) or 1
     limit = arg_to_number(args.get('limit', '50')) or 50
-    group_id = args.get('group_id', '')
+    group_id = args.get('group_id')
     params: Dict[str, Any] = {}
     response = response_according_pagination(client.group_projects_list_request, limit, page_number, params, group_id)
     for project in response:
@@ -633,7 +633,7 @@ def branch_create_command(client: Client, args: Dict[str, Any]) -> CommandResult
         'IsMerge': response.get('merged', 'False'),
         'IsProtected': response.get('protected', 'False')
     }
-    human_readable = tableToMarkdown('Create Branch', human_readable_dict, headers=headers)
+    human_readable = tableToMarkdown('Created Branch', human_readable_dict, headers=headers)
     return_partial = args.get('partial_response') == 'true'
     outputs = partial_response([response], 'Branch') if return_partial else response
     command_results = CommandResults(
@@ -661,6 +661,8 @@ def branch_delete_command(client: Client, args: Dict[str, Any]) -> CommandResult
     response = client.branch_delete_request(branch)
     human_readable_string = 'Branch deleted successfully'
     command_results = CommandResults(
+        outputs_prefix='GitLab.Branch',
+        outputs_key_field='short_id',
         readable_output=human_readable_string,
         outputs=response,
         raw_response=response
@@ -891,7 +893,7 @@ def file_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     last_commit_id = args.get('last_commit_id')
     execute_filemode = args.get('execute_filemode')
     if not entry_id and not file_content:
-        raise DemistoException('You must specify either the "file_text" or the "entry_id" of the file.')
+        raise DemistoException('You must specify either the "file_content" or the "entry_id" of the file.')
     elif entry_id:
         file_path_entry_id = demisto.getFilePath(entry_id).get('path')
         with open(file_path_entry_id, 'rb') as f:
@@ -1225,7 +1227,7 @@ def merge_request_list_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 def merge_request_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
-    Creates an merge request note.
+    Creates a merge request note.
     Args:
         client (Client): Client to perform calls to GitLab services.
         args (Dict[str, Any]): XSOAR arguments:
@@ -1351,7 +1353,7 @@ def merge_request_note_list_command(client: Client, args: Dict[str, Any]) -> Com
 
 def merge_request_note_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
-    Creates an merge request note.
+    Creates a merge request note.
     Args:
         client (Client): Client to perform calls to GitLab services.
         args (Dict[str, Any]): XSOAR arguments:
@@ -1377,7 +1379,7 @@ def merge_request_note_create_command(client: Client, args: Dict[str, Any]) -> C
 
 def merge_request_note_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
-    updating an merge request note.
+    updating a merge request note.
     Args:
         client (Client): Client to perform calls to GitLab services.
         args (Dict[str, Any]): XSOAR arguments:
@@ -1406,7 +1408,7 @@ def merge_request_note_update_command(client: Client, args: Dict[str, Any]) -> C
 
 def merge_request_note_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
-    deletes an issue note.
+    deletes a merge request note.
     Args:
         client (Client): Client to perform calls to GitLab services.
         args (Dict[str, Any]): XSOAR arguments:
@@ -1426,6 +1428,15 @@ def merge_request_note_delete_command(client: Client, args: Dict[str, Any]) -> C
 
 
 def group_member_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Gets a list of group or project members viewable by the authenticated user.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (Dict[str, Any]): XSOAR arguments:
+            - group_id
+    Returns:
+        (CommandResults).
+    """
     response_to_hr = []
     headers = ['Id', 'Name', 'UserName', 'MembershipState', 'ExpiresAt']
     group_id = args.get('group_id')

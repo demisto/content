@@ -10,10 +10,10 @@ def util_load_json(path):
 
 ARGS_CASES = [
     (2, -1, False,  # The page_size value must be equal to 1 or bigger.
-     {'error': 'Pagination values must be positive'}  # expected
+     {'error': 'limit and page arguments must be positive'}  # expected
      ),
     (-5, 11, False,  # The page_size value must be equal to 1 or bigger.
-     {'error': 'Pagination values must be positive'}  # expected
+     {'error': 'limit and page arguments must be positive'}  # expected
      ),
     (1, 1, True,  # Good Case
      {'limit': 1, 'per_page': 1, 'page_number': 1}),  # expected
@@ -31,13 +31,10 @@ def test_check_args(limit, page_number, isGoodCase, expected_results):
                 2. page_number: The number of page to retrieve results from.
                 3. isGoodCase: is the test case is with valid arguments.
                 3. expected_results: what we expect to get.
-
         When:
             - running commands that has pagination
-
         Then:
             - checking that if the parameters < 1 , exception is thrown
-
         """
     from GitLab import validate_pagination_values
     from CommonServerPython import DemistoException
@@ -112,8 +109,8 @@ def test_branch_create_command(mocker):
                     verify=False,
                     proxy=False,
                     headers={'PRIVATE-TOKEN': 'api_key'})
-    params = {'branch': 'branchExample', 'ref': 'ref'}
-    expected_hr = '### Create Branch\n' \
+    params = {'branch': 'branchExample', 'ref': 'ref', 'partial_response': 'false'}
+    expected_hr = '### Created Branch\n' \
                   '|Title|CommitShortId|CommitTitle|CreatedAt|IsMerge|IsProtected|\n' \
                   '|---|---|---|---|---|---|\n' \
                   '| branchExample | f9d0bf17 | test1 | 2022-07-27T13:09:50.000+00:00 | false | false |\n'
@@ -237,7 +234,6 @@ def test_get_project_list_command(mocker):
 
 ARGS_BRANCHES = [
     ({'branch_name': '1-test', 'limit': '1'},  # args single branch
-     'branch_single_request',
      'get_branches_single',  # result from json
      '### Branch details\n' \
      '|Title|CommitShortId|CommitTitle|CreatedAt|IsMerge|IsProtected|\n' \
@@ -245,7 +241,6 @@ ARGS_BRANCHES = [
      '| 1-test | f9d0bf17 | test1 | 2022-07-27T13:09:50.000+00:00 | false | false |\n'
      ),
     ({'limit': '2'},  # args list
-     'branch_list_request',
      'get_branches',
      '### List Branches\n' \
      '|Title|CommitShortId|CommitTitle|CreatedAt|IsMerge|IsProtected|\n' \
@@ -256,8 +251,8 @@ ARGS_BRANCHES = [
 ]
 
 
-@pytest.mark.parametrize('args, client_function, result_key_json, expected_results', ARGS_BRANCHES)
-def test_branch_list_command(mocker, args, client_function, result_key_json, expected_results):
+@pytest.mark.parametrize('args, result_key_json, expected_results', ARGS_BRANCHES)
+def test_branch_list_command(mocker, args, result_key_json, expected_results):
     """
     Given:
         - All relevant arguments for the command
@@ -605,7 +600,7 @@ def test_file_create_command(mocker, args, expected_results):
 
 CASE_FILE_UPDATE = [
     ({},  # args
-     'You must specify either the "file_text" or the "entry_id" of the file.'),
+     'You must specify either the "file_content" or the "entry_id" of the file.'),
     ({'file_path': 'example', 'branch': 'main', 'commit_msg': 'unit', 'file_content': 'update'},  # args
      'File updated successfully.'  # results
      )

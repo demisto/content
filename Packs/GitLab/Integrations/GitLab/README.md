@@ -1,5 +1,6 @@
 ## Overview
-[GitLab] GitLab is The DevOps platform that empowers organizations to maximize the overall return on software development by delivering software faster and efficiently, while strengthening security and compliance.
+GitLab is The DevOps platform that empowers organizations to maximize the overall return on software development by delivering software faster and efficiently while strengthening security and compliance.
+
 
 ## Use Cases
 This integration enables you to:
