@@ -59,12 +59,12 @@ script:
           description: The specific result page to display.
         - name: partial_response
           auto: PREDEFINED
-          defaultValue: True
+          defaultValue: true
           description: Return a partial response if true, else return the full API response.
           isArray: false
           predefined:
-            - True
-            - False
+            - 'true'
+            - 'false'
           required: false
       outputs:
         - contextPath: Bitbucket.Project.type
@@ -147,12 +147,12 @@ script:
           description: The specific result page to display.
         - name: partial_response
           auto: PREDEFINED
-          defaultValue: True
+          defaultValue: true
           description: Return a partial response if true, else return the full API response.
           isArray: false
           predefined:
-            - True
-            - False
+            - 'true'
+            - 'false'
           required: false
       outputs:
         - contextPath: Bitbucket.Branch.name
@@ -246,12 +246,12 @@ script:
           description: The name of the branch for which to retrieve the information.
         - name: partial_response
           auto: PREDEFINED
-          defaultValue: True
+          defaultValue: true
           description: Return a partial response if true, else return the full API response.
           isArray: false
           predefined:
-            - True
-            - False
+            - 'true'
+            - 'false'
           required: false
       outputs:
         - contextPath: Bitbucket.Branch.name
@@ -349,12 +349,12 @@ script:
           isArray: false
         - name: partial_response
           auto: PREDEFINED
-          defaultValue: True
+          defaultValue: true
           description: Return a partial response if true, else return the full API response.
           isArray: false
           predefined:
-            - True
-            - False
+            - 'true'
+            - 'false'
           required: false
       outputs:
         - contextPath: Bitbucket.Branch.name
@@ -510,12 +510,12 @@ script:
           description: The specific result page to display.
         - name: partial_response
           auto: PREDEFINED
-          defaultValue: True
+          defaultValue: true
           description: Return a partial response if true, else return the full API response.
           isArray: false
           predefined:
-            - True
-            - False
+            - 'true'
+            - 'false'
           required: false
       outputs:
         - contextPath: Bitbucket.Commit.type
@@ -720,12 +720,12 @@ script:
           isArray: false
         - name: partial_response
           auto: PREDEFINED
-          defaultValue: True
+          defaultValue: true
           description: Return a partial response if true, else return the full API response.
           isArray: false
           predefined:
-            - True
-            - False
+            - 'true'
+            - 'false'
           required: false
       outputs:
         - contextPath: Bitbucket.Issue.type
@@ -857,12 +857,12 @@ script:
           description: The specific result page to display.
         - name: partial_response
           auto: PREDEFINED
-          defaultValue: True
+          defaultValue: true
           description: Return a partial response if true, else return the full API response.
           isArray: false
           predefined:
-            - True
-            - False
+            - 'true'
+            - 'false'
           required: false
       outputs:
         - contextPath: Bitbucket.Issue.type
@@ -1037,12 +1037,12 @@ script:
           isArray: false
         - name: partial_response
           auto: PREDEFINED
-          defaultValue: True
+          defaultValue: true
           description: Return a partial response if true, else return the full API response.
           isArray: false
           predefined:
-            - True
-            - False
+            - 'true'
+            - 'false'
           required: false
       outputs:
         - contextPath: Bitbucket.Issue.type
@@ -1190,12 +1190,12 @@ script:
             - no
         - name: partial_response
           auto: PREDEFINED
-          defaultValue: True
+          defaultValue: true
           description: Return a partial response if true, else return the full API response.
           isArray: false
           predefined:
-            - True
-            - False
+            - 'true'
+            - 'false'
           required: false
       outputs:
         - contextPath: Bitbucket.PullRequest.comment_count
@@ -1389,12 +1389,12 @@ script:
             - no
         - name: partial_response
           auto: PREDEFINED
-          defaultValue: True
+          defaultValue: true
           description: Return a partial response if true, else return the full API response.
           isArray: false
           predefined:
-            - True
-            - False
+            - 'true'
+            - 'false'
           required: false
       outputs:
         - contextPath: Bitbucket.PullRequest.comment_count
@@ -1579,12 +1579,12 @@ script:
           description: The specific result page to display.
         - name: partial_response
           auto: PREDEFINED
-          defaultValue: True
+          defaultValue: true
           description: Return a partial response if true, else return the full API response.
           isArray: false
           predefined:
-            - True
-            - False
+            - 'true'
+            - 'false'
           required: false
       outputs:
         - contextPath: Bitbucket.PullRequest.comment_count
@@ -1751,12 +1751,12 @@ script:
           isArray: false
         - name: partial_response
           auto: PREDEFINED
-          defaultValue: True
+          defaultValue: true
           description: Return a partial response if true, else return the full API response.
           isArray: false
           predefined:
-            - True
-            - False
+            - 'true'
+            - 'false'
           required: false
       outputs:
         - contextPath: Bitbucket.IssueComment.type
@@ -1871,12 +1871,12 @@ script:
           description: The specific result page to display.
         - name: partial_response
           auto: PREDEFINED
-          defaultValue: True
+          defaultValue: true
           description: Return a partial response if true, else return the full API response.
           isArray: false
           predefined:
-            - True
-            - False
+            - 'true'
+            - 'false'
           required: false
       outputs:
         - contextPath: Bitbucket.IssueComment.type
@@ -1972,12 +1972,12 @@ script:
           isArray: false
         - name: partial_response
           auto: PREDEFINED
-          defaultValue: True
+          defaultValue: true
           description: Return a partial response if true, else return the full API response.
           isArray: false
           predefined:
-            - True
-            - False
+            - 'true'
+            - 'false'
           required: false
       outputs:
         - contextPath: Bitbucket.IssueComment.type
@@ -2069,12 +2069,12 @@ script:
           isArray: false
         - name: partial_response
           auto: PREDEFINED
-          defaultValue: True
+          defaultValue: true
           description: Return a partial response if true, else return the full API response.
           isArray: false
           predefined:
-            - True
-            - False
+            - 'true'
+            - 'false'
           required: false
       outputs:
         - contextPath: Bitbucket.PullRequestComment.id
@@ -2162,12 +2162,12 @@ script:
           description: The specific result page to display.
         - name: partial_response
           auto: PREDEFINED
-          defaultValue: True
+          defaultValue: true
           description: Return a partial response if true, else return the full API response.
           isArray: false
           predefined:
-            - True
-            - False
+            - 'true'
+            - 'false'
           required: false
       outputs:
         - contextPath: Bitbucket.PullRequestComment.id
@@ -2251,12 +2251,12 @@ script:
           isArray: false
         - name: partial_response
           auto: PREDEFINED
-          defaultValue: True
+          defaultValue: true
           description: Return a partial response if true, else return the full API response.
           isArray: false
           predefined:
-            - True
-            - False
+            - 'true'
+            - 'false'
           required: false
       outputs:
         - contextPath: Bitbucket.PullRequestComment.id
@@ -2347,12 +2347,12 @@ script:
           description: The specific result page to display.
         - name: partial_response
           auto: PREDEFINED
-          defaultValue: True
+          defaultValue: true
           description: Return a partial response if true, else return the full API response.
           isArray: false
           predefined:
-            - True
-            - False
+            - 'true'
+            - 'false'
           required: false
       outputs:
         - contextPath: Bitbucket.WorkspaceMember.type
