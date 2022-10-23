@@ -9,9 +9,13 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Forensics"
+    ],
     "useCases": [],
-    "keywords": ["Moloch"],
+    "keywords": [
+        "Moloch"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
