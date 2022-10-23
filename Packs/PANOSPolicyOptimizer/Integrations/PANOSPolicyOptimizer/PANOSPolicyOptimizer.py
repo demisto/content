@@ -43,14 +43,6 @@ class Client:
         return json_response
 
     @staticmethod
-    def version_parse(version: str) -> float:
-        try:
-            split = version.split('.')
-            return float(f'{split[0]}.{"".join(split[1:])}')
-        except ValueError:
-            raise Exception('Version is not in the correct format')
-
-    @staticmethod
     def extract_csrf(response_text: str) -> str:
         # the constant amount of chars until the value we want for the csrf
         csrf_start = response_text.find('_csrf') + CSRF_PARSING_CHARS
@@ -70,7 +62,7 @@ class Client:
             'ok': 'Log In'
         }
         try:
-            if self.version_parse(demisto.params().get('version', '8')) >= self.version_parse('10.1.6'):
+            if LooseVersion(demisto.params().get('version', '8')) >= LooseVersion('10.1.6'):
                 # We do this to get the cookie we need to add to the requests in the new version of PAN-OS
                 response = self.session.get(url=f'{self.session_metadata["base_url"]}/php/login.php?',
                                             verify=self.verify)
@@ -94,7 +86,7 @@ class Client:
         # Use RegEx to parse the ServerToken string from the JavaScript variable
         match = re.search(r'(?:window\.Pan\.st\.st\.st[0-9]+\s=\s\")(\w+)(?:\")', response.text)
         # Fix to login validation for version 9
-        if self.version_parse(demisto.params().get('version', '8')) >= self.version_parse('9'):
+        if LooseVersion(demisto.params().get('version', '8')) >= LooseVersion('9'):
             if 'window.Pan.staticMOTD' not in response.text:
                 match = None
         # The JavaScript calls the ServerToken a "cookie" so we will use that variable name
@@ -459,7 +451,7 @@ def main():  # pragma: no cover
                         device_group=params.get('device_group'), verify=not params.get('insecure'), tid=50)
         client.session_metadata['cookie_key'] = client.login()  # Login to PAN-OS and return the GUI cookie value
         headers = {}
-        if client.version_parse(demisto.params().get('version', '8')) >= client.version_parse('10.1.6'):
+        if LooseVersion(demisto.params().get('version', '8')) >= LooseVersion('10.1.6'):
             headers['Cookie'] = client.session_metadata["cookie"]
             headers['Content-Type'] = 'application/json'
             client.session_metadata["headers"] = headers

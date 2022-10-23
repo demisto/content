@@ -136,14 +136,6 @@ def test_querying_invalid_dynamic_address_group_response(mocker, client):
     assert dag.readable_output == 'Dynamic Address Group dag_test_ag was not found.'
 
 
-def test_verion_parse():
-    client = get_firewall_instance_client()
-    assert client.version_parse('10.1.6') == 10.16
-    assert client.version_parse('10') == 10.0
-    assert client.version_parse('10') == 10
-    assert client.version_parse('10.1') == 10.1
-
-
 def test_token_generator():
     client = get_firewall_instance_client()
     client.session_metadata['cookie_key'] = 'test'
