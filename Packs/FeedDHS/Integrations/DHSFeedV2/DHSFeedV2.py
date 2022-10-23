@@ -119,7 +119,7 @@ def get_collections_command(client: Taxii2FeedClient) -> CommandResults:
 ''' MAIN FUNCTION '''
 
 
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
     url = params.get('url', 'https://ais2.cisa.dhs.gov/taxii2/')
     key = params.get('key', {}).get('password')

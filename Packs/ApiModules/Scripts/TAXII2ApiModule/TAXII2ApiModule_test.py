@@ -1,3 +1,5 @@
+from taxii2client.exceptions import TAXIIServiceException
+
 from CommonServerPython import *
 from TAXII2ApiModule import Taxii2FeedClient, TAXII_VER_2_1, HEADER_USERNAME
 from taxii2client import v20, v21
@@ -389,6 +391,49 @@ class TestInitRoots:
 
         mock_client.init_roots()
         assert mock_client.api_root.url == self.default_api_root_url
+
+    has_none = "Unexpected Response."
+    has_version_error = "Unexpected Response. Got Content-Type: ‘application/taxii+json; charset=utf-8; version=2.1' " \
+                        "for Accept: ‘application/vnd.oasis.taxii+json; version=2.0' If you are trying to contact a " \
+                        "TAXII 2.0 Server use ‘from taxii2client.v20 import X' If you are trying to contact a TAXII 2.1 " \
+                        "Server use ‘from taxii2client.v21 import X'"
+    has_client_error = "Unexpected Response. 406 Client Error."
+    has_both_errors = "Unexpected Response. 406 Client Error. Got Content-Type: ‘application/taxii+json; charset=utf-8; " \
+                      "version=2.1' for Accept: ‘application/vnd.oasis.taxii+json; version=2.0' If you are trying to contact a " \
+                      "TAXII 2.0 Server use ‘from taxii2client.v20 import X' If you are trying to contact a TAXII 2.1 " \
+                      "Server use ‘from taxii2client.v21 import X'"
+
+    @pytest.mark.parametrize('error_msg, should_raise_error',
+                             [(has_none, True),
+                              (has_version_error, False),
+                              (has_client_error, False),
+                              (has_both_errors, False),
+                              ])
+    def test_error_code(self, mocker, error_msg, should_raise_error):
+        """
+        Given:
+            - Setting up a client with TAXII 2.0 server raised an error
+
+        When:
+            - Initializing roots for TAXII 2 client
+
+        Then:
+            - If the server is TAXII 2.1, error is handled and server is initialized with right version
+            - If it is a different error, it is raised
+        """
+        mock_client = Taxii2FeedClient(url='https://ais2.cisa.dhs.gov/taxii2/', collection_to_fetch='default', proxies=[],
+                                       verify=False, objects_to_fetch=[], default_api_root='federal')
+        set_api_root_mocker = mocker.patch.object(mock_client, 'set_api_root', side_effect=[TAXIIServiceException(error_msg), ''])
+
+        if should_raise_error:
+            with pytest.raises(Exception) as e:
+                mock_client.init_roots()
+            assert str(e.value) == error_msg
+            assert set_api_root_mocker.call_count == 1
+
+        else:
+            mock_client.init_roots()
+            assert set_api_root_mocker.call_count == 2
 
 
 class TestFetchingStixObjects:
