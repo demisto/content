@@ -542,7 +542,7 @@
             "instance_names": "ms_azure_compute_self_deployed"
         },
         {
-            "integrations": "Symantec Data Loss Prevention",
+            "integrations": ["Symantec Data Loss Prevention", "Symantec Data Loss Prevention v2"],
             "playbookID": "Symantec Data Loss Prevention - Test",
             "fromversion": "4.5.0"
         },
@@ -1405,6 +1405,7 @@
         },
         {
             "integrations": [
+                "EWSO365",
                 "EWS v2",
                 "EWS Mail Sender"
             ],
@@ -1830,7 +1831,7 @@
             "timeout": 500
         },
         {
-            "integrations": "EWS v2",
+            "integrations": ["EWS v2", "EWSO365"],
             "playbookID": "pyEWS_Test",
             "instance_names": "ewv2_regular",
             "is_mockable": false
@@ -2913,7 +2914,7 @@
         {
             "playbookID": "Test Convert file hash to corresponding hashes",
             "fromversion": "4.5.0",
-            "integrations": "VirusTotal",
+            "integrations": ["VirusTotal", "Zimperium"],
             "instance_names": "virus_total_general"
         },
         {
