@@ -6,9 +6,11 @@ from typing import Dict, List, Optional
 from requests.auth import HTTPBasicAuth
 from datetime import datetime
 import requests
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()  # pylint: disable=no-member
+
 
 # CORTEX XSOAR COMMAND CONSTANTS
 COUNT = 0
