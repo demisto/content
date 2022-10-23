@@ -5168,6 +5168,7 @@
             "fromversion": "6.2.0"
         },
         {
+            "integrations": "Skyhigh Security",
             "playbookID": "Skyhigh Security Test Play Book",
             "fromversion": "6.5.0"
         },
@@ -5192,8 +5193,7 @@
             "playbookID": "VerifyCIDR-Test"
         }, 
         {
-            "playbookID": "SetDateField-Test",
-            "integrations": "Skyhigh Security"
+            "playbookID": "SetDateField-Test"
         }
     ],
     "skipped_tests": {
