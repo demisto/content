@@ -2333,15 +2333,6 @@ def convert_asset_search_filters(search_filters: Union[str, list[str]]) -> list[
         _field, _operator, _value = search_filter.split(" ")
         values = argToList(_value)
 
-        # Convert numbers to floats if values are numbers
-        # TODO: Check if float conversion has any meaning, remove if not
-        for i, value in enumerate(values):
-            try:
-                values[i] = float(value)
-
-            except Exception:
-                pass
-
         filter_dict = {
             "field": _field,
             "operator": _operator,
