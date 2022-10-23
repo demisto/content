@@ -247,7 +247,7 @@ script:
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response. 
+      description: Return partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
@@ -448,7 +448,7 @@ script:
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response. 
+      description: Return partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
@@ -638,7 +638,7 @@ script:
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response. 
+      description: Return partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
@@ -792,7 +792,7 @@ script:
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response. 
+      description: Return partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
@@ -888,7 +888,7 @@ script:
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response. 
+      description: Return partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
@@ -1202,7 +1202,7 @@ script:
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response. 
+      description: Return partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
@@ -1532,7 +1532,7 @@ script:
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response. 
+      description: Return partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
@@ -1629,7 +1629,7 @@ script:
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response. 
+      description: Return partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
@@ -1730,7 +1730,7 @@ script:
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response. 
+      description: Return partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
@@ -1832,7 +1832,7 @@ script:
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response. 
+      description: Return partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
@@ -1910,7 +1910,7 @@ script:
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response. 
+      description: Return partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
@@ -1992,7 +1992,7 @@ script:
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response. 
+      description: Return partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
@@ -2086,7 +2086,7 @@ script:
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response. 
+      description: Return partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
@@ -2287,7 +2287,7 @@ script:
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response. 
+      description: Return partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
@@ -2999,7 +2999,7 @@ script:
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response. 
+      description: Return partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
@@ -3096,7 +3096,7 @@ script:
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response. 
+      description: Return partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
@@ -3435,7 +3435,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.7.35188
+  dockerimage: demisto/python3:3.10.8.36650
 fromversion: 6.5.0
 tests:
 - GitLab-Test
