@@ -251,6 +251,11 @@ def test_edit_case(mocker):
 MOCK_CURRENT_TIME = '2022-10-18T16:46:25Z'
 
 
+def create_time_difference_string(days=0, hours=0):
+    datetime_freezed = datetime.strptime(MOCK_CURRENT_TIME, McAfeeESMClient.demisto_format)
+    return datetime.strftime(datetime_freezed - timedelta(days=days, hours=hours), McAfeeESMClient.demisto_format)
+
+
 @freeze_time(MOCK_CURRENT_TIME)
 def test_alarm_to_incidents(mocker):
     """
@@ -270,23 +275,7 @@ def test_alarm_to_incidents(mocker):
        the second run. 
 
     """
-    def create_time_difference_string(days=0, hours=0):
-        return datetime.strftime(datetime_freezed - timedelta(days=days, hours=hours), McAfeeESMClient.demisto_format)
 
-    def mock_fetch_alarams(since: str = None, start_time: str = None, end_time: str = None, raw: bool = False):
-        if type(start_time) == str:
-            start_time = datetime.strptime(start_time, McAfeeESMClient.demisto_format)
-        all_alarms = [alarm for alarm in alarms if
-                      datetime.strptime(alarm.get('triggeredDate'), McAfeeESMClient.demisto_format)
-                      > start_time]
-        return None, None, all_alarms
-
-    def mock_fetch_alarm_without_results(client):
-        mocker.patch.object(McAfeeESMClient, 'fetch_alarms', return_value=(None, None, []))
-        client.fetch_incidents(params=params)
-        return demisto.setLastRun.call_args[0][0]
-
-    datetime_freezed = datetime.strptime(MOCK_CURRENT_TIME, McAfeeESMClient.demisto_format)
     params = {
         "url": "https://example.com",
         "insecure": True,
@@ -304,8 +293,21 @@ def test_alarm_to_incidents(mocker):
         {
             'id': 2,
             'triggeredDate': create_time_difference_string(hours=5)
-    }
+        }
     ]
+
+    def mock_fetch_alarams(since: str = None, start_time: str = None, end_time: str = None, raw: bool = False):
+        if type(start_time) == str:
+            start_time = datetime.strptime(start_time, McAfeeESMClient.demisto_format)
+        all_alarms = [alarm for alarm in alarms if
+                      datetime.strptime(alarm.get('triggeredDate'), McAfeeESMClient.demisto_format)
+                      > start_time]
+        return None, None, all_alarms
+
+    def mock_fetch_alarm_without_results(client):
+        mocker.patch.object(McAfeeESMClient, 'fetch_alarms', return_value=(None, None, []))
+        client.fetch_incidents(params=params)
+        return demisto.setLastRun.call_args[0][0]
 
     mocker.patch('McAfee_ESM_v2.parse_date_range', return_value=['', ''])
     mocker.patch.object(McAfeeESMClient, '_McAfeeESMClient__login', return_value={})
