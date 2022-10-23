@@ -6,6 +6,32 @@
         "customGroupBy": [
             null,
             {
+                "Auth Error": {
+                    "conditions": [
+                        [
+                            {
+                                "field": "apiResponseType",
+                                "operator": "isEqualCaseString",
+                                "right": "AuthError",
+                                "type": "string"
+                            }
+                        ]
+                    ],
+                    "name": "Auth Error"
+                },
+                "Connection Error": {
+                    "conditions": [
+                        [
+                            {
+                                "field": "apiResponseType",
+                                "operator": "isEqualCaseString",
+                                "right": "ConnectionError",
+                                "type": "string"
+                            }
+                        ]
+                    ],
+                    "name": "Connection Error"
+                },
                 "General Error": {
                     "conditions": [
                         [
@@ -44,32 +70,6 @@
                         ]
                     ],
                     "name": "Success"
-                },
-                "Auth Error": {
-                    "conditions": [
-                        [
-                            {
-                                "field": "apiResponseType",
-                                "operator": "isEqualCaseString",
-                                "right": "AuthError",
-                                "type": "string"
-                            }
-                        ]
-                    ],
-                    "name": "Auth Error"
-                },
-                "Connection Error": {
-                    "conditions": [
-                        [
-                            {
-                                "field": "apiResponseType",
-                                "operator": "isEqualCaseString",
-                                "right": "ConnectionError",
-                                "type": "string"
-                            }
-                        ]
-                    ],
-                    "name": "Connection Error"
                 }
             }
         ],
@@ -88,7 +88,7 @@
         }
     },
     "query": "type:integration and instance:\"JoeSecurityV2_instance_1\"",
-    "modified": "2022-07-28T07:14:16.55383798Z",
+    "modified": "2022-10-23T13:55:04.576754212Z",
     "name": "API Call Results for Joe Security",
     "dateRange": {
         "fromDate": "0001-01-01T00:00:00Z",
@@ -105,7 +105,7 @@
     },
     "isPredefined": true,
     "version": -1,
-    "id": "4a54be5f-0a1c-4a25-8b7b-7c4c340326b6",
+    "id": "c63390c0-0c5e-4906-8b44-a748e6a639ee",
     "widgetType": "line",
     "fromVersion": "6.5.0",
     "description": ""
