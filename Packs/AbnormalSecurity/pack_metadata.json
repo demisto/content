@@ -6,11 +6,9 @@
     "author": "Abnormal Security",
     "url": "",
     "email": "support@abnormalsecurity.com",
+    "tags": [],
     "categories": [
         "Data Enrichment & Threat Intelligence"
-    ],
-    "tags": [
-        "Email"
     ],
     "useCases": [
         "Phishing"
