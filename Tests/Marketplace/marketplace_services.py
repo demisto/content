@@ -28,10 +28,12 @@ from google.cloud import storage
 
 import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
-    PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, PACK_FOLDERS_TO_ID_SET_KEYS, \
+    PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, \
+    PACK_FOLDERS_TO_ID_SET_KEYS, \
     RN_HEADER_BY_PACK_FOLDER, CONTENT_ROOT_PATH, XSOAR_MP, XSIAM_MP, TAGS_BY_MP, CONTENT_ITEM_NAME_MAPPING, \
     ITEMS_NAMES_TO_DISPLAY_MAPPING
-from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
+from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, \
+    construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
 
 PULL_REQUEST_PATTERN = '\(#(\d+)\)'
@@ -1605,7 +1607,7 @@ class Pack(object):
                             for version, modified_release_notes_lines in modified_release_notes_lines_dict.items():
                                 versions, _ = self.get_same_block_versions(release_notes_dir, version, changelog)
                                 all_relevant_pr_nums_for_unified = list({pr_num for version in versions.keys()
-                                                                        for pr_num in version_to_prs[version]})
+                                                                         for pr_num in version_to_prs[version]})
                                 logging.debug(f"{all_relevant_pr_nums_for_unified=}")
                                 updated_entry = self._get_updated_changelog_entry(
                                     changelog, version, release_notes=modified_release_notes_lines,
@@ -1721,7 +1723,8 @@ class Pack(object):
             logging.debug(f"The pack {self._pack_name} release notes does not contain any entities")
             return changelog_entry, False
 
-        filtered_release_notes_from_tags = self.filter_headers_without_entries(release_notes_dict)  # type: ignore[arg-type]
+        filtered_release_notes_from_tags = self.filter_headers_without_entries(
+            release_notes_dict)  # type: ignore[arg-type]
         filtered_release_notes = self.filter_release_notes_by_entities_display_name(filtered_release_notes_from_tags,
                                                                                     modified_files_data, id_set)
 
@@ -1787,7 +1790,8 @@ class Pack(object):
 
             # Filters the RN entries by the entity display name
             display_names = [list(entity.values())[0]['display_name'] for entity in entities_data]
-            filtered_release_notes_entries = self.filter_entries_by_display_name(release_notes, display_names, rn_header,
+            filtered_release_notes_entries = self.filter_entries_by_display_name(release_notes, display_names,
+                                                                                 rn_header,
                                                                                  pack_folder, id_set)
 
             if filtered_release_notes_entries:
@@ -1796,7 +1800,8 @@ class Pack(object):
         return filtered_release_notes
 
     @staticmethod
-    def filter_entries_by_display_name(release_notes: dict, display_names: list, rn_header: str, pack_folder: str, id_set: dict):
+    def filter_entries_by_display_name(release_notes: dict, display_names: list, rn_header: str, pack_folder: str,
+                                       id_set: dict):
         """
         Filters the entries by display names and also handles special entities that their display name is not an header.
 
@@ -3075,7 +3080,8 @@ class Pack(object):
 
         return task_status
 
-    def upload_readme_images(self, storage_bucket, storage_base_path, diff_files_list=None, detect_changes=False, marketplace='', build_number='', ci_branch=''):
+    def upload_readme_images(self, storage_bucket, storage_base_path, diff_files_list=None, detect_changes=False,
+                             marketplace='', build_number='', ci_branch=''):
         """ Downloads pack readme links to images, and upload them to gcs.
 
             Searches for image links in pack readme.
@@ -3128,7 +3134,8 @@ class Pack(object):
         finally:
             return task_status
 
-    def collect_images_from_readme_and_replace_with_storage_path(self, pack_readme_path, gcs_pack_path, marketplace, build_number, ci_branch):
+    def collect_images_from_readme_and_replace_with_storage_path(self, pack_readme_path, gcs_pack_path, marketplace,
+                                                                 build_number, ci_branch):
         """
         Replaces inplace all images links in the pack README.md with their new gcs location
 
@@ -3164,7 +3171,8 @@ class Pack(object):
                 image_name = url_path.name
 
                 image_gcp_path = Path(gcs_pack_path, BucketUploadFlow.README_IMAGES, image_name)
-                url_to_replace_linking_to_dist = os.path.join(google_api_readme_images_url, BucketUploadFlow.README_IMAGES, image_name)
+                url_to_replace_linking_to_dist = os.path.join(google_api_readme_images_url,
+                                                              BucketUploadFlow.README_IMAGES, image_name)
 
                 line = line.replace(url, str(url_to_replace_linking_to_dist))
 
@@ -3188,7 +3196,8 @@ class Pack(object):
 
         Args:
              readme_original_url (str): The original url that was in the readme file
-             gcs_storage_path (str): The path to save the image on gcp (was calculated in collect_images_from_readme_and_replace_with_storage_path)
+             gcs_storage_path (str): The path to save the image on gcp (was calculated in collect_images_from_readme_
+             and_replace_with_storage_path)
              image_name(str): The name of the image we want to save
              storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where images will be uploaded.
 
@@ -3261,7 +3270,8 @@ class Pack(object):
             self.cleanup()
             return False
 
-        task_status = self.upload_readme_images(storage_bucket, storage_base_path, diff_files_list, detect_changes, marketplace, build_number, ci_branch)
+        task_status = self.upload_readme_images(storage_bucket, storage_base_path, diff_files_list, detect_changes,
+                                                marketplace, build_number, ci_branch)
         if not task_status:
             self._status = PackStatus.FAILED_README_IMAGE_UPLOAD.name
             self.cleanup()

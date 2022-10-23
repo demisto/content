@@ -6,7 +6,7 @@ import json
 import os
 import random
 import glob
-import requests
+# import requests
 from unittest.mock import mock_open
 from mock_open import MockOpen
 from google.cloud.storage.blob import Blob
@@ -14,7 +14,7 @@ from packaging.version import Version
 from freezegun import freeze_time
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Tuple, Any
-from pathlib import Path
+# from pathlib import Path
 # pylint: disable=no-member
 
 
@@ -1035,7 +1035,8 @@ This is visible
                                                                   build_number=build_number,
                                                                   modified_files_data=modified_data)
 
-        assert version_changelog['releaseNotes'] == "#### Integrations\n##### Integration Display Name\n- Fixed an issue"
+        assert version_changelog['releaseNotes'] == \
+               "#### Integrations\n##### Integration Display Name\n- Fixed an issue"
 
     def test_create_filtered_changelog_entry_modified_same_entities(self, dummy_pack: Pack):
         """
@@ -1182,7 +1183,7 @@ This is visible
 #### Scripts
 ##### Script Name
 - Fixed script''', 'marketplacev2',
-            "#### Integrations\n##### Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### Script Name\n\
+         "#### Integrations\n##### Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### Script Name\n\
 - Fixed script"),
         ('''
 #### Integrations
@@ -1194,7 +1195,7 @@ This is visible
 #### Scripts
 ##### Script Name
 - Fixed script''', 'xsoar',
-            "#### Integrations\n##### Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### Script Name\n\
+         "#### Integrations\n##### Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### Script Name\n\
 - Fixed script"),
         ('''
 #### Integrations
@@ -1206,7 +1207,7 @@ This is visible
 #### Scripts
 ##### New: Script Name
 - Fixed script''', 'marketplacev2',
-            "#### Scripts\n##### New: Script Name\n\
+         "#### Scripts\n##### New: Script Name\n\
 - Fixed script"),
         ('''
 #### Integrations
@@ -1218,8 +1219,8 @@ This is visible
 #### Scripts
 ##### New: Script Name
 - Fixed script''', 'xsoar',
-            "#### Integrations\n##### New: Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### New: "
-            "Script Name\n\
+         "#### Integrations\n##### New: Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### New: "
+         "Script Name\n\
 - Fixed script")
     ])
     def test_create_filtered_changelog_entry_by_mp_tags(self, dummy_pack: Pack, release_notes, upload_marketplace,
@@ -1669,7 +1670,8 @@ class TestImagesUpload:
     #        Then:
     #            - replace the readme images url with the new path to gcs return a list of all replaces urls.
     #    """
-    #     readme_images_test_folder_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data', 'readme_images_test_data')
+    #     readme_images_test_folder_path =
+    #     os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data', 'readme_images_test_data')
     #     path_readme_to_replace_url = os.path.join(readme_images_test_folder_path, 'url_replace_README.md')
     #     with open(os.path.join(readme_images_test_folder_path, 'original_README.md')) as original_readme:
     #         data = original_readme.read()
@@ -1683,7 +1685,8 @@ class TestImagesUpload:
     #         'new_gcs_image_path': Path('gcs_test_path/readme_images/Retrieve_Asset_Details_-_Lansweeper.png'),
     #         'image_name': 'Retrieve_Asset_Details_-_Lansweeper.png'
     #     }
-    #     ret = dummy_pack.collect_images_from_readme_and_replace_with_storage_path(path_readme_to_replace_url, 'gcs_test_path', 'marketplacev2')
+    #     ret = dummy_pack.collect_images_from_
+    #     readme_and_replace_with_storage_path(path_readme_to_replace_url, 'gcs_test_path', 'marketplacev2')
     #     assert ret == [expected_urls_ret]
     #
     #     with open(path_readme_to_replace_url) as replaced_readme:
@@ -1708,7 +1711,7 @@ class TestImagesUpload:
     #     mocker.patch('shutil.copyfileobj', side_effect=shutilcopyobj_mock)
     #     dummy_pack.download_readme_image_from_url_and_upload_to_gcs(mock_readme_url, gcs_storage_path, image_name,
     #                                                                 storage_bucket)
-    #def test_the_upload_flow(self, mocker, dummy_pack):
+    # def test_the_upload_flow(self, mocker, dummy_pack):
     #     mocker.patch("Tests.Marketplace.marketplace_services.logging")
     #     dummy_storage_bucket = mocker.MagicMock()
     #     dummy_pack.upload_readme_images(dummy_storage_bucket, GCPConfig.CONTENT_PACKS_PATH)
