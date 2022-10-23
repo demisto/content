@@ -894,7 +894,6 @@ script:
       - name: delete_after_days
         description: The number of days after which the analysis will be deleted.
         defaultValue: '30'
-        minValue: '1'
       - name: encrypt_with_password
         description: The password to encrypt the analysis with.
       - name: export_to_jbxview
@@ -1159,7 +1158,6 @@ script:
       - name: delete_after_days
         description: The number of days after which the analysis will be deleted.
         defaultValue: '30'
-        minValue: '1'
       - name: encrypt_with_password
         description: The password to encrypt the analysis with.
       - name: export_to_jbxview

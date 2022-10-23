@@ -1102,3 +1102,4 @@ inputs:
   description: ""
   playbookInputQuery: null
 outputs: []
+fromversion: 6.2.0
