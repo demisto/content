@@ -52,7 +52,7 @@
                                 "field": "apiResponseType",
                                 "operator": "isEqualCaseString",
                                 "right": "QuotaError",
-                                "type": "sring"
+                                "type": "string"
                             }
                         ]
                     ],
