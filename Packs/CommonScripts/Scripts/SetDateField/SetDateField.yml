@@ -14,7 +14,7 @@ args:
   required: true
   description: "The name of the field to update. Note that custom fields are not supported."
 scripttarget: 0
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
+fromversion: 6.5.0
+dockerimage: demisto/python3:3.10.8.36650
 tests:
 - SetDateField-Test
