@@ -1,8 +1,7 @@
 [MODEL: dataset=dropbox_dropbox_raw]
 filter
-    json_extract_scalar(event_category, "$['.tag']") ! = "logins"
+    json_extract_scalar(event_category, "$['.tag']") != "logins"
 | alter
-    _time = timestamp,
     xdm.event.type = json_extract_scalar(event_category, "$['.tag']"),
     xdm.event.operation_sub_type = json_extract_scalar(event_type, "$['.tag']"),
     xdm.event.description = json_extract_scalar(event_type, "$.description"),
@@ -27,7 +26,6 @@ filter
 filter
     json_extract_scalar(event_category, "$['.tag']") = "logins"
 | alter
-    _time = timestamp,
     xdm.event.type = json_extract_scalar(event_category, "$['.tag']"),
     xdm.event.operation_sub_type = json_extract_scalar(event_type, "$['.tag']"),
     xdm.event.description = json_extract_scalar(event_type, "$.description"),
