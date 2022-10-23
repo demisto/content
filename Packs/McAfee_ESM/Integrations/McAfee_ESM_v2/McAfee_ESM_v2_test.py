@@ -254,11 +254,20 @@ MOCK_CURRENT_TIME = '2022-10-18T16:46:25Z'
 @freeze_time(MOCK_CURRENT_TIME)
 def test_alarm_to_incidents(mocker):
     """
-    Given: last run object.
+    Given:
+    - An integration instance configured to fetch incidents.
 
-    When: running fetch incidents, and having a situation where no alarms are fetched, and other being fetched in next run.
+    When:
+    - Running two intervals of fetch-incidents command, and:
+       1. No alarms exist in the 3rd-party until the first run
+       2. Two alarms are created in the 3rd-party between the first and the second run.
 
-    Then: return correct incidents based on alerts time, and increase only the end time of the fetching window.
+    Then:
+    - Make sure the `time` field of the lastRun object that is sent as 
+       the start time of the alarms query is not updated after the first run.
+    - Make sure two incidents are returned on the second run.
+    - Make sure the `time` field of the lastRun object is updated correctly after
+       the second run. 
 
     """
     def create_time_difference_string(days=0, hours=0):
