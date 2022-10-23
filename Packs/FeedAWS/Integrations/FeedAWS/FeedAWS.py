@@ -18,7 +18,23 @@ def get_feed_config(services: list, regions: list):
         'ROUTE53',
         'ROUTE53_HEALTHCHECKS',
         'CLOUDFRONT',
-        'S3'
+        'S3',
+        'AMAZON_APPFLOW',
+        'AMAZON_CONNECT',
+        'API_GATEWAY',
+        'CHIME_MEETINGS',
+        'CHIME_VOICECONNECTOR',
+        'CLOUD9',
+        'CLOUDFRONT_ORIGIN_FACING',
+        'CODEBUILD',
+        'DYNAMODB',
+        'EBS',
+        'EC2_INSTANCE_CONNECT',
+        'GLOBALACCELERATOR',
+        'KINESIS_VIDEO_STREAMS',
+        'ROUTE53_HEALTHCHECKS_PUBLISHING',
+        'ROUTE53_RESOLVER',
+        'WORKSPACES_GATEWAYS',
     }
 
     region_path = ''
