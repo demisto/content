@@ -64,7 +64,6 @@ def main():
     try:
         return_results(grid_field_setup_command(demisto.args()))
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute GridFieldSetup. Error: {str(ex)}')
 
 
