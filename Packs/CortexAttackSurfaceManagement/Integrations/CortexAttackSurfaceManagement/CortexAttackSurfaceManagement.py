@@ -136,8 +136,10 @@ def format_asm_id(formatted_response: List[dict]) -> List[dict]:
 
     if formatted_response:
         for entry in formatted_response:
-            entry["asm_ids"] = entry["asm_ids"][0]
-    return(formatted_response)
+            if entry.get('asm_ids'):
+                entry['asm_ids'] = entry['asm_ids'][0]
+
+    return formatted_response
 
 
 ''' COMMAND FUNCTIONS '''
@@ -156,7 +158,8 @@ def list_external_service_command(client: Client, args: Dict[str, Any]) -> Comma
             ``args['discovery_type']`` how service was discovered.
 
     Returns:
-        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains external services.
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains external
+        services.
     """
     ip_address = args.get('ip_address')
     domain = args.get('domain')
@@ -235,7 +238,8 @@ def list_external_ip_address_range_command(client: Client, args: Dict[str, Any])
     """
     response = client.list_external_ip_address_range_request()
     parsed = response.get('reply', {}).get('external_ip_address_ranges')
-    markdown = tableToMarkdown('External IP Address Ranges', parsed, removeNull=True, headerTransform=string_to_table_header)
+    markdown = tableToMarkdown('External IP Address Ranges', parsed, removeNull=True,
+                               headerTransform=string_to_table_header)
     command_results = CommandResults(
         outputs_prefix='ASM.ExternalIpAddressRange',
         outputs_key_field='range_id',
@@ -269,7 +273,8 @@ def get_external_ip_address_range_command(client: Client, args: Dict[str, Any]) 
 
     response = client.get_external_ip_address_range_request(range_id_list)
     parsed = response.get('reply', {}).get('details')
-    markdown = tableToMarkdown('External IP Address Range', parsed, removeNull=True, headerTransform=string_to_table_header)
+    markdown = tableToMarkdown('External IP Address Range', parsed, removeNull=True,
+                               headerTransform=string_to_table_header)
     command_results = CommandResults(
         outputs_prefix='ASM.ExternalIpAddressRange',
         outputs_key_field='range_id',
@@ -315,7 +320,8 @@ def list_asset_internet_exposure_command(client: Client, args: Dict[str, Any]) -
     response = client.list_asset_internet_exposure_request(search_params)
     formatted_response = response.get('reply', {}).get('assets_internet_exposure')
     parsed = format_asm_id(formatted_response)
-    markdown = tableToMarkdown('Asset Internet Exposures', parsed, removeNull=True, headerTransform=string_to_table_header)
+    markdown = tableToMarkdown('Asset Internet Exposures', parsed, removeNull=True,
+                               headerTransform=string_to_table_header)
     command_results = CommandResults(
         outputs_prefix='ASM.AssetInternetExposure',
         outputs_key_field='asm_ids',
@@ -349,7 +355,8 @@ def get_asset_internet_exposure_command(client: Client, args: Dict[str, Any]) ->
 
     response = client.get_asset_internet_exposure_request(asm_id_list)
     parsed = response.get('reply', {}).get('details')
-    markdown = tableToMarkdown('Asset Internet Exposure', parsed, removeNull=True, headerTransform=string_to_table_header)
+    markdown = tableToMarkdown('Asset Internet Exposure', parsed, removeNull=True,
+                               headerTransform=string_to_table_header)
     command_results = CommandResults(
         outputs_prefix='ASM.AssetInternetExposure',
         outputs_key_field='asm_ids',
