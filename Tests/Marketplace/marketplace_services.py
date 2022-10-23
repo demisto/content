@@ -3370,7 +3370,6 @@ class Pack(object):
                     with open(file.a_path, "rb") as image_file:
                         pack_image_blob.upload_from_file(image_file)
                     self._uploaded_preview_images.append(file.a_path)
-            logging.info(f"yuval {self._uploaded_preview_images}")
             return True
         except Exception as e:
             logging.exception(f"Failed uploading {self.name} pack preview image. Additional info: {e}")
