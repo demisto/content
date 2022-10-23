@@ -26,7 +26,11 @@ ARGS_CASES = [
 def test_check_args(limit, page_number, isGoodCase, expected_results):
     """
         Given:
-            - A command's arguments
+            - A command's arguments:
+                1. limit: total number of results.
+                2. page_number: The number of page to retrieve results from.
+                3. isGoodCase: is the test case is with valid arguments.
+                3. expected_results: what we expect to get.
 
         When:
             - running commands that has pagination
