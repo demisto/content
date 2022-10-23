@@ -4764,3 +4764,23 @@ def test_slack_get_integration_context(mocker):
     slack_get_integration_context()
 
     assert demisto.results.mock_calls[0][1][0]['HumanReadable'] == expected_results
+
+
+def test_search_slack_users(mocker):
+    """
+    Given:
+        A list of users containing some invalid values
+    When:
+        Searching for a user
+    Then:
+        Assert the returned list contains no null values
+    """
+    import SlackV3
+    from SlackV3 import search_slack_users
+
+    mocker.patch.object(SlackV3, 'get_user_by_name', return_value={"ValidUser"})
+
+    users = ['', 'ValidUser', None]
+    results = search_slack_users(users=users)
+
+    assert results == [{'ValidUser'}]
