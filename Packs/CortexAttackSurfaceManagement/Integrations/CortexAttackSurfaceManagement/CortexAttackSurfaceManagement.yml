@@ -91,7 +91,7 @@ script:
       description: External service vulnerability score.
       type: Unknown
   - arguments:
-    - description: A string representing the service ID you want get details for.
+    - description: A string representing the service ID you want to get details for.
       name: service_id
       required: true
     description: Get service details according to the service ID.

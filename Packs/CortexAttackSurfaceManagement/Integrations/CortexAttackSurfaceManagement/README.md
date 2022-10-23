@@ -195,7 +195,7 @@ Get service details according to the service ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| service_id | A string representing the service ID you want get details for. | Required | 
+| service_id | A string representing the service ID you want to get details for. | Required | 
 
 
 #### Context Output

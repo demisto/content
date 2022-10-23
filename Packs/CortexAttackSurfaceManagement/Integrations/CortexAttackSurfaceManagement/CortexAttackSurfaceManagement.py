@@ -195,7 +195,7 @@ def get_external_service_command(client: Client, args: Dict[str, Any]) -> Comman
     Args:
         client (Client): CortexAttackSurfaceManagment client to use.
         args (dict): all command arguments, usually passed from ``demisto.args()``.
-            ``args['service_id']`` A string representing the service ID you want get details for.
+            ``args['service_id']`` A string representing the service ID you want to get details for.
 
     Returns:
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
