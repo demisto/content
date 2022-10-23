@@ -617,10 +617,10 @@ script:
       required: true
       isArray: true
     outputs: []
-  dockerimage: demisto/vmware:1.0.0.25599
+  dockerimage: devdemisto/vmware-py3:1.0.0.36672
   runonce: false
   script: ""
-  subtype: python2
+  subtype: python3
   type: python
 fromversion: 5.0.0
 tests:

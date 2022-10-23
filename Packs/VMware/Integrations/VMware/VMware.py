@@ -6,7 +6,7 @@ import demistomock as demisto  # noqa: F401
 import pyVim.task
 import dateparser  # type: ignore
 from CommonServerPython import *  # noqa: F401
-from cStringIO import StringIO
+from io import StringIO
 from pyVim.connect import Disconnect, SmartConnect
 from pyVmomi import vim, vmodl  # type: ignore
 from vmware.vapi.vsphere.client import create_vsphere_client
@@ -565,7 +565,7 @@ def list_vms_by_tag(vsphere_client, args):
     if not relevant_tag:
         raise Exception("The tag {} was not found".format(args.get('tag')))
     vms = vsphere_client.tagging.TagAssociation.list_attached_objects(relevant_tag)
-    vms = filter(lambda vm: vm.type == 'VirtualMachine', vms)
+    vms = [vm for vm in vms if vm.type == 'VirtualMachine']
     vms_details = []
     # This filter isn't needed if vms are empty, when you send an empty vms list - it returns all vms
     if vms:
