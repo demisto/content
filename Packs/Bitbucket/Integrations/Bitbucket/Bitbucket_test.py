@@ -92,7 +92,7 @@ def test_create_pull_request_body(title, source_branch, destination_branch, revi
 def test_project_list_command(mocker, bitbucket_client):
     """
     Given:
-        - A limit to te list
+        - A limit to te list, a partial_response option.
 
     When:
         - bitbucket-project-list command is executed
@@ -101,7 +101,7 @@ def test_project_list_command(mocker, bitbucket_client):
         - The http request is called with the right arguments, and returns the right command result.
     """
     from Bitbucket import project_list_command
-    args = {'limit': '10'}
+    args = {'limit': '10', 'partial_response': 'false'}
     check_pagination_object = util_load_json('test_data/commands_test_data.json').get('check_pagination')
     response = check_pagination_object.get('response2')
     expected_result = response.get('values')
@@ -118,7 +118,7 @@ def test_project_list_command(mocker, bitbucket_client):
 def test_project_list_command_with_project_key(mocker, bitbucket_client):
     """
     Given:
-        - A project key.
+        - A project key, a partial_response option.
 
     When:
         - bitbucket-project-list command is executed
@@ -128,22 +128,23 @@ def test_project_list_command_with_project_key(mocker, bitbucket_client):
             and returns a command result with the project information.
     """
     from Bitbucket import project_list_command
-    args = {'project_key': 'T1'}
-    response = util_load_json('test_data/commands_test_data.json').get('test_project_list_command_with_project_key') \
-        .get('response')
+    args = {'project_key': 'T1', 'partial_response': 'true'}
+    test_json = util_load_json('test_data/commands_test_data.json')
+    response = test_json.get('test_project_list_command_with_project_key').get('response')
+    expected_partial_result = [test_json.get('test_project_list_command_with_project_key_partial_result')]
     mocker.patch.object(bitbucket_client, 'get_project_list_request', return_value=response)
     result = project_list_command(bitbucket_client, args)
     expected_readable_output = '### The information about project T1\n|Key|Name|Description|IsPrivate|\n' \
                                '|---|---|---|---|\n| T1 | Test1 | description | true |\n'
     readable_output = result.readable_output
     assert readable_output == expected_readable_output
-    assert result.raw_response == [response]
+    assert result.raw_response == expected_partial_result
 
 
 def test_open_branch_list_command(mocker, bitbucket_client):
     """
     Given:
-            - No arguments needed to this function.
+            - No arguments needed to this function, a partial_response option.
     When:
         - bitbucket-open-branch-list command is executed.
     Then:
@@ -159,7 +160,7 @@ def test_open_branch_list_command(mocker, bitbucket_client):
                               '|---|---|---|---|\n' \
                               '| branch | Some User | 2022-09-08T00:00:00+00:00 | 1111111111111111111111111111111111111111 |\n' \
                               '| master | Some User | 2022-09-18T00:00:00+00:00 | 1111111111111111111111111111111111111111 |\n'
-    result = open_branch_list_command(bitbucket_client, {})
+    result = open_branch_list_command(bitbucket_client, {'partial_response': 'false'})
     assert result.readable_output == expected_human_readable
     assert result.raw_response == expected_result
 
@@ -167,15 +168,17 @@ def test_open_branch_list_command(mocker, bitbucket_client):
 def test_branch_get_command(mocker, bitbucket_client):
     """
     Given:
-        - A branch name.
+        - A branch name, a partial_response option.
     When:
         - bitbucket-branch-get command is executed
     Then:
         - The http request is called with the right arguments, and returns a command result with the branch information.
     """
     from Bitbucket import branch_get_command
-    args = {'branch_name': 'master'}
-    response = util_load_json('test_data/commands_test_data.json').get('test_branch_get_command')
+    args = {'branch_name': 'master', 'partial_response': 'true'}
+    test_json = util_load_json('test_data/commands_test_data.json')
+    response = test_json.get('test_branch_get_command')
+    expected_partial_result = test_json.get('test_branch_partial_result')
     mocker.patch.object(bitbucket_client, 'get_branch_request', return_value=response)
     expected_human_readable = '### Information about the branch: master\n' \
                               '|Name|LastCommitCreatedBy|LastCommitCreatedAt|LastCommitHash|\n' \
@@ -183,6 +186,7 @@ def test_branch_get_command(mocker, bitbucket_client):
                               '| master | Some User | 2022-09-18T00:00:00+00:00 | 1111111111111111111111111111111111111111 |\n'
     result = branch_get_command(bitbucket_client, args)
     assert result.readable_output == expected_human_readable
+    assert result.raw_response == expected_partial_result
 
 
 def test_branch_create_command(mocker, bitbucket_client):
@@ -260,7 +264,7 @@ def test_commit_create_command(mocker, bitbucket_client):
 def test_commit_list_command(mocker, bitbucket_client):
     """
     Given:
-        - A branch (that its commits will be on the list), and a limit to the list.
+        - A branch (that its commits will be on the list), a limit to the list, and a partial_response option.
     When:
         - bitbucket-commit-list command is executed
     Then:
@@ -268,7 +272,7 @@ def test_commit_list_command(mocker, bitbucket_client):
             and returns a command result with the relevant commit list.
     """
     from Bitbucket import commit_list_command
-    args = {'included_branches': 'master', 'limit': '3'}
+    args = {'included_branches': 'master', 'limit': '3', 'partial_response': 'false'}
     response = util_load_json('test_data/commands_test_data.json').get('test_commit_list_command')
     mocker.patch.object(bitbucket_client, 'commit_list_request', return_value=response)
     expected_human_readable = '### The list of commits\n' \
@@ -288,7 +292,7 @@ def test_commit_list_command(mocker, bitbucket_client):
 def test_issue_create_command(mocker, bitbucket_client):
     """
     Given:
-        - A title, a state, a type, a priority, a content, for the new issue.
+        - A title, a state, a type, a priority, a content, for the new issue, and a partial_response option.
     When:
         - bitbucket-issue-create command is executed
     Then:
@@ -301,7 +305,8 @@ def test_issue_create_command(mocker, bitbucket_client):
         'state': 'new',
         'type': 'enhancement',
         'priority': 'minor',
-        'content': 'An enhancement to an integration'
+        'content': 'An enhancement to an integration',
+        'partial_response': 'false'
     }
     expected_body = {
         'title': 'NewIssue',
@@ -321,15 +326,17 @@ def test_issue_create_command(mocker, bitbucket_client):
 def test_issue_list_command(mocker, bitbucket_client):
     """
     Given:
-        - A limit to the list.
+        - A limit to the list, a partial_response option.
     When:
         - bitbucket-issue-list command is executed
     Then:
         - The http request is called with the right arguments, and returns a command result with the issue list.
     """
     from Bitbucket import issue_list_command
-    args = {'limit': '3'}
-    response = util_load_json('test_data/commands_test_data.json').get('test_issue_list_command')
+    args = {'limit': '3', 'partial_response': 'true'}
+    test_object = util_load_json('test_data/commands_test_data.json')
+    response = test_object.get('test_issue_list_command')
+    expected_partial_result = test_object.get('test_issue_partial_result')
     mocker.patch.object(bitbucket_client, 'issue_list_request', return_value=response)
     expected_human_readable = '### Issues List\n' \
                               '|Id|Title|Type|Priority|Status|Votes|CreatedAt|UpdatedAt|\n' \
@@ -342,7 +349,7 @@ def test_issue_list_command(mocker, bitbucket_client):
                               '| 2022-09-22T00:00:00.000000+00:00 |\n'
     result = issue_list_command(bitbucket_client, args)
     assert result.readable_output == expected_human_readable
-    assert result.raw_response == response.get('values')
+    assert result.raw_response == expected_partial_result
 
 
 def test_issue_update_command(mocker, bitbucket_client):
@@ -423,7 +430,8 @@ def test_pull_request_create_command(mocker, bitbucket_client):
 def test_pull_request_update_command(mocker, bitbucket_client):
     """
     Given:
-        - A title, a source branch, a destination branch, a description, if to close the branch after the merge, and a PR id.
+        - A title, a partial_response option, a source branch, a destination branch, a description,
+            if to close the branch after the merge, and a PR id.
     When:
         - bitbucket-pull-request-update command is executed
     Then:
@@ -437,14 +445,17 @@ def test_pull_request_update_command(mocker, bitbucket_client):
         'destination_branch': 'master',
         'description': 'Wanted to update the description of the pr',
         'close_source_branch': 'yes',
-        'pull_request_id': '8'
+        'pull_request_id': '8',
+        'partial_response': 'true'
     }
-    response = util_load_json('test_data/commands_test_data.json').get('test_pull_request_update_command')
+    test_obj = util_load_json('test_data/commands_test_data.json')
+    response = test_obj.get('test_pull_request_update_command')
+    expected_partial_result = test_obj.get('test_pull_request_partial_result')
     mocker.patch.object(bitbucket_client, 'pull_request_update_request', return_value=response)
     expected_human_readable = 'The pull request 8 was updated successfully'
     result = pull_request_update_command(bitbucket_client, args)
     assert result.readable_output == expected_human_readable
-    assert result.raw_response == response
+    assert result.raw_response == expected_partial_result
 
 
 def test_issue_comment_create_command(mocker, bitbucket_client):
@@ -503,14 +514,14 @@ def test_issue_comment_update_command(mocker, bitbucket_client):
 def test_pull_request_list_command(mocker, bitbucket_client):
     """
     Given:
-        - A limit to the list.
+        - A limit to the list, a partial_response option.
     When:
         - bitbucket-pull-request-list command is executed
     Then:
         - The http request is called with the right arguments, and returns a command result with the PR list.
     """
     from Bitbucket import pull_request_list_command
-    args = {'limit': '2'}
+    args = {'limit': '2', 'partial_response': 'false'}
     response = util_load_json('test_data/commands_test_data.json').get('test_pull_request_list_command')
     mocker.patch.object(bitbucket_client, 'pull_request_list_request', return_value=response)
     expected_human_readable = '### List of the pull requests\n' \
@@ -529,14 +540,14 @@ def test_pull_request_list_command(mocker, bitbucket_client):
 def test_issue_comment_list_command(mocker, bitbucket_client):
     """
     Given:
-        - A limit to the list and an issue id.
+        - A limit to the list and an issue id, a partial_response option.
     When:
         - bitbucket-issue-comment-list command is executed
     Then:
         - The http request is called with the right arguments, and returns a command result a list of comments of the issue.
     """
     from Bitbucket import issue_comment_list_command
-    args = {'limit': '2', 'issue_id': '8'}
+    args = {'limit': '2', 'issue_id': '8', 'partial_response': 'false'}
     response = util_load_json('test_data/commands_test_data.json').get('test_issue_comment_list_command')
     mocker.patch.object(bitbucket_client, 'issue_comment_list_request', return_value=response)
     expected_human_readable = '### List of the comments on issue "8"\n' \
@@ -553,15 +564,17 @@ def test_issue_comment_list_command(mocker, bitbucket_client):
 def test_pull_request_comment_list_command(mocker, bitbucket_client):
     """
     Given:
-        - A limit to the list and a PR id.
+        - A limit to the list, a PR id, and a partial_response option.
     When:
         - bitbucket-pull-request-comment-list command is executed
     Then:
         - The http request is called with the right arguments, and returns a command result with a list of PR comments.
     """
     from Bitbucket import pull_request_comment_list_command
-    args = {'limit': '3', 'pull_request_id': '6'}
-    response = util_load_json('test_data/commands_test_data.json').get('test_pull_request_comment_list_command')
+    args = {'limit': '3', 'pull_request_id': '6', 'partial_response': 'true'}
+    test_json = util_load_json('test_data/commands_test_data.json')
+    response = test_json.get('test_pull_request_comment_list_command')
+    expected_partial_result = test_json.get('test_comment_partial_result')
     mocker.patch.object(bitbucket_client, 'pull_request_comment_list_request', return_value=response)
     expected_human_readable = '### List of the comments on pull request "6"\n' \
                               '|Id|Content|CreatedBy|CreatedAt|UpdatedAt|PullRequestId|PullRequestTitle|\n' \
@@ -572,21 +585,23 @@ def test_pull_request_comment_list_command(mocker, bitbucket_client):
                               '| 2022-09-12T00:00:00.000000+00:00 | 6 | uuuupdate |\n'
     result = pull_request_comment_list_command(bitbucket_client, args)
     assert result.readable_output == expected_human_readable
-    assert result.raw_response == response.get('values')
+    assert result.raw_response == expected_partial_result
 
 
 def test_workspace_member_list_command(mocker, bitbucket_client):
     """
     Given:
-        - A limit to the list.
+        - A limit to the list, a partial_response option.
     When:
         - bitbucket-workspace-member-list command is executed
     Then:
         - The http request is called with the right arguments, and returns a command result with a list of the members.
     """
     from Bitbucket import workspace_member_list_command
-    args = {'limit': '2'}
-    response = util_load_json('test_data/commands_test_data.json').get('test_workspace_member_list_command')
+    args = {'limit': '2', 'partial_response': 'true'}
+    test_json = util_load_json('test_data/commands_test_data.json')
+    response = test_json.get('test_workspace_member_list_command')
+    expected_partial_result = test_json.get('test_workspace_member_list_partial_result')
     mocker.patch.object(bitbucket_client, 'workspace_member_list_request', return_value=response)
     expected_human_readable = '### The list of all the workspace members\n' \
                               '|Name|AccountId|\n' \
@@ -595,4 +610,25 @@ def test_workspace_member_list_command(mocker, bitbucket_client):
                               '| Another User | 222222222222222222222222 |\n'
     result = workspace_member_list_command(bitbucket_client, args)
     assert result.readable_output == expected_human_readable
-    assert result.raw_response == response.get('values')
+    assert result.raw_response == expected_partial_result
+
+
+def test_pull_request_comment_update_command(mocker, bitbucket_client):
+    """
+        Given:
+            - A limit to the list, a partial_response option.
+        When:
+            - bitbucket-pull-request-comment-update command is executed
+        Then:
+            - The http request is called with the right arguments, and returns a command result with partial information
+                about the updated comment.
+        """
+    from Bitbucket import pull_request_comment_update_command
+    args = {'partial_response': 'false'}
+    test_json = util_load_json('test_data/commands_test_data.json')
+    response = test_json.get('test_pull_request_comment_update_command')
+    mocker.patch.object(bitbucket_client, 'pull_request_comment_update_request', return_value=response)
+    expected_human_readable = 'The comment was updated successfully'
+    result = pull_request_comment_update_command(bitbucket_client, args)
+    assert result.readable_output == expected_human_readable
+    assert result.raw_response == response

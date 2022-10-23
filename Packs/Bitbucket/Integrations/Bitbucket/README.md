@@ -31,11 +31,12 @@ If a project_key is given, returns the requested project. Else, returns a list o
 `bitbucket-project-list`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| project_key | The "id" of the project. Must be uppercase. | Optional | 
-| limit | The maximum number of projects to return. The default value is 50. | Optional | 
-| page | The specific result page to display. | Optional | 
+| **Argument Name** | **Description**                                                                                            | **Required** |
+| --- |------------------------------------------------------------------------------------------------------------| --- |
+| project_key | The "id" of the project. Must be uppercase.                                                                | Optional | 
+| limit | The maximum number of projects to return. The default value is 50.                                         | Optional | 
+| page | The specific result page to display.                                                                       | Optional | 
+| partial_response | Return a partial response if true, else return the full API response. Possible values are: True, False. Default is True. | Optional | 
 
 
 #### Context Output
@@ -220,6 +221,7 @@ Returns a list of the open branches.
 | repo | The repository name or slug. | Optional | 
 | limit | The maximum number of items in the list. The default value is 50. | Optional | 
 | page | The specific result page to display. | Optional | 
+| partial_response | Return a partial response if true, else return the full API response. Possible values are: True, False. Default is True. | Optional |
 
 
 #### Context Output
@@ -493,7 +495,8 @@ Returns the information of the requested branch.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | repo | The repository name. Should be given here or in the instance arguments. | Optional | 
-| branch_name | The name of the branch for which to retrieve the information. | Required | 
+| branch_name | The name of the branch for which to retrieve the information. | Required |
+| partial_response | Return a partial response if true, else return the full API response. Possible values are: True, False. Default is True. | Optional |
 
 
 #### Context Output
@@ -662,7 +665,8 @@ Creates a new branch in Bitbucket.
 | --- | --- | --- |
 | repo | The repository name or slug. | Optional | 
 | name | The name of the new branch. | Required | 
-| target_branch | The name of the branch from which the new branch will be created. | Required | 
+| target_branch | The name of the branch from which the new branch will be created. | Required |
+| partial_response | Return a partial response if true, else return the full API response. Possible values are: True, False. Default is True. | Optional |
 
 
 #### Context Output
@@ -887,6 +891,7 @@ Returns a list of the commit in accordance with the included and excluded branch
 | included_branches | A comma-separated list of branches to include in the commits that are returned. | Optional | 
 | limit | The maximum number of items in the list. The default value is 50. | Optional | 
 | page | The specific result page to display. | Optional | 
+| partial_response | Return a partial response if true, else return the full API response. Possible values are: True, False. Default is True. | Optional |
 
 
 #### Context Output
@@ -1184,16 +1189,11 @@ Returns the content of the given file, along with the option to download it.
 | --- | --- | --- |
 | Bitbucket.RawFile.file_path | String | The path of the file. | 
 | Bitbucket.RawFile.file_content | String | The content of the file. | 
-| File.Size | Number | The size of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.Name | String | The name of the file. | 
-| File.SSDeep | String | The SSDeep hash of the file. | 
-| File.EntryID | String | The entry ID of the file. | 
-| File.Info | String | File information. | 
-| File.Type | String | The file type. | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.Extension | String | The file extension. | 
+| InfoFile.Size | Number | The size of the file. |
+| InfoFile.Name | String | The name of the file. | 
+| InfoFile.EntryID | String | The entry ID of the file. | 
+| InfoFile.Info | String | File information. | 
+| InfoFile.Type | String | The file type. |
 
 #### Command example
 ```!bitbucket-raw-file-get file_path=new.txt branch=branch```
@@ -1247,7 +1247,8 @@ In order to perform this command, please create an issue tracker by clicking on 
 | priority | The priority of the issues to create. Possible values are: trivial, minor, major, critical, blocker. Default is major. | Optional | 
 | content | The content of the issue to create. | Optional | 
 | assignee_id | The ID of the assignee of the issue to create. To get the assignee_id, use the !bitbucket-workspace-member-list command, and use the field AccountId. | Optional | 
-| assignee_user_name | The user name of the assignee of the issue to create. | Optional | 
+| assignee_user_name | The user name of the assignee of the issue to create. | Optional |
+| partial_response | Return a partial response if true, else return the full API response. Possible values are: True, False. Default is True. | Optional |
 
 
 #### Context Output
@@ -1384,6 +1385,7 @@ If an issue_id is given, returns the information about it. Otherwise, returns a 
 | issue_id | The ID of the requested issue. To get the issue_id, use the !bitbucket-issue-list command. | Optional | 
 | limit | The maximum number of items in the list. The default value is 50. | Optional | 
 | page | The specific result page to display. | Optional | 
+| partial_response | Return a partial response if true, else return the full API response. Possible values are: True, False. Default is True. | Optional |
 
 
 #### Context Output
@@ -1626,7 +1628,8 @@ In order to perform this command, please create an issue tracker by clicking on 
 | priority | The priority of the issues to create. Possible values are: trivial, minor, major, critical, blocker. | Optional | 
 | content | The content of the issue to create. | Optional | 
 | assignee_id | The ID of the assignee of the issue to create. To get the assignee_id, use the !bitbucket-workspace-member-list command, and use the field AccountId. | Optional | 
-| assignee_user_name | The user name of the assignee of the issue to create. | Optional | 
+| assignee_user_name | The user name of the assignee of the issue to create. | Optional |
+| partial_response | Return a partial response if true, else return the full API response. Possible values are: True, False. Default is True. | Optional |
 
 
 #### Context Output
@@ -1780,7 +1783,8 @@ Creates a pull request in Bitbucket.
 | destination_branch | The branch that will contain the changes after the merge process. | Optional | 
 | reviewer_id | A comma-separated list of account_ids of the person to review the pull request. To get the reviewer_id, use the !bitbucket-workspace-member-list command, and use the field AccountId. | Optional | 
 | description | A description of the pull request. | Optional | 
-| close_source_branch | Whether the source branch should be closed after the pull request. Possible values are: yes, no. | Optional | 
+| close_source_branch | Whether the source branch should be closed after the pull request. Possible values are: yes, no. | Optional |
+| partial_response | Return a partial response if true, else return the full API response. Possible values are: True, False. Default is True. | Optional |
 
 
 #### Context Output
@@ -2058,8 +2062,8 @@ Updates a pull request in Bitbucket.
 | destination_branch | The branch that will contain the changes after the merge process. | Optional | 
 | reviewer_id | The ID of the account of the person to review the pull request. To get the reviewer_id, use the bitbucket-workspace-member-list command, and use the field AccountId. | Optional | 
 | description | A description of the pull request. | Optional | 
-| close_source_branch | Whether the source branch should be closed after the pull request. | Optional | 
-
+| close_source_branch | Whether the source branch should be closed after the pull request. Possible values are: yes, no. | Optional |
+| partial_response | Return a partial response if true, else return the full API response. Possible values are: True, False. Default is True. | Optional |
 
 #### Context Output
 
@@ -2132,7 +2136,8 @@ Returns a list of the pull requests. If a state is provided than the list will c
 | pull_request_id | The ID of the pull request to update. To get the pull_request_id, use the !bitbucket-pull-request-list command. | Optional | 
 | state | The state of the pull requests to see. Possible values are: OPEN, MERGED, DECLINED, SUPERSEDED, ALL. | Optional | 
 | limit | The maximum number of items in the list. The default value is 50. | Optional | 
-| page | The specific result page to display. | Optional | 
+| page | The specific result page to display. | Optional |
+| partial_response | Return a partial response if true, else return the full API response. Possible values are: True, False. Default is True. | Optional |
 
 
 #### Context Output
@@ -2515,6 +2520,7 @@ Creates a comment on an issue in Bitbucket.
 | repo | The repository name or slug. | Optional | 
 | issue_id | The ID of the issue to comment on. To get the issue_id, use the !bitbucket-issue-list command. | Required | 
 | content | The content of the comment. | Required | 
+| partial_response | Return a partial response if true, else return the full API response. Possible values are: True, False. Default is True. | Optional |
 
 
 #### Context Output
@@ -2667,6 +2673,7 @@ Returns a list of comments on a specific issue. If a comment_id is given it will
 | comment_id | The ID of the comment to delete. To get the comment_id, use the !bitbucket-issue-comment-list command without any parameters. | Optional | 
 | limit | The maximum number of items in the list. The default value is 50. | Optional | 
 | page | The specific result page to display. | Optional | 
+| partial_response | Return a partial response if true, else return the full API response. Possible values are: True, False. Default is True. | Optional |
 
 
 #### Context Output
@@ -2865,6 +2872,7 @@ Updates a specific comment on a given issue.
 | issue_id | The ID of the issue to comment on. To get the issue_id, use the !bitbucket-issue-list command. | Required | 
 | comment_id | The ID of the comment to delete. To get the issue_id, use the !bitbucket-issue-comment-list command. | Required | 
 | content | The new content of the comment. | Required | 
+| partial_response | Return a partial response if true, else return the full API response. Possible values are: True, False. Default is True. | Optional |
 
 
 #### Context Output
@@ -2990,6 +2998,7 @@ Creates a new comment on a pull request.
 | repo | The repository name or slug. | Optional | 
 | pull_request_id | The ID of the pull request to comment on. To get the pull request ID, use the  !bitbucket-pull-request-list command. | Required | 
 | content | The content of the comment. | Required | 
+| partial_response | Return a partial response if true, else return the full API response. Possible values are: True, False. Default is True. | Optional |
 
 
 #### Context Output
@@ -3102,6 +3111,7 @@ Returns a list of comments of a specific pull request.
 | comment_id | The ID of the comment. To get the comment_id, use the !bitbucket-pull-request-comment-list command. | Optional | 
 | limit | The maximum number of items in the list. The default value is 50. | Optional | 
 | page | The specific result page to display. | Optional | 
+| partial_response | Return a partial response if true, else return the full API response. Possible values are: True, False. Default is True. | Optional |
 
 
 #### Context Output
@@ -3217,6 +3227,7 @@ Updates a specific comment in a specific pull request.
 | pull_request_id | The ID of the pull request. To get the pull request_id use, the !bitbucket-pull-request-list command. | Required | 
 | comment_id | The ID of the comment. To get the comment_id, use the !bitbucket-pull-request-comment-list command. | Required | 
 | content | The ID of the comment. | Required | 
+| partial_response | Return a partial response if true, else return the full API response. Possible values are: True, False. Default is True. | Optional |
 
 
 #### Context Output
@@ -3352,6 +3363,7 @@ Returns a list of all the members in the workspace.
 | --- | --- | --- |
 | limit | The maximum number of items in the list. The default value is 50. | Optional | 
 | page | The specific result page to display. | Optional | 
+| partial_response | Return a partial response if true, else return the full API response. Possible values are: True, False. Default is True. | Optional |
 
 
 #### Context Output

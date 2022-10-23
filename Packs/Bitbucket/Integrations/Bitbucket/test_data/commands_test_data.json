@@ -516,6 +516,23 @@
           "has_publicly_visible_repos": false
         }
   },
+  "test_project_list_command_with_project_key_partial_result": {
+    "key": "T1",
+    "uuid": "{11111111}",
+    "is_private": true,
+    "name": "Test1",
+    "description": "description",
+    "created_on": "2022-08-24T09:25:07.002184+00:00",
+    "updated_on": "2022-08-24T09:25:07.002201+00:00",
+    "owner": {
+      "display_name": "Bit Bucket",
+      "account_id": "1111111111111111"
+    },
+    "workspace": {
+      "name": "Bit Bucket",
+      "slug": "bitbucket"
+    }
+  },
   "test_open_branch_list_command": {
     "values": [
         {
@@ -730,108 +747,121 @@
     "page": 1
   },
   "test_branch_get_command": {
-            "name": "master",
-            "target": {
-                "type": "commit",
-                "hash": "1111111111111111111111111111111111111111",
-                "date": "2022-09-18T00:00:00+00:00",
-                "author": {
-                    "type": "author",
-                    "raw": "Some User <someuser@gmail.com>",
-                    "user": {
-                        "display_name": "Some User",
-                        "links": {
-                            "self": {
-                                "href": "https://api.bitbucket.org/2.0/users/%1111111111-1111-1111-1111-111111111111%7D"
-                            },
-                            "avatar": {
-                                "href": "https://secure.gravatar.com/avatar/?d=httpsavatar-management--avatars.us-west-2.prod.public.atl-paas.net.png"
-                            },
-                            "html": {
-                                "href": "https://bitbucket.org/%1111111111-1111-1111-1111-111111111111%7D/"
-                            }
-                        },
-                        "type": "user",
-                        "uuid": "{bd5b5904-1111-1111-1111-111111111111}",
-                        "account_id": "111111111111111111111111",
-                        "nickname": "Some User"
-                    }
-                },
-                "message": "delete the new file",
-                "links": {
-                    "self": {
-                        "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/commit/1111111111111111111111111111111111111111"
-                    },
-                    "html": {
-                        "href": "https://bitbucket.org/workspace/start_repo/commits/1111111111111111111111111111111111111111"
-                    },
-                    "diff": {
-                        "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/diff/1111111111111111111111111111111111111111"
-                    },
-                    "approve": {
-                        "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/commit/1111111111111111111111111111111111111111/approve"
-                    },
-                    "comments": {
-                        "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/commit/1111111111111111111111111111111111111111/comments"
-                    },
-                    "statuses": {
-                        "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/commit/1111111111111111111111111111111111111111/statuses"
-                    },
-                    "patch": {
-                        "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/patch/1111111111111111111111111111111111111111"
-                    }
-                },
-                "parents": [
-                    {
-                        "type": "commit",
-                        "hash": "1111111111111111111111111111111111111111",
-                        "links": {
-                            "self": {
-                                "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/commit/1111111111111111111111111111111111111111"
-                            },
-                            "html": {
-                                "href": "https://bitbucket.org/workspace/start_repo/commits/1111111111111111111111111111111111111111"
-                            }
-                        }
-                    }
-                ],
-                "repository": {
-                    "type": "repository",
-                    "full_name": "workspace/start_repo",
-                    "links": {
-                        "self": {
-                            "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo"
-                        },
-                        "html": {
-                            "href": "https://bitbucket.org/workspace/start_repo"
-                        },
-                        "avatar": {
-                            "href": "https://bytebucket.org/ravatar/%7B11111111-1111-1111-1111-111111111111%7D?ts=default"
-                        }
-                    },
-                    "name": "start_repo",
-                    "uuid": "{11111111-1111-1111-1111-111111111111}"
-                }
-            },
-            "links": {
-                "self": {
-                    "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/refs/branches/master"
-                },
-                "commits": {
-                    "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/commits/master"
-                },
-                "html": {
-                    "href": "https://bitbucket.org/workspace/start_repo/branch/master"
-                }
-            },
-            "type": "branch",
-            "merge_strategies": [
-                "merge_commit",
-                "squash",
-                "fast_forward"
-            ],
-            "default_merge_strategy": "merge_commit"
-        },
+      "name": "master",
+      "target": {
+          "type": "commit",
+          "hash": "1111111111111111111111111111111111111111",
+          "date": "2022-09-18T00:00:00+00:00",
+          "author": {
+              "type": "author",
+              "raw": "Some User <someuser@gmail.com>",
+              "user": {
+                  "display_name": "Some User",
+                  "links": {
+                      "self": {
+                          "href": "https://api.bitbucket.org/2.0/users/%1111111111-1111-1111-1111-111111111111%7D"
+                      },
+                      "avatar": {
+                          "href": "https://secure.gravatar.com/avatar/?d=httpsavatar-management--avatars.us-west-2.prod.public.atl-paas.net.png"
+                      },
+                      "html": {
+                          "href": "https://bitbucket.org/%1111111111-1111-1111-1111-111111111111%7D/"
+                      }
+                  },
+                  "type": "user",
+                  "uuid": "{bd5b5904-1111-1111-1111-111111111111}",
+                  "account_id": "111111111111111111111111",
+                  "nickname": "Some User"
+              }
+          },
+          "message": "delete the new file",
+          "links": {
+              "self": {
+                  "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/commit/1111111111111111111111111111111111111111"
+              },
+              "html": {
+                  "href": "https://bitbucket.org/workspace/start_repo/commits/1111111111111111111111111111111111111111"
+              },
+              "diff": {
+                  "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/diff/1111111111111111111111111111111111111111"
+              },
+              "approve": {
+                  "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/commit/1111111111111111111111111111111111111111/approve"
+              },
+              "comments": {
+                  "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/commit/1111111111111111111111111111111111111111/comments"
+              },
+              "statuses": {
+                  "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/commit/1111111111111111111111111111111111111111/statuses"
+              },
+              "patch": {
+                  "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/patch/1111111111111111111111111111111111111111"
+              }
+          },
+          "parents": [
+              {
+                  "type": "commit",
+                  "hash": "1111111111111111111111111111111111111111",
+                  "links": {
+                      "self": {
+                          "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/commit/1111111111111111111111111111111111111111"
+                      },
+                      "html": {
+                          "href": "https://bitbucket.org/workspace/start_repo/commits/1111111111111111111111111111111111111111"
+                      }
+                  }
+              }
+          ],
+          "repository": {
+              "type": "repository",
+              "full_name": "workspace/start_repo",
+              "links": {
+                  "self": {
+                      "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo"
+                  },
+                  "html": {
+                      "href": "https://bitbucket.org/workspace/start_repo"
+                  },
+                  "avatar": {
+                      "href": "https://bytebucket.org/ravatar/%7B11111111-1111-1111-1111-111111111111%7D?ts=default"
+                  }
+              },
+              "name": "start_repo",
+              "uuid": "{11111111-1111-1111-1111-111111111111}"
+          }
+      },
+      "links": {
+          "self": {
+              "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/refs/branches/master"
+          },
+          "commits": {
+              "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/commits/master"
+          },
+          "html": {
+              "href": "https://bitbucket.org/workspace/start_repo/branch/master"
+          }
+      },
+      "type": "branch",
+      "merge_strategies": [
+          "merge_commit",
+          "squash",
+          "fast_forward"
+      ],
+      "default_merge_strategy": "merge_commit"
+  },
+  "test_branch_partial_result": {
+    "name": "master",
+    "target": {
+      "hash": "1111111111111111111111111111111111111111",
+      "date": "2022-09-18T00:00:00+00:00",
+      "author": {
+        "user": {
+          "display_name": "Some User",
+          "account_id": "111111111111111111111111"
+        }
+      }
+    }
+  },
   "test_commit_list_command": {
     "values": [
         {
@@ -1368,6 +1398,68 @@
     "page": 1,
     "next": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/issues?pagelen=3&page=2"
   },
+  "test_issue_partial_result": [
+    {
+      "id": 3,
+      "title": "hi",
+      "content": {
+        "raw": "updated content"
+      },
+      "reporter": {
+        "display_name": "Some User",
+        "account_id": "111111111111111111111111"
+      },
+      "assignee": {
+        "display_name": "",
+        "account_id": ""
+      },
+      "created_on": "2022-09-06T00:00:00.000000+00:00",
+      "updated_on": "2022-09-28T00:00:00.000000+00:00",
+      "state": "new",
+      "kind": "bug",
+      "priority": "minor"
+    },
+    {
+      "id": 93,
+      "title": "new bug",
+      "content": {
+        "raw": ""
+      },
+      "reporter": {
+        "display_name": "Some User",
+        "account_id": "111111111111111111111111"
+      },
+      "assignee": {
+        "display_name": "",
+        "account_id": ""
+      },
+      "created_on": "2022-09-28T00:00:00.000000+00:00",
+      "updated_on": "2022-09-28T00:00:00.000000+00:00",
+      "state": "new",
+      "kind": "bug",
+      "priority": "major"
+    },
+    {
+      "id": 10,
+      "title": "title",
+      "content": {
+        "raw": "updated content"
+      },
+      "reporter": {
+        "display_name": "Some User",
+        "account_id": "111111111111111111111111"
+      },
+      "assignee": {
+        "display_name": "",
+        "account_id": ""
+      },
+      "created_on": "2022-09-07T00:00:00.000000+00:00",
+      "updated_on": "2022-09-22T00:00:00.000000+00:00",
+      "state": "new",
+      "kind": "bug",
+      "priority": "major"
+    }
+  ],
   "test_pull_request_list_command": {
     "values": [
         {
@@ -1968,6 +2060,38 @@
     "page": 1,
     "next": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/pullrequests/6/comments?pagelen=3&page=2"
   },
+  "test_comment_partial_result": [
+    {
+      "id": 111111111,
+      "created_on": "2022-09-12T00:00:00.000000+00:00",
+      "content": {
+        "raw": "hi"
+      },
+      "user": {
+        "display_name": "Some User",
+        "account_id": "111111111111111111111111"
+      },
+      "pullrequest": {
+        "id": 6,
+        "title": "uuuupdate"
+      }
+    },
+    {
+      "id": 222222222,
+      "created_on": "2022-09-12T00:00:00.000000+00:00",
+      "content": {
+        "raw": "hello"
+      },
+      "user": {
+        "display_name": "Some User",
+        "account_id": "111111111111111111111111"
+      },
+      "pullrequest": {
+        "id": 6,
+        "title": "uuuupdate"
+      }
+    }
+  ],
   "test_workspace_member_list_command": {
     "values": [
         {
@@ -2062,6 +2186,28 @@
     "page": 1,
     "next": "https://api.bitbucket.org/2.0/workspaces/workspace/members?pagelen=2&page=2"
   },
+  "test_workspace_member_list_partial_result": [
+    {
+      "user": {
+        "display_name": "Some User",
+        "account_id": "111111111111111111111111"
+      },
+      "workspace": {
+        "name": "Some User",
+        "slug": "someuser"
+      }
+    },
+    {
+      "user": {
+        "display_name": "Another User",
+        "account_id": "222222222222222222222222"
+      },
+      "workspace": {
+        "name": "Some User",
+        "slug": "someuser"
+      }
+    }
+  ],
   "test_pull_request_update_command": {
     "comment_count": 12,
     "task_count": 0,
@@ -2247,6 +2393,80 @@
         "raw": "Wanted to update the description of the pr",
         "markup": "markdown",
         "html": "<p>Wanted to update the description of the pr</p>"
+    }
+  },
+  "test_pull_request_partial_result": {
+    "id": 8,
+    "title": "PR from test to master",
+    "description": "Wanted to update the description of the pr",
+    "state": "OPEN",
+    "author": {
+      "display_name": "Some User",
+      "account_id": "11111111111111111111111"
+    },
+    "created_on": "2022-09-12T00:00:00.000000+00:00",
+    "updated_on": "2022-10-03T00:00:00.000000+00:00",
+    "destination": {
+      "branch": {
+        "name": "master"
+      }
+    },
+    "source": {
+      "branch": {
+        "name": "test"
+      }
+    }
+  },
+  "test_pull_request_comment_update_command": {
+    "id": 222222222,
+    "created_on": "2022-09-12T00:00:00.000000+00:00",
+    "updated_on": "2022-10-23T00:00:00.000000+00:00",
+    "content": {
+        "type": "rendered",
+        "raw": "new comment after update",
+        "markup": "markdown",
+        "html": "<p>new comment after update</p>"
+    },
+    "user": {
+        "display_name": "Some User",
+        "links": {
+            "self": {
+                "href": "https://api.bitbucket.org/2.0/users/"
+            },
+            "avatar": {
+                "href": "https://secure.gravatar.com/avatar/?d=httpsavatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials.png"
+            },
+            "html": {
+                "href": "https://bitbucket.org/"
+            }
+        },
+        "type": "user",
+        "uuid": "{11111111-1111-1111-1111-111111111111}",
+        "account_id": "111111111111111111111111",
+        "nickname": "Some User"
+    },
+    "deleted": false,
+    "type": "pullrequest_comment",
+    "links": {
+        "self": {
+            "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/pullrequests/6/comments/222222222"
+        },
+        "html": {
+            "href": "https://bitbucket.org/workspace/start_repo/pull-requests/6/_/diff#comment-222222222"
+        }
+    },
+    "pullrequest": {
+        "type": "pullrequest",
+        "id": 6,
+        "title": "uuuupdate",
+        "links": {
+            "self": {
+                "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/pullrequests/6"
+            },
+            "html": {
+                "href": "https://bitbucket.org/workspace/start_repo/pull-requests/6"
+            }
+        }
     }
   }
 }

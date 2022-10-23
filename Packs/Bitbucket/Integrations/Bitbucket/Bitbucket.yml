@@ -57,6 +57,15 @@ script:
           required: false
           isArray: false
           description: The specific result page to display.
+        - name: partial_response
+          auto: PREDEFINED
+          defaultValue: True
+          description: Return a partial response if true, else return the full API response.
+          isArray: false
+          predefined:
+            - True
+            - False
+          required: false
       outputs:
         - contextPath: Bitbucket.Project.type
           description: The type of the object.
@@ -136,6 +145,15 @@ script:
           required: false
           isArray: false
           description: The specific result page to display.
+        - name: partial_response
+          auto: PREDEFINED
+          defaultValue: True
+          description: Return a partial response if true, else return the full API response.
+          isArray: false
+          predefined:
+            - True
+            - False
+          required: false
       outputs:
         - contextPath: Bitbucket.Branch.name
           description: The branch name.
@@ -226,6 +244,15 @@ script:
           required: true
           isArray: false
           description: The name of the branch for which to retrieve the information.
+        - name: partial_response
+          auto: PREDEFINED
+          defaultValue: True
+          description: Return a partial response if true, else return the full API response.
+          isArray: false
+          predefined:
+            - True
+            - False
+          required: false
       outputs:
         - contextPath: Bitbucket.Branch.name
           description: The name of the branch.
@@ -320,6 +347,15 @@ script:
           required: true
           description: The name of the branch from which the new branch will be created.
           isArray: false
+        - name: partial_response
+          auto: PREDEFINED
+          defaultValue: True
+          description: Return a partial response if true, else return the full API response.
+          isArray: false
+          predefined:
+            - True
+            - False
+          required: false
       outputs:
         - contextPath: Bitbucket.Branch.name
           description: The name of the new branch.
@@ -472,6 +508,15 @@ script:
           required: false
           isArray: false
           description: The specific result page to display.
+        - name: partial_response
+          auto: PREDEFINED
+          defaultValue: True
+          description: Return a partial response if true, else return the full API response.
+          isArray: false
+          predefined:
+            - True
+            - False
+          required: false
       outputs:
         - contextPath: Bitbucket.Commit.type
           description: The type of the commit.
@@ -597,35 +642,20 @@ script:
         - contextPath: Bitbucket.RawFile.file_content
           description: The content of the file.
           type: String
-        - contextPath: File.Size
+        - contextPath: InfoFile.Size
           description: The size of the file.
           type: Number
-        - contextPath: File.SHA1
-          description: The SHA1 hash of the file.
-          type: String
-        - contextPath: File.SHA256
-          description: The SHA256 hash of the file.
-          type: String
-        - contextPath: File.Name
+        - contextPath: InfoFile.Name
           description: The name of the file.
           type: String
-        - contextPath: File.SSDeep
-          description: The SSDeep hash of the file.
-          type: String
-        - contextPath: File.EntryID
+        - contextPath: InfoFile.EntryID
           description: The entry ID of the file.
           type: String
-        - contextPath: File.Info
+        - contextPath: InfoFile.Info
           description: File information.
           type: String
-        - contextPath: File.Type
+        - contextPath: InfoFile.Type
           description: The file type.
-          type: String
-        - contextPath: File.MD5
-          description: The MD5 hash of the file.
-          type: String
-        - contextPath: File.Extension
-          description: The file extension.
           type: String
     - name: bitbucket-issue-create
       description: Creates an issue in Bitbucket. To perform this command, create an issue tracker by clicking on the relevant repo > Repository settings > Issue tracker.
@@ -688,6 +718,15 @@ script:
           required: false
           description: The user name of the assignee of the issue to create.
           isArray: false
+        - name: partial_response
+          auto: PREDEFINED
+          defaultValue: True
+          description: Return a partial response if true, else return the full API response.
+          isArray: false
+          predefined:
+            - True
+            - False
+          required: false
       outputs:
         - contextPath: Bitbucket.Issue.type
           description: The action type.
@@ -816,6 +855,15 @@ script:
           required: false
           isArray: false
           description: The specific result page to display.
+        - name: partial_response
+          auto: PREDEFINED
+          defaultValue: True
+          description: Return a partial response if true, else return the full API response.
+          isArray: false
+          predefined:
+            - True
+            - False
+          required: false
       outputs:
         - contextPath: Bitbucket.Issue.type
           description: The action type.
@@ -987,6 +1035,15 @@ script:
           required: false
           description: The user name of the assignee of the issue to create.
           isArray: false
+        - name: partial_response
+          auto: PREDEFINED
+          defaultValue: True
+          description: Return a partial response if true, else return the full API response.
+          isArray: false
+          predefined:
+            - True
+            - False
+          required: false
       outputs:
         - contextPath: Bitbucket.Issue.type
           description: The action type.
@@ -1131,6 +1188,15 @@ script:
           predefined:
             - yes
             - no
+        - name: partial_response
+          auto: PREDEFINED
+          defaultValue: True
+          description: Return a partial response if true, else return the full API response.
+          isArray: false
+          predefined:
+            - True
+            - False
+          required: false
       outputs:
         - contextPath: Bitbucket.PullRequest.comment_count
           description: The number of comments there are in the pull request.
@@ -1314,9 +1380,22 @@ script:
           description: A description of the pull request.
           isArray: false
         - name: close_source_branch
+          auto: PREDEFINED
           required: false
           description: Whether the source branch should be closed after the pull request.
           isArray: false
+          predefined:
+            - yes
+            - no
+        - name: partial_response
+          auto: PREDEFINED
+          defaultValue: True
+          description: Return a partial response if true, else return the full API response.
+          isArray: false
+          predefined:
+            - True
+            - False
+          required: false
       outputs:
         - contextPath: Bitbucket.PullRequest.comment_count
           description: The number of comments in the pull request.
@@ -1498,6 +1577,15 @@ script:
           required: false
           isArray: false
           description: The specific result page to display.
+        - name: partial_response
+          auto: PREDEFINED
+          defaultValue: True
+          description: Return a partial response if true, else return the full API response.
+          isArray: false
+          predefined:
+            - True
+            - False
+          required: false
       outputs:
         - contextPath: Bitbucket.PullRequest.comment_count
           description: The number of comments in the pull request.
@@ -1661,6 +1749,15 @@ script:
           required: true
           description: The content of the comment.
           isArray: false
+        - name: partial_response
+          auto: PREDEFINED
+          defaultValue: True
+          description: Return a partial response if true, else return the full API response.
+          isArray: false
+          predefined:
+            - True
+            - False
+          required: false
       outputs:
         - contextPath: Bitbucket.IssueComment.type
           description: The action type.
@@ -1772,6 +1869,15 @@ script:
           required: false
           isArray: false
           description: The specific result page to display.
+        - name: partial_response
+          auto: PREDEFINED
+          defaultValue: True
+          description: Return a partial response if true, else return the full API response.
+          isArray: false
+          predefined:
+            - True
+            - False
+          required: false
       outputs:
         - contextPath: Bitbucket.IssueComment.type
           description: The action type.
@@ -1864,6 +1970,15 @@ script:
           required: true
           description: The new content of the comment.
           isArray: false
+        - name: partial_response
+          auto: PREDEFINED
+          defaultValue: True
+          description: Return a partial response if true, else return the full API response.
+          isArray: false
+          predefined:
+            - True
+            - False
+          required: false
       outputs:
         - contextPath: Bitbucket.IssueComment.type
           description: The action type.
@@ -1952,6 +2067,15 @@ script:
           required: true
           description: The content of the comment.
           isArray: false
+        - name: partial_response
+          auto: PREDEFINED
+          defaultValue: True
+          description: Return a partial response if true, else return the full API response.
+          isArray: false
+          predefined:
+            - True
+            - False
+          required: false
       outputs:
         - contextPath: Bitbucket.PullRequestComment.id
           description: The ID of the comment in the pull request.
@@ -2036,6 +2160,15 @@ script:
           required: false
           isArray: false
           description: The specific result page to display.
+        - name: partial_response
+          auto: PREDEFINED
+          defaultValue: True
+          description: Return a partial response if true, else return the full API response.
+          isArray: false
+          predefined:
+            - True
+            - False
+          required: false
       outputs:
         - contextPath: Bitbucket.PullRequestComment.id
           description: The ID of the comment in the pull request.
@@ -2116,6 +2249,15 @@ script:
           required: true
           description: The ID of the comment.
           isArray: false
+        - name: partial_response
+          auto: PREDEFINED
+          defaultValue: True
+          description: Return a partial response if true, else return the full API response.
+          isArray: false
+          predefined:
+            - True
+            - False
+          required: false
       outputs:
         - contextPath: Bitbucket.PullRequestComment.id
           description: The ID of the comment in the pull request.
@@ -2203,6 +2345,15 @@ script:
           required: false
           isArray: false
           description: The specific result page to display.
+        - name: partial_response
+          auto: PREDEFINED
+          defaultValue: True
+          description: Return a partial response if true, else return the full API response.
+          isArray: false
+          predefined:
+            - True
+            - False
+          required: false
       outputs:
         - contextPath: Bitbucket.WorkspaceMember.type
           description: The action type.
