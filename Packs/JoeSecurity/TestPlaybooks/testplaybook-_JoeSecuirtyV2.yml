@@ -1,5 +1,6 @@
-id: testplaybook- JoeSecuirtyV2
-version: -1
+id: 07c5b111-3824-46cf-8ce8-6d0d5603ee21
+version: 41
+vcShouldKeepItemLegacyProdMachine: false
 name: testplaybook- JoeSecuirtyV2
 starttaskid: "0"
 tasks:
@@ -13,15 +14,15 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "10"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 50
         }
       }
@@ -40,7 +41,8 @@ tasks:
       id: babee61a-3e37-4fce-8a2b-dfe0deb262a8
       version: -1
       name: Is server online
-      description: Check if the Joe Sandbox analysis back end is online or in maintenance mode.
+      description: Check if the Joe Sandbox analysis back end is online or in maintenance
+        mode.
       script: JoeSecurityV2|||joe-is-online
       type: regular
       iscommand: true
@@ -49,10 +51,11 @@ tasks:
       '#none#':
       - "2"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 370
         }
       }
@@ -86,10 +89,11 @@ tasks:
             value:
               simple: Joe.ServerStatus.Online
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 545
         }
       }
@@ -111,12 +115,12 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 4395
         }
       }
@@ -147,10 +151,11 @@ tasks:
       limit:
         simple: "5"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 720
         }
       }
@@ -187,10 +192,11 @@ tasks:
           right:
             value:
               simple: "5"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 895
         }
       }
@@ -209,7 +215,9 @@ tasks:
       id: 89c7df9d-e4d6-4010-8a09-8116fc13428b
       version: -1
       name: Download report
-      description: Download a resource belonging to a report. This can be the full report, dropped binaries, etc. See integration README for the full supported report types.
+      description: Download a resource belonging to a report. This can be the full
+        report, dropped binaries, etc. See integration README for the full supported
+        report types.
       script: JoeSecurityV2|||joe-download-report
       type: regular
       iscommand: true
@@ -227,10 +235,11 @@ tasks:
           transformers:
           - operator: FirstArrayElement
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 1070
         }
       }
@@ -274,10 +283,11 @@ tasks:
           right:
             value:
               simple: .json
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 1245
         }
       }
@@ -290,10 +300,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 2cda8776-14ea-449b-8cc0-690d472df7d6
+    taskid: c85a2014-98d7-4b1c-8dd7-485658a7fcb9
     type: regular
     task:
-      id: 2cda8776-14ea-449b-8cc0-690d472df7d6
+      id: c85a2014-98d7-4b1c-8dd7-485658a7fcb9
       version: -1
       name: DeleteContext
       description: |-
@@ -310,13 +320,14 @@ tasks:
       '#none#':
       - "1"
     scriptarguments:
-      key:
-        simple: all=true
+      all:
+        simple: "yes"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 195
         }
       }
@@ -344,10 +355,11 @@ tasks:
       '#none#':
       - "12"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 1595
         }
       }
@@ -401,10 +413,11 @@ tasks:
           right:
             value:
               simple: "0"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 1770
         }
       }
@@ -438,6 +451,7 @@ tasks:
       url:
         simple: ${inputs.url}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -454,10 +468,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 2bb35001-8fee-4c0c-8900-afc5e5abc08d
+    taskid: 534a79d9-7fd5-4b0e-8f58-dc800b801c41
     type: condition
     task:
-      id: 2bb35001-8fee-4c0c-8900-afc5e5abc08d
+      id: 534a79d9-7fd5-4b0e-8f58-dc800b801c41
       version: -1
       name: Verify submission URL
       type: condition
@@ -477,24 +491,17 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: inputs.url
+              complex:
+                root: inputs.url
+                transformers:
+                - operator: concat
+                  args:
+                    prefix:
+                      value:
+                        simple: http://
+                    suffix: {}
             iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Joe.Analysis.Comments
-            iscontext: true
-          right:
-            value:
-              simple: test_url
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Joe.Analysis.runs.system
-            iscontext: true
-          right:
-            value:
-              simple: w7
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -511,10 +518,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 52ee7ef0-ea03-4702-8b6a-f93a035f1195
+    taskid: 53b7418d-66b2-4e3e-8f80-db9325a4cfd0
     type: regular
     task:
-      id: 52ee7ef0-ea03-4702-8b6a-f93a035f1195
+      id: 53b7418d-66b2-4e3e-8f80-db9325a4cfd0
       version: -1
       name: Submission info
       description: Retrieve the submission info.
@@ -527,10 +534,11 @@ tasks:
       - "16"
     scriptarguments:
       full_display:
-        simple: "true"
+        simple: "false"
       submission_ids:
         simple: ${Joe.Submission.submission_id}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -570,6 +578,7 @@ tasks:
             iscontext: true
           right:
             value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -586,10 +595,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 48f61ea5-50c2-45c3-8822-4e040ab893fa
+    taskid: 9d453936-e720-441c-8040-c1048192fe75
     type: regular
     task:
-      id: 48f61ea5-50c2-45c3-8822-4e040ab893fa
+      id: 9d453936-e720-441c-8040-c1048192fe75
       version: -1
       name: Search URL
       description: Search through all analyses.
@@ -601,9 +610,20 @@ tasks:
       '#none#':
       - "24"
     scriptarguments:
+      full_display:
+        simple: "true"
       query:
-        simple: ${inputs.url}
+        complex:
+          root: inputs.url
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: http://
+              suffix: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -620,10 +640,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 844c612c-aa91-4a69-812f-ce486772dfa0
+    taskid: 68de199f-425c-44e6-843f-d16951134363
     type: regular
     task:
-      id: 844c612c-aa91-4a69-812f-ce486772dfa0
+      id: 68de199f-425c-44e6-843f-d16951134363
       version: -1
       name: DeleteContext
       description: |-
@@ -640,9 +660,10 @@ tasks:
       '#none#':
       - "22"
     scriptarguments:
-      key:
-        simple: all=true
+      all:
+        simple: "yes"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -659,10 +680,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: c055ba3f-6522-4bad-8764-2108547f8114
+    taskid: 4e620cc1-d6e2-4453-828f-ba95680587df
     type: condition
     task:
-      id: c055ba3f-6522-4bad-8764-2108547f8114
+      id: 4e620cc1-d6e2-4453-828f-ba95680587df
       version: -1
       name: Verify search URL
       type: condition
@@ -682,7 +703,15 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: inputs.url
+              complex:
+                root: inputs.url
+                transformers:
+                - operator: concat
+                  args:
+                    prefix:
+                      value:
+                        simple: http://
+                    suffix: {}
             iscontext: true
       - - operator: isEqualNumber
           left:
@@ -692,6 +721,7 @@ tasks:
           right:
             value:
               simple: "1"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -729,6 +759,7 @@ tasks:
       systems:
         simple: macvm
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -766,6 +797,7 @@ tasks:
       filename:
         simple: test_submit_sample.txt
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -782,10 +814,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: f3ee52b3-c04e-449d-81fb-1c4b3eeeffeb
+    taskid: a1ee4ecd-cd2a-41eb-84d2-3528eef262b1
     type: condition
     task:
-      id: f3ee52b3-c04e-449d-81fb-1c4b3eeeffeb
+      id: a1ee4ecd-cd2a-41eb-84d2-3528eef262b1
       version: -1
       name: Verify submit sample
       type: condition
@@ -798,30 +830,25 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualNumber
+      - - operator: isEqualString
           left:
             value:
-              simple: DBotScore.Score
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Vendor
+                      iscontext: true
+                    right:
+                      value:
+                        simple: JoeSecurityV2
+                accessor: Score
             iscontext: true
           right:
             value:
               simple: "1"
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Joe.Analysis.detection
-            iscontext: true
-          right:
-            value:
-              simple: clean
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Joe.Analysis.Comments
-            iscontext: true
-          right:
-            value:
-              simple: test
       - - operator: isEqualString
           left:
             value:
@@ -830,6 +857,7 @@ tasks:
           right:
             value:
               simple: macvm
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -846,10 +874,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: aa678fbc-a944-4774-8616-727af52bedf5
+    taskid: ed68d210-5884-4abc-8d84-e97f64018068
     type: regular
     task:
-      id: aa678fbc-a944-4774-8616-727af52bedf5
+      id: ed68d210-5884-4abc-8d84-e97f64018068
       version: -1
       name: DeleteContext
       description: |-
@@ -866,13 +894,14 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      key:
-        simple: all=true
+      all:
+        simple: "yes"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 1420
         }
       }
@@ -900,6 +929,7 @@ tasks:
       '#none#':
       - "30"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -957,6 +987,7 @@ tasks:
           right:
             value:
               simple: "0"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -973,10 +1004,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: d60d1635-4992-4774-8663-922bcbdc79f8
+    taskid: fccd9663-596d-46cf-8f9a-11e620cafde0
     type: regular
     task:
-      id: d60d1635-4992-4774-8663-922bcbdc79f8
+      id: fccd9663-596d-46cf-8f9a-11e620cafde0
       version: -1
       name: DeleteContext
       description: |-
@@ -993,9 +1024,10 @@ tasks:
       '#none#':
       - "29"
     scriptarguments:
-      key:
-        simple: all=true
+      all:
+        simple: "yes"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1012,10 +1044,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 9f3acb03-d4dc-4de9-8a37-2d8a074325eb
+    taskid: a8640888-9ff7-4017-8845-86384dda6274
     type: regular
     task:
-      id: 9f3acb03-d4dc-4de9-8a37-2d8a074325eb
+      id: a8640888-9ff7-4017-8845-86384dda6274
       version: -1
       name: DeleteContext
       description: |-
@@ -1032,9 +1064,10 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      key:
-        simple: all=true
+      all:
+        simple: "yes"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1051,13 +1084,11 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {
-      "12_3_#default#": 0.63
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 4410,
-        "width": 492.5,
+        "width": 605,
         "x": 50,
         "y": 50
       }
@@ -1069,6 +1100,5 @@ inputs:
     simple: example.com
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs: []
-fromversion: 6.5.0

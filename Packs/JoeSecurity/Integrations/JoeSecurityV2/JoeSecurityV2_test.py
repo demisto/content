@@ -1,7 +1,7 @@
 import json
 import pytest
 import io
-from CommonServerPython import Common, DemistoException
+from CommonServerPython import Common, DemistoException, ExecutionMetrics
 from typing import *
 
 
@@ -84,6 +84,27 @@ def test_is_online_command(mocker, client, result, excepted):
     assert response.readable_output == f'Joe server is {excepted}'
 
 
+def test_info_analysis_command(mocker, client):
+    """
+    Given:
+        - A client and web id to query.
+    When:
+        - joe-info-analysis command was called.
+    Then:
+        - Verify the output as expected.
+    """
+    from JoeSecurityV2 import analysis_info_command
+
+    result = util_load_json('test_data/list_analysis_raw_response.json')
+    excepted = util_load_json('test_data/list_analysis_expected_output.json')
+
+    mocker.patch.object(client, 'analysis_info', return_value=result[0])
+
+    command_res = analysis_info_command(client, {'full_display': 'false', 'webid': '1'})[0]
+    excepted = excepted.get('Joe').get('Analysis')[0]
+    assert excepted == command_res.outputs[0]
+
+
 def test_list_analysis_command(mocker, client):
     """
     Given:
@@ -102,7 +123,7 @@ def test_list_analysis_command(mocker, client):
     mocker.patch.object(client, 'analysis_info', return_value={})
     mocker.patch.object(client, 'analysis_info_list', return_value=result)
 
-    response = list_analysis_command(client, {})
+    response = list_analysis_command(client, {'full_display': 'true'})
     for index, command_res in enumerate(response[:-1]):
         assert command_res.indicator.dbot_score.indicator == excepted.get('DBotScore')[index].get('Indicator')
         assert command_res.indicator.dbot_score.score == excepted.get('DBotScore')[index].get('Score')
@@ -175,12 +196,12 @@ def test_file_command(mocker, client):
     """
     from JoeSecurityV2 import file_command
 
-    result = util_load_json('test_data/list_analysis_raw_response.json')[:-1]
+    result = [util_load_json('test_data/list_analysis_raw_response.json')[0]]
     excepted = util_load_json('test_data/list_analysis_expected_output.json')
 
     mocker.patch.object(client, 'analysis_search', return_value=result)
 
-    response = file_command(client, {'file': '1.pdf,test_2.jbs,test_3.jbs'})
+    response = file_command(client, {'file': '1.pdf'})
     for index, command_res in enumerate(response):
         assert command_res.indicator.dbot_score.indicator == excepted.get('DBotScore')[index].get('Indicator')
         assert command_res.indicator.dbot_score.score == excepted.get('DBotScore')[index].get('Score')
@@ -208,3 +229,117 @@ def test_url_command(mocker, client):
     assert command_res.indicator.dbot_score.indicator == excepted.get('DBotScore')[-1].get('Indicator')
     assert command_res.indicator.dbot_score.score == excepted.get('DBotScore')[-1].get('Score')
     assert command_res.indicator.url == excepted.get('URL').get('Data')
+
+
+COUNTRIES = [{'name': 'test_country1'}, {'name': 'test_country2'}, {'name': 'test_country3'}]
+
+
+def test_list_lia_countries_command(mocker, client):
+    """
+    Given:
+        - An app client object.
+    When:
+        - joe-list-lia-countries command was called.
+    Then:
+        - Ensure the corresponding readable output is returned.
+    """
+    from JoeSecurityV2 import list_lia_countries_command
+
+    mocker.patch.object(client, 'server_lia_countries', return_value=COUNTRIES)
+    command_res = list_lia_countries_command(client)
+    assert command_res.outputs == [item.get('name') for item in COUNTRIES]
+
+
+LANG_LOCALS = [{'name': 'Arabic - Egypt'}, {'name': 'Arabic - Qatar'}, {'name': 'Chinese - PRC'}]
+
+
+def test_list_lang_locales_command(mocker, client):
+    """
+    Given:
+        - An app client object.
+    When:
+        - joe-list-lang-locales command was called.
+    Then:
+        - Ensure the corresponding readable output is returned.
+    """
+    from JoeSecurityV2 import list_lang_locales_command
+
+    mocker.patch.object(client, 'server_languages_and_locales', return_value=LANG_LOCALS)
+    command_res = list_lang_locales_command(client)
+    assert command_res.outputs == [item.get('name') for item in LANG_LOCALS]
+
+
+QUOTA = {'type': 'ultimate', 'quota': {'daily': {'current': 0, 'limit': 100, 'remaining': 100},
+                                       'monthly': {'current': 100, 'limit': 250, 'remaining': 150}}}
+
+
+def test_get_account_quota_command(mocker, client):
+    """
+    Given:
+        - An app client object.
+    When:
+        - joe-get-account-quota command was called.
+    Then:
+        - Ensure the corresponding output is returned.
+    """
+    from JoeSecurityV2 import get_account_quota_command
+
+    mocker.patch.object(client, 'account_info', return_value=QUOTA)
+    command_res = get_account_quota_command(client)
+    assert command_res.outputs == QUOTA
+
+
+def test_submit_sample_command_file(mocker, client):
+    """
+    Given:
+        - An app client object and file for submission command.
+    When:
+        - The file submission command was called.
+    Then:
+        - Ensure the corresponding readable output is returned.
+    """
+    from JoeSecurityV2 import submit_sample_command
+
+    exe_metrics = ExecutionMetrics()
+    mocker.patch.object(client, 'submit_sample', return_value={'submission_id': '1'})
+
+    mocker.patch("builtins.open", create=True)
+    response = submit_sample_command(client, {'entry_id': 'test_entry_id'}, exe_metrics)
+    response.readable_output = 'Waiting for submission "1" to finish...'
+
+
+def test_submit_sample_command_url(mocker, client):
+    """
+    Given:
+        - An app client object and url for submission command.
+    When:
+        - The url submission command was called.
+    Then:
+        - Ensure the corresponding readable output is returned.
+    """
+    from JoeSecurityV2 import submit_url_command
+
+    exe_metrics = ExecutionMetrics()
+    mocker.patch.object(client, 'submit_url', return_value={'submission_id': '1'})
+
+    response = submit_url_command(client, {'url': 'test_url'}, exe_metrics)
+    response.readable_output = 'Waiting for submission "1" to finish...'
+
+
+def test_update_metrics(mocker, client):
+    """
+    Given:
+        - An app client object and url for submission command.
+    When:
+        - The url submission command was called.
+    Then:
+        - Ensure the corresponding readable output is returned.
+    """
+    from JoeSecurityV2 import update_metrics
+    from jbxapi import ApiError
+
+    exe_metrics = ExecutionMetrics()
+    mocker.patch.object(client, 'submit_url', return_value={'submission_id': '1'})
+    exception = ApiError({"code": 'UnknownEndpointError', 'message': 'Test error'})
+    update_metrics(exception, exe_metrics)
+    assert exe_metrics.general_error == 1

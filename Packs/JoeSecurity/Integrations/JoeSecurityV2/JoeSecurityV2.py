@@ -47,16 +47,15 @@ def update_metrics(exception: Exception, exe_metrics: ExecutionMetrics):
             None
     """
     if isinstance(exception, jbxapi.ApiError):
-        pass
-        # match API_ERRORS.get(exception.code):
-        #     case 'Quota':
-        #         exe_metrics.quota_error += 1
-        #     case 'InvalidApiKeyError' | 'PermissionError':
-        #         exe_metrics.auth_error += 1
-        #     case 'ServerOfflineError' | 'InternalServerError':
-        #         exe_metrics.connection_error += 1
-        #     case _:
-        #         exe_metrics.general_error += 1
+        match API_ERRORS.get(exception.code):
+            case 'Quota':
+                exe_metrics.quota_error += 1
+            case 'InvalidApiKeyError' | 'PermissionError':
+                exe_metrics.auth_error += 1
+            case 'ServerOfflineError' | 'InternalServerError':
+                exe_metrics.connection_error += 1
+            case _:
+                exe_metrics.general_error += 1
     else:
         exe_metrics.general_error += 1
 
@@ -532,8 +531,8 @@ def url_submission(client: Client, args: Dict[str, Any], params: Dict[str, Any],
 
 @polling_function(name=demisto.command(), timeout=arg_to_number(demisto.args().get('timeout', 1200)), interval=10,
                   requires_polling_arg=False)
-def polling_submission_command(args: Dict[str, Any], client: Client, params: Dict[str, Any],
-                               exe_metrics: ExecutionMetrics) -> PollResult:
+def polling_submit_command(args: Dict[str, Any], client: Client, params: Dict[str, Any],
+                           exe_metrics: ExecutionMetrics) -> PollResult:
     """
          Helper function that polls the analysis result.
 
@@ -568,7 +567,7 @@ def polling_submission_command(args: Dict[str, Any], client: Client, params: Dic
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client) -> str:     # pragma: no cover
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -585,16 +584,15 @@ def test_module(client: Client) -> str:
         client.server_online()
     except Exception as e:
         if isinstance(e, jbxapi.ApiError):
-            pass
-        #     match API_ERRORS.get(e.code):
-        #         case 'InvalidApiKeyError':
-        #             return "Invalid Api Key"
-        #         case 'PermissionError':
-        #             return "Permission Error"
-        #         case 'ServerOfflineError' | 'InternalServerError':
-        #             return "Server error, please verify the Server URL or check if the server is offline"
-        # else:
-        #     return "Server error, please verify the server url or check if the server is online"
+            match API_ERRORS.get(e.code):
+                case 'InvalidApiKeyError':
+                    return "Invalid Api Key"
+                case 'PermissionError':
+                    return "Permission Error"
+                case 'ServerOfflineError' | 'InternalServerError':
+                    return "Server error, please verify the Server URL or check if the server is offline"
+        else:
+            return "Server error, please verify the server url or check if the server is online"
     return 'ok'
 
 
@@ -614,7 +612,7 @@ def is_online_command(client: Client) -> CommandResults:
                           readable_output=f'Joe server is {status}')
 
 
-def joe_analysis_info(client: Client, args: Dict[str, Any]) -> Union[CommandResults, List[CommandResults]]:
+def analysis_info_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, List[CommandResults]]:
     """
         Get information about a specific analysis.
 
@@ -774,7 +772,7 @@ def list_lia_countries_command(client: Client) -> CommandResults:
     return CommandResults(readable_output='No Results were found.')
 
 
-def lis_lang_locales_command(client: Client) -> CommandResults:
+def list_lang_locales_command(client: Client) -> CommandResults:
     """
         Retrieve a list of available language and locale combinations.
 
@@ -834,7 +832,7 @@ def submission_info_command(client: Client, args: Dict[str, Any], exe_metrics: E
     return command_results
 
 
-def submission_sample_command(client: Client, args: Dict[str, Any], exe_metrics: ExecutionMetrics) -> PollResult:
+def submit_sample_command(client: Client, args: Dict[str, Any], exe_metrics: ExecutionMetrics) -> PollResult:
     """
         Upload a sample to Joe server.
          Args:
@@ -845,10 +843,10 @@ def submission_sample_command(client: Client, args: Dict[str, Any], exe_metrics:
              result: (CommandResults) The CommandResults object.
     """
     params = build_submission_params(args)
-    return polling_submission_command(args, client, params, exe_metrics)
+    return polling_submit_command(args, client, params, exe_metrics)
 
 
-def submission_url_command(client: Client, args: Dict[str, Any], exe_metrics: ExecutionMetrics) -> PollResult:
+def submit_url_command(client: Client, args: Dict[str, Any], exe_metrics: ExecutionMetrics) -> PollResult:
     """
         Upload a URL to Joe server.
          Args:
@@ -860,7 +858,7 @@ def submission_url_command(client: Client, args: Dict[str, Any], exe_metrics: Ex
     """
     params = build_submission_params(args)
     params.update({'url-reputation': argToBoolean(args.get('url_reputation', False))})
-    return polling_submission_command(args, client, params, exe_metrics)
+    return polling_submit_command(args, client, params, exe_metrics)
 
 
 ''' MAIN FUNCTION '''
@@ -892,7 +890,7 @@ def main() -> None:  # pragma: no cover
         elif command == 'joe-is-online':
             return_results(is_online_command(client))
         elif command == 'joe-analysis-info':
-            return_results((joe_analysis_info(client, args)))
+            return_results((analysis_info_command(client, args)))
         elif command == 'joe-list-analysis':
             return_results((list_analysis_command(client, args)))
         elif command == 'joe-download-report':
@@ -908,15 +906,15 @@ def main() -> None:  # pragma: no cover
         elif command == 'joe-list–lia-countries':
             return_results(list_lia_countries_command(client))
         elif command == 'joe-list-lang-locales':
-            return_results(lis_lang_locales_command(client))
+            return_results(list_lang_locales_command(client))
         elif command == 'joe-get-account-quota':
             return_results(get_account_quota_command(client))
         elif command == 'joe-submission-info':
             return_results(submission_info_command(client, args, exe_metrics))
         elif command == 'joe-submit-sample':
-            return_results(submission_sample_command(client, args, exe_metrics))
+            return_results(submit_sample_command(client, args, exe_metrics))
         elif command == 'joe-submit-url':
-            return_results(submission_url_command(client, args, exe_metrics))
+            return_results(submit_url_command(client, args, exe_metrics))
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 
