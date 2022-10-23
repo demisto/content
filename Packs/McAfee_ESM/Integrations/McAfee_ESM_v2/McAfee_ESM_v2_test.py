@@ -268,11 +268,11 @@ def test_alarm_to_incidents(mocker):
        2. Two alarms are created in the 3rd-party between the first and the second run.
 
     Then:
-    - Make sure the `time` field of the lastRun object that is sent as 
+    - Make sure the `time` field of the lastRun object that is sent as
        the start time of the alarms query is not updated after the first run.
     - Make sure two incidents are returned on the second run.
     - Make sure the `time` field of the lastRun object is updated correctly after
-       the second run. 
+       the second run.
 
     """
 
