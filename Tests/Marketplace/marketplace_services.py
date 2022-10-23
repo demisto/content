@@ -89,7 +89,7 @@ class Pack(object):
         self._update_date = None  # initialized in enhance_pack_attributes function
         self._uploaded_author_image = False  # whether the pack author image was uploaded or not
         self._uploaded_integration_images = []  # the list of all integration images that were uploaded for the pack
-        self._uploaded_preview_images = [] # list of all preview images that were uploaded for the pack
+        self._uploaded_preview_images = []  # list of all preview images that were uploaded for the pack
         self._support_details = None  # initialized in enhance_pack_attributes function
         self._author = None  # initialized in enhance_pack_attributes function
         self._certification = None  # initialized in enhance_pack_attributes function
@@ -3375,9 +3375,7 @@ class Pack(object):
             logging.exception(f"Failed uploading {self.name} pack preview image. Additional info: {e}")
             return False
 
-
-    def copy_preview_images(self, production_bucket, build_bucket, images_data, storage_base_path,
-                          build_bucket_base_path):
+    def copy_preview_images(self, production_bucket, build_bucket, images_data, storage_base_path, build_bucket_base_path):
         """ Copies pack's preview image from the build bucket to the production bucket
 
         Args:
@@ -3399,7 +3397,7 @@ class Pack(object):
             image_folder = os.path.dirname(image_name).split('/')[-1] or ''
             image_file_name = os.path.basename(image_name)
             build_bucket_image_path = os.path.join(build_bucket_base_path, self._pack_name,
-                                                   self.current_version ,image_folder, image_file_name)
+                                                   self.current_version, image_folder, image_file_name)
             build_bucket_image_blob = build_bucket.blob(build_bucket_image_path)
 
             if not build_bucket_image_blob.exists():
@@ -3434,7 +3432,6 @@ class Pack(object):
                 logging.success(f"Copied {num_copied_images} images for {self._pack_name} pack.")
 
         return task_status
-
 
     def is_preview_image(self, file_path: str) -> bool:
         """ Indicates whether a file_path is a preview image or not

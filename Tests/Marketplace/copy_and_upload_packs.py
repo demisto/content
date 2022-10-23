@@ -418,6 +418,7 @@ def main():
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
             pack.cleanup()
             continue
+
         if not task_status:
             pack.status = PackStatus.FAILED_UPLOADING_PACK.name
             pack.cleanup()

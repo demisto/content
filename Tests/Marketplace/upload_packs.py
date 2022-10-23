@@ -883,7 +883,6 @@ def get_images_data(packs_list: list):
         if pack.uploaded_integration_images:
             pack_image_data[pack.name][BucketUploadFlow.INTEGRATIONS] = pack.uploaded_integration_images
         if pack.uploaded_preview_images:
-            logging.info("yuval in get image data")
             pack_image_data[pack.name][BucketUploadFlow.PREVIEW_IMAGES] = pack.uploaded_preview_images
         if pack_image_data[pack.name]:
             images_data.update(pack_image_data)
