@@ -15,3 +15,5 @@ in a management console (Multi-org, MSP, or MSSP), navigate to Settings > API Ke
 
 You must acknowledge that your key and secret are only displayed once to 
    activate the **Close** button.
+
+For more information please see: [log-into-umbrella](https://developer.cisco.com/docs/cloud-security/#!reporting-v2-authentication/log-into-umbrella).
