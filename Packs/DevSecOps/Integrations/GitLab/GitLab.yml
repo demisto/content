@@ -1,7 +1,7 @@
 category: Utilities
 commonfields:
   id: GitLab
-  version: 1.1.1
+  version: -1
 configuration:
 - defaultvalue: https://gitlab.com/api/v4
   display: Server URL (e.g. https://gitlab.com/api/v4)
@@ -24,7 +24,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Deprecated. Use GitLab v2 in GitLab Pack instead.
+description: Deprecated. Use GitLab v2 Pack instead.
 display: GitLab (Deprecated) 
 name: GitLab
 script:
