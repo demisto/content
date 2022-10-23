@@ -82,7 +82,7 @@ tasks:
           right:
             value:
               simple: Suspicious
-        - operator: isEqualString
+        - operator: containsString
           left:
             value:
               complex:
@@ -119,17 +119,6 @@ tasks:
                       value:
                         simple: Core.AnalyticsPrevalence.Cmd.value
                       iscontext: true
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Core.AnalyticsPrevalence.Process
-                accessor: value
             iscontext: true
           right:
             value:
@@ -1036,67 +1025,6 @@ tasks:
     continueonerrortype: ""
     loop:
       iscommand: false
-      scriptArguments:
-        AutoContainment:
-          complex:
-            root: inputs.AutoContainment
-            transformers:
-            - operator: SetIfEmpty
-              args:
-                applyIfEmpty: {}
-                defaultValue:
-                  value:
-                    simple: "false"
-        BlockIndicators:
-          simple: "True"
-        ClearUserSessions:
-          simple: "True"
-        EndpointID:
-          complex:
-            root: alert
-            accessor: agentid
-        FileContainment:
-          simple: "True"
-        FileHash:
-          complex:
-            root: foundIncidents.CustomFields
-            filters:
-            - - operator: isNotEqualString
-                left:
-                  value:
-                    simple: foundIncidents.CustomFields.initiatorpath
-                  iscontext: true
-                right:
-                  value:
-                    simple: c:\windows\explorer.exe
-                ignorecase: true
-            accessor: initiatorsha256
-        FilePath:
-          complex:
-            root: foundIncidents.CustomFields.initiatorpath
-            filters:
-            - - operator: isNotEqualString
-                left:
-                  value:
-                    simple: foundIncidents.CustomFields.initiatorpath
-                  iscontext: true
-                right:
-                  value:
-                    simple: c:\windows\explorer.exe
-                ignorecase: true
-        FileRemediation:
-          complex:
-            root: inputs.FileRemediation
-        HostContainment:
-          simple: "True"
-        IAMUserDomain:
-          simple: '@demisto.com'
-        UserContainment:
-          simple: "True"
-        Username:
-          complex:
-            root: foundIncidents.CustomFields
-            accessor: username
       exitCondition: ""
       wait: 1
       max: 100
@@ -1149,25 +1077,6 @@ tasks:
     continueonerrortype: ""
     loop:
       iscommand: false
-      scriptArguments:
-        AutoEradicate:
-          complex:
-            root: inputs.AutoEradication
-        EndpointID:
-          complex:
-            root: alert
-            accessor: agentid
-        FilePath:
-          complex:
-            root: foundIncidents.CustomFields
-            accessor: initiatorpath
-        FileRemediation:
-          complex:
-            root: inputs.FileRemediation
-        Username:
-          complex:
-            root: foundIncidents.CustomFields
-            accessor: username
       exitCondition: ""
       wait: 1
       max: 100
