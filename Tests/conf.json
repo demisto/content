@@ -5744,9 +5744,6 @@
         }
     },
     "test_marketplacev2": [
-        "Sanity Test - Playbook with integration",
-        "Sanity Test - Playbook with no integration",
-        "Sanity Test - Playbook with mocked integration",
-        "Sanity Test - Playbook with Unmockable Whois Integration"
+        "Sanity Test - Playbook with Unmockable Whois Integration",
     ]
 }
