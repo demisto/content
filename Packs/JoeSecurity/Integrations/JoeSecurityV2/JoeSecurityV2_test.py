@@ -299,9 +299,11 @@ def test_submit_sample_command_file(mocker, client):
         - Ensure the corresponding readable output is returned.
     """
     from JoeSecurityV2 import submit_sample_command
+    from CommonServerPython import ScheduledCommand
 
     exe_metrics = ExecutionMetrics()
     mocker.patch.object(client, 'submit_sample', return_value={'submission_id': '1'})
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
 
     mocker.patch("builtins.open", create=True)
     response = submit_sample_command(client, {'entry_id': 'test_entry_id'}, exe_metrics)
@@ -318,9 +320,11 @@ def test_submit_sample_command_url(mocker, client):
         - Ensure the corresponding readable output is returned.
     """
     from JoeSecurityV2 import submit_url_command
+    from CommonServerPython import ScheduledCommand
 
     exe_metrics = ExecutionMetrics()
     mocker.patch.object(client, 'submit_url', return_value={'submission_id': '1'})
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
 
     response = submit_url_command(client, {'url': 'test_url'}, exe_metrics)
     response.readable_output = 'Waiting for submission "1" to finish...'
@@ -340,6 +344,7 @@ def test_update_metrics(mocker, client):
 
     exe_metrics = ExecutionMetrics()
     mocker.patch.object(client, 'submit_url', return_value={'submission_id': '1'})
+
     exception = ApiError({"code": 'UnknownEndpointError', 'message': 'Test error'})
     update_metrics(exception, exe_metrics)
     assert exe_metrics.general_error == 1
