@@ -1099,7 +1099,7 @@ This is visible
 #### Scripts
 ##### Script Name
 - Fixed script.''', 'xsoar', "#### Scripts\n##### Script Name\n- Fixed script."),
-        (
+        (  # Case 2
             '''
 #### Integrations
 <~XSIAM>
@@ -1110,7 +1110,8 @@ This is visible
 #### Scripts
 ##### Script Name
 - Fixed script.''', 'xsoar', "#### Scripts\n##### Script Name\n- Fixed script."),
-        ('''
+        (  # Case 3
+            '''
 #### Integrations
 ##### Integration Display Name
 <~XSIAM>
@@ -1120,7 +1121,8 @@ This is visible
 #### Scripts
 ##### Script Name
 - Fixed script''', 'xsoar', "#### Scripts\n##### Script Name\n- Fixed script"),
-        ('''
+        (  # Case 4
+            '''
 #### Integrations
 ##### Integration Display Name
 <~XSOAR>
@@ -1138,7 +1140,8 @@ This is visible
 </~XSOAR>
 - **Field Name 3**
 ''', 'marketplacev2', "#### Incident Fields\n- **Field Name 1**\n#### Scripts\n##### Script Name\n- Fixed script"),
-        ('''
+        (  # Case 5
+            '''
 #### Integrations
 ##### Integration Display Name
 <~XSIAM>
@@ -1150,7 +1153,8 @@ This is visible
 <~XSIAM>
 - Fixed script
 </~XSIAM>''', 'xsoar', 'Changes are not relevant for XSOAR marketplace.'),
-        ('''
+        (  # Case 6
+            '''
 #### Integrations
 ##### Integration Display Name
 <~XSIAM>
@@ -1162,7 +1166,8 @@ This is visible
 - Fixed script''', 'marketplacev2',
             "#### Integrations\n##### Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### Script Name\n\
 - Fixed script"),
-        ('''
+        (  # Case 7
+            '''
 #### Integrations
 <~XSOAR>
 ##### Integration Display Name
@@ -1174,7 +1179,8 @@ This is visible
 - Fixed script''', 'xsoar',
             "#### Integrations\n##### Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### Script Name\n\
 - Fixed script"),
-        ('''
+        (  # Case 8
+            '''
 #### Integrations
 <~XSOAR>
 ##### New: Integration Display Name
@@ -1186,7 +1192,8 @@ This is visible
 - Fixed script''', 'marketplacev2',
             "#### Scripts\n##### New: Script Name\n\
 - Fixed script"),
-        ('''
+        (  # Case 9
+            '''
 #### Integrations
 <~XSOAR>
 ##### New: Integration Display Name
@@ -1199,7 +1206,8 @@ This is visible
             "#### Integrations\n##### New: Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### New: "
             "Script Name\n\
 - Fixed script"),
-        ('''
+        (  # Case 10
+            '''
 #### Integrations
 ##### Integration Display Name
 <~XSIAM>
@@ -1226,7 +1234,7 @@ This is visible
                  Case 7: Same as case 6 but for XSOAR tags and xsoar marketplace.
                  Case 8: Test for new entities with the 'New' in display name for the same marketplace.
                  Case 9: Same as case 8 but for the other marketplace.
-                 Case 5: Eentities like incident fields in RN have wrapping tags in their entries and not relevant for MP.
+                 Case 10: Eentities like incident fields in RN have wrapping tags in their entries and not relevant for MP.
            When:
                - Creating changelog entry and filtering the entries by the tags.
            Then:

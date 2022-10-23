@@ -1707,7 +1707,7 @@ class Pack(object):
 
         filtered_release_notes_from_tags = self.filter_headers_without_entries(release_notes_dict)  # type: ignore[arg-type]
         filtered_release_notes = self.filter_entries_by_display_name(filtered_release_notes_from_tags, id_set)
-        print(filtered_release_notes)
+
         # if not filtered_release_notes and self.are_all_changes_relevant_to_more_than_one_marketplace(modified_files_data):
         #     # In case all release notes were filtered out, verify that it also makes sense - by checking that the
         #     # modified files are actually relevant for the other marketplace.
@@ -1716,7 +1716,7 @@ class Pack(object):
         #     return {}, True
 
         # Convert the RN dict to string
-        print(filtered_release_notes)
+
         final_release_notes = construct_entities_block(filtered_release_notes).strip()
         if not final_release_notes:
             final_release_notes = f"Changes are not relevant for {'XSOAR' if marketplace == 'xsoar' else 'XSIAM'} marketplace."
@@ -1725,64 +1725,28 @@ class Pack(object):
         logging.debug(f"Finall release notes - \n{changelog_entry[Changelog.RELEASE_NOTES]}")
         return changelog_entry, False
 
-    # def are_all_changes_relevant_to_more_than_one_marketplace(self, modified_files_data):
-    #     """
-    #     Returns true if all the modified files are also relevant to another marketplace besides the current one
-    #      this upload is done for.
+    def are_all_changes_relevant_to_more_than_one_marketplace(self, modified_files_data):
+        """
+        Returns true if all the modified files are also relevant to another marketplace besides the current one
+         this upload is done for.
 
-    #     Args:
-    #         modified_files_data (dict): The modified files data that are given from id-set.
+        Args:
+            modified_files_data (dict): The modified files data that are given from id-set.
 
-    #     Return:
-    #         (bool) True, if all the files are relevant to more than one marketplace.
-    #                False, if there is an item that is relevant only to the current marketplace.
-    #     """
-    #     modified_items = []
+        Return:
+            (bool) True, if all the files are relevant to more than one marketplace.
+                   False, if there is an item that is relevant only to the current marketplace.
+        """
+        modified_items = []
 
-    #     for entities_data in modified_files_data.values():
-    #         modified_items.extend([list(item.values())[0] for item in entities_data])
+        for entities_data in modified_files_data.values():
+            modified_items.extend([list(item.values())[0] for item in entities_data])
 
-    #     for item in modified_items:
-    #         if len(item['marketplaces']) == 1:
-    #             return False
+        for item in modified_items:
+            if len(item['marketplaces']) == 1:
+                return False
 
-    #     return True
-
-    # def filter_release_notes_by_entities_display_name(self, release_notes, modified_files_data, id_set):
-    #     """
-    #     Filters the RN entries by the modified files display names given from id-set.
-
-    #     Args:
-    #         release_notes (dict): The release notes in a dict object.
-    #         modified_files_data (dict): The modified files data that are given from id-set.
-
-    #     Return:
-    #         (dict) The filtered release notes.
-    #     """
-    #     filtered_release_notes: dict = {}
-    #     for pack_folder, entities_data in modified_files_data.items():
-
-    #         rn_header = RN_HEADER_BY_PACK_FOLDER[pack_folder]
-
-    #         # This might be if the entity was filtered by the tags
-    #         if rn_header not in release_notes:
-    #             continue
-
-    #         # Filters the RN entries by the entity display name
-    #         display_names = [list(entity.values())[0]['display_name'] for entity in entities_data]
-    #         filtered_release_notes_entries = self.filter_entries_by_display_name(release_notes, rn_header,
-    #                                                                              id_set, pack_folder, display_names)
-
-    #         if filtered_release_notes_entries:
-    #             filtered_release_notes[rn_header] = filtered_release_notes_entries
-
-    #     if not filtered_release_notes:
-    #         for header in release_notes:
-    #             filtered_release_notes_entries = self.filter_entries_by_display_name(release_notes, header,
-    #                                                                                  id_set)
-    #             filtered_release_notes[header] = filtered_release_notes_entries
-
-    #     return filtered_release_notes
+        return True
 
     @staticmethod
     def filter_entries_by_display_name(release_notes: dict, id_set: dict):
