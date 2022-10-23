@@ -35,6 +35,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
     taskid: ee043234-3d7b-4195-8ca7-1cbde477e677
@@ -73,6 +74,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "3":
     id: "3"
     taskid: dbdc45b0-9334-406c-8a0f-4d96d4b1c51b
@@ -111,6 +113,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "5":
     id: "5"
     taskid: 17c289b8-e1d0-40ab-8880-5c64708b5225
@@ -151,6 +154,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "6":
     id: "6"
     taskid: f1fa61ce-3ee3-4918-86af-e6d66a3c6b24
@@ -185,6 +189,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "7":
     id: "7"
     taskid: ca8852d8-fa26-4061-8673-2e0f0710b967
@@ -227,6 +232,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "9":
     id: "9"
     taskid: 0eb7ea1e-8067-4c3c-8d44-9fa64f71e7ad
@@ -244,7 +250,7 @@ tasks:
       {
         "position": {
           "x": 2300,
-          "y": 1400
+          "y": 1560
         }
       }
     note: false
@@ -254,6 +260,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "13":
     id: "13"
     taskid: 0cc08ef9-5225-44a8-8221-553bb90807b1
@@ -298,6 +305,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "16":
     id: "16"
     taskid: 776cf8da-d5f6-4fcc-8c46-be9bda455b2e
@@ -339,7 +347,7 @@ tasks:
       {
         "position": {
           "x": 1370,
-          "y": 860
+          "y": 870
         }
       }
     note: false
@@ -349,6 +357,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "18":
     id: "18"
     taskid: 60bac145-90e5-4429-8609-c659c8c2a182
@@ -381,7 +390,7 @@ tasks:
       {
         "position": {
           "x": 1370,
-          "y": 1220
+          "y": 1205
         }
       }
     note: false
@@ -391,6 +400,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "19":
     id: "19"
     taskid: aad4cc28-d608-4319-8985-f4a20a3c9f87
@@ -399,10 +409,10 @@ tasks:
       id: aad4cc28-d608-4319-8985-f4a20a3c9f87
       version: -1
       name: Were all hashes found?
-      description: Were all hashes found?
       type: condition
       iscommand: false
       brand: ""
+      description: 'Were all hashes found?'
     nexttasks:
       '#default#':
       - "9"
@@ -434,6 +444,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "20":
     id: "20"
     taskid: 87f2fab9-de14-4277-8357-8decd2d1b522
@@ -479,8 +490,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1830,
-          "y": 1220
+          "x": 1820,
+          "y": 1205
         }
       }
     note: false
@@ -490,6 +501,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "22":
     id: "22"
     taskid: 5ac5a3af-906e-4065-81be-63d12e6ca8f3
@@ -543,6 +555,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "23":
     id: "23"
     taskid: f1e1594d-5b8b-4414-8efb-2682ee0bb1a2
@@ -579,6 +592,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "24":
     id: "24"
     taskid: 93e1ecdb-1db8-4189-8aea-f455c87ebab2
@@ -631,6 +645,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "25":
     id: "25"
     taskid: 41001a52-b698-414c-8561-a9f8a3c2d620
@@ -675,6 +690,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "26":
     id: "26"
     taskid: 157ba2a0-d8e3-4d38-8360-d1dac15d5ec6
@@ -699,6 +715,7 @@ tasks:
     results:
     - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -736,6 +753,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -776,6 +794,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -836,11 +855,12 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 740,
-          "y": 1230
+          "y": 1380
         }
       }
     note: false
@@ -877,6 +897,7 @@ tasks:
             value:
               simple: Joe.Analysis
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -917,6 +938,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -969,6 +991,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1002,7 +1025,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "34"
+      - "36"
     scriptarguments:
       entryID:
         complex:
@@ -1021,6 +1044,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1065,11 +1089,12 @@ tasks:
           - operator: uniq
     separatecontext: false
     continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 950,
-          "y": 1040
+          "y": 1205
         }
       }
     note: false
@@ -1095,11 +1120,62 @@ tasks:
       '#none#':
       - "9"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 2300,
           "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 0db7cd2f-8ed8-4e79-81bc-a58a8218ac62
+    type: condition
+    task:
+      id: 0db7cd2f-8ed8-4e79-81bc-a58a8218ac62
+      version: -1
+      name: Are there MITRE findings?
+      description: Are there MITRE findings?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ExtractedIndicators.Attack_Pattern
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: ExtractedIndicators.Attack_Pattern
+                      iscontext: true
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 1020
         }
       }
     note: false
@@ -1119,7 +1195,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1635,
+        "height": 1795,
         "width": 2150,
         "x": 530,
         "y": -170
