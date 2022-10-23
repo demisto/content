@@ -1,4 +1,4 @@
-This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
+This playbook blocks malicious indicators through all integrations that are enabled, using the following sub-playbooks:
 
 - Block URL - Generic
 - Block Account - Generic

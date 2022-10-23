@@ -1,7 +1,7 @@
-This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
+This playbook blocks malicious indicators through all integrations that are enabled, using the following sub-playbooks:
 
-- Block URL - Generic
-- Block Account - Generic
+- Block URL - Generic v2
+- Block Account - Generic v2
 - Block IP - Generic v3
 - Block File - Generic v2
 - Block Email - Generic
@@ -13,12 +13,12 @@ This playbook blocks malicious Indicators using all integrations that are enable
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Block IP - Generic v3
-* Block File - Generic v2
-* Block Account - Generic v2
-* Block Email - Generic
 * Block Domain - Generic
+* Block File - Generic v2
 * Block URL - Generic v2
+* Block Email - Generic
+* Block Account - Generic v2
+* Block IP - Generic v3
 
 ### Integrations
 This playbook does not use any integrations.
@@ -37,14 +37,14 @@ This playbook does not use any scripts.
 | IP | An array of malicious IPs to block. Enter a comma-separated list of IPs \(i.e.: 1.1.1.1,2.2.2.2\). | DBotScore.Indicator | Optional |
 | URL | Array of malicious URLs to block. | DBotScore.Indicator | Optional |
 | Username | Array of malicious usernames to block. | DBotScore.Indicator | Optional |
-| MD5 | The MD5 hash of the file you want to block. | File.MD5 | Optional |
-| SHA256 | The SHA256 hash of the file you want to block. | File.SHA256 | Optional |
+| MD5 | The MD5 hash of the file you want to block. | DBotScore.Indicator | Optional |
+| SHA256 | The SHA256 hash of the file you want to block. | DBotScore.Indicator | Optional |
 | CustomBlockRule | This input determines whether Palo Alto Networks Panorama or Firewall Custom Block Rules are used.<br/>Specify "True" to create new Custom Block Rules \(2 FW rules inside the PAN-OS device\). <br/>For "False" - no rules will be created. | True | Optional |
 | LogForwarding | Panorama log forwarding object name. Indicate what type of Log Forwarding setting will be specified in the PAN-OS custom rules. |  | Optional |
 | AutoCommit | This input determines whether to commit the configuration automatically on PAN-OS devices and other FWs. <br/>Yes - Commit automatically.<br/>No - Commit manually. | No | Optional |
 | StaticAddressGroup | This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.<br/>Specify the Static Address Group name for IPs list handling. |  | Optional |
-| URLListName | URL list from the instance context with which to override the remote file. | XSOAR Remediation - URL EDL | Optional |
-| CustomURLCategory | Custom URL Category name. | XSOAR Remediation - Malicious URLs | Optional |
+| URLListName | URL list from the instance context with which to override the remote file. | Demisto Remediation - URL EDL | Optional |
+| CustomURLCategory | Custom URL Category name. | Demisto Remediation - Malicious URLs | Optional |
 | type | Custom URL category type. Insert "URL List"/ "Category Match". |  | Optional |
 | device-group | Device group for the Custom URL Category \(Panorama instances\). |  | Optional |
 | categories | The list of categories. Relevant from PAN-OS v9.x. |  | Optional |
