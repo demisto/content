@@ -77,7 +77,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
-      description: 'Is ticketing system input defined?'
+      description: 'Is the ticketing system input defined?'
     nexttasks:
       '#default#':
       - '5'
@@ -625,7 +625,7 @@ tasks:
       id: ea9fd0b1-fd0a-4987-89d3-5432b5ef7e74
       version: -1
       name: Remove file
-      description: Batch executes RTR active-responder remove file across the hosts mapped to a specific batch ID.
+      description: Batch executes RTR Active Responder to remove a file across the hosts mapped to a specific batch ID.
       script: '|||cs-falcon-rtr-remove-file'
       type: regular
       iscommand: true
@@ -698,7 +698,7 @@ tasks:
       type: collection
       iscommand: false
       brand: ''
-      description: 'Allow to remove file'
+      description: Allow to remove file.
     nexttasks:
       '#none#':
       - '50'
@@ -796,9 +796,9 @@ tasks:
     task:
       id: e8f22502-f0dd-4c13-899a-9f94b25f38b3
       version: -1
-      name: Crowdstrike Falcon - Isolate Endpoint
+      name: CrowdStrike Falcon - Isolate Endpoint
       description: This playbook auto isolates endpoints by the device ID provided in the playbook.
-      playbookName: Crowdstrike Falcon - Isolate Endpoint
+      playbookName: CrowdStrike Falcon - Isolate Endpoint
       type: playbook
       iscommand: false
       brand: ''
@@ -871,7 +871,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
-      description: 'Is auto isolation allowed?'
+      description: Is auto isolation allowed?
     nexttasks:
       '#default#':
       - '31'
@@ -988,7 +988,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
-      description: 'Is IOC allowed to be added globally?'
+      description: Is an IOC allowed to be added globally?
     nexttasks:
       '#default#':
       - '10'
@@ -1096,7 +1096,7 @@ tasks:
       type: collection
       iscommand: false
       brand: ''
-      description: 'Confirm Indicators to block'
+      description: Confirm which indicators to block.
     nexttasks:
       '#none#':
       - '49'
@@ -1163,7 +1163,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
-      description: 'Were are values provided?'
+      description: Were values provided?
     nexttasks:
       '#default#':
       - '10'
@@ -1208,7 +1208,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
-      description: 'Were are values provided?'
+      description: Were values provided?
     nexttasks:
       '#default#':
       - '27'
@@ -1475,7 +1475,7 @@ tasks:
       id: 0c47668b-0f43-40d1-831c-8c3f86362135
       version: -1
       name: Specify IOCs to hunt upon
-      description: Specify IOCs to hunt upon
+      description: Specify the IOCs to hunt upon.
       type: collection
       iscommand: false
       brand: ""
@@ -1498,7 +1498,7 @@ tasks:
       to:
         simple: Analyst
       subject:
-        simple: Specify IOCs to hunt upon
+        simple: Specify IOCs to hunt upon.
       body:
       methods:
       - email
@@ -1604,7 +1604,7 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
-      title: Specify IOCs to hunt upon
+      title: Specify IOCs to hunt upon.
       description: ""
       sender: ""
       expired: false
@@ -1622,7 +1622,7 @@ tasks:
       version: -1
       name: Tag the threat hunting results as Evidence
       description: |
-        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+        Adds provided entries to the incident Evidence Board. In a playbook, can be positioned after a task to add the previous task's entries to the Evidence Board automatically (with no need to provide arguments).
       scriptName: AddEvidence
       type: regular
       iscommand: false
@@ -1845,7 +1845,7 @@ inputs:
     simple: 'True'
   required: false
   description: |-
-    Whether adding to block list is global.
+    Whether adding to the block list is global.
     If False, provide an input for the BlockHostGroup input with the group name.
   playbookInputQuery:
 - key: BlockHostGroupName
@@ -1861,7 +1861,7 @@ inputs:
 - key: CloseNotes
   value: {}
   required: false
-  description: Provide the close notes to be listed in CrowdStrike.
+  description: The close notes to be listed in CrowdStrike.
   playbookInputQuery:
 - key: Sha256
   value: {}
@@ -1871,7 +1871,7 @@ inputs:
 - key: PathsForFilesToRemove
   value: {}
   required: false
-  description: Provide the path for the file to remove.
+  description: The path for the file to remove.
   playbookInputQuery:
 - key: OperatingSystemToRemoveFrom
   value: {}
@@ -1887,7 +1887,7 @@ inputs:
   description: |-
     This input will provide you the ability to select IOCs to be hunted using the Threat Hunting - generic playbook.
     If false, it will hunt for all IOCs detected in the incident.
-    Note: You can also insert "No Threat Hunting" to skiping the Threat Hunting stage.
+    Note: You can also insert "No Threat Hunting" to skip the Threat Hunting stage.
   playbookInputQuery:
 - key: IP
   value:
@@ -1902,7 +1902,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: IP value to be hunt on
+  description: IP value to hunt on.
   playbookInputQuery:
 - key: MD5
   value:
@@ -1917,7 +1917,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: MD5 file value to be hunt upon
+  description: MD5 file value to hunt upon.
   playbookInputQuery:
 - key: URL_or_Domain
   value:
@@ -1937,7 +1937,7 @@ inputs:
               simple: URL.Data
       - operator: uniq
   required: false
-  description: URL or Domain to be hunt upon
+  description: URL or Domain to hunt upon.
   playbookInputQuery:
 - key: FileSha1
   value:
@@ -1953,7 +1953,7 @@ inputs:
             iscontext: true
       - operator: uniq
   required: false
-  description: File SHA1 value to be hunt upon.
+  description: File SHA1 value to hunt upon.
   playbookInputQuery:
 outputs: []
 tests:
