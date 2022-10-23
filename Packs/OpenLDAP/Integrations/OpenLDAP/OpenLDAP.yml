@@ -1,8 +1,19 @@
+beta: false
 category: Authentication
 commonfields:
   id: OpenLDAP
   version: -1
 configuration:
+- additionalinfo: The LDAP vendor to authenticate with.
+  defaultvalue: OpenLDAP
+  display: LDAP Server Vendor
+  hidden: false
+  name: ldap_server_vendor
+  options:
+  - OpenLDAP
+  - Active Directory
+  required: true
+  type: 15
 - display: Server IP or Host Name (e.g., 192.168.0.1)
   name: host
   required: true
@@ -29,23 +40,27 @@ configuration:
   name: group_filter_class
   required: false
   type: 0
+  additionalinfo: Relevant for OpenLDAP.
 - defaultvalue: gidNumber
   display: Groups Unique Identifier Attribute
   name: group_identifier_attribute
   required: false
   type: 0
+  additionalinfo: Relevant for OpenLDAP.
 - defaultvalue: memberUid
   display: Group Membership Identifier Attribute
   name: member_identifier_attribute
   required: false
   type: 0
+  additionalinfo: Relevant for OpenLDAP.
 - defaultvalue: posixAccount
   display: User Object Class
   name: user_filter_class
   required: false
   type: 0
+  additionalinfo: Relevant for OpenLDAP.
 - additionalinfo: User attributes will be added to the user filter in 'ad-authenticate-and-roles'.
-    Attributes should be in the format "attrA=valA,attrB=valB,...".
+    Attributes should be in the format "attrA=valA,attrB=valB,..." (Relevant for OpenLDAP).
   display: User Defined Attributes
   name: custom_attributes
   required: false
@@ -55,6 +70,7 @@ configuration:
   name: user_identifier_attribute
   required: false
   type: 0
+  additionalinfo: Relevant for OpenLDAP.
 - defaultvalue: '500'
   display: Page size
   name: page_size
@@ -66,6 +82,7 @@ configuration:
   options:
   - None
   - SSL
+  - Start TLS
   required: true
   type: 15
 - display: Trust any certificate (not secure)
@@ -76,8 +93,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Authenticate using OpenLDAP.
-display: OpenLDAP
+description: Authenticate using OpenLDAP or Active Directory.
+display: LDAP Authentication
 name: OpenLDAP
 script:
   commands:
@@ -100,7 +117,8 @@ script:
     name: ad-authenticate
   - arguments:
     - default: false
-      description: 'A list of group object names to fetch. The list is delimited by a number sign (#).' 
+      description: A list of group object names to fetch. The list is delimited by
+        a number sign (#).
       isArray: false
       name: specific-groups
       required: false
@@ -124,21 +142,28 @@ script:
       secret: true
     - default: false
       defaultValue: mail
-      description: Mail attribute to return in the response. Default is "mail".
+      description: Mail attribute to return in the response.
       isArray: false
       name: attribute-mail
       required: false
       secret: false
     - default: false
-      description: Name attribute to return in the response.
+      description: Name attribute to return in the response. Default is "name".
       isArray: false
       name: attribute-name
+      required: false
+      secret: false
+    - default: false
+      defaultValue: mobile
+      description: Phone attribute to return in the response.
+      isArray: false
+      name: attribute-phone
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: 'Whether to return the name attribute. Possible values are: "true" and "false". Default is "true".'
+      description: 'Whether to return the name attribute.'
       isArray: false
       name: attribute-name-pull
       predefined:
@@ -149,7 +174,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: 'Whether to return the mail attribute. Possible values are: "true" and "false". Default is "true".'
+      description: 'Whether to return the mail attribute.'
       isArray: false
       name: attribute-mail-pull
       predefined:
@@ -157,11 +182,22 @@ script:
       - 'false'
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: 'Whether to return the phone attribute.'
+      isArray: false
+      name: attribute-phone-pull
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
-    description: Performs a simple bind operation on the LDAP server and returns the      authenticated user's groups.
+    description: Performs a simple bind operation on the LDAP server and returns the authenticated user's groups.
     execution: false
     name: ad-authenticate-and-roles
-  dockerimage: demisto/py3-tools:1.0.0.32758
+  dockerimage: demisto/py3-tools:1.0.0.35208
   feed: false
   isfetch: false
   longRunning: false
@@ -171,5 +207,6 @@ script:
   subtype: python3
   type: python
 tests:
-- No test
+- OpenLDAP - Test
+- LDAP Authentication - Test
 fromversion: 5.0.0

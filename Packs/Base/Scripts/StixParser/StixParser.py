@@ -409,5 +409,5 @@ def main():
 # SCRIPT START
 
 # IF STIX2 FILE
-if __name__ in ('__builtin__', 'builtins'):
+if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()

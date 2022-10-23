@@ -1,7 +1,9 @@
 commonfields:
   id: DemistoVersion
+  id_x2: GetVersion
   version: -1
 name: DemistoVersion
+name_x2: GetVersion
 script: ''
 type: python
 tags: []
@@ -17,6 +19,6 @@ outputs:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.6.33415
 runas: DBotWeakRole
 fromversion: 5.0.0

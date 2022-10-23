@@ -5,9 +5,4 @@ This fact makes it very difficult for IT and Security teams to provide these ser
 One example of these providers is Zoom.
 
 ## What does this pack do?
-This pack aims to address this issue by automating the collection of endpoint data in the form of an indicator feed. This will facilitate validation of the indicators before using them in enforcement points, for example firewalls, proxies, and more.
-
-
-## Demo Video
-
-[![Cortex XSOAR Zoom Feed Integration Demo](https://img.youtube.com/vi/s9lRtJltTGI/0.jpg)](https://www.youtube.com/watch?v=s9lRtJltTGI "Cortex XSOAR Zoom Feed Integration Demo")
+This pack addresses this issue by automating the collection of endpoint data in the form of an indicator feed. This will facilitate validation of the indicators before using them in enforcement points, for example firewalls, proxies, and more.

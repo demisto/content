@@ -1,8 +1,11 @@
 {
     "name": "Zoom Feed",
     "description": "Use the Zoom Feed to automatically ingest valid indicators such as CIDRs and DomainGlobs from Zoom. The indicators can then be added to firewall allow lists.",
-    "support": "community",
-    "currentVersion": "1.1.6",
+    "support": "xsoar",
+    "videos": [
+        "https://www.youtube.com/embed/s9lRtJltTGI"
+    ],
+    "currentVersion": "1.1.9",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

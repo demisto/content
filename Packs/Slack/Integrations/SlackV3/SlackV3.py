@@ -368,6 +368,9 @@ def search_slack_users(users: Union[list, str]) -> list:
     if not isinstance(users, list):
         users = [users]
 
+    # Filter NoneType elements from the user list
+    users = list(filter(lambda x: x, users))
+
     for user in users:
         slack_user = get_user_by_name(user)
         if not slack_user:
@@ -845,24 +848,23 @@ def check_for_unanswered_questions():
     updated_questions = []
 
     for question in questions:
-        if question.get('last_poll_time'):
-            if question.get('expiry'):
-                # Check if the question expired - if it did, answer it with the default response
-                # and remove it
-                expiry = datetime.strptime(question['expiry'], DATE_FORMAT)
-                if expiry < now:
-                    _ = answer_question(question.get('default_response'), question, email='')
-                    updated_questions.append(question)
-                    continue
-            # Check if it has been enough time(determined by the POLL_INTERVAL_MINUTES parameter)
-            # since the last polling time. if not, continue to the next question until it has.
-            last_poll_time = datetime.strptime(question['last_poll_time'], DATE_FORMAT)
-            delta = now - last_poll_time
-            minutes = delta.total_seconds() / 60
-            sent = question.get('sent', None)
-            poll_time_minutes = get_poll_minutes(now, sent)
-            if minutes < poll_time_minutes:
+        if question.get('expiry'):
+            # Check if the question expired - if it did, answer it with the default response
+            # and remove it
+            expiry = datetime.strptime(question['expiry'], DATE_FORMAT)
+            if expiry < now:
+                _ = answer_question(question.get('default_response'), question, email='')
+                updated_questions.append(question)
                 continue
+        # Check if it has been enough time(determined by the POLL_INTERVAL_MINUTES parameter)
+        # since the last polling time. if not, continue to the next question until it has.
+        last_poll_time = datetime.strptime(question['last_poll_time'], DATE_FORMAT)
+        delta = now - last_poll_time
+        minutes = delta.total_seconds() / 60
+        sent = question.get('sent', None)
+        poll_time_minutes = get_poll_minutes(now, sent)
+        if minutes < poll_time_minutes:
+            continue
         entitlement = question.get('entitlement', '')
         demisto.info(f'Slack - polling for an answer for entitlement {entitlement}')
         question['last_poll_time'] = now_string
@@ -1513,9 +1515,13 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
 
                 _body = json.dumps(body)
                 try:
-                    response = requests.request("POST", f"{DEMISTO_URL}/entry/execute/sync", headers=headers, data=_body,
-                                                verify=VERIFY_CERT)
-                    response.raise_for_status()
+                    response = requests.request("POST",  # type: ignore
+                                                f"{DEMISTO_URL}/entry/execute/sync",
+                                                headers=headers,
+                                                data=_body,
+                                                verify=VERIFY_CERT
+                                                )
+                    response.raise_for_status()  # type: ignore
                 except requests.exceptions.ConnectionError as err:
                     err_message = f'Error submitting context command to server. Check your API Key: {err}'
                     demisto.updateModuleHealth(err_message)
@@ -2348,7 +2354,11 @@ def create_channel():
 def invite_to_channel():
     channel = demisto.args().get('channel')
     channel_id = demisto.args().get('channel_id', '')
-    users = argToList(demisto.args().get('users', []))
+    users = argToList(demisto.args().get('users', '[]').rstrip(', '))
+
+    if not users:
+        # Not raising an error here to preserve BC
+        demisto.results('Missing required argument - users')
 
     if not channel:
         mirror = find_mirror_by_investigation()

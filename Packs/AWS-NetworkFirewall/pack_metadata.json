@@ -1,5 +1,5 @@
 {
-    "name": "AWS-NetworkFirewall",
+    "name": "AWS - Network Firewall",
     "description": "Amazon Web Services Network Firewall",
     "support": "xsoar",
     "currentVersion": "1.0.3",
@@ -8,7 +8,7 @@
     "email": "",
     "created": "2020-11-17T08:37:18Z",
     "categories": [
-        "IT Services"
+        "Network Security"
     ],
     "tags": [],
     "useCases": [],

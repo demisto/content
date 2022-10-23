@@ -1,0 +1,28 @@
+commonfields:
+  id: CuckooGetScreenshot
+  version: -1
+name: CuckooGetScreenshot
+script: ''
+type: python
+subtype: python3
+tags:
+- cuckoo
+comment: Deprecated. Use 'cuckoo-task-screenshot' command instead.
+deprecated: true
+system: true
+args:
+- name: id
+  required: true
+  default: true
+  description: ID of the task that generated the screenshot
+- name: screenshot
+  description: (optional) - numerical identifier of a single screenshot (e.g. 0001, 0002)
+scripttarget: 0
+dependson:
+  must:
+  - cuckoo-task-screenshot
+timeout: 0s
+tests:
+- No test
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.6.33415

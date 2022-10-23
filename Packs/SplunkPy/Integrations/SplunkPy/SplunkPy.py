@@ -1,22 +1,21 @@
-from splunklib.binding import HTTPError, namespace, AuthenticationError
-
-import demistomock as demisto
-from CommonServerPython import *
-import splunklib.client as client
-
-import splunklib.results as results
-import json
-from datetime import timedelta, datetime
-import pytz  # type: ignore[import]
-import dateparser  # type: ignore
-import urllib2
 import hashlib
-import ssl
-from StringIO import StringIO
-import requests
-import urllib3
 import io
+import json
 import re
+import ssl
+from datetime import datetime, timedelta
+
+import dateparser  # type: ignore
+import demistomock as demisto  # noqa: F401
+import pytz  # type: ignore[import]
+import requests
+import splunklib.client as client
+import splunklib.results as results
+import urllib2
+import urllib3
+from CommonServerPython import *  # noqa: F401
+from splunklib.binding import AuthenticationError, HTTPError, namespace
+from StringIO import StringIO
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -43,7 +42,7 @@ MIRROR_DIRECTION = {
     'Outgoing': 'Out',
     'Incoming And Outgoing': 'Both'
 }
-OUTGOING_MIRRORED_FIELDS = ['comment', 'status', 'owner', 'urgency', 'reviewer']
+OUTGOING_MIRRORED_FIELDS = ['comment', 'status', 'owner', 'urgency', 'reviewer', 'disposition']
 
 # =========== Enrichment Mechanism Globals ===========
 ENABLED_ENRICHMENTS = params.get('enabled_enrichments', [])
@@ -908,11 +907,11 @@ def drilldown_enrichment(service, notable_data, num_enrichment_events):
         if searchable_query:
             status, earliest_offset, latest_offset = get_drilldown_timeframe(notable_data, raw_dict)
             if status:
-                if "latest=" not in searchable_query:
-                    searchable_query = "latest={} ".format(latest_offset) + searchable_query
-                if "earliest=" not in searchable_query:
-                    searchable_query = "earliest={} ".format(earliest_offset) + searchable_query
                 kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
+                if latest_offset:
+                    kwargs['latest_time'] = latest_offset
+                if earliest_offset:
+                    kwargs['earliest_time'] = earliest_offset
                 query = build_search_query({"query": searchable_query})
                 demisto.debug("Drilldown query for notable {}: {}".format(notable_data[EVENT_ID], query))
                 try:
@@ -922,7 +921,7 @@ def drilldown_enrichment(service, notable_data, num_enrichment_events):
             else:
                 demisto.debug('Failed getting the drilldown timeframe for notable {}'.format(notable_data[EVENT_ID]))
         else:
-            demisto.debug("Coldn't build search query for notable {} with the following drilldown "
+            demisto.debug("Couldn't build search query for notable {} with the following drilldown "
                           "search {}".format(notable_data[EVENT_ID], search))
     else:
         demisto.debug("drill-down was not configured for notable {}".format(notable_data[EVENT_ID]))
@@ -1041,7 +1040,7 @@ def handle_submitted_notable(service, notable, enrichment_timeout):
             if enrichment.status == Enrichment.IN_PROGRESS:
                 try:
                     job = client.Job(service=service, sid=enrichment.id)
-                    if job.is_ready():
+                    if job.is_done():
                         demisto.debug('Handling open {} enrichment for notable {}'.format(enrichment.type, notable.id))
                         for item in results.ResultsReader(job.results()):
                             enrichment.data.append(item)
@@ -1352,7 +1351,7 @@ def update_remote_system_command(args, params, service, auth_token, mapper):
                 response_info = update_notable_events(
                     baseurl=base_url, comment=changed_data['comment'], status=changed_data['status'],
                     urgency=changed_data['urgency'], owner=changed_data['owner'], eventIDs=[notable_id],
-                    auth_token=auth_token, sessionKey=session_key
+                    disposition=changed_data.get('disposition'), auth_token=auth_token, sessionKey=session_key
                 )
                 if 'success' not in response_info or not response_info['success']:
                     demisto.error('Failed updating notable {}: {}'.format(notable_id, str(response_info)))
@@ -1792,7 +1791,7 @@ def convert_to_str(obj):
 
 
 def update_notable_events(baseurl, comment, status=None, urgency=None, owner=None, eventIDs=None,
-                          searchID=None, auth_token=None, sessionKey=None):
+                          disposition=None, searchID=None, auth_token=None, sessionKey=None):
     """
     Update some notable events.
 
@@ -1832,6 +1831,9 @@ def update_notable_events(baseurl, comment, status=None, urgency=None, owner=Non
     # Provide the list of event IDs that you want to change:
     if eventIDs is not None:
         args['ruleUIDs'] = eventIDs
+
+    if disposition:
+        args['disposition'] = disposition
 
     # If you want to manipulate the notable events returned by a search then include the search ID
     if searchID is not None:

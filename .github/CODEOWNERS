@@ -1,7 +1,7 @@
-# Marketplace Related
-/Tests/Marketplace/approved_tags.json @demisto/content-leaders @michalgold
-/Tests/Marketplace/approved_usecases.json @demisto/content-leaders @michalgold
-/Tests/Marketplace/landingPage_sections.json @demisto/content-leaders @michalgold
+# Marketplace Related - Marketplace PMs only
+/Tests/Marketplace/approved_tags.json @glicht @bakatzir @GuyLibermanPA
+/Tests/Marketplace/approved_usecases.json @glicht @bakatzir @GuyLibermanPA
+/Tests/Marketplace/landingPage_sections.json @glicht @bakatzir @GuyLibermanPA
 
 # Marketplace & Upload-Flow
 /Tests/Marketplace/upload_git_snapshot.py @Noy-Maimon
@@ -20,7 +20,7 @@
 /Utils/trigger_upload_packs_to_production.sh @Noy-Maimon
 
 # Test Collection
-/Tests/scripts/collect_tests_and_content_packs.py @dorschw
+/Tests/scripts/collect_tests @dorschw
 
 # PANW Products
 /Packs/Palo_Alto_Networks_Enterprise_DLP/ @DeanArbel
@@ -41,14 +41,14 @@
 /Packs/ContentManagement/* @adi88d
 
 # Important Scripts
-/Packs/CommonScripts/Scripts/SetGridField/* @yaakovi @David-BMS @altmannyarden
+/Packs/CommonScripts/Scripts/SetGridField/* @yaakovi @altmannyarden
 /Packs/CommonScripts/Scripts/SearchIncidentsV2/* @demisto/content-leaders
 /Packs/CommonScripts/Scripts/ParseEmailFiles/* @moishce
 
 # Common Packs
-/Packs/CommonTypes/ @michalgold @altmannyarden @idovandijk
-/Packs/CommonPlaybooks/ @michalgold @altmannyarden @idovandijk
-/Packs/CommonDashboards/ @michalgold @altmannyarden @idovandijk
+/Packs/CommonTypes/ @michalgold @idovandijk
+/Packs/CommonPlaybooks/ @michalgold @idovandijk
+/Packs/CommonDashboards/ @michalgold @idovandijk
 
 
 # Build related
