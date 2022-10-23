@@ -710,3 +710,83 @@ EXTERNAL_EXPOSURE_RESULTS = [
         "type": "Certificate"
     }
 ]
+
+INTERNET_EXPOSURE_POST_FORMAT = [
+    {
+        "asm_ids": "3c176460-8735-333c-b618-8262e2fb660c",
+        "name": "*.acme.com",
+        "asset_type": "CERTIFICATE",
+        "cloud_provider": null,
+        "externally_detected_providers": [],
+        "region": null,
+        "ips": [],
+        "business_units": [
+            "Acme"
+        ],
+        "management_status": [],
+        "iot_model": null,
+        "iot_category": null,
+        "iot_profile": null,
+        "sensor": [
+            "XPANSE"
+        ],
+        "service_type": [],
+        "last_observed": null,
+        "first_observed": null,
+        "has_active_externally_services": false,
+        "has_xdr_agent": "NA",
+        "certificate_classifications": [
+            "Wildcard",
+            "Expired",
+            "InsecureSignature"
+        ],
+        "certificate_issuer": "Thawte",
+        "certificate_algorithm": "SHA1withRSA",
+        "mac_addresses": [],
+        "cloud_id": null,
+        "ip_ranges": [],
+        "domain_resolves": false,
+        "operation_system": null,
+        "asm_va_score": null,
+        "externally_inferred_cves": [],
+        "agent_id": null
+    },
+    {
+        "asm_ids": "43164fde-8e87-3d1e-8530-82f14cd3ae9a",
+        "name": "*.ch3.intra.kmart.com",
+        "asset_type": "CERTIFICATE",
+        "cloud_provider": null,
+        "externally_detected_providers": [],
+        "region": null,
+        "ips": [],
+        "business_units": [
+            "VanDelay Industries"
+        ],
+        "management_status": [],
+        "iot_model": null,
+        "iot_category": null,
+        "iot_profile": null,
+        "sensor": [
+            "XPANSE"
+        ],
+        "service_type": [],
+        "last_observed": null,
+        "first_observed": null,
+        "has_active_externally_services": false,
+        "has_xdr_agent": "NA",
+        "certificate_classifications": [
+            "Wildcard",
+            "Expired"
+        ],
+        "certificate_issuer": "COMODO",
+        "certificate_algorithm": "SHA256withRSA",
+        "mac_addresses": [],
+        "cloud_id": null,
+        "ip_ranges": [],
+        "domain_resolves": false,
+        "operation_system": null,
+        "asm_va_score": null,
+        "externally_inferred_cves": [],
+        "agent_id": null
+    }
+]

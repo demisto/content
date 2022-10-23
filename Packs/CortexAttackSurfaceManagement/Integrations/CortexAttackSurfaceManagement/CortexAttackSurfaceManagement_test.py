@@ -3,6 +3,26 @@ Tests module for Cortex Attack Surface Management integration.
 """
 
 
+def test_format_asm_id_func(requests_mock):
+    """Tests format_asm_id helper function.
+
+        Given:
+            - Mock JSON pre-formatting from the list_asset_internet_exposure_command function
+        When:
+            - Sending JSON to format_asm_id function.
+        Then:
+            - Checks the output of the helper function with the expected output.
+    """
+    from CortexAttackSurfaceManagement import format_asm_id
+
+    from test_data.raw_response import INTERNET_EXPOSURE_PRE_FORMAT
+    from test_data.expected_results import INTERNET_EXPOSURE_POST_FORMAT
+
+    response = format_asm_id(INTERNET_EXPOSURE_PRE_FORMAT)
+
+    assert response == INTERNET_EXPOSURE_POST_FORMAT
+
+
 def test_list_external_service_command(requests_mock):
     """Tests list_external_service_command command function.
 
