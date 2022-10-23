@@ -15,7 +15,7 @@ def grid_field_setup(keys: Optional[Any], vals: dict) -> List[Dict[str, Any]]:
     :return: list of dictionaries
     """
     if keys:
-        key_list = keys.split(',')
+        key_list = argToList(keys)
     num_entries = len(key_list)
     res_list = []
     temp = {}
