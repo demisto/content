@@ -1,3 +1,4 @@
+import demistomock as demisto
 import copy
 
 from CommonServerPython import *
@@ -1296,7 +1297,7 @@ def main():
     handle_proxy()
     verify_certificate = not params.get('insecure', False)
 
-    LOG(f'Command being called is {command}')
+    demisto.debug(f'Command being called is {command}')
     try:
         client = Client(
             base_url=base_url,
