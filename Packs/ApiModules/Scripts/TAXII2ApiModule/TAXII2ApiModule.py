@@ -390,6 +390,9 @@ class Taxii2FeedClient:
 
     """ PARSING FUNCTIONS"""
 
+    def update_tlp(self, fields):
+        return self.tlp_color and not fields.get('trafficlightprotocol')
+
     def parse_indicator(self, indicator_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
         """
         Parses a single indicator object
@@ -458,7 +461,7 @@ class Taxii2FeedClient:
             "publications": publications,
             "tags": list(self.tags),
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         attack_pattern["fields"] = fields
 
@@ -491,7 +494,7 @@ class Taxii2FeedClient:
             "report_types": report_obj.get('report_types', []),
             "tags": list((set(report_obj.get('labels', []))).union(set(self.tags))),
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         report["fields"] = fields
 
@@ -525,7 +528,7 @@ class Taxii2FeedClient:
             "secondary_motivations": threat_actor_obj.get('secondary_motivations', []),
             "tags": list((set(threat_actor_obj.get('labels', []))).union(set(self.tags))),
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         threat_actor["fields"] = fields
 
@@ -557,7 +560,7 @@ class Taxii2FeedClient:
             "modified": infrastructure_obj.get('modified'),
             "tags": list(set(self.tags))
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         infrastructure["fields"] = fields
         return [infrastructure]
@@ -593,7 +596,7 @@ class Taxii2FeedClient:
             "sample_refs": malware_obj.get('sample_refs', []),
             "tags": list((set(malware_obj.get('labels', []))).union(set(self.tags)))
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         malware["fields"] = fields
         return [malware]
@@ -624,7 +627,7 @@ class Taxii2FeedClient:
             "tool_version": tool_obj.get('tool_version', ''),
             "tags": list(set(self.tags))
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         tool["fields"] = fields
         return [tool]
@@ -652,7 +655,7 @@ class Taxii2FeedClient:
             "publications": publications,
             "tags": [tag for tag in self.tags]
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         course_of_action["fields"] = fields
         return [course_of_action]
@@ -678,7 +681,7 @@ class Taxii2FeedClient:
             "objective": campaign_obj.get('objective', ''),
             "tags": [tag for tag in self.tags],
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         campaign["fields"] = fields
         return [campaign]
@@ -710,7 +713,7 @@ class Taxii2FeedClient:
             "publications": publications,
             "tags": list(self.tags),
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         intrusion_set["fields"] = fields
         return [intrusion_set]
@@ -736,7 +739,7 @@ class Taxii2FeedClient:
             'stixid': sco_object.get('id'),
             'tags': list(set(self.tags))
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         sco_indicator['fields'] = fields
         return [sco_indicator]
@@ -1156,7 +1159,7 @@ class Taxii2FeedClient:
 
         fields["tags"] = tags
 
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields["trafficlightprotocol"] = self.tlp_color
 
         indicator["fields"] = fields
