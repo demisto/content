@@ -192,7 +192,10 @@ class Client(BaseClient):
             token (str | None, optional): 2FA token to use for authentication.
             verify (bool, optional): Whether to verify SSL certificates. Defaults to True.
         """
-
+        self.base_url = url
+        self._auth_username = username
+        self._auth_password = password
+        self._auth_token = token
         self._headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
@@ -209,6 +212,31 @@ class Client(BaseClient):
             ok_codes=(200, 201),
             verify=verify,
         )
+
+    def _generate_session_id(self) -> str:
+        """
+        Generate a new session ID for internal API requests.
+
+        Note:
+            This is used for internal non-documented API requests that are used when using the web interface,
+            and have no alternative in the native API.
+
+        Returns:
+            str: A session ID.
+        """
+        internal_api_headers = self._headers.copy()
+        internal_api_headers["Content-Type"] = "application/x-www-form-urlencoded"
+
+        return self._http_request(
+            method="POST",
+            full_url=self.base_url.rstrip("/") + "/data/user/login",
+            headers=internal_api_headers,
+            data={
+                "nexposeccusername": self._auth_username,
+                "nexposeccpassword": self._auth_password,
+            },
+            ok_codes=(200,),
+        ).get("sessionID")
 
     def _paged_http_request(self, page_size: Optional[int], page: Optional[int] = None,
                             sort: Optional[str] = None, limit: Optional[int] = None, **kwargs) -> list:
@@ -2258,6 +2286,48 @@ class Client(BaseClient):
 
         return None
 
+    def find_asset_site(self, asset_id: str) -> Optional["Site"]:
+        """
+        Find the site of a given asset ID.
+
+        Note:
+            This method is from older versions of this pack. It uses an internal API to fetch a list of scans data
+            for an asset, and fetches site data for these scans to determine asset's site. This will not work if:
+            The asset has no previous scans, or if the asset has been moved to another site since the last scan.
+
+        Args:
+            asset_id (str): ID of the asset to find additional data for.
+
+        Returns:
+            Site: Site object containing data (ID, name) of the asset's site.
+        """
+        request_headers = self._headers.copy()
+        request_headers.update({"nexposeCCSessionID": self._generate_session_id()})
+
+        try:
+            response_data: dict = self._http_request(
+                full_url=self.base_url.rstrip("/") + f"/data/assets/{asset_id}/scans",
+                method="POST",
+                headers=request_headers,
+                resp_type="json",
+            )
+
+        except Exception:
+            return None
+
+        if not response_data.get("records"):
+            return None
+
+        record_data = response_data["records"][0]
+
+        if None in (record_data.get("siteID"), record_data.get("siteName")):
+            return None
+
+        return Site(
+            site_id=response_data["records"][0]["siteID"],
+            site_name=response_data["records"][0]["siteName"],
+        )
+
 
 class Site:
     """A class representing a site, which can be identified by ID or name."""
@@ -2286,8 +2356,6 @@ class Site:
             self.id = site_id
 
         elif site_name:
-            self.name = site_name
-
             if client:
                 site_id = client.find_site_id(site_name)
 
@@ -2303,7 +2371,6 @@ class Site:
             raise ValueError("Either a site ID or a site name must be passed.")
 
         self.name = site_name
-        self._client = client
 
 
 def convert_asset_search_filters(search_filters: Union[str, list[str]]) -> list[dict]:
@@ -2451,11 +2518,12 @@ def create_report(client: Client, scope: dict[str, Any], template_id: Optional[s
     )
 
 
-def enrich_asset_data(asset: dict) -> dict:
+def enrich_asset_data(client: Client, asset: dict) -> dict:
     """
     Enrich asset data with additional information.
 
     Args:
+        client (Client): Client to use for API requests.
         asset (dict): A dictionary representing an asset as received from the API.
 
     Returns:
@@ -2464,10 +2532,10 @@ def enrich_asset_data(asset: dict) -> dict:
     last_scan = find_asset_last_change(asset)
     asset["LastScanDate"] = last_scan["date"]
     asset["LastScanId"] = last_scan["id"]
-    site = find_site_from_asset(asset["id"])
+    site = client.find_asset_site(asset["id"])
 
-    if site:
-        asset["Site"] = site["name"]
+    if site is not None:
+        asset["Site"] = site.name
 
     return asset
 
@@ -2574,66 +2642,6 @@ def get_scan_entry(scan: dict) -> CommandResults:
         readable_output=scan_hr,
         raw_response=scan,
     )
-
-
-def get_session():
-    # TODO: Remove alongside get_site once get_site is removed
-    url = demisto.params()["server"].rstrip("/") + "/data/user/login"
-    headers = {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Accept": "application/json"
-    }
-
-    if demisto.params().get("token"):
-        headers["token"] = demisto.params().get("token")
-
-    body = {
-        "nexposeccusername": demisto.params()["credentials"]["identifier"],
-        "nexposeccpassword": demisto.params()["credentials"]["password"]
-    }
-
-    res = requests.post(url, headers=headers, data=body, verify=not demisto.params().get("unsecure", False))
-    if res.status_code < 200 or res.status_code >= 300:
-        return ""
-    body = res.json()
-    if "sessionID" not in body:
-        return ""
-
-    return body["sessionID"]
-
-
-def find_site_from_asset(asset_id: str):
-    # TODO: Remove demisto.params() and improve code,
-    #       Check why this function uses a non-API endpoint, and adjust this function accordingly.
-    url = demisto.params()["server"].rstrip("/") + "/data/assets/" + str(asset_id) + "/scans"
-    username = demisto.params()["credentials"]["identifier"]
-    password = demisto.params()["credentials"]["password"]
-    token = demisto.params().get("token")
-    verify = not demisto.params().get("unsecure", False)
-    session = get_session()
-
-    headers = {"Content-Type": "application/json"}
-
-    if token:
-        headers["token"] = token
-
-    headers["Cookie"] = "nexposeCCSessionID=" + session
-    headers["nexposeCCSessionID"] = session
-
-    res = requests.post(url, headers=headers, auth=(username, password), verify=verify)
-
-    if res.status_code < 200 or res.status_code >= 300:
-        return ""
-
-    response = res.json()
-    if response is None or response["records"] is None or len(response["records"]) == 0:
-        return ""
-
-    return {
-        "id": response["records"][0]["siteID"],
-        "name": response["records"][0]["siteName"],
-        "ip": response["records"][0]["ipAddress"]
-    }
 
 
 def generate_duration_time(years: Optional[int] = None, months: Optional[int] = None,
@@ -3490,7 +3498,7 @@ def get_asset_command(client: Client, asset_id: str) -> Union[CommandResults, Li
     last_scan = find_asset_last_change(asset_data)
     asset_data["LastScanDate"] = last_scan["date"]
     asset_data["LastScanId"] = last_scan["id"]
-    asset_data["Site"] = find_site_from_asset(asset_data["id"])["name"]
+    asset_data["Site"] = client.find_asset_site(asset_data["id"]).name
 
     asset_headers = [
         "AssetId",
@@ -3696,7 +3704,7 @@ def get_assets_command(client: Client, page_size: Optional[int] = None,
         )
 
     for asset in assets_data:
-        enrich_asset_data(asset)
+        enrich_asset_data(client, asset)
 
     headers = [
         "AssetId",
@@ -4623,7 +4631,7 @@ def search_assets_command(client: Client, filter_query: Optional[str] = None, ip
         return CommandResults(readable_output="No assets were found")
 
     for asset in assets:
-        enrich_asset_data(asset)
+        enrich_asset_data(client, asset)
 
     headers = [
         "AssetId",
@@ -4746,9 +4754,9 @@ def start_assets_scan_command(client: Client, ips: Union[str, list, None] = None
             raw_response=asset_data,
         )
 
-    site = find_site_from_asset(asset_data[0]["id"])
+    site = client.find_asset_site(asset_data[0]["id"])
 
-    if site is None or "id" not in site:  # TODO: Check if `site` can actually be None
+    if site is None:
         return CommandResults(
             readable_output="Could not find site",
             raw_response=site,
@@ -4763,7 +4771,7 @@ def start_assets_scan_command(client: Client, ips: Union[str, list, None] = None
         hosts.extend(hostnames)
 
     scan_response = client.start_site_scan(
-        site_id=site["id"],
+        site_id=site.id,
         scan_name=scan_name,
         hosts=hosts
     )
