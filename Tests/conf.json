@@ -2768,6 +2768,10 @@
             "memory_threshold": 80
         },
         {
+            "integrations": "AwsSecretsManager",
+            "playbookID": "AwsSecretsManagerTest"
+        },
+        {
             "integrations": "Image OCR",
             "playbookID": "TestImageOCR"
         },
