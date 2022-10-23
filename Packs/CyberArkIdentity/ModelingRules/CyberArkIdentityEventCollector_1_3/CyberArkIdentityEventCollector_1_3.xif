@@ -10,7 +10,6 @@ filter
     xdm.target.application.name = coalesce(ProfileName, ApplicationName, AppName),
 	xdm.auth.auth_method = AuthMethod;
     alter
-    _time = to_timestamp(to_integer(arrayindex(regextract(WhenOccurred, "[0-9]+"), 0)), "MILLIS"),
     xdm.target.resource.name = coalesce(ObjectName, Role, Alias, ProfileName, TargetUser, DSName, ImpersonateTargetName, Cname, AffectedTenant, OU, DeviceName, ApplicationName, AppName, EntityName),
     xdm.target.resource.type = coalesce(ObjectType, Type, DSType, LicenseType, NewLicenseType, ApplicationType, EntityType),
     xdm.target.resource.id = coalesce( if(EventType NOT IN ("Cloud.AfwEnterprise.Enroll", "Cloud.AfwEnterprise.Unenroll", "Cloud.Core.EmmTenantMigrated", "Cloud.Saas.Application.AppPublish", "Cloud.Saas.Application.AppUnpublish"), RoleId), Id, TargetUserID, Uuid, Key, DSUuid, ImpersonateTargetUuid, ProxyId, ConnectorUuid, DeviceID, ApplicationID, AppId, EntityUuid),

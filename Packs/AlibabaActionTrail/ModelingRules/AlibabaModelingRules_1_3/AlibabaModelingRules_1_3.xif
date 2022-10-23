@@ -3,7 +3,6 @@ filter
     event_eventtype in("ApiCall","ConsoleOperation","AliyunServiceEvent","PasswordReset")
 | alter
     xdm.event.type = event_eventtype,
-    _time = timestamp_seconds(to_integer(__time__)),
     xdm.target.cloud.region = event_acsregion,
     xdm.event.id = event_eventid,
     xdm.event.operation = event_eventname,
@@ -17,7 +16,6 @@ filter
 filter
     event_eventtype in("ConsoleSignin","ConsoleSignout")
 | alter
-    _time = timestamp_seconds(to_integer(__time__)),
     xdm.source.location.region = event_acsregion,
     xdm.event.id = event_eventid,
     xdm.event.operation = event_eventname,
