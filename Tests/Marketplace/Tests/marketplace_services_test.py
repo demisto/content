@@ -1608,7 +1608,7 @@ class TestImagesUpload:
         dummy_build_bucket = mocker.MagicMock()
         dummy_prod_bucket = mocker.MagicMock()
         dummy_pack.current_version = '1.0.0'
-        blob_name = "content/packs/TestPack/1.0.0/XSIAMDashboards/MyDashboard_image.png"
+        blob_name = "TestPack/XSIAMDashboards/MyDashboard_image.png"
         dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         dummy_build_bucket.copy_blob.return_value = Blob('copied_blob', dummy_prod_bucket)
