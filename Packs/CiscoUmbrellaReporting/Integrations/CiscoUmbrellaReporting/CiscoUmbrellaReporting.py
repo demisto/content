@@ -1288,8 +1288,8 @@ def main():
     command = demisto.command()
     params = demisto.params()
     copy_args = copy.deepcopy(args)
-    secret_key = params.get('credentials').get('password')
-    client_key = params.get('credentials').get('identifier')
+    secret_key = params.get('credentials', {}).get('password')
+    client_key = params.get('credentials', {}).get('identifier')
     organisation_id = params.get('organization_id')
 
     # get the service API url
