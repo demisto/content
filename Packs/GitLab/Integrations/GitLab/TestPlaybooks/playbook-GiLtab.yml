@@ -1,7 +1,6 @@
-id: d84642ca-065b-4bd5-86ca-dbdf63746d48
-version: 410
-vcShouldKeepItemLegacyProdMachine: false
-name: 'gitlab '
+id: 'gitlab'
+version: -1
+name: 'gitlab'
 starttaskid: "0"
 tasks:
   "0":
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "86"
@@ -76,8 +76,7 @@ tasks:
       id: aa47615c-38bf-4c39-8734-e507b23187c2
       version: -1
       name: issue-update
-      description: Updates an existing project issue. This call is also used to mark
-        an issue as closed. The iid can be taken from gitlab-issue-list.
+      description: Updates an existing project issue. This call is also used to mark an issue as closed. The iid can be taken from gitlab-issue-list.
       script: GitLab v2|||gitlab-issue-update
       type: regular
       iscommand: true
@@ -199,6 +198,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -706,8 +706,7 @@ tasks:
       id: 58bd8e57-08aa-4c25-893e-c337dd0961e5
       version: -1
       name: ' get branch'
-      description: Get a list of repository branches from a project, sorted by name
-        alphabetically.
+      description: Get a list of repository branches from a project, sorted by name alphabetically.
       script: GitLab v2|||gitlab-branch-list
       type: regular
       iscommand: true
@@ -932,8 +931,7 @@ tasks:
       id: 67a51341-bd02-4156-89d5-e1f5d8705e0d
       version: -1
       name: merge update
-      description: Updates an existing merge request. You can change the target branch,
-        title, or even close the MR.
+      description: Updates an existing merge request. You can change the target branch, title, or even close the MR.
       script: GitLab v2|||gitlab-merge-request-update
       type: regular
       iscommand: true
@@ -1091,9 +1089,7 @@ tasks:
       id: ac0cce78-e257-4880-8802-47732750d85f
       version: -1
       name: group list
-      description: Get a list of visible groups for the authenticated user. When accessed
-        without authentication, only public groups are returned. By default, this
-        request returns 20 results at a time because the API results are paginated
+      description: Get a list of visible groups for the authenticated user. When accessed without authentication, only public groups are returned. By default, this request returns 20 results at a time because the API results are paginated
       script: GitLab v2|||gitlab-group-list
       type: regular
       iscommand: true
@@ -1166,8 +1162,7 @@ tasks:
       id: c171a576-eefe-4881-8e98-cb6dd08dfde7
       version: -1
       name: group member
-      description: Gets a list of group or project members viewable by the authenticated
-        user.
+      description: Gets a list of group or project members viewable by the authenticated user.
       script: GitLab v2|||gitlab-group-member-list
       type: regular
       iscommand: true
@@ -1240,9 +1235,7 @@ tasks:
       id: f7e9e49e-3d0b-4ac9-8716-dbe1f71b4f98
       version: -1
       name: project list
-      description: Get a list of all visible projects across GitLab for the authenticated
-        user. When accessed without authentication, only public projects with simple
-        fields are returned.
+      description: Get a list of all visible projects across GitLab for the authenticated user. When accessed without authentication, only public projects with simple fields are returned.
       script: GitLab v2|||gitlab-project-list
       type: regular
       iscommand: true
@@ -1433,8 +1426,7 @@ tasks:
       id: 61229892-41ca-4da5-87d8-df832c1726a4
       version: -1
       name: File get
-      description: Allows to receive information about file in repository like name,
-        size, content.
+      description: Allows to receive information about file in repository like name, size, content.
       script: GitLab v2|||gitlab-file-get
       type: regular
       iscommand: true
@@ -1895,8 +1887,7 @@ tasks:
       id: 063a6929-d57e-4944-85a2-2ad4d0ff4bc0
       version: -1
       name: file-create
-      description: This allows you to create a single file. File path or entry_id
-        must be specified.
+      description: This allows you to create a single file. File path or entry_id must be specified.
       script: GitLab v2|||gitlab-file-create
       type: regular
       iscommand: true
@@ -1939,8 +1930,7 @@ tasks:
       id: e3b17a82-e88c-4fe8-8f44-4fccbdb43a80
       version: -1
       name: VERIFY  file create
-      description: This allows you to create a single file. File path or entry_id
-        must be specified.
+      description: This allows you to create a single file. File path or entry_id must be specified.
       type: condition
       iscommand: false
       brand: ""
@@ -2102,8 +2092,7 @@ tasks:
       id: 43ac7937-ad6b-4087-8375-51202657acfa
       version: -1
       name: Code search
-      description: Using Scope blobs. Blobs searches are performed on both filenames
-        and contents.
+      description: Using Scope blobs. Blobs searches are performed on both filenames and contents.
       script: GitLab v2|||gitlab-code-search
       type: regular
       iscommand: true
@@ -2295,3 +2284,5 @@ view: |-
   }
 inputs: []
 outputs: []
+description: 'playbook for GitLab v2'
+fromversion: 5.0.0
