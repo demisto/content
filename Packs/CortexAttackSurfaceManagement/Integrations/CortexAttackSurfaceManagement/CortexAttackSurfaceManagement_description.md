@@ -6,8 +6,8 @@
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL (e.g., https://api-xsiam.paloaltonetworks.com) | The web UI with \`api-\` appended to front. | True |
-    | API Key ID | See https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis | True |
-    | API Key | See https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis | True |
+     Server URL | The web UI with \`api-\` appended to front (e.g., https://api-xsiam.paloaltonetworks.com). For more information please see [get-started-with-cortex-xdr-apis](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis). | True 
+     API Key ID | See [get-started-with-cortex-xdr-apis](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis). | True 
+     API Key | See [get-started-with-cortex-xdr-apis](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis). | True 
     
 4. Click **Test** to validate the URLs, token, and connection.

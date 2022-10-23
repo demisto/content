@@ -3,12 +3,12 @@ commonfields:
   id: Cortex Attack Surface Management
   version: -1
 configuration:
-- additionalinfo: The web UI with `api-` appended to front.
+- additionalinfo: The web UI with `api-` appended to front (e.g., https://api-xsiam.paloaltonetworks.com). For more information please see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.
   display: Server URL
   name: url
   required: true
   type: 0
-- additionalinfo: (e.g., https://api-xsiam.paloaltonetworks.com) See https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis
+- additionalinfo: For more information please see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.
   display: API Key ID
   displaypassword: API Key
   name: credentials
