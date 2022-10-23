@@ -254,5 +254,5 @@ if __name__ == "__main__":
         json_write(os.path.join(args.artifacts_path, 'packs_items.json'), pack_items_dict)
         json_write(os.path.join(args.artifacts_path, 'versions_dict.json'), versions_dict)
 
-        print(pack_items_dict)
+        print(new_branch_name)
 
