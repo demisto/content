@@ -3398,8 +3398,8 @@ class Pack(object):
 
         for image_name in pc_uploaded_preview_images:
             logging.info("yuval in for image ")
-            image_folder = os.path.dirname(image_name.a_path).split('/')[-1] or ''
-            image_file_name = os.path.basename(image_name.a_path)
+            image_folder = os.path.dirname(image_name).split('/')[-1] or ''
+            image_file_name = os.path.basename(image_name)
             # pack_storage_root_path = os.path.join(storage_base_path, self.name, self.current_version)
             # image_folder = os.path.dirname(file.a_path).split('/')[-1] or ''
             # image_name = os.path.basename(file.a_path)
