@@ -315,6 +315,9 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
      (MockerCases.F, ('myTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS,
       ('Packs/myPack/Scripts/script-myScript.yml',)),
 
+     # (24) When content is moved between packs, both packs (old, new) should be collected
+     (MockerCases.C, None, ('bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration'), None, XSOAR_BRANCH_ARGS, (), 
+      ('bothMarketplacesPack','bothMarketplacesPackOnlyXSIAMIntegration')),
      ))
 def test_branch(
         monkeypatch,
