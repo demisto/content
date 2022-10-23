@@ -2,11 +2,7 @@
     {
         "value": "http://demisto.com/4712",
         "indicator_type": "URL",
-        "title": null,
-        "description": null,
-        "name": null,
-        "stixdescription": null,
-        "confidence": null,
+        "customFields": {},
         "rawJSON": {
             "indicator": "http://demisto.com/4712",
             "type": "URL",

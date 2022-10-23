@@ -2,11 +2,7 @@
     {
         "value": "01234567890abcdef01234567890abcdef",
         "indicator_type": "File",
-        "title": null,
-        "description": null,
-        "name": null,
-        "stixdescription": null,
-        "confidence": null,
+        "customFields": {},
         "rawJSON": {
             "indicator": "01234567890abcdef01234567890abcdef",
             "htype": "md5",
@@ -18,11 +14,7 @@
     {
         "value": "abcdef1234567890abcdef1234567890",
         "indicator_type": "File",
-        "title": null,
-        "description": null,
-        "name": null,
-        "stixdescription": null,
-        "confidence": null,
+        "customFields": {},
         "rawJSON": {
             "indicator": "abcdef1234567890abcdef1234567890",
             "htype": "md5",
@@ -34,11 +26,7 @@
     {
         "value": "00112233445566778899aabbccddeeff",
         "indicator_type": "File",
-        "title": null,
-        "description": null,
-        "name": null,
-        "stixdescription": null,
-        "confidence": null,
+        "customFields": {},
         "rawJSON": {
             "indicator": "00112233445566778899aabbccddeeff",
             "htype": "md5",

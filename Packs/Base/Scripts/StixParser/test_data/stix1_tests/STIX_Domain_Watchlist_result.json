@@ -2,11 +2,7 @@
     {
         "value": "malicious1.example.com",
         "indicator_type": "Domain",
-        "title": null,
-        "description": null,
-        "name": null,
-        "stixdescription": null,
-        "confidence": null,
+        "customFields": {},
         "rawJSON": {
             "indicator": "malicious1.example.com",
             "type": "Domain",
@@ -17,11 +13,7 @@
     {
         "value": "malicious2.example.com",
         "indicator_type": "Domain",
-        "title": null,
-        "description": null,
-        "name": null,
-        "stixdescription": null,
-        "confidence": null,
+        "customFields": {},
         "rawJSON": {
             "indicator": "malicious2.example.com",
             "type": "Domain",
@@ -32,11 +24,7 @@
     {
         "value": "malicious3.example.com",
         "indicator_type": "Domain",
-        "title": null,
-        "description": null,
-        "name": null,
-        "stixdescription": null,
-        "confidence": null,
+        "customFields": {},
         "rawJSON": {
             "indicator": "malicious3.example.com",
             "type": "Domain",

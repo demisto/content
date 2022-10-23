@@ -2,11 +2,7 @@
     {
         "value": "10.0.0.0/20",
         "indicator_type": "CIDR",
-        "title": null,
-        "description": null,
-        "name": null,
-        "stixdescription": null,
-        "confidence": null,
+        "customFields": {},
         "rawJSON": {
             "indicator": "10.0.0.0/20",
             "type": "CIDR",
@@ -17,11 +13,7 @@
     {
         "value": "10.0.0.1",
         "indicator_type": "IP",
-        "title": null,
-        "description": null,
-        "name": null,
-        "stixdescription": null,
-        "confidence": null,
+        "customFields": {},
         "rawJSON": {
             "indicator": "10.0.0.1",
             "type": "IP",
@@ -32,11 +24,7 @@
     {
         "value": "10.0.0.2",
         "indicator_type": "IP",
-        "title": null,
-        "description": null,
-        "name": null,
-        "stixdescription": null,
-        "confidence": null,
+        "customFields": {},
         "rawJSON": {
             "indicator": "10.0.0.2",
             "type": "IP",

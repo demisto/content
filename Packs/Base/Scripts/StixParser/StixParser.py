@@ -22,7 +22,12 @@ TAXII_VER_2_1 = "2.1"
 DFLT_LIMIT_PER_REQUEST = 100
 API_USERNAME = "_api_token_key"
 HEADER_USERNAME = "_header:"
-
+XSOAR_TAXII2_SERVER_SCHEMA = "https://github.com/demisto/content/blob/4265bd5c71913cd9d9ed47d9c37d0d4d3141c3eb/" \
+                             "Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json"
+SYSTEM_FIELDS = ['id', 'version', 'modified', 'sortValues', 'timestamp', 'indicator_type',
+                 'value', 'sourceInstances', 'sourceBrands', 'investigationIDs', 'lastSeen', 'firstSeen',
+                 'firstSeenEntryID', 'score', 'insightCache', 'moduleToFeedMap', 'expirationStatus',
+                 'expirationSource', 'calculatedTime', 'lastReputationRun', 'modifiedTime', 'aggregatedReliability']
 ERR_NO_COLL = "No collection is available for this user, please make sure you entered the configuration correctly"
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
@@ -135,7 +140,7 @@ class STIX2Parser:
     OBJECTS_TO_PARSE = ["indicator", "report", "malware", "campaign", "attack-pattern", "course-of-action",
                         "intrusion-set", "tool", "threat-actor", "infrastructure", "autonomous-system",
                         "domain-name", "email-addr", "file", "ipv4-addr", "ipv6-addr", "mutex", "url",
-                        "user-account", "windows-registry-key", "relationship"]
+                        "user-account", "windows-registry-key", "relationship", "extension-definition"]
 
     def __init__(
             self
@@ -756,18 +761,25 @@ class STIX2Parser:
                             parse_objects_func):
         indicators = []
         relationships_list: List[Dict[str, Any]] = []
+        xsoar_taxii_server_extentions = []
+
+        for obj_type, stix_objects in envelopes.items():
+            if obj_type == 'extension-definition':
+                for obj in stix_objects:
+                    if obj.get('schema') == XSOAR_TAXII2_SERVER_SCHEMA:
+                        xsoar_taxii_server_extentions.append(obj.get('id'))
+
         for obj_type, stix_objects in envelopes.items():
             if obj_type != "relationship":
                 for obj in stix_objects:
-                    # we currently don't support extension object
+                    # handled separately
                     if obj.get('type') == 'extension-definition':
-                        # todo: ceck if taxii2 extension
                         continue
                     self.id_to_object[obj.get('id')] = obj
-                    # todo: save the extention, parse it at the end.
                     result = parse_objects_func[obj_type](obj)
                     if not result:
                         continue
+                    self.update_obj_if_extensions(xsoar_taxii_server_extentions, obj, result)
                     self.parsed_object_id_to_object[obj.get('id')] = result[0]
                     indicators.extend(result)
             else:
@@ -899,6 +911,24 @@ class STIX2Parser:
             if a_value := indicator.get('value'):
                 if relationships := relationships_mapping.get(a_value):
                     indicator['relationships'] = relationships
+
+    @staticmethod
+    def update_obj_if_extensions(xsoar_taxii_server_extensions, obj, result):
+        parsed_result = result[0]
+        custom_fields = parsed_result.get('customFields', {})
+        if extensions := obj.get('extensions'):
+            for ext_id, extension in extensions.items():
+                if ext_id in xsoar_taxii_server_extensions:
+                    extension.pop('extension_type')
+                    for field, value in extension.items():
+                        if field in SYSTEM_FIELDS:
+                            parsed_result[field] = value
+                        elif field.lower() == 'customfields':
+                            custom_fields.update(value)
+                        else:
+                            custom_fields[field] = value
+                    parsed_result['customFields'] = custom_fields
+
 
 # STIX 1 Parsing
 
@@ -1508,6 +1538,14 @@ def parse_stix(file_name):
     """
     indicators = []
 
+    indicator_custom_fields = {
+        'title': 'stix_title',
+        'description': 'stix_description',
+        'name': 'stix_indicator_name',
+        'stixdescription': 'stix_indicator_description',
+        'confidence': 'confidence'
+    }
+
     # Create the indicators from the observables
     observables, ttps = build_observables(file_name)
     for item in observables:
@@ -1516,12 +1554,10 @@ def parse_stix(file_name):
             indicator_obj = {
                 'value': indicator.strip(),
                 'indicator_type': item.get('type'),
-                # todo: change to customfields
-                'title': item.get('stix_title'),
-                'description': item.get('stix_description'),
-                'name': item.get('stix_indicator_name'),
-                'stixdescription': item.get('stix_indicator_description'),
-                'confidence': item.get('confidence'),
+                'customFields': {
+                    xsoar_field: item.get(stix_field)
+                    for xsoar_field, stix_field in indicator_custom_fields.items() if item.get(stix_field)
+                }
             }
 
             if item.get('relationships'):
@@ -1532,18 +1568,23 @@ def parse_stix(file_name):
             indicators.append(indicator_obj)
 
     # Create the indicators from the ttps
+    ttps_custom_fields = {
+        'title': 'title',
+        'description': 'description',
+        'shortdescription': 'short_description',
+        'stixdescription': 'ttp_description',
+        'stixttptitle': 'stix_ttp_title'
+    }
     for item in ttps.values():
         if indicator := item.get('indicator'):
             item['value'] = indicator.strip()
             indicator_obj = {
                 'value': indicator.strip(),
                 'indicator_type': item.get('type'),
-                'title': item.get('title'),
-                # todo: change to customfields
-                'description': item.get('description'),
-                'shortdescription': item.get('short_description'),
-                'stixdescription': item.get('ttp_description'),
-                'stixttptitle': item.get('stix_ttp_title'),
+                'customFields': {
+                    xsoar_field: item.get(stix_field)
+                    for xsoar_field, stix_field in ttps_custom_fields.items() if item.get(stix_field)
+                }
             }
 
             if item.get('type') == 'Malware':
@@ -1559,7 +1600,7 @@ def parse_stix(file_name):
     return indicators
 
 
-def main():     # pragma: no cover
+def main():  # pragma: no cover
     args = demisto.args()
 
     indicator_txt = args.get('iocXml')

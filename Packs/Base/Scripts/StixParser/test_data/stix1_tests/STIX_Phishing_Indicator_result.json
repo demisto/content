@@ -2,11 +2,7 @@
     {
         "value": "cf2b3ad32a8a4cfb05e9dfc45875bd70",
         "indicator_type": "File",
-        "title": null,
-        "description": null,
-        "name": null,
-        "stixdescription": null,
-        "confidence": null,
+        "customFields": {},
         "rawJSON": {
             "indicator": "cf2b3ad32a8a4cfb05e9dfc45875bd70",
             "htype": "md5",

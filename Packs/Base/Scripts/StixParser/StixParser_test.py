@@ -3,6 +3,13 @@ import json
 import pytest
 
 
+def create_json_output_file(result, file_name):
+    json_object = json.dumps(result, indent=4)
+    # Writing to sample.json
+    with open(f"test_data/stix1_tests/{file_name}", "w") as outfile:
+        outfile.write(json_object)
+
+
 @pytest.mark.parametrize('indicators_file, expected_result', [
     ('file-stix-ioc.xml', 'file-stix-ioc-results.json'),
     ('ip-stix-ioc.xml', 'ip-stix-ioc-results.json'),
@@ -43,6 +50,8 @@ def test_parse_stix1(indicators_file, expected_result):
     ('stix2_example6.json', 'expected_result_example6.json'),
     ('stix2_example7.json', 'expected_result_example7.json'),
     ('stix2.json', 'stix2_results.json'),
+    ('stix2_extension1.json', 'expected_result_extension1.json'),
+    ('stix2_extension2.json', 'expected_result_extension2.json'),
 ])
 def test_parse_stix2(indicators_file, expected_result):
     """
