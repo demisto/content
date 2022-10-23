@@ -891,7 +891,7 @@ script:
     name: nexpose-delete-site-scan-credential
   - arguments:
     - default: false
-      description: Id of the site to delete
+      description: The ID of the site to delete
       isArray: false
       name: id
       required: false
@@ -1119,13 +1119,13 @@ script:
       description: Multiple criteria of integer<int32> Site ids to create the report on, comma separated.
       isArray: true
       name: sites
-      required: true
+      required: false
       secret: false
     - default: false
       description: Multiple criteria of <string> Site names to create the report on, comma separated.
       isArray: true
       name: site_names
-      required: true
+      required: false
       secret: false
     - default: false
       description: <string> Report template id to create the report with. If none is provided, the first template available will be used.

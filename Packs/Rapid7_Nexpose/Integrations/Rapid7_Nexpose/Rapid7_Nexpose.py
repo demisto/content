@@ -287,6 +287,9 @@ class Client(BaseClient):
         Returns:
             dict: API response from POST /sites/{siteId}/assets.
         """
+        if hostname_source is not None:
+            hostname_source = hostname_source.value
+
         return self._http_request(
             method="POST",
             url_suffix=f"/sites/{site_id}/assets",
@@ -294,7 +297,7 @@ class Client(BaseClient):
                 date=date,
                 ip_address=ip_address,
                 hostname=hostname,
-                hostname_source=hostname_source.value,
+                hostname_source=hostname_source,
             ),
         )
 
@@ -418,113 +421,114 @@ class Client(BaseClient):
         """
         account_data = {}
 
-        with CredentialService as S:  # type: CredentialService
-            # Services where "username" field is required
-            if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL, S.ORACLE,
-                           S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SNMPV3, S.SSH, S.SSH_KEY, S.SYBASE, S.TELNET):
-                if username is None:
-                    raise ValueError(f"Username is required for \"{service.value}\" services.")
+        S = CredentialService  # Simplify object name for shorter lines
 
-                account_data["username"] = username
+        # Services where "username" field is required
+        if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL, S.ORACLE,
+                       S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SNMPV3, S.SSH, S.SSH_KEY, S.SYBASE, S.TELNET):
+            if username is None:
+                raise ValueError(f"Username is required for \"{service.value}\" services.")
 
-            # Services where "password" field is required
-            if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL,
-                           S.ORACLE, S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SSH, S.SYBASE, S.TELNET):
+            account_data["username"] = username
+
+        # Services where "password" field is required
+        if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL,
+                       S.ORACLE, S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SSH, S.SYBASE, S.TELNET):
+            if password is None:
+                raise ValueError(f"Password is required for \"{service.value}\" services.")
+
+            account_data["password"] = password
+
+        # Services with optional "useWindowsAuthentication" field.
+        if service in (S.MS_SQL, S.SYBASE) and use_windows_authentication is not None:
+            account_data["useWindowsAuthentication"] = use_windows_authentication
+
+        # Services with optional "domain" field.
+        if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.MS_SQL, S.SYBASE) and domain is not None:
+            if service in (S.MS_SQL, S.SYBASE):
+                if use_windows_authentication:
+                    account_data["domain"] = domain
+
+            else:
+                account_data["domain"] = domain
+
+        # Services with optional "database" field.
+        if service in (S.DB2, S.MS_SQL, S.MYSQL, S.POSTGRESQL, S.SYBASE) and database_name is not None:
+            account_data["database"] = database_name
+
+        if service == S.CIFSHASH:
+            if ntlm_hash is None:
+                raise ValueError(f"NTLM hash is required for \"{service.value}\" services.")
+
+            account_data["ntlmHash"] = ntlm_hash
+
+        if service == S.HTTP and http_realm is not None:
+            account_data["realm"] = http_realm
+
+        if service == S.NOTES and notes_id_password is not None:
+            account_data["notesIDPassword"] = notes_id_password
+
+        if service == S.ORACLE:
+            if oracle_sid is not None:
+                account_data["sid"] = oracle_sid
+
+            if oracle_enumerate_sids is not None:
+                account_data["enumerateSids"] = oracle_enumerate_sids
+
+                if oracle_enumerate_sids and oracle_listener_password is None:
+                    raise ValueError("Oracle listener password is required when enumerating SIDs.")
+
+                account_data["oracleListenerPassword"] = oracle_listener_password
+
+        if service == S.SNMP:
+            if snmp_community_name is None:
+                raise ValueError(f"Community name is required for \"{service.value}\" services.")
+
+            account_data["community"] = snmp_community_name
+
+        if service == S.SNMPV3:
+            if snmpv3_authentication_type is None:
+                raise ValueError(f"Authentication type is required for \"{service.value}\" services.")
+
+            account_data["authenticationType"] = snmpv3_authentication_type.value
+
+            if snmpv3_authentication_type != SNMPv3AuthenticationType.NO_AUTHENTICATION:
                 if password is None:
-                    raise ValueError(f"Password is required for \"{service.value}\" services.")
+                    raise ValueError(f"Password is required for \"{service.value}\" services when authentication "
+                                     f"is md5 to anything other than \"no-authentication\".")
 
                 account_data["password"] = password
 
-            # Services with optional "useWindowsAuthentication" field.
-            if service in (S.MS_SQL, S.SYBASE) and use_windows_authentication is not None:
-                account_data["useWindowsAuthentication"] = use_windows_authentication
+            if snmpv3_privacy_type is not None:
+                account_data["privacyType"] = snmpv3_privacy_type.value
 
-            # Services with optional "domain" field.
-            if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.MS_SQL, S.SYBASE) and domain is not None:
-                if service in (S.MS_SQL, S.SYBASE):
-                    if use_windows_authentication:
-                        account_data["domain"] = domain
+                if snmpv3_privacy_type != SNMPv3PrivacyType.NO_PRIVACY and snmpv3_privacy_password is None:
+                    raise ValueError(f"Privacy password is required for \"{service.value}\" services when the "
+                                     f"authentication type is set to a value other than \"no-authentication\", "
+                                     f"and privacy type is set to a value other than \"no-privacy\".")
 
-                else:
-                    account_data["domain"] = domain
+                account_data["privacyPassword"] = snmpv3_privacy_password
 
-            # Services with optional "database" field.
-            if service in (S.DB2, S.MS_SQL, S.MYSQL, S.POSTGRESQL, S.SYBASE) and database_name is not None:
-                account_data["database"] = database_name
+        if service in (S.SSH, S.SSH_KEY):
+            if ssh_permission_elevation:
+                account_data["permissionElevation"] = ssh_permission_elevation
 
-            if service == S.CIFSHASH:
-                if ntlm_hash is None:
-                    raise ValueError(f"NTLM hash is required for \"{service.value}\" services.")
+            if ssh_permission_elevation not in (SSHElevationType.NONE, SSHElevationType.PBRUN):
+                if None in (ssh_permission_elevation_username, ssh_permission_elevation_password):
+                    raise ValueError(f"Elevation username and password are required for \"{service.value}\" "
+                                     f"services when permission elevation is not \"none\" or \"pbrun\".")
 
-                account_data["ntlmHash"] = ntlm_hash
+                account_data["permissionElevationUsername"] = ssh_permission_elevation_username
+                account_data["permissionElevationPassword"] = ssh_permission_elevation_password
 
-            if service == S.HTTP and http_realm is not None:
-                account_data["realm"] = http_realm
+        if service == S.SSH_KEY:
+            if ssh_key_pem is None:
+                raise ValueError(f"SSH private key password is required for \"{service.value}\" services.")
 
-            if service == S.NOTES and notes_id_password is not None:
-                account_data["notesIDPassword"] = notes_id_password
+            account_data["pemKey"] = ssh_key_pem
 
-            if service == S.ORACLE:
-                if oracle_sid is not None:
-                    account_data["sid"] = oracle_sid
-
-                if oracle_enumerate_sids is not None:
-                    account_data["enumerateSids"] = oracle_enumerate_sids
-
-                    if oracle_enumerate_sids and oracle_listener_password is None:
-                        raise ValueError("Oracle listener password is required when enumerating SIDs.")
-
-                    account_data["oracleListenerPassword"] = oracle_listener_password
-
-            if service == S.SNMP:
-                if snmp_community_name is None:
-                    raise ValueError(f"Community name is required for \"{service.value}\" services.")
-
-                account_data["community"] = snmp_community_name
-
-            if service == S.SNMPV3:
-                if snmpv3_authentication_type is None:
-                    raise ValueError(f"Authentication type is required for \"{service.value}\" services.")
-
-                account_data["authenticationType"] = snmpv3_authentication_type.value
-
-                if snmpv3_authentication_type != SNMPv3AuthenticationType.NO_AUTHENTICATION:
-                    if password is None:
-                        raise ValueError(f"Password is required for \"{service.value}\" services when authentication "
-                                         f"is md5 to anything other than \"no-authentication\".")
-
-                    account_data["password"] = password
-
-                if snmpv3_privacy_type is not None:
-                    account_data["privacyType"] = snmpv3_privacy_type.value
-
-                    if snmpv3_privacy_type != SNMPv3PrivacyType.NO_PRIVACY and snmpv3_privacy_password is None:
-                        raise ValueError(f"Privacy password is required for \"{service.value}\" services when the "
-                                         f"authentication type is set to a value other than \"no-authentication\", "
-                                         f"and privacy type is set to a value other than \"no-privacy\".")
-
-                    account_data["privacyPassword"] = snmpv3_privacy_password
-
-            if service in (S.SSH, S.SSH_KEY):
-                if ssh_permission_elevation:
-                    account_data["permissionElevation"] = ssh_permission_elevation
-
-                if ssh_permission_elevation not in (SSHElevationType.NONE, SSHElevationType.PBRUN):
-                    if None in (ssh_permission_elevation_username, ssh_permission_elevation_password):
-                        raise ValueError(f"Elevation username and password are required for \"{service.value}\" "
-                                         f"services when permission elevation is not \"none\" or \"pbrun\".")
-
-                    account_data["permissionElevationUsername"] = ssh_permission_elevation_username
-                    account_data["permissionElevationPassword"] = ssh_permission_elevation_password
-
-            if service == S.SSH_KEY:
-                if ssh_key_pem is None:
-                    raise ValueError(f"SSH private key password is required for \"{service.value}\" services.")
-
-                account_data["pemKey"] = ssh_key_pem
-
-                if ssh_private_key_password is None:
-                    account_data["privateKeyPassword"] = ssh_private_key_password
+            if ssh_private_key_password is None:
+                account_data["privateKeyPassword"] = ssh_private_key_password
 
         post_data = find_valid_params(
             description=description,
@@ -609,20 +613,26 @@ class Client(BaseClient):
             if interval is None:
                 raise ValueError("'interval' parameter must be set if frequency is used.")
 
-            if frequency == RepeatFrequencyType.DATE_OF_MONTH and not date_of_month:
-                raise ValueError("'date_of_month' parameter must be set if frequency is set to 'Date of month'.")
+            if frequency is not None:
+                if frequency == RepeatFrequencyType.DATE_OF_MONTH and not date_of_month:
+                    raise ValueError("'date_of_month' parameter must be set if frequency is set to 'Date of month'.")
+
+                frequency = frequency.value
 
             repeat = find_valid_params(
-                every=frequency.value,
+                every=frequency,
                 interval=interval,
                 dateOfMonth=date_of_month,
             )
+
+        if repeat_behaviour is not None:
+            repeat_behaviour = repeat_behaviour.value
 
         post_data = find_valid_params(
             assets=assets,
             duration=duration,
             enabled=enabled,
-            onScanRepeat=repeat_behaviour.value,
+            onScanRepeat=repeat_behaviour,
             repeat=repeat,
             scanName=scan_name,
             scanTemplateId=scan_template_id,
@@ -747,113 +757,114 @@ class Client(BaseClient):
         """
         account_data = {}
 
-        with CredentialService as S:  # type: CredentialService
-            # Services where "username" field is required
-            if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL, S.ORACLE,
-                           S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SNMPV3, S.SSH, S.SSH_KEY, S.SYBASE, S.TELNET):
-                if username is None:
-                    raise ValueError(f"Username is required for \"{service.value}\" services.")
+        S = CredentialService  # Simplify object name for shorter lines
 
-                account_data["username"] = username
+        # Services where "username" field is required
+        if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL, S.ORACLE,
+                       S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SNMPV3, S.SSH, S.SSH_KEY, S.SYBASE, S.TELNET):
+            if username is None:
+                raise ValueError(f"Username is required for \"{service.value}\" services.")
 
-            # Services where "password" field is required
-            if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL,
-                           S.ORACLE, S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SSH, S.SYBASE, S.TELNET):
+            account_data["username"] = username
+
+        # Services where "password" field is required
+        if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL,
+                       S.ORACLE, S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SSH, S.SYBASE, S.TELNET):
+            if password is None:
+                raise ValueError(f"Password is required for \"{service.value}\" services.")
+
+            account_data["password"] = password
+
+        # Services with optional "useWindowsAuthentication" field.
+        if service in (S.MS_SQL, S.SYBASE) and use_windows_authentication is not None:
+            account_data["useWindowsAuthentication"] = use_windows_authentication
+
+        # Services with optional "domain" field.
+        if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.MS_SQL, S.SYBASE) and domain is not None:
+            if service in (S.MS_SQL, S.SYBASE):
+                if use_windows_authentication:
+                    account_data["domain"] = domain
+
+            else:
+                account_data["domain"] = domain
+
+        # Services with optional "database" field.
+        if service in (S.DB2, S.MS_SQL, S.MYSQL, S.POSTGRESQL, S.SYBASE) and database_name is not None:
+            account_data["database"] = database_name
+
+        if service == S.CIFSHASH:
+            if ntlm_hash is None:
+                raise ValueError(f"NTLM hash is required for \"{service.value}\" services.")
+
+            account_data["ntlmHash"] = ntlm_hash
+
+        if service == S.HTTP and http_realm is not None:
+            account_data["realm"] = http_realm
+
+        if service == S.NOTES and notes_id_password is not None:
+            account_data["notesIDPassword"] = notes_id_password
+
+        if service == S.ORACLE:
+            if oracle_sid is not None:
+                account_data["sid"] = oracle_sid
+
+            if oracle_enumerate_sids is not None:
+                account_data["enumerateSids"] = oracle_enumerate_sids
+
+                if oracle_enumerate_sids and oracle_listener_password is None:
+                    raise ValueError("Oracle listener password is required when enumerating SIDs.")
+
+                account_data["oracleListenerPassword"] = oracle_listener_password
+
+        if service == S.SNMP:
+            if snmp_community_name is None:
+                raise ValueError(f"Community name is required for \"{service.value}\" services.")
+
+            account_data["community"] = snmp_community_name
+
+        if service == S.SNMPV3:
+            if snmpv3_authentication_type is None:
+                raise ValueError(f"Authentication type is required for \"{service.value}\" services.")
+
+            account_data["authenticationType"] = snmpv3_authentication_type.value
+
+            if snmpv3_authentication_type != SNMPv3AuthenticationType.NO_AUTHENTICATION:
                 if password is None:
-                    raise ValueError(f"Password is required for \"{service.value}\" services.")
+                    raise ValueError(f"Password is required for \"{service.value}\" services when authentication "
+                                     f"is md5 to anything other than \"no-authentication\".")
 
                 account_data["password"] = password
 
-            # Services with optional "useWindowsAuthentication" field.
-            if service in (S.MS_SQL, S.SYBASE) and use_windows_authentication is not None:
-                account_data["useWindowsAuthentication"] = use_windows_authentication
+            if snmpv3_privacy_type is not None:
+                account_data["privacyType"] = snmpv3_privacy_type.value
 
-            # Services with optional "domain" field.
-            if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.MS_SQL, S.SYBASE) and domain is not None:
-                if service in (S.MS_SQL, S.SYBASE):
-                    if use_windows_authentication:
-                        account_data["domain"] = domain
+                if snmpv3_privacy_type != SNMPv3PrivacyType.NO_PRIVACY and snmpv3_privacy_password is None:
+                    raise ValueError(f"Privacy password is required for \"{service.value}\" services when the "
+                                     f"authentication type is set to a value other than \"no-authentication\", "
+                                     f"and privacy type is set to a value other than \"no-privacy\".")
 
-                else:
-                    account_data["domain"] = domain
+                account_data["privacyPassword"] = snmpv3_privacy_password
 
-            # Services with optional "database" field.
-            if service in (S.DB2, S.MS_SQL, S.MYSQL, S.POSTGRESQL, S.SYBASE) and database_name is not None:
-                account_data["database"] = database_name
+        if service in (S.SSH, S.SSH_KEY):
+            if ssh_permission_elevation:
+                account_data["permissionElevation"] = ssh_permission_elevation
 
-            if service == S.CIFSHASH:
-                if ntlm_hash is None:
-                    raise ValueError(f"NTLM hash is required for \"{service.value}\" services.")
+            if ssh_permission_elevation not in (SSHElevationType.NONE, SSHElevationType.PBRUN):
+                if None in (ssh_permission_elevation_username, ssh_permission_elevation_password):
+                    raise ValueError(f"Elevation username and password are required for \"{service.value}\" "
+                                     f"services when permission elevation is not \"none\" or \"pbrun\".")
 
-                account_data["ntlmHash"] = ntlm_hash
+                account_data["permissionElevationUsername"] = ssh_permission_elevation_username
+                account_data["permissionElevationPassword"] = ssh_permission_elevation_password
 
-            if service == S.HTTP and http_realm is not None:
-                account_data["realm"] = http_realm
+        if service == S.SSH_KEY:
+            if ssh_key_pem is None:
+                raise ValueError(f"SSH private key password is required for \"{service.value}\" services.")
 
-            if service == S.NOTES and notes_id_password is not None:
-                account_data["notesIDPassword"] = notes_id_password
+            account_data["pemKey"] = ssh_key_pem
 
-            if service == S.ORACLE:
-                if oracle_sid is not None:
-                    account_data["sid"] = oracle_sid
-
-                if oracle_enumerate_sids is not None:
-                    account_data["enumerateSids"] = oracle_enumerate_sids
-
-                    if oracle_enumerate_sids and oracle_listener_password is None:
-                        raise ValueError("Oracle listener password is required when enumerating SIDs.")
-
-                    account_data["oracleListenerPassword"] = oracle_listener_password
-
-            if service == S.SNMP:
-                if snmp_community_name is None:
-                    raise ValueError(f"Community name is required for \"{service.value}\" services.")
-
-                account_data["community"] = snmp_community_name
-
-            if service == S.SNMPV3:
-                if snmpv3_authentication_type is None:
-                    raise ValueError(f"Authentication type is required for \"{service.value}\" services.")
-
-                account_data["authenticationType"] = snmpv3_authentication_type.value
-
-                if snmpv3_authentication_type != SNMPv3AuthenticationType.NO_AUTHENTICATION:
-                    if password is None:
-                        raise ValueError(f"Password is required for \"{service.value}\" services when authentication "
-                                         f"is md5 to anything other than \"no-authentication\".")
-
-                    account_data["password"] = password
-
-                if snmpv3_privacy_type is not None:
-                    account_data["privacyType"] = snmpv3_privacy_type.value
-
-                    if snmpv3_privacy_type != SNMPv3PrivacyType.NO_PRIVACY and snmpv3_privacy_password is None:
-                        raise ValueError(f"Privacy password is required for \"{service.value}\" services when the "
-                                         f"authentication type is set to a value other than \"no-authentication\", "
-                                         f"and privacy type is set to a value other than \"no-privacy\".")
-
-                    account_data["privacyPassword"] = snmpv3_privacy_password
-
-            if service in (S.SSH, S.SSH_KEY):
-                if ssh_permission_elevation:
-                    account_data["permissionElevation"] = ssh_permission_elevation
-
-                if ssh_permission_elevation not in (SSHElevationType.NONE, SSHElevationType.PBRUN):
-                    if None in (ssh_permission_elevation_username, ssh_permission_elevation_password):
-                        raise ValueError(f"Elevation username and password are required for \"{service.value}\" "
-                                         f"services when permission elevation is not \"none\" or \"pbrun\".")
-
-                    account_data["permissionElevationUsername"] = ssh_permission_elevation_username
-                    account_data["permissionElevationPassword"] = ssh_permission_elevation_password
-
-            if service == S.SSH_KEY:
-                if ssh_key_pem is None:
-                    raise ValueError(f"SSH private key password is required for \"{service.value}\" services.")
-
-                account_data["pemKey"] = ssh_key_pem
-
-                if ssh_private_key_password is None:
-                    account_data["privateKeyPassword"] = ssh_private_key_password
+            if ssh_private_key_password is None:
+                account_data["privateKeyPassword"] = ssh_private_key_password
 
         post_data = find_valid_params(
             description=description,
@@ -985,6 +996,12 @@ class Client(BaseClient):
         |
         | For more information see:
             https://help.rapid7.com/insightvm/en-us/api/index.html#operation/updateSharedCredential
+
+        Args:
+            shared_credential_id (str): ID of the shared credential to delete.
+
+        Returns:
+            dict: API response with information about the deleted shared credential.
         """
         return self._http_request(
             url_suffix=f"/shared_credentials/{shared_credential_id}",
@@ -1764,113 +1781,114 @@ class Client(BaseClient):
         """
         account_data = {}
 
-        with CredentialService as S:  # type: CredentialService
-            # Services where "username" field is required
-            if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL, S.ORACLE,
-                           S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SNMPV3, S.SSH, S.SSH_KEY, S.SYBASE, S.TELNET):
-                if username is None:
-                    raise ValueError(f"Username is required for \"{service.value}\" services.")
+        S = CredentialService  # Simplify object name for shorter lines
 
-                account_data["username"] = username
+        # Services where "username" field is required
+        if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL, S.ORACLE,
+                       S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SNMPV3, S.SSH, S.SSH_KEY, S.SYBASE, S.TELNET):
+            if username is None:
+                raise ValueError(f"Username is required for \"{service.value}\" services.")
 
-            # Services where "password" field is required
-            if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL,
-                           S.ORACLE, S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SSH, S.SYBASE, S.TELNET):
+            account_data["username"] = username
+
+        # Services where "password" field is required
+        if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL,
+                       S.ORACLE, S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SSH, S.SYBASE, S.TELNET):
+            if password is None:
+                raise ValueError(f"Password is required for \"{service.value}\" services.")
+
+            account_data["password"] = password
+
+        # Services with optional "useWindowsAuthentication" field.
+        if service in (S.MS_SQL, S.SYBASE) and use_windows_authentication is not None:
+            account_data["useWindowsAuthentication"] = use_windows_authentication
+
+        # Services with optional "domain" field.
+        if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.MS_SQL, S.SYBASE) and domain is not None:
+            if service in (S.MS_SQL, S.SYBASE):
+                if use_windows_authentication:
+                    account_data["domain"] = domain
+
+            else:
+                account_data["domain"] = domain
+
+        # Services with optional "database" field.
+        if service in (S.DB2, S.MS_SQL, S.MYSQL, S.POSTGRESQL, S.SYBASE) and database_name is not None:
+            account_data["database"] = database_name
+
+        if service == S.CIFSHASH:
+            if ntlm_hash is None:
+                raise ValueError(f"NTLM hash is required for \"{service.value}\" services.")
+
+            account_data["ntlmHash"] = ntlm_hash
+
+        if service == S.HTTP and http_realm is not None:
+            account_data["realm"] = http_realm
+
+        if service == S.NOTES and notes_id_password is not None:
+            account_data["notesIDPassword"] = notes_id_password
+
+        if service == S.ORACLE:
+            if oracle_sid is not None:
+                account_data["sid"] = oracle_sid
+
+            if oracle_enumerate_sids is not None:
+                account_data["enumerateSids"] = oracle_enumerate_sids
+
+                if oracle_enumerate_sids and oracle_listener_password is None:
+                    raise ValueError("Oracle listener password is required when enumerating SIDs.")
+
+                account_data["oracleListenerPassword"] = oracle_listener_password
+
+        if service == S.SNMP:
+            if snmp_community_name is None:
+                raise ValueError(f"Community name is required for \"{service.value}\" services.")
+
+            account_data["community"] = snmp_community_name
+
+        if service == S.SNMPV3:
+            if snmpv3_authentication_type is None:
+                raise ValueError(f"Authentication type is required for \"{service.value}\" services.")
+
+            account_data["authenticationType"] = snmpv3_authentication_type.value
+
+            if snmpv3_authentication_type != SNMPv3AuthenticationType.NO_AUTHENTICATION:
                 if password is None:
-                    raise ValueError(f"Password is required for \"{service.value}\" services.")
+                    raise ValueError(f"Password is required for \"{service.value}\" services when authentication "
+                                     f"is md5 to anything other than \"no-authentication\".")
 
                 account_data["password"] = password
 
-            # Services with optional "useWindowsAuthentication" field.
-            if service in (S.MS_SQL, S.SYBASE) and use_windows_authentication is not None:
-                account_data["useWindowsAuthentication"] = use_windows_authentication
+            if snmpv3_privacy_type is not None:
+                account_data["privacyType"] = snmpv3_privacy_type.value
 
-            # Services with optional "domain" field.
-            if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.MS_SQL, S.SYBASE) and domain is not None:
-                if service in (S.MS_SQL, S.SYBASE):
-                    if use_windows_authentication:
-                        account_data["domain"] = domain
+                if snmpv3_privacy_type != SNMPv3PrivacyType.NO_PRIVACY and snmpv3_privacy_password is None:
+                    raise ValueError(f"Privacy password is required for \"{service.value}\" services when the "
+                                     f"authentication type is set to a value other than \"no-authentication\", "
+                                     f"and privacy type is set to a value other than \"no-privacy\".")
 
-                else:
-                    account_data["domain"] = domain
+                account_data["privacyPassword"] = snmpv3_privacy_password
 
-            # Services with optional "database" field.
-            if service in (S.DB2, S.MS_SQL, S.MYSQL, S.POSTGRESQL, S.SYBASE) and database_name is not None:
-                account_data["database"] = database_name
+        if service in (S.SSH, S.SSH_KEY):
+            if ssh_permission_elevation:
+                account_data["permissionElevation"] = ssh_permission_elevation
 
-            if service == S.CIFSHASH:
-                if ntlm_hash is None:
-                    raise ValueError(f"NTLM hash is required for \"{service.value}\" services.")
+            if ssh_permission_elevation not in (SSHElevationType.NONE, SSHElevationType.PBRUN):
+                if None in (ssh_permission_elevation_username, ssh_permission_elevation_password):
+                    raise ValueError(f"Elevation username and password are required for \"{service.value}\" "
+                                     f"services when permission elevation is not \"none\" or \"pbrun\".")
 
-                account_data["ntlmHash"] = ntlm_hash
+                account_data["permissionElevationUsername"] = ssh_permission_elevation_username
+                account_data["permissionElevationPassword"] = ssh_permission_elevation_password
 
-            if service == S.HTTP and http_realm is not None:
-                account_data["realm"] = http_realm
+        if service == S.SSH_KEY:
+            if ssh_key_pem is None:
+                raise ValueError(f"SSH private key password is required for \"{service.value}\" services.")
 
-            if service == S.NOTES and notes_id_password is not None:
-                account_data["notesIDPassword"] = notes_id_password
+            account_data["pemKey"] = ssh_key_pem
 
-            if service == S.ORACLE:
-                if oracle_sid is not None:
-                    account_data["sid"] = oracle_sid
-
-                if oracle_enumerate_sids is not None:
-                    account_data["enumerateSids"] = oracle_enumerate_sids
-
-                    if oracle_enumerate_sids and oracle_listener_password is None:
-                        raise ValueError("Oracle listener password is required when enumerating SIDs.")
-
-                    account_data["oracleListenerPassword"] = oracle_listener_password
-
-            if service == S.SNMP:
-                if snmp_community_name is None:
-                    raise ValueError(f"Community name is required for \"{service.value}\" services.")
-
-                account_data["community"] = snmp_community_name
-
-            if service == S.SNMPV3:
-                if snmpv3_authentication_type is None:
-                    raise ValueError(f"Authentication type is required for \"{service.value}\" services.")
-
-                account_data["authenticationType"] = snmpv3_authentication_type.value
-
-                if snmpv3_authentication_type != SNMPv3AuthenticationType.NO_AUTHENTICATION:
-                    if password is None:
-                        raise ValueError(f"Password is required for \"{service.value}\" services when authentication "
-                                         f"is md5 to anything other than \"no-authentication\".")
-
-                    account_data["password"] = password
-
-                if snmpv3_privacy_type is not None:
-                    account_data["privacyType"] = snmpv3_privacy_type.value
-
-                    if snmpv3_privacy_type != SNMPv3PrivacyType.NO_PRIVACY and snmpv3_privacy_password is None:
-                        raise ValueError(f"Privacy password is required for \"{service.value}\" services when the "
-                                         f"authentication type is set to a value other than \"no-authentication\", "
-                                         f"and privacy type is set to a value other than \"no-privacy\".")
-
-                    account_data["privacyPassword"] = snmpv3_privacy_password
-
-            if service in (S.SSH, S.SSH_KEY):
-                if ssh_permission_elevation:
-                    account_data["permissionElevation"] = ssh_permission_elevation
-
-                if ssh_permission_elevation not in (SSHElevationType.NONE, SSHElevationType.PBRUN):
-                    if None in (ssh_permission_elevation_username, ssh_permission_elevation_password):
-                        raise ValueError(f"Elevation username and password are required for \"{service.value}\" "
-                                         f"services when permission elevation is not \"none\" or \"pbrun\".")
-
-                    account_data["permissionElevationUsername"] = ssh_permission_elevation_username
-                    account_data["permissionElevationPassword"] = ssh_permission_elevation_password
-
-            if service == S.SSH_KEY:
-                if ssh_key_pem is None:
-                    raise ValueError(f"SSH private key password is required for \"{service.value}\" services.")
-
-                account_data["pemKey"] = ssh_key_pem
-
-                if ssh_private_key_password is not None:
-                    account_data["privateKeyPassword"] = ssh_private_key_password
+            if ssh_private_key_password is not None:
+                account_data["privateKeyPassword"] = ssh_private_key_password
 
         post_data = find_valid_params(
             description=description,
@@ -1963,113 +1981,114 @@ class Client(BaseClient):
         """
         account_data = {}
 
-        with CredentialService as S:  # type: CredentialService
-            # Services where "username" field is required
-            if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL, S.ORACLE,
-                           S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SNMPV3, S.SSH, S.SSH_KEY, S.SYBASE, S.TELNET):
-                if username is None:
-                    raise ValueError(f"Username is required for \"{service.value}\" services.")
+        S = CredentialService  # Simplify object name for shorter lines
 
-                account_data["username"] = username
+        # Services where "username" field is required
+        if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL, S.ORACLE,
+                       S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SNMPV3, S.SSH, S.SSH_KEY, S.SYBASE, S.TELNET):
+            if username is None:
+                raise ValueError(f"Username is required for \"{service.value}\" services.")
 
-            # Services where "password" field is required
-            if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL,
-                           S.ORACLE, S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SSH, S.SYBASE, S.TELNET):
+            account_data["username"] = username
+
+        # Services where "password" field is required
+        if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL,
+                       S.ORACLE, S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SSH, S.SYBASE, S.TELNET):
+            if password is None:
+                raise ValueError(f"Password is required for \"{service.value}\" services.")
+
+            account_data["password"] = password
+
+        # Services with optional "useWindowsAuthentication" field.
+        if service in (S.MS_SQL, S.SYBASE) and use_windows_authentication is not None:
+            account_data["useWindowsAuthentication"] = use_windows_authentication
+
+        # Services with optional "domain" field.
+        if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.MS_SQL, S.SYBASE) and domain is not None:
+            if service in (S.MS_SQL, S.SYBASE):
+                if use_windows_authentication:
+                    account_data["domain"] = domain
+
+            else:
+                account_data["domain"] = domain
+
+        # Services with optional "database" field.
+        if service in (S.DB2, S.MS_SQL, S.MYSQL, S.POSTGRESQL, S.SYBASE) and database_name is not None:
+            account_data["database"] = database_name
+
+        if service == S.CIFSHASH:
+            if ntlm_hash is None:
+                raise ValueError(f"NTLM hash is required for \"{service.value}\" services.")
+
+            account_data["ntlmHash"] = ntlm_hash
+
+        if service == S.HTTP and http_realm is not None:
+            account_data["realm"] = http_realm
+
+        if service == S.NOTES and notes_id_password is not None:
+            account_data["notesIDPassword"] = notes_id_password
+
+        if service == S.ORACLE:
+            if oracle_sid is not None:
+                account_data["sid"] = oracle_sid
+
+            if oracle_enumerate_sids is not None:
+                account_data["enumerateSids"] = oracle_enumerate_sids
+
+                if oracle_enumerate_sids and oracle_listener_password is None:
+                    raise ValueError("Oracle listener password is required when enumerating SIDs.")
+
+                account_data["oracleListenerPassword"] = oracle_listener_password
+
+        if service == S.SNMP:
+            if snmp_community_name is None:
+                raise ValueError(f"Community name is required for \"{service.value}\" services.")
+
+            account_data["community"] = snmp_community_name
+
+        if service == S.SNMPV3:
+            if snmpv3_authentication_type is None:
+                raise ValueError(f"Authentication type is required for \"{service.value}\" services.")
+
+            account_data["authenticationType"] = snmpv3_authentication_type.value
+
+            if snmpv3_authentication_type != SNMPv3AuthenticationType.NO_AUTHENTICATION:
                 if password is None:
-                    raise ValueError(f"Password is required for \"{service.value}\" services.")
+                    raise ValueError(f"Password is required for \"{service.value}\" services when authentication "
+                                     f"is md5 to anything other than \"no-authentication\".")
 
                 account_data["password"] = password
 
-            # Services with optional "useWindowsAuthentication" field.
-            if service in (S.MS_SQL, S.SYBASE) and use_windows_authentication is not None:
-                account_data["useWindowsAuthentication"] = use_windows_authentication
+            if snmpv3_privacy_type is not None:
+                account_data["privacyType"] = snmpv3_privacy_type.value
 
-            # Services with optional "domain" field.
-            if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.MS_SQL, S.SYBASE) and domain is not None:
-                if service in (S.MS_SQL, S.SYBASE):
-                    if use_windows_authentication:
-                        account_data["domain"] = domain
+                if snmpv3_privacy_type != SNMPv3PrivacyType.NO_PRIVACY and snmpv3_privacy_password is None:
+                    raise ValueError(f"Privacy password is required for \"{service.value}\" services when the "
+                                     f"authentication type is set to a value other than \"no-authentication\", "
+                                     f"and privacy type is set to a value other than \"no-privacy\".")
 
-                else:
-                    account_data["domain"] = domain
+                account_data["privacyPassword"] = snmpv3_privacy_password
 
-            # Services with optional "database" field.
-            if service in (S.DB2, S.MS_SQL, S.MYSQL, S.POSTGRESQL, S.SYBASE) and database_name is not None:
-                account_data["database"] = database_name
+        if service in (S.SSH, S.SSH_KEY):
+            if ssh_permission_elevation:
+                account_data["permissionElevation"] = ssh_permission_elevation
 
-            if service == S.CIFSHASH:
-                if ntlm_hash is None:
-                    raise ValueError(f"NTLM hash is required for \"{service.value}\" services.")
+            if ssh_permission_elevation not in (SSHElevationType.NONE, SSHElevationType.PBRUN):
+                if None in (ssh_permission_elevation_username, ssh_permission_elevation_password):
+                    raise ValueError(f"Elevation username and password are required for \"{service.value}\" "
+                                     f"services when permission elevation is not \"none\" or \"pbrun\".")
 
-                account_data["ntlmHash"] = ntlm_hash
+                account_data["permissionElevationUsername"] = ssh_permission_elevation_username
+                account_data["permissionElevationPassword"] = ssh_permission_elevation_password
 
-            if service == S.HTTP and http_realm is not None:
-                account_data["realm"] = http_realm
+        if service == S.SSH_KEY:
+            if ssh_key_pem is None:
+                raise ValueError(f"SSH private key password is required for \"{service.value}\" services.")
 
-            if service == S.NOTES and notes_id_password is not None:
-                account_data["notesIDPassword"] = notes_id_password
+            account_data["pemKey"] = ssh_key_pem
 
-            if service == S.ORACLE:
-                if oracle_sid is not None:
-                    account_data["sid"] = oracle_sid
-
-                if oracle_enumerate_sids is not None:
-                    account_data["enumerateSids"] = oracle_enumerate_sids
-
-                    if oracle_enumerate_sids and oracle_listener_password is None:
-                        raise ValueError("Oracle listener password is required when enumerating SIDs.")
-
-                    account_data["oracleListenerPassword"] = oracle_listener_password
-
-            if service == S.SNMP:
-                if snmp_community_name is None:
-                    raise ValueError(f"Community name is required for \"{service.value}\" services.")
-
-                account_data["community"] = snmp_community_name
-
-            if service == S.SNMPV3:
-                if snmpv3_authentication_type is None:
-                    raise ValueError(f"Authentication type is required for \"{service.value}\" services.")
-
-                account_data["authenticationType"] = snmpv3_authentication_type.value
-
-                if snmpv3_authentication_type != SNMPv3AuthenticationType.NO_AUTHENTICATION:
-                    if password is None:
-                        raise ValueError(f"Password is required for \"{service.value}\" services when authentication "
-                                         f"is md5 to anything other than \"no-authentication\".")
-
-                    account_data["password"] = password
-
-                if snmpv3_privacy_type is not None:
-                    account_data["privacyType"] = snmpv3_privacy_type.value
-
-                    if snmpv3_privacy_type != SNMPv3PrivacyType.NO_PRIVACY and snmpv3_privacy_password is None:
-                        raise ValueError(f"Privacy password is required for \"{service.value}\" services when the "
-                                         f"authentication type is set to a value other than \"no-authentication\", "
-                                         f"and privacy type is set to a value other than \"no-privacy\".")
-
-                    account_data["privacyPassword"] = snmpv3_privacy_password
-
-            if service in (S.SSH, S.SSH_KEY):
-                if ssh_permission_elevation:
-                    account_data["permissionElevation"] = ssh_permission_elevation
-
-                if ssh_permission_elevation not in (SSHElevationType.NONE, SSHElevationType.PBRUN):
-                    if None in (ssh_permission_elevation_username, ssh_permission_elevation_password):
-                        raise ValueError(f"Elevation username and password are required for \"{service.value}\" "
-                                         f"services when permission elevation is not \"none\" or \"pbrun\".")
-
-                    account_data["permissionElevationUsername"] = ssh_permission_elevation_username
-                    account_data["permissionElevationPassword"] = ssh_permission_elevation_password
-
-            if service == S.SSH_KEY:
-                if ssh_key_pem is None:
-                    raise ValueError(f"SSH private key password is required for \"{service.value}\" services.")
-
-                account_data["pemKey"] = ssh_key_pem
-
-                if ssh_private_key_password is None:
-                    account_data["privateKeyPassword"] = ssh_private_key_password
+            if ssh_private_key_password is None:
+                account_data["privateKeyPassword"] = ssh_private_key_password
 
         post_data = find_valid_params(
             description=description,
@@ -2376,36 +2395,39 @@ def create_report(client: Client, scope: dict[str, Any], template_id: Optional[s
         download_immediately: (bool | None, optional) = Whether to download the report automatically after creation.
             Defaults to True.
     """
-    if not template_id:
-        templates = client.get_report_templates()
+    if template_id is None:
+        templates_data = client.get_report_templates()
 
-        if not templates.get("resources"):
-            return CommandResults(readable_output="Error: No available templates were found.")
+        if not templates_data.get("resources"):
+            return CommandResults(
+                readable_output="Error: No available templates were found.",
+                raw_response=templates_data,
+            )
 
-        template_id = templates["resources"][0]["id"]
+        template_id = templates_data["resources"][0]["id"]
 
-    if not report_name:
+    if report_name is None:
         report_name = "report " + str(datetime.now())
 
-    if not report_format:
+    if report_format is None:
         report_format = ReportFileFormat.PDF
 
     if download_immediately is None:
         download_immediately = True
 
-    report_id = client.create_report_config(
+    report_data = client.create_report_config(
         scope=scope,
         template_id=template_id,
         report_name=report_name,
         report_format=report_format,
-    )["id"]
+    )
 
-    instance_id = client.create_report(report_id)["id"]
+    instance_data = client.create_report(report_data["id"])
 
     context = {
         "Name": report_name,
-        "ID": report_id,
-        "InstanceID": instance_id,
+        "ID": report_data["id"],
+        "InstanceID": instance_data["id"],
         "Format": report_format.value,
     }
     hr = tableToMarkdown("Report Information", context)
@@ -2417,8 +2439,8 @@ def create_report(client: Client, scope: dict[str, Any], template_id: Optional[s
 
             return download_report_command(
                 client=client,
-                report_id=report_id,
-                instance_id=instance_id,
+                report_id=report_data["id"],
+                instance_id=instance_data["id"],
                 report_name=report_name,
                 report_format=report_format,
             )
@@ -2434,29 +2456,8 @@ def create_report(client: Client, scope: dict[str, Any], template_id: Optional[s
         outputs_prefix="Nexpose.Report",
         outputs=context,
         outputs_key_field=["ID", "InstanceID"],
+        raw_response=instance_data,
     )
-
-
-def dq(obj, path):
-    """
-    return a value in an object path. in case of multiple objects in path, searches them all.
-    @param obj - dictionary tree to search in
-    @param path (list) - a path of the desired value in the object. for example ['root', 'key', 'subkey']
-    """
-    # TODO: Remove or rewrite this function
-    if len(path) == 0:
-        return obj
-
-    if isinstance(obj, dict):
-        if path[0] in obj:
-            return dq(obj[path[0]], path[1:])
-    elif isinstance(obj, list):
-        # in case current obj has multiple objects, search them all.
-        line = [dq(o, path) for o in obj]
-        return [k for k in line if k is not None]
-
-    # in case of error in the path
-    return None
 
 
 def enrich_asset_data(asset: dict) -> dict:
@@ -3438,10 +3439,12 @@ def delete_vulnerability_exception_command(client: Client, vulnerability_excepti
         client (Client): Client to use for API requests.
         vulnerability_exception_id (str): ID of the vulnerability exception to delete.
     """
-    client.delete_vulnerability_exception(vulnerability_exception_id)
+    response_data = client.delete_vulnerability_exception(vulnerability_exception_id)
 
     return CommandResults(
-        readable_output=f"Vulnerability exception with ID {vulnerability_exception_id} has been deleted.")
+        readable_output=f"Vulnerability exception with ID {vulnerability_exception_id} has been deleted.",
+        raw_response=response_data,
+    )
 
 
 def download_report_command(client: Client, report_id: str, instance_id: str,
@@ -3477,7 +3480,7 @@ def download_report_command(client: Client, report_id: str, instance_id: str,
     )
 
 
-def get_asset_command(client: Client, asset_id: str) -> CommandResults:
+def get_asset_command(client: Client, asset_id: str) -> Union[CommandResults, List[CommandResults]]:
     """
     Retrieve information about an asset.
 
@@ -3485,15 +3488,18 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults:
         client (Client): Client to use for API requests.
         asset_id (str): ID of the asset to retrieve information about.
     """
-    asset = client.get_asset(asset_id)
+    asset_data = client.get_asset(asset_id)
 
-    if asset.get("status") == "404":
-        return CommandResults(readable_output="Asset not found")
+    if asset_data.get("status") == "404":
+        return CommandResults(
+            readable_output="Asset not found",
+            raw_response=asset_data
+        )
 
-    last_scan = find_asset_last_change(asset)
-    asset["LastScanDate"] = last_scan["date"]
-    asset["LastScanId"] = last_scan["id"]
-    asset["Site"] = find_site_from_asset(asset["id"])["name"]
+    last_scan = find_asset_last_change(asset_data)
+    asset_data["LastScanDate"] = last_scan["date"]
+    asset_data["LastScanId"] = last_scan["id"]
+    asset_data["Site"] = find_site_from_asset(asset_data["id"])["name"]
 
     asset_headers = [
         "AssetId",
@@ -3510,7 +3516,7 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults:
     ]
 
     asset_output = replace_key_names(
-        data=asset,
+        data=asset_data,
         name_mapping={
             "id": "AssetId",
             "addresses.ip": "Addresses",
@@ -3530,14 +3536,14 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults:
     # Set all vars to None
     software_headers = software_output = service_headers = services_output = users_headers = users_output = None
 
-    if "software" in asset and len(asset["software"]) > 0:
+    if "software" in asset_data and len(asset_data["software"]) > 0:
         software_headers = [
             "Software",
             "Version",
         ]
 
         software_output = replace_key_names(
-            data=asset["software"],
+            data=asset_data["software"],
             name_mapping={
                 "description": "Software",
                 "version": "Version",
@@ -3546,7 +3552,7 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults:
             use_reference=True,
         )
 
-    if "services" in asset and len(asset["services"]) > 0:
+    if "services" in asset_data and len(asset_data["services"]) > 0:
         service_headers = [
             "Name",
             "Port",
@@ -3555,7 +3561,7 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults:
         ]
 
         services_output = replace_key_names(
-            data=asset["services"],
+            data=asset_data["services"],
             name_mapping={
                 "name": "Name",
                 "port": "Port",
@@ -3566,7 +3572,7 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults:
             use_reference=True,
         )
 
-    if "users" in asset and len(asset["users"]) > 0:
+    if "users" in asset_data and len(asset_data["users"]) > 0:
         users_headers = [
             "FullName",
             "Name",
@@ -3574,7 +3580,7 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults:
         ]
 
         users_output = replace_key_names(
-            data=asset["users"],
+            data=asset_data["users"],
             name_mapping={
                 "name": "Name",
                 "fullName": "FullName",
@@ -3597,16 +3603,14 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults:
         "Instances",
     ]
 
-    asset["vulnerabilities"] = client.get_vulnerabilities(asset["id"])
+    asset_data["vulnerabilities"] = client.get_vulnerabilities(asset_data["id"])
 
     vulnerabilities_output = []
     cves_output = []
 
-    for idx, vulnerability in enumerate(asset["vulnerabilities"]):
+    for idx, vulnerability in enumerate(asset_data["vulnerabilities"]):
         extra_info = client.get_vulnerability(vulnerability["id"])
-        asset["vulnerabilities"][idx].update(extra_info)
-
-        cvss = dq(extra_info["cvss"], ["v2", "score"])  # TODO: Find a more intuitive way to do this without dq
+        asset_data["vulnerabilities"][idx].update(extra_info)
 
         if "cves" in extra_info:
             cves_output.extend(
@@ -3618,7 +3622,7 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults:
             "Title": extra_info["title"],
             "Malware": extra_info["malwareKits"],
             "Exploit": extra_info["exploits"],
-            "CVSS": cvss,
+            "CVSS": extra_info["cvss"]["v2"]["score"],
             "Risk": extra_info["riskScore"],
             "PublishedOn": extra_info["published"],
             "ModifiedOn": extra_info["modified"],
@@ -3628,7 +3632,7 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults:
 
         vulnerabilities_output.append(output_vulnerability)
 
-    asset_md = tableToMarkdown("Nexpose asset " + str(asset["id"]), asset_output, asset_headers, removeNull=True)
+    asset_md = tableToMarkdown("Nexpose asset " + str(asset_data["id"]), asset_output, asset_headers, removeNull=True)
     vulnerabilities_md = tableToMarkdown("Vulnerabilities", vulnerabilities_output, vulnerability_headers,
                                          removeNull=True) if len(vulnerabilities_output) > 0 else ""
     software_md = tableToMarkdown("Software", software_output, software_headers,
@@ -3663,7 +3667,7 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults:
     # TODO: Switch to CommandResults
     return {
         "Type": entryTypes["note"],
-        "Contents": asset,
+        "Contents": asset_data,
         "ContentsFormat": formats["json"],
         "ReadableContentsFormat": formats["markdown"],
         "HumanReadable": md,
@@ -3687,17 +3691,20 @@ def get_assets_command(client: Client, page_size: Optional[int] = None,
         limit (int | None, optional): Limit the number of scans to return. None means to not use a limit.
             Defaults to None.
     """
-    assets = client.get_assets(
+    assets_data = client.get_assets(
         page_size=page_size,
         page=page,
         sort=sort,
         limit=limit
     )
 
-    if not assets:
-        return CommandResults(readable_output="No assets found")
+    if not assets_data:
+        return CommandResults(
+            readable_output="No assets found",
+            raw_response=assets_data
+        )
 
-    for asset in assets:
+    for asset in assets_data:
         enrich_asset_data(asset)
 
     headers = [
@@ -3716,7 +3723,7 @@ def get_assets_command(client: Client, page_size: Optional[int] = None,
     ]
 
     replace_key_names(
-        data=assets,
+        data=assets_data,
         name_mapping={
             "id": "AssetId",
             "ip": "Address",
@@ -3735,7 +3742,7 @@ def get_assets_command(client: Client, page_size: Optional[int] = None,
 
     result = []
 
-    for asset in assets:
+    for asset in assets_data:
         result.append(
             CommandResults(
                 outputs_prefix="Nexpose.Asset",
@@ -3774,7 +3781,10 @@ def get_asset_vulnerability_command(client: Client, asset_id: str, vulnerability
     # Otherwise print an error saying which parameter is invalid.
 
     if vulnerability_data is None:
-        return CommandResults(readable_output="Vulnerability not found")
+        return CommandResults(
+            readable_output="Vulnerability not found",
+            raw_response=vulnerability_data,
+        )
 
     vulnerability_headers = [
         "Id",
@@ -3954,7 +3964,10 @@ def get_report_templates_command(client: Client) -> CommandResults:
     response_data = client.get_report_templates()
 
     if not response_data.get("resources"):
-        return CommandResults(readable_output="No templates found")
+        return CommandResults(
+            readable_output="No templates found",
+            raw_response=response_data,
+        )
 
     headers = [
         "Id",
@@ -4029,7 +4042,7 @@ def get_scans_command(client: Client, active: Optional[bool] = None, page_size: 
         limit (int | None, optional): Limit the number of scans to return. None means to not use a limit.
             Defaults to None.
     """
-    scans: list = client.get_scans(
+    scans_data = client.get_scans(
         active=active,
         page_size=page_size,
         page=page,
@@ -4037,10 +4050,13 @@ def get_scans_command(client: Client, active: Optional[bool] = None, page_size: 
         limit=limit,
     )
 
-    if not scans:
-        return CommandResults(readable_output="No scans found")
+    if not scans_data:
+        return CommandResults(
+            readable_output="No scans found",
+            raw_response=scans_data,
+        )
 
-    normalized_scans = [normalize_scan_data(scan) for scan in scans]  # TODO: Use get_scan_entry function and modify it to make vulnerability optional
+    normalized_scans = [normalize_scan_data(scan) for scan in scans_data]
 
     scan_hr = tableToMarkdown(
         name="Nexpose scans",
@@ -4063,7 +4079,7 @@ def get_scans_command(client: Client, active: Optional[bool] = None, page_size: 
         outputs_key_field="Id",
         outputs=normalized_scans,
         readable_output=scan_hr,
-        raw_response=scans,
+        raw_response=scans_data,
     )
 
 
@@ -4082,15 +4098,18 @@ def get_sites_command(client: Client, page_size: Optional[int] = None, page: Opt
         limit (int | None, optional): Limit the number of scans to return. None means to not use a limit.
             Defaults to None.
     """
-    sites = client.get_sites(
+    sites_data = client.get_sites(
         page_size=page_size,
         page=page,
         sort=sort,
         limit=limit
     )
 
-    if not sites:
-        return CommandResults(readable_output="No sites found")
+    if not sites_data:
+        return CommandResults(
+            readable_output="No sites found",
+            raw_response=sites_data,
+        )
 
     headers = [
         "Id",
@@ -4103,7 +4122,7 @@ def get_sites_command(client: Client, page_size: Optional[int] = None, page: Opt
     ]
 
     outputs = replace_key_names(
-        data=sites,
+        data=sites_data,
         name_mapping={
             "id": "Id",
             "name": "Name",
@@ -4121,7 +4140,7 @@ def get_sites_command(client: Client, page_size: Optional[int] = None, page: Opt
         outputs_key_field="Id",
         outputs=outputs,
         readable_output=tableToMarkdown("Nexpose sites", outputs, headers, removeNull=True),
-        raw_response=sites,
+        raw_response=sites_data,
     )
 
 
@@ -4144,7 +4163,7 @@ def list_scan_schedule_command(client: Client, site: Site, schedule_id: Optional
             Defaults to None.
     """
     if not schedule_id:
-        scan_schedules = client.get_site_scan_schedules(
+        scan_schedules_data = client.get_site_scan_schedules(
             site_id=site.id,
             page_size=page_size,
             page=page,
@@ -4152,17 +4171,20 @@ def list_scan_schedule_command(client: Client, site: Site, schedule_id: Optional
         )
 
     else:
-        scan_schedules = client.get_site_scan_schedule(
+        scan_schedules_data = client.get_site_scan_schedule(
             site_id=site.id,
             schedule_id=schedule_id,
         )
-        scan_schedules = [scan_schedules]
+        scan_schedules_data = [scan_schedules_data]
 
-    if not scan_schedules:
-        return CommandResults(readable_output="No scan schedules were found for the site.")
+    if not scan_schedules_data:
+        return CommandResults(
+            readable_output="No scan schedules were found for the site.",
+            raw_response=scan_schedules_data,
+        )
 
     hr_outputs = replace_key_names(
-        data=scan_schedules,
+        data=scan_schedules_data,
         name_mapping={
             "id": "Id",
             "enabled": "Enable",
@@ -4193,9 +4215,9 @@ def list_scan_schedule_command(client: Client, site: Site, schedule_id: Optional
     return CommandResults(
         outputs_prefix="Nexpose.ScanSchedule",
         outputs_key_field="id",
-        outputs=scan_schedules,
+        outputs=scan_schedules_data,
         readable_output=tableToMarkdown("Nexpose scan schedules", hr_outputs, headers, removeNull=True),
-        raw_response=scan_schedules,
+        raw_response=scan_schedules_data,
     )
 
 
@@ -4216,18 +4238,21 @@ def list_shared_credential_command(client: Client, credential_id: Optional[str],
             Defaults to None.
     """
     if not credential_id:
-        shared_credentials = client.get_shared_credentials(
+        shared_credentials_data = client.get_shared_credentials(
             page_size=page_size,
             page=page,
             limit=limit,
         )
 
     else:
-        shared_credentials = client.get_shared_credential(credential_id)
-        shared_credentials = [shared_credentials]
+        shared_credentials_data = client.get_shared_credential(credential_id)
+        shared_credentials_data = [shared_credentials_data]
 
-    if not shared_credentials:
-        return CommandResults(readable_output="No shared credentials were found.")
+    if not shared_credentials_data:
+        return CommandResults(
+            readable_output="No shared credentials were found.",
+            raw_response=shared_credentials_data,
+        )
 
     headers = [
         "Id",
@@ -4239,7 +4264,7 @@ def list_shared_credential_command(client: Client, credential_id: Optional[str],
     ]
 
     shared_credentials_hr = replace_key_names(
-        data=shared_credentials,
+        data=shared_credentials_data,
         name_mapping={
             "id": "Id",
             "name": "Name",
@@ -4257,9 +4282,9 @@ def list_shared_credential_command(client: Client, credential_id: Optional[str],
     return CommandResults(
         outputs_prefix="Nexpose.SharedCredential",
         outputs_key_field="id",
-        outputs=shared_credentials,
+        outputs=shared_credentials_data,
         readable_output=tableToMarkdown("Nexpose Shared Credentials", shared_credentials_hr, headers, removeNull=True),
-        raw_response=shared_credentials,
+        raw_response=shared_credentials_data,
     )
 
 
@@ -4276,7 +4301,11 @@ def list_assigned_shared_credential_command(client: Client, site: Site, limit: O
 
     if not response_data:
         site_id = site.name if site.name else site.id
-        return CommandResults(readable_output=f"No assigned shared credentials were found for site \"{site_id}\".")
+
+        return CommandResults(
+            readable_output=f"No assigned shared credentials were found for site \"{site_id}\".",
+            raw_response=response_data,
+        )
 
     if limit is not None and limit < len(response_data):
         response_data = response_data[:limit]
@@ -4322,18 +4351,21 @@ def list_site_scan_credential_command(client: Client, site: Site, credential_id:
             Defaults to None.
     """
     if credential_id is not None:
-        site_scan_credentials = client.get_site_scan_credential(site_id=site.id, credential_id=credential_id)
-        site_scan_credentials = [site_scan_credentials]
+        site_scan_credentials_data = client.get_site_scan_credential(site_id=site.id, credential_id=credential_id)
+        site_scan_credentials_data = [site_scan_credentials_data]
 
     else:
-        site_scan_credentials = client.get_site_scan_credentials(site_id=site.id)
+        site_scan_credentials_data = client.get_site_scan_credentials(site_id=site.id)
 
-    if not site_scan_credentials:
+    if not site_scan_credentials_data:
         site_id = site.name if site.name else site.id
-        return CommandResults(readable_output=f"No site scan credentials were found for site \"{site_id}\".")
+        return CommandResults(
+            readable_output=f"No site scan credentials were found for site \"{site_id}\".",
+            raw_response=site_scan_credentials_data,
+        )
 
-    if limit and len(site_scan_credentials) > limit:
-        site_scan_credentials = site_scan_credentials[:limit]
+    if limit and len(site_scan_credentials_data) > limit:
+        site_scan_credentials_data = site_scan_credentials_data[:limit]
 
     headers = [
         "Id",
@@ -4346,7 +4378,7 @@ def list_site_scan_credential_command(client: Client, site: Site, credential_id:
     ]
 
     site_scan_credentials_hr = replace_key_names(
-        data=site_scan_credentials,
+        data=site_scan_credentials_data,
         name_mapping={
             "id": "Id",
             "enabled": "Enabled",
@@ -4362,9 +4394,9 @@ def list_site_scan_credential_command(client: Client, site: Site, credential_id:
     return CommandResults(
         outputs_prefix="Nexpose.SiteScanCredential",
         outputs_key_field="id",
-        outputs=site_scan_credentials,
+        outputs=site_scan_credentials_data,
         readable_output=tableToMarkdown("Nexpose Site Scan Credentials", site_scan_credentials_hr, headers, removeNull=True),
-        raw_response=site_scan_credentials,
+        raw_response=site_scan_credentials_data,
     )
 
 
@@ -4387,7 +4419,7 @@ def list_vulnerability_command(client: Client, vulnerability_id: Optional[str], 
             Defaults to None.
     """
     if not vulnerability_id:
-        vulnerabilities = client.get_vulnerabilities(
+        vulnerabilities_data = client.get_vulnerabilities(
             page_size=page_size,
             page=page,
             sort=sort,
@@ -4395,11 +4427,14 @@ def list_vulnerability_command(client: Client, vulnerability_id: Optional[str], 
         )
 
     else:
-        vulnerabilities = client.get_vulnerability(vulnerability_id)
-        vulnerabilities = [vulnerabilities]
+        vulnerabilities_data = client.get_vulnerability(vulnerability_id)
+        vulnerabilities_data = [vulnerabilities_data]
 
-    if not vulnerabilities:
-        return CommandResults(readable_output="No vulnerability exceptions were found.")
+    if not vulnerabilities_data:
+        return CommandResults(
+            readable_output="No vulnerability exceptions were found.",
+            raw_response=vulnerabilities_data,
+        )
 
     headers = [
         "Title",
@@ -4414,7 +4449,7 @@ def list_vulnerability_command(client: Client, vulnerability_id: Optional[str], 
     ]
 
     vulnerabilities_hr = replace_key_names(
-        data=vulnerabilities,
+        data=vulnerabilities_data,
         name_mapping={
             "title": "Title",
             "malwareKits": "MalwareKits",
@@ -4432,10 +4467,10 @@ def list_vulnerability_command(client: Client, vulnerability_id: Optional[str], 
     return CommandResults(
         outputs_prefix="Nexpose.Vulnerability",
         outputs_key_field="id",
-        outputs=vulnerabilities,
+        outputs=vulnerabilities_data,
         readable_output=tableToMarkdown(
             "Nexpose Vulnerabilities", vulnerabilities_hr, headers, removeNull=True),
-        raw_response=vulnerabilities,
+        raw_response=vulnerabilities_data,
     )
 
 
@@ -4458,7 +4493,7 @@ def list_vulnerability_exceptions_command(client: Client, vulnerability_exceptio
             Defaults to None.
     """
     if not vulnerability_exception_id:
-        vulnerability_exceptions = client.get_vulnerability_exceptions(
+        vulnerability_exceptions_data = client.get_vulnerability_exceptions(
             page_size=page_size,
             page=page,
             sort=sort,
@@ -4466,11 +4501,14 @@ def list_vulnerability_exceptions_command(client: Client, vulnerability_exceptio
         )
 
     else:
-        vulnerability_exceptions = client.get_vulnerability_exception(vulnerability_exception_id)
-        vulnerability_exceptions = [vulnerability_exceptions]
+        vulnerability_exceptions_data = client.get_vulnerability_exception(vulnerability_exception_id)
+        vulnerability_exceptions_data = [vulnerability_exceptions_data]
 
-    if not vulnerability_exceptions:
-        return CommandResults(readable_output="No vulnerability exceptions were found.")
+    if not vulnerability_exceptions_data:
+        return CommandResults(
+            readable_output="No vulnerability exceptions were found.",
+            raw_response=vulnerability_exceptions_data,
+        )
 
     headers = [
         "Id",
@@ -4485,7 +4523,7 @@ def list_vulnerability_exceptions_command(client: Client, vulnerability_exceptio
     ]
 
     hr_outputs = replace_key_names(
-        data=vulnerability_exceptions,
+        data=vulnerability_exceptions_data,
         name_mapping={
             "id": "Id",
             "scope.vulnerability": "Vulnerability",
@@ -4502,10 +4540,10 @@ def list_vulnerability_exceptions_command(client: Client, vulnerability_exceptio
     return CommandResults(
         outputs_prefix="Nexpose.VulnerabilityException",
         outputs_key_field="id",
-        outputs=vulnerability_exceptions,
+        outputs=vulnerability_exceptions_data,
         readable_output=tableToMarkdown(
             "Nexpose Vulnerability Exceptions", hr_outputs, headers, removeNull=True),
-        raw_response=vulnerability_exceptions,
+        raw_response=vulnerability_exceptions_data,
     )
 
 
@@ -4680,7 +4718,9 @@ def start_assets_scan_command(client: Client, ips: Union[str, list, None] = None
     """
     | Start a scan on the provided assets.
     |
-    | Note: Both `ips` and `hostnames` are optional, but at least one of them must be provided.
+
+    Note:
+        Both `ips` and `hostnames` are optional, but at least one of them must be provided.
 
     Args:
         client (Client): Client to use for API requests.
@@ -4707,15 +4747,21 @@ def start_assets_scan_command(client: Client, ips: Union[str, list, None] = None
     else:  # elif hostnames
         asset_filter = "host-name is " + hostnames[0]
 
-    asset = client.search_assets(filters=convert_asset_search_filters(asset_filter), match="all")
+    asset_data = client.search_assets(filters=convert_asset_search_filters(asset_filter), match="all")
 
-    if not asset:
-        return CommandResults(readable_output="Could not find assets")
+    if not asset_data:
+        return CommandResults(
+            readable_output="Could not find assets",
+            raw_response=asset_data,
+        )
 
-    site = find_site_from_asset(asset[0]["id"])
+    site = find_site_from_asset(asset_data[0]["id"])
 
     if site is None or "id" not in site:  # TODO: Check if `site` can actually be None
-        return CommandResults(readable_output="Could not find site")
+        return CommandResults(
+            readable_output="Could not find site",
+            raw_response=site,
+        )
 
     hosts = []
 
@@ -4732,7 +4778,10 @@ def start_assets_scan_command(client: Client, ips: Union[str, list, None] = None
     )
 
     if "id" not in scan_response:
-        return CommandResults(readable_output="Could not start scan")
+        return CommandResults(
+            readable_output="Could not start scan",
+            raw_response=scan_response,
+        )
 
     return get_scan_entry(client.get_scan(scan_response["id"]))
 
@@ -4763,7 +4812,10 @@ def start_site_scan_command(client: Client, site: Site,
     )
 
     if not scan_response or "id" not in scan_response:
-        return CommandResults(readable_output="Could not start scan")
+        return CommandResults(
+            readable_output="Could not start scan",
+            raw_response=scan_response,
+        )
 
     scan_data = client.get_scan(scan_response.get("id"))
     return get_scan_entry(scan_data)
@@ -5034,7 +5086,7 @@ def update_scan_schedule_command(client: Client, site: Site, scan_schedule_id: i
         hours=duration_hours,
         minutes=duration_minutes)
 
-    client.update_site_scan_schedule(
+    response_data = client.update_site_scan_schedule(
         site_id=site.id,
         scan_schedule_id=scan_schedule_id,
         enabled=enabled,
@@ -5052,7 +5104,10 @@ def update_scan_schedule_command(client: Client, site: Site, scan_schedule_id: i
         scan_template_id=scan_template_id,
     )
 
-    return CommandResults(readable_output=f"Scan schedule {scan_schedule_id} has been updated.")
+    return CommandResults(
+        readable_output=f"Scan schedule {scan_schedule_id} has been updated.",
+        raw_response=response_data,
+    )
 
 
 def update_vulnerability_exception_command(client: Client, vulnerability_exception_id: str,
@@ -5093,7 +5148,8 @@ def update_vulnerability_exception_command(client: Client, vulnerability_excepti
 
     return CommandResults(
         readable_output=f"Successfully updated vulnerability exception {vulnerability_exception_id}.",
-        raw_response=responses)
+        raw_response=responses,
+    )
 
 
 def main():
@@ -5248,6 +5304,9 @@ def main():
             sites_list.extend(
                 [Site(site_name=site_name, client=client) for site_name in argToList(args.get("site_names"))]
             )
+
+            if not sites_list:
+                raise Exception("At least one site ID or site name must be provided.")
 
             report_format = None
 
