@@ -673,7 +673,7 @@
             "reflectDimensions": true
         },
         {
-            "id": "636b8130-3a83-11ed-a458-1bc96ed59c0e",
+            "id": "436d50f0-52d6-11ed-af6a-eb2c495cab55",
             "forceRange": false,
             "x": 8,
             "y": 6,
@@ -684,7 +684,7 @@
                 "id": "4a54be5f-0a1c-4a25-8b7b-7c4c340326b6",
                 "version": 1,
                 "cacheVersn": 0,
-                "modified": "2022-07-28T07:14:16.55383798Z",
+                "modified": "2022-10-23T11:08:08.285884451Z",
                 "packID": "",
                 "packName": "",
                 "itemVersion": "",
@@ -700,7 +700,7 @@
                 "shouldCommit": false,
                 "Cache": null,
                 "name": "API Call Results for Joe Security",
-                "prevName": "API Call Results for Cisco Umbrella Investigate",
+                "prevName": "API Call Results for Joe Security",
                 "dataType": "metrics",
                 "widgetType": "line",
                 "query": "type:integration and instance:\"JoeSecurityV2_instance_1\"",
