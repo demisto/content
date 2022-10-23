@@ -185,11 +185,12 @@ class GCP:
         item_name_with_extension = Path(item_file_path).name
         if item_type in ['Integrations', 'Scripts']:
             # for integrations and scripts, add the sub-folder hierarchy
-            extracted_item_path = os.path.join(pack_id, item_type, item_name,
+            extracted_item_path = os.path.join(self.extracting_destination, pack_id, item_type, item_name,
                                                f'{item_type.lower()[:-1]}-{item_name_with_extension}')
         elif item_type == 'IndicatorTypes':
             # for indicator types, use the 'reputation' prefix
-            extracted_item_path = os.path.join(pack_id, item_type, f'reputation-{item_name_with_extension}')
+            extracted_item_path = os.path.join(self.extracting_destination, pack_id, item_type,
+                                               f'reputation-{item_name_with_extension}')
         else:
             extracted_item_path = os.path.join(self.extracting_destination, pack_id, item_type,
                                                f'{item_type.lower()[:-1]}-{item_name_with_extension}')
@@ -238,7 +239,7 @@ def get_args():
     parser.add_argument('-a', '--artifacts-path', help="path to artifacts from the script creating the test branch, "
                                                        "should contain json with dict of pack names and items to verify"
                                                        "and json with dict of pack names and versions to verify",
-                        required=False, default='.')
+                        required=False)
 
     return parser.parse_args()
 
