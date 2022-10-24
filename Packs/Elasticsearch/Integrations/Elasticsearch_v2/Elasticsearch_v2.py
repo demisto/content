@@ -834,8 +834,6 @@ def main():
             get_mapping_fields_command()
         elif demisto.command() == 'es-eql-search':
             return_results(search_eql_command(demisto.args(), proxies))
-        elif demisto.command() == 'es-create-api-key':
-            return_results(create_api_key())
     except Exception as e:
         if 'The client noticed that the server is not a supported distribution of Elasticsearch' in str(e):
             return_error('Failed executing {}. Seems that the client does not support the server\'s distribution, '
