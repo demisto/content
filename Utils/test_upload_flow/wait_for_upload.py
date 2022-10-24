@@ -92,7 +92,7 @@ def main():
         print(f'Failed to upload files to marketplace. See failed pipeline here: {pipeline_url}')
         sys.exit(1)
 
-    print(f'The upload has finished. See successful pipeline here: {pipeline_url}')
+    print(f'The upload has finished. See pipeline here: {pipeline_url}')
     # TODO: check why 'logging' logs are not present in gitlab build
 
 

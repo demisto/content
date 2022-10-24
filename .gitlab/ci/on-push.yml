@@ -430,13 +430,12 @@ test_upload_flow:
   artifacts:
     expire_in: 48 hrs
     paths:
-      - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/artifacts
     when: always
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
   variables:
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER}"
     CURRENT_BRANCH: "$CI_COMMIT_BRANCH"
   stage: unittests-and-validations
   script:
