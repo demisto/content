@@ -1,11 +1,11 @@
 {
-    "id": "incident_techniqueaffectedassetstrend",
+    "id": "incident_xmcybercurrentsecurityscore",
     "version": -1,
     "fromVersion": "6.0.0",
-    "modified": "2020-10-29T07:04:02.929771107Z",
-    "name": "Technique Affected Assets Trend",
+    "modified": "2022-07-25T11:54:08.942332793Z",
+    "name": "XM Cyber current security score",
     "ownerOnly": false,
-    "cliName": "techniqueaffectedassetstrend",
+    "cliName": "xmcybercurrentsecurityscore",
     "type": "number",
     "closeForm": false,
     "editForm": true,
@@ -19,7 +19,7 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "XM Cyber Technique"
+        "XM Cyber Security Score"
     ],
     "associatedToAll": false,
     "unmapped": false,
