@@ -26,13 +26,16 @@ MSG_DICT = {
 def logger(func):
     @functools.wraps(func)
     def wrapper(self, *args, **kwargs):
-        logging.info(f'Starting {func.__name__}')
+        #logging.info(f'Starting {func.__name__}')
+        print(f'Starting {func.__name__}')
         try:
             result, pack_id = func(self, *args, **kwargs)
             self.is_valid = self.is_valid and result
-            logging.info(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} for {pack_id} is {result}')
+            #logging.info(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} for {pack_id} is {result}')
+            print(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} for {pack_id} is {result}')
         except FileNotFoundError as e:
-            logging.info(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} is False: {e}')
+            #logging.info(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} is False: {e}')
+            print(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} is False: {e}')
             self.is_valid = False
 
     return wrapper
@@ -308,6 +311,8 @@ if __name__ == "__main__":
     bv.verify_new_image('Armis', Path(
         __file__).parent / 'TestUploadFlow' / 'Integrations' / 'TestUploadFlow' / 'TestUploadFlow_image.png')
     is_valid = 'valid' if bv.is_valid else 'not valid'
-    logging.info(f'The bucket {gcp.storage_bucket.name} was found as {is_valid}')
+    #logging.info(f'The bucket {gcp.storage_bucket.name} was found as {is_valid}')
+    print(f'The bucket {gcp.storage_bucket.name} was found as {is_valid}')
+
     if not is_valid:
         sys.exit(1)
