@@ -441,6 +441,7 @@ test_upload_flow:
       fi
     - section_start "Create Testing Branch"
     - export branch=$(python3 ./Utils/test_upload_flow/create_test_branch.py -a $ARTIFACTS_FOLDER -g $GITLAB_PUSH_TOKEN)
+    - exit 0
     - section_end "Create Testing Branch"
     - section_start "Trigger Test Upload Flow On Testing Branch"
     - branch="$ARTIFACTS_FOLDER/create_test_branch.log" tail -n 1
