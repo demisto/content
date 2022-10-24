@@ -49,6 +49,26 @@ def parse_outputs(users_data):
         return user_readable, user_outputs
 
 
+def create_account_outputs(users_outputs: (list[dict[str, Any]] | dict[str, Any])) -> list:
+    if not isinstance(users_outputs, list):
+        users_outputs = [users_outputs]
+
+    accounts = []
+    for user_outputs in users_outputs:
+        accounts.append({
+            'Type': 'Azure AD',
+            'DisplayName': user_outputs.get('DisplayName'),
+            'Username': user_outputs.get('UserPrincipalName'),
+            'JobTitle': user_outputs.get('JobTitle'),
+            'Email': {'Address': user_outputs.get('Mail')},
+            'TelephoneNumber': user_outputs.get('MobilePhone'),
+            'ID': user_outputs.get('ID'),
+            'Office': user_outputs.get('OfficeLocation')
+        })
+
+    return accounts
+
+
 def get_unsupported_chars_in_user(user: Optional[str]) -> set:
     """
     Extracts the invalid user characters found in the provided string.
@@ -296,7 +316,12 @@ def create_user_command(client: MsGraphClient, args: Dict):
 
     user_readable, user_outputs = parse_outputs(user_data)
     human_readable = tableToMarkdown(name=f"{user} was created successfully:", t=user_readable, removeNull=True)
-    outputs = {'MSGraphUser(val.ID == obj.ID)': user_outputs}
+    accounts = create_account_outputs(user_outputs)
+    outputs = {
+        'MSGraphUser(val.ID == obj.ID)': user_outputs,
+        'Account(obj.ID == val.ID)': accounts
+    }
+
     return human_readable, outputs, user_data
 
 
@@ -352,8 +377,12 @@ def get_user_command(client: MsGraphClient, args: Dict):
         return human_readable, {}, error_message
 
     user_readable, user_outputs = parse_outputs(user_data)
+    accounts = create_account_outputs(user_outputs)
     human_readable = tableToMarkdown(name=f"{user} data", t=user_readable, removeNull=True)
-    outputs = {'MSGraphUser(val.ID == obj.ID)': user_outputs}
+    outputs = {
+        'MSGraphUser(val.ID == obj.ID)': user_outputs,
+        'Account(obj.ID == val.ID)': accounts
+    }
     return human_readable, outputs, user_data
 
 
@@ -362,8 +391,12 @@ def list_users_command(client: MsGraphClient, args: Dict):
     next_page = args.get('next_page', None)
     users_data, result_next_page = client.list_users(properties, next_page)
     users_readable, users_outputs = parse_outputs(users_data)
+    accounts = create_account_outputs(users_outputs)
     metadata = None
-    outputs = {'MSGraphUser(val.ID == obj.ID)': users_outputs}
+    outputs = {
+        'MSGraphUser(val.ID == obj.ID)': users_outputs,
+        'Account(obj.ID == val.ID)': accounts
+    }
 
     if result_next_page:
         metadata = "To get further results, enter this to the next_page parameter:\n" + str(result_next_page)

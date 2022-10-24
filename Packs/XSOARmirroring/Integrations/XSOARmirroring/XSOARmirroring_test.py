@@ -24,7 +24,9 @@ INCIDENT_FIELDS = [
         'name': "field1",
         'type': 'type1',
         'description': 'description1',
-        'cliName': 'cliName1'
+        'cliName': 'cliName1',
+        'content': False,
+        'system': True
     },
     {
         'group': 0,
@@ -34,7 +36,9 @@ INCIDENT_FIELDS = [
         'name': "field2",
         'type': 'type2',
         'description': 'description2',
-        'cliName': 'cliName2'
+        'cliName': 'cliName2',
+        'content': True,
+        'system': True
     }
 ]
 INCIDENT_TYPES = [
@@ -68,8 +72,8 @@ def test_mirroring(mocker):
         'cliName1': 'field1 - type1'
     }
     assert response['test'] == {
-        'cliName1': 'field1 - type1',
-        'cliName2': 'field2 - type2'
+        'CustomFields': {'cliName2': 'field2 - type2'},
+        'cliName1': 'field1 - type1'
     }
     assert response['Something'] == {
         'cliName1': 'field1 - type1'

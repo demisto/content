@@ -2,8 +2,8 @@ import os
 import json
 import enum
 from typing import List
-from Tests.scripts.utils.content_packs_util import IGNORED_FILES
 
+IGNORED_FILES = ['__init__.py', 'ApiModules', 'NonSupported']  # files to ignore inside Packs folder
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
 PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
 PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, PACKS_FOLDER)  # full path to Packs folder in content repo
@@ -21,7 +21,7 @@ BASE_PACK_DEPENDENCY_DICT = {
 }
 
 
-SIEM_RULES_OBJECTS = ['ParsingRule', 'ModelingRule', 'CorrelationRule']
+SIEM_RULES_OBJECTS = ['ParsingRule', 'ModelingRule', 'CorrelationRule', 'AgentConfig']
 XSIAM_MP = "marketplacev2"
 XSOAR_MP = "xsoar"
 XSIAM_START_TAG = "<~XSIAM>"
@@ -206,6 +206,7 @@ class PackFolders(enum.Enum):
     XSIAM_REPORTS = 'XSIAMReports'
     TRIGGERS = 'Triggers'
     WIZARDS = 'Wizards'
+    AGENT_CONFIGS = 'AgentConfigs'
 
     @classmethod
     def pack_displayed_items(cls):
@@ -218,7 +219,7 @@ class PackFolders(enum.Enum):
             PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value, PackFolders.JOBS.value,
             PackFolders.PARSING_RULES.value, PackFolders.MODELING_RULES.value, PackFolders.CORRELATION_RULES.value,
             PackFolders.XSIAM_DASHBOARDS.value, PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value,
-            PackFolders.WIZARDS.value,
+            PackFolders.WIZARDS.value, PackFolders.AGENT_CONFIGS.value,
         }
 
     @classmethod
@@ -237,6 +238,7 @@ class PackFolders(enum.Enum):
             PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value,
             PackFolders.PREPROCESS_RULES.value, PackFolders.JOBS.value, PackFolders.XSIAM_DASHBOARDS.value,
             PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value, PackFolders.WIZARDS.value,
+            PackFolders.AGENT_CONFIGS.value,
         }
 
 
@@ -287,7 +289,8 @@ PACK_FOLDERS_TO_ID_SET_KEYS = {
     PackFolders.XSIAM_DASHBOARDS.value: "XSIAMDashboards",
     PackFolders.XSIAM_REPORTS.value: "XSIAMReports",
     PackFolders.TRIGGERS.value: "Triggers",
-    PackFolders.WIZARDS.value: "Wizards"
+    PackFolders.WIZARDS.value: "Wizards",
+    PackFolders.AGENT_CONFIGS.value: "AgentConfigs",
 }
 
 
@@ -299,6 +302,7 @@ class PackStatus(enum.Enum):
     FAILED_LOADING_USER_METADATA = "Failed in loading user defined metadata"
     FAILED_IMAGES_UPLOAD = "Failed to upload pack integration images to gcs"
     FAILED_AUTHOR_IMAGE_UPLOAD = "Failed to upload pack author image to gcs"
+    FAILED_PREVIEW_IMAGES_UPLOAD = "Failed to upload pack preview images to gcs"
     FAILED_METADATA_PARSING = "Failed to parse and create metadata.json"
     FAILED_COLLECT_ITEMS = "Failed to collect pack content items data"
     FAILED_ZIPPING_PACK_ARTIFACTS = "Failed zipping pack artifacts"
@@ -369,6 +373,7 @@ RN_HEADER_BY_PACK_FOLDER = {
     PackFolders.XSIAM_REPORTS.value: 'XSIAM Reports',
     PackFolders.TRIGGERS.value: 'Triggers Recommendations',  # https://github.com/demisto/etc/issues/48153#issuecomment-1111988526
     PackFolders.WIZARDS.value: 'Wizards',
+    PackFolders.AGENT_CONFIGS.value: "Agent Configs",
 }
 
 # the format is defined in issue #19786, may change in the future
@@ -399,6 +404,7 @@ CONTENT_ITEM_NAME_MAPPING = {
     PackFolders.XSIAM_REPORTS.value: "xsiamreport",
     PackFolders.TRIGGERS.value: "trigger",
     PackFolders.WIZARDS.value: "wizard",
+    PackFolders.AGENT_CONFIGS.value: "agentconfig",
 }
 
 ITEMS_NAMES_TO_DISPLAY_MAPPING = {
@@ -428,4 +434,5 @@ ITEMS_NAMES_TO_DISPLAY_MAPPING = {
     CONTENT_ITEM_NAME_MAPPING[PackFolders.XSIAM_REPORTS.value]: "XSIAM Report",
     CONTENT_ITEM_NAME_MAPPING[PackFolders.TRIGGERS.value]: "Trigger",
     CONTENT_ITEM_NAME_MAPPING[PackFolders.WIZARDS.value]: "Wizard",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.AGENT_CONFIGS.value]: "Agent Config",
 }
