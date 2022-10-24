@@ -3,12 +3,12 @@ commonfields:
   id: GitLab v2
   version: -1
 configuration:
-- display: Server URL (e.g. https://gitlab.com/api/v4)
+- display: Server URL (e.g., https://gitlab.com/api/v4)
   name: url
   required: false
   type: 0
 - displaypassword: API Key
-  additionalinfo: The API Key to use for connection
+  additionalinfo: The API Key to use for connection.
   name: credentials
   hiddenusername: true
   required: true
@@ -40,14 +40,14 @@ script:
       contextPath: GitLab.Version.revision
       description: The revision of this GitLab instance.
   - name: gitlab-file-get
-    description: Allows to receive information about file in repository like name, size, content.
+    description: Gets information about a file in the repository, such as name, size, content.
     arguments:
     - name: file_path
       description: The file path.
       required: false
       isArray: false
     - name: ref
-      description: The name of branch, tag or commit
+      description: The name of the branch, tag or commit.
       required: false
       isArray: false
     outputs:
@@ -61,7 +61,7 @@ script:
       description: The size of the file.
       type: Number
     - contextPath: GitLab.File.encoding
-      description: the encoding of the file.'
+      description: The encoding of the file.
       type: String
     - contextPath: GitLab.File.content
       description: File content.
@@ -73,26 +73,26 @@ script:
       description: The branch the file's content was taken from.
       type: String
     - contextPath: GitLab.File.blob_id
-      description: The blob id.
+      description: The blob ID.
       type: String
     - contextPath: GitLab.File.commit_id
-      description: The commit id of the file.
+      description: The commit ID of the file.
       type: String
     - contextPath: GitLab.File.last_commit_id
-      description: The last commit id of the file.
+      description: The last commit ID of the file.
       type: String
     - contextPath: GitLab.File.execute_filemode
-      description: If the file is excute in filemode (Bool)
+      description: Whether the file was executed in filemode.
       type: Boolean
   - name: gitlab-file-create
-    description: This allows you to create a single file. File path or entry_id must be specified.
+    description: Allows you to create a single file. file-path or entry_id must be specified.
     arguments:
     - name: entry_id
-      description: Entry id of the file.
+      description: Entry ID of the file.
       required: false
       isArray: false
     - name: file_path
-      description: URL-encoded full path to new file.
+      description: URL-encoded full path to the new file.
       required: false
       isArray: false
     - name: file_content
@@ -117,7 +117,7 @@ script:
       isArray: false
     - auto: PREDEFINED
       name: execute_filemode
-      description: Enables or disables the execute flag on the file. Can be true or false.
+      description: Enables or disables the execute flag on the file. 
       required: false
       isArray: false
       predefined:
@@ -131,10 +131,10 @@ script:
       description: Name of the new branch to create.
       type: String
   - name: gitlab-file-update
-    description: Editing existing file in repository.
+    description: Edit an existing file in the repository.
     arguments:
     - name: file_path
-      description: URL-encoded full path to new file.
+      description: URL-encoded full path to the new file.
       required: true
       isArray: false
       type: String
@@ -149,7 +149,7 @@ script:
     - auto: PREDEFINED
       defaultValue: text
       name: encoding
-      description: Change encoding to base64. Default is text.
+      description: Change encoding to base64. 
       required: false
       isArray: false
       type: String
@@ -165,7 +165,7 @@ script:
       required: false
       isArray: false
     - name: entry_id
-      description: Entry id of the file.
+      description: Entry ID of the file. 
       required: false
       isArray: false
     - name: file_content
@@ -182,7 +182,7 @@ script:
       isArray: false
     - auto: PREDEFINED
       name: execute_filemode
-      description: Enables or disables the execute flag on the file. Can be true or false.
+      description: Enables or disables the execute flag on the file. 
       required: false
       isArray: false
       predefined:
@@ -196,7 +196,7 @@ script:
       contextPath: GitLab.File.branch
       description: The name of the branch.
   - name: gitlab-file-delete
-    description: Editing existing file in repository.
+    description: Delete a file in the repository.
     arguments:
     - name: file_path
       description: URL-encoded full path of the file.
@@ -216,46 +216,46 @@ script:
     description: Get a list of a project's issues.
     arguments:
     - name: assignee_id
-      description: Return issues assigned to the given user id. The command gitlab-project-user-list gives a list of all relevent users.
+      description: The ID assigned to the user. The command gitlab-project-user-list gives a list of all relevant users.
       required: false
       isArray: false
     - name: assignee_username
-      description: Return issues assigned to the given username.
+      description: The username assigned to the user.
       required: false
       isArray: false
     - name: author_id
-      description: Return issues created by the given user id
+      description: The ID of the author of the issue.
       required: false
       isArray: false
     - name: author_username
-      description: Return issues created by the given username.
+      description: The username of the author of the issue.
       required: false
       isArray: false
     - name: confidential
-      description: Filter confidential or public issues.
+      description: Whether to filter confidential or public issues.
       type: Boolean
       required: false
       isArray: false
     - name: created_after
-      description: Return issues created on or after the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z)
+      description: Return issues created on or after the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z).
       required: false
       isArray: false
     - name: created_before
-      description: Return issues created on or before the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z)
+      description: Return issues created on or before the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z).
       required: false
       isArray: false
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response.
+      description: Return a partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
       - 'true'
       - 'false'
-    - auto: PREDEFINED
+    - auto: PREDEFINED 
       name: due_date
-      description: Return issues that have no due date, are overdue, or whose due date is this week, this month, or between two weeks ago and next month.
+      description: Return issues based on this due date.
       type: List
       required: false
       isArray: false
@@ -274,7 +274,7 @@ script:
       isArray: false
     - auto: PREDEFINED
       name: issue_type
-      description: Filter to a given type of issue. One of issue, incident, or test_case.
+      description: Filter to a given type of issue. 
       required: false
       isArray: false
       predefined:
@@ -282,7 +282,7 @@ script:
       - incident
       - test_case
     - name: labels
-      description: Comma-separated list of label names, issues must have all labels to be returned. None lists all issues with no labels
+      description: Comma-separated list of label names. Issues must have all labels to be returned. None lists all issues with no labels.
       required: false
       isArray: false
     - name: milestone
@@ -292,7 +292,7 @@ script:
     - auto: PREDEFINED
       name: order_by
       defaultValue: created_at
-      description: Return issues ordered by created_at, updated_at, priority, due_date, relative_position, label_priority, milestone_due, popularity, weight fields. Default is created_at
+      description: The method used to order the retrieved issues. 
       required: false
       predefined:
       - created_at
@@ -307,7 +307,7 @@ script:
     - auto: PREDEFINED
       name: scope
       defaultValue: all
-      description: Return issues for the given scope
+      description: Return issues for the given scope.
       required: false
       isArray: false
       predefined:
@@ -315,13 +315,13 @@ script:
       - assigned_to_me
       - all
     - name: search
-      description: Search project issues against their title and description
+      description: Search project issues against their title and description.
       required: false
       isArray: false
     - auto: PREDEFINED
       name: sort
       defaultValue: desc
-      description: Return issues sorted in asc or desc order. Default is desc
+      description: Return issues sorted in asc or desc order. 
       required: false
       isArray: false
       predefined:
@@ -350,13 +350,13 @@ script:
       isArray: false
     - defaultValue: 1
       name: page
-      description: The number of page to retrieve results from.
+      description: The page number of the results to retrieve. Minimum value is 1.
       required: false
       isArray: false
     outputs:
     - type: Number
       contextPath: GitLab.Issue.iid
-      description: The issue internal Id.
+      description: The issue internal ID.
     - type: String
       contextPath: GitLab.Issue.title
       description: The title of the issue.
@@ -374,28 +374,28 @@ script:
       description: The milestone title.
     - type: String
       contextPath: GitLab.Issue.state
-      description: The state of the issue(closed or opened).
+      description: The state of the issue (closed or opened).
     - type: String
       contextPath: GitLab.Issue.assignee.name
       description: The name of the assignee.
   - name: gitlab-issue-update
-    description: Updates an existing project issue. This call is also used to mark an issue as closed. The iid can be taken from gitlab-issue-list.
+    description: Updates an existing project issue. This call is also used to mark an issue as closed. The ID can be taken from gitlab-issue-list.
     arguments:
     - name: issue_iid
-      description: The internal ID of a project's issue
+      description: The internal ID of a project's issue.
       required: true
       isArray: false
       type: integer
     - name: add_labels
-      description: Comma-separated label names to add to an issue.
+      description: Comma-separated list of label names to add to an issue.
       required: false
       isArray: false
     - name: assignee_ids
-      description: The ID of the users to assign the issue to.  The command gitlab-project-user-list gives a list of all relevent users.
+      description: The ID of the users to assign the issue to. The command gitlab-project-user-list gives a list of all relevant users.
       required: false
       isArray: false
     - name: confidential
-      description: Updates an issue to be confidential
+      description: Updates an issue to be confidential.
       required: false
       isArray: false
     - name: description
@@ -417,12 +417,12 @@ script:
       required: false
       isArray: false
     - name: epic_iid
-      description: IID of the epic to add the issue to. Valid values are greater than or equal to 0.
+      description: Internal ID of the epic to add the issue to. Valid values are greater than or equal to 0.
       required: false
       isArray: false
     - auto: PREDEFINED
       name: issue_type
-      description: Updates the type of issue. One of issue, incident, or test_case.
+      description: Updates the type of issue. 
       required: false
       isArray: false
       predefined:
@@ -433,33 +433,33 @@ script:
       description: The global ID of a milestone to assign the issue to. Set to 0 or provide an empty value to unassign a milestone.
       required: false
       isArray: false
-    - name: remove_labels
-      description: Comma-separated label names to remove from an issue.
-      required: false
-      isArray: false
-    - name: state_event
-      description: The state event of an issue. Set close to close the issue and reopen to reopen it
-      required: false
-      isArray: false
-    - name: title
-      description: The title of an issue
-      required: false
-      isArray: false
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response.
+      description: Return a partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
       - 'true'
-      - 'false'
+      - 'false' 
+    - name: remove_labels
+      description: Comma-separated list of label names to remove from an issue.
+      required: false
+      isArray: false
+    - name: state_event
+      description: The state event of an issue. Set "close" to close the issue and "reopen" to reopen it.
+      required: false
+      isArray: false
+    - name: title
+      description: The title of an issue.
+      required: false
+      isArray: false
     outputs:
     - contextPath: GitLab.Issue.id
-      description: The issue id.
+      description: The issue ID.
       type: Number
     - contextPath: GitLab.Issue.iid
-      description: The issue's iid.
+      description: The issue's internal ID.
       type: Number
     - contextPath: GitLab.Issue.project_id
       description: The project ID.
@@ -485,7 +485,7 @@ script:
     - contextPath: GitLab.Issue.author.name
       description: The author name.
     - contextPath: GitLab.Issue.author.avatar_url
-      description: The avatar url.
+      description: The avatar URL.
       type: Unknown
     - contextPath: GitLab.Issue.author.username
       description: The username of the author.
@@ -495,18 +495,18 @@ script:
     - contextPath: GitLab.Issue.author.state
       description: The state of the issue.
     - contextPath: GitLab.Issue.author.web_url
-      description: The author url.
+      description: The author URL.
     - contextPath: GitLab.Issue.closed_by.state
       description: The state of the project at closing time.
     - contextPath: GitLab.Issue.closed_by.web_url
-      description: The web url of the author who closed the project.
+      description: The web URL of the author who closed the project.
     - contextPath: GitLab.Issue.closed_by.avatar_url
-      description: The avatar url of the author who closed the project.
+      description: The avatar URL of the author who closed the project.
       type: Unknown
     - contextPath: GitLab.Issue.closed_by.username
       description: The username of the author who closed the project.
     - contextPath: GitLab.Issue.closed_by.id
-      description: The id of the author who closed the project.
+      description: The ID of the author who closed the project.
       type: Number
     - contextPath: GitLab.Issue.closed_by.name
       description: The name of the author who closed the project.
@@ -526,7 +526,7 @@ script:
       description: The projects milestones.
       type: Unknown
     - contextPath: GitLab.Issue.subscribed
-      description: if the user is subscribed to the project.
+      description: Whether the user is subscribed to the project.
       type: Boolean
     - contextPath: GitLab.Issue.user_notes_count
       description: The user notes count.
@@ -535,13 +535,13 @@ script:
       description: The due date of the project.
       type: Date
     - contextPath: GitLab.Issue.web_url
-      description: The project web url.
+      description: The project web URL.
     - contextPath: GitLab.Issue.references.short
-      description: The issue's refrences's short ID.
+      description: The issue's reference's short ID.
     - contextPath: GitLab.Issue.references.relative
       description: The number of relatives of the project.
     - contextPath: GitLab.Issue.references.full
-      description: The number of reference.
+      description: The number of references.
     - contextPath: GitLab.Issue.time_stats.time_estimate
       description: The total time estimate to the project.
       type: Number
@@ -554,62 +554,62 @@ script:
       description: The total time estimate to the project.
       type: Unknown
     - contextPath: GitLab.Issue.confidential
-      description: If the project confidential.
+      description: Whether the project is confidential.
       type: Boolean
     - contextPath: GitLab.Issue.discussion_locked
-      description: If the discussion is locked.
+      description: Whether the discussion is locked.
       type: Boolean
     - contextPath: GitLab.Issue.issue_type
       description: The issue type.
     - contextPath: GitLab.Issue.severity
       description: The severity of the project.
     - contextPath: GitLab.Issue._links.self
-      description: dictionary  of links.
+      description: Dictionary of links.
     - contextPath: GitLab.Issue._links.notes
-      description: Notes of links.
+      description: Link notes.
     - contextPath: GitLab.Issue._links.award_emoji
       description: Award emoji of the project.
     - contextPath: GitLab.Issue._links.project
       description: Link to the project.
     - contextPath: GitLab.Issue._links.closed_as_duplicate_of
-      description: Link to closed duplicate of the project.
+      description: Link to a closed duplicate of the project.
     - contextPath: GitLab.Issue.task_completion_status.count
-      description: Dictionray of completion status.
+      description: Dictionary of the completion status.
       type: Number
     - contextPath: GitLab.Issue.task_completion_status.completed_count
-      description: dictionary of status.
+      description: Dictionary of status.
       type: Number
   - name: gitlab-commit-list
     description: Get a list of repository commits in a project.
     arguments:
     - name: commit_id
-      description: If the user provided a value, a specific commit will be retrieved. otherwise, all the commits will be retrieved(sha).
+      description: If the user provided a value, a specific commit will be retrieved. otherwise, all the commits will be retrieved (SHA).
       required: false
       isArray: false
     - name: ref_name
-      description: The name of a repository branch, tag or revision range, or if not given the default branch.
+      description: The name of a repository branch, tag, or revision range, or if not given the default branch.
       required: false
       isArray: false
     - name: created_before
-      description: Only commits before or on this date are returned (until). Expected in ISO 8601 format (2019-03-15T08:00:00Z)
+      description: Only commits before or on this date are returned (until). Expected in ISO 8601 format (2019-03-15T08:00:00Z).
       required: false
       isArray: false
     - name: created_after
-      description: Only commits after or on this date are returned(since). Expected in ISO 8601 format (2019-03-15T08:00:00Z)
+      description: Only commits after or on this date are returned(since). Expected in ISO 8601 format (2019-03-15T08:00:00Z).
       required: false
       isArray: false
     - name: path
-      description: The file path
+      description: The file path.
       required: false
       isArray: false
     - name: all
-      description: Retrieve every commit from the repository.
+      description: Whether to retrieve every commit from the repository.
       type: Boolean
       required: false
       isArray: false
     - name: with_stats
       type: Boolean
-      description: Stats about each commit are added to the response.
+      description: Whether to retrieve the stats about each commit.
       required: false
       isArray: false
     - name: first_parent
@@ -618,7 +618,7 @@ script:
       isArray: false
     - auto: PREDEFINED
       name: order
-      description: List commits in order. Possible values- default, topo. Defaults to default, the commits are shown in reverse chronological order.
+      description: List commits in order. Defaults to default, the commits are shown in reverse chronological order.
       type: List
       required: false
       isArray: false
@@ -627,23 +627,23 @@ script:
       - topo
     - defaultValue: 50
       name: limit
-      description: Total commits to show.
+      description: Total number of commits to show.
       required: false
       isArray: false
     - defaultValue: 1
       name: page
-      description: Present commits from page.
+      description: The page number of the results to retrieve. Minimum value is 1.
       required: false
       isArray: false
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response.
+      description: Return a partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
       - 'true'
-      - 'false'
+      - 'false' 
     outputs:
     - contextPath: GitLab.Commit.id
       description: The commit ID.
@@ -655,7 +655,7 @@ script:
       description: The title of the commit.
       type: String
     - contextPath: GitLab.Commit.author_name
-      description: The commit's author's.
+      description: The commit's author's name.
       type: String
     - contextPath: GitLab.Commit.author_email
       description: The commit's author's email.
@@ -664,32 +664,32 @@ script:
       description: The commit authored date.
       type: Date
     - contextPath: GitLab.Commit.committer_name
-      description: The commit commiter's name.
+      description: The commit committer's name.
       type: String
     - contextPath: GitLab.Commit.committer_email
-      description: The commit commiter's email.
+      description: The commit committer's email.
       type: String
     - contextPath: GitLab.Commit.committed_date
       description: The commit committed date.
       type: Date
     - contextPath: GitLab.Commit.created_at
-      description: When the commit was created.
+      description: The date the commit was created.
       type: Date
     - contextPath: GitLab.Commit.message
       description: The message attached to the commit.
       type: String
     - contextPath: GitLab.Commit.parent_ids
-      description: The commit's parent ids.
+      description: The commit's parent IDs.
       type: String
     - contextPath: GitLab.Commit.web_url
-      description: The commit's web url.
+      description: The commit's web URL.
       type: String
   - name: gitlab-merge-request-list
     description: Get all merge requests for this project.
     arguments:
     - auto: PREDEFINED
       name: state
-      description: Return all merge requests or just those that are opened, closed, locked, or merged.
+      description: The state of the merge requests to return.
       required: false
       predefined:
       - opened
@@ -699,7 +699,7 @@ script:
     - auto: PREDEFINED
       name: order_by
       defaultValue: created_at
-      description: Return requests ordered by created_at, title or updated_at fields. Default is created_at.
+      description: The method used to order the retrieved issues. 
       required: false
       predefined:
       - created_at
@@ -708,7 +708,7 @@ script:
     - auto: PREDEFINED
       name: sort
       defaultValue: desc
-      description: Return requests sorted in asc or desc order. Default is desc.
+      description: Return requests sorted in asc or desc order. 
       required: false
       isArray: false
       predefined:
@@ -723,24 +723,24 @@ script:
       required: false
       isArray: false
     - name: created_after
-      description: Return merge requests created on or after the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z)
+      description: Return merge requests created on or after the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z).
       required: false
       isArray: false
     - name: created_before
-      description: Return merge requests created on or before the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z)
+      description: Return merge requests created on or before the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z).
       required: false
       isArray: false
     - name: updated_after
-      description: Return merge requests updated on or after the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z)
+      description: Return merge requests updated on or after the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z).
       required: false
       isArray: false
     - name: updated_before
-      description: Return merge requests updated on or before the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z)
+      description: Return merge requests updated on or before the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z).
       required: false
       isArray: false
     - auto: PREDEFINED
       name: scope
-      description: Return merge requests for the given scope- created_by_me, assigned_to_me, or all.
+      description: Return merge requests for the given scope.
       required: false
       isArray: false
       predefined:
@@ -756,15 +756,15 @@ script:
       required: false
       isArray: false
     - name: assignee_id
-      description: Returns merge requests assigned to the given user id.  The command gitlab-project-user-list gives a list of all relevent users.
+      description: Returns merge requests assigned to the given user ID. The command gitlab-project-user-list gives a list of all relevant users.
       required: false
       isArray: false
     - name: reviewer_id
-      description: Returns merge requests which have the user as a reviewer with the given user id.  The command gitlab-project-user-list gives a list of all relevent users.
+      description: Returns merge requests that have the user as a reviewer with the given user ID. The command gitlab-project-user-list gives a list of all relevant users.
       required: false
       isArray: false
     - name: reviewer_username
-      description: Returns merge requests which have the user as a reviewer with the given username.  The command gitlab-project-user-list gives a list of all relevent users.
+      description: Returns merge requests that have the user as a reviewer with the given username. The command gitlab-project-user-list gives a list of all relevant users.
       required: false
       isArray: false
     - name: source_branch
@@ -786,34 +786,34 @@ script:
       isArray: false
     - defaultValue: 1
       name: page
-      description: Present merge requests from page.
+      description: The page number of the results to retrieve. Minimum value is 1.
       required: false
       isArray: false
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response.
+      description: Return a partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
       - 'true'
-      - 'false'
+      - 'false' 
     outputs:
     - type: Number
       contextPath: GitLab.MergeRequest.iid
       description: The internal ID of the merge request.
     - type: String
       contextPath: GitLab.MergeRequest.title
-      description: The merge requests't title.
+      description: The merge request's title.
     - type: String
       contextPath: GitLab.MergeRequest.created_at
-      description: When the merge request's creation time.
+      description: The merge request's creation time.
     - type: Date
       contextPath: GitLab.MergeRequest.created_by
       description: The request's author.
     - type: Date
       contextPath: GitLab.MergeRequest.updated_at
-      description: When the merge request was update.
+      description: When the merge request was updated.
     - type: Unknown
       contextPath: GitLab.MergeRequest.status
       description: The status of the merge request.
@@ -825,7 +825,7 @@ script:
       description: When the merge request was merged.
     - type: Number
       contextPath: GitLab.MergeRequest.reviewers
-      description: The reviewer of the merge requests.
+      description: The reviewers of the merge request.
   - name: gitlab-merge-request-create
     description: Creates a new merge request.
     arguments:
@@ -842,15 +842,15 @@ script:
       required: true
       isArray: false
     - name: assignee_ids
-      description: The ID of the users to assign the MR to.  The command gitlab-project-user-list gives a list of all relevent users.
+      description: The ID of the users to assign the merge request to. The command gitlab-project-user-list gives a list of all relevant users.
       required: false
       isArray: false
     - name: reviewer_ids
-      description: The ID of the users added as a reviewer to the MR.  The command gitlab-project-user-list gives a list of all relevent users.
+      description: The ID of the users added as a reviewer to the merge request. The command gitlab-project-user-list gives a list of all relevant users.
       required: false
       isArray: false
     - name: description
-      description: description of MR. Limited to 1,048,576 characters.
+      description: Description of the merge request. Limited to 1,048,576 characters.
       required: false
       isArray: false
     - name: target_project_id
@@ -862,7 +862,7 @@ script:
       required: false
       isArray: false
     - name: milestone_id
-      description: Labels for MR as a comma-separated list.
+      description: A comma-separated list of labels for a merge request.
       required: false
       isArray: false
     - name: remove_source_branch
@@ -888,19 +888,19 @@ script:
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response.
+      description: Return a partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
       - 'true'
-      - 'false'
+      - 'false' 
     outputs:
     - type: Number
       contextPath: GitLab.MergeRequest.id
       description: The merge request ID. Alias of allow_collaboration.
     - type: Number
       contextPath: GitLab.MergeRequest.iid
-      description: The merge request IID.
+      description: The merge request internal ID.
     - type: Number
       contextPath: GitLab.MergeRequest.project_id
       description: The project ID of the merge request.
@@ -936,7 +936,7 @@ script:
       description: The time the merge request was closed.
     - type: String
       contextPath: GitLab.MergeRequest.target_branch
-      description: The merge request source branch.
+      description: The merge request target branch.
     - type: String
       contextPath: GitLab.MergeRequest.source_branch
       description: The merge request source branch.
@@ -951,7 +951,7 @@ script:
       description: The merge request downvotes.
     - type: Number
       contextPath: GitLab.MergeRequest.author.id
-      description: The merge request author's id.
+      description: The merge request author's ID.
     - type: String
       contextPath: GitLab.MergeRequest.author.username
       description: The merge request author's username.
@@ -963,13 +963,13 @@ script:
       description: The merge request author's state.
     - type: String
       contextPath: GitLab.MergeRequest.author.avatar_url
-      description: The merge request author's avatar url.
+      description: The merge request author's avatar URL.
     - type: String
       contextPath: GitLab.MergeRequest.author.web_url
-      description: The merge request author's web url.
+      description: The merge request author's web URL.
     - type: Number
       contextPath: GitLab.MergeRequest.assignees.id
-      description: The merge request assignees's id.
+      description: The merge request assignees's ID.
     - type: String
       contextPath: GitLab.MergeRequest.assignees.username
       description: The merge request assignees's username.
@@ -981,13 +981,13 @@ script:
       description: The merge request assignees's state.
     - type: String
       contextPath: GitLab.MergeRequest.assignees.avatar_url
-      description: The merge request assignees's avatar url.
+      description: The merge request assignees's avatar URL.
     - type: String
       contextPath: GitLab.MergeRequest.assignees.web_url
-      description: The merge request assignees's web url.
+      description: The merge request assignees's web URL.
     - type: Number
       contextPath: GitLab.MergeRequest.assignee.id
-      description: The merge request assignees's id.
+      description: The merge request assignees's ID.
     - type: String
       contextPath: GitLab.MergeRequest.assignee.username
       description: The merge request assignees's username.
@@ -999,19 +999,19 @@ script:
       description: The merge request assignees's state.
     - type: String
       contextPath: GitLab.MergeRequest.assignee.avatar_url
-      description: The merge request assignees's avatar_url.
+      description: The merge request assignees's avatar URL.
     - type: String
       contextPath: GitLab.MergeRequest.assignee.web_url
-      description: The merge request assignees's web_url.
+      description: The merge request assignees's web URL.
     - type: Number
       contextPath: GitLab.MergeRequest.source_project_id
-      description: The merge request source project id.
+      description: The merge request source project ID.
     - type: Number
       contextPath: GitLab.MergeRequest.target_project_id
-      description: The merge request target project id.
+      description: The merge request target project ID.
     - type: Boolean
       contextPath: GitLab.MergeRequest.draft
-      description: The merge request draft.
+      description: Whether the merge request is a draft.
     - type: Boolean
       contextPath: GitLab.MergeRequest.work_in_progress
       description: The merge request work in progress.
@@ -1020,52 +1020,52 @@ script:
       description: The global ID of a milestone.
     - type: Boolean
       contextPath: GitLab.MergeRequest.merge_when_pipeline_succeeds
-      description: If to merge when pipeline succeeds.
+      description: Whether to merge when the pipeline succeeds.
     - type: String
       contextPath: GitLab.MergeRequest.merge_status
       description: The merge status.
     - type: String
       contextPath: GitLab.MergeRequest.sha
-      description: The request's sha.
+      description: The request's SHA.
     - type: Unknown
       contextPath: GitLab.MergeRequest.merge_commit_sha
-      description: The merge commit sha.
+      description: The merge commit SHA.
     - type: Unknown
       contextPath: GitLab.MergeRequest.squash_commit_sha
-      description: The squash commit sha.
+      description: The squash commit SHA.
     - type: Unknown
       contextPath: GitLab.MergeRequest.discussion_locked
-      description: discussion locked value.
+      description: The discussion locked value.
     - type: Unknown
       contextPath: GitLab.MergeRequest.should_remove_source_branch
-      description: If should remove source branch.
+      description: Whether to remove the source branch.
     - type: Unknown
       contextPath: GitLab.MergeRequest.force_remove_source_branch
-      description: If to force remove source branch.
+      description: Whether to force remove the source branch.
     - type: String
       contextPath: GitLab.MergeRequest.reference
       description: The merge request's reference.
     - type: String
       contextPath: GitLab.MergeRequest.references.short
-      description: The merge requests refrence's short.
+      description: The merge request's reference's short.
     - type: String
       contextPath: GitLab.MergeRequest.references.relative
-      description: The merge requests refrence's relative.
+      description: The merge request's reference's relative.
     - type: String
       contextPath: GitLab.MergeRequest.references.full
-      description: The merge requests refrence's full.
+      description: The merge request's reference's full.
     - type: String
       contextPath: GitLab.MergeRequest.web_url
-      description: The merge request web url.
+      description: The merge request web URL.
     - type: Number
       contextPath: GitLab.MergeRequest.time_stats.time_estimate
       description: The merge requests time estimate.
     - type: Number
       contextPath: GitLab.MergeRequest.time_stats.total_time_spent
-      description: The merge requests total time spent.
+      description: The merge request's total time spent.
     - type: Unknown
       contextPath: GitLab.MergeRequest.time_stats.human_time_estimate
-      description: The merge requests human time estimate.
+      description: The merge request's human time estimate.
     - type: Unknown
       contextPath: GitLab.MergeRequest.time_stats.human_total_time_spent
       description: The merge request's human total time spent.
@@ -1074,34 +1074,34 @@ script:
       description: The merge request's squash.
     - type: Number
       contextPath: GitLab.MergeRequest.task_completion_status.count
-      description: The merge request's task completion status- count.
+      description: The merge request's task completion status count.
     - type: Number
       contextPath: GitLab.MergeRequest.task_completion_status.completed_count
-      description: The merge request's task completion status- completed count.
+      description: The merge request's task completion status completed count.
     - type: Boolean
       contextPath: GitLab.MergeRequest.has_conflicts
-      description: If the request has conflict.
+      description: Whether the request has conflicts.
     - type: Boolean
       contextPath: GitLab.MergeRequest.blocking_discussions_resolved
-      description: If the merge request blocking discussion are resolved.
+      description: Whether the merge request blocking discussions are resolved.
     - type: Unknown
       contextPath: GitLab.MergeRequest.approvals_before_merge
-      description: Th approvals before merge.
+      description: The approvals before merge.
     - type: Boolean
       contextPath: GitLab.MergeRequest.subscribed
-      description: If subscribed.
+      description: Whether the merge request is subscribed.
     - type: String
       contextPath: GitLab.MergeRequest.changes_count
-      description: Counter of changes.
+      description: The number of changes to the merge request.
     - type: Unknown
       contextPath: GitLab.MergeRequest.latest_build_started_at
-      description: When latest build started at.
+      description: The date when the latest build started.
     - type: Unknown
       contextPath: GitLab.MergeRequest.latest_build_finished_at
-      description: When latest build finished at.
+      description: The date when the latest build finished.
     - type: Unknown
       contextPath: GitLab.MergeRequest.first_deployed_to_production_at
-      description: When is the first deployed to production at.
+      description: The date when the merge request was first deployed to production.
     - type: Unknown
       contextPath: GitLab.MergeRequest.pipeline
       description: The merge request's pipeline.
@@ -1110,24 +1110,24 @@ script:
       description: The merge request's head pipeline.
     - type: String
       contextPath: GitLab.MergeRequest.diff_refs.base_sha
-      description: The refrence's base sha.
+      description: The reference's base SHA.
     - type: String
       contextPath: GitLab.MergeRequest.diff_refs.head_sha
-      description: The refrence's head sha.
+      description: The reference's head SHA.
     - type: String
       contextPath: GitLab.MergeRequest.diff_refs.start_sha
-      description: The refrence's start sha.
+      description: The reference's start SHA.
     - type: Unknown
       contextPath: GitLab.MergeRequest.merge_error
-      description: If exist, the error of the merge.
+      description: If an error exists, the error of the merge request.
     - type: Boolean
       contextPath: GitLab.MergeRequest.user.can_merge
-      description: If the user can merge.
+      description: Whether the user can merge.
   - name: gitlab-merge-request-update
-    description: Updates an existing merge request. You can change the target branch, title, or even close the MR.
+    description: Updates an existing merge request. You can change the target branch, title, or even close the merge request.
     arguments:
     - name: merge_request_id
-      description: The ID of a merge request. Can be taken from gitlab-merge-request-list.
+      description: The ID of a merge request. Can be taken from the gitlab-merge-request-list command.
       required: true
       isArray: false
     - name: target_branch
@@ -1135,35 +1135,35 @@ script:
       required: true
       isArray: false
     - name: title
-      description: Title of MR.
+      description: Title of the merge request.
       required: true
       isArray: false
     - name: assignee_ids
-      description: The ID of the users to assign the MR to.  The command gitlab-project-user-list gives a list of all relevent users.
+      description: The ID of the users to assign the merge request to. The gitlab-project-user-list command provides a list of all relevant users.
       required: false
       isArray: true
     - name: reviewer_ids
-      description: The ID of the users set as a reviewer to the MR. The command gitlab-project-user-list gives a list of all relevent users.
+      description: The ID of the users set as a reviewer to the merge request. The gitlab-project-user-list command provides a list of all relevant users.
       required: false
       isArray: true
     - name: description
-      description: description of MR. Limited to 1,048,576 characters.
+      description: Description of the merge request. Limited to 1,048,576 characters.
       required: false
       isArray: false
     - name: target_project_id
-      description: The target project id.
+      description: The target project ID.
       required: false
       isArray: false
     - name: labels
-      description: Comma-separated label names for a merge request. Set to an empty string to unassign all labels.
+      description: Comma-separated list of label names for a merge request. Set to an empty string to unassign all labels.
       required: false
       isArray: false
     - name: add_labels
-      description: Comma-separated label names to add to a merge request.
+      description: Comma-separated list of label names to add to a merge request.
       required: false
       isArray: false
     - name: remove_labels
-      description: Comma-separated label names to remove from a merge request.
+      description: Comma-separated list of label names to remove from a merge request.
       required: false
       isArray: false
     - name: milestone_id
@@ -1180,17 +1180,17 @@ script:
       isArray: false
       type: Boolean
     - name: squash
-      description: Squash commits into a single commit when merging.
+      description: Whether to squash commits into a single commit when merging.
       required: false
       isArray: false
       type: Boolean
     - name: discussion_locked
-      description: Flag indicating if the merge request's discussion is locked. If the discussion is locked only project members can add, edit or resolve comments.
+      description: Flag indicating if the merge request's discussion is locked. If the discussion is locked only project members can add, edit, or resolve comments.
       required: false
       isArray: false
       type: Boolean
     - name: allow_collaboration
-      description: Allow commits from members who can merge to the target branch.
+      description: Whether to allow commits from members who can merge to the target branch.
       required: false
       isArray: false
       type: Boolean
@@ -1202,19 +1202,19 @@ script:
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response.
+      description: Return a partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
       - 'true'
-      - 'false'
+      - 'false' 
     outputs:
     - type: Number
       contextPath: GitLab.MergeRequest.id
       description: The merge request ID. Alias of allow_collaboration.
     - type: Number
       contextPath: GitLab.MergeRequest.iid
-      description: The merge request IID.
+      description: The merge request internal ID.
     - type: Number
       contextPath: GitLab.MergeRequest.project_id
       description: The project ID of the merge request.
@@ -1235,7 +1235,7 @@ script:
       description: The time the merge request was updated.
     - type: String
       contextPath: GitLab.MergeRequest.target_branch
-      description: The merge request source branch.
+      description: The merge request target branch.
     - type: String
       contextPath: GitLab.MergeRequest.source_branch
       description: The merge request source branch.
@@ -1247,7 +1247,7 @@ script:
       description: The merge request downvotes.
     - type: Number
       contextPath: GitLab.MergeRequest.author.id
-      description: The merge request author's id.
+      description: The merge request author's ID.
     - type: String
       contextPath: GitLab.MergeRequest.author.username
       description: The merge request author's username.
@@ -1259,13 +1259,13 @@ script:
       description: The merge request author's state.
     - type: String
       contextPath: GitLab.MergeRequest.author.avatar_url
-      description: The merge request author's avatar url.
+      description: The merge request author's avatar URL.
     - type: String
       contextPath: GitLab.MergeRequest.author.web_url
-      description: The merge request author's web url.
+      description: The merge request author's web URL.
     - type: Number
       contextPath: GitLab.MergeRequest.assignee.id
-      description: The merge request assignees's id.
+      description: The merge request assignees's ID.
     - type: String
       contextPath: GitLab.MergeRequest.assignee.name
       description: The merge request assignees's name.
@@ -1277,13 +1277,13 @@ script:
       description: The merge request assignees's state.
     - type: String
       contextPath: GitLab.MergeRequest.assignee.avatar_url
-      description: The merge request assignees's avatar_url.
+      description: The merge request assignees's avatar URL.
     - type: String
       contextPath: GitLab.MergeRequest.assignee.web_url
-      description: The merge request assignees's web_url.
+      description: The merge request assignees's web URL.
     - type: Number
       contextPath: GitLab.MergeRequest.assignees.id
-      description: The merge request assignees's id.
+      description: The merge request assignees's ID.
     - type: String
       contextPath: GitLab.MergeRequest.assignees.username
       description: The merge request assignees's username.
@@ -1295,10 +1295,10 @@ script:
       description: The merge request assignees's state.
     - type: String
       contextPath: GitLab.MergeRequest.assignees.avatar_url
-      description: The merge request assignees's avatar url.
+      description: The merge request assignees's avatar URL.
     - type: String
       contextPath: GitLab.MergeRequest.assignees.web_url
-      description: The merge request assignees's web url.
+      description: The merge request assignees's web URL.
     - type: Number
       contextPath: GitLab.MergeRequest.reviewers.id
       description: The reviewer's ID.
@@ -1313,37 +1313,37 @@ script:
       description: The reviewer's state.
     - type: String
       contextPath: GitLab.MergeRequest.reviewers.avatar_url
-      description: The reviewer's avatar_url.
+      description: The reviewer's avatar URL.
     - type: String
       contextPath: GitLab.MergeRequest.reviewers.web_url
-      description: The reviewer's web_url.
+      description: The reviewer's web URL.
     - type: Number
       contextPath: GitLab.MergeRequest.source_project_id
-      description: The merge request source project id.
+      description: The merge request source project ID.
     - type: Number
       contextPath: GitLab.MergeRequest.target_project_id
-      description: The merge request target project id.
+      description: The merge request target project ID.
     - type: Unknown
       contextPath: GitLab.MergeRequest.labels
-      description: Merge request's labels
+      description: Merge request's labels.
     - type: Boolean
       contextPath: GitLab.MergeRequest.draft
-      description: If the merge request is draft.
+      description: Whether the merge request is a draft.
     - type: Boolean
       contextPath: GitLab.MergeRequest.work_in_progress
-      description: If the merge request is draft.
+      description: Whether the merge request is a draft.
     - type: Unknown
       contextPath: GitLab.MergeRequest.milestone
       description: Milestone details.
     - type: Integer
       contextPath: GitLab.MergeRequest.milestone.id
-      description: Milestone details.
+      description: Milestone ID.
     - type: Integer
       contextPath: GitLab.MergeRequest.milestone.iid
-      description: Milestone's id.
+      description: Milestone's internal ID.
     - type: Integer
       contextPath: GitLab.MergeRequest.milestone.project_id
-      description: Milestone's project_id.
+      description: Milestone's project ID.
     - type: String
       contextPath: GitLab.MergeRequest.milestone.title
       description: Milestone's title.
@@ -1358,79 +1358,79 @@ script:
       description: Milestone's state.
     - type: String
       contextPath: GitLab.MergeRequest.milestone.created_at
-      description: Milestone's created_at date.
+      description: Date the milestone was created.
     - type: String
       contextPath: GitLab.MergeRequest.milestone.updated_at
-      description: Milestone's updated_at date.
+      description: Date the milestone was updated.
     - type: String
       contextPath: GitLab.MergeRequest.milestone.due_date
-      description: Milestone's due_date.
+      description: Date the milestone is due.
     - type: String
       contextPath: GitLab.MergeRequest.milestone.start_date
-      description: Milestone's start_date.
+      description: Date the milestone started.
     - type: String
       contextPath: GitLab.MergeRequest.milestone.web_url
-      description: Milestone's web_url.
+      description: Milestone's web URL.
     - type: Boolean
       contextPath: GitLab.MergeRequest.merge_when_pipeline_succeeds
-      description: If to merge when pipeline succeeds.
+      description: Whether to merge when the pipeline succeeds.
     - type: String
       contextPath: GitLab.MergeRequest.merge_status
       description: The merge status.
     - type: String
       contextPath: GitLab.MergeRequest.merge_error
-      description: The merge error if exist.
+      description: The merge error if it exists.
     - type: String
       contextPath: GitLab.MergeRequest.sha
-      description: The request's sha.
+      description: The request's SHA.
     - type: Unknown
       contextPath: GitLab.MergeRequest.merge_commit_sha
-      description: The merge commit sha.
+      description: The merge commit SHA.
     - type: Unknown
       contextPath: GitLab.MergeRequest.squash_commit_sha
-      description: The squash commit sha.
+      description: The squash commit SHA.
     - type: Integer
       contextPath: GitLab.MergeRequest.user_notes_count
       description: The merge request user notes count.
     - type: Unknown
       contextPath: GitLab.MergeRequest.discussion_locked
-      description: discussion locked value.
+      description: The discussion locked value.
     - type: Unknown
       contextPath: GitLab.MergeRequest.should_remove_source_branch
-      description: If should remove source branch.
+      description: Whether to remove the source branch.
     - type: Unknown
       contextPath: GitLab.MergeRequest.force_remove_source_branch
-      description: If to force remove source branch.
+      description: Whether to force remove the source branch.
     - type: Boolean
       contextPath: GitLab.MergeRequest.allow_collaboration
-      description: If to allow collaboration.
+      description: Whether to allow collaboration.
     - type: Boolean
       contextPath: GitLab.MergeRequest.allow_maintainer_to_push
-      description: If to allow maintainer to push.
+      description: Whether to allow the maintainer to push.
     - type: String
       contextPath: GitLab.MergeRequest.web_url
-      description: The merge request web url.
+      description: The merge request web URL.
     - type: String
       contextPath: GitLab.MergeRequest.reference
       description: The merge request's reference.
     - type: String
       contextPath: GitLab.MergeRequest.references.short
-      description: The merge requests refrence's short.
+      description: The merge request's reference's short.
     - type: String
       contextPath: GitLab.MergeRequest.references.relative
-      description: The merge requests refrence's relative.
+      description: The merge requests reference's relative.
     - type: String
       contextPath: GitLab.MergeRequest.references.full
-      description: The merge requests refrence's full.
+      description: The merge request's reference's full.
     - type: Number
       contextPath: GitLab.MergeRequest.time_stats.time_estimate
-      description: The merge requests time estimate.
+      description: The merge request's time estimate.
     - type: Number
       contextPath: GitLab.MergeRequest.time_stats.total_time_spent
-      description: The merge requests total time spent.
+      description: The merge request's total time spent.
     - type: Unknown
       contextPath: GitLab.MergeRequest.time_stats.human_time_estimate
-      description: The merge requests human time estimate.
+      description: The merge request's human time estimate.
     - type: Unknown
       contextPath: GitLab.MergeRequest.time_stats.human_total_time_spent
       description: The merge request's human total time spent.
@@ -1439,52 +1439,49 @@ script:
       description: The merge request's squash.
     - type: Boolean
       contextPath: GitLab.MergeRequest.subscribed
-      description: If subscribed.
+      description: Whether the merge request is subscribed.
     - type: Integer
       contextPath: GitLab.MergeRequest.changes_count
-      description: The merge request number of changes.
+      description: The number of changes to the merge request.
     - type: Integer
       contextPath: GitLab.MergeRequest.merge_user.id
-      description: The merge requests merge user's ID.
+      description: The merge request's merge user's ID.
     - type: String
       contextPath: GitLab.MergeRequest.merge_user.name
-      description: The merge requests merge user's name.
+      description: The merge request's merge user's name.
     - type: String
       contextPath: GitLab.MergeRequest.merge_user.username
-      description: The merge requests merge user's username.
+      description: The merge request's merge user's username.
     - type: String
       contextPath: GitLab.MergeRequest.merge_user.state
-      description: The merge requests merge user's state.
+      description: The merge request's merge user's state.
     - type: String
       contextPath: GitLab.MergeRequest.merge_user.avatar_url
-      description: The merge requests merge user's .avatar url
+      description: The merge request's merge user's avatar URL.
     - type: Date
       contextPath: GitLab.MergeRequest.merged_at
-      description: The merge request was merged.
+      description: The date the merge request was merged.
     - type: String
       contextPath: GitLab.MergeRequest.closed_by
-      description: who close the request.
+      description: The user who closed the request.
     - type: Date
       contextPath: GitLab.MergeRequest.closed_at
-      description: The merge requests closing time.
+      description: The merge request's closing time.
     - type: Date
       contextPath: GitLab.MergeRequest.latest_build_started_at
-      description: When latest build started at.
-    - type: Date
-      contextPath: GitLab.MergeRequest.latest_build_started_at
-      description: When latest build started at.
+      description: The date when the latest build started.
     - type: Date
       contextPath: GitLab.MergeRequest.latest_build_finished_at
-      description: When latest build finished at.
+      description: The date when the latest build finished.
     - type: Date
       contextPath: GitLab.MergeRequest.first_deployed_to_production_at
-      description: When is the first deployed to production at.
+      description: The date when the merge request was first deployed to production.
     - type: Integer
       contextPath: GitLab.MergeRequest.pipeline.ID
       description: The merge request's pipeline's ID.
     - type: String
       contextPath: GitLab.MergeRequest.pipeline.sha
-      description: The merge request's pipeline's sha.
+      description: The merge request's pipeline's SHA.
     - type: String
       contextPath: GitLab.MergeRequest.pipeline.ref
       description: The merge request's pipeline's reference.
@@ -1493,30 +1490,30 @@ script:
       description: The merge request's pipeline's status.
     - type: String
       contextPath: GitLab.MergeRequest.pipeline.web_url
-      description: The merge request's pipeline's weburl.
+      description: The merge request's pipeline's web URL.
     - type: String
       contextPath: GitLab.MergeRequest.diff_refs.base_sha
-      description: The refrence's base sha.
+      description: The reference's base SHA.
     - type: String
       contextPath: GitLab.MergeRequest.diff_refs.head_sha
-      description: The refrence's head sha.
+      description: The reference's head SHA.
     - type: String
       contextPath: GitLab.MergeRequest.diff_refs.start_sha
-      description: The refrence's start sha.
+      description: The reference's start SHA.
     - type: Integer
       contextPath: GitLab.MergeRequest.diverged_commits_count
       description: The number of diverged commits.
     - type: Integer
       contextPath: GitLab.MergeRequest.task_completion_status.count
-      description: The number of task completion.
+      description: The status count of the number of task completion.
     - type: Integer
       contextPath: GitLab.MergeRequest.task_completion_status.completed_count
-      description: The number of task completed completion.
+      description: The number of tasks completed completions.
   - name: gitlab-issue-note-create
-    description: Creates a new note to a single project issue.
+    description: Creates a new note for a single project issue.
     arguments:
     - name: issue_iid
-      description: The IID of an issue.
+      description: The internal ID of an issue.
       required: true
       isArray: false
     - name: body
@@ -1525,25 +1522,25 @@ script:
       isArray: false
       type: String
     - name: confidential
-      description: will be removed in GitLab 16.0 and renamed to internal. The confidential flag of a note. Default is false.
+      description: Will be removed in GitLab 16.0 and renamed to internal. The confidential flag of a note. Default is false.
       required: false
       isArray: false
       type: Boolean
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response.
+      description: Return a partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
       - 'true'
-      - 'false'
+      - 'false' 
     outputs:
     - contextPath: GitLab.IssueNote.id
       description: The issue note ID.
       type: Number
     - contextPath: GitLab.IssueNote.type
-      description: The type of the Project- private, internal, or public.
+      description: The type of the Project - private, internal, or public.
       type: Unknown
     - contextPath: GitLab.IssueNote.body
       description: The issue note's body.
@@ -1564,43 +1561,43 @@ script:
       description: The issue note's author's state.
       type: String
     - contextPath: GitLab.IssueNote.author.avatar_url
-      description: The issue note's author's avatar_url.
+      description: The issue note's author's avatar URL.
       type: String
     - contextPath: GitLab.IssueNote.author.web_url
-      description: The issue note's author's web_url.
+      description: The issue note's author's web URL.
       type: String
     - contextPath: GitLab.IssueNote.created_at
-      description: The creation time of the issue note.
+      description: Date the issue note was created.
       type: Date
     - contextPath: GitLab.IssueNote.updated_at
-      description: Last update time of the issue note.
+      description: Date the issue note was updated.
       type: Date
     - contextPath: GitLab.IssueNote.system
-      description: If the issue note is a about changes to the project.
+      description: Whether the issue note is about changes to the project.
       type: Boolean
     - contextPath: GitLab.IssueNote.noteable_id
-      description: The noteable id of the issue note.
+      description: The noteable ID of the issue note.
       type: Number
     - contextPath: GitLab.IssueNote.noteable_type
       description: The noteable type of the issue note.
       type: String
     - contextPath: GitLab.IssueNote.resolvable
-      description: If the issue is resolvable.
+      description: Whether the issue is resolvable.
       type: Boolean
     - contextPath: GitLab.IssueNote.confidential
-      description: If the issue is confidential.
+      description: Whether the issue is confidential.
       type: Boolean
     - contextPath: GitLab.IssueNote.internal
-      description: If the issue is internal.
+      description: Whether the issue is internal.
       type: Boolean
     - contextPath: GitLab.IssueNote.noteable_iid
-      description: The noteable IID.
+      description: The noteable internal ID.
       type: Number
   - name: gitlab-issue-note-delete
     description: Deletes an existing note of an issue.
     arguments:
     - name: issue_iid
-      description: The IID of an issue.
+      description: The internal ID of an issue.
       required: true
       isArray: false
     - name: note_id
@@ -1610,16 +1607,16 @@ script:
     outputs:
     - type: String
       contextPath: GitLab.IssueNote.message
-      description: issue note message
+      description: The issue note message.
   - name: gitlab-issue-note-update
-    description: Modify existing note of an issue.
+    description: Modify an existing note of an issue.
     arguments:
     - name: issue_iid
-      description: The issue internal Id.
+      description: The issue internal ID.
       required: true
       isArray: false
     - name: note_id
-      description: The note Id.
+      description: The note ID.
       required: true
       isArray: false
     - name: body
@@ -1629,12 +1626,12 @@ script:
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response.
+      description: Return a partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
       - 'true'
-      - 'false'
+      - 'false' 
     outputs:
     - type: Number
       contextPath: GitLab.IssueNote.id
@@ -1662,19 +1659,19 @@ script:
       description: The issue note's author's state.
     - type: String
       contextPath: GitLab.IssueNote.author.avatar_url
-      description: The issue note's author's avatar url.
+      description: The issue note's author's avatar URL.
     - type: String
       contextPath: GitLab.IssueNote.author.web_url
-      description: The issue note's author's web url.
+      description: The issue note's author's web URL.
     - type: Date
       contextPath: GitLab.IssueNote.created_at
-      description: Date time string, date of creating the file.
+      description: Date the issue note was created.
     - type: Date
       contextPath: GitLab.IssueNote.updated_at
-      description: Date time string, date of updating the file.
+      description: Date the issue note was updated.
     - type: Boolean
       contextPath: GitLab.IssueNote.system
-      description: If the note is about changes to the object.
+      description: Whether the note is about changes to the object.
     - type: Number
       contextPath: GitLab.IssueNote.noteable_id
       description: The notable ID.
@@ -1683,13 +1680,13 @@ script:
       description: The notable type.
     - type: Boolean
       contextPath: GitLab.IssueNote.resolvable
-      description: If the thread is resolvable.
+      description: Whether the thread is resolvable.
     - type: Boolean
       contextPath: GitLab.IssueNote.confidential
-      description: If the thread is confidential.
+      description: Whether the thread is confidential.
     - type: Boolean
       contextPath: GitLab.IssueNote.internal
-      description: If the thread is internal.
+      description: Whether the thread is internal.
     - type: Number
       contextPath: GitLab.IssueNote.noteable_iid
       description: The notable internal ID.
@@ -1697,13 +1694,13 @@ script:
     description: Gets a list of all notes for a single issue.
     arguments:
     - name: issue_iid
-      description: The IID of an issue in order to get a specific issue note.
+      description: The internal ID of an issue in order to get a specific issue note.
       required: true
       isArray: false
     - auto: PREDEFINED
       name: order_by
       defaultValue: created_at
-      description: Return issue noted ordered by created_at, updated_at fields.
+      description: The method used to order the retrieved issues. 
       required: false
       predefined:
       - created_at
@@ -1711,7 +1708,7 @@ script:
     - auto: PREDEFINED
       name: sort
       defaultValue: desc
-      description: Return issue noted ordered by created_at, updated_at fields.
+      description: Return requests sorted in asc or desc order.
       required: false
       predefined:
       - desc
@@ -1730,12 +1727,12 @@ script:
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response.
+      description: Return a partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
       - 'true'
-      - 'false'
+      - 'false' 
     outputs:
     - type: Number
       contextPath: GitLab.IssueNote.id
@@ -1763,19 +1760,19 @@ script:
       description: The issue note's author's state.
     - type: String
       contextPath: GitLab.IssueNote.author.avatar_url
-      description: The issue note's author's avatar url.
+      description: The issue note's author's avatar URL.
     - type: String
       contextPath: GitLab.IssueNote.author.web_url
-      description: The issue note's author's web url.
+      description: The issue note's author's web URL.
     - type: Date
       contextPath: GitLab.IssueNote.created_at
-      description: Date time string, date of creating the file.
+      description: Date the issue note was created.
     - type: Date
       contextPath: GitLab.IssueNote.updated_at
-      description: Date time string, date of updating the file.
+      description: Date the issue note was updated.
     - type: Boolean
       contextPath: GitLab.IssueNote.system
-      description: If the note is about changes to the object.
+      description: Whether the note is about changes to the object.
     - type: Number
       contextPath: GitLab.IssueNote.noteable_id
       description: The notable ID.
@@ -1784,13 +1781,13 @@ script:
       description: The notable type.
     - type: Boolean
       contextPath: GitLab.IssueNote.resolvable
-      description: If the thread is resolvable.
+      description: Whether the thread is resolvable.
     - type: Boolean
       contextPath: GitLab.IssueNote.confidential
-      description: If the thread is confidential.
+      description: Whether the thread is confidential.
     - type: Boolean
       contextPath: GitLab.IssueNote.internal
-      description: If the thread is internal.
+      description: Whether the thread is internal.
     - type: Number
       contextPath: GitLab.IssueNote.noteable_iid
       description: The notable internal ID.
@@ -1798,13 +1795,13 @@ script:
     description: Gets a list of all notes for a single merge request.
     arguments:
     - name: merge_request_iid
-      description: The IID of a project merge request
+      description: The internal ID of a project merge request.
       required: true
       isArray: false
     - auto: PREDEFINED
       defaultValue: desc
       name: sort
-      description: Return merge request notes sorted in asc or desc order. Default is desc
+      description: Return merge request notes sorted in asc or desc order.
       required: false
       isArray: false
       predefined:
@@ -1813,7 +1810,7 @@ script:
     - auto: PREDEFINED
       defaultValue: created_at
       name: order_by
-      description: Return merge request notes ordered by created_at or updated_at fields. Default is created_at
+      description: The method used to order the retrieved issues. 
       required: false
       isArray: false
       predefined:
@@ -1826,18 +1823,18 @@ script:
       isArray: false
     - defaultValue: 1
       name: page
-      description: Present merge requests from page.
+      description: The page number of the results to retrieve. Minimum value is 1.
       required: false
       isArray: false
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response.
+      description: Return a partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
       - 'true'
-      - 'false'
+      - 'false' 
     outputs:
     - type: Number
       contextPath: GitLab.MergeRequestNote.id
@@ -1865,10 +1862,10 @@ script:
       description: The merge request note's author's state.
     - type: String
       contextPath: GitLab.MergeRequestNote.author.avatar_url
-      description: The merge request note's author's avatar url.
+      description: The merge request note's author's avatar URL.
     - type: String
       contextPath: GitLab.MergeRequestNote.author.web_url
-      description: The merge request note's author's web url.
+      description: The merge request note's author's web URL.
     - type: Date
       contextPath: GitLab.MergeRequestNote.created_at
       description: The merge request note's creation time.
@@ -1877,7 +1874,7 @@ script:
       description: The time of the last update of the merge request note.
     - type: Boolean
       contextPath: GitLab.MergeRequestNote.system
-      description: If the note is about changes to the object.
+      description: Whether the note is about changes to the object.
     - type: Number
       contextPath: GitLab.MergeRequestNote.noteable_id
       description: The merge request's noteable ID.
@@ -1886,21 +1883,21 @@ script:
       description: The merge request's noteable type.
     - type: Boolean
       contextPath: GitLab.MergeRequestNote.resolvable
-      description: If the merge request is resolvable.
+      description: Whether the merge request is resolvable.
     - type: Boolean
       contextPath: GitLab.MergeRequestNote.confidential
-      description: If the merge request is confidential.
+      description: Whether the merge request is confidential.
     - type: Boolean
       contextPath: GitLab.MergeRequestNote.internal
-      description: If the merge request is internal.
+      description: Whether the merge request is internal.
     - type: Number
       contextPath: GitLab.MergeRequestNote.noteable_iid
-      description: The merge request's noteable IID.
+      description: The merge request's noteable internal ID.
   - name: gitlab-merge-request-note-create
     description: Creates a new note for a single merge request.
     arguments:
     - name: merge_request_iid
-      description: The IID of a project merge request
+      description: The internal ID of a project merge request.
       required: true
       isArray: false
     - name: body
@@ -1910,12 +1907,12 @@ script:
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response.
+      description: Return a partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
       - 'true'
-      - 'false'
+      - 'false' 
     outputs:
     - type: Number
       contextPath: GitLab.MergeRequestNote.id
@@ -1943,10 +1940,10 @@ script:
       description: The merge request note's author's state.
     - type: String
       contextPath: GitLab.MergeRequestNote.author.avatar_url
-      description: The merge request note's author's avatar url.
+      description: The merge request note's author's avatar URL.
     - type: String
       contextPath: GitLab.MergeRequestNote.author.web_url
-      description: The merge request note's author's web url.
+      description: The merge request note's author's web URL.
     - type: Date
       contextPath: GitLab.MergeRequestNote.created_at
       description: The merge request note's creation time.
@@ -1955,7 +1952,7 @@ script:
       description: The time of the last update of the merge request note.
     - type: Boolean
       contextPath: GitLab.MergeRequestNote.system
-      description: If the note is about changes to the object.
+      description: Whether the note is about changes to the object.
     - type: Number
       contextPath: GitLab.MergeRequestNote.noteable_id
       description: The merge request's noteable ID.
@@ -1964,25 +1961,25 @@ script:
       description: The merge request's noteable type.
     - type: Boolean
       contextPath: GitLab.MergeRequestNote.resolvable
-      description: If the merge request is resolvable.
+      description: Whether the merge request is resolvable.
     - type: Boolean
       contextPath: GitLab.MergeRequestNote.confidential
-      description: If the merge request is confidential.
+      description: Whether the merge request is confidential.
     - type: Boolean
       contextPath: GitLab.MergeRequestNote.internal
-      description: If the merge request is internal.
+      description: Whether the merge request is internal.
     - type: Number
       contextPath: GitLab.MergeRequestNote.noteable_iid
-      description: The merge request's noteable IID.
+      description: The merge request's noteable internal ID.
   - name: gitlab-merge-request-note-update
     description: Modify existing note of a merge request.
     arguments:
     - name: merge_request_iid
-      description: The IID of a project merge request
+      description: The internal ID of a project merge request.
       required: true
       isArray: false
     - name: note_id
-      description: The ID of a note
+      description: The ID of a note.
       required: true
       isArray: false
     - name: body
@@ -1992,12 +1989,12 @@ script:
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response.
+      description: Return a partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
       - 'true'
-      - 'false'
+      - 'false' 
     outputs:
     - type: Number
       contextPath: GitLab.MergeRequestNote.id
@@ -2025,10 +2022,10 @@ script:
       description: The merge request note's author's state.
     - type: String
       contextPath: GitLab.MergeRequestNote.author.avatar_url
-      description: The merge request note's author's avatar url.
+      description: The merge request note's author's avatar URL.
     - type: String
       contextPath: GitLab.MergeRequestNote.author.web_url
-      description: The merge request note's author's web url.
+      description: The merge request note's author's web URL.
     - type: Date
       contextPath: GitLab.MergeRequestNote.created_at
       description: The merge request note's creation time.
@@ -2037,7 +2034,7 @@ script:
       description: The time of the last update of the merge request note.
     - type: Boolean
       contextPath: GitLab.MergeRequestNote.system
-      description: If the note is about changes to the object.
+      description: Whether the note is about changes to the object.
     - type: Number
       contextPath: GitLab.MergeRequestNote.noteable_id
       description: The merge request's noteable ID.
@@ -2046,25 +2043,25 @@ script:
       description: The merge request's noteable type.
     - type: Boolean
       contextPath: GitLab.MergeRequestNote.resolvable
-      description: If the merge request is resolvable.
+      description: Whether the merge request is resolvable.
     - type: Boolean
       contextPath: GitLab.MergeRequestNote.confidential
-      description: If the merge request is confidential.
+      description: Whether the merge request is confidential.
     - type: Boolean
       contextPath: GitLab.MergeRequestNote.internal
-      description: If the merge request is internal.
+      description: Whether the merge request is internal.
     - type: Number
       contextPath: GitLab.MergeRequestNote.noteable_iid
-      description: The merge request's noteable IID.
+      description: The merge request's noteable internal ID.
   - name: gitlab-merge-request-note-delete
     description: Deletes an existing note of a merge request.
     arguments:
     - name: merge_request_iid
-      description: The IID of a merge request
+      description: The internal ID of a merge request.
       required: true
       isArray: false
     - name: note_id
-      description: The ID of a note
+      description: The ID of a note.
       required: true
       isArray: false
     outputs: []
@@ -2072,7 +2069,7 @@ script:
     description: Create an issue.
     arguments:
     - name: labels
-      description: Comma separated values of labels to add to the issue.
+      description: Comma-separated list of labels to add to the issue.
       isArray: false
       required: false
     - name: title
@@ -2086,15 +2083,15 @@ script:
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response.
+      description: Return a partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
       - 'true'
-      - 'false'
+      - 'false' 
     outputs:
     - contextPath: GitLab.Issue.iid
-      description: The issue's IID.
+      description: The issue's internal ID.
       type: Number
     - contextPath: GitLab.Issue.created_at
       description: The issue's creation date.
@@ -2127,13 +2124,13 @@ script:
       description: The issue author's name.
       type: String
     - contextPath: GitLab.Issue.author.avatar_url
-      description: The issue author's avatar url.
+      description: The issue author's avatar URL.
       type: Unknown
     - contextPath: GitLab.Issue.author.state
       description: The issue author's state.
       type: String
     - contextPath: GitLab.Issue.author.web_url
-      description: The issue author's web url.
+      description: The issue author's web URL.
       type: String
     - contextPath: GitLab.Issue.author.id
       description: The issue author's ID.
@@ -2148,16 +2145,16 @@ script:
       description: The issue's last update date.
       type: Date
     - contextPath: GitLab.Issue.closed_at
-      description: The date that the issue has closed.
+      description: The date that the issue was closed.
       type: Unknown
     - contextPath: GitLab.Issue.closed_by
-      description: The one who had closed the issue if closed.
+      description: The user who closed the issue if closed.
       type: Unknown
     - contextPath: GitLab.Issue.milestone
       description: The issue's milestone title.
       type: Unknown
     - contextPath: GitLab.Issue.subscribed
-      description: If the user is subscribed to the issue(receive notifications about the issue).
+      description: Whether the user is subscribed to the issue (received notifications about the issue).
       type: Boolean
     - contextPath: GitLab.Issue.user_notes_count
       description: The number of the user notes.
@@ -2166,34 +2163,34 @@ script:
       description: The due date of the issue.
       type: Unknown
     - contextPath: GitLab.Issue.web_url
-      description: The issue's web url.
+      description: The issue's web URL.
       type: String
     - contextPath: GitLab.Issue.references.short
-      description: The issue's short refrences.
+      description: The issue's short references.
       type: String
     - contextPath: GitLab.Issue.references.relative
-      description: The issue's relative refrences.
+      description: The issue's relative references.
       type: String
     - contextPath: GitLab.Issue.references.full
-      description: The issue's full refrences.
+      description: The issue's full references.
       type: String
     - contextPath: GitLab.Issue.time_stats.time_estimate
       description: The time estimate to solve the issue.
       type: Number
     - contextPath: GitLab.Issue.time_stats.total_time_spent
-      description: The time that had spent to solve the issue.
+      description: The time that was spent to solve the issue.
       type: Number
     - contextPath: GitLab.Issue.time_stats.human_time_estimate
       description: The human time estimate to solve the issue.
       type: Unknown
     - contextPath: GitLab.Issue.time_stats.human_total_time_spent
-      description: The human time that had spent to solve the issue.
+      description: The human time that was spent to solve the issue.
       type: Unknown
     - contextPath: GitLab.Issue.confidential
-      description: If the issue is confidential.
+      description: Whether the issue is confidential.
       type: Boolean
     - contextPath: GitLab.Issue.discussion_locked
-      description: If the discussion is locked.
+      description: Whether the discussion is locked.
       type: Boolean
     - contextPath: GitLab.Issue.issue_type
       description: The issue's type.
@@ -2208,13 +2205,13 @@ script:
       description: The issue's notes' link.
       type: String
     - contextPath: GitLab.Issue._links.award_emoji
-      description: The issue's award_emoji's link.
+      description: The issue's award emoji's link.
       type: String
     - contextPath: GitLab.Issue._links.project
       description: The issue's project's link.
       type: String
     - contextPath: GitLab.Issue._links.closed_as_duplicate_of
-      description: The issue's closed_as_duplicate_of's link.
+      description: Link to a closed duplicate of the project.
       type: String
     - contextPath: GitLab.Issue.task_completion_status.count
       description: The issue's completion status counter.
@@ -2232,7 +2229,7 @@ script:
     - auto: PREDEFINED
       name: order_by
       defaultValue: created_at
-      description: Return projects ordered by id, name, path, created_at, updated_at, last_activity_at, or similarity fields. repository_size, storage_size, packages_size or wiki_size fields are only allowed for administrators.
+      description: The method used to order the retrieved issues. repository_size, storage_size, packages_size or wiki_size fields are only allowed for administrators.
       required: false
       predefined:
       - id
@@ -2243,7 +2240,7 @@ script:
       - last_activity_at
       - similarity
     - name: owned
-      description: Limit by projects explicitly owned by the current user.
+      description: Whether to limit by projects explicitly owned by the current user.
       type: boolean
       required: false
       isArray: false
@@ -2261,22 +2258,22 @@ script:
       - desc
     - name: visibility
       description: Limit by visibility public, internal, or private.
-      type: boolean
+      type: Boolean
       required: false
       isArray: false
     - name: with_issues_enabled
-      description: Limit by enabled issues feature.
+      description: Whether to limit by enabled issues feature.
       type: boolean
       required: false
       isArray: false
     - name: with_merge_requests_enabled
       type: boolean
-      description: Limit by enabled merge requests feature.
+      description: Whether to limit by enabled merge requests feature.
       required: false
       isArray: false
     - name: page
       defaultValue: 1
-      description: The page number.
+      description: The page number of the results to retrieve. Minimum value is 1.
       required: false
       isArray: false
     - defaultValue: 50
@@ -2287,12 +2284,12 @@ script:
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response.
+      description: Return a partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
       - 'true'
-      - 'false'
+      - 'false' 
     outputs:
     - type: Number
       contextPath: GitLab.Project.id
@@ -2320,25 +2317,25 @@ script:
       description: The project's default branch.
     - type: String
       contextPath: GitLab.Project.ssh_url_to_repo
-      description: The project's SSH url to repository.
+      description: The project's SSH URL to repository.
     - type: String
       contextPath: GitLab.Project.http_url_to_repo
-      description: The project's http url to repository.
+      description: The project's HTTP URL to repository.
     - type: String
       contextPath: GitLab.Project.web_url
-      description: The project's web url.
+      description: The project's web URL.
     - type: String
       contextPath: GitLab.Project.readme_url
-      description: The project's readme url.
+      description: The project's readme URL.
     - type: Unknown
       contextPath: GitLab.Project.avatar_url
-      description: The project's avatar url.
+      description: The project's avatar URL.
     - type: Number
       contextPath: GitLab.Project.forks_count
       description: Number of forks of the project.
     - type: Number
       contextPath: GitLab.Project.star_count
-      description: Number of star of the project.
+      description: Number of stars of the project.
     - type: Number
       contextPath: GitLab.Project.last_activity_at
       description: The last activity time.
@@ -2347,31 +2344,31 @@ script:
       description: Namespace ID.
     - type: String
       contextPath: GitLab.Project.namespace.name
-      description: The Project's namespace name.
+      description: The project's namespace name.
     - type: String
       contextPath: GitLab.Project.namespace.path
-      description: The Project's namespace path.
+      description: The project's namespace path.
     - type: String
       contextPath: GitLab.Project.namespace.kind
-      description: The Project's namespace kind.
+      description: The project's namespace kind.
     - type: String
       contextPath: GitLab.Project.namespace.full_path
-      description: The Project's namespace full path.
+      description: The project's namespace full path.
     - type: Unknown
       contextPath: GitLab.Project.namespace.parent_id
-      description: The Project's namespace parent ID.
+      description: The project's namespace parent ID.
     - type: Unknown
       contextPath: GitLab.Project.namespace.avatar_url
-      description: The Project's namespace avatar.
+      description: The project's namespace avatar URL.
     - type: String
       contextPath: GitLab.Project.namespace.web_url
-      description: The Project's namespace web url.
+      description: The project's namespace web URL.
     - type: String
       contextPath: GitLab.Project.container_registry_image_prefix
       description: The project container registry image prefix.
     - type: Dictionary
       contextPath: GitLab.Project._links.self
-      description: Dictionary of links for list project.
+      description: Dictionary of links for the list project.
     - type: String
       contextPath: GitLab.Project._links.issues
       description: Link to the issues of the project.
@@ -2386,7 +2383,7 @@ script:
       description: Link to the labels of the project.
     - type: String
       contextPath: GitLab.Project._links.events
-      description: Link to the events of thr project.
+      description: Link to the events of the project.
     - type: String
       contextPath: GitLab.Project._links.members
       description: Link to the members of the project.
@@ -2395,13 +2392,13 @@ script:
       description: Link to the cluster agents of the project.
     - type: String
       contextPath: GitLab.Project.packages_enabled
-      description: If the packages are enabled.
+      description: Whether the packages are enabled.
     - type: Boolean
       contextPath: GitLab.Project.empty_repo
-      description: If the repository is empty.
+      description: Whether the repository is empty.
     - type: Boolean
       contextPath: GitLab.Project.archived
-      description: If the project is archived.
+      description: Whether the project is archived.
     - type: String
       contextPath: GitLab.Project.visibility
       description: The visibility of the project Public, Private or Internal.
@@ -2413,7 +2410,7 @@ script:
       description: The cadence of the container expiration policy.
     - type: Boolean
       contextPath: GitLab.Project.container_expiration_policy.enabled
-      description: If the container expiration policy enabled.
+      description: Whether the container expiration policy enabled.
     - type: Number
       contextPath: GitLab.Project.container_expiration_policy.keep_n
       description: Keep n value.
@@ -2425,37 +2422,37 @@ script:
       description: Regex name of the container expiration policy.
     - type: Unknown
       contextPath: GitLab.Project.container_expiration_policy.name_regex_keep
-      description: Value of regex keep of the container expiration policy.
+      description: Value of the regex keep of the container expiration policy.
     - type: Date
       contextPath: GitLab.Project.container_expiration_policy.next_run_at
       description: Next run at value of the container expiration policy.
     - type: Boolean
       contextPath: GitLab.Project.issues_enabled
-      description: Issues enabled list project.
+      description: Whether issues are enabled.
     - type: Boolean
       contextPath: GitLab.Project.merge_requests_enabled
-      description: If the merge requests are enabled.
+      description: Whether the merge requests are enabled.
     - type: Boolean
       contextPath: GitLab.Project.wiki_enabled
-      description: If the wiki is enabled.
+      description: Whether the wiki is enabled.
     - type: Boolean
       contextPath: GitLab.Project.jobs_enabled
-      description: If the jobs are enabled.
+      description: Whether the jobs are enabled.
     - type: Boolean
       contextPath: GitLab.Project.snippets_enabled
-      description: If snippets are enabled.
+      description: Whether snippets are enabled.
     - type: Boolean
       contextPath: GitLab.Project.container_registry_enabled
-      description: The container registry is enabled.
+      description: Whether the container registry is enabled.
     - type: Boolean
       contextPath: GitLab.Project.service_desk_enabled
-      description: If the service desk is enabled.
+      description: Whether the service desk is enabled.
     - type: String
       contextPath: GitLab.Project.service_desk_address
       description: The service desk address.
     - type: Boolean
       contextPath: GitLab.Project.can_create_merge_request_in
-      description: If creating merge request is an option.
+      description: Whether creating a merge request is an option.
     - type: String
       contextPath: GitLab.Project.issues_access_level
       description: The access level of the issues.
@@ -2494,76 +2491,76 @@ script:
       description: The security and compliance access level.
     - type: Unknown
       contextPath: GitLab.Project.emails_disabled
-      description: If the emails are disabled.
+      description: Whether the emails are disabled.
     - type: Boolean
       contextPath: GitLab.Project.shared_runners_enabled
-      description: If shared runners is enabled.
+      description: Whether shared runners is enabled.
     - type: Boolean
       contextPath: GitLab.Project.lfs_enabled
-      description: If lfs are enabled.
+      description: Whether LFS is enabled.
     - type: Number
       contextPath: GitLab.Project.creator_id
       description: The creator ID.
     - type: Unknown
       contextPath: GitLab.Project.import_url
-      description: The import url pf list project.
+      description: The import URL of the list project.
     - type: Unknown
       contextPath: GitLab.Project.import_type
       description: The import type of the list project.
     - type: String
       contextPath: GitLab.Project.import_status
-      description: The import status
+      description: The import status.
     - type: Number
       contextPath: GitLab.Project.open_issues_count
-      description: The open issues count number.
+      description: The number of open issues.
     - type: Number
       contextPath: GitLab.Project.ci_default_git_depth
-      description: The ci default git depth value
+      description: The CI default git depth value.
     - type: Boolean
       contextPath: GitLab.Project.ci_forward_deployment_enabled
-      description: If the ci forward deployment is enabled.
+      description: Whether the CI forward deployment is enabled.
     - type: Boolean
       contextPath: GitLab.Project.ci_job_token_scope_enabled
-      description: If the ci job token scope is enabled.
+      description: Whether the CI job token scope is enabled.
     - type: Boolean
       contextPath: GitLab.Project.ci_separated_caches
-      description: If the ci separated caches is enabled.
+      description: Whether the CI separated caches is enabled.
     - type: Boolean
       contextPath: GitLab.Project.public_jobs
-      description: If there is public jobs in the project.
+      description: Whether there are public jobs in the project.
     - type: Number
       contextPath: GitLab.Project.build_timeout
       description: The timeout of the build.
     - type: String
       contextPath: GitLab.Project.auto_cancel_pending_pipelines
-      description: If the auto cancel pending pipelines is enabled.
+      description: Whether the auto cancel pending pipelines is enabled.
     - type: String
       contextPath: GitLab.Project.ci_config_path
-      description: The ci config path of the project list.
+      description: The CI config path of the project list.
     - type: Boolean
       contextPath: GitLab.Project.only_allow_merge_if_pipeline_succeeds
-      description: Only allow merge if pipeline succeeds.
+      description: Whether to only allow merges if the pipeline succeeds.
     - type: Boolean
       contextPath: GitLab.Project.ci_allow_fork_pipelines_to_run_in_parent_project
-      description: Ci allow fork pipelines to run in parent project.
+      description: Whether to allow fork pipelines to run in parent project.
     - type: Unknown
       contextPath: GitLab.Project.allow_merge_on_skipped_pipeline
-      description: Allow merge on skipped pipeline.
+      description: Whether to allow a merge on a skipped pipeline.
     - type: Boolean
       contextPath: GitLab.Project.restrict_user_defined_variables
-      description: If to restrict user defined variables.
+      description: Whether to restrict user defined variables.
     - type: Boolean
       contextPath: GitLab.Project.request_access_enabled
-      description: If to enable access request.
+      description: Whether to enable access requests.
     - type: Boolean
       contextPath: GitLab.Project.only_allow_merge_if_all_discussions_are_resolved
-      description: If only allow merge if all discussions are resolved.
+      description: Whether to only allow a merge if all discussions are resolved.
     - type: Boolean
       contextPath: GitLab.Project.remove_source_branch_after_merge
-      description: If to remove source branch after merge.
+      description: Whether to remove the source branch after a merge.
     - type: Boolean
       contextPath: GitLab.Project.printing_merge_request_link_enabled
-      description: If printing merge request link is enabled.
+      description: Whether a printing merge request link is enabled.
     - type: String
       contextPath: GitLab.Project.merge_method
       description: The merge method.
@@ -2572,10 +2569,10 @@ script:
       description: The squash option.
     - type: Boolean
       contextPath: GitLab.Project.enforce_auth_checks_on_uploads
-      description: If to printing merge request link enabled.
+      description: Whether a printing merge request link is enabled.
     - type: Unknown
       contextPath: GitLab.Project.suggestion_commit_message
-      description: Suggestion commit message
+      description: Suggestion commit message.
     - type: Unknown
       contextPath: GitLab.Project.merge_commit_template
       description: The merge commit template.
@@ -2584,16 +2581,16 @@ script:
       description: The squash commit template.
     - type: Boolean
       contextPath: GitLab.Project.auto_devops_enabled
-      description: If the auto devops is enabled.
+      description: Whether to default to the Auto DevOps pipeline for all projects within this group.
     - type: String
       contextPath: GitLab.Project.auto_devops_deploy_strategy
       description: The auto devops deploy strategy.
     - type: Boolean
       contextPath: GitLab.Project.autoclose_referenced_issues
-      description: If to autoclose the referenced issues.
+      description: Whether to autoclose the referenced issues.
     - type: Boolean
       contextPath: GitLab.Project.keep_latest_artifact
-      description: If to keep the lastest artifact.
+      description: Whether to keep the latest artifact.
     - type: Unknown
       contextPath: GitLab.Project.runner_token_expiration_interval
       description: The runner token expiration interval.
@@ -2602,7 +2599,7 @@ script:
       description: The external authorization classification label.
     - type: Boolean
       contextPath: GitLab.Project.requirements_enabled
-      description: If the requirements enabled.
+      description: Whether the requirements are enabled.
     - type: String
       contextPath: GitLab.Project.requirements_access_level
       description: The requirements access level.
@@ -2623,7 +2620,7 @@ script:
       description: The notification level of the group(permissions).
     - type: Unknown
       contextPath: GitLab.Project.permissions.project_access
-      description: The project access(permissions).
+      description: The project access (permissions).
   - name: gitlab-group-project-list
     description: Get the list of projects of a given group.
     arguments:
@@ -2640,7 +2637,7 @@ script:
       required: false
       secret: false
     - defaultValue: 1
-      description: Dispaly projects from this page number.
+      description: The page number of the results to retrieve. Minimum value is 1.
       isArray: false
       name: page
       required: false
@@ -2672,31 +2669,31 @@ script:
       description: The project default branch.
     - type: String
       contextPath: GitLab.GroupProject.ssh_url_to_repo
-      description: Group project ssh url to repository.
+      description: Group project SSH URL to repository.
     - type: String
       contextPath: GitLab.GroupProject.http_url_to_repo
-      description: Group project http url to repository.
+      description: Group project HTTP URL to repository.
     - type: String
       contextPath: GitLab.GroupProject.web_url
-      description: Group project web url.
+      description: Group project web URL.
     - type: String
       contextPath: GitLab.GroupProject.readme_url
-      description: Group project readme url.
+      description: Group project readme URL.
     - type: Unknown
       contextPath: GitLab.GroupProject.avatar_url
-      description: Group project avatar url.
+      description: Group project avatar URL.
     - type: Number
       contextPath: GitLab.GroupProject.forks_count
       description: Group project web url forks count.
     - type: Number
       contextPath: GitLab.GroupProject.star_count
-      description: Group project web url star count.
+      description: Group project web URL star count.
     - type: Date
       contextPath: GitLab.GroupProject.last_activity_at
-      description: The project date of last date of activity.
+      description: The date of the last activity of the project. 
     - type: Number
       contextPath: GitLab.GroupProject.namespace.id
-      description: The namespace id.
+      description: The namespace ID.
     - type: String
       contextPath: GitLab.GroupProject.namespace.name
       description: The namespace name.
@@ -2711,103 +2708,103 @@ script:
       description: The full path of the namespace.
     - type: Unknown
       contextPath: GitLab.GroupProject.namespace.parent_id
-      description: The parent id.
+      description: The parent ID.
     - type: Unknown
       contextPath: GitLab.GroupProject.namespace.avatar_url
-      description: The avatar url.
+      description: The avatar URL.
     - type: String
       contextPath: GitLab.GroupProject.namespace.web_url
-      description: The name web url.
+      description: The name web URL.
     - type: String
       contextPath: GitLab.GroupProject.container_registry_image_prefix
       description: The container registry image prefix.
     - type: String
       contextPath: GitLab.GroupProject._links.self
-      description: The group projects' links.
+      description: The group project's links.
     - type: String
       contextPath: GitLab.GroupProject._links.issues
-      description: The group projects' issues.
+      description: The group project's issues.
     - type: String
       contextPath: GitLab.GroupProject._links.merge_requests
-      description: The group projects' merge requests.
+      description: The group project's merge requests.
     - type: String
       contextPath: GitLab.GroupProject._links.repo_branches
-      description: The group projects' repository branches.
+      description: The group project's repository branches.
     - type: String
       contextPath: GitLab.GroupProject._links.labels
-      description: The group projects' links labels.
+      description: The group project's links labels.
     - type: String
       contextPath: GitLab.GroupProject._links.events
-      description: The group projects' links events.
+      description: The group project's links events.
     - type: String
       contextPath: GitLab.GroupProject._links.members
-      description: The group projects' links members.
+      description: The group project's links members.
     - type: String
       contextPath: GitLab.GroupProject._links.cluster_agents
-      description: The group projects' links cluster agents.
+      description: The group project's links cluster agents.
     - type: Boolean
       contextPath: GitLab.GroupProject.packages_enabled
-      description: If the group projects' packages are enabled.
+      description: Whether the group project's packages are enabled.
     - type: Boolean
       contextPath: GitLab.GroupProject.empty_repo
-      description: The group projects' empty repository.
+      description: Whether the group project's repository is empty.
     - type: Boolean
       contextPath: GitLab.GroupProject.archived
-      description: The group projects is archived.
+      description: Whether the group project is archived.
     - type: String
       contextPath: GitLab.GroupProject.visibility
-      description: The group projects' visibility.
+      description: The group project's visibility.
     - type: Boolean
       contextPath: GitLab.GroupProject.resolve_outdated_diff_discussions
-      description: The group projects's resolved outdated different discussions.
+      description: Whether the group project's outdated different discussions were resolved.
     - type: String
       contextPath: GitLab.GroupProject.container_expiration_policy.cadence
-      description: The group projects' container expiration policy cadence.
+      description: The group project's container expiration policy cadence.
     - type: Boolean
       contextPath: GitLab.GroupProject.container_expiration_policy.enabled
-      description: If the group projects' container expiration policy enabled.
+      description: Whether the group project's container expiration policy is enabled.
     - type: Number
       contextPath: GitLab.GroupProject.container_expiration_policy.keep_n
-      description: If to keep the group project expiration policy.
+      description: Whether to keep the group project expiration policy.
     - type: String
       contextPath: GitLab.GroupProject.container_expiration_policy.older_than
-      description: If the group project expiration policy is older than X.
+      description: Whether the group project expiration policy is older than X.
     - type: String
       contextPath: GitLab.GroupProject.container_expiration_policy.name_regex
-      description: What is the group project expiration policy regex name.
+      description: The group project expiration policy regex name.
     - type: String
       contextPath: GitLab.GroupProject.container_expiration_policy.name_regex_keep
-      description: If to keep the group project expiration policy regex name.
+      description: Whether to keep the group project expiration policy regex name.
     - type: Date
       contextPath: GitLab.GroupProject.container_expiration_policy.next_run_at
-      description: The group project expiration policy next run at.
+      description: The date on which the group project expiration policy will run next.
     - type: Boolean
       contextPath: GitLab.GroupProject.issues_enabled
-      description: if to enabled issues.
+      description: Whether to enabled issues.
     - type: Boolean
       contextPath: GitLab.GroupProject.merge_requests_enabled
-      description: If to enable merge requests.
+      description: Whether to enable merge requests.
     - type: Boolean
       contextPath: GitLab.GroupProject.wiki_enabled
-      description: If wiki is enabled.
+      description: Whether wiki is enabled.
     - type: Boolean
       contextPath: GitLab.GroupProject.jobs_enabled
-      description: If jobs are enabled.
+      description: Whether jobs are enabled.
     - type: Boolean
       contextPath: GitLab.GroupProject.snippets_enabled
-      description: If snippets are enabled.
+      description: Whether snippets are enabled.
     - type: Boolean
       contextPath: GitLab.GroupProject.container_registry_enabled
-      description: If the container registry is enabled.
+      description: Whether the container registry is enabled.
     - type: Boolean
       contextPath: GitLab.GroupProject.service_desk_enabled
-      description: If service desk is enabled.
+      description: Whether service desk is enabled.
     - type: String
       contextPath: GitLab.GroupProject.service_desk_address
       description: The group project service desk address.
     - type: Boolean
       contextPath: GitLab.GroupProject.can_create_merge_request_in
-      description: If the group project can create merge request in.
+      description: Whether creating a merge request is an option.
     - type: String
       contextPath: GitLab.GroupProject.issues_access_level
       description: The group project issues access level.
@@ -2846,19 +2843,19 @@ script:
       description: The group project security and compliance access level.
     - type: Unknown
       contextPath: GitLab.GroupProject.emails_disabled
-      description: If group project emails are disabled.
+      description: Whether group project emails are disabled.
     - type: Boolean
       contextPath: GitLab.GroupProject.shared_runners_enabled
-      description: If group project shared runners are enabled.
+      description: Whether group project shared runners are enabled.
     - type: Boolean
       contextPath: GitLab.GroupProject.lfs_enabled
-      description: If group project lfs are enabled.
+      description: Whether group project LFS are enabled.
     - type: Number
       contextPath: GitLab.GroupProject.creator_id
-      description: The group project creator id.
+      description: The group project creator ID.
     - type: string
       contextPath: GitLab.GroupProject.import_url
-      description: The group project import url.
+      description: The group project import URL.
     - type: Unknown
       contextPath: GitLab.GroupProject.import_type
       description: The group project import type.
@@ -2870,25 +2867,25 @@ script:
       description: The group project issues count.
     - type: Number
       contextPath: GitLab.GroupProject.ci_default_git_depth
-      description: The group project default fit depth.
+      description: The group project default git depth.
     - type: Boolean
       contextPath: GitLab.GroupProject.ci_forward_deployment_enabled
-      description: If the ci forward deployment are  enabled.
+      description: Whether the CI forward deployment are  enabled.
     - type: Boolean
       contextPath: GitLab.GroupProject.ci_job_token_scope_enabled
-      description: If the group project ci job token scope is enabled.
+      description: Whether the group project CI job token scope is enabled.
     - type: Boolean
       contextPath: GitLab.GroupProject.ci_separated_caches
-      description: The group project ci separated caches.
+      description: Whether the group project CI separated caches.
     - type: Boolean
       contextPath: GitLab.GroupProject.ci_opt_in_jwt
-      description: The group project ci opt in jwt value.
+      description: Whether the group project CI opt in JWT value.
     - type: Boolean
       contextPath: GitLab.GroupProject.ci_allow_fork_pipelines_to_run_in_parent_project
-      description: If group project ci allows fork pipelines to run in parent project.
+      description: Whether group project CI allows fork pipelines to run in a parent project.
     - type: Boolean
       contextPath: GitLab.GroupProject.public_jobs
-      description: The group project import public jobs.
+      description: Whether the group project imports public jobs.
     - type: Number
       contextPath: GitLab.GroupProject.build_timeout
       description: The group project build timeout.
@@ -2897,37 +2894,37 @@ script:
       description: The group project auto cancel pending pipelines.
     - type: String
       contextPath: GitLab.GroupProject.ci_config_path
-      description: The group project ci config path.
+      description: The group project CI config path.
     - type: Boolean
       contextPath: GitLab.GroupProject.only_allow_merge_if_pipeline_succeeds
-      description: If to only allow merge if pipeline succeeds.
+      description: Whether to only allow a merge if the pipeline succeeds.
     - type: Boolean
       contextPath: GitLab.GroupProject.allow_merge_on_skipped_pipeline
-      description: If to only allow merge on skipped pipeline.
+      description: Whether to only allow a merge on a skipped pipeline.
     - type: Boolean
       contextPath: GitLab.GroupProject.restrict_user_defined_variables
-      description: The group project restrict user defined variables.
+      description: Whether the group project restricts user defined variables.
     - type: Boolean
       contextPath: GitLab.GroupProject.request_access_enabled
-      description: If the request access enabled.
+      description: Whether the request access is enabled.
     - type: Boolean
       contextPath: GitLab.GroupProject.only_allow_merge_if_all_discussions_are_resolved
-      description: If to only allow merge if all discussions are resolved.
+      description: Whether to only allow a merge if all discussions are resolved.
     - type: Boolean
       contextPath: GitLab.GroupProject.remove_source_branch_after_merge
-      description: If to remove source branch after merge.
+      description: Whether to remove a source branch after a merge.
     - type: Boolean
       contextPath: GitLab.GroupProject.printing_merge_request_link_enabled
-      description: If printing merge request link is enabled.
+      description: Whether the printing merge request link is enabled.
     - type: String
       contextPath: GitLab.GroupProject.merge_method
-      description: what is the merge method.
+      description: The merge method.
     - type: String
       contextPath: GitLab.GroupProject.squash_option
-      description: What the squash option.
+      description: The squash option.
     - type: Boolean
       contextPath: GitLab.GroupProject.enforce_auth_checks_on_uploads
-      description: If to enforce auth checks on uploads.
+      description: Whether to enforce authentication checks on uploads.
     - type: Unknown
       contextPath: GitLab.GroupProject.suggestion_commit_message
       description: The suggestion commit message.
@@ -2939,39 +2936,39 @@ script:
       description: The squash commit template.
     - type: Boolean
       contextPath: GitLab.GroupProject.auto_devops_enabled
-      description: The auto devops deploy strategy.
+      description: Whether to default to the Auto DevOps pipeline for all projects within this group.
     - type: String
       contextPath: GitLab.GroupProject.auto_devops_deploy_strategy
-      description: The auto devops deploy strategy
+      description: The auto devops deploy strategy.
     - type: Boolean
       contextPath: GitLab.GroupProject.autoclose_referenced_issues
-      description: The autoclose referenced issues.
+      description: Whether to autoclose the referenced issues.
     - type: Boolean
       contextPath: GitLab.GroupProject.keep_latest_artifact
-      description: If keeping the lastest artifact is enabled.
+      description: Whether keeping the latest artifact is enabled.
     - type: Unknown
       contextPath: GitLab.GroupProject.runner_token_expiration_interval
-      description: What is runner token expiration interval.
+      description: The runner token expiration interval.
     - type: String
       contextPath: GitLab.GroupProject.external_authorization_classification_label
-      description: What is the external authorization classification label.
+      description: The external authorization classification label.
     - type: Boolean
       contextPath: GitLab.GroupProject.requirements_enabled
-      description: If the requirements are enabled.
+      description: Whether the requirements are enabled.
     - type: String
       contextPath: GitLab.GroupProject.requirements_access_level
       description: The requirements access level.
     - type: Boolean
       contextPath: GitLab.GroupProject.security_and_compliance_enabled
-      description: If the security and compliance is enabled.
+      description: Whether the security and compliance is enabled.
   - name: gitlab-raw-file-get
-    description: Get file the file in a raw format.
+    description: Get the file in a raw format.
     arguments:
     - description: The file path.
       isArray: false
       name: file_path
       required: true
-    - description: The branch to retrieve the file from, default is master
+    - description: The branch to retrieve the file from. Default is master.
       isArray: false
       name: ref
       required: false
@@ -2999,12 +2996,12 @@ script:
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response.
+      description: Return a partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
       - 'true'
-      - 'false'
+      - 'false'     
     outputs:
     - contextPath: GitLab.Branch.commit.author_email
       description: The branch commit's author's email.
@@ -3043,25 +3040,25 @@ script:
       description: The branch's name.
       type: String
     - contextPath: GitLab.Branch.merged
-      description: If the branch had merged.
+      description: Whether the branch was merged.
       type: Boolean
     - contextPath: GitLab.Branch.protected
-      description: If the branch is protected.
+      description: Whether the branch is protected.
       type: Boolean
     - contextPath: GitLab.Branch.default
-      description: If The branch is the default branch.
+      description: Whether the branch is the default branch.
       type: Boolean
     - contextPath: GitLab.Branch.developers_can_push
-      description: If the branch's developers can push.
+      description: Whether the branch's developers can push.
       type: Boolean
     - contextPath: GitLab.Branch.developers_can_merge
-      description: If the branch's developers can merge.
+      description: Whether the branch's developers can merge.
       type: Boolean
     - contextPath: GitLab.Branch.can_push
-      description: If push is possible.
+      description: Whether push is possible.
       type: Boolean
     - contextPath: GitLab.Branch.web_url
-      description: The branch's web url.
+      description: The branch's web URL.
       type: String
   - name: gitlab-branch-delete
     description: Deletes a branch from the repository.
@@ -3073,14 +3070,14 @@ script:
   - description: Deletes all branches that are merged into the project's default branch.
     name: gitlab-merged-branch-delete
   - name: gitlab-branch-list
-    description: Get a list of repository branches from a project, sorted by name alphabetically.
+    description: Get a list of repository branches from a project, alphabetically sorted by name.
     arguments:
     - name: branch_name
-      description: optional Url parameter, if the user provided a value a single branch will be returned
+      description: Optional URL parameter. If you provide a value, a single branch will be returned.
       required: false
       isArray: false
     - name: search
-      description: Return list of branches containing the search string. You can use ^term and term$ to find branches that begin and end with term respectively.
+      description: Returns a list of branches containing the search string. You can use ^term and term$ to find branches that begin and end with term respectively.
       required: false
       isArray: false
     - defaultValue: 50
@@ -3090,42 +3087,42 @@ script:
       isArray: false
     - defaultValue: 1
       name: page
-      description: The number of results on the page.
+      description: The page number of the results to retrieve. Minimum value is 1.
       required: false
       isArray: false
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
-      description: Return partial API response in context data if true, otherwise returns full API response.
+      description: Return a partial API response in context data if true, otherwise returns full API response.
       required: false
       isArray: false
       predefined:
       - 'true'
-      - 'false'
+      - 'false' 
     outputs:
     - contextPath: GitLab.Branch.name
       description: The branch's name.
       type: String
     - contextPath: GitLab.Branch.merged
-      description: If the branch had nerged.
+      description: Whether the branch was merged.
       type: Boolean
     - contextPath: GitLab.Branch.protected
-      description: If the branch is protected.
+      description: Whether the branch is protected.
       type: Boolean
     - contextPath: GitLab.Branch.default
-      description: If the branch is the default branch of the project.
+      description: Whether the branch is the default branch of the project.
       type: Boolean
     - contextPath: GitLab.Branch.developers_can_push
-      description: If developers can push to the branch.
+      description: Whether developers can push to the branch.
       type: Boolean
     - contextPath: GitLab.Branch.developers_can_merge
-      description: If developers can merge.
+      description: Whether developers can merge.
       type: Boolean
     - contextPath: GitLab.Branch.can_push
-      description: If the branch cab be pushed.
+      description: Whether the branch can be pushed.
       type: Boolean
     - contextPath: GitLab.Branch.web_url
-      description: The branch web url.
+      description: The branch web URL.
       type: String
     - contextPath: GitLab.Branch.commit.author_email
       description: The branch commit's author's email.
@@ -3146,10 +3143,10 @@ script:
       description: The branch commit's committer's name.
       type: String
     - contextPath: GitLab.Branch.commit.id
-      description: The branch commit's id.
+      description: The branch commit's ID.
       type: String
     - contextPath: GitLab.Branch.commit.short_id
-      description: The branch commit's short id.
+      description: The branch commit's short ID.
       type: String
     - contextPath: GitLab.Branch.commit.title
       description: The branch commit's title.
@@ -3158,27 +3155,27 @@ script:
       description: The branch commit's message.
       type: String
     - contextPath: GitLab.Branch.commit.parent_ids
-      description: The branch commit's parent ids.
+      description: The branch commit's parent IDs.
       type: String
   - name: gitlab-group-list
-    description: Get a list of visible groups for the authenticated user. When accessed without authentication, only public groups are returned. By default, this request returns 20 results at a time because the API results are paginated
+    description: Get a list of visible groups for the authenticated user. When accessed without authentication, only public groups are returned. By default, this request returns 20 results at a time because the API results are paginated.
     arguments:
     - name: skip_groups
-      description: Skip the group IDs passed
+      description: A comma-separated list of group IDs to skip.
       required: false
       isArray: true
     - name: all_available
-      description: Show all the groups you have access to (defaults to false for authenticated users, true for administrators).
+      description: Show all the groups you have access to. (Defaults to false for authenticated users, true for administrators).
       required: false
       isArray: false
     - name: search
-      description: Return the list of authorized groups matching the search criteria
+      description: Return the list of authorized groups matching the search criteria.
       required: false
       isArray: false
     - auto: PREDEFINED
       defaultValue: name
       name: order_by
-      description: Order groups by name, path, id, or similarity.
+      description: The method used to order the retrieved issues.
       required: false
       isArray: false
       predefined:
@@ -3195,16 +3192,16 @@ script:
       - asc
       - desc
     - name: owned
-      description: Limit to groups explicitly owned by the current user
+      description: Limit to groups explicitly owned by the current user.
       required: false
       isArray: false
       type: Boolean
     - name: min_access_level
-      description: Limit to groups where current user has at least this access level
+      description: Limit to groups where the current user has at least this access level.
       required: false
       isArray: false
     - name: top_level_only
-      description: Limit to top level groups, excluding all subgroups
+      description: Limit to top level groups, excluding all subgroups.
       required: false
       isArray: false
     - defaultValue: 50
@@ -3214,7 +3211,7 @@ script:
       isArray: false
     - defaultValue: 1
       name: page
-      description: The number of results on the page.
+      description: The page number of the results to retrieve. Minimum value is 1.
       required: false
       isArray: false
     outputs:
@@ -3234,10 +3231,10 @@ script:
       description: The group's visibility.
       type: String
     - contextPath: GitLab.Group.share_with_group_lock
-      description: The group's ID.
+      description: Whether to prevent sharing a project with another group within this group.
       type: Boolean
     - contextPath: GitLab.Group.require_two_factor_authentication
-      description: If the group require two factor authentication.
+      description: Whether the group requires two factor authentication.
       type: Boolean
     - contextPath: GitLab.Group.two_factor_grace_period
       description: The group's two factor grace period.
@@ -3246,31 +3243,31 @@ script:
       description: The group's project's creation level.
       type: String
     - contextPath: GitLab.Group.auto_devops_enabled
-      description: If the group devops is enabled.
+      description: Whether to default to the Auto DevOps pipeline for all projects within this group.
       type: Unknown
     - contextPath: GitLab.Group.subgroup_creation_level
       description: The group's subgroup creation level.
       type: String
     - contextPath: GitLab.Group.emails_disabled
-      description: If the group's emails are disabled.
+      description: Whether the group's emails are disabled.
       type: Unknown
     - contextPath: GitLab.Group.mentions_disabled
-      description: If the group mentions are disabled.
+      description: Whether the group mentions are disabled.
       type: Unknown
     - contextPath: GitLab.Group.lfs_enabled
-      description: If the group lfs are enabled.
+      description: Whether the group LFS are enabled.
       type: Boolean
     - contextPath: GitLab.Group.default_branch_protection
       description: The group's default branch protection.
       type: Number
     - contextPath: GitLab.Group.avatar_url
-      description: The group's avatar url.
+      description: The group's avatar URL.
       type: String
     - contextPath: GitLab.Group.web_url
-      description: The group's web url.
+      description: The group's web URL.
       type: String
     - contextPath: GitLab.Group.request_access_enabled
-      description: If the group's request access is enabled.
+      description: Whether the group's request access is enabled.
       type: Boolean
     - contextPath: GitLab.Group.full_name
       description: The group's full name.
@@ -3279,10 +3276,10 @@ script:
       description: The group's full path.
       type: String
     - contextPath: GitLab.Group.file_template_project_id
-      description: The group's file template project id.
+      description: The group's file template project ID.
       type: Number
     - contextPath: GitLab.Group.parent_id
-      description: The group's parent id.
+      description: The group's parent ID.
       type: Unknown
     - contextPath: GitLab.Group.created_at
       description: The group's creation time.
@@ -3308,10 +3305,10 @@ script:
       description: The group's state.
       type: String
     - contextPath: GitLab.Group.avatar_url
-      description: The group's avatar url.
+      description: The group's avatar URL.
       type: String
     - contextPath: GitLab.Group.web_url
-      description: The group's web url.
+      description: The group's web URL.
       type: String
     - contextPath: GitLab.Group.created_at
       description: The group's creation time.
@@ -3329,31 +3326,31 @@ script:
       description: The group's creator's state.
       type: String
     - contextPath: GitLab.Group.created_by.avatar_url
-      description: The group's creator's avatar url.
+      description: The group's creator's avatar URL.
       type: String
     - contextPath: GitLab.Group.created_by.web_url
       description: The group's creator's web url.
       type: String
     - contextPath: GitLab.Group.expires_at
-      description: The group's expertion time.
+      description: The group's expiration time.
       type: Date
     - contextPath: GitLab.Group.access_level
       description: The group's access level.
       type: Number
     - contextPath: GitLab.Group.group_saml_identity.extern_uid
-      description: The group saml identity extern uid.
+      description: The group SAML identity extern UID.
       type: String
     - contextPath: GitLab.Group.group_saml_identity.provider
-      description: The group saml identity provider.
+      description: The group SAML identity provider.
       type: String
     - contextPath: GitLab.Group.group_saml_identity.saml_provider_id
-      description: The group saml identity provider id.
+      description: The group SAML identity provider ID.
       type: Number
     - contextPath: GitLab.Group.email
       description: The group member email.
       type: String
   - name: gitlab-code-search
-    description: Using Scope blobs. Blobs searches are performed on both filenames and contents.
+    description: Using Scope blobs. Blob searches are performed on both filenames and contents.
     arguments:
     - name: search
       description: The search query.
@@ -3366,7 +3363,7 @@ script:
       isArray: false
     - defaultValue: 1
       name: page
-      description: The number of results on the page.
+      description: The page number of the results to retrieve. Minimum value is 1.
       required: false
       isArray: false
     outputs:
@@ -3383,16 +3380,16 @@ script:
       description: the name of the file.
       type: String
     - contextPath: GitLab.Code.id
-      description: The code Id.
+      description: The code ID.
       type: Unknown
     - contextPath: GitLab.Code.ref
       description: Branch name.
       type: String
     - contextPath: GitLab.Code.startline
-      description: The line which the search code begin.
+      description: The line in which the search code begins.
       type: Number
     - contextPath: GitLab.Code.project_id
-      description: The project's id.
+      description: The project's ID.
       type: Number
   - name: gitlab-project-user-list
     description: Get the users list of a project.
@@ -3408,12 +3405,12 @@ script:
       isArray: false
     - defaultValue: 1
       name: page
-      description: The number of results on the page.
+      description: The page number of the results to retrieve. Minimum value is 1.
       required: false
       isArray: false
     outputs:
     - contextPath: GitLab.User.id
-      description: The user's Id.
+      description: The user's ID.
       type: Number
     - contextPath: GitLab.User.username
       description: The user's username.
@@ -3425,10 +3422,10 @@ script:
       description: The user's state.
       type: String
     - contextPath: GitLab.User.avatar_url
-      description: The user's avatar url.
+      description: The user's avatar URL.
       type: String
     - contextPath: GitLab.User.web_url
-      description: The user's web url.
+      description: The user's web URL.
       type: String
   isfetch: false
   runonce: false
