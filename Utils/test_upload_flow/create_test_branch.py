@@ -9,6 +9,9 @@ versions_dict = {}
 pack_items_dict = {}
 changed_packs = set()
 
+import logging
+from Tests.scripts.utils.log_util import install_logging
+install_logging('create_test_branch.log', logger=logging)
 
 def add_changed_pack(func):
     def wrapper(*args, **kwargs):
@@ -198,6 +201,9 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument("-g", "--gitlab-mirror-token", help="Gitlab mirror token for pushing commits "
                                                             "directly to gitlab repo")
     return parser.parse_args()
+
+def set_logger():
+
 
 
 if __name__ == "__main__":

@@ -5,6 +5,11 @@ import tempfile
 from Tests.Marketplace.upload_packs import download_and_extract_index
 from Tests.Marketplace.marketplace_services import *
 import functools
+import logging
+
+from Tests.scripts.utils.log_util import install_logging
+
+install_logging('create_test_branch.log', logger=logging)
 
 MSG_DICT = {
     'verify_new_pack': 'Verify the pack is in the index, verify version 1.0.0 zip exists under the pack path',
