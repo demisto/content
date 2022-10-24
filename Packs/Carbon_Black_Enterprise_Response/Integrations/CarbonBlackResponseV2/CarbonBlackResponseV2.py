@@ -855,7 +855,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
                 continue
 
         alert_id = alert.get('unique_id', '')
-        process_name = alert.get('process_name','')
+        process_name = alert.get('process_name', '')
         if alert.get('feed_name', '') == 'My Watchlists':
             alert['description'] = alert.get('watchlist_name', '')
         alert_name = alert.get('description', '')
