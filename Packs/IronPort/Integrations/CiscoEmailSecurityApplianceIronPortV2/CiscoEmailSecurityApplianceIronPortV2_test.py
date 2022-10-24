@@ -1,5 +1,6 @@
 import json
 import os
+from typing import Any, Dict, List
 import pytest
 from unittest.mock import patch
 
@@ -76,10 +77,10 @@ def mock_client():
     ],
 )
 def test_spam_quarantine_message_search_command(
-    response_file_name,
-    command_arguments,
-    expected_outputs_len,
-    expected_message_id,
+    response_file_name: str,
+    command_arguments: Dict[str, Any],
+    expected_outputs_len: int,
+    expected_message_id: int,
     requests_mock,
     mock_client,
 ):
@@ -121,9 +122,9 @@ def test_spam_quarantine_message_search_command(
     ],
 )
 def test_spam_quarantine_message_get_command(
-    response_file_name,
-    command_arguments,
-    expected_message_id,
+    response_file_name: str,
+    command_arguments: Dict[str, Any],
+    expected_message_id: int,
     requests_mock,
     mock_client,
 ):
@@ -163,7 +164,11 @@ def test_spam_quarantine_message_get_command(
     ],
 )
 def test_spam_quarantine_message_release_command(
-    response_file_name, command_arguments, expected_message, requests_mock, mock_client
+    response_file_name: str,
+    command_arguments: Dict[str, Any],
+    expected_message: str,
+    requests_mock,
+    mock_client
 ):
     """
     Scenario: Spam quarantine message release.
@@ -205,10 +210,10 @@ def test_spam_quarantine_message_release_command(
     ],
 )
 def test_spam_quarantine_message_delete_command(
-    response_file_name,
-    command_arguments,
-    expected_message_first_id,
-    expected_message_second_id,
+    response_file_name: str,
+    command_arguments: Dict[str, Any],
+    expected_message_first_id: str,
+    expected_message_second_id: str,
     requests_mock,
     mock_client,
 ):
@@ -260,10 +265,10 @@ def test_spam_quarantine_message_delete_command(
     ],
 )
 def test_list_entry_get_command(
-    response_file_name,
-    command_arguments,
-    expected_outputs_len,
-    expected_recipient_address,
+    response_file_name: str,
+    command_arguments: Dict[str, Any],
+    expected_outputs_len: int,
+    expected_recipient_address: str,
     requests_mock,
     mock_client,
 ):
@@ -310,7 +315,7 @@ def test_list_entry_get_command(
     ],
 )
 def test_list_entry_add_command(
-    command_arguments, expected_message, requests_mock, mock_client
+    command_arguments: Dict[str, Any], expected_message: str, requests_mock, mock_client
 ):
     """
     Scenario: List entry add.
@@ -349,7 +354,7 @@ def test_list_entry_add_command(
     ],
 )
 def test_list_entry_append_command(
-    command_arguments, expected_message, requests_mock, mock_client
+    command_arguments: Dict[str, Any], expected_message: str, requests_mock, mock_client
 ):
     """
     Scenario: List entry append.
@@ -388,7 +393,7 @@ def test_list_entry_append_command(
     ],
 )
 def test_list_entry_edit_command(
-    command_arguments, expected_message, requests_mock, mock_client
+    command_arguments: Dict[str, Any], expected_message: str, requests_mock, mock_client
 ):
     """
     Scenario: List entry edit.
@@ -426,7 +431,7 @@ def test_list_entry_edit_command(
     ],
 )
 def test_list_entry_delete_command(
-    command_arguments, expected_message, requests_mock, mock_client
+    command_arguments: Dict[str, Any], expected_message: str, requests_mock, mock_client
 ):
     """
     Scenario: List entry delete.
@@ -481,11 +486,11 @@ def test_list_entry_delete_command(
     ],
 )
 def test_message_search_command(
-    response_file_name,
-    command_arguments,
-    expected_outputs_len,
-    expected_message_id,
-    expected_recipients,
+    response_file_name: str,
+    command_arguments: Dict[str, Any],
+    expected_outputs_len: int,
+    expected_message_id: List[int],
+    expected_recipients: List[str],
     requests_mock,
     mock_client,
 ):
@@ -534,11 +539,11 @@ def test_message_search_command(
     ],
 )
 def test_message_details_get_command(
-    response_file_name,
-    command_arguments,
-    expected_message_id,
-    expected_recipients,
-    expected_summary_len,
+    response_file_name: str,
+    command_arguments: Dict[str, Any],
+    expected_message_id: List[int],
+    expected_recipients: List[str],
+    expected_summary_len: int,
     requests_mock,
     mock_client,
 ):
@@ -585,11 +590,11 @@ def test_message_details_get_command(
     ],
 )
 def test_message_amp_details_get_command(
-    response_file_name,
-    command_arguments,
-    expected_message_id,
-    expected_recipients,
-    expected_amp_summary_len,
+    response_file_name: str,
+    command_arguments: Dict[str, Any],
+    expected_message_id: List[int],
+    expected_recipients: List[str],
+    expected_amp_summary_len: int,
     requests_mock,
     mock_client,
 ):
@@ -636,11 +641,11 @@ def test_message_amp_details_get_command(
     ],
 )
 def test_message_dlp_details_get_command(
-    response_file_name,
-    command_arguments,
-    expected_message_id,
-    expected_recipients,
-    expected_dlp_policy,
+    response_file_name: str,
+    command_arguments: Dict[str, Any],
+    expected_message_id: List[int],
+    expected_recipients: List[str],
+    expected_dlp_policy: str,
     requests_mock,
     mock_client,
 ):
@@ -687,11 +692,11 @@ def test_message_dlp_details_get_command(
     ],
 )
 def test_message_url_details_get_command(
-    response_file_name,
-    command_arguments,
-    expected_message_id,
-    expected_recipients,
-    expected_url_summary_len,
+    response_file_name: str,
+    command_arguments: Dict[str, Any],
+    expected_message_id: List[int],
+    expected_recipients: List[str],
+    expected_url_summary_len: int,
     requests_mock,
     mock_client,
 ):
@@ -738,10 +743,10 @@ def test_message_url_details_get_command(
     ],
 )
 def test_message_report_get_command(
-    response_file_name,
-    command_arguments,
-    expected_type,
-    expected_results_len,
+    response_file_name: str,
+    command_arguments: Dict[str, Any],
+    expected_type: str,
+    expected_results_len: int,
     requests_mock,
     mock_client,
 ):
@@ -783,7 +788,10 @@ def test_message_report_get_command(
         )
     ],
 )
-def test_format_number_list_argument(number_list_argument, expected_result):
+def test_format_number_list_argument(
+    number_list_argument: str,
+    expected_result: List[int]
+):
     """
     Scenario: Format number list argument.
     Given:
@@ -809,7 +817,10 @@ def test_format_number_list_argument(number_list_argument, expected_result):
         )
     ],
 )
-def test_format_custom_query_args(custom_query_argument, expected_result):
+def test_format_custom_query_args(
+    custom_query_argument: str,
+    expected_result: Dict[str, Any]
+):
     """
     Scenario: Format custom query arguments for tracking message advanced filters.
     Given:
