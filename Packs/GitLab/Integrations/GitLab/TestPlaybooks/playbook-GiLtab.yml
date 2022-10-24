@@ -1,6 +1,6 @@
-id: 'gitlab'
+id: 'GitLab v2'
 version: -1
-name: 'gitlab'
+name: 'GitLab v2'
 starttaskid: "0"
 tasks:
   "0":
