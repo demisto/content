@@ -736,13 +736,13 @@ def get_mapping_fields_command():
     """
     indexes = FETCH_INDEX.split(',')
     elastic_mapping = {}
-    demisto.debug(f'{indexes=}')
     for index in indexes:
-        demisto.debug(f'{index=}')
-        res = requests.get(SERVER + '/' + index + '/_mapping', auth=(USERNAME, PASSWORD), verify=INSECURE)
+        if index == '':
+            res = requests.get(SERVER + '/_mapping', auth=(USERNAME, PASSWORD), verify=INSECURE)
+        else:
+            res = requests.get(SERVER + '/' + index + '/_mapping', auth=(USERNAME, PASSWORD), verify=INSECURE)
         res_json = res.json()
-        demisto.debug(f'{res=}')
-        demisto.debug(f'{res_json=}')
+
         # To get mappings for all data streams and indices in a cluster,
         # use _all or * for <target> or omit the <target> parameter - from Elastic API
         if index in ['*', '_all', '']:
@@ -752,8 +752,8 @@ def get_mapping_fields_command():
                     elastic_mapping[key] = {"_id": "doc_id", "_index": key}
                     elastic_mapping[key]["_source"] = parse_subtree(my_map)
 
-        elif index.endswith('*') or index.endswith('_all'):
-            prefix_index = re.compile(index.rstrip('_all').rstrip('*'))
+        elif index.endswith('*'):
+            prefix_index = re.compile(index.rstrip('*'))
             for key in res_json.keys():
                 demisto.debug(f'{prefix_index=} and {key=}')
                 if prefix_index.match(key):
@@ -817,46 +817,6 @@ def search_eql_command(args, proxies):
         outputs_prefix='Elasticsearch.Search',
         outputs=search_context
     )
-
-
-def create_api_key():
-    body = {
-        "name": "my-api-key",
-        "expiration": "1d",
-        "role_descriptors": {
-            "role-a": {
-                "cluster": ["all"],
-                "index": [
-                    {
-                        "names": ["index-a*"],
-                        "privileges": ["read"]
-                    }
-                ]
-            },
-            "role-b": {
-                "cluster": ["all"],
-                "index": [
-                    {
-                        "names": ["index-b*"],
-                        "privileges": ["all"]
-                    }
-                ]
-            }
-        },
-        "metadata": {
-            "application": "my-application",
-            "environment": {
-                "level": 1,
-                "trusted": True,
-                "tags": ["dev", "staging"]
-            }
-        }
-    }
-    headers = {
-        'Content-Type': "application/json"
-    }
-    res = requests.post(SERVER + '/_security/api_key', auth=(USERNAME, PASSWORD), verify=INSECURE, json=body, headers=headers)
-    return CommandResults(readable_output=res.json())
 
 
 def main():

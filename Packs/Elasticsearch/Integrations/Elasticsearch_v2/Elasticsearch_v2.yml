@@ -1,6 +1,6 @@
 category: Database
 commonfields:
-  id: Elasticsearch v2 - Dev
+  id: Elasticsearch v2
   version: -1
 configuration:
 - display: Server URL
@@ -87,8 +87,8 @@ configuration:
   required: false
   type: 8
 description: "Search for and analyze data in real time. \n Supports version 6 and later."
-display: Elasticsearch v2 - Dev
-name: Elasticsearch v2 - Dev
+display: Elasticsearch v2
+name: Elasticsearch v2
 script:
   commands:
   - arguments:
@@ -439,10 +439,6 @@ script:
     - contextPath: Elasticsearch.Search.Size
       description: The maximum number of scores that a search can return.
       type: Number
-  - deprecated: false
-    description: Search using EQL query
-    execution: false
-    name: es-create-api-key
   dockerimage: demisto/py3-tools:1.0.0.34985
   feed: false
   isfetch: true
