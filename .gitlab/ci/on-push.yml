@@ -427,11 +427,6 @@ test_upload_flow:
     - gke
   extends:
     - .default-job-settings
-  artifacts:
-    expire_in: 48 hrs
-    paths:
-      - /builds/xsoar/content/artifacts
-    when: always
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
