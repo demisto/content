@@ -18,7 +18,7 @@ def add_changed_pack(func):
         global changed_packs
         global versions_dict
         global pack_items_dict
-        logging.info(f'Running {func.__name__}', end=" ")
+        logging.info(f'Running {func.__name__}')
         pack, version, pack_items = func(*args, **kwargs)
         changed_packs.add(pack)
         versions_dict[str(pack.name)] = version

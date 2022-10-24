@@ -5,6 +5,9 @@ import sys
 import time
 import os
 import requests
+import logging
+from Tests.scripts.utils.log_util import install_logging
+install_logging('create_test_branch.log', logger=logging)
 
 GITLAB_CONTENT_PIPELINES_BASE_URL = 'http://code.pan.run/api/v4/projects/2596/pipelines/'  # disable-secrets-detection
 TIMEOUT = 60 * 60 * 4
