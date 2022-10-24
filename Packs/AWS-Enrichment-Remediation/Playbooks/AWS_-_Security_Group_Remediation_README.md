@@ -13,10 +13,10 @@ This playbook does not use any sub-playbooks.
 * Set
 
 ### Commands
-* aws-ec2-describe-security-groups
 * aws-ec2-modify-network-interface-attribute
 * aws-ec2-authorize-security-group-ingress-rule
 * aws-ec2-create-security-group
+* aws-ec2-describe-security-groups
 
 ## Playbook Inputs
 ---
@@ -25,6 +25,7 @@ This playbook does not use any sub-playbooks.
 | --- | --- | --- | --- |
 | VpcID | This is the VPC ID used for Security group creation. |  | Required |
 | NicID | This is the Network interface of Ec2 instance. |  | Required |
+| RemediationRule | The security group that will used for remediating internet exposures.  | Remediation-Security-Group | Optional |
 
 ## Playbook Outputs
 ---
