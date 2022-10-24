@@ -254,10 +254,10 @@ tasks:
     continueonerrortype: ""
   "14":
     id: "14"
-    taskid: c0cec4ff-8abe-49a4-8b2d-e67ae4a0af97
+    taskid: a3211000-764a-4ea3-8fea-1cb2a8c2b4cd
     type: playbook
     task:
-      id: c0cec4ff-8abe-49a4-8b2d-e67ae4a0af97
+      id: a3211000-764a-4ea3-8fea-1cb2a8c2b4cd
       version: -1
       name: PAN-OS - Block URL - Custom URL Category
       description: |-
@@ -272,9 +272,11 @@ tasks:
       - "2"
     scriptarguments:
       AutoCommit:
-        simple: "No"
+        complex:
+          root: inputs.AutoCommit
       CustomURLCategory:
-        simple: Demisto Remediation - Malicious URLs
+        complex:
+          root: inputs.CustomURLCategory
       URL:
         complex:
           root: Blocklist
@@ -283,6 +285,15 @@ tasks:
           - operator: uniq
       pre-post:
         simple: pre-rulebase
+      LogForwarding:
+        complex:
+          root: inputs.LogForwarding
+      categories:
+        complex:
+          root: inputs.categories
+      device-group:
+        complex:
+          root: inputs.device-group
     separatecontext: true
     loop:
       iscommand: false
@@ -663,12 +674,12 @@ tasks:
     continueonerrortype: ""
   "27":
     id: "27"
-    taskid: 6f012bfb-f96f-4b8e-8429-22e25716e594
+    taskid: c08fd24c-0333-4f69-8700-69b92c530882
     type: condition
     task:
-      id: 6f012bfb-f96f-4b8e-8429-22e25716e594
+      id: c08fd24c-0333-4f69-8700-69b92c530882
       version: -1
-      name: Is Sophos Integration Is Enabled?
+      name: Is Sophos Integration Enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
@@ -911,12 +922,12 @@ tasks:
     continueonerrortype: ""
   "34":
     id: "34"
-    taskid: 39802624-7a78-4ac4-8999-7735896a5fcd
+    taskid: 08e14d34-e96d-422a-8640-f5ef9a6eaa7a
     type: condition
     task:
-      id: 39802624-7a78-4ac4-8999-7735896a5fcd
+      id: 08e14d34-e96d-422a-8640-f5ef9a6eaa7a
       version: -1
-      name: Is Sophos Integration Is Enabled?
+      name: Is Forcepoint Integration Enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
