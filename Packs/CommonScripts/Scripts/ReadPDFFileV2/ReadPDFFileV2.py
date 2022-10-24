@@ -12,12 +12,18 @@ import shutil
 import json
 from typing import List, Set
 from pikepdf import Pdf
+# from pdfminer.high_level import extract_text
 
 URL_EXTRACTION_REGEX = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+' \
                        r'[-\w\d]+(?::\d+)?(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
+INTEGRATION_NAME = 'ReadPDFFileV2'
 
 
-# error class for shell errors
+class PdfPermissionsException(Exception):
+    pass
+
+
+# Error class for shell errors
 class ShellException(Exception):
     pass
 
@@ -45,7 +51,7 @@ def handle_error_read_only(fun, path, exp):
     # Checking if the file is Read-Only
     if not os.access(path, os.W_OK):
         demisto.debug(f'The {path} file is read-only')
-        # Change the file permission to the writting
+        # Change the file permission to the writing
         try:
             os.chmod(path, stat.S_IWUSR)
             fun(path)
@@ -55,7 +61,24 @@ def handle_error_read_only(fun, path, exp):
         raise ValueError(str(exp))
 
 
-def mark_suspicious(suspicious_reason, entry_id):
+def create_file_instance(entry_id: str, path: str, file_name: str, score: int) -> Common.File:
+    # TODO Should I add file_type, path, name?
+    # TODO Is PDF the only file extension?
+    dbot_score = Common.DBotScore(indicator=entry_id,
+                                  indicator_type=DBotScoreType.FILE,
+                                  integration_name=INTEGRATION_NAME,
+                                  score=score,
+                                  )
+    file = Common.File(dbot_score=dbot_score,
+                       extension='pdf',
+                       entry_id=entry_id,
+                       name=file_name,
+                       path=path
+                       )
+    return file
+
+
+def mark_suspicious(suspicious_reason: str, entry_id: str, path: str, file_name: str):
     """Missing EOF, file may be corrupted or suspicious file"""
 
     dbot = {
@@ -67,9 +90,14 @@ def mark_suspicious(suspicious_reason, entry_id):
                 "Score": 2
             }
     }
-    human_readable = f"{suspicious_reason}\nFile marked as suspicious for entry id: {entry_id}"
+    human_readable = f'{suspicious_reason}\nFile marked as suspicious for entry id: {entry_id}'
     LOG(suspicious_reason)
-    return_outputs(human_readable, dbot, {})
+    file = create_file_instance(entry_id=entry_id, path=path, file_name=file_name, score=Common.DBotScore.SUSPICIOUS)
+    command_results = CommandResults(readable_output=human_readable,
+                                     indicator=file)
+    return_results(command_results)
+    # TODO Should I use return_results since return_outputs is deprecated
+    # return_outputs(human_readable, dbot, {})
 
 
 def return_error_without_exit(message):
@@ -87,7 +115,12 @@ def run_shell_command(command, *args):
     """Runs shell command and returns the result if not encountered an error"""
     cmd = [command] + list(args)
     completed_process = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    if completed_process.returncode != 0:
+    exit_codes = completed_process.returncode
+    if exit_codes != 0:
+        error_string = completed_process.stderr.decode('utf-8')
+        if exit_codes == 3:  # Error related to PDF permissions
+            raise PdfPermissionsException(error_string)
+
         raise ShellException(f'Failed with the following error code: {completed_process.returncode}.'
                              f' Error: {completed_process.stderr.decode("utf8")}')
     elif completed_process.stderr:
@@ -119,10 +152,18 @@ def get_images_paths_in_path(path):
 
 def get_pdf_metadata(file_path, user_password=None):
     """Gets the metadata from the pdf as a dictionary"""
-    if user_password:
-        metadata_txt = run_shell_command('pdfinfo', '-upw', user_password, file_path)
-    else:
-        metadata_txt = run_shell_command('pdfinfo', '-enc', 'UTF-8', file_path)
+    # if user_password:
+    #     metadata_txt = run_shell_command('pdfinfo', '-upw', user_password, file_path)
+    # else:
+    #     metadata_txt = run_shell_command('pdfinfo', '-enc', 'UTF-8', file_path)
+    try:
+        if user_password:
+            metadata_txt = run_shell_command('pdfinfo', '-upw', user_password, file_path)
+        else:
+            metadata_txt = run_shell_command('pdfinfo', '-enc', 'UTF-8', file_path)
+    except Exception as e:
+        if 'Incorrect password' in str(e):
+            return_error('The provided password is either incorrect or missing. Please provide a correct password')
     metadata = {}
     metadata_str = metadata_txt.decode('utf8', 'replace')
     for line in metadata_str.split('\n'):
@@ -150,11 +191,18 @@ def get_pdf_metadata(file_path, user_password=None):
 
 def get_pdf_text(file_path, pdf_text_output_path):
     """Creates a txt file from the pdf in the pdf_text_output_path and returns the content of the txt file"""
-    run_shell_command('pdftotext', file_path, pdf_text_output_path)
+    # pdf = Pdf.open(file_path)
+    # pdf.save(pdf_text_output_path)
+    try:
+        run_shell_command('pdftotext', file_path, pdf_text_output_path)
+    except PdfPermissionsException:
+        pdf = Pdf.open(file_path)
+        pdf.save('extractable.pdf')
+        run_shell_command('pdftotext', 'extractable.pdf', pdf_text_output_path)
     text = ''
     with open(pdf_text_output_path, 'rb') as f:
         for line in f:
-            text += line.decode('utf-8')
+            text += line.decode('utf-8', errors='ignore')  # TODO DON'T FORGET TO DELETE errors ARGS
     return text
 
 
@@ -403,7 +451,7 @@ def get_urls_and_emails_from_pdf_annots(file_path):
     all_emails: Set[str] = set()
 
     with open(file_path, 'rb') as pdf_file:
-        pdf = PyPDF2.PdfFileReader(pdf_file, strict=False)
+        pdf = PyPDF2.PdfReader(pdf_file, strict=False)
         pages_len = len(pdf.pages)
 
         # Goes over the PDF, page by page, and extracts urls and emails:
@@ -479,9 +527,10 @@ def main():
 
     try:
         path = demisto.getFilePath(entry_id).get('path')
+        file_name = demisto.getFilePath(entry_id).get('name')
         if path:
             try:
-                output_folder = "ReadPDF"
+                output_folder = 'ReadPDF'
                 os.makedirs(output_folder)
             except OSError as e:
                 if e.errno != errno.EEXIST:
@@ -504,7 +553,8 @@ def main():
                 text = get_pdf_text(cpy_file_path, pdf_text_output_path)
 
                 # Get URLS + emails:
-                urls_set, emails_set = extract_urls_and_emails_from_pdf_file(cpy_file_path, output_folder)
+                # urls_set, emails_set = extract_urls_and_emails_from_pdf_file(cpy_file_path, output_folder)
+                urls_set, emails_set = extract_urls_and_emails_from_pdf_file('extractable.pdf', output_folder)
 
                 for url in urls_set:
                     urls_ec.append({"Data": url})
@@ -530,7 +580,10 @@ def main():
                 "Contents": f"EntryID {entry_id} path could not be found"
             })
     except ShellException as e:
-        mark_suspicious(f'The script failed read PDF file due to an error: {str(e)}', entry_id)
+        mark_suspicious(suspicious_reason=f'The script failed read PDF file due to an error: {str(e)}',
+                        entry_id=entry_id,
+                        path=path,
+                        file_name=file_name)
     except Exception as e:
         return_error_without_exit(f'The script failed read PDF file due to an error: {str(e)}')
     finally:
@@ -539,6 +592,5 @@ def main():
             shutil.rmtree(folder, onerror=handle_error_read_only)
 
 
-# python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
