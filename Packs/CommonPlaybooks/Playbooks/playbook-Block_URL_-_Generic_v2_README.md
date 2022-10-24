@@ -1,4 +1,4 @@
-This playbook blocks malicious URLs using all integrations that are enabled.
+This playbook blocks malicious URLs through all integrations that are enabled.
 
 Supported integrations for this playbook:
 * Palo Alto Networks PAN-OS
@@ -12,24 +12,24 @@ Supported integrations for this playbook:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* PAN-OS - Block URL - Custom URL Category
-* Sophos Firewall - Block URL
 * Checkpoint - Block URL
+* Sophos Firewall - Block URL
+* PAN-OS - Block URL - Custom URL Category
 
 ### Integrations
+* Forcepoint
 * Zscaler
 * Netcraft
-* Forcepoint
 
 ### Scripts
-* IsIntegrationAvailable
 * SetAndHandleEmpty
+* IsIntegrationAvailable
 
 ### Commands
+* setIndicator
 * fp-add-address-to-category
 * netcraft-report-attack
 * zscaler-blacklist-url
-* setIndicator
 
 ## Playbook Inputs
 ---
@@ -41,10 +41,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | AutoCommit | This input establishes whether to commit the configuration automatically.<br/>Yes - Commit automatically.<br/>No - Commit manually. | No | Optional |
 | CustomURLCategory | Custom URL Category name. | XSOAR Remediation - Malicious URLs | Optional |
 | type | Custom URL category type. Insert "URL List"/ "Category Match". |  | Optional |
-| Tag | Device group for the Custom URL Category \(Panorama instances\). |  | Optional |
+| Tag | Insert a tag name with which indicators will get tagged. This tag can be used later in the External Dynamic Lists integration by using the tag for filtering IPs in the indicator query. |  | Optional |
 | categories | The list of categories. Relevant from PAN-OS v9.x. |  | Optional |
 | UserVerification | Possible values:True/False. Default:True.<br/>Specify if User Verification is Requrired | True | Optional |
 | EDLServerIP | EDL Server IP Address |  | Optional |
+| device-group | Device group for the Custom URL Category \(Panorama instances\). |  | Optional |
 
 ## Playbook Outputs
 ---

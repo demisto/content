@@ -1,4 +1,4 @@
-This playbook blocks malicious indicators through all integrations that are enabled, using the following sub-playbooks:
+This playbook blocks malicious Indicators through all integrations that are enabled, using the following sub-playbooks:
 
 - Block URL - Generic v2
 - Block Account - Generic v2
@@ -13,12 +13,12 @@ This playbook blocks malicious indicators through all integrations that are enab
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+* Block IP - Generic v3
+* Block Account - Generic v2
 * Block Domain - Generic
 * Block File - Generic v2
 * Block URL - Generic v2
 * Block Email - Generic
-* Block Account - Generic v2
-* Block IP - Generic v3
 
 ### Integrations
 This playbook does not use any integrations.
@@ -43,7 +43,6 @@ This playbook does not use any scripts.
 | LogForwarding | Panorama log forwarding object name. Indicate what type of Log Forwarding setting will be specified in the PAN-OS custom rules. |  | Optional |
 | AutoCommit | This input determines whether to commit the configuration automatically on PAN-OS devices and other FWs. <br/>Yes - Commit automatically.<br/>No - Commit manually. | No | Optional |
 | StaticAddressGroup | This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.<br/>Specify the Static Address Group name for IPs list handling. |  | Optional |
-| URLListName | URL list from the instance context with which to override the remote file. | Demisto Remediation - URL EDL | Optional |
 | CustomURLCategory | Custom URL Category name. | Demisto Remediation - Malicious URLs | Optional |
 | type | Custom URL category type. Insert "URL List"/ "Category Match". |  | Optional |
 | device-group | Device group for the Custom URL Category \(Panorama instances\). |  | Optional |
@@ -61,6 +60,7 @@ This playbook does not use any scripts.
 | InputEnrichment | The rule name/description that will be presented on the created rule in certain integrations \(if there is a need\).<br/>The supported integrations: PAN-OS, CheckPoint.<br/><br/>Default input- "XSOAR - Block IP playbook - $\{incident.id\}" | False | Optional |
 | RuleName | The rule name/description that will be presented on the created rule in certain integrations \(if there is a need\).<br/>The supported integrations: PAN-OS, CheckPoint.<br/><br/>Default input- "XSOAR - Block IP playbook - $\{incident.id\}" | XSOAR - Block Indicators playbook - ${incident.id} | Optional |
 | RuleDirection | Determine if a newly created rule should be with the network direction of outbound or inbound blocked traffic.<br/>Possible values: inbound or outbound<br/>Default: outbound | outbound | Optional |
+| EDLServerIP | EDL Server IP Address |  | Optional |
 
 ## Playbook Outputs
 ---
