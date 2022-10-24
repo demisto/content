@@ -290,7 +290,7 @@ There are no input arguments for this command.
 
 #### Human Readable Output
 
->**In case the default URL is incorrect, you can override it by setting the "TAXII2 Service URL Address" field in the integration configuration**
+>**In case the defaut URL is incorrect, you can override it by setting the "TAXII2 Service URL Address" field in the integration configuration**
 >
 >### Server Info
 >|api_roots|default|description|title|
