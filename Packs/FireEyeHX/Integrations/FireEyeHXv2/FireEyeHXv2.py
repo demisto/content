@@ -1,11 +1,12 @@
 import urllib.parse
+import urllib3
 from json import JSONDecodeError
 from typing import Tuple, Pattern
 
 from CommonServerPython import *
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
@@ -964,10 +965,14 @@ class Client(BaseClient):
 
     def file_acquisition_package_request(self, acquisition_id):
 
-        return self._http_request(
+        headers = {'Accept': 'application/octet-stream'}
+        response = self._http_request(
             method='GET',
-            url_suffix=f"acqs/files/{acquisition_id}.zip"
-        )["content"]
+            url_suffix=f'acqs/files/{acquisition_id}.zip',
+            headers=headers,
+            resp_type='content'
+        )
+        return response
 
     def delete_file_acquisition_request(self, acquisition_id):
         """
@@ -2981,7 +2986,12 @@ def search_result_get_command(client: Client, args: Dict[str, Any]) -> List[Comm
                 message = "The search was deleted successfully"
         except Exception as e:
             demisto.debug(f'{message}\n{e}')
-        commandsResults[0].readable_output += f"\n\n{message}"
+        if len(commandsResults) > 0:
+            commandsResults[0].readable_output += f"\n\n{message}"
+        else:
+            commandsResults.append(CommandResults(
+                readable_output=message
+            ))
 
     return commandsResults if commandsResults else [CommandResults(readable_output="No Results")]
 
