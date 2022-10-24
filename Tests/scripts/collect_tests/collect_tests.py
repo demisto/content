@@ -556,7 +556,7 @@ class BranchTestCollector(TestCollector):
         ])
 
     def __collect_from_changed_files(self, changed_files: tuple[str, ...]) -> CollectionResult:
-        # NOTE: this should only be used from _collect
+        """NOTE: this should only be used from _collect"""
         collected = []
         for raw_path in changed_files:
             path = PATHS.content_path / raw_path
@@ -575,25 +575,25 @@ class BranchTestCollector(TestCollector):
             except Exception as e:
                 logger.exception(f'Error while collecting tests for {raw_path}', exc_info=True, stack_info=True)
                 raise e
-        return CollectionResult.union(collected)
+        return CollectionResult.union(filter(None, collected))
 
     def __collect_packs_from_which_files_were_moved(self, pack_ids: tuple[str, ...]) -> CollectionResult:
-        # NOTE: this should only be used from _collect
+        """NOTE: this should only be used from _collect"""
         collected: list[CollectionResult] = []
         for pack_id in pack_ids:
             logger.info(f'one or more files were moved from the {pack_id} pack, attempting to collect the pack.')
             try:
-                collected.append(self._collect_pack(pack_id=pack_id,
-                                                    reason=CollectionReason.FILES_MOVED_FROM_PACK,
-                                                    reason_description='',
-                                                    allow_incompatible_marketplace=True,
-                                                    ))
+                if pack_to_collect := self._collect_pack(pack_id=pack_id,
+                                                         reason=CollectionReason.FILES_MOVED_FROM_PACK,
+                                                         reason_description='',
+                                                         allow_incompatible_marketplace=True):
+                    collected.append(pack_to_collect)
             except NothingToCollectException as e:
                 logger.info(e.message)
             except Exception as e:
                 logger.exception(f'Error while collecting tests for {pack_id=}', exc_info=True, stack_info=True)
                 raise e
-        return CollectionResult.union(collected)
+        return CollectionResult.union(filter(None, collected))
 
     def _collect_yml(self, content_item_path: Path) -> Optional[CollectionResult]:
         """
