@@ -855,8 +855,14 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
                 continue
 
         alert_id = alert.get('unique_id', '')
-        alert_name = alert.get('process_name', '')
-        incident_name = f'{INTEGRATION_NAME}: {alert_id} {alert_name}'
+        process_name = alert.get('process_name','')
+        if alert.get('feed_name', '') == 'My Watchlists':
+            alert['description'] = alert.get('watchlist_name', '')
+        alert_name = alert.get('description', '')
+        if process_name:
+            incident_name = f'EDR Alert: {alert_name} -- {process_name}'
+        else:
+            incident_name = f'EDR Alert: {alert_name}'
         if not alert_id or not alert_name:
             demisto.debug(f'{INTEGRATION_NAME} - Alert details are missing. {str(alert)}')
 
