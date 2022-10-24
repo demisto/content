@@ -1,7 +1,7 @@
 id: GitLab v2
 version: -1
 name: GitLab v2
-description: A playbook for GitLab v2 integration
+description: A playbook for GitLab v2 integration.
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:
