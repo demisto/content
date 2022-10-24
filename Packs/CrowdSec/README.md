@@ -1,4 +1,4 @@
-CrowdSec CTI distributes IP reputation intelligence, built thanks to the CrowdSe community, allowing SOC teams & security analysts to obtain highly curated data on intrusion attempts, origins, and trends.
+CrowdSec CTI distributes IP reputation intelligence, built thanks to the CrowdSec community, allowing SOC teams & security analysts to obtain highly curated data on intrusion attempts, origins, and trends.
 
 This pack contains one CrowdSec integration, allowing you to enrich an IP address against the CrowdSec CTI.
 
