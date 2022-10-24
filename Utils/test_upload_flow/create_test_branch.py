@@ -202,9 +202,6 @@ def parse_arguments() -> argparse.Namespace:
                                                             "directly to gitlab repo")
     return parser.parse_args()
 
-def set_logger():
-
-
 
 if __name__ == "__main__":
 
