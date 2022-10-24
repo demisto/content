@@ -106,7 +106,6 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
     download_index_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_NAME}.zip")
 
     index_blob = storage_bucket.blob(index_storage_path)
-    print(index_storage_path)
     index_folder_path = os.path.join(extract_destination_path, GCPConfig.INDEX_NAME)
     index_generation = 0  # Setting to 0 makes the operation succeed only if there are no live versions of the blob
 

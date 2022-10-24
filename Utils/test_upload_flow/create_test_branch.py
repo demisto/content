@@ -24,7 +24,7 @@ def add_changed_pack(func):
         versions_dict[str(pack.name)] = version
         if pack_items:
             pack_items_dict[str(pack.name)] = pack_items
-        logging.info("Done")
+        logging.info(f"Done running {func.__name__} on pack {pack}")
 
         return pack, version, pack_items
     return wrapper
