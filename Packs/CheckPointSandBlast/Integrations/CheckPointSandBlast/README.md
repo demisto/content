@@ -12,7 +12,7 @@ This integration was integrated and tested with version v1 of CheckPointSandBlas
 
     | **Parameter** | **Description**                                            | **Required** |
     |------------------------------------------------------------| --- | --- |
-    | Server URL | https://te.checkpoint.com                                  | True |
+    | Server URL | `https://te.checkpoint.com`                                  | True |
     | Authorization - API Key |                                                            | False |
     | Trust any certificate (not secure) |                                                            | False |
     | Use system proxy settings |                                                            | False |
