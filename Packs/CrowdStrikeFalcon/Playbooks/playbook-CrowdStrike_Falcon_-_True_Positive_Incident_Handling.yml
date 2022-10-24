@@ -798,7 +798,7 @@ tasks:
       version: -1
       name: CrowdStrike Falcon - Isolate Endpoint
       description: This playbook auto isolates endpoints by the device ID provided in the playbook.
-      playbookName: CrowdStrike Falcon - Isolate Endpoint
+      playbookName: Crowdstrike Falcon - Isolate Endpoint
       type: playbook
       iscommand: false
       brand: ''
