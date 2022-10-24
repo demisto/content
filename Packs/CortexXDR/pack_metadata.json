@@ -14,11 +14,10 @@
         "XDR"
     ],
     "categories": [
-        "Endpoint",
-        "Data Enrichment & Threat Intelligence"
+        "Endpoint"
     ],
     "tags": [
-        "Incident Mirroring"
+        "Palo Alto Networks Products"
     ],
     "useCases": [
         "Malware"
