@@ -355,7 +355,7 @@ Retrieves file information from URLhaus.
 >### URLhaus reputation for SHA256 : 7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89
 >|First seen|Last seen|MD5|SHA256|Signature|URLhaus link|
 >|---|---|---|---|---|---|
->| 2022-01-18T11:18:31 | 2022-01-28T09:36:21 | 2ff9cce7a08215ded0945de5965d2a0a | 7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89 | BazaLoader | https://urlhaus-api.abuse.ch/v1/download/7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89/ |
+>| 2022-01-18T11:18:31 | 2022-01-28T09:36:21 | 2ff9cce7a08215ded0945de5965d2a0a | 7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89 | BazaLoader | `https://urlhaus-api.abuse.ch/v1/download/7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89/` |
 
 
 ### urlhaus-download-sample
