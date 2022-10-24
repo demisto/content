@@ -11,7 +11,7 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL (e.g., https://demisto.zendesk.com) |  | True |
+    | Server URL (e.g., `https://demisto.zendesk.com`) |  | True |
     | Username (or '&lt;username&gt;/token' when using API key). | example 'admin@org.com' when using the password, or 'admin@org.com/token' when using an API key. | True |
     | Password/API key |  | True |
     | Fetch incidents |  | False |
