@@ -784,7 +784,9 @@ ARGS_FOR_PARTIAL_RESPONSE = [
 def test_partial_response(response, object_name, expected_response):
     """
     Given:
-        - optinal params, arguments
+        - API response.
+        - object_name (Branch, Issue etc).
+        - expected_response after filtering. 
     When:
         - running partial_response
     Then:
