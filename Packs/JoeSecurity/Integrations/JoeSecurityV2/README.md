@@ -1,5 +1,8 @@
-Access the full set of possibilities the JoeSandbox Cloud provides via RESTful Web API v2.
+Access the full set of possibilities the Joe Sandbox Cloud provides via RESTful Web API v2.
 This integration was integrated and tested with version 3.18.0 of [jbxapi](https://github.com/joesecurity/jbxapi).
+
+Some changes have been made that might affect your existing content. 
+If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes).
 
 ## Configure Joe Security v2 on Cortex XSOAR
 
@@ -21,7 +24,7 @@ This integration was integrated and tested with version 3.18.0 of [jbxapi](https
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-**Note**: Most of the commands have the *full_display* boolean argument that when is set to true, indicators information , including their DBot Scores, will be displayed.   
+**Note**: Most of the commands have the *full_display* boolean argument that when set to true, indicators information, including their DBot Scores, will be displayed.   
 
 
 ### joe-is-online
@@ -71,10 +74,10 @@ Get information about an analysis.
 `joe-analysis-info`
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                                       | **Required** |
-| --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| webid | The analysis web id.                                                                                                                                                  | Required | 
-| full_display | When is set to true indicators information , including their DBot Scores, will be displayed. Possible values are: true, false. Default is false. | Optional | 
+| **Argument Name** | **Description**  | **Required** |
+| --- |-------| --- |
+| webid | The analysis web ID.      | Required | 
+| full_display | When set to true, indicators information, including their DBot Scores, will be displayed. Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
@@ -93,29 +96,29 @@ Get information about an analysis.
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | File.MD5 | String | The MD5 hash of the file. | 
 | URL.Data | String | The URL. | 
-| Joe.Analysis.AnalysisID | String | The analysis id from joe security. | 
+| Joe.Analysis.AnalysisID | String | The analysis ID Joe Security. | 
 | Joe.Analysis.Classification | String | The classification of the analysis. | 
 | Joe.Analysis.Comments | String | Comments regarding the analysis. | 
 | Joe.Analysis.detection | String | The analysis detection. Can be one of unknown, clean, suspicious, malicious. | 
-| Joe.Analysis.duration | Number | The duration field contains the duration of the analysis in seconds. | 
-| Joe.Analysis.encrypted | Boolean | The encrypted field is true if the analysis data is encrypted. | 
-| Joe.Analysis.filename | String | The file name of the analysis | 
-| Joe.Analysis.md5 | String | The file md5 | 
+| Joe.Analysis.duration | Number | The duration of the analysis in seconds. | 
+| Joe.Analysis.encrypted | Boolean | True if the analysis data is encrypted. | 
+| Joe.Analysis.filename | String | The file name of the analysis. | 
+| Joe.Analysis.md5 | String | The file MD5. | 
 | Joe.Analysis.runs.detection | String | The run detection. Can be one of unknown, clean, suspicious, malicious. | 
 | Joe.Analysis.runs.error | Unknown | The run errors. | 
 | Joe.Analysis.runs.score | Number | The run score. | 
 | Joe.Analysis.runs.sigma | Boolean | The run sigma. | 
 | Joe.Analysis.runs.snort | Boolean | The run snort. | 
 | Joe.Analysis.runs.system | String | The run operation system. | 
-| Joe.Analysis.runs.yara | Boolean | The run yara. | 
+| Joe.Analysis.runs.yara | Boolean | The run YARA. | 
 | Joe.Analysis.score | Number | The run score. | 
 | Joe.Analysis.scriptname | String | The run script name. | 
-| Joe.Analysis.sha1 | String | The file sha1. | 
-| Joe.Analysis.sha256 | String | The file sha256. | 
+| Joe.Analysis.sha1 | String | The file SHA1. | 
+| Joe.Analysis.sha256 | String | The file SHA256. | 
 | Joe.Analysis.status | String | The status is one of submitted, running, finished. | 
 | Joe.Analysis.threatname | String | The analysis threat name. | 
 | Joe.Analysis.time | Date | The analysis time. | 
-| Joe.Analysis.webid | String | The web id from joe security. | 
+| Joe.Analysis.webid | String | The web ID from Joe Security. | 
 
 #### Command example
 ```!joe-analysis-info webid=2722073```
@@ -191,7 +194,7 @@ Lists all analyses.
 | page | Page number to display. | Optional | 
 | page_size | Determine how many entries to display on each page. | Optional | 
 | limit | Limit the number of entries to display. Default is 50. | Optional | 
-| full_display | When is set to true indicators information , including their DBot Scores, will be displayed. Possible values are: true, false. Default is false. | Optional | 
+| full_display | When set to true, indicators information, including their DBot Scores, will be displayed. Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
@@ -210,29 +213,29 @@ Lists all analyses.
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | File.MD5 | String | The MD5 hash of the file. | 
 | URL.Data | String | The URL. | 
-| Joe.Analysis.AnalysisID | String | The analysis id. | 
+| Joe.Analysis.AnalysisID | String | The analysis ID. | 
 | Joe.Analysis.Classification | String | The classification of the analysis. | 
 | Joe.Analysis.Comments | String | Comments regarding the analysis. | 
 | Joe.Analysis.detection | String | The analysis detection. Can be one of unknown, clean, suspicious, malicious. | 
-| Joe.Analysis.duration | Number | The duration field contains the duration of the analysis in seconds. | 
-| Joe.Analysis.encrypted | Boolean | The encrypted field is true if the analysis data is encrypted. | 
-| Joe.Analysis.filename | String | The file name of the analysis | 
-| Joe.Analysis.md5 | String | The file md5 | 
+| Joe.Analysis.duration | Number | The duration of the analysis in seconds. | 
+| Joe.Analysis.encrypted | Boolean | True if the analysis data is encrypted. | 
+| Joe.Analysis.filename | String | The file name of the analysis. | 
+| Joe.Analysis.md5 | String | The file MD5. | 
 | Joe.Analysis.runs.detection | String | The run detection. Can be one of unknown, clean, suspicious, malicious. | 
 | Joe.Analysis.runs.error | Unknown | The run errors. | 
 | Joe.Analysis.runs.score | Number | The run score. | 
 | Joe.Analysis.runs.sigma | Boolean | The run sigma. | 
 | Joe.Analysis.runs.snort | Boolean | The run snort. | 
 | Joe.Analysis.runs.system | String | The run operation system. | 
-| Joe.Analysis.runs.yara | Boolean | The run yara. | 
+| Joe.Analysis.runs.yara | Boolean | The run YARA. | 
 | Joe.Analysis.score | Number | The run score. | 
 | Joe.Analysis.scriptname | String | The run script name. | 
-| Joe.Analysis.sha1 | String | The file sha1. | 
-| Joe.Analysis.sha256 | String | The file sha256. | 
+| Joe.Analysis.sha1 | String | The file SHA1. | 
+| Joe.Analysis.sha256 | String | The file SHA256. | 
 | Joe.Analysis.status | String | The status is one of submitted, running, finished. | 
 | Joe.Analysis.threatname | String | The analysis threat name. | 
 | Joe.Analysis.time | Date | The analysis time. | 
-| Joe.Analysis.webid | String | The web id from joe security. | 
+| Joe.Analysis.webid | String | The web ID from Joe Security. | 
 
 #### Command example
 ```!joe-list-analysis limit=1```
@@ -295,7 +298,7 @@ Lists all analyses.
 
 ### joe-download-report
 ***
-Download a resource belonging to a report. This can be the full report, dropped binaries, etc. See integration README for the full supported report types.
+Download a resource belonging to a report. This can be the full report, dropped binaries, etc. See the integration README for the full list of supported report types.
 
 
 #### Base Command
@@ -303,9 +306,9 @@ Download a resource belonging to a report. This can be the full report, dropped 
 `joe-download-report`
 #### Input
 
-| **Argument Name** | **Description**                                                                                           | **Required** |
-| --- |-----------------------------------------------------------------------------------------------------------| --- |
-| webid | The Web ID.                                                                                               | Required | 
+| **Argument Name** | **Description**     | **Required** |
+| --- |----------| --- |
+| webid | The Web ID.      | Required | 
 | type | The resource type to download. Possible values are: html, json, pcap, pdf, xml, iocjson. Default is html. | Optional | 
 
 
@@ -313,12 +316,12 @@ Download a resource belonging to a report. This can be the full report, dropped 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | FileName | 
-| InfoFile.EntryID | string | The EntryID of the report | 
-| InfoFile.Size | number | File Size | 
-| InfoFile.Type | string | File type e.g. "PE" | 
-| InfoFile.Info | string | Basic information of the file | 
-| File.Extension | string | File Extension | 
+| InfoFile.Name | string | Filename. | 
+| InfoFile.EntryID | string | The entry ID of the report | 
+| InfoFile.Size | number | File size. | 
+| InfoFile.Type | string | File type. e.g., "PE". | 
+| InfoFile.Info | string | Basic information of the file. | 
+| File.Extension | string | File extension. | 
 
 #### Command example
 ```!joe-download-report webid=1```
@@ -360,16 +363,16 @@ Download a sample.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.Size | number | File Size | 
+| File.Size | number | File size. | 
 | File.SHA1 | string | SHA1 hash of the file | 
 | File.SHA256 | string | SHA256 hash of the file | 
-| File.Name | string | The sample name | 
-| File.SSDeep | string | SSDeep hash of the file | 
-| File.EntryID | string | War-Room Entry ID of the file | 
+| File.Name | string | The sample name. | 
+| File.SSDeep | string | SSDeep hash of the file. | 
+| File.EntryID | string | War.Room entry ID of the file. | 
 | File.Info | string | Basic information of the file | 
-| File.Type | string | File type e.g. "PE" | 
-| File MD5 | string | MD5 hash of the file | 
-| File.Extension | string | File Extension | 
+| File.Type | string | File type, e.g., "PE". | 
+| File MD5 | string | MD5 hash of the file. | 
+| File.Extension | string | File extension. | 
 
 #### Command example
 ```!joe-download-sample webid=2722073```
@@ -409,7 +412,7 @@ Retrieves files information from Joe Security.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | A comma-separated list of file names, SHA1, SHA256 or MD5 hashes. | Required | 
+| file | A comma-separated list of file names, SHA1, SHA256, or MD5 hashes. | Required | 
 
 
 #### Context Output
@@ -485,7 +488,7 @@ Retrieves files information from Joe Security.
 
 ### url
 ***
-Retrieves urls information from Joe Security.
+Retrieves URL information from Joe Security.
 
 
 #### Base Command
@@ -495,15 +498,15 @@ Retrieves urls information from Joe Security.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | A comma-separated list of urls. | Required | 
+| url | A comma-separated list of URLs. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| URL.Name | String | Name of the url. | 
-| Joe.URL.Name | String | Name of the url. | 
+| URL.Name | String | Name of the URL. | 
+| Joe.URL.Name | String | Name of the URL. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
@@ -714,8 +717,8 @@ Retrieve the submission info.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| submission_ids | A comma-separated list of submission ids. | Optional | 
-| full_display | When is set to true indicators information , including their DBot Scores, will be displayed. Possible values are: true, false. Default is true. | Optional | 
+| submission_ids | A comma-separated list of submission IDs. | Optional | 
+| full_display | When set to true, indicators information, including their DBot Scores, will be displayed. Possible values are: true, false. Default is true. | Optional | 
 
 
 #### Context Output
@@ -734,7 +737,7 @@ Retrieve the submission info.
 | File.SHA1 | String | The SHA1 hash of the file. | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | URL.Data | String | The URL. | 
-| Joe.Analysis.AnalysisID | String | The analysis id. | 
+| Joe.Analysis.AnalysisID | String | The analysis ID. | 
 | Joe.Analysis.Classification | String | The classification. | 
 | Joe.Analysis.Comments | String | The comments. | 
 | Joe.Analysis.detection | String | The detection. | 
@@ -747,19 +750,19 @@ Retrieve the submission info.
 | Joe.Analysis.runs.sigma | Boolean | The sigma. | 
 | Joe.Analysis.runs.snort | Boolean | The snort. | 
 | Joe.Analysis.runs.system | String | The system. | 
-| Joe.Analysis.runs.yara | Boolean | The yara. | 
+| Joe.Analysis.runs.yara | Boolean | The YARA. | 
 | Joe.Analysis.score | Number | The score. | 
 | Joe.Analysis.scriptname | String | The script name. | 
 | Joe.Analysis.status | String | The status. | 
 | Joe.Analysis.threatname | String | The threat name. | 
 | Joe.Analysis.time | Date | The time. | 
-| Joe.Analysis.webid | String | The web id. | 
+| Joe.Analysis.webid | String | The web ID. | 
 | Joe.Submission.most_relevant_analysis.detection | String | The detection. | 
 | Joe.Submission.most_relevant_analysis.score | Number | The score. | 
-| Joe.Submission.most_relevant_analysis.webid | String | The web id. | 
+| Joe.Submission.most_relevant_analysis.webid | String | The web ID. | 
 | Joe.Submission.name | String | The name. | 
 | Joe.Submission.status | String | The status. | 
-| Joe.Submission.submission_id | String | The submission id. | 
+| Joe.Submission.submission_id | String | The submission ID. | 
 | Joe.Submission.time | Date | The time. | 
 
 #### Command example
@@ -875,8 +878,8 @@ Retrieve the submission info.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entry_id | The war room entry id of the file to submit. | Required | 
-| full_display | When is set to true indicators information , including their DBot Scores, will be displayed. Possible values are: true, false. Default is true. | Optional | 
+| entry_id | The War Room entry ID of the file to submit. | Required | 
+| full_display | When set to true, indicators information, including their DBot Scores, will be displayed. Possible values are: true, false. Default is true. | Optional | 
 | timeout | The timeout for the polling in seconds. Default is 1200. | Optional | 
 | hide_polling_output | Hide polling output. | Optional | 
 | report_type | The report type. Possible values are: html, json, pcap, pdf, xml, iocjson. Default is html. | Optional | 
@@ -896,7 +899,7 @@ Retrieve the submission info.
 | java_jar_tracing | Whether to enable Java JAR tracing. Default is true. | Optional | 
 | dotnet_tracing | Whether to enable .NET tracing. Default is true. | Optional | 
 | amsi_unpacking | Whether to enable Microsoft Antimalware Scan Interface unpacking. Default is true. | Optional | 
-| fast_mode | Whether to enable fast mode, focuses on fast analysis and detection versus deep forensic analysis. Default is false. | Optional | 
+| fast_mode | Whether to enable fast mode. It focuses on fast analysis and detection versus deep forensic analysis. Default is false. | Optional | 
 | secondary_results | Whether to enable secondary results, such as Yara rule generation, classification via Joe Sandbox Class as well as several detail reports. Default is false. | Optional | 
 | report_cache | Whether to enable report cache. Default is false. | Optional | 
 | command_line_argument | A command line argument to be passed to the sample. | Optional | 
@@ -926,7 +929,7 @@ Retrieve the submission info.
 | File.Name | String | The full file name. | 
 | File.SHA1 | String | The SHA1 hash of the file. | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
-| Joe.Analysis.AnalysisID | String | The analysis id. | 
+| Joe.Analysis.AnalysisID | String | The analysis ID. | 
 | Joe.Analysis.Classification | String | The classification. | 
 | Joe.Analysis.Comments | String | The comments. | 
 | Joe.Analysis.detection | String | The detection. | 
@@ -939,19 +942,19 @@ Retrieve the submission info.
 | Joe.Analysis.runs.sigma | Boolean | The sigma. | 
 | Joe.Analysis.runs.snort | Boolean | The snort. | 
 | Joe.Analysis.runs.system | String | The system. | 
-| Joe.Analysis.runs.yara | Boolean | The yara. | 
+| Joe.Analysis.runs.yara | Boolean | The YARA. | 
 | Joe.Analysis.score | Number | The score. | 
 | Joe.Analysis.scriptname | String | The script name. | 
 | Joe.Analysis.status | String | The status. | 
 | Joe.Analysis.threatname | String | The threat name. | 
 | Joe.Analysis.time | Date | The time. | 
-| Joe.Analysis.webid | String | The web id. | 
+| Joe.Analysis.webid | String | The web ID. | 
 | Joe.Submission.most_relevant_analysis.detection | String | The detection. | 
 | Joe.Submission.most_relevant_analysis.score | Number | The score. | 
-| Joe.Submission.most_relevant_analysis.webid | String | The web id. | 
+| Joe.Submission.most_relevant_analysis.webid | String | The web ID. | 
 | Joe.Submission.name | String | The name. | 
 | Joe.Submission.status | String | The status. | 
-| Joe.Submission.submission_id | String | The submission id. | 
+| Joe.Submission.submission_id | String | The submission ID. | 
 | Joe.Submission.time | Date | The time. | 
 
 
@@ -1061,7 +1064,7 @@ Retrieve the submission info.
 | --- | --- | --- |
 | url | The URL to submit. | Required | 
 | url_reputation | The URL reputation. Possible values are: true, false. Default is false. | Optional | 
-| full_display | When is set to true indicators information , including their DBot Scores, will be displayed. Possible values are: true, false. Default is true. | Optional | 
+| full_display | When set to true, indicators information, including their DBot Scores, will be displayed. Possible values are: true, false. Default is true. | Optional | 
 | timeout | The timeout for the polling in seconds. Default is 1200. | Optional | 
 | hide_polling_output | Hide polling output. | Optional | 
 | report_type | The report type. Possible values are: html, json, pcap, pdf, xml, iocjson. Default is html. | Optional | 
@@ -1105,7 +1108,7 @@ Retrieve the submission info.
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | URL.Data | String | The URL. | 
-| Joe.Analysis.AnalysisID | String | The analysis id. | 
+| Joe.Analysis.AnalysisID | String | The analysis ID. | 
 | Joe.Analysis.Classification | String | The classification. | 
 | Joe.Analysis.Comments | String | The comments. | 
 | Joe.Analysis.detection | String | The detection. | 
@@ -1118,19 +1121,19 @@ Retrieve the submission info.
 | Joe.Analysis.runs.sigma | Boolean | The sigma. | 
 | Joe.Analysis.runs.snort | Boolean | The snort. | 
 | Joe.Analysis.runs.system | String | The system. | 
-| Joe.Analysis.runs.yara | Boolean | The yara. | 
+| Joe.Analysis.runs.yara | Boolean | The YARA. | 
 | Joe.Analysis.score | Number | The score. | 
 | Joe.Analysis.scriptname | String | The script name. | 
 | Joe.Analysis.status | String | The status. | 
 | Joe.Analysis.threatname | String | The threat name. | 
 | Joe.Analysis.time | Date | The time. | 
-| Joe.Analysis.webid | String | The web id. | 
+| Joe.Analysis.webid | String | The web ID. | 
 | Joe.Submission.most_relevant_analysis.detection | String | The detection. | 
 | Joe.Submission.most_relevant_analysis.score | Number | The score. | 
-| Joe.Submission.most_relevant_analysis.webid | String | The web id. | 
+| Joe.Submission.most_relevant_analysis.webid | String | The web ID. | 
 | Joe.Submission.name | String | The name. | 
 | Joe.Submission.status | String | The status. | 
-| Joe.Submission.submission_id | String | The submission id. | 
+| Joe.Submission.submission_id | String | The submission ID. | 
 | Joe.Submission.time | Date | The time. | 
 
 
@@ -1210,23 +1213,22 @@ Retrieve the submission info.
 > |---|---|---|---|---|---|---|---|---|---|---|---|
 > | 1 | http://example.com | 2022-09-15T10:57:14+02:00 | finished | 1 | false | 1 | | Unknown | 1 | clean | http://example.com |
 
-
+## Breaking Changes
 
 ### Commands
 #### The following commands were removed in this version:
-* *joe-analysis-submit-sample* - this command was replaced by *joe-submit-sample*.
-* *joe-analysis-submit-url* - this command was replaced by *joe-submit-url*.
+* ***joe-analysis-submit-sample*** - this command was replaced by ***joe-submit-sample***.
+* ***joe-analysis-submit-url*** - this command was replaced by ***joe-submit-url***.
 
 ### Arguments
-#### The behavior of the following arguments was changed:
-In the *joe-search* command:
-* *query* - is now support comma separated values.
+#### The behavior of the following argument was changed:
+In the ***joe-search*** command, the *query* argument now supports comma-separated values.
 
 
 ### Playbooks
 #### The following playbooks were deprecated:
-**Detonate File - JoeSecurity** - Use the *joe-submit-sample* command instead.
-**Detonate File From URL - JoeSecurity** - Use the *joe-submit-sample* command instead.
-**Detonate URL - JoeSecurity** - Use the *joe-submit-url* command instead.
+**Detonate File - JoeSecurity** - Use the ***joe-submit-sample*** command instead.
+**Detonate File From URL - JoeSecurity** - Use the ***joe-submit-sample*** command instead.
+**Detonate URL - JoeSecurity** - Use the ***joe-submit-url*** command instead.
 
 
