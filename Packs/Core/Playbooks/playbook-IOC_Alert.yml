@@ -1164,13 +1164,13 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Should close the alert automatically if it's established verdict is False Positive?
+  description: Should close the alert automatically if it's established verdict is False Positive? Specify True/False.
   playbookInputQuery:
 - key: PreHostContainment
   value:
     simple: "False"
   required: false
-  description: Isolate the host before the investigation phase in case IOC found as suspicious.
+  description: Isolate the host before the investigation phase in case IOC found as suspicious. Specify True/False.
   playbookInputQuery:
 - key: ShouldHandleFPautomatically
   value: {}
@@ -1180,7 +1180,7 @@ inputs:
 - key: AutoRestoreEndpoint
   value: {}
   required: false
-  description: Whether to execute the Recovery playbook.
+  description: Whether to execute the Recovery playbook. Specify True/False.
   playbookInputQuery:
 - key: AutoContainment
   value: {}
@@ -1192,6 +1192,7 @@ inputs:
     * Block indicators
     * Quarantine file
     * Disable user
+    Specify True/False.
   playbookInputQuery:
 - key: FileRemediation
   value:
@@ -1208,6 +1209,7 @@ inputs:
     * Terminate process
     * Delete file
     * Reset the user's password
+    Specify True/False.
   playbookInputQuery:
 outputs: []
 tests:
