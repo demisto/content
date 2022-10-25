@@ -3394,10 +3394,9 @@ class Pack(object):
         pc_uploaded_preview_images = images_data.get(self._pack_name, {}).get(BucketUploadFlow.PREVIEW_IMAGES, [])
 
         for image_name in pc_uploaded_preview_images:
-            image_folder = os.path.dirname(image_name).split('/')[-1] or ''
-            image_file_name = os.path.basename(image_name)
+            image_pack_path = Path(image_name).parts[-2:]
             build_bucket_image_path = os.path.join(build_bucket_base_path, self._pack_name,
-                                                   self.current_version, image_folder, image_file_name)
+                                                   self.current_version, *image_pack_path)
             build_bucket_image_blob = build_bucket.blob(build_bucket_image_path)
 
             if not build_bucket_image_blob.exists():
@@ -3410,7 +3409,7 @@ class Pack(object):
                     copied_blob = build_bucket.copy_blob(
                         blob=build_bucket_image_blob, destination_bucket=production_bucket,
                         new_name=os.path.join(storage_base_path, self._pack_name, self.current_version,
-                                              image_folder, image_name)
+                                              *image_pack_path)
                     )
                     if not copied_blob.exists():
                         logging.error(f"Copy {self._pack_name} preview image: {build_bucket_image_blob.name} "
