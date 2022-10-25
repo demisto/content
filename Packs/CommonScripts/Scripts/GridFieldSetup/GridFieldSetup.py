@@ -34,9 +34,10 @@ def grid_field_setup(keys: str, vals: dict, res_list: list) -> list[str]:
 def grid_field_setup_command(args: Dict[str, Any]) -> CommandResults:
     keys = args.get('keys')
     overwrite = args.get('overwrite')
+    gridfield = args.get('gridfield')
 
     # logic here to check if empty result and set default list
-    orig = demisto.alerts()[0].get('CustomFields').get(args.get('gridfield'))
+    orig = demisto.alerts()[0].get('CustomFields').get(gridfield)
     if not orig or overwrite == "true":
         orig = []
 
