@@ -1,0 +1,7 @@
+name: Tenable.io Modeling Rule
+id: Tenable_io_modeling_rule
+from_xdr_version: 3.4.0
+fromversion: 6.8.0
+tags: tenable
+rules: ''
+schema: ''
