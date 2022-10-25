@@ -15,7 +15,9 @@
         "MislavReversingLabs",
         "ivukovicRL"
     ],
-    "tags": [],
+    "tags": [
+    "Threat Intelligence Management"
+    ],
     "useCases": [],
     "keywords": [
         "ReversingLabs",
