@@ -7,15 +7,9 @@
     "url": "https://www.knowbe4.com/products/phisher",
     "email": "support@knowbe4.com",
     "categories": [
-        "Email Gateway"
+        "Network Security"
     ],
-    "tags": [
-        "Alerts",
-        "Breach",
-        "Email",
-        "Scam",
-        "Spam"
-    ],
+    "tags": [],
     "useCases": [],
     "keywords": [],
     "githubUser": [],
