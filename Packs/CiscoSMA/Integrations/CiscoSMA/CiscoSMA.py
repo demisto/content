@@ -1793,7 +1793,7 @@ def fetch_incidents(
         )
         message_id = incident.get("mid")
         if (
-            message_id and not message_id in last_minute_incident_ids
+            message_id and message_id not in last_minute_incident_ids
             and start_date < incident_datetime
         ):
             quarantine_message: Dict[str, Any] = client.spam_quarantine_message_get_request(
