@@ -57,6 +57,7 @@ def mock_client() -> Client:
     return Client(
         host=HOST,
         api_key=API_KEY,
+        reliability='C - Fairly reliable'
     )
 
 
