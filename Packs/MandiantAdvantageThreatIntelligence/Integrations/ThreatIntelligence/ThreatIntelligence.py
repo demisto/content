@@ -92,7 +92,7 @@ class MandiantClient(BaseClient):
         # return the current token
         if token and valid_until:
             if now_timestamp < valid_until:
-                return token
+                return self._token
 
         # else generate a token and update the integration context accordingly
         token = self._retrieve_token()
@@ -859,10 +859,8 @@ def test_module(client: MandiantClient, args: Dict) -> str:
     :rtype: ``str``
     """
 
-    print(client._token)
     message: str = ''
     try:
-        assert client._token is not None
         message = "ok"
     except Exception as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e) or 'Unauthorized' in str(

@@ -1,0 +1,638 @@
+{
+  "metadata_indicator": {
+    "value": "value",
+    "type": "File",
+    "rawJSON": {
+      "first_seen": "2021-11-18T13:22:01.000Z",
+      "last_seen": "2021-11-18T13:22:01.000Z",
+      "sources": [
+        {
+          "first_seen": "2021-11-18T13:22:01.240+0000",
+          "last_seen": "2021-11-18T13:22:01.240+0000",
+          "osint": true,
+          "category": [],
+          "source_name": "source_name"
+        }
+      ],
+      "associated_hashes": [
+        {
+          "id": "id",
+          "type": "md5",
+          "value": "value"
+        }
+      ],
+      "mscore": 100,
+      "id": "id",
+      "type": "md5",
+      "value": "value",
+      "is_publishable": true,
+      "actors": [
+        {
+          "name": "name"
+        }
+      ],
+      "cve": [
+        {
+          "name": "name"
+        }
+      ],
+      "malware": [
+        {
+          "name": "name"
+        }
+      ]
+    },
+    "score": 3,
+    "fields": {
+      "firstseenbysource": "2021-11-18T13:22:01.000Z",
+      "lastseenbysource": "2021-11-18T13:22:01.000Z",
+      "stixid": "id"
+    }
+  },
+  "new_indicators": [
+    {
+      "first_seen": "2021-08-23T22:26:02.000Z",
+      "last_seen": "2021-08-23T22:30:16.000Z",
+      "sources": [
+        {
+          "first_seen": "2021-08-23T22:29:11.000+0000",
+          "last_seen": "2021-08-23T22:29:11.000+0000",
+          "osint": false,
+          "category": [],
+          "source_name": "source_name"
+        }
+      ],
+      "associated_hashes": [
+        {
+          "id": "id",
+          "type": "type",
+          "value": "value"
+        }
+      ],
+      "mscore": 100,
+      "attributed_associations": [
+        {
+          "id": "id",
+          "name": "name",
+          "type": "type"
+        }
+      ],
+      "id": "id",
+      "type": "type",
+      "value": "value",
+      "is_publishable": true
+    }
+  ],
+  "relationships_malware": [
+    {
+      "name": "related-to",
+      "reverseName": "related-to",
+      "type": "IndicatorToIndicator",
+      "entityA": "",
+      "entityAFamily": "Indicator",
+      "entityAType": "Malware",
+      "entityB": "name",
+      "entityBFamily": "Indicator",
+      "entityBType": "Threat Actor",
+      "fields": {}
+    },
+    {
+      "name": "related-to",
+      "reverseName": "related-to",
+      "type": "IndicatorToIndicator",
+      "entityA": "",
+      "entityAFamily": "Indicator",
+      "entityAType": "Malware",
+      "entityB": "name",
+      "entityBFamily": "Indicator",
+      "entityBType": "CVE",
+      "fields": {}
+    }
+  ],
+  "relationships_actor": [
+    {
+      "name": "related-to",
+      "reverseName": "related-to",
+      "type": "IndicatorToIndicator",
+      "entityA": "",
+      "entityAFamily": "Indicator",
+      "entityAType": "Threat Actor",
+      "entityB": "name",
+      "entityBFamily": "Indicator",
+      "entityBType": "Malware",
+      "fields": {}
+    },
+    {}
+  ],
+  "malware_indicator": {
+    "value": null,
+    "type": "Malware",
+    "rawJSON": {
+      "first_seen": "2021-11-18T13:22:01.000Z",
+      "last_seen": "2021-11-18T13:22:01.000Z",
+      "sources": [
+        {
+          "first_seen": "2021-11-18T13:22:01.240+0000",
+          "last_seen": "2021-11-18T13:22:01.240+0000",
+          "osint": true,
+          "category": [],
+          "source_name": "source_name"
+        }
+      ],
+      "associated_hashes": [
+        {
+          "id": "id",
+          "type": "md5",
+          "value": "value"
+        }
+      ],
+      "mscore": 100,
+      "id": "id",
+      "type": "md5",
+      "value": "value",
+      "is_publishable": true,
+      "actors": [
+        {
+          "name": "name"
+        }
+      ],
+      "cve": [
+        {
+          "name": "name"
+        }
+      ],
+      "malware": [
+        {
+          "name": "name"
+        }
+      ]
+    },
+    "score": 3,
+    "fields": {
+      "stixid": "id"
+    },
+    "relationships": [
+      {
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator",
+        "entityA": "",
+        "entityAFamily": "Indicator",
+        "entityAType": "Malware",
+        "entityB": "name",
+        "entityBFamily": "Indicator",
+        "entityBType": "Threat Actor",
+        "fields": {}
+      },
+      {
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator",
+        "entityA": "",
+        "entityAFamily": "Indicator",
+        "entityAType": "Malware",
+        "entityB": "name",
+        "entityBFamily": "Indicator",
+        "entityBType": "CVE",
+        "fields": {}
+      }
+    ]
+  },
+  "report_indicator": {
+    "value": null,
+    "type": "Report",
+    "rawJSON": {
+      "first_seen": "2021-11-18T13:22:01.000Z",
+      "last_seen": "2021-11-18T13:22:01.000Z",
+      "sources": [
+        {
+          "first_seen": "2021-11-18T13:22:01.240+0000",
+          "last_seen": "2021-11-18T13:22:01.240+0000",
+          "osint": true,
+          "category": [],
+          "source_name": "source_name"
+        }
+      ],
+      "associated_hashes": [
+        {
+          "id": "id",
+          "type": "md5",
+          "value": "value"
+        }
+      ],
+      "mscore": 100,
+      "id": "id",
+      "type": "md5",
+      "value": "value",
+      "is_publishable": true,
+      "actors": [
+        {
+          "name": "name"
+        }
+      ],
+      "cve": [
+        {
+          "name": "name"
+        }
+      ],
+      "malware": [
+        {
+          "name": "name"
+        }
+      ]
+    },
+    "fields": {
+      "stixid": "id"
+    },
+    "score": 3,
+    "relationships": [
+      {}
+    ]
+  },
+  "general_indicator": {
+    "value": "value",
+    "type": "File",
+    "rawJSON": {
+      "first_seen": "2021-11-18T13:22:01.000Z",
+      "last_seen": "2021-11-18T13:22:01.000Z",
+      "sources": [
+        {
+          "first_seen": "2021-11-18T13:22:01.240+0000",
+          "last_seen": "2021-11-18T13:22:01.240+0000",
+          "osint": true,
+          "category": [],
+          "source_name": "source_name"
+        }
+      ],
+      "associated_hashes": [
+        {
+          "id": "id",
+          "type": "md5",
+          "value": "value"
+        }
+      ],
+      "mscore": 100,
+      "id": "id",
+      "type": "md5",
+      "value": "value",
+      "is_publishable": true,
+      "actors": [
+        {
+          "name": "name"
+        }
+      ],
+      "cve": [
+        {
+          "name": "name"
+        }
+      ],
+      "malware": [
+        {
+          "name": "name"
+        }
+      ]
+    },
+    "score": 3,
+    "relationships": [
+      {
+        "name": "indicated-by",
+        "reverseName": "indicator-of",
+        "type": "IndicatorToIndicator",
+        "entityA": "entity_a",
+        "entityAFamily": "Indicator",
+        "entityAType": "entity_a_type",
+        "entityB": "value",
+        "entityBFamily": "Indicator",
+        "entityBType": "File",
+        "fields": {}
+      }
+    ]
+  },
+  "attack_pattern_indicator": {
+    "value": null,
+    "type": "Report",
+    "rawJSON": {
+      "first_seen": "2021-11-18T13:22:01.000Z",
+      "last_seen": "2021-11-18T13:22:01.000Z",
+      "sources": [
+        {
+          "first_seen": "2021-11-18T13:22:01.240+0000",
+          "last_seen": "2021-11-18T13:22:01.240+0000",
+          "osint": true,
+          "category": [],
+          "source_name": "source_name"
+        }
+      ],
+      "associated_hashes": [
+        {
+          "id": "id",
+          "type": "md5",
+          "value": "value"
+        }
+      ],
+      "mscore": 100,
+      "id": "id",
+      "type": "md5",
+      "value": "value",
+      "is_publishable": true,
+      "actors": [
+        {
+          "name": "name"
+        }
+      ],
+      "cve": [
+        {
+          "name": "name"
+        }
+      ],
+      "malware": [
+        {
+          "name": "name"
+        }
+      ]
+    },
+    "fields": {
+      "stixid": "id"
+    },
+    "score": 3,
+    "relationships": [
+      {}
+    ]
+  },
+  "actor_indicator": {
+    "value": null,
+    "type": "Threat Actor",
+    "rawJSON": {
+      "first_seen": "2021-11-18T13:22:01.000Z",
+      "last_seen": "2021-11-18T13:22:01.000Z",
+      "sources": [
+        {
+          "first_seen": "2021-11-18T13:22:01.240+0000",
+          "last_seen": "2021-11-18T13:22:01.240+0000",
+          "osint": true,
+          "category": [],
+          "source_name": "source_name"
+        }
+      ],
+      "associated_hashes": [
+        {
+          "id": "id",
+          "type": "md5",
+          "value": "value"
+        }
+      ],
+      "mscore": 100,
+      "id": "id",
+      "type": "md5",
+      "value": "value",
+      "is_publishable": true,
+      "actors": [
+        {
+          "name": "name"
+        }
+      ],
+      "cve": [
+        {
+          "name": "name"
+        }
+      ],
+      "malware": [
+        {
+          "name": "name"
+        }
+      ]
+    },
+    "score": 3,
+    "fields": {
+      "stixid": "id"
+    },
+    "relationships": [
+      {
+        "name": "related-to",
+        "reverseName": "related-to",
+        "type": "IndicatorToIndicator",
+        "entityA": "",
+        "entityAFamily": "Indicator",
+        "entityAType": "Threat Actor",
+        "entityB": "name",
+        "entityBFamily": "Indicator",
+        "entityBType": "Malware",
+        "fields": {}
+      },
+      {}
+    ]
+  },
+  "indicator": {
+    "value": "value",
+    "type": "File",
+    "rawJSON": {
+      "first_seen": "2021-11-18T13:22:01.000Z",
+      "last_seen": "2021-11-18T13:22:01.000Z",
+      "sources": [
+        {
+          "first_seen": "2021-11-18T13:22:01.240+0000",
+          "last_seen": "2021-11-18T13:22:01.240+0000",
+          "osint": true,
+          "category": [],
+          "source_name": "source_name"
+        }
+      ],
+      "associated_hashes": [
+        {
+          "id": "id",
+          "type": "md5",
+          "value": "value"
+        }
+      ],
+      "mscore": 100,
+      "id": "id",
+      "type": "md5",
+      "value": "value",
+      "is_publishable": true,
+      "actors": [
+        {
+          "name": "name"
+        }
+      ],
+      "cve": [
+        {
+          "name": "name"
+        }
+      ],
+      "malware": [
+        {
+          "name": "name"
+        }
+      ]
+    },
+    "score": 3,
+    "fields": {
+      "firstseenbysource": "2021-11-18T13:22:01.000Z",
+      "lastseenbysource": "2021-11-18T13:22:01.000Z",
+      "stixid": "id"
+    }
+  },
+  "enrich": [
+    {
+      "value": null,
+      "type": "Report",
+      "rawJSON": {
+        "first_seen": "2021-11-18T13:22:01.000Z",
+        "last_seen": "2021-11-18T13:22:01.000Z",
+        "sources": [
+          {
+            "first_seen": "2021-11-18T13:22:01.240+0000",
+            "last_seen": "2021-11-18T13:22:01.240+0000",
+            "osint": true,
+            "category": [],
+            "source_name": "source_name"
+          }
+        ],
+        "associated_hashes": [
+          {
+            "id": "id",
+            "type": "md5",
+            "value": "value"
+          }
+        ],
+        "mscore": 100,
+        "id": "id",
+        "type": "md5",
+        "value": "value",
+        "is_publishable": true,
+        "actors": [
+          {
+            "name": "name"
+          }
+        ],
+        "cve": [
+          {
+            "name": "name"
+          }
+        ],
+        "malware": [
+          {
+            "name": "name"
+          }
+        ]
+      },
+      "fields": {
+        "stixid": "id"
+      },
+      "score": 3,
+      "relationships": [
+        {}
+      ]
+    },
+    {
+      "value": "value",
+      "type": "File",
+      "rawJSON": {
+        "first_seen": "2021-11-18T13:22:01.000Z",
+        "last_seen": "2021-11-18T13:22:01.000Z",
+        "sources": [
+          {
+            "first_seen": "2021-11-18T13:22:01.240+0000",
+            "last_seen": "2021-11-18T13:22:01.240+0000",
+            "osint": true,
+            "category": [],
+            "source_name": "source_name"
+          }
+        ],
+        "associated_hashes": [
+          {
+            "id": "id",
+            "type": "md5",
+            "value": "value"
+          }
+        ],
+        "mscore": 100,
+        "id": "id",
+        "type": "md5",
+        "value": "value",
+        "is_publishable": true,
+        "actors": [
+          {
+            "name": "name"
+          }
+        ],
+        "cve": [
+          {
+            "name": "name"
+          }
+        ],
+        "malware": [
+          {
+            "name": "name"
+          }
+        ]
+      },
+      "score": 3,
+      "relationships": [
+        {
+          "name": "indicated-by",
+          "reverseName": "indicator-of",
+          "type": "IndicatorToIndicator",
+          "entityA": "",
+          "entityAFamily": "Indicator",
+          "entityAType": "Malware",
+          "entityB": "value",
+          "entityBFamily": "Indicator",
+          "entityBType": "File",
+          "fields": {}
+        }
+      ]
+    },
+    {
+      "value": null,
+      "type": "Report",
+      "rawJSON": {
+        "first_seen": "2021-11-18T13:22:01.000Z",
+        "last_seen": "2021-11-18T13:22:01.000Z",
+        "sources": [
+          {
+            "first_seen": "2021-11-18T13:22:01.240+0000",
+            "last_seen": "2021-11-18T13:22:01.240+0000",
+            "osint": true,
+            "category": [],
+            "source_name": "source_name"
+          }
+        ],
+        "associated_hashes": [
+          {
+            "id": "id",
+            "type": "md5",
+            "value": "value"
+          }
+        ],
+        "mscore": 100,
+        "id": "id",
+        "type": "md5",
+        "value": "value",
+        "is_publishable": true,
+        "actors": [
+          {
+            "name": "name"
+          }
+        ],
+        "cve": [
+          {
+            "name": "name"
+          }
+        ],
+        "malware": [
+          {
+            "name": "name"
+          }
+        ]
+      },
+      "fields": {
+        "stixid": "id"
+      },
+      "score": 3,
+      "relationships": [
+        {}
+      ]
+    }
+  ]
+}
