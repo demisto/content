@@ -3,12 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 from typing import Dict, Any, List, Optional, Tuple
 
-''' IMPORTS '''
-import requests
-
-# disable insecure warnings
-requests.packages.urllib3.disable_warnings()
-
 ''' CONSTANTS '''
 
 VENDOR = 'Threat Crowd'
