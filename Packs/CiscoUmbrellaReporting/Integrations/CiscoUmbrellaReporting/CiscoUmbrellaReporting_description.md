@@ -7,11 +7,14 @@ Use Cisco Umbrella's Reporting to monitor your Umbrella integration and gain a b
 
 Create an Umbrella Reporting API key and secret.
 
-1. Navigate to **Admin > API Keys** and click **Create**; or
-in a management console (Multi-org, MSP, or MSSP), navigate to Settings > API Keys and click Add.
+1. Navigate to **Admin** > **API Keys** and click **Create**.
+
+   or
+
+   In a management console (Multi-org, MSP, or MSSP), navigate to **Settings** > **API Keys** and click **Add**.
 2. Select **Umbrella Reporting** and click **Generate Token**.
 3. Expand **Umbrella Reporting** and copy **Your Key** and **Your Secret**.
-4. Click **To keep it secure, ...** check box and then click **Close**.
+4. Click the **To keep it secure, ...** checkbox and then click **Close**.
 
 You must acknowledge that your key and secret are only displayed once to 
    activate the **Close** button.
