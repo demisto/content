@@ -617,7 +617,7 @@ script:
       required: true
       isArray: true
     outputs: []
-  dockerimage: devdemisto/vmware-py3:1.0.0.36672
+  dockerimage: devdemisto/vmware:1.0.0.36741
   runonce: false
   script: ""
   subtype: python3
