@@ -540,6 +540,46 @@ Note: When using the Authorization Code flow, make sure the user you authenticat
 <td style="width: 332px;">MSGraphUser.UserPrincipalName</td>
 <td style="width: 86px;">String</td>
 <td style="width: 322px;">User’s principal name.</td>
+<tr>
+<td style="width: 334px;">Account.ID</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s ID.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.DisplayName</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s display name.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.Username</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s principal name.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.JobTitle</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s job title.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.Email.Address</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s mail address.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.TelephoneNumber</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s mobile phone number.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.Office</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s office location.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.Type</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">The account entity type.</td>
+</tr>
 </tr>
 </tbody>
 </table>
@@ -557,6 +597,18 @@ Note: When using the Authorization Code flow, make sure the user you authenticat
 </div>
 <div class="cl-preview-section">
 <pre>{
+    "Account": {
+        "DisplayName": "Graph Test - DELETE",
+        "Email": {
+            "Address": null
+        },
+        "ID": "57a820e9-90bc-4692-a22e-27bd170699cb",
+        "JobTitle": "Test",
+        "Office": "null",
+        "TelephoneNumber": null,
+        "Type": "Azure AD",
+        "Username": "graph@demistodev.onmicrosoft.com"
+    },
     "MSGraphUser": {
         "Surname": null,
         "DisplayName": "Graph Test - DELETE",
@@ -889,6 +941,46 @@ Note: When using the Authorization Code flow, make sure the user you authenticat
 <td style="width: 84px;">String</td>
 <td style="width: 322px;">User’s principal name.</td>
 </tr>
+<tr>
+<td style="width: 334px;">Account.ID</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s ID.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.DisplayName</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s display name.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.Username</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s principal name.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.JobTitle</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s job title.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.Email.Address</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s mail address.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.TelephoneNumber</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s mobile phone number.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.Office</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s office location.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.Type</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">The account entity type.</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -905,6 +997,18 @@ Note: When using the Authorization Code flow, make sure the user you authenticat
 </div>
 <div class="cl-preview-section">
 <pre>{
+    "Account": {
+        "DisplayName": "Graph Test - DELETE",
+        "Email": {
+            "Address": null
+        },
+        "ID": "57a820e9-90bc-4692-a22e-27bd170699cb",
+        "JobTitle": "Test",
+        "Office": "null",
+        "TelephoneNumber": null,
+        "Type": "Azure AD",
+        "Username": "graph@demistodev.onmicrosoft.com"
+    },
     "MSGraphUser": {
         "Surname": null,
         "DisplayName": "Graph Test - DELETE",
@@ -1066,6 +1170,46 @@ Note: When using the Authorization Code flow, make sure the user you authenticat
 <td style="width: 95px;">string</td>
 <td style="width: 322px;">A token pass to the next list command to retrieve additional results.</td>
 </tr>
+<tr>
+<td style="width: 334px;">Account.ID</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s ID.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.DisplayName</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s display name.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.Username</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s principal name.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.JobTitle</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s job title.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.Email.Address</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s mail address.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.TelephoneNumber</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s mobile phone number.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.Office</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">User’s office location.</td>
+</tr>
+<tr>
+<td style="width: 334px;">Account.Type</td>
+<td style="width: 84px;">String</td>
+<td style="width: 322px;">The account entity type.</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -1082,6 +1226,20 @@ Note: When using the Authorization Code flow, make sure the user you authenticat
 </div>
 <div class="cl-preview-section">
 <pre>{
+    "Account": [
+        {
+            "ID": "2827c1e7-edb6-4529-b50d-25984e968637",
+            "Username": "dev@demisto.works"
+        },
+        {
+            "ID": "c788ab51-6b4f-42cc-8b50-0759a8701c0b",
+            "Username": "donaldt@demistodev.onmicrosoft.com"
+        },
+        {
+            "ID": "57a820e9-90bc-4692-a22e-27bd170699cb",
+            "Username": "graph@demistodev.onmicrosoft.com"
+        }
+    ]
     "MSGraphUser": [
         {
             "ID": "2827c1e7-edb6-4529-b50d-25984e968637",
