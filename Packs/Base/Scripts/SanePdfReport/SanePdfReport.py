@@ -107,8 +107,6 @@ def startServer():
                 demisto.error(f'Failed to get markdown file: {fileID}, file path: {file_path}. Error: {ex}')
                 self.send_response(404)
                 self.flush_headers()
-    # Make sure the server is created at tmp dir
-    os.chdir(tempfile.gettempdir())
     # Create server object listening the port 10888
     global SERVER_OBJECT
     SERVER_OBJECT = HTTPServer(server_address=('', MD_HTTP_PORT), RequestHandlerClass=fileHandler)
