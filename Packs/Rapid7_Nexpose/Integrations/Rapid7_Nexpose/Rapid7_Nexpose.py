@@ -3494,13 +3494,14 @@ def get_asset_command(client: Client, asset_id: str) -> Union[CommandResults, Li
         client (Client): Client to use for API requests.
         asset_id (str): ID of the asset to retrieve information about.
     """
-    asset_data = client.get_asset(asset_id)
+    try:
+        asset_data = client.get_asset(asset_id)
 
-    if asset_data.get("status") == "404":
-        return CommandResults(
-            readable_output="Asset not found",
-            raw_response=asset_data
-        )
+    except DemistoException as e:
+        if e.res is not None and e.res.status_code is not None and e.res.status_code == 404:
+            return CommandResults(readable_output="Asset not found",)
+
+        raise e
 
     last_scan = find_asset_last_change(asset_data)
     asset_data["LastScanDate"] = last_scan["date"]
@@ -3609,19 +3610,24 @@ def get_asset_command(client: Client, asset_id: str) -> Union[CommandResults, Li
         "Instances",
     ]
 
-    asset_data["vulnerabilities"] = client.get_vulnerabilities(asset_data["id"])
+    asset_data["vulnerabilities"] = client.get_asset_vulnerabilities(asset_id=asset_data["AssetId"])
 
     vulnerabilities_output = []
-    cves_output = []
+    cve_indicators: list[CommandResults] = []
 
     for idx, vulnerability in enumerate(asset_data["vulnerabilities"]):
         extra_info = client.get_vulnerability(vulnerability["id"])
         asset_data["vulnerabilities"][idx].update(extra_info)
 
         if "cves" in extra_info:
-            cves_output.extend(
-                [{"ID": cve} for cve in extra_info["cves"]]
-            )
+            cve_indicators.extend([CommandResults(
+                    indicator=Common.CVE(
+                        id=cve,
+                        cvss=None,
+                        description=None,
+                        modified=None,
+                        published=None,
+                    )) for cve in extra_info["cves"]])
 
         output_vulnerability = {
             "Id": vulnerability["id"],
@@ -3638,7 +3644,8 @@ def get_asset_command(client: Client, asset_id: str) -> Union[CommandResults, Li
 
         vulnerabilities_output.append(output_vulnerability)
 
-    asset_md = tableToMarkdown("Nexpose asset " + str(asset_data["id"]), asset_output, asset_headers, removeNull=True)
+    asset_md = tableToMarkdown("Nexpose Asset " + str(asset_data["AssetId"]), asset_output, asset_headers,
+                               removeNull=True)
     vulnerabilities_md = tableToMarkdown("Vulnerabilities", vulnerabilities_output, vulnerability_headers,
                                          removeNull=True) if len(vulnerabilities_output) > 0 else ""
     software_md = tableToMarkdown("Software", software_output, software_headers,
@@ -3648,37 +3655,31 @@ def get_asset_command(client: Client, asset_id: str) -> Union[CommandResults, Li
     users_md = tableToMarkdown("Users", users_output, users_headers,
                                removeNull=True) if users_output is not None else ""
 
-    md = asset_md + vulnerabilities_md + software_md + services_md + users_md
-
     asset_output["Vulnerability"] = vulnerabilities_output
     asset_output["Software"] = software_output
     asset_output["Service"] = services_output
     asset_output["User"] = users_output
 
-    endpoint = {
-        "IP": asset_output["Addresses"],
-        "MAC": asset_output["Hardware"],
-        "HostName": asset_output["Aliases"],
-        "OS": asset_output["OperatingSystem"]
-    }
+    result = CommandResults(
+        readable_output=asset_md + vulnerabilities_md + software_md + services_md + users_md,
+        outputs_prefix="Nexpose.Asset",
+        outputs=asset_output,
+        outputs_key_field="AssetId",
+        indicator=Common.Endpoint(
+            id=asset_output.get("AssetId"),
+            hostname=asset_output.get("Aliases"),
+            ip_address=asset_output.get("Addresses"),
+            os=asset_output.get("OperatingSystem"),
+            vendor=VENDOR_NAME
+        )
+    )
 
-    context = {
-        "Nexpose.Asset(val.AssetId==obj.AssetId)": asset_output,
-        "Endpoint(val.IP==obj.IP)": endpoint
-    }
+    if cve_indicators:
+        results = [result]
+        results.extend(cve_indicators)
+        return results
 
-    if cves_output:
-        context["CVE(val.ID==obj.ID)"] = cves_output
-
-    # TODO: Switch to CommandResults
-    return {
-        "Type": entryTypes["note"],
-        "Contents": asset_data,
-        "ContentsFormat": formats["json"],
-        "ReadableContentsFormat": formats["markdown"],
-        "HumanReadable": md,
-        "EntryContext": context
-    }
+    return result
 
 
 def get_assets_command(client: Client, page_size: Optional[int] = None,
@@ -3777,7 +3778,7 @@ def get_asset_vulnerability_command(client: Client, asset_id: str, vulnerability
         asset_id (str): ID of the asset to retrieve information about.
         vulnerability_id (str): ID of the vulnerability to look for
     """
-    vulnerability_data = client.get_asset_vulnerability(
+    asset_vulnerability_data = client.get_asset_vulnerability(
         asset_id=asset_id,
         vulnerability_id=vulnerability_id,
     )
@@ -3786,10 +3787,10 @@ def get_asset_vulnerability_command(client: Client, asset_id: str, vulnerability
     # If they are, print a message saying that the asset is not vulnerable.
     # Otherwise print an error saying which parameter is invalid.
 
-    if vulnerability_data is None:
+    if asset_vulnerability_data is None:
         return CommandResults(
             readable_output="Vulnerability not found",
-            raw_response=vulnerability_data,
+            raw_response=asset_vulnerability_data,
         )
 
     vulnerability_headers = [
@@ -3809,8 +3810,9 @@ def get_asset_vulnerability_command(client: Client, asset_id: str, vulnerability
     ]
 
     # Add extra info about vulnerability
-    vulnerability_extra_data = client.get_vulnerability(asset_id)
-    vulnerability_data.update(vulnerability_extra_data)
+    vulnerability_data = [asset_vulnerability_data]
+    vulnerability_extra_data = client.get_asset_vulnerabilities(asset_id=asset_id)
+    vulnerability_data.extend(vulnerability_extra_data)
 
     vulnerability_outputs: dict = replace_key_names(
         data=vulnerability_extra_data,
@@ -3843,9 +3845,9 @@ def get_asset_vulnerability_command(client: Client, asset_id: str, vulnerability
 
     results_output = []
 
-    if vulnerability_data.get("results"):
+    if vulnerability_data:
         results_output = replace_key_names(
-            data=vulnerability_data["results"],
+            data=vulnerability_data,
             name_mapping={
                 "port": "Port",
                 "protocol": "Protocol",
