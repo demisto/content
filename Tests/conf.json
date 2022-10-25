@@ -5196,12 +5196,12 @@
             ]
         },
         {
-            "playbookID": "VerifyCIDR-Test"
-        },
-        {
             "integrations": "Aha",
             "playbookID": "AHA_TestPlaybook",
             "fromversion": "6.5.0"
+        },
+        {
+            "playbookID": "VerifyCIDR-Test"
         }
     ],
     "skipped_tests": {
