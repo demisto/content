@@ -4189,9 +4189,9 @@
             ]
         },
         {
-            "playbookID": "GitLab-Test",
+            "playbookID": "Test-GitLab-v2",
             "fromversion": "6.5.0",
-            "integrations": "GitLab v2"
+            "integrations": "GitLabv2"
         },
         {
             "playbookID": "LGTM-test-playbook",

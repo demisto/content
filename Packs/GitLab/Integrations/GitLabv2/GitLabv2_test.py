@@ -36,7 +36,7 @@ def test_check_args(limit, page_number, isGoodCase, expected_results):
         Then:
             - checking that if the parameters < 1 , exception is thrown
         """
-    from GitLab import validate_pagination_values
+    from GitLabv2 import validate_pagination_values
     from CommonServerPython import DemistoException
 
     if isGoodCase:
@@ -72,7 +72,7 @@ def test_create_issue_command(mocker):
     Then:
         Assert the message returned is as expected.
     """
-    from GitLab import Client, create_issue_command
+    from GitLabv2 import Client, create_issue_command
     client = Client(project_id=1234,
                     base_url="base_url",
                     verify=False,
@@ -103,7 +103,7 @@ def test_branch_create_command(mocker):
     Then:
         - check if the results of creation a branch.
     """
-    from GitLab import Client, branch_create_command
+    from GitLabv2 import Client, branch_create_command
     client = Client(project_id=1234,
                     base_url="base_url",
                     verify=False,
@@ -130,7 +130,7 @@ def test_issue_update_command(mocker):
     Then:
         - check if the results of ypdating an issue is valid
     """
-    from GitLab import Client, issue_update_command
+    from GitLabv2 import Client, issue_update_command
     client = Client(project_id=1234,
                     base_url="base_url",
                     verify=False,
@@ -161,7 +161,7 @@ def test_get_version_command(mocker):
     Then:
         - check if the results of version and reversion returns are valid.
     """
-    from GitLab import Client, version_get_command
+    from GitLabv2 import Client, version_get_command
     client = Client(project_id=1234,
                     base_url="base_url",
                     verify=False,
@@ -185,7 +185,7 @@ def test_group_project_list_command(mocker):
     Then:
         - The http request is called with the right arguments, and returns the right command result
     """
-    from GitLab import Client, group_project_list_command
+    from GitLabv2 import Client, group_project_list_command
     client = Client(project_id=1234,
                     base_url="base_url",
                     verify=False,
@@ -213,7 +213,7 @@ def test_get_project_list_command(mocker):
     Then:
         - The http request is called with the right arguments, and returns the right command result
     """
-    from GitLab import Client, get_project_list_command
+    from GitLabv2 import Client, get_project_list_command
     client = Client(project_id=1234,
                     base_url="base_url",
                     verify=False,
@@ -261,7 +261,7 @@ def test_branch_list_command(mocker, args, result_key_json, expected_results):
     Then:
         - The http request is called with the right arguments, and returns the right command result
     """
-    from GitLab import Client, branch_list_command
+    from GitLabv2 import Client, branch_list_command
     client = Client(project_id=1234,
                     base_url="base_url",
                     verify=False,
@@ -305,7 +305,7 @@ def test_commit_list_command(mocker, args, client_function, result_key_json, exp
     Then:
         - The http request is called with the right arguments, and returns the right command result
     """
-    from GitLab import Client, commit_list_command
+    from GitLabv2 import Client, commit_list_command
     client = Client(project_id=1234,
                     base_url="base_url",
                     verify=False,
@@ -326,7 +326,7 @@ def test_merge_request_list_command(mocker):
     Then:
         - The http request is called with the right arguments, and returns the right command result
     """
-    from GitLab import Client, merge_request_list_command
+    from GitLabv2 import Client, merge_request_list_command
     client = Client(project_id=1234,
                     base_url="base_url",
                     verify=False,
@@ -354,7 +354,7 @@ def test_group_list_command(mocker):
     Then:
         - The http request is called with the right arguments, and returns the right command result
     """
-    from GitLab import Client, group_list_command
+    from GitLabv2 import Client, group_list_command
     client = Client(project_id=1234,
                     base_url="base_url",
                     verify=False,
@@ -381,7 +381,7 @@ def test_issue_note_list_command(mocker):
     Then:
         - The http request is called with the right arguments, and returns the right command result
     """
-    from GitLab import Client, issue_note_list_command
+    from GitLabv2 import Client, issue_note_list_command
     client = Client(project_id=1234,
                     base_url="base_url",
                     verify=False,
@@ -409,7 +409,7 @@ def test_merge_request_note_list_command(mocker):
     Then:
         - The http request is called with the right arguments, and returns the right command result
     """
-    from GitLab import Client, merge_request_note_list_command
+    from GitLabv2 import Client, merge_request_note_list_command
     client = Client(project_id=1234,
                     base_url="base_url",
                     verify=False,
@@ -437,7 +437,7 @@ def test_group_member_list_command(mocker):
     Then:
         - The http request is called with the right arguments, and returns the right command result
     """
-    from GitLab import Client, group_member_list_command
+    from GitLabv2 import Client, group_member_list_command
     client = Client(project_id=1234,
                     base_url="base_url",
                     verify=False,
@@ -466,7 +466,7 @@ def test_project_user_list_command(mocker):
     Then:
         - The http request is called with the right arguments, and returns the right command result
     """
-    from GitLab import Client, project_user_list_command
+    from GitLabv2 import Client, project_user_list_command
     client = Client(project_id=1234,
                     base_url="base_url",
                     verify=False,
@@ -520,7 +520,7 @@ def test_check_args_for_update(args, optinal_params, isGoodCase, expected_result
     Then:
         - checking that at least one argument from optinal params is in args.
     """
-    from GitLab import check_args_for_update
+    from GitLabv2 import check_args_for_update
     from CommonServerPython import DemistoException
 
     if isGoodCase:
@@ -542,7 +542,7 @@ def test_file_get_command(mocker):
     Then:
         - The http request is called with the right arguments, and returns the right command result.
     """
-    from GitLab import Client, file_get_command
+    from GitLabv2 import Client, file_get_command
     client = Client(project_id=1234,
                     base_url="base_url",
                     verify=False,
@@ -580,7 +580,7 @@ def test_file_create_command(mocker, args, expected_results):
     Then:
         - The http request is called with the right arguments, and returns the right command result.
     """
-    from GitLab import Client, file_create_command
+    from GitLabv2 import Client, file_create_command
     from CommonServerPython import DemistoException
     client = Client(project_id=1234,
                     base_url="base_url",
@@ -618,7 +618,7 @@ def test_file_update_command(mocker, args, expected_results):
     Then:
         - The http request is called with the right arguments, and returns the right command result.
     """
-    from GitLab import Client, file_update_command
+    from GitLabv2 import Client, file_update_command
     from CommonServerPython import DemistoException
     client = Client(project_id=1234,
                     base_url="base_url",
@@ -656,7 +656,7 @@ def test_check_pagintion(mocker, args, expected_results):
     Then:
         - checking that the response is according pagination
     """
-    from GitLab import Client, response_according_pagination
+    from GitLabv2 import Client, response_according_pagination
     mocker.patch.object(Client, 'project_user_list_request', return_value={"response_client"})
     result = response_according_pagination(Client.project_user_list_request, args['limit'], args['page_number'], {}, None)
     assert len(result) == expected_results
@@ -671,7 +671,7 @@ def test_get_raw_file_command(mocker):
     Then:
         - The http request is called with the right arguments, and returns the right command result.
     """
-    from GitLab import Client, get_raw_file_command
+    from GitLabv2 import Client, get_raw_file_command
     import CommonServerPython
     client = Client(project_id=1234,
                     base_url="base_url",
@@ -700,7 +700,7 @@ def test_code_search_command(mocker):
     Then:
         - The http request is called with the right arguments, and returns the right command result.
     """
-    from GitLab import Client, code_search_command
+    from GitLabv2 import Client, code_search_command
     client = Client(project_id=1234,
                     base_url="base_url",
                     verify=False,
@@ -792,6 +792,6 @@ def test_partial_response(response, object_name, expected_response):
     Then:
         - The http request is called with the right arguments, and returns the right command result.
     """
-    from GitLab import partial_response
+    from GitLabv2 import partial_response
     result = partial_response(response, object_name)
     assert result == expected_response

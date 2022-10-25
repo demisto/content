@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: GitLab v2
+  id: GitLabv2
   version: -1
 configuration:
 - display: Server URL (e.g., https://gitlab.com/api/v4)
@@ -27,7 +27,7 @@ configuration:
   type: 8
 description: Integration to GitLab API
 display: GitLab v2
-name: GitLab v2
+name: GitLabv2
 script:
   commands:
   - name: gitlab-version-get
@@ -3435,4 +3435,4 @@ script:
   dockerimage: demisto/python3:3.10.8.36650
 fromversion: 6.5.0
 tests:
-- GitLab-Test
+- Test-GitLab-v2

@@ -1,5 +1,5 @@
 {
-    "name": "GitLab v2",
+    "name": "GitLab",
     "description": "Pack for handling gitlab operations",
     "support": "xsoar",
     "currentVersion": "2.0.0",

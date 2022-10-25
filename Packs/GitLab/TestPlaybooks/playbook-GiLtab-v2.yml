@@ -1,6 +1,6 @@
-id: GitLab v2
+id: Test-GitLab-v2
 version: -1
-name: GitLab v2
+name: Test-GitLab-v2
 description: A playbook for GitLab v2 integration.
 fromversion: 6.5.0
 starttaskid: "0"
