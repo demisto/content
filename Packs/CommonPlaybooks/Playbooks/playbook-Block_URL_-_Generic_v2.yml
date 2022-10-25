@@ -1237,11 +1237,6 @@ inputs:
   required: false
   description: Custom URL category type. Insert "URL List"/ "Category Match".
   playbookInputQuery:
-- key: Tag
-  value: {}
-  required: false
-  description: Insert a tag name with which indicators will get tagged. This tag can be used later in the External Dynamic Lists integration by using the tag for filtering IPs in the indicator query.
-  playbookInputQuery:
 - key: categories
   value: {}
   required: false
@@ -1258,7 +1253,8 @@ inputs:
 - key: EDLServerIP
   value: {}
   required: false
-  description: EDL Server IP Address
+  description: |-
+    EDL Server IP Address
   playbookInputQuery:
 - key: device-group
   value: {}
