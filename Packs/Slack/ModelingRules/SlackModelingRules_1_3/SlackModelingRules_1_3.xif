@@ -2,7 +2,6 @@
 filter
     action not in ("user_login","user_logout")
 | alter
-    _time = to_timestamp(to_integer(to_string(date_create)), "SECONDS"),
     xdm.event.id = id,
     xdm.event.operation = action,
     xdm.source.user.user_type = json_extract_scalar(actor, "$.type"),
@@ -19,7 +18,6 @@ filter
 filter
     action in ("user_login","user_logout")
 | alter
-    _time = to_timestamp(to_integer(to_string(date_create)), "SECONDS"),
     xdm.event.id = id,
     xdm.event.operation = action,
     xdm.source.user.user_type = json_extract_scalar(actor, "$.type"),
