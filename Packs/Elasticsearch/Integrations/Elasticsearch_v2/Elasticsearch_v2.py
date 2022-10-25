@@ -755,7 +755,6 @@ def get_mapping_fields_command():
         elif index.endswith('*'):
             prefix_index = re.compile(index.rstrip('*'))
             for key in res_json.keys():
-                demisto.debug(f'{prefix_index=} and {key=}')
                 if prefix_index.match(key):
                     my_map = res_json[key]['mappings']['properties']
                     elastic_mapping[key] = {"_id": "doc_id", "_index": key}
@@ -766,7 +765,7 @@ def get_mapping_fields_command():
             elastic_mapping[index] = {"_id": "doc_id", "_index": index}
             elastic_mapping[index]["_source"] = parse_subtree(my_map)
 
-    demisto.results(elastic_mapping)
+    return elastic_mapping
 
 
 def build_eql_body(query, fields, size, tiebreaker_field, timestamp_field, event_category_field, filter):
@@ -831,7 +830,7 @@ def main():
         elif demisto.command() in ['search', 'es-search']:
             search_command(proxies)
         elif demisto.command() == 'get-mapping-fields':
-            get_mapping_fields_command()
+            demisto.results(get_mapping_fields_command())
         elif demisto.command() == 'es-eql-search':
             return_results(search_eql_command(demisto.args(), proxies))
     except Exception as e:
