@@ -157,7 +157,7 @@ class GCP:
                 pack_zip.extractall(os.path.join(self.extracting_destination, pack_id))
             return os.path.join(self.extracting_destination, pack_id)
         else:
-            raise FileNotFoundError(f'{pack_id} pack of version {pack_version} was not found in the bucket') # TODO: maybe change to return False
+            raise FileNotFoundError(f'{pack_id} pack of version {pack_version} was not found in the bucket')
 
     def download_image(self, pack_id):
         image_path = os.path.join(storage_base_path, pack_id, f"{pack_id}_image.png")
@@ -267,7 +267,6 @@ if __name__ == "__main__":
     gcp = GCP(service_account, storage_bucket_name, storage_base_path)
 
     bv = BucketVerifier(gcp, versions_dict)
-    # TODO: extend usecases details
     # verify new pack - TestUploadFlow
     bv.verify_new_pack('TestUploadFlow', items_dict.get('TestUploadFlow'))
 

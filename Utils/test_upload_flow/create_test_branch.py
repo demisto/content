@@ -225,7 +225,6 @@ if __name__ == "__main__":
         change_image(packs_path / 'Armis')
 
         update_existing_release_notes(packs_path / 'Box', "2_1_2")
-        enhance_release_notes(packs_path / 'Box')
         add_1_0_0_release_notes(packs_path / 'BPA')
         # set_pack_hidden(packs_path / 'Microsoft365Defender') TODO: fix after hidden pack mechanism is fixed
         update_readme(packs_path / 'Maltiverse')
