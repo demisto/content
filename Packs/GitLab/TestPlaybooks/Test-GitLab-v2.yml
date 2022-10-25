@@ -1,7 +1,7 @@
 id: Test-GitLab-v2
 version: -1
 name: Test-GitLab-v2
-description: A playbook for GitLab v2 integration.
+description: A playbook for GitLabv2 integration.
 fromversion: 6.5.0
 starttaskid: "0"
 tasks:
@@ -79,10 +79,10 @@ tasks:
       version: -1
       name: issue-update
       description: Updates an existing project issue. This call is also used to mark an issue as closed. The iid can be taken from gitlab-issue-list.
-      script: GitLab v2|||gitlab-issue-update
+      script: GitLabv2|||gitlab-issue-update
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "9"
@@ -226,10 +226,10 @@ tasks:
       version: -1
       name: issue-note-create
       description: Creates a new note to a single project issue.
-      script: GitLab v2|||gitlab-issue-note-create
+      script: GitLabv2|||gitlab-issue-note-create
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "12"
@@ -414,10 +414,10 @@ tasks:
       version: -1
       name: Get Version
       description: Retrieve version information for this GitLab instance.
-      script: GitLab v2|||gitlab-version-get
+      script: GitLabv2|||gitlab-version-get
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "19"
@@ -489,10 +489,10 @@ tasks:
       version: -1
       name: list commit
       description: Get a list of repository commits in a project.
-      script: GitLab v2|||gitlab-commit-list
+      script: GitLabv2|||gitlab-commit-list
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "21"
@@ -562,10 +562,10 @@ tasks:
       version: -1
       name: 'get commit '
       description: Get a list of repository commits in a project.
-      script: GitLab v2|||gitlab-commit-list
+      script: GitLabv2|||gitlab-commit-list
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "23"
@@ -635,10 +635,10 @@ tasks:
       version: -1
       name: delete issue-note
       description: Deletes an existing note of an issue.
-      script: GitLab v2|||gitlab-issue-note-delete
+      script: GitLabv2|||gitlab-issue-note-delete
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "25"
@@ -672,10 +672,10 @@ tasks:
       version: -1
       name: branch create
       description: Creates a new branch in the repository.
-      script: GitLab v2|||gitlab-branch-create
+      script: GitLabv2|||gitlab-branch-create
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "27"
@@ -709,10 +709,10 @@ tasks:
       version: -1
       name: ' get branch'
       description: Get a list of repository branches from a project, sorted by name alphabetically.
-      script: GitLab v2|||gitlab-branch-list
+      script: GitLabv2|||gitlab-branch-list
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "28"
@@ -820,10 +820,10 @@ tasks:
       version: -1
       name: branch delete
       description: Deletes a branch from the repository.
-      script: GitLab v2|||gitlab-branch-delete
+      script: GitLabv2|||gitlab-branch-delete
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "65"
@@ -855,10 +855,10 @@ tasks:
       version: -1
       name: merge request create
       description: Creates a new merge request.
-      script: GitLab v2|||gitlab-merge-request-create
+      script: GitLabv2|||gitlab-merge-request-create
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "31"
@@ -934,10 +934,10 @@ tasks:
       version: -1
       name: merge update
       description: Updates an existing merge request. You can change the target branch, title, or even close the MR.
-      script: GitLab v2|||gitlab-merge-request-update
+      script: GitLabv2|||gitlab-merge-request-update
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "33"
@@ -1015,10 +1015,10 @@ tasks:
       version: -1
       name: issue-create
       description: Create an issue.
-      script: GitLab v2|||gitlab-issue-create
+      script: GitLabv2|||gitlab-issue-create
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "42"
@@ -1092,10 +1092,10 @@ tasks:
       version: -1
       name: group list
       description: Get a list of visible groups for the authenticated user. When accessed without authentication, only public groups are returned. By default, this request returns 20 results at a time because the API results are paginated
-      script: GitLab v2|||gitlab-group-list
+      script: GitLabv2|||gitlab-group-list
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "45"
@@ -1165,10 +1165,10 @@ tasks:
       version: -1
       name: group member
       description: Gets a list of group or project members viewable by the authenticated user.
-      script: GitLab v2|||gitlab-group-member-list
+      script: GitLabv2|||gitlab-group-member-list
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "47"
@@ -1238,10 +1238,10 @@ tasks:
       version: -1
       name: project list
       description: Get a list of all visible projects across GitLab for the authenticated user. When accessed without authentication, only public projects with simple fields are returned.
-      script: GitLab v2|||gitlab-project-list
+      script: GitLabv2|||gitlab-project-list
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "49"
@@ -1311,10 +1311,10 @@ tasks:
       version: -1
       name: group project list
       description: Get the list of projects of a given group.
-      script: GitLab v2|||gitlab-group-project-list
+      script: GitLabv2|||gitlab-group-project-list
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "61"
@@ -1429,10 +1429,10 @@ tasks:
       version: -1
       name: File get
       description: Allows to receive information about file in repository like name, size, content.
-      script: GitLab v2|||gitlab-file-get
+      script: GitLabv2|||gitlab-file-get
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "74"
@@ -1466,10 +1466,10 @@ tasks:
       version: -1
       name: Get raw file
       description: Get file the file in a raw format.
-      script: GitLab v2|||gitlab-raw-file-get
+      script: GitLabv2|||gitlab-raw-file-get
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "88"
@@ -1543,10 +1543,10 @@ tasks:
       version: -1
       name: merge request note create
       description: Creates a new note for a single merge request.
-      script: GitLab v2|||gitlab-merge-request-note-create
+      script: GitLabv2|||gitlab-merge-request-note-create
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "67"
@@ -1620,10 +1620,10 @@ tasks:
       version: -1
       name: 'merge request note update '
       description: Modify existing note of a merge request.
-      script: GitLab v2|||gitlab-merge-request-note-update
+      script: GitLabv2|||gitlab-merge-request-note-update
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "78"
@@ -1659,10 +1659,10 @@ tasks:
       version: -1
       name: 'merge request note delete '
       description: Deletes an existing note of a merge request.
-      script: GitLab v2|||gitlab-merge-request-note-delete
+      script: GitLabv2|||gitlab-merge-request-note-delete
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "64"
@@ -1696,10 +1696,10 @@ tasks:
       version: -1
       name: merge request note list
       description: Gets a list of all notes for a single merge request.
-      script: GitLab v2|||gitlab-merge-request-note-list
+      script: GitLabv2|||gitlab-merge-request-note-list
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "71"
@@ -1771,10 +1771,10 @@ tasks:
       version: -1
       name: file update
       description: Editing existing file in repository.
-      script: GitLab v2|||gitlab-file-update
+      script: GitLabv2|||gitlab-file-update
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "73"
@@ -1890,10 +1890,10 @@ tasks:
       version: -1
       name: file-create
       description: This allows you to create a single file. File path or entry_id must be specified.
-      script: GitLab v2|||gitlab-file-create
+      script: GitLabv2|||gitlab-file-create
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "76"
@@ -1979,10 +1979,10 @@ tasks:
       version: -1
       name: file delete
       description: Editing existing file in repository.
-      script: GitLab v2|||gitlab-file-delete
+      script: GitLabv2|||gitlab-file-delete
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "84"
@@ -2056,10 +2056,10 @@ tasks:
       version: -1
       name: issue note update
       description: Modify existing note of an issue.
-      script: GitLab v2|||gitlab-issue-note-update
+      script: GitLabv2|||gitlab-issue-note-update
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "14"
@@ -2095,10 +2095,10 @@ tasks:
       version: -1
       name: Code search
       description: Using Scope blobs. Blobs searches are performed on both filenames and contents.
-      script: GitLab v2|||gitlab-code-search
+      script: GitLabv2|||gitlab-code-search
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "85"
@@ -2168,10 +2168,10 @@ tasks:
       version: -1
       name: list users
       description: Get the users list of a project.
-      script: GitLab v2|||gitlab-project-user-list
+      script: GitLabv2|||gitlab-project-user-list
       type: regular
       iscommand: true
-      brand: GitLab v2
+      brand: GitLabv2
     nexttasks:
       '#none#':
       - "87"
