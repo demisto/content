@@ -3,131 +3,126 @@ commonfields:
   id: Aha
   version: -1
 configuration:
-  - name: url
-    display: Server URL
-    required: true
-    defaultvalue: https://example.com/
-    type: 0
-    additionalinfo: null
-  - name: project_name
-    display: Project Name
-    required: true
-    defaultvalue: DEMO
-    type: 0
-    additionalinfo: "Check the Aha! project name in the URL.
-      Replace the <PROJECT_NAME> placeholder in the following : exmaple.com.aha.io/products/<PROJECT_NAME>/features"
-  - name: api_key
-    displaypassword: Api Key
-    required: true
-    defaultvalue: null
-    type: 9
-    hiddenusername: true
-    additionalinfo: "API Key to access service REST API "
-  - name: insecure
-    display: Trust any certificate (not secure)
-    required: false
-    type: 8
-    additionalinfo: null
-  - name: proxy
-    display: Use system proxy settings
-    required: false
-    type: 8
-    additionalinfo: null
-description: Use the Aha! integration to list and manage Cortex XSOAR features
-  from Aha.
+- name: url
+  display: Server URL
+  required: true
+  defaultvalue: https://example.com/
+  type: 0
+  additionalinfo:
+- name: project_name
+  display: Project Name
+  required: true
+  defaultvalue: DEMO
+  type: 0
+  additionalinfo: "Check the Aha! project name in the URL. Replace the <PROJECT_NAME> placeholder in the following : exmaple.com.aha.io/products/<PROJECT_NAME>/features"
+- name: api_key
+  displaypassword: Api Key
+  required: true
+  defaultvalue:
+  type: 9
+  hiddenusername: true
+  additionalinfo: "API Key to access service REST API "
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  type: 8
+  additionalinfo:
+- name: proxy
+  display: Use system proxy settings
+  required: false
+  type: 8
+  additionalinfo:
+description: Use the Aha! integration to list and manage Cortex XSOAR features from Aha.
 display: Aha
 name: Aha
 script:
   commands:
-    - name: aha-get-features
-      description: Will list all features from service, unless a specific feature is specified
-      deprecated: false
-      arguments:
-        - name: from_date
-          description: Show features created after that date
-          required: false
-          isArray: false
-          defaultValue: "2020-01-01"
-        - name: feature_name
-          description: get a specific feature
-          required: false
-          isArray: false
-          defaultValue: ""
-        - name: fields
-          description: Specify fields in comma sepereated manner to include in Aha! service response
-          required: false
-          isArray: false
-          defaultValue: "name,reference_num,id,created_at"
-        - name: page
-          description: "result set pagination: get a specific result page"
-          required: false
-          isArray: false
-          defaultValue: "1"
-        - name: per_page
-          description: "result set pagination: set max items per page"
-          required: false
-          isArray: false
-          defaultValue: "30"
-      outputs:
-        - contextPath: AHA.Feature.id
-          description: The feature ID.
-          type: UUID
-        - contextPath: AHA.Feature.name
-          description: The feature name.
-          type: String
-        - contextPath: AHA.Feature.reference_num
-          description: A feature reference num unique.
-          type: String
-        - contextPath: AHA.Feature.workflow_status
-          description: Feature status description.
-          type: String
-        - contextPath: AHA.Feature.description
-          description: Description of the feature.
-          type: String
-        - contextPath: AHA.Feature.created_at
-          description: Feature creation date.
-          type: Date
-    - name: aha-edit-feature
-      description: "Edit of the following fields in a feature: Name, Status and Description"
-      deprecated: false
-      arguments:
-        - name: feature_name
-          description: Select features to edit
-          required: true
-          isArray: false
-          defaultValue: ""
-        - name: fields
-          description:
-            'Fields in JSON format to edit in a feature. Possible fields are name, description and status.
-            Status should match Aha values under workflow_status.
-            Example:" {"name": "name", "description": "desc", "status" : "Closed"}'
-          required: true
-          isArray: false
-          defaultValue: ""
-      outputs:
-        - contextPath: AHA.Feature.id
-          description: The feature ID.
-          type: UUID
-        - contextPath: AHA.Feature.name
-          description: The feature name.
-          type: String
-        - contextPath: AHA.Feature.reference_num
-          description: A feature reference number.
-          type: String
-        - contextPath: AHA.Feature.workflow_status
-          description: Status name.
-          type: String
-        - contextPath: AHA.Feature.description
-          description: Description of the feature.
-          type: String
-        - contextPath: AHA.Feature.created_at
-          description: Feature creation date.
-          type: Date
+  - name: aha-get-features
+    description: Will list all features from service, unless a specific feature is specified
+    deprecated: false
+    arguments:
+    - name: from_date
+      description: Show features created after that date
+      required: false
+      isArray: false
+      defaultValue: "2020-01-01"
+    - name: feature_name
+      description: get a specific feature
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: fields
+      description: Specify fields in comma sepereated manner to include in Aha! service response
+      required: false
+      isArray: false
+      defaultValue: "name,reference_num,id,created_at"
+    - name: page
+      description: "result set pagination: get a specific result page"
+      required: false
+      isArray: false
+      defaultValue: "1"
+    - name: per_page
+      description: "result set pagination: set max items per page"
+      required: false
+      isArray: false
+      defaultValue: "30"
+    outputs:
+    - contextPath: AHA.Feature.id
+      description: The feature ID.
+      type: UUID
+    - contextPath: AHA.Feature.name
+      description: The feature name.
+      type: String
+    - contextPath: AHA.Feature.reference_num
+      description: A feature reference num unique.
+      type: String
+    - contextPath: AHA.Feature.workflow_status
+      description: Feature status description.
+      type: String
+    - contextPath: AHA.Feature.description
+      description: Description of the feature.
+      type: String
+    - contextPath: AHA.Feature.created_at
+      description: Feature creation date.
+      type: Date
+  - name: aha-edit-feature
+    description: "Edit of the following fields in a feature: Name, Status and Description"
+    deprecated: false
+    arguments:
+    - name: feature_name
+      description: Select features to edit
+      required: true
+      isArray: false
+      defaultValue: ""
+    - name: fields
+      description: 'Fields in JSON format to edit in a feature. Possible fields are name, description and status. Status should match Aha values under workflow_status. Example:" {"name": "name", "description": "desc", "status" : "Closed"}'
+      required: true
+      isArray: false
+      defaultValue: ""
+    outputs:
+    - contextPath: AHA.Feature.id
+      description: The feature ID.
+      type: UUID
+    - contextPath: AHA.Feature.name
+      description: The feature name.
+      type: String
+    - contextPath: AHA.Feature.reference_num
+      description: A feature reference number.
+      type: String
+    - contextPath: AHA.Feature.workflow_status
+      description: Status name.
+      type: String
+    - contextPath: AHA.Feature.description
+      description: Description of the feature.
+      type: String
+    - contextPath: AHA.Feature.created_at
+      description: Feature creation date.
+      type: Date
   isfetch: false
   runonce: false
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.8.36650
   feed: false
 fromversion: 6.5.0
