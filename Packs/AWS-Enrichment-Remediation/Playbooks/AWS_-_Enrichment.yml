@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "8"
+      - "11"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: e08046a8-1aa4-4123-8480-5403cd5519c0
+    taskid: 70e5fc67-a675-464c-8544-2d3743e4b0b1
     type: regular
     task:
-      id: e08046a8-1aa4-4123-8480-5403cd5519c0
+      id: 70e5fc67-a675-464c-8544-2d3743e4b0b1
       version: -1
       name: Lookup EC2 information associated with IP
       description: Describes EC2 instance based off public IP address.
@@ -180,67 +180,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: d9f625c8-f422-4e29-8575-6dc1ce98eff6
-    type: condition
-    task:
-      id: d9f625c8-f422-4e29-8575-6dc1ce98eff6
-      version: -1
-      name: Is AWS - EC2 enabled?
-      description: Determines if the AWS - EC2 integration instance is pull enrichment data.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "yes":
-      - "1"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: AWS - EC2
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 560,
-          "y": -650
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: 060102cd-0ced-4e67-88bc-6916f4f3750b
@@ -347,13 +286,78 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 08a31227-3225-4082-80a8-ba8f22faec22
+    type: condition
+    task:
+      id: 08a31227-3225-4082-80a8-ba8f22faec22
+      version: -1
+      name: Is AWS - EC2 enabled and is Input value defined?
+      description: Determines if the AWS - EC2 integration instance is configured and Input values are defined to pull enrichment data.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS - EC2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.AwsIP
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "10_2_#default#": 0.27,
       "10_3_yes": 0.55,
-      "8_1_yes": 0.57,
-      "8_2_#default#": 0.45,
       "9_2_#default#": 0.5,
       "9_4_yes": 0.53
     },
@@ -392,7 +396,7 @@ inputs:
     complex:
       root: alert
       accessor: remoteip
-  required: false
+  required: true
   description: AWS IP in alert
   playbookInputQuery:
 outputs:

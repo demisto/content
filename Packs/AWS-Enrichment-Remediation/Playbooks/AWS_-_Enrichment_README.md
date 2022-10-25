@@ -14,15 +14,16 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any scripts.
 
 ### Commands
-* aws-iam-list-users
 * aws-ec2-describe-security-groups
 * aws-ec2-describe-instances
+* aws-iam-list-users
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
+| Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
 | AwsIP | AWS IP in alert | alert.remoteip | Required |
 
 ## Playbook Outputs
