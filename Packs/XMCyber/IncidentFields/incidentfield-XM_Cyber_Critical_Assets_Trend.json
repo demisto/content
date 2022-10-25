@@ -1,11 +1,11 @@
 {
-    "id": "incident_averagecomplexity",
+    "id": "incident_xmcybercriticalassetstrend",
     "version": -1,
     "fromVersion": "6.0.0",
-    "modified": "2022-07-21T11:22:53.923511919Z",
-    "name": "Average Complexity of Compromise",
+    "modified": "2020-10-29T07:04:02.929771107Z",
+    "name": "XM Cyber critical assets trend",
     "ownerOnly": false,
-    "cliName": "averagecomplexity",
+    "cliName": "xmcybercriticalassetstrend",
     "type": "number",
     "closeForm": false,
     "editForm": true,
@@ -19,14 +19,12 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "XM Cyber Critical Asset",
-        "XM Cyber Choke Point"
+        "XM Cyber Technique"
     ],
     "associatedToAll": false,
     "unmapped": false,
     "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
-    "threshold": 72,
-    "description": "Average Complexity of Compromise"
+    "threshold": 72
 }
