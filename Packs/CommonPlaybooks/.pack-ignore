@@ -99,6 +99,3 @@ ignore=PA129
 
 [file:playbook-Block_Indicators_-_Generic_v2.yml]
 ignore=PB118
-
-[file:playbook-Block_Indicators_-_Generic_v3_README.md]
-ignore=RM106

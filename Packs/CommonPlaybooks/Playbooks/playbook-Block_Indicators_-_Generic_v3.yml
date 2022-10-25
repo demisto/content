@@ -756,7 +756,7 @@ inputs:
   playbookInputQuery:
 - key: CustomURLCategory
   value:
-    simple: Demisto Remediation - Malicious URLs
+    simple: XSOAR Remediation - Malicious URLs
   required: false
   description: Custom URL Category name.
   playbookInputQuery:
