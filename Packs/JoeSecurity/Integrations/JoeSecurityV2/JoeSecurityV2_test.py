@@ -330,20 +330,19 @@ def test_submit_sample_command_url(mocker, client):
     response.readable_output = 'Waiting for submission "1" to finish...'
 
 
-def test_update_metrics(mocker, client):
+def test_update_metrics():
     """
     Given:
-        - An app client object and url for submission command.
+        - An error.
     When:
-        - The url submission command was called.
+        - The update metrics method was called.
     Then:
-        - Ensure the corresponding readable output is returned.
+        - Ensure the incrementation of the execution metrics general error counter.
     """
     from JoeSecurityV2 import update_metrics
     from jbxapi import ApiError
 
     exe_metrics = ExecutionMetrics()
-    mocker.patch.object(client, 'submit_url', return_value={'submission_id': '1'})
 
     exception = ApiError({"code": 'UnknownEndpointError', 'message': 'Test error'})
     update_metrics(exception, exe_metrics)
