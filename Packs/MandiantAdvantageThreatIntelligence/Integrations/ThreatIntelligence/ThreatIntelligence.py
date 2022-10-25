@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import requests
-from typing import Dict, Any
+from typing import Dict
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -846,7 +846,7 @@ def fetch_reputation(client: MandiantClient, args: Dict = None):
 
 
 def test_module(client: MandiantClient, args: Dict) -> str:
-    """Tests API connectivity and authentication'
+    """Tests API connectivity and authentication
 
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
@@ -859,16 +859,9 @@ def test_module(client: MandiantClient, args: Dict) -> str:
     :rtype: ``str``
     """
 
-    message: str = ''
-    try:
-        message = "ok"
-    except Exception as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e) or 'Unauthorized' in str(
-                e):
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
+    # Note: As part of client initialization, a token is retrieved, which requires successful authentication
+    # Therefor, if a user has reached this point with a valid MandiantClient, everything is working
+    return 'ok'
 
 ''' MAIN FUNCTION '''
 
