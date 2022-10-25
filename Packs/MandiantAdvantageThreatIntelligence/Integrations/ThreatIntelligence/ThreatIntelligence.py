@@ -92,7 +92,7 @@ class MandiantClient(BaseClient):
         # return the current token
         if token and valid_until:
             if now_timestamp < valid_until:
-                return self._token
+                return token
 
         # else generate a token and update the integration context accordingly
         token = self._retrieve_token()
@@ -718,27 +718,8 @@ def batch_fetch_indicators(client: MandiantClient, args: Dict = None, update_con
         List of all indicators
     """
     args = args if args else {}
-    limit = int(args.get('limit', client.limit))
-    metadata = argToBoolean(args.get('indicatorMetadata', client.metadata))
-    enrichment = argToBoolean(args.get('indicatorRelationships', client.enrichment))
-    types = argToList(args.get('type', client.types))
 
-    first_fetch = client.first_fetch
-
-    result = []
-    for indicator_type in types:
-        indicators_list = get_indicator_list(client, limit, first_fetch, indicator_type, update_context)
-
-        if metadata and indicator_type != 'Indicators':
-            indicators_list = [client.get_indicator_info(identifier=indicator.get('id'),  # type:ignore
-                                                         indicator_type=indicator_type)
-                               for indicator in indicators_list]
-
-        indicators = [MAP_INDICATORS_FUNCTIONS[indicator_type](client, indicator) for indicator in indicators_list]
-        if enrichment and indicator_type != 'Indicators':
-            enrich_indicators(client, indicators, indicator_type)
-
-        result += indicators
+    result = fetch_indicators(client=client, args=args, update_context=update_context)
 
     for b in batch(result, batch_size=2000):
         demisto.createIndicators(b)
@@ -748,13 +729,13 @@ def fetch_indicator_by_value(client: MandiantClient, args: Dict = None):
     indicator_value = args.get("indicator_value")
 
     INDICATOR_FUNC_MAP = {
-        "ip": create_ip_indicator,
+        "ipv4": create_ip_indicator,
         "fqdn": create_fqdn_indicator,
         "url": create_url_indicator,
         "md5": create_file_indicator
     }
     INDICATOR_TYPE_MAP = {
-        "ip": "ip",
+        "ipv4": "ip",
         "fqdn": "domain",
         "url": "url",
         "md5": "file"
