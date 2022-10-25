@@ -9,7 +9,6 @@
         "--show-column-numbers",
         "--no-pretty",
         "--allow-redefinition",
-        "--no-site-packages",
         "--namespace-packages"
     ],
     "python.testing.pytestEnabled": true,
