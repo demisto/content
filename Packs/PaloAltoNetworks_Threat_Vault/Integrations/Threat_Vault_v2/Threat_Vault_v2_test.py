@@ -1,6 +1,9 @@
+from CommonServerPython import *
 import pytest
 
-from Threat_Vault_v2 import Client, threat_batch_search_command, release_note_get_command, threat_signature_get_command
+
+from Threat_Vault_v2 import Client, threat_batch_search_command, release_note_get_command, threat_signature_get_command, \
+    threat_search_command, file_command, cve_command, pagination, parse_resp_by_type, resp_to_hr
 
 
 @pytest.mark.parametrize(
@@ -14,7 +17,7 @@ from Threat_Vault_v2 import Client, threat_batch_search_command, release_note_ge
         (
             threat_batch_search_command,
             {},
-            'One of following arguments is required -> [id, sha256, md5]'
+            'One of following arguments is required -> [id, sha256, md5, name]'
         ),
         (
             release_note_get_command,
@@ -25,7 +28,35 @@ from Threat_Vault_v2 import Client, threat_batch_search_command, release_note_ge
             threat_signature_get_command,
             {},
             'One of following arguments is required -> [signature_id, sha256, md5]'
-        )
+        ),
+        (
+            threat_search_command,
+            {},
+            'One of following arguments is required -> [cve, vendor, name]'
+        ),
+        (
+            threat_search_command,
+            {'cve': 'test', 'from-release-date': 'test'},
+            ('When using a release date range in a query, it must be used with the following two arguments ->'
+             '[from-release-date, to-release-date]')
+        ),
+        (
+            threat_search_command,
+            {'cve': 'test', 'from-release-version': 'test'},
+            ('When using a release version range in a query, it must be used with the following two arguments ->'
+             '[from-release-version, to-release-version]')
+        ),
+        (
+            threat_search_command,
+            {'cve': 'test', 'release-date': 'test', 'release-version': 'test'},
+            ('There can only be one argument from the following list in the command ->'
+             '[release-date, release-version]')
+        ),
+        (
+            threat_search_command,
+            {'cve': 'test', 'release-date': 'test', 'from-release-date': 'test', 'to-release-date': 'test'},
+            ''
+        ),
     ]
 )
 def test_commands_failure(command, demisto_args, expected_results):
@@ -35,3 +66,772 @@ def test_commands_failure(command, demisto_args, expected_results):
     with pytest.raises(Exception) as e:
         command(client, demisto_args)
     assert expected_results in str(e)
+
+
+@pytest.mark.parametrize(
+    'cmd, demisto_args, expected_readable_output, expected_indicator',
+    [
+        (
+            file_command,
+            {'file': '1234567890'},
+            'Hash 1234567890 antivirus reputation is unknown to Threat Vault.',
+            Common.File
+        ),
+        (
+            cve_command,
+            {'cve': '1234567890'},
+            'CVE 1234567890 vulnerability reputation is unknown to Threat Vault.',
+            None
+        ),
+        (
+            threat_signature_get_command,
+            {'signature_id': '123456'},
+            '123456 reputation is unknown to Threat Vault.',
+            None
+        ),
+        (
+            release_note_get_command,
+            {'type': '123456', 'version': '2222'},
+            '2222 release note not found.',
+            None
+        ),
+        (
+            threat_search_command,
+            {'cve': '123'},
+            '123 reputation is unknown to Threat Vault.',
+            None
+        )
+    ]
+)
+def test_commands_with_not_found(mocker, cmd, demisto_args, expected_readable_output, expected_indicator):
+
+    client = Client(
+        api_key='test',
+        verify=False,
+        proxy=False,
+        reliability='E - Unreliable'
+    )
+
+    mocker.patch.object(client, 'antivirus_signature_get_request', side_effect=Exception('Error in API call [404] - Not Found'))
+    mocker.patch.object(client, 'release_notes_get_request', side_effect=Exception('Error in API call [404] - Not Found'))
+    mocker.patch.object(client, 'threat_search_request', side_effect=Exception('Error in API call [404] - Not Found'))
+
+    results = cmd(client, demisto_args)
+
+    if expected_indicator:
+        assert isinstance(results[0].indicator, expected_indicator)
+    if isinstance(results, list):
+        assert results[0].readable_output == expected_readable_output
+    else:
+        assert results.readable_output == expected_readable_output
+
+
+@pytest.mark.parametrize('page, page_size, limit, expected_result', [
+    (
+        5,
+        100,
+        None,
+        (500, 100)
+    ),
+    (
+        None,
+        None,
+        100,
+        (0, 100)
+    )
+])
+def test_pagination(page, page_size, limit, expected_result):
+
+    results = pagination(page, page_size, limit)
+    assert results[0] == expected_result[0]
+    assert results[1] == expected_result[1]
+
+
+@pytest.mark.parametrize(
+    'resp, expanded, expected_results',
+    [
+        (
+            {"data": {"vulnerability": [{"id": "test", "name": "test", "description": "test"}]}},
+            True,
+            ['ThreatVault.vulnerability']
+        ),
+        (
+            {
+                "data": {
+                    "antivirus": [{"id": "test", "name": "test", "description": "test"}],
+                    "vulnerability": [{"id": "test", "name": "test", "description": "test"}]
+                }
+            },
+            False,
+            ['ThreatVault.antivirus', "ThreatVault.vulnerability"]
+        ),
+        (
+            {
+                "data": {
+                    "antivirus": [{"id": "test", "name": "test", "description": "test"}],
+                    "vulnerability": [{"id": "test", "name": "test", "description": "test"}],
+                    "fileformat": [{"id": "test", "name": "test", "description": "test"}],
+                    "spyware": [{"id": "test", "name": "test", "description": "test"}]
+                }
+            },
+            False,
+            ['ThreatVault.antivirus', "ThreatVault.spyware", "ThreatVault.vulnerability", "ThreatVault.fileformat"]
+        )
+    ]
+)
+def test_parse_resp_by_type(mocker, resp, expanded, expected_results):
+
+    mocker.patch('Threat_Vault_v2.resp_to_hr', return_value={})
+
+    results = parse_resp_by_type(response=resp, expanded=expanded)
+    for i in range(len(expected_results)):
+        assert results[i].outputs_prefix == expected_results[i]
+
+
+RESP_TO_HR_ARGS = [
+    (
+        {
+            "vulnerability": [
+                {
+                    "id": "test",
+                    "name": "test",
+                    "description": "test",
+                }
+            ]
+        },
+        'vulnerability',
+        False,
+        14
+    ),
+    (
+        {
+            "fileformat": [
+                {
+                    "id": "test",
+                    "name": "test",
+                    "description": "test",
+                }
+            ]
+        },
+        'fileformat',
+        False,
+        13
+    ),
+    (
+        {
+            "file": [
+                {
+                    "id": "test",
+                    "name": "test",
+                    "description": "test",
+                }
+            ]
+        },
+        'file',
+        False,
+        8
+    ),
+    (
+        {
+            "file": [
+                {
+                    "id": "test",
+                    "name": "test",
+                    "description": "test",
+                }
+            ]
+        },
+        'file',
+        True,
+        15
+    ),
+    (
+        {
+            "antivirus": [
+                {
+                    "id": "test",
+                    "name": "test",
+                    "description": "test",
+                }
+            ]
+        },
+        'antivirus',
+        False,
+        9
+    ),
+    (
+        {
+            "spyware": [
+                {
+                    "id": "test",
+                    "name": "test",
+                    "description": "test",
+                }
+            ]
+        },
+        'spyware',
+        False,
+        12
+    ),
+    (
+        {
+            "release_notes":
+                {
+                    "id": "test",
+                    "name": "test",
+                    "description": "test",
+                }
+        },
+        'release_notes',
+        False,
+        14
+    ),
+    (
+        {
+            "test": [
+                {
+                    "id": "test",
+                    "name": "test",
+                    "description": "test",
+                }
+            ]
+        },
+        'test',
+        False,
+        0
+    )
+]
+
+
+@pytest.mark.parametrize('resp, type_, extra, expected', RESP_TO_HR_ARGS)
+def test_resp_to_hr(resp, type_, extra, expected):
+
+    result = resp_to_hr(resp, type_, extra)
+    assert len(result.keys()) == expected
+
+
+FILE_COMMAND_ARGS = [
+    (
+        {'file': 'xxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxx'},
+        [{"data": {
+            "fileinfo": [
+                {
+                    "filetype": "test",
+                    "sha256": "xxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxx",
+                    "sha1": "test",
+                    "md5": "test",
+                    "size": "test",
+                    "type": "test",
+                    "family": "test",
+                    "platform": "test",
+                    "wildfire_verdict": "unknown",
+                    "create_time": "test",
+                    "signatures": {
+                        "antivirus": [
+                            {
+                                "name": "test",
+                                "severity": "test",
+                                "type": "test",
+                                "subtype": "test",
+                                "description": "test",
+                                "action": "",
+                                "id": "test",
+                                "create_time": "test",
+                                "status": "test",
+                                "related_sha256_hashes": [
+                                    "test"
+                                ],
+                                "release": {
+                                    "antivirus": {
+                                        "first_release_version": "test",
+                                        "first_release_time": "test",
+                                        "last_release_version": "test",
+                                        "last_release_time": "test"
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }}],
+        {
+            'sha256': ['xxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxx'],
+            'md5': ['test'],
+            'readable_output': ['### Hash xxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxx antivirus reputation:']
+        }
+    ),
+    (
+        {'file': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'},
+        [{"data": {
+            "fileinfo": [
+                {
+                    "filetype": "test",
+                    "sha256": "test",
+                    "sha1": "test",
+                    "md5": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+                    "size": "test",
+                    "type": "test",
+                    "family": "test",
+                    "platform": "test",
+                    "wildfire_verdict": "unknown",
+                    "create_time": "test",
+                    "signatures": {
+                        "antivirus": [
+                            {
+                                "name": "test",
+                                "severity": "test",
+                                "type": "test",
+                                "subtype": "test",
+                                "description": "test",
+                                "action": "",
+                                "id": "test",
+                                "create_time": "test",
+                                "status": "test",
+                                "related_sha256_hashes": [
+                                    "test"
+                                ],
+                                "release": {
+                                    "antivirus": {
+                                        "first_release_version": "test",
+                                        "first_release_time": "test",
+                                        "last_release_version": "test",
+                                        "last_release_time": "test"
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }}],
+        {
+            'sha256': ['test'],
+            'md5': ['xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'],
+            'readable_output': ['### Hash xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx antivirus reputation:']
+        }
+    ),
+    (
+        {'file': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,xxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxx'},
+        [
+            {"data": {
+                "fileinfo": [
+                    {
+                        "filetype": "test",
+                        "sha256": "test",
+                        "sha1": "test",
+                        "md5": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+                        "size": "test",
+                        "type": "test",
+                        "family": "test",
+                        "platform": "test",
+                        "wildfire_verdict": "unknown",
+                        "create_time": "test",
+                        "signatures": {
+                            "antivirus": [
+                                {
+                                    "name": "test",
+                                    "severity": "test",
+                                    "type": "test",
+                                    "subtype": "test",
+                                    "description": "test",
+                                    "action": "",
+                                    "id": "test",
+                                    "create_time": "test",
+                                    "status": "test",
+                                    "related_sha256_hashes": [
+                                        "test"
+                                    ],
+                                    "release": {
+                                        "antivirus": {
+                                            "first_release_version": "test",
+                                            "first_release_time": "test",
+                                            "last_release_version": "test",
+                                            "last_release_time": "test"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }},
+            {"data": {
+                "fileinfo": [
+                    {
+                        "filetype": "test",
+                        "sha256": "xxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxx",
+                        "sha1": "test",
+                        "md5": "test",
+                        "size": "test",
+                        "type": "test",
+                        "family": "test",
+                        "platform": "test",
+                        "wildfire_verdict": "unknown",
+                        "create_time": "test",
+                        "signatures": {
+                            "antivirus": [
+                                {
+                                    "name": "test",
+                                    "severity": "test",
+                                    "type": "test",
+                                    "subtype": "test",
+                                    "description": "test",
+                                    "action": "",
+                                    "id": "test",
+                                    "create_time": "test",
+                                    "status": "test",
+                                    "related_sha256_hashes": [
+                                        "test"
+                                    ],
+                                    "release": {
+                                        "antivirus": {
+                                            "first_release_version": "test",
+                                            "first_release_time": "test",
+                                            "last_release_version": "test",
+                                            "last_release_time": "test"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }}
+        ],
+        {
+            'sha256': ['test', 'xxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxx'],
+            'md5': ['xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'test'],
+            'readable_output': [
+                '### Hash xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx antivirus reputation:',
+                '### Hash xxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxx antivirus reputation:'
+            ]
+        }
+    )
+]
+
+
+@pytest.mark.parametrize('args, resp, expected_results', FILE_COMMAND_ARGS)
+def test_file_command(mocker, args, resp, expected_results):
+
+    client = Client(
+        api_key='test',
+        verify=False,
+        proxy=False,
+        reliability='E - Unreliable'
+    )
+    mocker.patch.object(client, 'antivirus_signature_get_request', side_effect=resp)
+    results = file_command(client, args)
+
+    for i in range(len(results)):
+        assert results[i].indicator.sha256 == expected_results['sha256'][i]
+        assert results[i].indicator.md5 == expected_results['md5'][i]
+        assert expected_results['readable_output'][i] in results[i].readable_output
+
+
+CVE_COMMAND_ARGS = [
+    (
+        {'cve': 'CVE-2011-1272'},
+        [{
+            "data": {
+                "vulnerability": [
+                    {
+                        "id": "test",
+                        "name": "test",
+                        "description": "test",
+                        "category": "test",
+                        "min_version": "test",
+                        "max_version": "",
+                        "severity": "test",
+                        "default_action": "test",
+                        "cve": [
+                            "CVE-2011-1272"
+                        ],
+                        "vendor": [
+                            "test"
+                        ],
+                        "reference": [
+                            "test"
+                        ],
+                        "status": "test",
+                        "details": {
+                            "change_data": "test"
+                        },
+                        "ori_release_version": "test",
+                        "latest_release_version": "test",
+                        "ori_release_time": "test",
+                        "latest_release_time": "test"
+                    }
+                ]
+            }
+        }],
+        {
+            'id': ['CVE-2011-1272'],
+            'readable_output': ['CVE CVE-2011-1272 vulnerability reputation:']
+        }
+    ),
+    (
+        {'cve': 'CVE-2011-1272,CVE-2011-1272'},
+        [
+            {
+                "data": {
+                    "vulnerability": [
+                        {
+                            "id": "test",
+                            "name": "test",
+                            "description": "test",
+                            "category": "test",
+                            "min_version": "test",
+                            "max_version": "",
+                            "severity": "test",
+                            "default_action": "test",
+                            "cve": [
+                                "CVE-2011-1272"
+                            ],
+                            "vendor": [
+                                "test"
+                            ],
+                            "reference": [
+                                "test"
+                            ],
+                            "status": "test",
+                            "details": {
+                                "change_data": "test"
+                            },
+                            "ori_release_version": "test",
+                            "latest_release_version": "test",
+                            "ori_release_time": "test",
+                            "latest_release_time": "test"
+                        }
+                    ]
+                }
+            },
+            {
+                "data": {
+                    "vulnerability": [
+                        {
+                            "id": "test",
+                            "name": "test",
+                            "description": "test",
+                            "category": "test",
+                            "min_version": "test",
+                            "max_version": "",
+                            "severity": "test",
+                            "default_action": "test",
+                            "cve": [
+                                "CVE-2011-1272"
+                            ],
+                            "vendor": [
+                                "test"
+                            ],
+                            "reference": [
+                                "test"
+                            ],
+                            "status": "test",
+                            "details": {
+                                "change_data": "test"
+                            },
+                            "ori_release_version": "test",
+                            "latest_release_version": "test",
+                            "ori_release_time": "test",
+                            "latest_release_time": "test"
+                        }
+                    ]
+                }
+            }
+        ],
+        {
+            'id': ['CVE-2011-1272', 'CVE-2011-1272'],
+            'readable_output': [
+                'CVE CVE-2011-1272 vulnerability reputation:',
+                'CVE CVE-2011-1272 vulnerability reputation:'
+            ]
+        }
+    )
+]
+
+
+@pytest.mark.parametrize('args, resp, expected_results', CVE_COMMAND_ARGS)
+def test_cve_command(mocker, args, resp, expected_results):
+
+    client = Client(
+        api_key='test',
+        verify=False,
+        proxy=False,
+        reliability='E - Unreliable'
+    )
+    mocker.patch.object(client, 'antivirus_signature_get_request', side_effect=resp)
+    results = cve_command(client, args)
+
+    for i in range(len(results)):
+        assert results[i].indicator.id == expected_results['id'][i]
+        assert expected_results['readable_output'][i] in results[i].readable_output
+
+
+@pytest.mark.parametrize(
+    'args, expected_results',
+    [
+        (
+            {'sha256': 'test'},
+            {
+                'result': 'file',
+                'call_hashes_command': 1,
+                'call_ids_command': 0,
+                'args': {
+                    'file': 'test',
+                    'sha256': 'test',
+                    'extra': True
+                }
+            }
+        ),
+        (
+            {'md5': 'test'},
+            {
+                'result': 'file',
+                'call_hashes_command': 1,
+                'call_ids_command': 0,
+                'args': {
+                    'file': 'test',
+                    'md5': 'test',
+                    'extra': True
+                }
+            }
+        ),
+        (
+            {'sha256': 'test,test1', 'md5': 'test2'},
+            {
+                'result': 'file',
+                'call_hashes_command': 1,
+                'call_ids_command': 0,
+                'args': {
+                    'file': 'test,test1,test2',
+                    'sha256': 'test,test1',
+                    'md5': 'test2',
+                    'extra': True
+                }
+            }
+        ),
+        (
+            {'signature_id': 'test,test1'},
+            {
+                'result': 'ids',
+                'call_hashes_command': 0,
+                'call_ids_command': 2,
+                'args': {
+                    'signature_id': 'test,test1',
+                    'file': '',
+                    'extra': True
+                }
+            }
+        ),
+    ]
+)
+def test_threat_signature_get_command(mocker, args, expected_results):
+
+    client = Client(
+        api_key='test',
+        verify=False,
+        proxy=False,
+        reliability='E - Unreliable'
+    )
+    call_hashes_command = mocker.patch('Threat_Vault_v2.file_command', return_value=['file'])
+    call_ids_command = mocker.patch.object(client, 'antivirus_signature_get_request', return_value='ids')
+    mocker.patch('Threat_Vault_v2.parse_resp_by_type', return_value=['ids'])
+    results = threat_signature_get_command(client, args)
+
+    assert results[0] == expected_results['result']
+    assert call_hashes_command.call_count == expected_results['call_hashes_command']
+    assert call_ids_command.call_count == expected_results['call_ids_command']
+    assert args == expected_results['args']
+
+
+@pytest.mark.parametrize(
+    'args, expected_results',
+    [
+        (
+            {'type': 'test', 'version': 'test'},
+            {'prefix': 'ThreatVault.ReleaseNote', 'readable_output': 'Release notes:'}
+        )
+    ]
+)
+def test_release_note_get_command(mocker, args, expected_results):
+
+    client = Client(
+        api_key='test',
+        verify=False,
+        proxy=False,
+        reliability='E - Unreliable'
+    )
+
+    mocker.patch.object(client, 'release_notes_get_request', return_value={'data': []})
+    mocker.patch('Threat_Vault_v2.resp_to_hr', return_value={'release_notes': 'test'})
+    results = release_note_get_command(client, args)
+
+    assert results.outputs_prefix == expected_results['prefix']
+    assert expected_results['readable_output'] in results.readable_output
+
+
+@pytest.mark.parametrize(
+    'args, mocking, expected_args, expected_results',
+    [
+        (
+            {'id': '123'},
+            ['ids'],
+            {'value': '123', 'type': 'id'},
+            'ids'
+        )
+    ]
+)
+def test_threat_batch_search_command(mocker, args, mocking, expected_args, expected_results):
+
+    client = Client(
+        api_key='test',
+        verify=False,
+        proxy=False,
+        reliability='E - Unreliable'
+    )
+
+    call_request = mocker.patch.object(client, 'threat_batch_search_request', return_value='')
+    mocker.patch('Threat_Vault_v2.parse_resp_by_type', return_value=mocking)
+    results = threat_batch_search_command(client, args)
+
+    assert results[0] == expected_results
+    assert expected_args['value'] in call_request.call_args_list[0][1]['value']
+    assert expected_args['type'] in call_request.call_args_list[0][1]['arg']
+
+
+@pytest.mark.parametrize(
+    'args, expected_results',
+    [
+        (
+            {'cve': '123'},
+            {'cve': '123', 'offset': 0}
+        ),
+        (
+            {'cve': '123', 'release-date': 'test'},
+            {'cve': '123', 'offset': 0, 'releaseDate': 'test'}
+        ),
+        (
+            {'cve': '123', 'from-release-date': 'test', 'to-release-date': 'test'},
+            {'cve': '123', 'offset': 0, 'fromReleaseDate': 'test', 'toReleaseDate': 'test'}
+        ),
+        (
+            {'signature-name': '123', 'page': '2', 'page_size': '100'},
+            {'name': '123', 'offset': 200, 'limit': 100}
+        )
+    ]
+)
+def test_threat_search_command(mocker, args, expected_results):
+
+    client = Client(
+        api_key='test',
+        verify=False,
+        proxy=False,
+        reliability='E - Unreliable'
+    )
+
+    call_request = mocker.patch.object(client, 'threat_search_request', return_value={'data': []})
+    mocker.patch('Threat_Vault_v2.parse_resp_by_type', return_value=['test'])
+    threat_search_command(client, args)
+
+    assert call_request.call_args_list[0][1]['args'] == expected_results

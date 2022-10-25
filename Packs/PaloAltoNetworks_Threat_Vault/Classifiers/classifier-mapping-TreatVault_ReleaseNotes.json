@@ -1,0 +1,117 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "9426ff1f-a1bb-41ca-86b9-70ab56bf55a7",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 2,
+	"mapping": {
+		"ThreatVault Release notes": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"ThreatVault   Spyware new": {
+					"complex": {
+						"accessor": "new",
+						"filters": [],
+						"root": "data.release_notes.spyware",
+						"transformers": []
+					}
+				},
+				"ThreatVault  Applications": {
+					"complex": {
+						"accessor": "applications",
+						"filters": [],
+						"root": "data.release_notes",
+						"transformers": []
+					}
+				},
+				"ThreatVault  Content Version": {
+					"simple": "data.[0].content_version"
+				},
+				"ThreatVault  Release Version": {
+					"simple": "data.[0].release_version"
+				},
+				"ThreatVault  data correlation": {
+					"complex": {
+						"accessor": "data_correlation",
+						"filters": [],
+						"root": "data.release_notes",
+						"transformers": []
+					}
+				},
+				"ThreatVault  decoders": {
+					"complex": {
+						"accessor": "decoders",
+						"filters": [],
+						"root": "data.release_notes",
+						"transformers": []
+					}
+				},
+				"ThreatVault Vulnerability new": {
+					"complex": {
+						"accessor": "new",
+						"filters": [],
+						"root": "data.release_notes.vulnerability",
+						"transformers": []
+					}
+				},
+				"ThreatVault file type": {
+					"complex": {
+						"accessor": "file_type",
+						"filters": [],
+						"root": "data.release_notes",
+						"transformers": []
+					}
+				},
+				"ThreatVault release notes": {
+					"simple": "data.[0].release_notes.notes.[0]"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"ThreatConnect Group Vulnerability New": {
+					"complex": {
+						"accessor": "new",
+						"filters": [],
+						"root": "data.release_notes.vulnerability",
+						"transformers": []
+					}
+				},
+				"ThreatVault  Content Version": {
+					"simple": "data.[0].content_version"
+				},
+				"ThreatVault  Release Version": {
+					"simple": "data.[0].release_version"
+				},
+				"ThreatVault release notes": {
+					"simple": "data.[0].release_notes.notes.[0]"
+				}
+			}
+		}
+	},
+	"name": "ThreatVault",
+	"nameRaw": "ThreatVault",
+	"packID": "",
+	"packName": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}
