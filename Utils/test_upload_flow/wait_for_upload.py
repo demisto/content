@@ -94,7 +94,7 @@ def main():
     if upload_job_status == 'skipped':
         print(f'Failed to upload files to marketplace. See failed pipeline here: {pipeline_url}')
         sys.exit(1)
-
+    # TODO: add note about which job has failed
     print(f'The upload has finished. See pipeline here: {pipeline_url}')
     # TODO: check why 'logging' logs are not present in gitlab build
 

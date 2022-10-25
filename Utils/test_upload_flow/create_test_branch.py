@@ -13,6 +13,7 @@ import logging
 from Tests.scripts.utils.log_util import install_logging
 install_logging('create_test_branch.log', logger=logging)
 
+
 def add_changed_pack(func):
     def wrapper(*args, **kwargs):
         global changed_packs
@@ -86,7 +87,6 @@ def enhance_release_notes(pack: Path):
 def change_image(pack: Path):
     new_image = Path(__file__).parent / 'TestUploadFlow' / 'Integrations' / 'TestUploadFlow' / 'TestUploadFlow_image.png'
     for p in Path(pack).glob('**/*.png'):
-        # shutil.rmtree(p)
         shutil.copy(new_image, p)
     return pack, get_current_version(pack), None
 
@@ -239,7 +239,7 @@ if __name__ == "__main__":
                          'Alibaba.yml', packs_path / 'AlibabaActionTrail')
         modify_item_path(packs_path /
                          'AlibabaActionTrail/ModelingRules/AlibabaModelingRules/AlibabaModelingRules_schema.json',
-                         'Alibaba_schema.json', packs_path / 'AlibabaActionTrail')
+                         'Alibaba_schema.json', packs_path / 'AlibabaActionTrail') # TODO: add script
 
         for p in changed_packs:
             repo.git.add(f"{p}/*")
