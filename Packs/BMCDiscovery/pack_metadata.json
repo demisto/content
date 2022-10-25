@@ -10,9 +10,11 @@
     "categories": [
         "IT Services"
     ],
-    "tags": ["IT", "Network"],
-    "useCases": ["Asset Management", "IT Services"],
-    "keywords": ["BMC", "discovery", "asset", "software", "scan", "search"],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "BMC", "discovery", "asset", "software", "scan", "search"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
