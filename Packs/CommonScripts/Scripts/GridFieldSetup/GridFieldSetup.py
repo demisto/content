@@ -2,10 +2,10 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-from typing import Dict, Any
+from typing import Dict
 
 
-def grid_field_setup(keys: str, vals: dict, res_list: list) -> list[str]:
+def grid_field_setup(keys: Optional[str], vals: dict, res_list: list) -> list[str]:
     """Returns a list of dictionaries based on the key/values provided.
     :type keys: ``str``
     :type vals: ``dict``
@@ -31,13 +31,16 @@ def grid_field_setup(keys: str, vals: dict, res_list: list) -> list[str]:
 ''' COMMAND FUNCTION '''
 
 
-def grid_field_setup_command(args: Dict[str, Any]) -> CommandResults:
+def grid_field_setup_command(args: Dict[str, str]) -> CommandResults:
     keys = args.get('keys')
     overwrite = args.get('overwrite')
     gridfield = args.get('gridfield')
 
     # logic here to check if empty result and set default list
-    orig = demisto.alerts()[0].get('CustomFields').get(gridfield)
+    fields = demisto.incidents()[0].get('CustomFields')
+    if not fields:
+        raise ValueError('no Custom Fields present')
+    orig = fields.get(gridfield)
     if not orig or overwrite == "true":
         orig = []
 
@@ -56,7 +59,7 @@ def grid_field_setup_command(args: Dict[str, Any]) -> CommandResults:
     # Call the standalone function and get the raw response
     result = grid_field_setup(keys, vals, orig)
 
-    results = demisto.executeCommand("setIncident", {args.get('gridfield'): result})
+    results = demisto.executeCommand("setIncident", {gridfield: result})
 
     return results
 
