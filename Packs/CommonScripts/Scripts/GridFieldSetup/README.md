@@ -39,7 +39,10 @@ There are no outputs for this script.
 
 ### Human Readable Output
 
->done
+>|Field|URL SSL Verification|
+>|---|---|
+>| Old Value | [{"url":"https://www.paloaltonetworks.com","verified":"verified"}] |
+>| New Value | [{"url":"https://www.paloaltonetworks.com","verified":"verified"},{"url":"https://xsoar.pan.dev/","verified":"verified"}] |
 
 ### Example command
 ```!GridFieldSetup keys=url,verified val1="https://www.paloaltonetworks.com" val2="verified" gridfield="urlsslverification" overwrite=true```
@@ -50,4 +53,7 @@ There are no outputs for this script.
 
 ### Human Readable Output
 
->done
+>|Field|URL SSL Verification|
+>|---|---|
+>| Old Value | [{"url":"https://xsoar.pan.dev/","verified":"verified"},{"url":"https://xsoar.pan.dev/","verified":"verified"}] |
+>| New Value | [{"url":"https://www.paloaltonetworks.com","verified":"verified"}] |
