@@ -40,10 +40,11 @@ def fetch_indicators_command(client: Taxii2FeedClient, limit: int, last_run_ctx:
 
 def fetch_one_collection(client: Taxii2FeedClient, limit: int, initial_interval: Union[str, datetime],
                          last_run_ctx: Optional[dict] = None):
+    demisto.debug('in fetch_one_collection')
     last_fetch_time = last_run_ctx.get(client.collection_to_fetch.id) if last_run_ctx else None
     added_after = last_fetch_time or initial_interval
 
-    indicators = client.build_iterator(limit, added_after=added_after)
+    indicators = client.build_iterator(limit, added_after=added_after, recover_http_errors=True)
     if last_run_ctx is not None:  # in case we got {}, we want to set it because we are in fetch incident run
         last_run_ctx[client.collection_to_fetch.id] = _ensure_datetime_to_string(client.last_fetched_indicator__modified
                                                                                  if client.last_fetched_indicator__modified
@@ -55,6 +56,7 @@ def fetch_one_collection(client: Taxii2FeedClient, limit: int, initial_interval:
 def fetch_all_collections(client: Taxii2FeedClient, limit: int, initial_interval: Union[str, datetime],
                           last_run_ctx: Optional[dict] = None):
     indicators: list = []
+    demisto.debug('in fetch_all_collections')
     for collection in client.collections:  # type: ignore[attr-defined]
         client.collection_to_fetch = collection
         fetched_iocs, last_run_ctx = fetch_one_collection(client, limit, initial_interval, last_run_ctx)
@@ -64,6 +66,7 @@ def fetch_all_collections(client: Taxii2FeedClient, limit: int, initial_interval
             limit -= len(fetched_iocs)
             if limit <= 0:
                 break
+        demisto.debug(f'{limit=}')
 
     return indicators, last_run_ctx
 
@@ -84,7 +87,7 @@ def get_indicators_command(client: Taxii2FeedClient, args: Dict[str, Any]) \
     raw = argToBoolean(args.get('raw', 'false'))
 
     if client.collection_to_fetch:
-        indicators = client.build_iterator(limit, added_after=added_after)
+        indicators = client.build_iterator(limit, added_after=added_after, recover_http_errors=True)
     else:
         indicators, _ = fetch_all_collections(client, limit, added_after)  # type: ignore[arg-type]
 
