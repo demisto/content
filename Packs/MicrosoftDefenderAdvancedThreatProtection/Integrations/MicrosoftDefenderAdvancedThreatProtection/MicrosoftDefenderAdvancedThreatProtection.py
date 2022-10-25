@@ -1106,7 +1106,7 @@ class MsClient:
     """
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
-                 alert_severities_to_fetch, alert_status_to_fetch, alert_detectionsource_to_fetch, 
+                 alert_severities_to_fetch, alert_status_to_fetch, alert_detectionsource_to_fetch,
                  alert_time_to_fetch, max_fetch, auth_type, redirect_uri, auth_code,
                  is_gcc: bool, certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
         client_args = assign_params(
@@ -4938,8 +4938,8 @@ def main():  # pragma: no cover
         client = MsClient(
             base_url=base_url, tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=APP_NAME, verify=use_ssl,
             proxy=proxy, self_deployed=self_deployed, alert_severities_to_fetch=alert_severities_to_fetch,
-            alert_status_to_fetch=alert_status_to_fetch, alert_detectionsource_to_fetch=alert_detectionsource_to_fetch, 
-            alert_time_to_fetch=alert_time_to_fetch, max_fetch=max_alert_to_fetch, 
+            alert_status_to_fetch=alert_status_to_fetch, alert_detectionsource_to_fetch=alert_detectionsource_to_fetch,
+            alert_time_to_fetch=alert_time_to_fetch, max_fetch=max_alert_to_fetch,
             certificate_thumbprint=certificate_thumbprint, private_key=private_key,
             is_gcc=is_gcc, auth_type=auth_type, auth_code=auth_code, redirect_uri=redirect_uri
         )
