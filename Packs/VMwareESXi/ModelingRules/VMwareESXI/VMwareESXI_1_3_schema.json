@@ -1,0 +1,48 @@
+{
+  "alibaba_action_trail_raw": {
+      "__time__": {
+          "type": "string",
+          "is_array": false
+      },
+      "event_acsregion": {
+          "type": "string",
+          "is_array": false
+      },
+      "event_eventid": {
+          "type": "string",
+          "is_array": false
+      },
+      "event_eventname": {
+          "type": "string",
+          "is_array": false
+      },
+      "event_eventtype": {
+          "type": "string",
+          "is_array": false
+      },
+      "event_resourcename": {
+          "type": "string",
+          "is_array": false
+      },
+      "event_resourcetype": {
+          "type": "string",
+          "is_array": false
+      },
+      "event_sourceipaddress": {
+          "type": "string",
+          "is_array": false
+      },
+      "event_useridentity_type": {
+          "type": "string",
+          "is_array": false
+      },
+      "event_useridentity_principalid": {
+          "type": "string",
+          "is_array": false
+      },
+      "event_useridentity_username": {
+          "type": "string",
+          "is_array": false
+      }
+  }
+}
