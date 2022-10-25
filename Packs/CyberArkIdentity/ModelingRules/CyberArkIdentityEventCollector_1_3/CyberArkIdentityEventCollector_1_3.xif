@@ -8,7 +8,10 @@ filter
     xdm.event.outcome = MfaResult,
     xdm.event.outcome_reason = MfaReason,
     xdm.target.application.name = coalesce(ProfileName, ApplicationName, AppName),
-	xdm.auth.auth_method = AuthMethod;
+	xdm.auth.auth_method = AuthMethod,
+    xdm.event.type=EventType,
+    xdm.source.ipv4 = FromIPAddress,
+    xdm.source.application.name = AppId;
     alter
     xdm.target.resource.name = coalesce(ObjectName, Role, Alias, ProfileName, TargetUser, DSName, ImpersonateTargetName, Cname, AffectedTenant, OU, DeviceName, ApplicationName, AppName, EntityName),
     xdm.target.resource.type = coalesce(ObjectType, Type, DSType, LicenseType, NewLicenseType, ApplicationType, EntityType),
