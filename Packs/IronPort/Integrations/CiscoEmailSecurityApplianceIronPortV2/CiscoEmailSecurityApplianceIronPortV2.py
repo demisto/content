@@ -801,15 +801,15 @@ def pagination(request_command: Callable, args: Dict[str, Any], **kwargs) -> Tup
         offset = page_size * (page - 1)
         output = request_command(offset=offset, limit=page_size, **kwargs).get("data")
         pagination_message = f"Showing page {page}.\n Current page size: {page_size}."
-    else:
+    elif limit:
         output = []
         offset = 0
-        while limit > 0:  # type: ignore
-            page_size = limit if limit <= REQUEST_MAX_PULL else REQUEST_MAX_PULL  # type: ignore
+        while limit > 0:
+            page_size = limit if limit <= REQUEST_MAX_PULL else REQUEST_MAX_PULL
             output.extend(
                 request_command(offset=offset, limit=page_size, **kwargs).get("data")
             )
-            limit -= REQUEST_MAX_PULL  # type: ignore
+            limit -= REQUEST_MAX_PULL
             offset += REQUEST_MAX_PULL
         pagination_message = f"Showing {len(output)} rows." if len(output) > 0 else None  # type: ignore
 
@@ -830,8 +830,8 @@ def spam_quarantine_message_search_command(
         CommandResults: readable outputs for XSOAR.
     """
     quarantine_type = QUARANTINE_TYPE
-    start_date = format_datetime(args.get("start_date"))  # type: ignore
-    end_date = format_datetime(args.get("end_date"))  # type: ignore
+    start_date = format_datetime(args["start_date"])
+    end_date = format_datetime(args["end_date"])
     filter_by = args.get("filter_by")
     filter_operator = args.get("filter_operator")
     filter_value = args.get("filter_value")
@@ -904,7 +904,7 @@ def spam_quarantine_message_get_command(
 
     response: Dict[str, Any] = client.spam_quarantine_message_get_request(
         quarantine_type, message_id
-    ).get("data")  # type: ignore
+    ).get("data", {})
 
     new_message = dict(response.get("attributes", {}), **{"mid": response.get("mid")})
     readable_message = (
@@ -1481,7 +1481,9 @@ def message_amp_details_get_command(
     amp_summary: List[Dict[str, Any]] = response.get("ampDetails")
     if amp_summary:
         for event in amp_summary:
-            event["timestamp"] = format_timestamp(event.get("timestamp"))  # type: ignore
+            timestamp = event.get("timestamp")
+            if timestamp:
+                event["timestamp"] = format_timestamp(timestamp)
 
     summary_readable_output = tableToMarkdown(
         name="Message AMP Report Details Summary",
@@ -1608,7 +1610,9 @@ def message_url_details_get_command(
     url_summary: List[Dict[str, Any]] = response.get("urlDetails")
     if url_summary:
         for event in url_summary:
-            event["timestamp"] = format_timestamp(event.get("timestamp"))  # type: ignore
+            timestamp = event.get("timestamp")
+            if timestamp:
+                event["timestamp"] = format_timestamp(timestamp)
 
     readable_output = tableToMarkdown(
         name="Message URL Report Details",
@@ -1680,7 +1684,7 @@ def report_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         filter_value=filter_value,
         filter_by=filter_by,
         filter_operator=filter_operator,
-    ).get("data")  # type: ignore
+    ).get("data", {})
 
     response["uuid"] = str(uuid.uuid4())
 
@@ -1759,7 +1763,7 @@ def fetch_incidents(
         recipient_filter_value=recipient_filter_value,
         order_by=order_by,
         order_dir=order_dir,
-    ).get("data")  # type: ignore
+    ).get("data", [])
 
     incidents: List[Dict[str, Any]] = []
     last_minute_incident_ids = last_run.get("last_minute_incident_ids", [])
@@ -1767,14 +1771,15 @@ def fetch_incidents(
         incident_datetime = format_quarantine_timestamp(
             dict_safe_get(incident, ["attributes", "date"])
         )
+        message_id = incident.get("mid")
         if (
-            not incident.get("mid") in last_minute_incident_ids
+            message_id and message_id not in last_minute_incident_ids
             and start_date < incident_datetime
         ):
             quarantine_message: Dict[str, Any] = client.spam_quarantine_message_get_request(
                 quarantine_type=quarantine_type,
-                message_id=incident.get("mid")  # type: ignore
-            ).get("data")  # type: ignore
+                message_id=message_id
+            ).get("data", {})
 
             incident_details = dict(
                 quarantine_message.get("attributes", {}),
