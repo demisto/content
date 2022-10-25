@@ -7,14 +7,10 @@
     "url": "http://support.picussecurity.com",
     "email": "blueteam@picussecurity.com",
     "categories": [
-        "Network Security"
+        "Vulnerability Management"
     ],
     "tags": [
-        "Attack",
-        "Breach",
-        "Network",
-        "Security",
-        "Simulation"
+        "Breach Simulation"
     ],
     "useCases": [],
     "keywords": [

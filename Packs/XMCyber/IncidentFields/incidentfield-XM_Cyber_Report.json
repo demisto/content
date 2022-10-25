@@ -1,12 +1,12 @@
 {
-    "id": "incident_xmcybersecurityscoregrade",
+    "id": "incident_xmcyberreport",
     "version": -1,
     "fromVersion": "6.0.0",
-    "modified": "2022-07-25T11:54:23.003386331Z",
-    "name": "XM Cyber Security Score Grade",
+    "modified": "2022-09-11T16:25:14.951273619Z",
+    "name": "XM Cyber report",
     "ownerOnly": false,
-    "cliName": "xmcybersecurityscoregrade",
-    "type": "shortText",
+    "cliName": "xmcyberreport",
+    "type": "url",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -19,7 +19,7 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "XM Cyber Security Score"
+        "XM Cyber Technique"
     ],
     "associatedToAll": false,
     "unmapped": false,
