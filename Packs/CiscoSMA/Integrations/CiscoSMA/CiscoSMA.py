@@ -1,4 +1,3 @@
-# type: ignore
 from typing import Callable, Tuple
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -640,7 +639,7 @@ def format_datetime(time_expression: str) -> str:
     Returns:
         str: Datetime formatted string.
     """
-    return arg_to_datetime(time_expression).strftime(CISCO_TIME_FORMAT)
+    return arg_to_datetime(time_expression).strftime(CISCO_TIME_FORMAT)  # type: ignore
 
 
 def format_reporting_datetime(time_expression: str) -> str:
@@ -653,7 +652,7 @@ def format_reporting_datetime(time_expression: str) -> str:
     Returns:
         str: Datetime formatted string.
     """
-    return arg_to_datetime(time_expression).strftime(CISCO_REPORTING_TIME_FORMAT)
+    return arg_to_datetime(time_expression).strftime(CISCO_REPORTING_TIME_FORMAT)  # type: ignore
 
 
 def format_timestamp(timestamp: str) -> str:
@@ -707,10 +706,14 @@ def format_number_list_argument(number_list_string: str) -> List[int]:
     Returns:
         List[int]: List of integers.
     """
-    return [arg_to_number(number) for number in argToList(number_list_string)]
+    return [arg_to_number(number) for number in argToList(number_list_string)]  # type: ignore
 
 
-def validate_pagination_arguments(page: int, page_size: int, limit: int):
+def validate_pagination_arguments(
+    page: Optional[int],
+    page_size: Optional[int],
+    limit: Optional[int]
+):
     """
     Validate pagination arguments, raise error if argument is not valid.
 
@@ -729,7 +732,7 @@ def validate_pagination_arguments(page: int, page_size: int, limit: int):
         if page < MIN_PAGE_NUMBER:
             raise ValueError(f"page argument must be equal or greater than {MIN_PAGE_NUMBER}.")
     else:
-        if limit < MIN_LIMIT:
+        if limit and limit < MIN_LIMIT:
             raise ValueError(f"limit argument must be equal or greater than {MIN_LIMIT}.")
 
 
@@ -809,7 +812,7 @@ def pagination(request_command: Callable, args: Dict[str, Any], **kwargs) -> Tup
         offset = page_size * (page - 1)
         output = request_command(offset=offset, limit=page_size, **kwargs).get("data")
         pagination_message = f"Showing page {page}.\n Current page size: {page_size}."
-    else:
+    elif limit:
         output = []
         offset = 0
         while limit > 0:
@@ -819,7 +822,7 @@ def pagination(request_command: Callable, args: Dict[str, Any], **kwargs) -> Tup
             )
             limit -= REQUEST_MAX_PULL
             offset += REQUEST_MAX_PULL
-        pagination_message = f"Showing {len(output)} rows." if len(output) > 0 else None
+        pagination_message = f"Showing {len(output)} rows." if len(output) > 0 else None  # type: ignore
 
     return output, pagination_message
 
@@ -838,8 +841,8 @@ def spam_quarantine_message_search_command(
         CommandResults: readable outputs for XSOAR.
     """
     quarantine_type = QUARANTINE_TYPE
-    start_date = format_datetime(args.get("start_date"))
-    end_date = format_datetime(args.get("end_date"))
+    start_date = format_datetime(args["start_date"])
+    end_date = format_datetime(args["end_date"])
     filter_by = args.get("filter_by")
     filter_operator = args.get("filter_operator")
     filter_value = args.get("filter_value")
@@ -912,7 +915,7 @@ def spam_quarantine_message_get_command(
 
     response: Dict[str, Any] = client.spam_quarantine_message_get_request(
         quarantine_type, message_id
-    ).get("data")
+    ).get("data", [])
 
     new_message = dict(response.get("attributes", {}), **{"mid": response.get("mid")})
     readable_message = (
@@ -1492,7 +1495,9 @@ def message_amp_details_get_command(
     amp_summary: List[Dict[str, Any]] = response.get("ampDetails")
     if amp_summary:
         for event in amp_summary:
-            event["timestamp"] = format_timestamp(event.get("timestamp"))
+            timestamp = event.get("timestamp")
+            if timestamp:
+                event["timestamp"] = format_timestamp(timestamp)
 
     summary_readable_output = tableToMarkdown(
         name="Message AMP Report Details Summary",
@@ -1619,7 +1624,9 @@ def message_url_details_get_command(
     url_summary: List[Dict[str, Any]] = response.get("urlDetails")
     if url_summary:
         for event in url_summary:
-            event["timestamp"] = format_timestamp(event.get("timestamp"))
+            timestamp = event.get("timestamp")
+            if timestamp:
+                event["timestamp"] = format_timestamp(timestamp)
 
     readable_output = tableToMarkdown(
         name="Message URL Report Details",
@@ -1695,13 +1702,13 @@ def report_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         filter_value=filter_value,
         filter_by=filter_by,
         filter_operator=filter_operator,
-    ).get("data")
+    ).get("data", [])
 
     response["uuid"] = str(uuid.uuid4())
 
     try:
         table = {
-            k: v for results in response.get("resultSet") for k, v in results.items()
+            k: v for results in response.get("resultSet", [{}]) for k, v in results.items()
         }
     except Exception:
         table = response.get("resultSet", response)
@@ -1776,9 +1783,7 @@ def fetch_incidents(
         recipient_filter_value=recipient_filter_value,
         order_by=order_by,
         order_dir=order_dir,
-    ).get(
-        "data"
-    )
+    ).get("data", [])
 
     incidents: List[Dict[str, Any]] = []
     last_minute_incident_ids = last_run.get("last_minute_incident_ids", [])
@@ -1786,17 +1791,14 @@ def fetch_incidents(
         incident_datetime = format_quarantine_timestamp(
             dict_safe_get(incident, ["attributes", "date"])
         )
+        message_id = incident.get("mid")
         if (
-            not incident.get("mid") in last_minute_incident_ids
+            message_id and not message_id in last_minute_incident_ids
             and start_date < incident_datetime
         ):
-            quarantine_message: Dict[
-                str, Any
-            ] = client.spam_quarantine_message_get_request(
-                quarantine_type=quarantine_type, message_id=incident.get("mid")
-            ).get(
-                "data"
-            )
+            quarantine_message: Dict[str, Any] = client.spam_quarantine_message_get_request(
+                quarantine_type=quarantine_type, message_id=message_id
+            ).get("data", {})
 
             incident_details = dict(
                 quarantine_message.get("attributes", {}),
@@ -1814,7 +1816,7 @@ def fetch_incidents(
         start_time = incidents[-1].get("occurred")
         last_run["start_time"] = start_time
         last_run["last_minute_incident_ids"] = [
-            json.loads(incident.get("rawJSON")).get("mid")
+            json.loads(incident.get("rawJSON", {})).get("mid")
             for incident in incidents
             if incident.get("occurred") == start_time
         ]
@@ -1920,8 +1922,8 @@ def main() -> None:
         elif command == "fetch-incidents":
             incidents, last_run = fetch_incidents(
                 client,
-                max_fetch,
-                first_fetch,
+                max_fetch,  # type: ignore
+                first_fetch,  # type: ignore
                 demisto.getLastRun(),
                 filter_by,
                 filter_operator,
