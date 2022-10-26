@@ -606,13 +606,18 @@ def get_new_indicators(client: MandiantClient, last_run: str, indicator_type: st
         List: A list of new indicators
     """
     start_date = arg_to_datetime(last_run)
+    minimum_mscore = int(demisto.params().get('feedMinimumConfidence', 80))
+    exclude_osint = demisto.params().get('feedExcludeOSIntel', True)
 
     params = {}
     if indicator_type == 'Indicators':
         # for indicator type the earliest time to fetch is 90 days ago
         earliest_fetch = arg_to_datetime('90 days ago')
         start_date = max(earliest_fetch, start_date)  # type:ignore
-        params = {'start_epoch': int(start_date.timestamp()), 'limit': limit}  # type:ignore
+        params = {'start_epoch': int(start_date.timestamp()),
+                  'limit': limit,
+                  'gte_mscore': minimum_mscore,
+                  'exclude_osint': exclude_osint}  # type:ignore
 
     new_indicators_list = client.get_indicators(indicator_type, params=params)
 
@@ -757,14 +762,16 @@ def fetch_threat_actor(client: MandiantClient, args: Dict = None):
 
     indicator = client.get_indicator_info(identifier=actor_name, indicator_type="Actors")
     indicator = [create_actor_indicator(client, indicator)]
-    enrich_indicators(client, indicator, "Actors")
 
-    dummy_indicator = [{
-        "value": "$$DummyIndicator$$",
-        "relationships": indicator[0]["relationships"]
-    }]
+    if client.enrichment:
+        enrich_indicators(client, indicator, "Malware")
 
-    demisto.createIndicators(dummy_indicator)
+        dummy_indicator = [{
+            "value": "$$DummyIndicator$$",
+            "relationships": indicator[0]["relationships"]
+        }]
+        demisto.createIndicators(dummy_indicator)
+
     demisto.createIndicators(indicator)
 
     return CommandResults(
@@ -780,14 +787,15 @@ def fetch_malware_family(client: MandiantClient, args: Dict = None):
 
     indicator = client.get_indicator_info(identifier=malware_name, indicator_type="Malware")
     indicator = [create_malware_indicator(client, indicator)]
-    enrich_indicators(client, indicator, "Malware")
+    if client.enrichment:
+        enrich_indicators(client, indicator, "Malware")
 
-    dummy_indicator = [{
-        "value": "$$DummyIndicator$$",
-        "relationships": indicator[0]["relationships"]
-    }]
+        dummy_indicator = [{
+            "value": "$$DummyIndicator$$",
+            "relationships": indicator[0]["relationships"]
+        }]
+        demisto.createIndicators(dummy_indicator)
 
-    demisto.createIndicators(dummy_indicator)
     demisto.createIndicators(indicator)
 
     return CommandResults(

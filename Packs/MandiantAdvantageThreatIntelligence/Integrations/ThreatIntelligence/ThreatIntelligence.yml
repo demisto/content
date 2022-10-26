@@ -36,7 +36,7 @@ configuration:
   required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: B - Usually reliable
+  defaultvalue: A - Completely reliable
   display: Source Reliability
   name: feedReliability
   options:
@@ -75,6 +75,18 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
+- name: feedMinimumConfidence
+  type: 0
+  display: Feed Minimum Confidence Score
+  required: true
+  defaultvalue: 80
+  additionalinfo: 'The minimum MScore value to import as part of the feed'
+- name: feedExcludeOSIntel
+  display: Feed Exclude Open Source Intelligence
+  type: 8
+  required: true
+  defaultvalue: true
+  additionalinfo: 'Whether to exclude Open Source Intelligence as part of the feed'
 - additionalinfo: 'The type of indicators to fetch. Indicator type might include the
     following: Domains, IPs, Files and URLs.'
   defaultvalue: Malware,Actors,Indicators
@@ -87,7 +99,7 @@ configuration:
   required: false
   type: 16
 - additionalinfo: The maximum value allowed is 90 days.
-  defaultvalue: 3 days
+  defaultvalue: 30 days
   display: First fetch time
   name: first_fetch
   required: false
@@ -138,7 +150,7 @@ configuration:
   type: 8
 description: 'Integrate with Mandiant Advantage'
 display: Mandiant Advantage Threat Intelligence
-name: MandiantAdvantageThreatIntelligence
+name: Mandiant Advantage Threat Intelligence
 script:
   commands:
   - arguments:
