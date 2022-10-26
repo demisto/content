@@ -8,12 +8,10 @@
     "email": "",
     "created": "2020-12-27T15:38:19Z",
     "categories": [
-        "IT Services"
+        "Database"
     ],
     "tags": [],
-    "useCases": [
-        "IT Services"
-    ],
+    "useCases": [],
     "keywords": [],
     "marketplaces": [
         "xsoar",

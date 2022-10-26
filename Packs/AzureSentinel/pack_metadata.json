@@ -12,9 +12,7 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [
-        "AzureSentinel"
-    ],
+    "keywords": [],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
