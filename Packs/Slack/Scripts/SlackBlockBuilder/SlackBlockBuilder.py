@@ -58,7 +58,7 @@ class BlockCarrier:
         """
         self.entitlement_string = str()
         self.default_response = default_response
-        self.blocks_ready_for_args = dict()
+        self.blocks_ready_for_args: Dict[str, Any] = dict()
         self.url = url
         self.list_name = list_name
         self.persistent = persistent
