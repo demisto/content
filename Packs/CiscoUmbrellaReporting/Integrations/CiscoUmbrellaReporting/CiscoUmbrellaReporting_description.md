@@ -16,7 +16,6 @@ Create an Umbrella Reporting API key and secret.
 3. Expand **Umbrella Reporting** and copy **Your Key** and **Your Secret**.
 4. Click the **To keep it secure, ...** checkbox and then click **Close**.
 
-You must acknowledge that your key and secret are only displayed once to 
-   activate the **Close** button.
+You must acknowledge that your key and secret are only displayed once to activate the **Close** button.
 
 For more information please see: [log-into-umbrella](https://developer.cisco.com/docs/cloud-security/#!reporting-v2-authentication/log-into-umbrella).
