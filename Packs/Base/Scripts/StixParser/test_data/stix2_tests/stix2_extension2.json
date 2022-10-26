@@ -136,7 +136,7 @@
             "Unit42v2 Feed_instance_1"
           ],
           "timestamp": "2022-10-18T00:36:30.810380077Z",
-          "value": "5.8.18.242",
+          "value": "1.1.1.1",
           "version": 2
         }
       },
@@ -282,7 +282,7 @@
               "sourceInstance": "Unit42v2 Feed_instance_1",
               "timestamp": "0001-01-01T00:00:00Z",
               "type": "IP",
-              "value": "94.140.114.103"
+              "value": "2.2.2.2"
             }
           },
           "score": 3,
