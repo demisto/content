@@ -1,12 +1,12 @@
 {
-    "id": "incident_techniquedescription",
+    "id": "incident_xmcybersecurityscoretrend",
     "version": -1,
     "fromVersion": "6.0.0",
-    "modified": "2020-10-25T11:09:49.214226268Z",
-    "name": "Technique Description",
+    "modified": "2022-07-25T10:00:53.389980141Z",
+    "name": "XM Cyber security score trend",
     "ownerOnly": false,
-    "cliName": "techniquedescription",
-    "type": "longText",
+    "cliName": "xmcybersecurityscoretrend",
+    "type": "number",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -19,9 +19,9 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "XM Cyber Technique"
+        "XM Cyber Security Score"
     ],
-    "associatedToAll": false,
+    "associatedToAll": true,
     "unmapped": false,
     "unsearchable": true,
     "caseInsensitive": true,

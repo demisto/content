@@ -8,11 +8,11 @@
     "email": "",
     "created": "2020-05-25T10:39:08Z",
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Network Security"
     ],
     "tags": ["Use Case"],
     "useCases": [
-        "access"
+        "Access"
     ],
     "keywords": [],
     "dependencies": {
