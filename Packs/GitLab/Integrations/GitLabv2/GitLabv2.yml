@@ -3434,5 +3434,8 @@ script:
   subtype: python3
   dockerimage: demisto/python3:3.10.8.36650
 fromversion: 6.5.0
+marketplaces:
+- marketplacev2
 tests:
 - Test-GitLab-v2
+

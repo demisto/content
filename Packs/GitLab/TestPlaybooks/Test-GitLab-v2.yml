@@ -2286,4 +2286,6 @@ view: |-
   }
 inputs: []
 outputs: []
+marketplaces:
+- marketplacev2
 
