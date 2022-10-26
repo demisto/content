@@ -14,12 +14,10 @@
     ],
     "keywords": [
         "Case Management",
-        "siem",
         "SIEM"
     ],
     "beta": true,
     "marketplaces": [
-        "xsoar",
-        "marketplacev2"
+        "xsoar"
     ]
 }

@@ -280,6 +280,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 107. [Download The provided software version onto the device.](#pan-os-platform-download-software)
 108. [Download the running configuration](#pan-os-get-running-config)
 109. [Download the merged configuration](#pan-os-get-merged-config)
+110. [Create Nat-rule](#pan-os-create-nat-rule)
+111. [Create PBF-rule](#pan-os-create-pbf-rule)
 
 
 
@@ -668,14 +670,15 @@ Creates an address object.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | New address name. | Required | 
-| description | New address description. | Optional | 
-| fqdn | FQDN of the new address. | Optional | 
-| ip_netmask | IP Netmask of the new address. For example, 10.10.10.10/24 | Optional | 
-| ip_range | IP range of the new address IP. For example, 10.10.10.0-10.10.10.255 | Optional | 
-| device-group | The device group for which to return addresses (Panorama instances). | Optional | 
-| tag | The tag for the new address. | Optional | 
+|-------------------| --- | --- |
+| name              | New address name. | Required | 
+| description       | New address description. | Optional | 
+| fqdn              | FQDN of the new address. | Optional | 
+| ip_netmask        | IP Netmask of the new address. For example, 10.10.10.10/24 | Optional | 
+| ip_range          | IP range of the new address IP. For example, 10.10.10.0-10.10.10.255 | Optional | 
+| ip_wildcard       | The IP wildcard of the new address. For example, 10.20.1.0/0.0.248.255 | Optional | 
+| device-group      | The device group for which to return addresses (Panorama instances). | Optional | 
+| tag               | The tag for the new address. | Optional | 
 
 
 #### Context Output
@@ -1584,13 +1587,13 @@ Adds or removes sites to and from a custom URL category.
 `pan-os-edit-custom-url-category`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-|-------------------| --- | --- |
-| name              | Name of the custom URL category to add or remove sites. | Required | 
-| sites             | A comma separated list of sites to add to the custom URL category. | Optional | 
-| action            | Adds or removes sites or categories. Can be "add",or "remove". | Required | 
+| **Argument Name** | **Description**                                                         | **Required** |
+|-------------------|-------------------------------------------------------------------------| --- |
+| name              | Name of the custom URL category to add or remove sites.                 | Required | 
+| sites             | A comma separated list of sites to add to the custom URL category.      | Optional | 
+| action            | Adds or removes sites or categories. Possible values are: add, remove   | Required | 
 | categories        | A comma separated list of categories to add to the custom URL category. | Optional | 
-| device-group      | The device group in which the URL category belongs to. | Optional |
+| device-group      | The device group in which the URL category belongs to.                  | Optional |
 
 #### Context Output
 
@@ -7436,3 +7439,1052 @@ There is no context output for this command.
 }
 ```
 
+### pan-os-list-templates
+***
+Returns a list of available templates. (Used only in Panorama instances).
+
+
+#### Base Command
+
+`pan-os-list-templates`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| template_name | The name of the template to retrieve. If not provided then all available templates will be brought. | Optional | 
+| limit | The maximum number of templates to retrieve. This value will be used by default if page argument was not provided. Default is 50. | Optional | 
+| page_size | The page size of the templates to return. Default is 50. | Optional | 
+| page | The page at which to start listing templates. This must be a positive number. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Template.Name | String | The name of the template. | 
+| Panorama.Template.Description | String | The description of the template. | 
+| Panorama.Template.Variable.Name | String | The variable name of the template. | 
+| Panorama.Template.Variable.Type | String | The type of the template. | 
+| Panorama.Template.Variable.Value | String | The value of the variable of the template. | 
+| Panorama.Template.Variable.Description | String | The description of the variable of the template. | 
+
+#### Command example
+```!pan-os-list-templates limit=20```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Template": [
+            {
+                "Description": null,
+                "Name": "test-1",
+                "Variable": []
+            },
+            {
+                "Description": "test description",
+                "Name": "test-2",
+                "Variable": [
+                    {
+                        "Description": "variable-1-test",
+                        "Name": "$variable-1",
+                        "Type": "ip-netmask",
+                        "Value": "1.1.1.1"
+                    },
+                    {
+                        "Description": null,
+                        "Name": "$variable-2",
+                        "Type": "fqdn",
+                        "Value": "google.com"
+                    }
+                ]
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Templates:
+>|Description|Name|Variable|
+>|---|---|---|
+>|  | test-1 |  |
+>| test description | test-2 | $variable-1,<br/>$variable-2 |
+
+### pan-os-list-nat-rules
+***
+Returns a list of NAT rules of either a Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-list-nat-rules`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the NAT rule to retrieve. If not mentioned, will bring all the NAT rules. | Optional | 
+| device-group | The device group in which the NAT rules are part of. | Optional | 
+| pre_post | The pre-rule or post-rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| show_uncommitted | Whether to show the un-committed rules or not. can be true or false. Default is false. | Optional | 
+| limit | The maximum number of rules to retrieve, Will be used by default if page argument was not provided. Default is 50. | Optional | 
+| page_size | The page at which to start listing NAT rules. Must be a positive number. Default is 50. | Optional | 
+| page | The page at which to start listing nat-rules, must be a positive number. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Nat.Name | String | The name of the rule. | 
+| Panorama.Nat.Location | String | The device group that the rule is part of. | 
+| Panorama.Nat.Tags | String | The tags in which the rule is part of. | 
+| Panorama.Nat.SourceZone | String | The source zone of the rule. | 
+| Panorama.Nat.DestinationZone | String | The destination zone of the rule. | 
+| Panorama.Nat.SourceAddress | String | The source address of the rule. | 
+| Panorama.Nat.DestinationAddress | String | The destination address of the rule. | 
+| Panorama.Nat.DestinationInterface | String | The destination interface of the rule. | 
+| Panorama.Nat.Service | String | The service in which the rule has. | 
+| Panorama.Nat.Description | String | The description of the rule. | 
+| Panorama.Nat.SourceTranslation | Unknown | The source translation of the rule. | 
+| Panorama.Nat.DestinationTranslation | Unknown | The destination translation of the rule. | 
+| Panorama.Nat.DynamicDestinationTranslation | Unknown | The dynamic destination translation of the rule. | 
+
+#### Command example
+```!pan-os-list-nat-rules pre_post=pre-rulebase show_uncommitted=true```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Nat": [
+            {
+                "Description": "a test rule",
+                "DestinationAddress": "test123",
+                "DestinationInterface": "any",
+                "DestinationTranslation": {
+                    "TranslatedAddress": "1.1.1.1"
+                },
+                "DestinationZone": "2.2.2.2",
+                "DynamicDestinationTranslation": null,
+                "Name": "test-2",
+                "Service": "any",
+                "SourceAddress": "5.5.5.5",
+                "SourceTranslation": {
+                    "DynamicIpAndPort": {
+                        "InterfaceAddress": "a2"
+                    }
+                },
+                "SourceZone": [
+                    "2.2.2.2",
+                    "3.3.3.3"
+                ],
+                "Tags": "test tag"
+            },
+            {
+                "Description": "blabla",
+                "DestinationAddress": "1.1.1.1",
+                "DestinationInterface": "a2",
+                "DestinationTranslation": null,
+                "DestinationZone": "2.2.2.2",
+                "DynamicDestinationTranslation": {
+                    "TranslatedAddress": "1.1.1.1"
+                },
+                "Name": "test-1",
+                "Service": "any",
+                "SourceAddress": "3.3.3.3",
+                "SourceTranslation": {
+                    "StaticIP": {
+                        "TranslatedAddress": "3.3.3.3"
+                    }
+                },
+                "SourceZone": "3.3.3.3",
+                "Tags": null
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Nat Policy Rules:
+>| Name   |Tags|Source Zone|Destination Zone|Source Address|Destination Address|Destination Interface|Service|Description|
+--------|---|---|---|---|---|---|---|---|---|
+>| test-2 | test tag | 2.2.2.2,<br/>3.3.3.3 | 2.2.2.2 | 5.5.5.5 | test123 | any | any | a test rule |
+>| test-1 |  | 3.3.3.3 | 2.2.2.2 | 3.3.3.3 | 1.1.1.1 | a2 | any | blabla |
+
+
+### pan-os-create-nat-rule
+***
+Creates a new NAT rule in a Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-create-nat-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rulename | The name of the NAT rule to create. | Required | 
+| description | The description that the new NAT rule should have. | Optional | 
+| device-group | The device-group in which the new rule should be created (Panorama instances only). | Optional | 
+| pre_post | The pre-rule or post-rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| nat_type | The NAT type in which the rule will be created. Possible values are: ipv4, nat64, nptv6. Default is ipv4. | Optional | 
+| source_zone | A comma-separated list of source zones. Default is any. | Optional | 
+| destination_zone | A comma-separated list of destination zones. | Optional | 
+| destination_interface | The page at which to start listing nat-rules, must be a positive number. Default is any. | Optional | 
+| service | The service in which the rule will be created with. Default is any. | Optional | 
+| source_address | A comma-separated list of address object names, address group object names, or EDL object names. Default is any. | Optional | 
+| destination_address | A comma-separated list of address object names, address group object names, or EDL object names. Default is any. | Optional | 
+| source_translation_type | The source translation type in which the rule will be created. Possible values are: static-ip, dynamic-ip, dynamic-ip-and-port, none. Default is none. | Optional | 
+| source_translated_address_type | The source translation address type in which the rule will be created. Possible values are: translated-address, interface-address. Default is translated-address. | Optional | 
+| source_translated_address | A comma-separated list of source translation addresses. If source_translation_type == static_ip, must be a single value. | Optional | 
+| source_translated_interface | The source translation interface. | Optional | 
+| destination_translation_type | The destination translation type. Possible values are: static_ip, dynamic_ip, none. Default is none. | Optional | 
+| destination_translated_address | A comma-separated list of destination translated addresses. | Optional | 
+| destination_translated_port | The destination translated port. | Optional | 
+| destination_translation_distribution_method | The destination translation distribution method. Possible values are: round-robin, source-ip-hash, ip-modulo, ip-hash, least-sessions. | Optional | 
+| negate_destination | Whether to use negate destination. Possible values are: yes, no. | Optional | 
+| destination_dns_rewrite_direction | The DNS rewrite direction. Possible values are: forward, reverse. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-create-nat-rule rulename=test pre_post="pre-rulebase" source_translated_address_type="interface-address" source_translated_interface=a2 source_translation_type="dynamic-ip-and-port" destination_translation_type=dynamic_ip destination_translated_address=1.1.1.1```
+#### Human Readable Output
+
+>Nat rule test was created successfully.
+### pan-os-delete-nat-rule
+***
+Deletes a NAT rule.
+
+#### Base Command
+
+`pan-os-delete-nat-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rulename | The name of the NAT rule to delete. Can be retrieved from the pan-os-list-nat-rules command. | Optional | 
+| device-group | The device-group from which the NAT rule should be deleted. Only for a Panorama instance. | Optional | 
+| pre_post | The pre-rule or post-rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-delete-nat-rule rulename=test pre_post="pre-rulebase"```
+#### Human Readable Output
+
+>Nat rule test was deleted successfully.
+### pan-os-edit-nat-rule
+***
+Edits a NAT rule.
+
+#### Base Command
+
+`pan-os-edit-nat-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- |--------------|
+| rulename | The name of the NAT rule to edit. Can be retrieved from the pan-os-list-nat-rules command. | Required     | 
+| device-group | The device-group that the NAT rule is part of. (Panorama instances only). | Optional     | 
+| pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional     | 
+| behavior | The operation to perform on the rule. Possible values are: replace, add, remove. Default is replace. | Optional     | 
+| element_to_change | The element to change. Possible values are: tags, service, nat_type, description, source_zone, destination_zone, source_address, destination_address, destination_interface, negate_destination, source_translation_dynamic_ip_and_port, source_translation_interface, source_translation_dynamic_ip, source_translation_static_ip, destination_translation_port, destination_translation_ip, destination_translation_dynamic_port, destination_translation_dynamic_ip, destination_translation_dynamic_distribution_method, disabled. | Required     | 
+| element_value | The value of the element to change. Can be a list for certain elements. | Required     | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-edit-nat-rule rulename=test element_to_change=source_translation_static_ip behavior=replace pre_post="pre-rulebase" element_value=3.3.3.3```
+#### Human Readable Output
+
+>Nat rule test was edited successfully.
+### pan-os-list-virtual-routers
+***
+Returns a list of virtual routers of either Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-list-virtual-routers`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| virtual_router | The name of the virtual router to retrieve. If not mentioned, will bring all the virtual routers. | Optional | 
+| template | The template that the virtual router is part of. Use only for Panorama instances. | Optional | 
+| show_uncommitted | Whether to show the un-committed virtual routers or not. can be true or false. Default is false. | Optional | 
+| limit | The maximum number of virtual routers to retrieve. Will be used by default if the page argument was not provided. Default is 50. | Optional | 
+| page_size | The size of nat-rules to return. Default is 50. | Optional | 
+| page | The page at which to start listing virtual-routers. Must be a positive number. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.VirtualRouter.Name | String | The name of the virtual router. | 
+| Panorama.VirtualRouter.Interface | Unknown | The interface\(s\) that the virtual router uses. | 
+| Panorama.VirtualRouter.RIP | Unknown | Information about the RIP of the virtual router. | 
+| Panorama.VirtualRouter.OSPF | Unknown | Information about the OSPF of the virtual router. | 
+| Panorama.VirtualRouter.OSPFv3 | Unknown | Information about the OSPFv3 of the virtual router. | 
+| Panorama.VirtualRouter.BGP | Unknown | Information about the BGP of the virtual router. | 
+| Panorama.VirtualRouter.RedistributionProfile | Unknown | The redistribution profile\(s\) that the virtual router uses. | 
+| Panorama.VirtualRouter.Multicast | Unknown | Information about the multicast of the virtual router. | 
+| Panorama.VirtualRouter.StaticRoute | Unknown | The static routes\(s\) that the virtual router uses. | 
+
+#### Command example
+```!pan-os-list-virtual-routers show_uncommitted=true```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "VirtualRouter": [
+            {
+                "BGP": {
+                    "enable": "no",
+                    "routing-options": {
+                        "graceful-restart": {
+                            "enable": "yes"
+                        }
+                    }
+                },
+                "Interface": null,
+                "Multicast": {},
+                "Name": "virtual-router-1",
+                "OSPF": {
+                    "enable": "no"
+                },
+                "OSPFv3": {
+                    "enable": "no"
+                },
+                "RIP": {
+                    "enable": "no"
+                },
+                "RedistributionProfile": {},
+                "StaticRoute": {
+                    "ip": {
+                        "static-route": {
+                            "entry": [
+                                {
+                                    "@name": "static_route_ip",
+                                    "bfd": {
+                                        "profile": "None"
+                                    },
+                                    "destination": "1.1.1.1",
+                                    "metric": "14",
+                                    "nexthop": {
+                                        "ip-address": "1.1.1.1"
+                                    },
+                                    "path-monitor": {
+                                        "enable": "no",
+                                        "failure-condition": "any",
+                                        "hold-time": "2"
+                                    },
+                                    "route-table": {
+                                        "unicast": null
+                                    }
+                                },
+                                {
+                                    "@name": "static_route_ip2",
+                                    "bfd": {
+                                        "profile": "None"
+                                    },
+                                    "destination": "1.1.1.1",
+                                    "metric": "188",
+                                    "nexthop": {
+                                        "ip-address": "1.1.1.1"
+                                    },
+                                    "path-monitor": {
+                                        "enable": "no",
+                                        "failure-condition": "any",
+                                        "hold-time": "2"
+                                    },
+                                    "route-table": {
+                                        "unicast": null
+                                    }
+                                },
+                                {
+                                    "@name": "static_route_ip3",
+                                    "destination": "1.1.1.1/32",
+                                    "nexthop": {
+                                        "ip-address": "1.1.1.1"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "BGP": {
+                    "enable": "no",
+                    "routing-options": {
+                        "graceful-restart": {
+                            "enable": "yes"
+                        }
+                    }
+                },
+                "Interface": "loopback",
+                "Multicast": {
+                    "enable": "no",
+                    "rp": {
+                        "local-rp": {
+                            "candidate-rp": {
+                                "interface": "loopback"
+                            }
+                        }
+                    }
+                },
+                "Name": "virtual-router-2",
+                "OSPF": {
+                    "enable": "no"
+                },
+                "OSPFv3": {
+                    "enable": "no"
+                },
+                "RIP": {
+                    "auth-profile": {
+                        "entry": {
+                            "@name": "213"
+                        }
+                    },
+                    "enable": "no",
+                    "export-rules": {
+                        "entry": {
+                            "@name": "test1"
+                        }
+                    },
+                    "interface": {
+                        "entry": {
+                            "@name": "loopback",
+                            "bfd": {
+                                "profile": "Inherit-vr-global-setting"
+                            },
+                            "default-route": {
+                                "disable": {}
+                            },
+                            "enable": "yes",
+                            "mode": "normal"
+                        }
+                    }
+                },
+                "RedistributionProfile": {
+                    "entry": [
+                        {
+                            "@name": "test1",
+                            "action": {
+                                "no-redist": {}
+                            },
+                            "priority": "1"
+                        },
+                        {
+                            "@name": "test-2",
+                            "action": {
+                                "no-redist": {}
+                            },
+                            "priority": "123"
+                        }
+                    ]
+                },
+                "StaticRoute": {
+                    "ip": {
+                        "static-route": {
+                            "entry": {
+                                "@name": "test",
+                                "bfd": {
+                                    "profile": "None"
+                                },
+                                "destination": "1.1.1.1",
+                                "metric": "10",
+                                "nexthop": {
+                                    "ip-address": "2.2.2.2"
+                                },
+                                "path-monitor": {
+                                    "enable": "no",
+                                    "failure-condition": "any",
+                                    "hold-time": "2"
+                                },
+                                "route-table": {
+                                    "unicast": {}
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Virtual Routers:
+>|BGP|Interface|Multicast| Name             |OSPF|OSPFv3|RIP|RedistributionProfile|StaticRoute|
+>|---|---|------------------|---|---|---|---|---|---|
+>| no |  |  | virtual-router-1 | no | no | no |  | static_route_ip,<br/>static_route_ip2,<br/>static_route_ip3 |
+>| no | loopback | no | virtual-router-2 | no | no | no | test1,<br/>test-2 | test |
+
+### pan-os-list-redistribution-profiles
+***
+Returns a list of redistribution-profiles of a specific virtual-router of either a Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-list-redistribution-profiles`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Redistribution profile name. | Optional | 
+| virtual_router | The name of the virtual router that has the redistribution profiles retrieve. Can be retrieved from pan-os-list-virtual-routers. | Required | 
+| template | The template that the redistribution profiles and virtual-router are part of. Use only for Panorama instances. | Optional | 
+| limit | The maximum number of redistribution-profiles to retrieve. Default is 50. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-list-redistribution-profiles virtual_router=test```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "RedistributionProfile": [
+            {
+                "Action": "redist",
+                "BGP": {
+                    "Community": [
+                        "local-as",
+                        "no-export"
+                    ],
+                    "ExtendedCommunity": "0x4164ACFCE33404EA"
+                },
+                "FilterDestination": "1.1.1.1",
+                "FilterInterface": "loopback",
+                "FilterNextHop": "2.2.2.2",
+                "FilterType": [
+                    "bgp",
+                    "connect",
+                    "ospf",
+                    "rip",
+                    "static"
+                ],
+                "Name": "test1",
+                "OSPF": {
+                    "Area": [
+                        "1.1.1.1",
+                        "2.2.2.2"
+                    ],
+                    "PathType": [
+                        "ext-1",
+                        "ext-2",
+                        "inter-area",
+                        "intra-area"
+                    ],
+                    "Tag": "1"
+                },
+                "Priority": "1"
+            },
+            {
+                "Action": "no-redist",
+                "BGP": null,
+                "FilterDestination": null,
+                "FilterInterface": null,
+                "FilterNextHop": null,
+                "FilterType": null,
+                "Name": "test-2",
+                "OSPF": null,
+                "Priority": "123"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Redistribution profiles for virtual router test-guy
+>|Name|Priority|Action|Filter Type|Filter Destination|Filter Next Hop|BGP|OSPF|
+>|---|---|---|---|---|---|---|---|
+>| test1 | 1 | redist | bgp,<br/>connect,<br/>ospf,<br/>rip,<br/>static | 1.1.1.1 | 2.2.2.2 | Community: local-as,<br/>no-export<br/>ExtendedCommunity: 0x4164ACFCE33404EA | PathType: ext-1,<br/>ext-2,<br/>inter-area,<br/>intra-area<br/>Area: 1.1.1.1,<br/>2.2.2.2<br/>Tag: 1 |
+>| test-2 | 123 | no-redist |  |  |  |  |  |
+
+### pan-os-create-redistribution-profile
+***
+Creates a new redistribution-profile under a virtual-router for a Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-create-redistribution-profile`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the of the redistribution profile to create. | Required | 
+| virtual_router | The virtual router that the redistribution profile will be created on. | Required | 
+| template | The template that the virtual-router is in. Use only for Panorama instances. | Optional | 
+| filter_source_type | Comma-separated list of the filter source types. Possible values are: bgp, ospf, rip, static. | Optional | 
+| destination | A comma-separated list of destination to filter by. | Optional | 
+| nexthop | A comma-separated list of next-hops to filter by. | Optional | 
+| interface | A comma-separated list of interfaces to filter by. | Optional | 
+| priority | The priority of the profile. (1-255). | Required | 
+| action | The action of the profile. Possible values are: redist, no-redist. | Optional | 
+| filter_ospf_area | A comma-separated list of areas for the OSPF. | Optional | 
+| filter_ospf_tag | A comma-separated list of tags for the OSPF. | Optional | 
+| filter_ospf_path_type | A comma-separated list of path types for the OSPF. Possible values are: ext-1, ext-2, inter-area, intra-area. | Optional | 
+| filter_bgp_community | A comma-separated list of community filters for the BGP. 32-bit value in decimal or hex or in AS:VAL format where AS and VAL are each in 0 - 65535 range. (Max 10 values). | Optional | 
+| filter_bgp_extended_community | A comma-separated list of community filters for the BGP. 64-bit value in hex, or in TYPE:AS:VAL, TYPE:IP:VAL format. TYPE is 16-bit, the other two are 16-bit and 32-bit each. (Max 5 values). | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-create-redistribution-profile name=test virtual_router=virtual-router-1 priority=12 action=redist filter_bgp_extended_community=0x4164ACFCE33404EA filter_source_type=bgp,ospf filter_bgp_community=13,89 filter_ospf_path_type="ext-1" interface=loopback filter_ospf_tag=1.1.1.1,2.2.2.2 filter_ospf_area=1.1.1.1,2.2.2.2 nexthop=1.1.1.1```
+#### Human Readable Output
+
+>Redistribution profile test was created successfully.
+### pan-os-edit-redistribution-profile
+***
+Edits a redistribution-profile in a virtual-router.
+
+
+#### Base Command
+
+`pan-os-edit-redistribution-profile`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the redistribution-profile to edit. | Required | 
+| virtual_router | The name of the virtual-router that the redistribution-profile is part of. | Required | 
+| template |  The template that the virtual-router is in. Only for Panorama instances. | Optional | 
+| element_to_change | The element to change. Possible values are: filter_type, filter_destination, filter_nexthop, filter_interface, priority, action, filter_ospf_area, filter_ospf_tag, filter_ospf_path_type, filter_bgp_community, filter_bgp_extended_community. | Required | 
+| element_value | The value of the element to change. Can be a list for all the elements except priority and action. | Required | 
+| behavior | The operation to perform on the profile. Possible values are: replace, add, remove. Default is replace. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-edit-redistribution-profile virtual_router=virtual-router-name name=test element_to_change=filter_type element_value=bgp,ospf```
+#### Human Readable Output
+
+>Redistribution profile test was edited successfully.
+
+### pan-os-delete-redistribution-profile
+***
+Deletes a redistribution-profile from a virtual-router.
+
+
+#### Base Command
+
+`pan-os-delete-redistribution-profile`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the redistribution-profile to delete. | Required | 
+| virtual_router | The name of the virtual-router that the redistribution-profile is part of. | Required | 
+| template | The template that the virtual-router is in. Only for panorama instances. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-delete-redistribution-profile virtual_router=test1 name=test```
+#### Human Readable Output
+
+>Redistribution profile test was deleted successfully.
+### pan-os-list-pbf-rules
+***
+Returns a list of pbf-rules of either a Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-list-pbf-rules`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rulename | The name of the pbf-rule to retrieve. If not mentioned, will bring all the pbf rules. | Optional | 
+| device-group | The device-group that the pbf-rules are part of. | Optional | 
+| pre_post | The pre-rule or post-rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| show_uncommitted | Whether to show the un-committed rules or not. can be true or false. Default is false. | Optional | 
+| limit | The maximum number of rules to retrieve. Will be used by default if page argument was not provided. Default is 50. | Optional | 
+| page_size | The size of pbf-rules to return. Default is 50. | Optional | 
+| page | The page at which to start listing pbf-rules. Must be a positive number. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.PBF.Name | String | The name of the PBF rule. | 
+| Panorama.PBF.Description | String | The description of the PBF rule. | 
+| Panorama.PBF.Tags | Unknown | The tags of the PBF rule. | 
+| Panorama.PBF.SourceZone | Unknown | The source-zones of the PBF rule. | 
+| Panorama.PBF.SourceInterface | Unknown | The source-interfaces of the PBF rule. | 
+| Panorama.PBF.SourceAddress | Unknown | The source-addresses of the PBF rule. | 
+| Panorama.PBF.SourceUser | Unknown | The source-users of the PBF rule. | 
+| Panorama.PBF.DestinationAddress | Unknown | The destination-addresses of the PBF rule. | 
+| Panorama.PBF.EnforceSymmetricReturn | Unknown | The enforce-symmetric-return of the PBF rule. | 
+| Panorama.PBF.Target | Unknown | The target of the PBF rule. | 
+| Panorama.PBF.Application | Unknown | The applications of the PBF rule. | 
+| Panorama.PBF.Service | Unknown | The services of the PBF rule. | 
+
+#### Command example
+```!pan-os-list-pbf-rules pre_post="pre-rulebase" show_uncommitted=true rulename=test```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "PBF": {
+            "Action": {
+                "forward": {
+                    "egress-interface": "a2",
+                    "monitor": {
+                        "disable-if-unreachable": "no",
+                        "ip-address": "1.1.1.1",
+                        "profile": "profile"
+                    },
+                    "nexthop": {
+                        "ip-address": "2.2.2.2"
+                    }
+                }
+            },
+            "Application": "3pc",
+            "Description": "this is a test description",
+            "DestinationAddress": "1.1.1.1",
+            "EnforeSymmetricReturn": {
+                "enabled": "yes",
+                "nexthop-address-list": {
+                    "entry": {
+                        "@name": "1.1.1.1"
+                    }
+                }
+            },
+            "Name": "test",
+            "Service": "application-default",
+            "SourceAddress": "1.1.1.1",
+            "SourceInterface": null,
+            "SourceUser": "pre-logon",
+            "SourceZone": "1.1.1.1",
+            "Tags": [
+                "test tag",
+                "dag_test_tag"
+            ],
+            "Target": {
+                "negate": "no"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Policy Based Forwarding Rules:
+>|Action|Description|Destination Address|Name|Source Address|Source User|Source Zone|Tags|
+>|---|---|---|---|---|---|---|---|
+>| forward | this is a test description | 1.1.1.1 | test | 1.1.1.1 | pre-logon | 1.1.1.1 | test tag,<br/>dag_test_tag |
+
+### pan-os-create-pbf-rule
+***
+Creates a new policy-based-forwarding (PBF) rule in a Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-create-pbf-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rulename | The name of the PBF-rule to create. | Required | 
+| description | The description that the new PBF-rule should have. | Optional | 
+| device-group | The device-group in which the new rule should be created. Only for Panorama instance. | Optional | 
+| pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| tags | The tags that the rule will be created with. | Optional | 
+| source_zone | A comma-separated list of source zones. Default is any. | Optional | 
+| source_address | A comma-separated list of source addresses. Default is any. | Optional | 
+| source_user | A comma-separated list of source users. Default is any. | Optional | 
+| service | The service in which the rule will be created with. Default is any. | Optional | 
+| destination_address | A comma-separated list of destination addresses. Default is any. | Optional | 
+| application | A comma-separated list of applications. Default is any. | Optional | 
+| action | The action that the rule will be created with. Possible values are: forward, discard, no-pbf. | Required | 
+| egress_interface | The egress interface the rule will be created with. Must be provided if action == forward. | Optional | 
+| nexthop | The next-hop. Relevant only when action = forward. Possible values are: ip-address, fqdn, none. Default is none. | Optional | 
+| nexthop_value | The next-hop value when action = forward. Could be an IP address or FQDN. Required when nexthop is not none. | Optional | 
+| enforce_symmetric_return | Whether to enforce symmetric return. Possible values are: yes, no. Default is no. | Optional | 
+| negate_source | Whether to negate the source. Possible values are: yes, no. Default is no. | Optional | 
+| negate_destination | Whether to negate the destination. Possible values are: yes, no. Default is no. | Optional | 
+| nexthop_address_list | The nexthop addresses list for the symmetric return. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-create-pbf-rule rulename=test4 pre_post="pre-rulebase" enforce_symmetric_return=yes nexthop_address_list=1.1.1.1,2.2.2.2 action=forward description="this is just a description" egress_interface=a2 nexthop="ip-address" nexthop_value=1.1.1.1 negate_source=yes source_zone=1.1.1.1,2.2.2.2 destination_address=1.1.1.1,2.2.2.2 service=dns,service-https```
+#### Human Readable Output
+
+>PBF rule test4 was created successfully.
+### pan-os-edit-pbf-rule
+***
+Edits a redistribution-profile in a virtual-router.
+
+
+#### Base Command
+
+`pan-os-edit-pbf-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rulename | The name of the PBF rule to edit. Can be retrieved from the pan-os-list-pbf-rules command. | Required | 
+| device-group | The device-group that the PBF rule is in. | Optional | 
+| pre_post | The pre-rule or post-rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| element_to_change | The element to change. Possible values are: source_zone, source_address, source_user, service, destination_address, application, negate_source, negate_destination, nexthop_address_list, enforce_symmetric_return, action_forward_egress_interface, action_forward_nexthop_ip, action_forward_nexthop_fqdn, action_forward_discard, action_forward_no_pbf. | Required | 
+| element_value | The value of the element to change. Can be a list for some of the elements. When element_to_change == 'action_forward_egress_interface', the action of the rule will be changed to 'forward' automatically. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-edit-pbf-rule rulename=test4 element_to_change=nexthop_address_list element_value="1.1.1.1,2.2.2.2" pre_post="pre-rulebase"```
+#### Human Readable Output
+
+>PBF test4 was edited successfully.
+### pan-os-delete-pbf-rule
+***
+Deletes a PBF rule.
+
+
+#### Base Command
+
+`pan-os-delete-pbf-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rulename | The name of the pbf-rule to delete. Can be retrieved from the pan-os-list-pbf-rules command. | Required | 
+| device-group | The device-group from which the pbf-rule should be deleted. Only for a Panorama instance. | Optional | 
+| pre_post | The pre-rule or post-rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-delete-pbf-rule rulename=test4 pre_post="pre-rulebase"```
+#### Human Readable Output
+
+>PBF rule test4 was deleted successfully.
+### pan-os-list-application-groups
+***
+Returns a list of application-groups of either a Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-list-application-groups`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the application-group to retrieve. If not mentioned, will bring all the application-groups. | Optional | 
+| device-group | The device-group that the nat-rules are part of. | Optional | 
+| show_uncommitted | Whether to show the un-committed application-groups or not. Possible values are: true, false. Default is false. | Optional | 
+| limit | The maximum number of application-groups to retrieve. Will be used by default if page argument was not provided. Default is 50. | Optional | 
+| page_size | The page size of the application-groups to return. Default is 50. | Optional | 
+| page | The page at which to start listing application-groups. Must be a positive number. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.ApplicationGroup.Name | String | The name of the application-group object. | 
+| Panorama.ApplicationGroup.Applications | Unknown | The list of the applications that the application-group has. | 
+| Panorama.ApplicationGroup.Members | Number | The number of the application that are part of the application-group | 
+
+#### Command example
+```!pan-os-list-application-groups show_uncommitted=true```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "ApplicationGroup": [
+            {
+                "Applications": [
+                    "1c-enterprise"
+                ],
+                "Members": 1,
+                "Name": "test"
+            },
+            {
+                "Applications": [
+                    "2ch-base",
+                    "4shared"
+                ],
+                "Members": 2,
+                "Name": "test-2"
+            },
+            {
+                "Applications": [
+                    "1c-enterprise",
+                    "4shared"
+                ],
+                "Members": 2,
+                "Name": "test-3"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Application groups:
+>|Applications|Members|Name|
+>|---|---|---|
+>| 1c-enterprise | 1 | test |
+>| 2ch-base,<br/>4shared | 2 | test-2 |
+>| 1c-enterprise,<br/>4shared | 2 | test-3 |
+
+
+### pan-os-create-application-group
+***
+Creates a new application group rule in a Panorama/firewall instance.
+
+
+#### Base Command
+
+`pan-os-create-application-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name for the application-group to be created with. | Required | 
+| applications | Comma-separated list of applications. Can be retrieved using the command pan-os-list-applications. | Required | 
+| device-group | The device-group in which the application-group should be created. Only for Panorama instance. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.ApplicationGroup.Name | String | The name of the application-group object. | 
+| Panorama.ApplicationGroup.Applications | Unknown | The list of the applications that the application-group has. | 
+| Panorama.ApplicationGroup.Members | Number | The number of the applications that are part of the application-group. | 
+
+#### Command example
+```!pan-os-create-application-group name=test-3 applications=1c-enterprise,4shared```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "ApplicationGroup": {
+            "Applications": [
+                "1c-enterprise",
+                "4shared"
+            ],
+            "Members": 2,
+            "Name": "test-3"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>application-group test-3 was created successfully.
+### pan-os-edit-application-group
+***
+Edits an application-group.
+
+
+#### Base Command
+
+`pan-os-edit-application-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name for the application-group to be edit. Can be retrieved from the pan-os-list-application-groups command. | Required | 
+| applications | Comma-separated list of applications. Can be retrieved using the command pan-os-list-applications. | Required | 
+| device-group | The device-group in which the application-group should be created. Only for a Panorama instance. | Optional | 
+| action | The action to perform on the application-group. Possible values are: add, remove. Default is add. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.ApplicationGroup.Name | String | The name of the application-group object. | 
+| Panorama.ApplicationGroup.Applications | Unknown | The list of the applications that the application-group has. | 
+| Panorama.ApplicationGroup.Members | Number | The number of the applications that are part of the application-group | 
+
+#### Command example
+```!pan-os-edit-application-group name=test-3 action=remove applications=4shared```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "ApplicationGroup": {
+            "Applications": [
+                "1c-enterprise"
+            ],
+            "Members": 1,
+            "Name": "test-3"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>application-group test-3 was edited successfully.
+### pan-os-delete-application-group
+***
+Deletes an application-group
+
+
+#### Base Command
+
+`pan-os-delete-application-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the application-group to delete. Can be retrieved from the pan-os-list-application-groups command. | Required | 
+| device-group | The device-group in which the application-group is part of. Only for a Panorama instance. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-delete-application-group name=test-3```
+#### Human Readable Output
+
+>application-group test-3 was deleted successfully.
