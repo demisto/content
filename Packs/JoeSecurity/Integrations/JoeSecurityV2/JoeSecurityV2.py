@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Generator, Tuple
 import jbxapi
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -239,7 +240,7 @@ def build_indicator_object(client: Client, analysis: Dict[str, Any], analyses: L
             analyses: List(Dict(str, any)): List of analysis result returned by the API.
             is_reputation: (bool): If the command is reputation command.
          Returns:
-             result: Tuple(CommandResults, List(EntityRelationship)): The indicator object and the relationship entry.
+             result: (CommandResults) The indicator object including its relationships
     """
     if analysis.get('sha256'):
         return build_file_object(client, analysis, analyses, is_reputation)
@@ -257,7 +258,7 @@ def build_file_object(client: Client, analysis: Dict[str, Any], analyses: List[D
             analyses: List(Dict(str, any)): List of analysis result returned by the API.
             is_reputation (bool): Whether the command is reputation command.
          Returns:
-             result: Tuple(CommandResults, EntityRelationship): Tuple of the File indicator class and the relationship entry.
+             result: (CommandResults) The indicator object including its relationships
     """
     file_name = analysis.get('filename')
     sha1 = analysis.get('sha1')
@@ -297,7 +298,7 @@ def build_url_object(client: Client, analysis: Dict[str, Any], analyses: List[Di
             analyses: List(Dict(str, any)): Analysis results returned by the API.
             is_reputation (bool): Whether the command is reputation command.
          Returns:
-             result: Tuple(URL, Optional(EntityRelationship)): Tuple of the URL indicator class and the relationship entry.
+             result: (CommandResults) The indicator object including its relationships
     """
     url = analysis.get('filename', '')
     threat_name = analysis.get('threatname', '')
@@ -425,7 +426,7 @@ def build_submission_command_result(client: Client, res: Dict[str, Any], args: D
     full_display = argToBoolean(args.get('full_display', True))
     analyses = res.get('analyses', [])
     hr, headers = build_submission_hr(res, res.get('analyses', []))
-    res_copy = res
+    res_copy = deepcopy(res)
 
     if full_display:
         for analysis in analyses:

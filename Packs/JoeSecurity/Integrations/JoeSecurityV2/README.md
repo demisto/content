@@ -1219,10 +1219,7 @@ Retrieve the submission info.
 #### The following commands were removed in this version:
 * ***joe-analysis-submit-sample*** - this command was replaced by ***joe-submit-sample***.
 * ***joe-analysis-submit-url*** - this command was replaced by ***joe-submit-url***.
-
-### Arguments
-#### The behavior of the following argument was changed:
-In the ***joe-search*** command, the *query* argument now supports comma-separated values.
+* ***joe-search*** command, the *query* argument now supports comma-separated values.
 
 
 ### Playbooks

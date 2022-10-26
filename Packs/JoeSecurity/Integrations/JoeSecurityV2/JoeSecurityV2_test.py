@@ -2,7 +2,7 @@ import json
 import pytest
 import io
 from CommonServerPython import Common, DemistoException, ExecutionMetrics
-from typing import *
+from typing import Any
 
 
 def util_load_json(path: str) -> Any:
