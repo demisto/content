@@ -3435,7 +3435,7 @@ script:
   dockerimage: demisto/python3:3.10.8.36650
 fromversion: 6.5.0
 marketplaces:
-- marketplacev2
+- xsoar
 tests:
 - Test-GitLab-v2
 
