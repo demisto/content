@@ -6,17 +6,12 @@
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "categories": [],
-    "tags": [
-        "Incident Response"
+    "categories": [
+        "Case Management"
     ],
-    "useCases": [
-        "Hunting",
-        "Incident Response",
-        "Rapid Breach Response"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
-        "zero-day",
         "0-day",
         "zero day",
         "MSDT",
