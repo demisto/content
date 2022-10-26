@@ -178,7 +178,7 @@ class MicrosoftClient(BaseClient):
         if self.timeout:
             kwargs['timeout'] = self.timeout
         should_http_retry_on_rate_limit = self.retry_on_rate_limit and not overwrite_rate_limit_retry
-        error_handler = self.handle_error_with_metrics if http_retry_on_rate_limit else None
+        error_handler = self.handle_error_with_metrics if should_http_retry_on_rate_limit else None
         response = super()._http_request(  # type: ignore[misc]
             *args, resp_type="response", headers=default_headers, error_handler=error_handler, **kwargs)
 
