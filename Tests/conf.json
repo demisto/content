@@ -5170,6 +5170,10 @@
             "memory_threshold": 95
         },
         {
+            "integrations": "Cortex Attack Surface Management",
+            "playbookID": "CortexAttackSurfaceManagement_Test"
+        },
+        {
             "integrations": "checkpointdome9",
             "playbookID": "Dome9",
             "fromversion": "6.2.0"
@@ -5349,7 +5353,8 @@
         "Carbon Black Enterprise Protection V2 Test": "No credentials",
         "TruSTAR v2-Test": "No credentials",
         "Process Email - Generic - Test - Incident Starter": "Issue CIAC-4161",
-        "AD v2 - debug-mode": "No credentials"
+        "AD v2 - debug-mode": "No credentials",
+        "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449"
     },
     "skipped_integrations": {
         "AbuseIPDB": "License expired",
