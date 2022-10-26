@@ -87,14 +87,13 @@ builtinPlaybooks = demisto.executeCommand(
                          "body": {"query": "system:T"}})[0]["Contents"]["response"]["playbooks"]
 
 builtinPlaybooksNames = []
+copyDetected = []
+sleepDetected = []
+multiSetIncidentDetected = []
+multiTasksDetected = []
+emailAskUserDetected = []
 
 if customPlaybooks is not None:
-    copyDetected = []
-    sleepDetected = []
-    multiSetIncidentDetected = []
-    multiTasksDetected = []
-    emailAskUserDetected = []
-
     for builtinPlaybook in builtinPlaybooks:
         builtinPlaybooksNames.append(builtinPlaybook["name"])
 
