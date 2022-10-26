@@ -1,10 +1,10 @@
 {
-    "id": "incident_threatvaultreleasenotesmd",
+    "id": "incident_threatvaultbypaloaltonetworksreleasenotesmd",
     "version": -1,
     "modified": "2022-10-26T11:40:51.455179979Z",
-    "name": "ThreatVault release notes md",
+    "name": "Threat Vault by Palo Alto Networks release notes md",
     "ownerOnly": false,
-    "cliName": "threatvaultreleasenotesmd",
+    "cliName": "threatvaultbypaloaltonetworksreleasenotesmd",
     "type": "markdown",
     "closeForm": false,
     "editForm": true,

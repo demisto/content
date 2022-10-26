@@ -1,10 +1,10 @@
 {
-    "id": "incident_threatvaultdecoders",
+    "id": "incident_threatvaultbypaloaltonetworksdecoders",
     "version": -1,
     "modified": "2022-10-25T10:48:20.140964449Z",
-    "name": "ThreatVault  decoders",
+    "name": "Threat Vault by Palo Alto Networks decoders",
     "ownerOnly": false,
-    "cliName": "threatvaultdecoders",
+    "cliName": "threatvaultbypaloaltonetworksdecoders",
     "type": "longText",
     "closeForm": false,
     "editForm": true,

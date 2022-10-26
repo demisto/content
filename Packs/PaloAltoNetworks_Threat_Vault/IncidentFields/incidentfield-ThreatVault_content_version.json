@@ -1,10 +1,10 @@
 {
-    "id": "incident_threatvaultcontentversion",
+    "id": "incident_threatvaultbypaloaltonetworkscontentversion",
     "version": -1,
     "modified": "2022-10-24T09:45:27.455611694Z",
-    "name": "ThreatVault  Content Version",
+    "name": "Threat Vault by Palo Alto Networks Content Version",
     "ownerOnly": false,
-    "cliName": "threatvaultcontentversion",
+    "cliName": "threatvaultbypaloaltonetworkscontentversion",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

@@ -65,23 +65,12 @@
                 },
                 "ThreatVault release notes md": {
                     "simple": "data.[0].release_notes_md"
-                },
-                "test_for_test": {
-                    "simple": "data.[0].release_notes_md"
                 }
             }
         },
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "ThreatConnect Group Vulnerability New": {
-                    "complex": {
-                        "accessor": "new",
-                        "filters": [],
-                        "root": "data.release_notes.vulnerability",
-                        "transformers": []
-                    }
-                },
                 "ThreatVault  Content Version": {
                     "simple": "data.[0].content_version"
                 },

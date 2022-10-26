@@ -52,7 +52,7 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
-description: Deprecated. No available replacement. ## not done
+description: Use the Palo Alto Networks Threat Vault to research the latest threats (vulnerabilities/exploits, viruses, and spyware) that Palo Alto Networks next-generation firewalls can detect and prevent.
 display: Palo Alto Networks Threat Vault v2
 name: Palo Alto Networks Threat Vault v2
 script:
@@ -387,9 +387,67 @@ script:
       - rtdns
       - spywarec2
     deprecated: false
-    description: retrieve the threats signature metadata by id, name or sample hash (sha256 or md5) in batch mode. Batch limit is 100 entries.
+    description: Retrieve the threats signature metadata by id, name or sample hash (sha256 or md5) in batch mode. Batch limit is 100 entries.
     execution: false
     name: threatvault-threat-batch-search ## not done, I need add the outputs
+    outputs:
+    - contextPath: ThreatVault.antivirus.id
+      description: The unique id of the signature.
+      type: String
+    - contextPath: ThreatVault.antivirus.name
+      description: The name of the signature.
+      type: String
+    - contextPath: ThreatVault.antivirus.description
+      description: The description of the signature.
+      type: String
+    - contextPath: ThreatVault.antivirus.subtype
+      description: The subtype of the signature.
+      type: String
+    - contextPath: ThreatVault.antivirus.type
+      description: The type of the signature.
+      type: String
+    - contextPath: ThreatVault.antivirus.create_time
+      description: The create_time of the signature.
+      type: String
+    - contextPath: ThreatVault.antivirus.related_sha256_hashes
+      description: The related_sha256_hashes of the threat.
+      type: String
+    - contextPath: ThreatVault.antivirus.release
+      description: The default action when the signature is triggered.
+      type: String
+    - contextPath: ThreatVault.fileinfo.filetype
+      description: The file type of the file.
+      type: String
+    - contextPath: ThreatVault.fileinfo.sha256
+      description: The sha256 of the file.
+      type: String
+    - contextPath: ThreatVault.fileinfo.sha1
+      description: The md5 of the file.
+      type: String
+    - contextPath: ThreatVault.fileinfo.md5
+      description: The md5 of the file.
+      type: String
+    - contextPath: ThreatVault.fileinfo.size
+      description: The size of the file.
+      type: String
+    - contextPath: ThreatVault.fileinfo.type
+      description: The type of the file.
+      type: String
+    - contextPath: ThreatVault.fileinfo.family
+      description: The family of the file.
+      type: String
+    - contextPath: ThreatVault.fileinfo.platform
+      description: The platform of the file.
+      type: String
+    - contextPath: ThreatVault.fileinfo.wildfire_verdict
+      description: The wildfire verdict.
+      type: String
+    - contextPath: ThreatVault.fileinfo.create_time
+      description: The threat signature creation time.
+      type: String
+    - contextPath: ThreatVault.fileinfo.signatures
+      description: The signatures.
+      type: String
   - arguments:
     - default: true
       description: The CVE tied to the signature.
@@ -655,6 +713,6 @@ script:
   subtype: python3
   type: python
 tests:
-- PANW Threat Vault - Signature Search - Test
+- No tests
 fromversion: 5.0.0
 deprecated: false
