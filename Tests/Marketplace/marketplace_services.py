@@ -3133,8 +3133,7 @@ class Pack(object):
         finally:
             return task_status
 
-    def collect_images_from_readme_and_replace_with_storage_path(self, pack_readme_path, gcs_pack_path, marketplace,
-                                                                 build_number, ci_branch):
+    def collect_images_from_readme_and_replace_with_storage_path(self, pack_readme_path, gcs_pack_path, marketplace):
         """
         Replaces inplace all images links in the pack README.md with their new gcs location
 
