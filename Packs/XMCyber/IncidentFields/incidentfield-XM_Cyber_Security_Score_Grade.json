@@ -1,12 +1,11 @@
 {
-    "id": "incident_averagecomplexitylevel",
+    "id": "incident_xmcybersecurityscoregrade",
     "version": -1,
     "fromVersion": "6.0.0",
-    "modified": "2020-10-15T17:57:31.945846658Z",
-    "name": "Average Complexity Level",
+    "modified": "2022-07-25T11:54:23.003386331Z",
+    "name": "XM Cyber security score grade",
     "ownerOnly": false,
-    "placeholder": "None",
-    "cliName": "averagecomplexitylevel",
+    "cliName": "xmcybersecurityscoregrade",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -20,8 +19,7 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "XM Cyber Critical Asset",
-        "XM Cyber Choke Point"
+        "XM Cyber Security Score"
     ],
     "associatedToAll": false,
     "unmapped": false,
