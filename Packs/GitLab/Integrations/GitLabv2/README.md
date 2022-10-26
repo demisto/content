@@ -18,7 +18,6 @@ This integration enables you to:
 - Get the contents and deatils of a file in GitLab.
 - Search for code in the GitLab project.
 
-
 #### Create a Personal Access Token 
 Personal access tokens (PATs) are an alternative to using passwords for authentication to GitLab when using the GitLab API. 
 To generate a new token:
