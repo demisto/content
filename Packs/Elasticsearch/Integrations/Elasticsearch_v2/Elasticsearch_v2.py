@@ -727,6 +727,15 @@ def parse_subtree(my_map):
     return res
 
 
+def update_elastic_mapping(res_json: dict, elastic_mapping: dict, key: str):
+    """
+    A helper function for get_mapping_fields_command, updates the elastic mapping.
+    """
+    my_map = res_json[key]['mappings']['properties']
+    elastic_mapping[key] = {"_id": "doc_id", "_index": key}
+    elastic_mapping[key]["_source"] = parse_subtree(my_map)
+
+
 def get_mapping_fields_command():
     """
     Maps a schema from a given index
@@ -746,22 +755,16 @@ def get_mapping_fields_command():
         if index in ['*', '_all', '']:
             for key in res_json.keys():
                 if 'mappings' in res_json[key] and 'properties' in res_json[key]['mappings']:
-                    my_map = res_json[key]['mappings']['properties']
-                    elastic_mapping[key] = {"_id": "doc_id", "_index": key}
-                    elastic_mapping[key]["_source"] = parse_subtree(my_map)
+                    update_elastic_mapping(res_json, elastic_mapping, key)
 
         elif index.endswith('*'):
             prefix_index = re.compile(index.rstrip('*'))
             for key in res_json.keys():
                 if prefix_index.match(key):
-                    my_map = res_json[key]['mappings']['properties']
-                    elastic_mapping[key] = {"_id": "doc_id", "_index": key}
-                    elastic_mapping[key]["_source"] = parse_subtree(my_map)
+                    update_elastic_mapping(res_json, elastic_mapping, key)
 
         else:
-            my_map = res_json[index]['mappings']['properties']
-            elastic_mapping[index] = {"_id": "doc_id", "_index": index}
-            elastic_mapping[index]["_source"] = parse_subtree(my_map)
+            update_elastic_mapping(res_json, elastic_mapping, index)
 
     return elastic_mapping
 
