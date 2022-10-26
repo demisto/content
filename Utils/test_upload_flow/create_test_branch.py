@@ -11,7 +11,7 @@ changed_packs = set()
 
 import logging
 from Tests.scripts.utils.log_util import install_logging
-install_logging('create_test_branch.log', logger=logging)
+# install_logging('create_test_branch.log', logger=logging)
 
 
 def add_changed_pack(func):
