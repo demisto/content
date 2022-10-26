@@ -45,23 +45,6 @@ Enrich files using file hash (MD5, SHA1, SHA256) with Stairwell's knowledge.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Inception.File_Details | Dict | Raw JSON output from API | 
-| Inception.File_Details.Data.Attributes.MD5 | String | MD5 file hash | 
-| Inception.File_Details.Data.Attributes.SHA1 | String | SHA1 file hash | 
-| Inception.File_Details.Data.Attributes.SHA256 | String | SHA256 file hash | 
-| Inception.File_Details.Data.Attributes.Size | Integer | File size in bytes | 
-| Inception.File_Details.Data.Attributes.Creation_Date | Integer | Global first seen time (Unix time) | 
-| Inception.File_Details.Data.Attributes.Last_Analysis_Results | Dict | AV engine results (if available) | 
-| Inception.File_Details.Data.Attributes.Last_Analysis_Stats | Dict | AV scanning summary (if available) | 
-| Inception.File_Details.Data.Attributes.Names| String | Filenames & file paths | 
-| Inception.File_Details.Data.Attributes.Meaningful_Name | String | Common filename & file path | 
-| Inception.File_Details.Data.Attributes.Type_Description | String | Detected MAGIC type | 
-| Inception.File_Details.Data.Attributes.Crowdsourced_YARA_Rules.Rule_Name | String | Matching YARA intelligence | 
-| Inception.File_Details.Data.Attributes.Inception.Environments.Environment_ID.ID | String | Seen environment ID for object | 
-| Inception.File_Details.Data.Attributes.Inception.Assets.Asset_ID.ID | String | Seen asset ID for object | 
-| Inception.File_Details.Data.Attributes.Inception.Assets.Name | String | Seen asset name/hostname for object | 
-| Inception.File_Details.Data.Attributes.Magic | String | Detected MAGIC type | 
-| Inception.File_Details.Data.Attributes.ImpHash | String | Calculated ImpHash | 
-| Inception.File_Details.Data.Attributes.SSDeep | String | Calculated SSDeep | 
 
 
 #### Command Example
@@ -168,11 +151,6 @@ Hunt for variants using a SHA256 across all files you have access to, including 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Inception.Variants | Dict | Raw JSON output from API | 
-| Inception.Variants.Name | String | Object identifier | 
-| Inception.Variants.Variants.Similarity | Integer | Similarity score, between 0-1 | 
-| Inception.Variants.Variants.Sha256 | String | SHA256 of discovered variant | 
-| Inception.Variants.Variants.Variant_Count | Integer | Count of discovered variants | 
-| Inception.Variants.Variants.Original_Object | String | Original SHA256 | 
 
 
 #### Command Example
