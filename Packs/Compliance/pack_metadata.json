@@ -8,9 +8,6 @@
     "email": "",
     "categories": [],
     "tags": [
-        "Breach",
-        "GDPR",
-        "HIPAA"
     ],
     "created": "2020-05-10T10:50:52Z",
     "useCases": [
@@ -20,6 +17,7 @@
         "Compliance",
         "Breach",
         "GDPR",
+        "HIPAA",
         "US",
         "Notification",
         "Breach notification",

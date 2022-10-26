@@ -8,7 +8,9 @@
     "email": "",
     "created": "2020-05-19T15:37:38Z",
     "categories": [],
-    "tags": [],
+    "tags": [
+        "Core"
+    ],
     "useCases": [],
     "keywords": [],
     "dependencies": {

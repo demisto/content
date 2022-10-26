@@ -8,12 +8,9 @@
     "email": "",
     "categories": [
         "Endpoint",
-        "Data Enrichment & Threat Intelligence"
     ],
     "tags": [],
-    "useCases": [
-        "Malware"
-    ],
+    "useCases": [],
     "keywords": [],
     "marketplaces": [
         "marketplacev2"
