@@ -1282,7 +1282,7 @@ class Client(BaseClient):
             dict: API response with information about a specific scan.
         """
         return self._http_request(
-            url_suffix=f"/scan/{scan_id}",
+            url_suffix=f"/scans/{scan_id}",
             method="GET",
             resp_type="json",
         )
@@ -2624,7 +2624,7 @@ def get_scan_entry(scan: dict) -> CommandResults:
     )
 
     scan_hr = tableToMarkdown(
-        name="Nexpose scan " + str(scan["id"]),
+        name="Nexpose Scan ID " + str(scan["Id"]),
         t=scan_output,
         headers=[
             "Id",
@@ -4023,15 +4023,19 @@ def get_scan_command(client: Client, scan_ids: Union[str, list[str]]) -> Union[C
     scans = []
 
     for scan_id in scan_ids:
-        scan_data = client.get_scan(scan_id)
+        try:
+            scan_data = client.get_scan(scan_id)
 
-        if not scan_data:
-            return CommandResults(
-                readable_output="Scan not found",
-                raw_response=scan_data,
-            )
+        except DemistoException as e:
+            if e.res is not None and e.res.status_code is not None and e.res.status_code == 404:
+                scan_entry = CommandResults(readable_output=f"Scan for ID {scan_id} was not found.")
 
-        scan_entry = get_scan_entry(scan_data)
+            else:
+                raise e
+
+        else:
+            scan_entry = get_scan_entry(scan_data)
+
         scans.append(scan_entry)
 
     if len(scans) == 1:
@@ -5507,7 +5511,7 @@ def main():
         elif command == "nexpose-get-scan":
             results = get_scan_command(
                 client=client,
-                scan_ids=argToList(str(args.get(id))),
+                scan_ids=argToList(args.get("id")),
             )
         elif command == "nexpose-get-scans":
             results = get_scans_command(
