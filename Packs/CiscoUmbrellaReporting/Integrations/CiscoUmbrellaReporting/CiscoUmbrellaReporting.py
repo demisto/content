@@ -98,10 +98,10 @@ class Client(BaseClient):
             raise DemistoException(
                 "Authorization Error: The provided credentials for "
                 "Cisco Umbrella Reporting are invalid. Please provide "
-                "a valid Client ID and Client Secret.")
+                "valid Client ID and Client Secret.")
         elif token_response.status_code >= 400:
             raise DemistoException("Error: something went wrong, please try "
-                                   "again")
+                                   "again.")
 
         return token_response.json().get('access_token')
 
@@ -161,8 +161,8 @@ class Client(BaseClient):
         :Raises exceptions if something goes wrong.
         """
         if not self.organisation_id.isdigit():
-            raise DemistoException("Invalid Input Error:The Organization ID is "
-                                   "must be a number")
+            raise DemistoException("Invalid Input Error:The Organization ID "
+                                   "must be a number.")
         token = self.access_token()
         url = f'{self._base_url}/v2/organizations/{self.organisation_id}/activity'
 
