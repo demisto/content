@@ -10,13 +10,8 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [
-        "Alerts",
-        "Network"
-    ],
-    "useCases": [
-        "Network Security"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "SolarWinds",
         "Network",
