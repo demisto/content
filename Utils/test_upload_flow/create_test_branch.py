@@ -146,7 +146,7 @@ def modify_pack(pack: Path, integration: str):
     """
     integration = pack / integration
     with integration.open('a') as f:
-        f.write('\n#  CHANGE IN PACK\n')
+        f.write('\n#  CHANGE IN PACK')
     enhance_release_notes(pack)
     return pack, get_current_version(pack), get_all_packs_items_dict(pack)
 
