@@ -6,24 +6,18 @@
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "categories": [],
-    "tags": [
-        "Incident Response"
+    "categories": [
+        "Case Management"
     ],
-    "useCases": [
-        "Hunting",
-        "Incident Response",
-        "Rapid Breach Response"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "zero-day",
         "0-day",
-        "zero day",
         "Apache",
         "CVE-2021-44228",
         "Log4j",
         "CVE-2021-45046",
-        "CVE",
         "44228",
         "45046",
         "Log4Shell",
