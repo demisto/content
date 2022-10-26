@@ -1025,7 +1025,7 @@ class Taxii2FeedClient:
                         raise e
                     if i <= 3:
                         demisto.debug(f'Got HTTPError in while loop number {i} for {obj_type=}, '
-                                      f'sleeping for {self.seconds_to_sleep} seconds and trying again.')
+                                      f'waiting for {self.seconds_to_sleep} seconds and trying again.')
                         time.sleep(self.seconds_to_sleep)
                     else:
                         demisto.debug(f'Got HTTPError in while loop number {i}, getting out of while loop for {obj_type=}.')
