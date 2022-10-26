@@ -1,5 +1,5 @@
 commonfields:
-  id: AquatoneDiscover
+  id: AquatoneDiscoverScript
   version: -1
 name: AquatoneDiscover
 type: python
