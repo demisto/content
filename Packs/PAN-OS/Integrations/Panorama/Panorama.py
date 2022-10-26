@@ -8032,8 +8032,15 @@ class Topology:
                         state = find_text_in_element(panorama_ha_state_result, "./result/group/local-info/state")
 
                     if "active" in state:
-                        # TODO: Work out how to get the Panorama peer serial..
-                        self.ha_active_devices[serial_number_or_hostname] = "peer serial not implemented here.."
+                        peer_serial = "Peer unknown"
+                        try:
+                            # For panorama, there is no serial stored in the HA output, so we can't get it.
+                            # Instead, we can get the mgmt IP in it's place.
+                            peer_serial = find_text_in_element(panorama_ha_state_result, "./result/peer-info/mgmt-ip")
+                        except LookupError:
+                            peer_serial = "Peer unknown"
+
+                        self.ha_active_devices[serial_number_or_hostname] = peer_serial
                         self.get_all_child_firewalls(device)
                         self.panorama_objects[serial_number_or_hostname] = device
                         return
@@ -10387,9 +10394,13 @@ class FirewallCommand:
                 ))
             else:
                 state_information_element = run_op_command(firewall, FirewallCommand.HA_STATE_COMMAND)
-                state = find_text_in_element(state_information_element, "./result/group/local-info/state")
+                # Check both places for state to cover firewalls and panorama
+                try:
+                    state = find_text_in_element(state_information_element, "./result/group/local-info/state")
+                except LookupError:
+                    state = find_text_in_element(state_information_element, "./result/local-info/state")
 
-                if state == "active":
+                if "active" in state:
                     result.append(ShowHAState(
                         hostid=firewall_host_id,
                         status=state,
