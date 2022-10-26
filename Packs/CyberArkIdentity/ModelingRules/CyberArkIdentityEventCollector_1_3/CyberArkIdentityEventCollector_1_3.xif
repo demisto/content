@@ -12,7 +12,8 @@ filter
     xdm.event.type=EventType,
     xdm.source.ipv4 = FromIPAddress,
     xdm.source.application.name = AppId;
-    alter
+filter  EventType not in ("Cloud.Core.OAuthToken.Create", "Cloud.Core.Logout", "Cloud.Core.MfaSummary", "Cloud.Core.StartImpersonate","Cloud.Core.Login", "Cloud.Core.LoginFail", "Cloud.Core.Logout", "Cloud.Core.OAuthToken.InvalidClient" )
+ |   alter
     xdm.target.resource.name = coalesce(ObjectName, Role, Alias, ProfileName, TargetUser, DSName, ImpersonateTargetName, Cname, AffectedTenant, OU, DeviceName, ApplicationName, AppName, EntityName),
     xdm.target.resource.type = coalesce(ObjectType, Type, DSType, LicenseType, NewLicenseType, ApplicationType, EntityType),
     xdm.target.resource.id = coalesce( if(EventType NOT IN ("Cloud.AfwEnterprise.Enroll", "Cloud.AfwEnterprise.Unenroll", "Cloud.Core.EmmTenantMigrated", "Cloud.Saas.Application.AppPublish", "Cloud.Saas.Application.AppUnpublish"), RoleId), Id, TargetUserID, Uuid, Key, DSUuid, ImpersonateTargetUuid, ProxyId, ConnectorUuid, DeviceID, ApplicationID, AppId, EntityUuid),
