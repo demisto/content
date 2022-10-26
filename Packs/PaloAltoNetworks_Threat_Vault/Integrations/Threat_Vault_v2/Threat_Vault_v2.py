@@ -500,7 +500,7 @@ def threat_batch_search_command(client: Client, args: Dict) -> List[CommandResul
     md5 = argToList(args.get('md5'))
     sha256 = argToList(args.get('sha256'))
     names = argToList(args.get('name'))
-    type_ = args.get('type', '')
+    threat_type = args.get('type', '')
 
     if len([x for x in (ids, md5, sha256, names) if x]) > 1:
         raise ValueError('There can only be one argument from the following list in the command -> [id, md5, sha256, name]')
@@ -511,14 +511,14 @@ def threat_batch_search_command(client: Client, args: Dict) -> List[CommandResul
 
     if ids or names:
         type_ = 'id' if ids else 'name'
-        response = client.threat_batch_search_request(arg=type_, value=ids if ids else names, type_=type_)
+        response = client.threat_batch_search_request(arg=type_, value=ids if ids else names, type_=threat_type)
         command_results_list.extend(parse_resp_by_type(response, True))
 
     elif md5 or sha256:
         dbot_reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(client.reliability)
 
         type_ = 'md5' if md5 else 'sha256'
-        response = client.threat_batch_search_request(arg=type_, value=md5 if md5 else sha256, type_=type_)
+        response = client.threat_batch_search_request(arg=type_, value=md5 if md5 else sha256, type_=threat_type)
         files_info: List[dict] = response.get('data', {}).get('fileinfo', [])
         for file_info in files_info:
 
@@ -560,7 +560,7 @@ def threat_search_command(client: Client, args: Dict) -> List[CommandResults]:
 
     length = len([x for x in (cve, vendor, name) if x])
     if length == 0:
-        raise ValueError('One of following arguments is required -> [cve, vendor, name]')
+        raise ValueError('One of following arguments is required -> [cve, vendor, signature-name]')
     elif length > 1:
         raise ValueError('There can only be one argument from the following list in the command ->'
                          '[release-date, release-version]')

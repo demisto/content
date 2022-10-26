@@ -1,6 +1,6 @@
-category: Data Enrichment & Threat Intelligence ## not done
+category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Palo Alto Networks Threat Vault v2 ## not done
+  id: Palo Alto Networks Threat Vault v2
   version: -1
 configuration:
 - additionalinfo: TIM customers that upgraded to version 6.2 or above, can have this value pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
@@ -53,8 +53,8 @@ configuration:
   required: false
   type: 19
 description: Deprecated. No available replacement. ## not done
-display: Palo Alto Networks Threat Vault v2 ## not done
-name: Palo Alto Networks Threat Vault v2 ## not done
+display: Palo Alto Networks Threat Vault v2
+name: Palo Alto Networks Threat Vault v2
 script:
   commands:
   - arguments:
@@ -95,13 +95,13 @@ script:
       type: String
   - arguments:
     - default: true
-      description: The cve of the antivirus signature. ## not done
+      description: The CVE name.
       isArray: true
       name: cve
       required: true
       secret: false
     deprecated: false
-    description: Checks the reputation of an antivirus in Threat Vault. ## not done
+    description: Checks the reputation of CVE in Threat Vault.
     execution: false
     name: cve
     outputs:
@@ -287,19 +287,19 @@ script:
       type: String
   - arguments:
     - default: true
-      description:  ## not done
+      description: The type of the release notes (ex. Content).
       isArray: false
       name: type
       required: true
       secret: false
     - default: true
-      description: ## not done
+      description: The release version (ex. 8446) or content version (ex. 8446-6886) of the release notes.
       isArray: false
       name: version
       required: true
       secret: false
     deprecated: false
-    description: ## not done
+    description: Retrieve the release notes information by type and version.
     execution: false
     name: threatvault-release-note-get
     outputs:
@@ -322,7 +322,7 @@ script:
       description: List of new entries.
       type: Array
     - contextPath: ThreatVault.RelaseNote.spyware.modified
-      description: ## not done
+      description: List of modified entries.
       type: Array
     - contextPath: ThreatVault.RelaseNote.spyware.disabled
       description: List of disabled entries.
@@ -331,7 +331,7 @@ script:
       description: List of new entries.
       type: Array
     - contextPath: ThreatVault.RelaseNote.vulnerability.modified
-      description: ## not done
+      description: List of modified entries.
       type: Array
     - contextPath: ThreatVault.RelaseNote.vulnerability.disabled
       description: List of disabled entries.
@@ -340,10 +340,10 @@ script:
       description: List of new entries.
       type: Array
     - contextPath: ThreatVault.RelaseNote.applications.modified
-      description: ## not done
+      description: List of modified entries.
       type: Array
     - contextPath: ThreatVault.RelaseNote.applications.obsoleted
-      description: ## not done
+      description: List of obsoleted entries.
       type: Array
   - arguments:
     - default: true
@@ -387,7 +387,7 @@ script:
       - rtdns
       - spywarec2
     deprecated: false
-    description: ## not done
+    description: retrieve the threats signature metadata by id, name or sample hash (sha256 or md5) in batch mode. Batch limit is 100 entries.
     execution: false
     name: threatvault-threat-batch-search ## not done, I need add the outputs
   - arguments:
@@ -398,7 +398,7 @@ script:
       required: false
       secret: false
     - default: true
-      description: The vendor ID tied to the signatures. ## not done
+      description: The vendor ID tied to the signatures.
       isArray: false
       name: vendor
       required: false
@@ -446,7 +446,7 @@ script:
       required: false
       secret: false
     - default: true
-      description: ## not done
+      description: The threat type. Use together with the other fields to filter out the results.
       isArray: false
       name: type
       required: false
@@ -462,27 +462,27 @@ script:
       - rtdns
       - spywarec2
     - default: true
-      description:  ## not done
+      description:  Page number to get result from. Needs to be used with page_size argument.
       isArray: false
       name: page
       required: false
       secret: false
     - default: true
-      description:  ## not done
+      description:  The page size of the returned results. Needs to be used with the page argument.
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: true
-      description: The maximum number of results to return. ## not done
+      description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: ## not done
+    description: Retrieve threat metadata, the nature of the query is determined by the query parameter that you provide.
     execution: false
-    name: threatvault-threat-search ## not done, I need add the outputs
+    name: threatvault-threat-search
     outputs:
     - contextPath: ThreatVault.vulnerability.id
       description: The unique id of the signature.
@@ -596,55 +596,55 @@ script:
       description: The default action when the signature is triggered.
       type: String
     - contextPath: ThreatVault.fileformat.id
-      description: 
+      description: The unique id of the signature.
       type: String
     - contextPath: ThreatVault.fileformat.name
-      description: 
+      description: The name of the signature.
       type: String
     - contextPath: ThreatVault.fileformat.description
-      description: 
+      description: The description of the signature.
       type: String
     - contextPath: ThreatVault.fileformat.category
-      description: 
+      description: The threat category of the signature.
       type: String
     - contextPath: ThreatVault.fileformat.min_version
-      description: 
+      description: The PAN-OS minimum version.
       type: String
     - contextPath: ThreatVault.fileformat.max_version
-      description: 
+      description: The PAN-OS maximum version.
       type: String
     - contextPath: ThreatVault.fileformat.severity
-      description: 
+      description: The severity of the threat.
       type: String
     - contextPath: ThreatVault.fileformat.default_action
-      description: 
+      description: The default action when the signature is triggered.
       type: String
     - contextPath: ThreatVault.fileformat.cve
-      description: 
+      description: The CVE (Common Vulnerabilities and Exposures) of the threat. ## not done
       type: Array
     - contextPath: ThreatVault.fileformat.vendor
-      description: 
+      description: The fileformat identifier issued by vendor on advisories.
       type: Array
     - contextPath: ThreatVault.fileformat.reference
-      description: 
+      description: The public reference of the threat.
       type: Array
     - contextPath: ThreatVault.fileformat.status
-      description: 
+      description: The status of the signature.
       type: String
     - contextPath: ThreatVault.fileformat.details
-      description: 
+      description: Any additional details of the signature.
       type: Array
     - contextPath: ThreatVault.fileformat.ori_release_version
-      description: 
+      description: The original release version of the signature.
       type: String
     - contextPath: ThreatVault.fileformat.latest_release_version
-      description: 
+      description: The latest release version of the signature.
       type: String
     - contextPath: ThreatVault.fileformat.ori_release_time
-      description: 
+      description: The original release time of the signature.
       type: String
     - contextPath: ThreatVault.fileformat.latest_release_time
-      description: 
+      description: The latest release time of the signature.
       type: String
   dockerimage: devdemisto/python3:3.10.8.36800
   isfetch: true
@@ -657,4 +657,4 @@ script:
 tests:
 - PANW Threat Vault - Signature Search - Test
 fromversion: 5.0.0
-deprecated: false ## not done
+deprecated: false
