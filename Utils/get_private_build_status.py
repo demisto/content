@@ -71,6 +71,7 @@ def get_workflow_status(github_token: str, workflow_id: str) -> Tuple[str, str, 
         # if the job is still in progress - get the current step
         curr_step = next(step for step in jobs[0].get('steps') if step.get('status') == 'in_progress')
     except Exception as e:
+        logging.info('Exception here!!')
         logging.info(jobs[0])
         return job_status, job_conclusion, 'unknown'
 
