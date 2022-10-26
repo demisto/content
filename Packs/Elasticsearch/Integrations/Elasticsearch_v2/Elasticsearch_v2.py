@@ -828,7 +828,7 @@ def main():
         elif demisto.command() in ['search', 'es-search']:
             search_command(proxies)
         elif demisto.command() == 'get-mapping-fields':
-            demisto.results(get_mapping_fields_command())
+            return_results(get_mapping_fields_command())
         elif demisto.command() == 'es-eql-search':
             return_results(search_eql_command(demisto.args(), proxies))
     except Exception as e:
