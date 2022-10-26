@@ -135,8 +135,8 @@ def create_failing_pack(integration: Path):
     Modify a pack such that the upload fails on it - modifying a pack
     without adding release notes and without bumping the version.
     """
-    integration.open('a')
-    integration.write_text('\n#  CHANGE IN PACK\n')
+    with integration.open('a') as f:
+        f.write('\n#  CHANGE IN PACK')
     return integration.parent.parent.parent, get_current_version(integration.parent.parent.parent), None
 
 
@@ -145,8 +145,8 @@ def modify_pack(pack: Path, integration: str):
     Modify a pack regularly, in order to check if all packs items are uploaded correctly
     """
     integration = pack / integration
-    integration.open('a')
-    integration.write_text('\n#  CHANGE IN PACK\n')
+    with integration.open('a') as f:
+        f.write('\n#  CHANGE IN PACK\n')
     enhance_release_notes(pack)
     return pack, get_current_version(pack), get_all_packs_items_dict(pack)
 

@@ -429,7 +429,6 @@ test_upload_flow:
     - .default-job-settings
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-    - if: '$NIGHTLY' # TODO: verify
   variables:
     CURRENT_BRANCH: "$CI_COMMIT_BRANCH"
   stage: unittests-and-validations

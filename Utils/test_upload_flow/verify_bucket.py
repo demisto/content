@@ -36,10 +36,10 @@ def logger(func):
         try:
             result, pack_id = func(self, *args, **kwargs)
             self.is_valid = self.is_valid and result
-            #logging.info(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} for {pack_id} is {result}')
-            print(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} for {pack_id} is {result}')
+            logging.info(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} for {pack_id} is {result}')
+            print(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} for {pack_id} is {result}') # TODO: remove all prints once logging is present in the gitlab build
         except FileNotFoundError as e:
-            #logging.info(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} is False: {e}')
+            logging.info(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} is False: {e}')
             print(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} is False: {e}')
             self.is_valid = False
 
@@ -315,7 +315,7 @@ if __name__ == "__main__":
     bv.verify_new_image('Armis', Path(
         __file__).parent / 'TestUploadFlow' / 'Integrations' / 'TestUploadFlow' / 'TestUploadFlow_image.png')
     is_valid = 'valid' if bv.is_valid else 'not valid'
-    #logging.info(f'The bucket {gcp.storage_bucket.name} was found as {is_valid}') TODO: all should be logging, check how to show in gitlab
+    logging.info(f'The bucket {gcp.storage_bucket.name} was found as {is_valid}')  # check how to show in gitlab
     print(f'The bucket {gcp.storage_bucket.name} was found as {is_valid}')
 
     if not is_valid:
