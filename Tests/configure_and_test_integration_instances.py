@@ -1099,7 +1099,7 @@ def set_integration_params(build,
         logging_module (Union[ParallelLoggingManager,logging]): The logging module to use
 
     Returns:
-        (bool): True if integratitfghons params were filled with secret configuration values, otherwise false
+        (bool): True if integrations params were filled with secret configuration values, otherwise false
     """
     for integration in integrations:
         # integration_params = [change_placeholders_to_values(placeholders_map, item) for item
