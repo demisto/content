@@ -11,9 +11,10 @@ import json
 import requests
 import warnings
 from dateutil.parser import parse
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 warnings.filterwarnings(action="ignore", message='.*using SSL with verify_certs=False is insecure.')
 
 ELASTIC_SEARCH_CLIENT = demisto.params().get('client_type')
@@ -571,7 +572,7 @@ def results_to_incidents_datetime(response, last_fetch):
 
     Args:
         response(dict): the raw search results from Elasticsearch.
-        last_fetch(datetime): the date or timestamp of the last fetch before this fetch
+        last_fetch(datetime): the date or timestamp of the last fetch before this fetch or parameter default fetch time
         - this will hold the last date of the incident brought by this fetch.
 
     Returns:
@@ -579,7 +580,7 @@ def results_to_incidents_datetime(response, last_fetch):
         (datetime).The date of the last incident brought by this fetch.
     """
     last_fetch = dateparser.parse(last_fetch)
-    last_fetch_timestamp = int(last_fetch.timestamp() * 1000)
+    last_fetch_timestamp = int(last_fetch.timestamp() * 1000)  # type:ignore[union-attr]
     current_fetch = last_fetch_timestamp
     incidents = []
 
@@ -609,7 +610,7 @@ def results_to_incidents_datetime(response, last_fetch):
 
                 incidents.append(inc)
 
-    return incidents, last_fetch.isoformat()
+    return incidents, last_fetch.isoformat()  # type:ignore[union-attr]
 
 
 def format_to_iso(date_string):
