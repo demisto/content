@@ -753,13 +753,13 @@ def get_mapping_fields_command():
         # To get mappings for all data streams and indices in a cluster,
         # use _all or * for <target> or omit the <target> parameter - from Elastic API
         if index in ['*', '_all', '']:
-            for key in res_json.keys():
+            for key in res_json:
                 if 'mappings' in res_json[key] and 'properties' in res_json[key]['mappings']:
                     update_elastic_mapping(res_json, elastic_mapping, key)
 
         elif index.endswith('*'):
             prefix_index = re.compile(index.rstrip('*'))
-            for key in res_json.keys():
+            for key in res_json:
                 if prefix_index.match(key):
                     update_elastic_mapping(res_json, elastic_mapping, key)
 
@@ -831,7 +831,7 @@ def main():
         elif demisto.command() in ['search', 'es-search']:
             search_command(proxies)
         elif demisto.command() == 'get-mapping-fields':
-            demisto.results(get_mapping_fields_command())
+            return_results(get_mapping_fields_command())
         elif demisto.command() == 'es-eql-search':
             return_results(search_eql_command(demisto.args(), proxies))
     except Exception as e:
