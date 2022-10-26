@@ -301,9 +301,6 @@ def fetch_params_check():
     if (TIME_FIELD == '' or TIME_FIELD is None) and not RAW_QUERY:
         str_error.append("Index time field is not configured.")
 
-    if FETCH_INDEX == '' or FETCH_INDEX is None:
-        str_error.append("Index is not configured.")
-
     if not FETCH_QUERY:
         str_error.append("Query by which to fetch incidents is not configured.")
 
