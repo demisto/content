@@ -16,10 +16,18 @@ INPUTS = [
 
 
 @pytest.mark.parametrize("json_obj, fields, expected", INPUTS)
-def test_ignore_fields(mocker, json_obj, fields, expected):
+def test_ignore_fields_json_obj(mocker, json_obj, fields, expected):
     from IgnoreFieldsFromJson import ignore_fields
 
     res = ignore_fields(json_obj, fields)
+    assert res == expected
+
+
+@pytest.mark.parametrize("value, fields, expected", INPUTS)
+def test_ignore_fields_value(mocker, value, fields, expected):
+    from IgnoreFieldsFromJson import ignore_fields
+
+    res = ignore_fields(value, fields)
     assert res == expected
 
 
@@ -29,10 +37,37 @@ FAILED_INPUTS = [
 
 
 @pytest.mark.parametrize("json_obj, fields, expected", FAILED_INPUTS)
-def test_ignore_fields_fail(mocker, json_obj, fields, expected):
+def test_ignore_fields_fail_json_obj(mocker, json_obj, fields, expected):
     from IgnoreFieldsFromJson import ignore_fields
 
     debug_mock = mocker.patch.object(demisto, 'debug')
     res = ignore_fields(json_obj, fields)
     debug_mock.assert_called_once_with('Could not parse invalid json format to Json. Please insert a valid json format.')
+    assert res == expected
+
+
+@pytest.mark.parametrize("value, fields, expected", FAILED_INPUTS)
+def test_ignore_fields_fail_value(mocker, value, fields, expected):
+    from IgnoreFieldsFromJson import ignore_fields
+
+    debug_mock = mocker.patch.object(demisto, 'debug')
+    res = ignore_fields(value, fields)
+    debug_mock.assert_called_once_with('Could not parse invalid json format to Json. Please insert a valid json format.')
+    assert res == expected
+
+
+def test_main_value_priority(mocker):
+    from IgnoreFieldsFromJson import main
+
+    mocker.patch.object(demisto, 'args', return_value={
+        'value': {'a': 'b'},
+        'json_obj': {'b': 'c'},
+        'fields': []
+    })
+
+    expected = {'a': 'b'}
+
+    mocker.patch.object(demisto, 'results')
+    main()
+    res = demisto.results.call_args[0][0]
     assert res == expected

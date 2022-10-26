@@ -19,7 +19,7 @@ def ignore_fields(value, fields):
 def main():   # pragma: no cover
     try:
         args = demisto.args()
-        json_obj = args.get("json_object")
+        json_obj = args.get("value") or args.get("json_object")
         fields_to_ignore = args.get("fields")
         return_results(ignore_fields(json_obj, fields_to_ignore))
     except Exception as e:
