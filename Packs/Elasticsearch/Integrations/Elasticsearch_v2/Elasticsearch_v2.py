@@ -744,7 +744,7 @@ def get_mapping_fields_command():
         # To get mappings for all data streams and indices in a cluster,
         # use _all or * for <target> or omit the <target> parameter - from Elastic API
         if index in ['*', '_all', '']:
-            for key in res_json.keys():
+            for key in res_json:
                 if 'mappings' in res_json[key] and 'properties' in res_json[key]['mappings']:
                     my_map = res_json[key]['mappings']['properties']
                     elastic_mapping[key] = {"_id": "doc_id", "_index": key}
