@@ -30,7 +30,7 @@ class BSAPI:
         self.bs_port = bs_port
         self.timeout = timeout
         self.session_key = None
-        self.base_url = "https://{host}:{port}/api".format(host=self.bs_host, port=self.bs_port)
+        self.base_url = f"https://{self.bs_host}:{self.bs_port}/api"
         self.verify_ssl = verify_ssl
 
     def do_request(self, url, data=None, headers=None, files=None, method=None, content_type='application/json',
@@ -62,20 +62,20 @@ class BSAPI:
             r = request_func(url, headers=headers, data=data, files=files, verify=self.verify_ssl)
         except requests.exceptions.SSLError:
             demisto.error("SSL verification failed")
-            demisto.results("SSL verification to {url} failed".format(url=url))
+            demisto.results(f"SSL verification to {url} failed")
         except requests.exceptions.ConnectionError as e:
-            demisto.error("Could not connect to: {server}".format(server=SERVER))
-            demisto.error("Exception: {}".format(e))
-            demisto.results("Could not connect to {server} ({exception})".format(server=SERVER, exception=e))
+            demisto.error(f"Could not connect to: {SERVER}")
+            demisto.error(f"Exception: {e}")
+            demisto.results(f"Could not connect to {SERVER} ({e})")
         except Exception as e:
-            demisto.error("Generic Exception: {exception}".format(exception=e))
-            demisto.error("Type is: {type}".format(type=e.__class__.__name__))
+            demisto.error(f"Generic Exception: {e}")
+            demisto.error(f"Type is: {e.__class__.__name__}")
 
         if r is not None and r.content:
             try:
                 json_res = r.json()
             except ValueError:
-                return_error('Failed deserializing response JSON - {}'.format(r.content))
+                return_error(f'Failed deserializing response JSON - {r.content}')
             return json_res
         else:
             return None
@@ -126,9 +126,9 @@ class BSAPI:
             if object_id == 'ALL':
                 url = "/obj_group_cfg/summary/user"
             else:
-                url = "/obj_group_cfg/user/{object_id}".format(object_id=object_id)
+                url = f"/obj_group_cfg/user/{object_id}"
         else:
-            response = "Unknown option: {object_type}".format(object_type=object_type)
+            response = f"Unknown option: {object_type}"
             return (response)
 
         deceptive_objects = self.do_request(url)
@@ -213,9 +213,9 @@ def valid_ip(host):
 
 
 def date_to_epoch(date):
-    date_pattern1 = '\d{4}-\d{2}-\d{2}$'
+    date_pattern1 = r'\d{4}-\d{2}-\d{2}$'
     date_format1 = '%Y-%m-%d'
-    date_pattern2 = '\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'
+    date_pattern2 = r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'
     date_format2 = '%Y-%m-%dT%H:%M:%SZ'
 
     epoch = None
@@ -250,14 +250,14 @@ if demisto.command() == 'attivo-get-events':
         timestampEnd = int(time.time()) * 1000
 
     if timestampEnd is None:
-        demisto.info("Bad date: {}\nDate should be of the format yyyy-mm-dd or yyyy-mm-ddThh:mm:ssZ".format(end_date))
-        return_error("Bad date: {}\nDate should be of the format yyyy-mm-dd or yyyy-mm-ddThh:mm:ssZ".format(end_date))
+        demisto.info(f"Bad date: {end_date}\nDate should be of the format yyyy-mm-dd or yyyy-mm-ddThh:mm:ssZ")
+        return_error(f"Bad date: {end_date}\nDate should be of the format yyyy-mm-dd or yyyy-mm-ddThh:mm:ssZ")
 
     if timestampStart is None:
         demisto.info(
-            "\nBad date: {}\nDate should be of the format yyyy-mm-dd or yyyy-mm-ddThh:mm:ssZ".format(start_date))
+            f"\nBad date: {start_date}\nDate should be of the format yyyy-mm-dd or yyyy-mm-ddThh:mm:ssZ")
         return_error(
-            "\nBad date: {}\nDate should be of the format yyyy-mm-dd or yyyy-mm-ddThh:mm:ssZ".format(start_date))
+            f"\nBad date: {start_date}\nDate should be of the format yyyy-mm-dd or yyyy-mm-ddThh:mm:ssZ")
 
     severity_end = "15"
     severity_start = attivo_api.convert_severity_string(severity_string)
@@ -283,7 +283,7 @@ if demisto.command() == 'attivo-get-events':
             'Target OS': event['details']['Target OS'],
             'Timestamp': event['details']['Timestamp'],
         })
-        context.append({k.replace(' ', ''): v for k, v in event['details'].items()})
+        context.append({k.replace(' ', ''): v for k, v in list(event['details'].items())})
 
     headers = ['Attack Name', 'Severity', 'Timestamp', 'Target IP', 'Target OS']
     entry = {
@@ -291,7 +291,7 @@ if demisto.command() == 'attivo-get-events':
         'ContentsFormat': formats['json'],
         'Contents': events['eventdata'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Found {} events:'.format(len(brief_events)), brief_events, headers=headers),
+        'HumanReadable': tableToMarkdown(f'Found {len(brief_events)} events:', brief_events, headers=headers),
         'EntryContext': {'Attivo.Events.Count': len(events['eventdata']),
                          'Attivo.Events.List': context}
     }
@@ -308,7 +308,7 @@ if demisto.command() == 'fetch-incidents':
 
     severity_start = attivo_api.convert_severity_string(FETCH_SEVERITY)
     if not severity_start:
-        demisto.info("Attivo fetch-incidents: Unknown severity specified ('{}') using Medium".format(FETCH_SEVERITY))
+        demisto.info(f"Attivo fetch-incidents: Unknown severity specified ('{FETCH_SEVERITY}') using Medium")
         severity_start = 7  # Medium
     severity_end = "15"  # Very High
 
@@ -323,7 +323,7 @@ if demisto.command() == 'fetch-incidents':
     demisto.info("Attivo fetch-incidents: Last run time {}, severity {}:{}".format(last_run_time, FETCH_SEVERITY,
                                                                                    severity_start))
 
-    new_last_run = 0
+    new_last_run = 0.0
     incidents = []
 
     events = attivo_api.get_events(timestamp_start=last_run_time, timestamp_end='now',
@@ -353,7 +353,7 @@ if demisto.command() == 'fetch-incidents':
 
     if len(incidents) > 0 and new_last_run > 0:
         new_last_run += 1
-        demisto.info("Setting new last run value to {}".format(new_last_run))
+        demisto.info(f"Setting new last run value to {new_last_run}")
         demisto.setLastRun({'time': new_last_run})
     else:
         demisto.info("No new Attivo incidents to add")
@@ -371,9 +371,9 @@ if demisto.command() == 'test-module':
         demisto.results('ok')
         sys.exit(0)
     else:
-        demisto.error("Login to {} failed".format(SERVER))
-        demisto.error("API Results: {}".format(login_status))
-        demisto.results("Login to {} failed\n{}".format(SERVER, login_status))
+        demisto.error(f"Login to {SERVER} failed")
+        demisto.error(f"API Results: {login_status}")
+        demisto.results(f"Login to {SERVER} failed\n{login_status}")
 
 if demisto.command() == 'attivo-list-playbooks':
     login_status = attivo_api.login(API_USER, API_PASS)
@@ -445,14 +445,14 @@ if demisto.command() == 'attivo-run-playbook':
             break
 
     if not playbook_id:
-        demisto.error("ID not found for Attivo playbook named: {}".format(playbook_name))
-        status_message = "Failed: could not find playbook named '{}'".format(playbook_name)
+        demisto.error(f"ID not found for Attivo playbook named: {playbook_name}")
+        status_message = f"Failed: could not find playbook named '{playbook_name}'"
         status = False
     else:
         demisto.info(
-            "Running Attivo playbook named {} ({}) with attacker IP {}".format(playbook_name, playbook_id, attacker_ip))
+            f"Running Attivo playbook named {playbook_name} ({playbook_id}) with attacker IP {attacker_ip}")
         playbook_status = attivo_api.run_playbook(playbook_id, attacker_ip)
-        demisto.info("Run playbook status = {}".format(playbook_status))
+        demisto.info(f"Run playbook status = {playbook_status}")
 
         if 'error' in playbook_status:
             error_text = playbook_status['error']
@@ -466,7 +466,7 @@ if demisto.command() == 'attivo-run-playbook':
                                  "IP {}".format(playbook_name, playbook_id, attacker_ip)
             else:
                 status = False
-                status_message = "Attivo playbook has not been run.  Status = '{}'".format(status_text)
+                status_message = f"Attivo playbook has not been run.  Status = '{status_text}'"
         else:
             status = False
             status_message = "Attivo playbook has not been run.  Status = 'Unknown failure'"
@@ -488,10 +488,10 @@ if demisto.command() == 'attivo-deploy-decoy':
     vulnerable_ip = demisto.args()['vulnerable_ip']
     decoy_number = demisto.args()['decoy_number']
     login_status = attivo_api.login(API_USER, API_PASS)
-    demisto.info("Deploying {} decoy(s) on the subnet of {}".format(decoy_number, vulnerable_ip))
+    demisto.info(f"Deploying {decoy_number} decoy(s) on the subnet of {vulnerable_ip}")
     deploy_status = {}
     deploy_status = attivo_api.deploy_decoys(vulnerable_ip, decoy_number=decoy_number)
-    demisto.info("Deployment status = {}".format(deploy_status))
+    demisto.info(f"Deployment status = {deploy_status}")
 
     status = False
     status_text = "Unknown failure"
@@ -507,9 +507,9 @@ if demisto.command() == 'attivo-deploy-decoy':
         status_text = deploy_status['error']
 
     if status:
-        status_message = "{} new Attivo decoy(s) deployed on the subnet with {}".format(decoy_number, vulnerable_ip)
+        status_message = f"{decoy_number} new Attivo decoy(s) deployed on the subnet with {vulnerable_ip}"
     else:
-        status_message = "No Attivo decoys have been deployed. {}".format(status_text)
+        status_message = f"No Attivo decoys have been deployed. {status_text}"
 
     entry = {
         'Type': entryTypes['note'],
@@ -542,7 +542,7 @@ if demisto.command() == 'attivo-list-users':
                 users[user] = [group_name]
 
     all_users = []
-    for user in sorted(users.keys(), key=lambda x: x.lower()):
+    for user in sorted(list(users.keys()), key=lambda x: x.lower()):
         user_entry = {'User': user, 'Groups': ", ".join(users[user])}
         all_users.append(user_entry)
 
@@ -561,7 +561,7 @@ if demisto.command() == 'attivo-list-users':
 
 if demisto.command() == 'attivo-check-user':
     user = demisto.args()['user']
-    demisto.info("Check Attivo for user = {}".format(user))
+    demisto.info(f"Check Attivo for user = {user}")
     login_status = attivo_api.login(API_USER, API_PASS)
 
     is_deceptive = False
@@ -670,7 +670,7 @@ if demisto.command() == 'attivo-list-hosts':
         'Type': entryTypes['note'],
         'Contents': all_hosts,
         'ContentsFormat': formats['json'],
-        'HumanReadable': tableToMarkdown("Attivo deceptive hosts (network decoys): {}".format(len(all_hosts)),
+        'HumanReadable': tableToMarkdown(f"Attivo deceptive hosts (network decoys): {len(all_hosts)}",
                                          all_hosts, headers=headers),
         'ReadableContentsFormat': formats['markdown'],
         'EntryContext': {}
@@ -681,7 +681,7 @@ if demisto.command() == 'attivo-list-hosts':
 
 if demisto.command() == 'attivo-check-host':
     host = demisto.args()['host']
-    demisto.info("Check Attivo for host = {}".format(host))
+    demisto.info(f"Check Attivo for host = {host}")
     login_status = attivo_api.login(API_USER, API_PASS)
 
     is_deceptive = False
@@ -792,6 +792,6 @@ if demisto.command() == 'attivo-check-host':
                               }
              }
 
-    demisto.info("Deception status for {host} is {is_deceptive}".format(host=host, is_deceptive=is_deceptive))
+    demisto.info(f"Deception status for {host} is {is_deceptive}")
     demisto.results(entry)
     logout_status = attivo_api.logout()

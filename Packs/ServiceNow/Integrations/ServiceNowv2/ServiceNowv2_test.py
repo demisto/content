@@ -1414,6 +1414,25 @@ def test_clear_fields_in_get_ticket_fields(args, expected_ticket_fields):
         assert res == expected_ticket_fields
 
 
+def test_clear_fields_for_update_remote_system():
+    """
+    Given:
+        - The fields from the parsed_args.data (from update_remote_system)
+    When:
+        - Run get_ticket_fields
+    Then:
+        - Validate that the ampty fields exists in the fields that returns.
+    """
+    parsed_args_data = {'assigned_to': '', 'category': 'Software', 'description': '', 'impact': '3 - Low',
+                        'notify': '1 - Do Not Notify', 'priority': '5 - Planning', 'severity': '1 - High - Low',
+                        'short_description': 'Testing 3', 'sla_due': '0001-01-01T02:22:42+02:20',
+                        'state': '2 - In Progress', 'subcategory': '', 'urgency': '3 - Low',
+                        'work_start': '0001-01-01T02:22:42+02:20'}
+
+    res = get_ticket_fields(parsed_args_data)
+    assert 'assigned_to' in res
+
+
 def test_query_table_with_fields(mocker):
     """
     Given:

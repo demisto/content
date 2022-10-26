@@ -9519,14 +9519,14 @@ script:
     - contextPath: GoogleCloudCompute.ProjectMetadata.kind
       description: Type of the resource. Always compute#operation.
       type: String
-  dockerimage: demisto/google-api:1.0.0.7874
+  dockerimage: demisto/googleapi-python3:1.0.0.35180
   feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python2
+  subtype: python3
   type: python
 tests:
 - No tests

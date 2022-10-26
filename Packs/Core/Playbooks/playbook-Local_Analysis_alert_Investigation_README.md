@@ -39,13 +39,13 @@ External resources:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Recovery Plan
-* Containment Plan
-* Endpoint Investigation Plan
 * Wildfire Detonate and Analyze File
-* Handle False Positive Alerts
-* Enrichment for Verdict
+* Endpoint Investigation Plan
 * Eradication Plan
+* Recovery Plan
+* Enrichment for Verdict
+* Handle False Positive Alerts
+* Containment Plan
 
 ### Integrations
 * CortexCoreIR
@@ -55,10 +55,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * UnzipFile
 
 ### Commands
-* core-retrieve-files
-* closeInvestigation
-* core-retrieve-file-details
 * core-report-incorrect-wildfire
+* core-retrieve-file-details
+* closeInvestigation
+* internal-wildfire-get-report
+* core-retrieve-files
 
 ## Playbook Inputs
 ---
@@ -72,6 +73,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | AutoRecovery | Whether to execute the Recovery playbook. | False | Optional |
 | AutoCloseAlert | Whether to close the alert automatically or manually, after an analyst's review. | False | Optional |
 | ShouldRescanBenign | Whether to rescan \(Using WildFire detonate file\) benign files. | True | Optional |
+| ShouldManualReviewFP | Whether to ask for a manual review before false positive handling. Should be True or False | False | Optional |
 
 ## Playbook Outputs
 ---

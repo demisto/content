@@ -1,12 +1,12 @@
 import os
-
+import urllib3
 import demistomock as demisto  # noqa: F401
 import requests
 from bs4 import BeautifulSoup
 from CommonServerPython import *  # noqa: F401
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
@@ -43,7 +43,7 @@ def http_request(method, url_suffix, cookies=COOKIES, data=None, headers=None):
 
         if res.status_code not in (200, 204):
             raise Exception('Your request failed with the following error: ' + res.reason)
-    except Exception, e:
+    except Exception as e:
         LOG(e)
         raise
     return res
@@ -54,7 +54,7 @@ def login():
     login_do_response = http_request('get', login_do_url, cookies=None)
     login_jsession = login_do_response.cookies.get_dict()['JSESSIONID']
 
-    soup = BeautifulSoup(login_do_response.content, "lxml")
+    soup = BeautifulSoup(login_do_response.text, "lxml")
     hidden_tags = soup.find_all("input", type="hidden")  # Parse <input type=hidden>
     for tag in hidden_tags:
         name = tag.attrs.get('name', None)
@@ -83,7 +83,7 @@ def login():
     # Get Token
     login_do_url = 'admin/backup/backupNow.do'
     login_do_response = http_request('get', login_do_url)
-    soup = BeautifulSoup(login_do_response.content, "lxml")
+    soup = BeautifulSoup(login_do_response.text, "lxml")
     hidden_tags = soup.find_all("input", type="hidden")  # Parse <input type=hidden>
     for tag in hidden_tags:
         name = tag.attrs.get('name', None)
@@ -99,7 +99,7 @@ def get_selected_sender_groups(group):
     '''
     cmd_url = 'reputation/sender-group/viewSenderGroups.do?view=badSenders'
     groups = http_request('get', cmd_url)
-    soup = BeautifulSoup(groups.content, 'lxml')
+    soup = BeautifulSoup(groups.text, 'lxml')
 
     tds_group_names_array = soup.find_all('td')  # Parse <td>
     for td in tds_group_names_array:
@@ -126,7 +126,7 @@ def block_request(ioc, selected_sender_groups):
     }
     response = http_request('post', cmd_url, data=data)
     # Check if given domain/email address is valid and is not already blocked
-    soup = BeautifulSoup(response.content, 'lxml')
+    soup = BeautifulSoup(response.text, 'lxml')
     # Look for the error message
     error = soup.find('div', 'errorMessageText')
     if error:  # Error occured
@@ -179,7 +179,7 @@ def get_blocked_domains():
     selected_sender_groups = get_selected_sender_groups(BAD_DOMAINS_EMAILS_GROUP)
     blocked_domains = get_blocked_request(BAD_DOMAINS_EMAILS_GROUP)
     hr = '### SMG Blocked domains:\n'
-    soup = BeautifulSoup(blocked_domains.content, 'lxml')
+    soup = BeautifulSoup(blocked_domains.text, 'lxml')
     # Handles pagination of Local Bad Sender Domains
     pages = soup.find('select', 'defaultDrop', id="pageNumber").find_all('option')
     for i in range(len(pages)):  # Loop through all pages of blocked IP address
@@ -191,7 +191,7 @@ def get_blocked_domains():
                 hr += '- ' + ''.join(s.split()) + '\n'  # Removes whitespaces from string
         # Get next page
         next_page = get_next_page(selected_sender_groups)
-        soup = BeautifulSoup(next_page.content, 'lxml')
+        soup = BeautifulSoup(next_page.text, 'lxml')
 
     entry = {
         'Type': entryTypes['note'],
@@ -207,7 +207,7 @@ def get_blocked_ips():
     selected_sender_groups = get_selected_sender_groups(BAD_IPS_GROUP)
     blocked_emails = get_blocked_request(BAD_IPS_GROUP)
     hr = '### SMG Blocked IP addresses:\n'
-    soup = BeautifulSoup(blocked_emails.content, 'lxml')
+    soup = BeautifulSoup(blocked_emails.text, 'lxml')
     # Handles pagination of Local Bad Sender IPs
     pages = soup.find('select', 'defaultDrop', id="pageNumber").find_all('option')
     for i in range(len(pages)):  # Loop through all pages of blocked IP address
@@ -219,7 +219,7 @@ def get_blocked_ips():
                 hr += '- ' + ''.join(s.split()) + '\n'  # Removes whitespaces from string
         # Get next page
         next_page = get_next_page(selected_sender_groups)
-        soup = BeautifulSoup(next_page.content, 'lxml')
+        soup = BeautifulSoup(next_page.text, 'lxml')
 
     entry = {
         'Type': entryTypes['note'],
@@ -259,7 +259,7 @@ def unblock_email(email):
     selected_sender_groups = get_selected_sender_groups(BAD_DOMAINS_EMAILS_GROUP)
     blocked_emails = get_blocked_request(BAD_DOMAINS_EMAILS_GROUP)
     # Email member number is required in order to send it in the unblock query
-    soup = BeautifulSoup(blocked_emails.content, 'lxml')
+    soup = BeautifulSoup(blocked_emails.text, 'lxml')
     # Handles pagination of Local Bad Sender Domains
     pages = soup.find('select', 'defaultDrop', id="pageNumber").find_all('option')
     for i in range(len(pages)):  # Loop through all pages of blocked email addresses
@@ -276,7 +276,7 @@ def unblock_email(email):
                     break
         # Get next page
         next_page = get_next_page(selected_sender_groups)
-        soup = BeautifulSoup(next_page.content, 'lxml')
+        soup = BeautifulSoup(next_page.text, 'lxml')
 
     if 'selected_group_member' not in locals():
         return 'Could not find given email address in ' + BAD_DOMAINS_EMAILS_GROUP
@@ -329,7 +329,7 @@ def unblock_domain(domain):
     selected_sender_groups = get_selected_sender_groups(BAD_DOMAINS_EMAILS_GROUP)
     blocked_domains = get_blocked_request(BAD_DOMAINS_EMAILS_GROUP)
     # Domain member number is required in order to send it in the unblock query
-    soup = BeautifulSoup(blocked_domains.content, 'lxml')
+    soup = BeautifulSoup(blocked_domains.text, 'lxml')
     # Handles pagination of Local Bad Sender Domains
     pages = soup.find('select', 'defaultDrop', id="pageNumber").find_all('option')
     for i in range(len(pages)):  # Loop through all pages of blocked domains
@@ -346,7 +346,7 @@ def unblock_domain(domain):
                     break
         # Get next page
         next_page = get_next_page(selected_sender_groups)
-        soup = BeautifulSoup(next_page.content, 'lxml')
+        soup = BeautifulSoup(next_page.text, 'lxml')
 
     if 'selected_group_member' not in locals():
         return 'Could not find given domain in ' + BAD_DOMAINS_EMAILS_GROUP
@@ -399,7 +399,7 @@ def unblock_ip(ip):
     selected_sender_groups = get_selected_sender_groups(BAD_IPS_GROUP)
     blocked_ips = get_blocked_request(BAD_IPS_GROUP)
     # Domain member number is required in order to send it in the unblock query
-    soup = BeautifulSoup(blocked_ips.content, 'lxml')
+    soup = BeautifulSoup(blocked_ips.text, 'lxml')
     # Handles pagination of Local Bad Sender IPs
     pages = soup.find('select', 'defaultDrop', id="pageNumber").find_all('option')
     for i in range(len(pages)):  # Loop through all pages of blocked IP address
@@ -415,7 +415,7 @@ def unblock_ip(ip):
                     selected_group_member = a['href'][comma_index + 1:-2]  # Get IP member number
                     break
         next_page = get_next_page(selected_sender_groups)
-        soup = BeautifulSoup(next_page.content, 'lxml')
+        soup = BeautifulSoup(next_page.text, 'lxml')
 
     if 'selected_group_member' not in locals():
         return 'Could not find given IP address in ' + BAD_IPS_GROUP
@@ -465,7 +465,7 @@ try:
         demisto.results(get_blocked_domains())
     elif demisto.command() == 'smg-get-blocked-ips':
         demisto.results(get_blocked_ips())
-except Exception, e:
-    LOG(e.message)
+except Exception as e:
+    LOG(e)
     LOG.print_log()
     raise

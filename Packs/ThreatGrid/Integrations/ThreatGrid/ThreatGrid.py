@@ -111,12 +111,13 @@ def get_with_limit(obj, path, limit=None):
         if limit:
             if len(res) > limit:
                 if isinstance(res, dict):
-                    return {k: res[k] for k in res.keys()[:limit]}
+                    return {k: res[k] for k in list(res.keys())[:limit]}
                 elif isinstance(res, list):
                     return res[:limit]
     # If res has no len, or if not a list or a dictionary return res
-    finally:
+    except Exception:
         return res
+    return res
 
 
 def sample_to_readable(k):
@@ -243,9 +244,10 @@ def upload_sample():
             args[k] = demisto.getArg(k)
     args['api_key'] = API_KEY
     fileData = demisto.getFilePath(demisto.getArg('file-id'))
+    filename = demisto.getArg('filename').replace('"', '').replace('\n', '')
     with open(fileData['path'], 'rb') as f:
         r = requests.request('POST', URL + SUB_API + 'samples',
-                             files={'sample': (encode_sample_file_name(demisto.getArg('filename')), f)},
+                             files={'sample': (filename, f)},
                              data=args, verify=VALIDATE_CERT)
         if r.status_code != requests.codes.ok:
             if r.status_code == 503:
@@ -265,19 +267,14 @@ def upload_sample():
         return sample.get('ID')
 
 
-def encode_sample_file_name(filename):
-    """
-    Encodes sample file name
-    """
-    return filename.encode('ascii', 'ignore').replace('"', '').replace('\n', '')
-
-
 def get_html_report_by_id():
     """
     Download the html report for a sample given the id
     """
     sample_id = demisto.getArg('id')
+
     r = req('GET', SUB_API + 'samples/' + sample_id + '/report.html')
+
     ec = {'ThreatGrid.Sample.Id': sample_id}
     demisto.results([
         {
@@ -286,7 +283,7 @@ def get_html_report_by_id():
             'HumanReadable': '### ThreatGrid Sample Run HTML Report -\n'
                              + 'Your sample run HTML report download request has been completed successfully for '
                              + sample_id,
-            'Contents': r.content,
+            'Contents': r.text,
             'ContentsFormat': formats['html']
         },
         fileResult(sample_id + '-report.html', r.content, file_type=entryTypes['entryInfoFile'])
@@ -649,7 +646,7 @@ def handle_artifact_from_analysis_json(ec, hr, analysis_json, limit):
 def create_analysis_json_human_readable(hr):
     hr_str = tableToMarkdown('Files scanned:', hr['File'], SAMPLE_ANALYSIS_HEADERS_MAP['File'])
     tmp_hr_str = ''
-    for k in hr['Sample'].keys():
+    for k in hr['Sample'].copy():
         if isinstance(hr['Sample'][k], dict) or (isinstance(hr['Sample'][k], list) and len(hr['Sample'][k]) > 0
                                                  and k in SAMPLE_ANALYSIS_HEADERS_MAP):
             tmp_hr_str = tmp_hr_str + tableToMarkdown('{0}:'.format(str(k)), hr['Sample'][k],
@@ -698,7 +695,7 @@ def create_sample_ec_from_analysis_json(analysis_json, sample_id, sample_process
         'Stream': extract_network_from_analysis_networks(get_with_limit(analysis_json, 'network', limit),
                                                          full_extraction=False),
         'VT': extract_vt_from_analysis_artifact(demisto.get(analysis_json, 'artifacts')),
-        'Domain': [{'Name': str(key), 'Status': str(val.get('status'))} for key, val in domain_with_limit.iteritems()]
+        'Domain': [{'Name': str(key), 'Status': str(val.get('status'))} for key, val in domain_with_limit.items()]
     }
 
 
@@ -809,7 +806,7 @@ def ioc_to_readable(ioc):
     }
     res = {}
     # add ioc_key_to_path_dict values to result
-    for k, v in ioc_key_to_path_dict.iteritems():
+    for k, v in ioc_key_to_path_dict.items():
         val = demisto.get(ioc, v)
         if val:
             res[k] = val
@@ -1096,73 +1093,78 @@ def get_analysis_process():
     ])
 
 
-if demisto.command() == 'test-module':
-    request = req('GET', USER_API + 'session/whoami')
-    demisto.results('ok')
-elif demisto.command() == 'threat-grid-download-sample-by-id':
-    download_sample()
-elif demisto.command() == 'threat-grid-get-samples':
-    get_samples()
-elif demisto.command() == 'threat-grid-get-sample-by-id':
-    get_sample_by_id()
-elif demisto.command() == 'threat-grid-get-sample-state-by-id' or demisto.command() == 'threat-grid-get-samples-state':
-    get_sample_state_by_id()
-elif demisto.command() == 'threat-grid-upload-sample':
-    upload_sample()
-elif demisto.command() == 'threat-grid-get-html-report-by-id':
-    get_html_report_by_id()
-elif demisto.command() == 'threat-grid-get-pcap-by-id':
-    get_pcap_by_id()
-elif demisto.command() == 'threat-grid-get-processes-by-id':
-    get_processes_by_id()
-elif demisto.command() == 'threat-grid-get-summary-by-id':
-    get_summary_by_id()
-elif demisto.command() == 'threat-grid-get-threat-summary-by-id':
-    get_threat_summary_by_id()
-elif demisto.command() == 'threat-grid-get-video-by-id':
-    get_video_by_id()
-elif demisto.command() == 'threat-grid-get-warnings-by-id':
-    get_warnings_by_id()
-elif demisto.command() == 'threat-grid-user-get-rate-limit':
-    user_get_rate_limit()
-elif demisto.command() == 'threat-grid-organization-get-rate-limit':
-    organization_get_rate_limit()
-elif demisto.command() == 'threat-grid-who-am-i':
-    who_am_i()
-elif demisto.command() == 'threat-grid-get-analysis-annotations':
-    get_analysis_annotations()
-elif demisto.command() == 'threat-grid-get-analysis-by-id':
-    get_analysis_by_id()
-elif demisto.command() == 'threat-grid-get-analysis-iocs' or demisto.command() == 'threat-grid-get-analysis-ioc':
-    get_analysis_iocs()
-elif demisto.command() == 'threat-grid-url-to-file':
-    url_to_file()
-elif demisto.command() == 'threat-grid-search-samples':
-    search_samples()
-elif demisto.command() == 'threat-grid-search-ips':
-    search_ips()
-elif demisto.command() == 'threat-grid-search-urls':
-    search_urls()
-elif demisto.command() == 'threat-grid-search-submissions':
-    search_submissions()
-elif demisto.command() == 'threat-grid-get-specific-feed':
-    get_specific_feed()
-elif demisto.command() in ['threat-grid-feeds-artifacts', 'threat-grid-feeds-domain',
-                           'threat-grid-feeds-ip', 'threat-grid-feeds-network-stream',
-                           'threat-grid-feeds-registry-key', 'threat-grid-feeds-url', 'threat-grid-feeds-path']:
-    feeds_helper(demisto.command()[18:])
-elif demisto.command() == 'threat-grid-get-analysis-artifact' or \
-        demisto.command() == 'threat-grid-get-analysis-artifacts':
-    get_analysis_artifact()
-elif demisto.command() == 'threat-grid-get-analysis-metadata':
-    get_analysis_metadata()
-elif demisto.command() == 'threat-grid-get-analysis-network-stream' or \
-        demisto.command() == 'threat-grid-get-analysis-network-streams':
-    get_analysis_network_stream()
-elif demisto.command() == 'threat-grid-get-analysis-process' or \
-        demisto.command() == 'threat-grid-get-analysis-processes':
-    get_analysis_process()
-elif demisto.command() in ['threat-grid-download-artifact', 'threat-grid-detonate-file']:
-    return_error('Error: The API for this command is no longer supported')
-else:
-    return_error('Unrecognized command: ' + demisto.command())
+def main():
+    if demisto.command() == 'test-module':
+        req('GET', USER_API + 'session/whoami')
+        demisto.results('ok')
+    elif demisto.command() == 'threat-grid-download-sample-by-id':
+        download_sample()
+    elif demisto.command() == 'threat-grid-get-samples':
+        get_samples()
+    elif demisto.command() == 'threat-grid-get-sample-by-id':
+        get_sample_by_id()
+    elif demisto.command() == 'threat-grid-get-sample-state-by-id' or demisto.command() == 'threat-grid-get-samples-state':
+        get_sample_state_by_id()
+    elif demisto.command() == 'threat-grid-upload-sample':
+        upload_sample()
+    elif demisto.command() == 'threat-grid-get-html-report-by-id':
+        get_html_report_by_id()
+    elif demisto.command() == 'threat-grid-get-pcap-by-id':
+        get_pcap_by_id()
+    elif demisto.command() == 'threat-grid-get-processes-by-id':
+        get_processes_by_id()
+    elif demisto.command() == 'threat-grid-get-summary-by-id':
+        get_summary_by_id()
+    elif demisto.command() == 'threat-grid-get-threat-summary-by-id':
+        get_threat_summary_by_id()
+    elif demisto.command() == 'threat-grid-get-video-by-id':
+        get_video_by_id()
+    elif demisto.command() == 'threat-grid-get-warnings-by-id':
+        get_warnings_by_id()
+    elif demisto.command() == 'threat-grid-user-get-rate-limit':
+        user_get_rate_limit()
+    elif demisto.command() == 'threat-grid-organization-get-rate-limit':
+        organization_get_rate_limit()
+    elif demisto.command() == 'threat-grid-who-am-i':
+        who_am_i()
+    elif demisto.command() == 'threat-grid-get-analysis-annotations':
+        get_analysis_annotations()
+    elif demisto.command() == 'threat-grid-get-analysis-by-id':
+        get_analysis_by_id()
+    elif demisto.command() == 'threat-grid-get-analysis-iocs' or demisto.command() == 'threat-grid-get-analysis-ioc':
+        get_analysis_iocs()
+    elif demisto.command() == 'threat-grid-url-to-file':
+        url_to_file()
+    elif demisto.command() == 'threat-grid-search-samples':
+        search_samples()
+    elif demisto.command() == 'threat-grid-search-ips':
+        search_ips()
+    elif demisto.command() == 'threat-grid-search-urls':
+        search_urls()
+    elif demisto.command() == 'threat-grid-search-submissions':
+        search_submissions()
+    elif demisto.command() == 'threat-grid-get-specific-feed':
+        get_specific_feed()
+    elif demisto.command() in ['threat-grid-feeds-artifacts', 'threat-grid-feeds-domain',
+                               'threat-grid-feeds-ip', 'threat-grid-feeds-network-stream',
+                               'threat-grid-feeds-registry-key', 'threat-grid-feeds-url', 'threat-grid-feeds-path']:
+        feeds_helper(demisto.command()[18:])
+    elif demisto.command() == 'threat-grid-get-analysis-artifact' or \
+            demisto.command() == 'threat-grid-get-analysis-artifacts':
+        get_analysis_artifact()
+    elif demisto.command() == 'threat-grid-get-analysis-metadata':
+        get_analysis_metadata()
+    elif demisto.command() == 'threat-grid-get-analysis-network-stream' or \
+            demisto.command() == 'threat-grid-get-analysis-network-streams':
+        get_analysis_network_stream()
+    elif demisto.command() == 'threat-grid-get-analysis-process' or \
+            demisto.command() == 'threat-grid-get-analysis-processes':
+        get_analysis_process()
+    elif demisto.command() in ['threat-grid-download-artifact', 'threat-grid-detonate-file']:
+        return_error('Error: The API for this command is no longer supported')
+    else:
+        return_error('Unrecognized command: ' + demisto.command())
+
+
+if __name__ in ["__builtin__", "builtins"]:
+    main()

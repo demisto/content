@@ -984,11 +984,11 @@ script:
     - contextPath: InstaQuery.List
       description: The list of InstaQuery
       type: string
-  dockerimage: demisto/pyjwt:1.0.0.24033
+  dockerimage: demisto/pyjwt3:1.0.0.34355
   isfetch: true
   runonce: false
   script: ''
-  subtype: python2
+  subtype: python3
   type: python
 tests:
 - Cylance Protect v2 Test

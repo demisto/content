@@ -148,6 +148,14 @@ script:
       defaultValue: 'false'
     - name: useragent
       description: User agent to perform request
+    - name: use_url_as_name
+      default: true
+      description: Whether to use the URL as the file name.
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      defaultValue: "false"
     deprecated: true
     description: Deprecated. Use the url command instead.
     name: urlscan-submit
@@ -421,11 +429,10 @@ script:
     description: Returns the results page for the specified UUID.
     name: urlscan-get-result-page
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.7.35188
 fromversion: 5.0.0
 tests:
 - urlscan_malicious_Test
-defaultEnabled: false
