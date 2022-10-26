@@ -443,7 +443,7 @@ test_upload_flow:
     - section_end "Create Testing Branch"
     - section_start "Trigger Test Upload Flow On Testing Branch"
     - branch="$ARTIFACTS_FOLDER/create_test_branch.log" tail -n 1 # TODO: verify
-    - export upload_response=$(./Utils/trigger_test_upload_flow.sh -ct $GITLAB_SVC_USER_TOKEN -g -b $branch| jq .id)
+    - #export upload_response=$(./Utils/trigger_test_upload_flow.sh -ct $GITLAB_SVC_USER_TOKEN -g -b $branch| jq .id)
     - ./Utils/trigger_test_upload_flow.sh -ct $GITLAB_SVC_USER_TOKEN -g -b $branch
     - #export pipeline_id=$($upload_response | jq .id)
     - echo "Triggered a test upload with pipeline id" $pipeline_id
