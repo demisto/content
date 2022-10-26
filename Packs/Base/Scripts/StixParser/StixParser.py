@@ -761,13 +761,9 @@ class STIX2Parser:
                             parse_objects_func):
         indicators = []
         relationships_list: List[Dict[str, Any]] = []
-        xsoar_taxii_server_extentions = []
 
-        for obj_type, stix_objects in envelopes.items():
-            if obj_type == 'extension-definition':
-                for obj in stix_objects:
-                    if obj.get('schema') == XSOAR_TAXII2_SERVER_SCHEMA:
-                        xsoar_taxii_server_extentions.append(obj.get('id'))
+        xsoar_taxii_server_extensions = self.get_taxii2_extensions_from_envelope(
+            envelopes.get('extension-definition', []))
 
         for obj_type, stix_objects in envelopes.items():
             if obj_type != "relationship":
@@ -779,7 +775,7 @@ class STIX2Parser:
                     result = parse_objects_func[obj_type](obj)
                     if not result:
                         continue
-                    self.update_obj_if_extensions(xsoar_taxii_server_extentions, obj, result)
+                    self.update_obj_if_extensions(xsoar_taxii_server_extensions, obj, result)
                     self.parsed_object_id_to_object[obj.get('id')] = result[0]
                     indicators.extend(result)
             else:
@@ -914,9 +910,16 @@ class STIX2Parser:
 
     @staticmethod
     def update_obj_if_extensions(xsoar_taxii_server_extensions, obj, result):
+        """
+        If stix object has extension, check if it xsoar taxii2 server extension, if yes parse it to XSOAR.
+        :param xsoar_taxii_server_extensions: ids of all XSOAR extentions in current bundle.
+        :param obj: stix object
+        :param result: parsed xsoar indicator
+        :return: updated xsoar indicator
+        """
         parsed_result = result[0]
-        custom_fields = parsed_result.get('customFields', {})
         if extensions := obj.get('extensions'):
+            custom_fields = parsed_result.get('customFields', {})
             for ext_id, extension in extensions.items():
                 if ext_id in xsoar_taxii_server_extensions:
                     extension.pop('extension_type')
@@ -929,6 +932,17 @@ class STIX2Parser:
                             custom_fields[field] = value
                     parsed_result['customFields'] = custom_fields
 
+    @staticmethod
+    def get_taxii2_extensions_from_envelope(stix_objects):
+        """
+        :param stix_objects: list of all extension objects.
+        :return: list of xsoar extensions ids.
+        """
+        xsoar_taxii_server_extensions = []
+        for obj in stix_objects:
+            if obj.get('schema') == XSOAR_TAXII2_SERVER_SCHEMA:
+                xsoar_taxii_server_extensions.append(obj.get('id'))
+        return xsoar_taxii_server_extensions
 
 # STIX 1 Parsing
 
