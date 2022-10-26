@@ -18,7 +18,7 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS '''
 
-IS_VERSION_2_1 = api_version == '2.1'
+IS_VERSION_2_1: bool
 GLOBAL_BLOCK: bool
 BLOCK_SITEIDS: str
 OS_COUNT = 4
@@ -2903,8 +2903,6 @@ def threat_to_incident(threat) -> dict:
 def main():
     """ PARSE INTEGRATION PARAMETERS """
 
-    global IS_VERSION_2_1, GLOBAL_BLOCK, BLOCK_SITEIDS
-
     params = demisto.params()
     token = params.get('token') or params.get('credentials', {}).get('password')
     if not token:
@@ -2914,7 +2912,7 @@ def main():
     base_url = urljoin(server, f'/web/api/v{api_version}/')
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    BLOCK_SITEIDS = params.get('block_site_ids', 'None')
+    BLOCK_SITEIDS = params.get('block_site_ids', 'None') or 'None'
     GLOBAL_BLOCK = BLOCK_SITEIDS == 'None'
 
     IS_VERSION_2_1 = api_version == '2.1'
