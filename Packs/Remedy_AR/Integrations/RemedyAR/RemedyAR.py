@@ -1,15 +1,21 @@
+from urllib.parse import quote_plus
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from CommonServerUserPython import *  # noqa
+
+from Packs.Base.Scripts.CommonServerPython.CommonServerPython import LOG
 
 ''' IMPORTS '''
 import json
 import os
 import urllib
+import urllib3
 
 import requests
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 if not demisto.params()['proxy']:
     del os.environ['HTTP_PROXY']
@@ -22,7 +28,7 @@ if not demisto.params()['proxy']:
 
 def http_request(method, url_suffix, data, headers):
     data = {} if data is None else data
-    LOG('running request with url=%s\tdata=%s\theaders=%s' % (BASE_URL + url_suffix,
+    LOG.print_log('running request with url=%s\tdata=%s\theaders=%s' % (BASE_URL + url_suffix,
         data, headers))
     try:
         res = requests.request(method,
@@ -33,8 +39,8 @@ def http_request(method, url_suffix, data, headers):
                                )
         if res.status_code not in (200, 204):
             raise Exception('Your request failed with the following error: ' + res.reason)
-    except Exception, e:
-        raise
+    except Exception as ex:
+        raise Exception(ex)
     return res
 
 
@@ -77,7 +83,7 @@ def get_server_details(qualification, fields):
     fields = 'fields=values(' + fields + ')'
 
     # URL Encodes qualification
-    qualification = urllib.quote_plus(qualification)
+    qualification = quote_plus(qualification)
 
     cmd_url = '/arsys/v1/entry/AST:ComputerSystem/?q=' + qualification + '&' + fields
     result = http_request('GET', cmd_url, None, DEFAULT_HEADERS).json()
@@ -127,8 +133,8 @@ try:
         else:
             qualification = ''
         demisto.results(get_server_details(qualification, demisto.args()['fields']))
-except Exception, e:
-    LOG(e.message)
+except Exception as e:
+    LOG(e)
     LOG.print_log()
     raise
 finally:
