@@ -6,7 +6,6 @@ import json
 import os
 import random
 import glob
-import requests
 from unittest.mock import mock_open
 from mock_open import MockOpen
 from google.cloud.storage.blob import Blob
@@ -1670,7 +1669,8 @@ class TestImagesUpload:
            Then:
                - replace the readme images url with the new path to gcs return a list of all replaces urls.
        """
-        readme_images_test_folder_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data', 'readme_images_test_data')
+        readme_images_test_folder_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data',
+                                                      'readme_images_test_data')
         path_readme_to_replace_url = os.path.join(readme_images_test_folder_path, 'url_replace_README.md')
         with open(os.path.join(readme_images_test_folder_path, 'original_README.md')) as original_readme:
             data = original_readme.read()
@@ -1696,7 +1696,7 @@ class TestImagesUpload:
         assert replaced == expected
 
     @pytest.mark.parametrize('path, expected_res', [('Packs/TestPack/README.md', True),
-                                                   ('Packs/Integrations/dummyIntegration/README.md', False),
+                                                    ('Packs/Integrations/dummyIntegration/README.md', False),
                                                     ('Packs/NotExists/README.md', False)])
     def test_is_file_readme(self, dummy_pack, path, expected_res):
         assert expected_res == dummy_pack.is_raedme_file(path)
