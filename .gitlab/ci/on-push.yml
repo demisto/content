@@ -429,7 +429,7 @@ test_upload_flow:
     - .default-job-settings
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-    - if: '$NIGHTLY'
+    - if: '$NIGHTLY' # TODO: verify
   variables:
     CURRENT_BRANCH: "$CI_COMMIT_BRANCH"
   stage: unittests-and-validations
@@ -443,7 +443,7 @@ test_upload_flow:
     - export branch=$(python3 ./Utils/test_upload_flow/create_test_branch.py -a $ARTIFACTS_FOLDER -g $GITLAB_PUSH_TOKEN)
     - section_end "Create Testing Branch"
     - section_start "Trigger Test Upload Flow On Testing Branch"
-    #- branch="$ARTIFACTS_FOLDER/create_test_branch.log" tail -n 1 # TODO: verify
+    - branch="$ARTIFACTS_FOLDER/create_test_branch.log" tail -n 1 # TODO: verify
     - export pipeline_id=$(./Utils/trigger_test_upload_flow.sh -ct $GITLAB_SVC_USER_TOKEN -g -b $branch| jq .id)
     - echo "Triggered a test upload with pipeline id" $pipeline_id
     - section_end "Trigger Test Upload Flow On Testing Branch"
