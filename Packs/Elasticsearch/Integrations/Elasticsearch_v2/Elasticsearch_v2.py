@@ -752,7 +752,7 @@ def get_mapping_fields_command():
 
         elif index.endswith('*'):
             prefix_index = re.compile(index.rstrip('*'))
-            for key in res_json.keys():
+            for key in res_json:
                 if prefix_index.match(key):
                     my_map = res_json[key]['mappings']['properties']
                     elastic_mapping[key] = {"_id": "doc_id", "_index": key}
