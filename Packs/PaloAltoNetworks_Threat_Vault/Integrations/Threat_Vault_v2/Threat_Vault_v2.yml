@@ -646,7 +646,7 @@ script:
     - contextPath: ThreatVault.fileformat.latest_release_time
       description: 
       type: String
-  dockerimage: demisto/python3:3.10.1.26972
+  dockerimage: devdemisto/python3:3.10.8.36800
   isfetch: true
   longRunning: false
   longRunningPort: false

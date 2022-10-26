@@ -1,8 +1,7 @@
 from typing import Tuple
 from CommonServerPython import *
+from html_to_json import convert
 
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
 
 BASE_URL = 'https://api.threatvault.paloaltonetworks.com/service/v1/'
 SCORE_TABLE_FILE = {
@@ -11,6 +10,16 @@ SCORE_TABLE_FILE = {
     'grayware': Common.DBotScore.SUSPICIOUS,
     'malicious': Common.DBotScore.BAD
 }
+LIST_OF_RN_KEYS = [
+    'spyware',
+    'vulnerability',
+    'fileformat',
+    'antivirus',
+    'file_type', 
+    'data_correlation',
+    'decoders',
+    'applications'
+]
 
 
 class Client(BaseClient):
@@ -265,6 +274,56 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
             )
 
     return command_results_list
+
+
+def extract_rn_from_html_to_json(raw_incident):
+
+    values: list = []
+    if isinstance(raw_incident, list):
+        for item in raw_incident:
+            if isinstance(item, dict):
+                values.extend(extract_rn_from_html_to_json(item))
+    if isinstance(raw_incident, dict):
+        for key in raw_incident.keys():
+            if key == '_values':
+                values.append({'Values': raw_incident['_values']})
+            else:
+                values.extend(extract_rn_from_html_to_json(raw_incident[key]))
+    return values
+
+
+def organization_release_notes(rn: list):
+
+    release_notes = []
+    for release_note in rn:
+        rn_one = ' '.join(release_note['Values']).replace('\xa0', ' ')
+        release_notes.append({'Release Note': rn_one})
+    return release_notes
+
+
+def parse_incident(incident: dict):
+
+    table_for_md = organization_release_notes(
+        extract_rn_from_html_to_json(
+            convert(
+                incident['data'][0]['release_notes']['notes'][0]
+            )
+        )
+    )
+
+    incident['data'][0]['release_notes_md'] = tableToMarkdown(
+        name=f"Release version {incident['data'][0]['release_version']}:",
+        t=table_for_md,
+        removeNull=True
+    )
+
+    incident['data'][0]['Source name'] = 'THREAT VAULT - RELEASE NOTES'
+
+    for key in incident['data'][0]['release_notes'].copy():
+        if key in LIST_OF_RN_KEYS and not incident['data'][0]['release_notes'][key]['new']:
+            del incident['data'][0]['release_notes'][key]
+
+    return incident
 
 
 '''
@@ -580,7 +639,7 @@ def fetch_incidents(client: Client, args: dict) -> List:
     today = datetime.now(timezone.utc).date().strftime('%Y-%m-%d')
     try:
         demisto.debug(f'Time for request fetch-incidents -> {today}')
-        response = client.threat_search_request({'releaseDate': today})
+        response = client.threat_search_request({'releaseDate': '2022-10-17'})
     except Exception as err:
         if 'Error in API call [404] - Not Found' in str(err):
             return []
@@ -590,12 +649,11 @@ def fetch_incidents(client: Client, args: dict) -> List:
     if keys_of_resp := [x for x in response['data'].keys() if x in ('spyware', 'vulnerability', 'fileformat', 'antivirus')]:
         number_version = response['data'][keys_of_resp[0]][0]['latest_release_version']
         release = client.release_notes_get_request('content', number_version)
-        # release['data'][0]['release_notes']['notes'][0] = convert(release['data'][0]['release_notes']['notes'][0])
-        # del release['data'][0]['release_notes']['notes']
+
         incident = {
             'name': 'THREAT VAULT - RELEASE NOTES',
             'occurred': release['data'][0]['release_time'],
-            'rawJSON': json.dumps(release)
+            'rawJSON': json.dumps(parse_incident(release))
         }
         return [incident]
     else:
