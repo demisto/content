@@ -303,46 +303,46 @@ script:
     execution: false
     name: threatvault-release-note-get
     outputs:
-    - contextPath: ThreatVault.RelaseNote.release_version
+    - contextPath: ThreatVault.ReleaseNote.release_version
       description: The release version of the update.
       type: String
-    - contextPath: ThreatVault.RelaseNote.type
+    - contextPath: ThreatVault.ReleaseNote.type
       description: The type of the release notes.
       type: String
-    - contextPath: ThreatVault.RelaseNote.content_version
+    - contextPath: ThreatVault.ReleaseNote.content_version
       description: The content version of the update.
       type: String
-    - contextPath: ThreatVault.RelaseNote.notes
+    - contextPath: ThreatVault.ReleaseNote.notes
       description: General notices and reminders.
       type: Array
-    - contextPath: ThreatVault.RelaseNote.decoders
+    - contextPath: ThreatVault.ReleaseNote.decoders
       description: The decoder updates in the release notes.
       type: Array
-    - contextPath: ThreatVault.RelaseNote.spyware.new
+    - contextPath: ThreatVault.ReleaseNote.spyware.new
       description: List of new entries.
       type: Array
-    - contextPath: ThreatVault.RelaseNote.spyware.modified
+    - contextPath: ThreatVault.ReleaseNote.spyware.modified
       description: List of modified entries.
       type: Array
-    - contextPath: ThreatVault.RelaseNote.spyware.disabled
+    - contextPath: ThreatVault.ReleaseNote.spyware.disabled
       description: List of disabled entries.
       type: Array
-    - contextPath: ThreatVault.RelaseNote.vulnerability.new
+    - contextPath: ThreatVault.ReleaseNote.vulnerability.new
       description: List of new entries.
       type: Array
-    - contextPath: ThreatVault.RelaseNote.vulnerability.modified
+    - contextPath: ThreatVault.ReleaseNote.vulnerability.modified
       description: List of modified entries.
       type: Array
-    - contextPath: ThreatVault.RelaseNote.vulnerability.disabled
+    - contextPath: ThreatVault.ReleaseNote.vulnerability.disabled
       description: List of disabled entries.
       type: Array
-    - contextPath: ThreatVault.RelaseNote.applications.new
+    - contextPath: ThreatVault.ReleaseNote.applications.new
       description: List of new entries.
       type: Array
-    - contextPath: ThreatVault.RelaseNote.applications.modified
+    - contextPath: ThreatVault.ReleaseNote.applications.modified
       description: List of modified entries.
       type: Array
-    - contextPath: ThreatVault.RelaseNote.applications.obsoleted
+    - contextPath: ThreatVault.ReleaseNote.applications.obsoleted
       description: List of obsoleted entries.
       type: Array
   - arguments:

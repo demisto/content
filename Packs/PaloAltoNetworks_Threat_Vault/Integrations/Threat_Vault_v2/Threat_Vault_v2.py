@@ -70,6 +70,9 @@ HELP FUNCTIONS
 
 
 def pagination(page: Optional[int], page_size: Optional[int], limit: Optional[int]) -> Tuple[Optional[int], Optional[int]]:
+    '''
+    The page_size and page arguments are converted so they match the offset and limit parameters of the API call.
+    '''
 
     if page and page_size:
         if page < 0:
@@ -277,6 +280,9 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
 
 
 def extract_rn_from_html_to_json(raw_incident):
+    '''
+    Extracts the release notes from the incident (recursive) and converts them to JSON.
+    '''
 
     values: list = []
     if isinstance(raw_incident, list):
@@ -302,6 +308,12 @@ def organization_release_notes(rn: list):
 
 
 def parse_incident(incident: dict):
+    '''
+    1. Parse the release notes information received
+    2. Organizes the release notes so that they are easily readable
+    3. Adds source name to the incident
+    4. Deletes keys from the incident when no values were found in them
+    '''
 
     table_for_md = organization_release_notes(
         extract_rn_from_html_to_json(
@@ -332,13 +344,10 @@ COMMANDS
 
 
 def file_command(client: Client, args: Dict) -> List[CommandResults]:
-    """Get the reputation of a sha256 or a md5 representing an antivirus
-    Args:
-        client: Client object with request.
-        args: Usually demisto.args()
-    Returns:
-        list of CommandResults.
     """
+    Get the reputation of a sha256 or a md5 representing an antivirus
+    """
+
     hashes = argToList(args.get('file'))
     command_results_list: List[CommandResults] = []
     dbot_reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(client.reliability)
@@ -635,7 +644,11 @@ FETCH INCIDENT
 
 
 def fetch_incidents(client: Client, args: dict) -> List:
+    '''
+    Retrieving release notes that contain all the information about vulnerabilities, antivirus, spyware, and more.
+    '''
 
+    # Bringing the daily date for the first api call
     today = datetime.now(timezone.utc).date().strftime('%Y-%m-%d')
     try:
         demisto.debug(f'Time for request fetch-incidents -> {today}')
@@ -647,9 +660,13 @@ def fetch_incidents(client: Client, args: dict) -> List:
             raise ValueError(err)
 
     if keys_of_resp := [x for x in response['data'].keys() if x in ('spyware', 'vulnerability', 'fileformat', 'antivirus')]:
+
+        # The version of the release notes for the second API call can be extracted
         number_version = response['data'][keys_of_resp[0]][0]['latest_release_version']
+        # The API is called by the version number
         release = client.release_notes_get_request('content', number_version)
 
+        # Incident organization and arrangement
         incident = {
             'name': 'THREAT VAULT - RELEASE NOTES',
             'occurred': release['data'][0]['release_time'],
@@ -704,9 +721,11 @@ def main():
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
+
         elif command == 'fetch-incidents':
             incidents = fetch_incidents(client, params)
             demisto.incidents(incidents)
+
         elif command in commands:
             return_results(commands[command](client, demisto.args()))
         else:
