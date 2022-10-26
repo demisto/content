@@ -85,3 +85,4 @@ def test_markdown_image_server(mocker, capfd):
         assert res3.status == 404
 
         conn.close()
+        quit_driver_and_reap_children(True)
