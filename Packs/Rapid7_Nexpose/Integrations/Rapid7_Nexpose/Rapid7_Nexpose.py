@@ -16,7 +16,7 @@ API_DEFAULT_PAGE_SIZE = 10  # Default page size that's set on the API. Used for 
 DEFAULT_PAGE_SIZE = 50  # Default page size to use
 MATCH_DEFAULT_VALUE = "any"  # Default "match" value to use when using search filters. Can be either "all" or "any".
 REPORT_DOWNLOAD_WAIT_TIME = 60  # Time in seconds to wait before downloading a report after starting its generation
-VENDOR_NAME = "Rapid7 Nexpose"  # TODO: Check if correct
+VENDOR_NAME = "Rapid7 Nexpose"  # Vendor name to use for indicators.
 
 urllib3.disable_warnings()  # Disable insecure warnings
 
@@ -3623,10 +3623,10 @@ def get_asset_command(client: Client, asset_id: str) -> Union[CommandResults, Li
             cve_indicators.extend([CommandResults(
                     indicator=Common.CVE(
                         id=cve,
-                        cvss=None,
-                        description=None,
-                        modified=None,
-                        published=None,
+                        cvss=None,  # type: ignore
+                        description=None,  # type: ignore
+                        modified=None,  # type: ignore
+                        published=None,  # type: ignore
                     )) for cve in extra_info["cves"]])
 
         output_vulnerability = {
@@ -3769,7 +3769,8 @@ def get_assets_command(client: Client, page_size: Optional[int] = None,
     return result
 
 
-def get_asset_vulnerability_command(client: Client, asset_id: str, vulnerability_id: str) -> CommandResults:
+def get_asset_vulnerability_command(client: Client, asset_id: str,
+                                    vulnerability_id: str) -> Union[CommandResults, list[CommandResults]]:
     """
     Retrieve information about vulnerability findings on an asset.
 
@@ -3778,41 +3779,31 @@ def get_asset_vulnerability_command(client: Client, asset_id: str, vulnerability
         asset_id (str): ID of the asset to retrieve information about.
         vulnerability_id (str): ID of the vulnerability to look for
     """
-    asset_vulnerability_data = client.get_asset_vulnerability(
-        asset_id=asset_id,
-        vulnerability_id=vulnerability_id,
-    )
-
-    # TODO: If 404 is received, check that asset_id and vulnerability_id are valid and return error message accordingly.
-    # If they are, print a message saying that the asset is not vulnerable.
-    # Otherwise print an error saying which parameter is invalid.
-
-    if asset_vulnerability_data is None:
-        return CommandResults(
-            readable_output="Vulnerability not found",
-            raw_response=asset_vulnerability_data,
+    try:
+        vulnerability_data = client.get_asset_vulnerability(
+            asset_id=asset_id,
+            vulnerability_id=vulnerability_id,
         )
 
-    vulnerability_headers = [
-        "Id",
-        "Title",
-        "Severity",
-        "RiskScore",
-        "CVSS",
-        "CVSSV3",
-        "Published",
-        "Added",
-        "Modified",
-        "CVSSScore",
-        "CVSSV3Score",
-        "Categories",
-        "CVES"
-    ]
+    # A 404 error is returned when the asset or vulnerability could not be found,
+    # or if the asset is not vulnerable to this vulnerability.
+    # This code section is to separate the different errors and return a different message for each case.
+    except DemistoException as e:
+        if e.res is not None and e.res.status_code is not None and e.res.status_code == 404:
+            try:
+                client.get_asset(asset_id)
+
+            except DemistoException as e2:
+                if e2.res is not None and e2.res.status_code is not None and e2.res.status_code == 404:
+                    return CommandResults(readable_output="Asset not found.")
+
+            return CommandResults(readable_output=f"Asset is not vulnerable to \"{vulnerability_id}\".")
+
+        raise e
 
     # Add extra info about vulnerability
-    vulnerability_data = [asset_vulnerability_data]
-    vulnerability_extra_data = client.get_asset_vulnerabilities(asset_id=asset_id)
-    vulnerability_data.extend(vulnerability_extra_data)
+    vulnerability_extra_data = client.get_vulnerability(vulnerability_id=vulnerability_id)
+    vulnerability_data.update(vulnerability_extra_data)
 
     vulnerability_outputs: dict = replace_key_names(
         data=vulnerability_extra_data,
@@ -3835,19 +3826,11 @@ def get_asset_vulnerability_command(client: Client, asset_id: str, vulnerability
         use_reference=True,
     )
 
-    results_headers = [
-        "Port",
-        "Protocol",
-        "Since",
-        "Proof",
-        "Status"
-    ]
-
     results_output = []
 
-    if vulnerability_data:
+    if vulnerability_data.get("results"):
         results_output = replace_key_names(
-            data=vulnerability_data,
+            data=vulnerability_data["results"],
             name_mapping={
                 "port": "Port",
                 "protocol": "Protocol",
@@ -3862,14 +3845,6 @@ def get_asset_vulnerability_command(client: Client, asset_id: str, vulnerability
     # Remove HTML tags
     for result in results_output:
         result["Proof"] = re.sub("<.*?>", "", result["Proof"])
-
-    solutions_headers = [
-        "Type",
-        "Summary",
-        "Steps",
-        "Estimate",
-        "AdditionalInformation"
-    ]
 
     # Add solutions data
     solutions_output: dict = {}
@@ -3890,8 +3865,40 @@ def get_asset_vulnerability_command(client: Client, asset_id: str, vulnerability
             use_reference=True,
         )
 
-        for i, val in enumerate(solutions_output):
-            solutions_output[i]["Estimate"] = readable_duration_time(solutions_output[i]["Estimate"])
+        for idx, val in enumerate(solutions_output):
+            solutions_output[idx]["Estimate"] = readable_duration_time(solutions_output[idx]["Estimate"])
+
+    vulnerability_headers = [
+        "Id",
+        "Title",
+        "Severity",
+        "RiskScore",
+        "CVSS",
+        "CVSSV3",
+        "Published",
+        "Added",
+        "Modified",
+        "CVSSScore",
+        "CVSSV3Score",
+        "Categories",
+        "CVES",
+    ]
+
+    results_headers = [
+        "Port",
+        "Protocol",
+        "Since",
+        "Proof",
+        "Status",
+    ]
+
+    solutions_headers = [
+        "Type",
+        "Summary",
+        "Steps",
+        "Estimate",
+        "AdditionalInformation",
+    ]
 
     vulnerabilities_md = tableToMarkdown("Vulnerability " + vulnerability_id, vulnerability_outputs,
                                          vulnerability_headers, removeNull=True)
@@ -3899,36 +3906,35 @@ def get_asset_vulnerability_command(client: Client, asset_id: str, vulnerability
         results_output) > 0 else ""
     solutions_md = tableToMarkdown("Solutions", solutions_output, solutions_headers,
                                    removeNull=True) if solutions_output is not None else ""
-    md = vulnerabilities_md + results_md + solutions_md
-
-    cves = []
-
-    if vulnerability_outputs["CVES"] is not None and len(vulnerability_outputs["CVES"]) > 0:
-        cves = [{"ID": cve} for cve in vulnerability_outputs["CVES"]]
 
     vulnerability_outputs["Check"] = results_output
     vulnerability_outputs["Solution"] = solutions_output
 
-    asset = {
-        "AssetId": asset_id,
-        "Vulnerability": [vulnerability_outputs]
-    }
+    result = CommandResults(
+            outputs_prefix="Nexpose.Asset",
+            outputs_key_field="Id",
+            outputs={
+                "AssetId": asset_id,
+                "Vulnerability": [vulnerability_outputs]
+            },
+            readable_output=vulnerabilities_md + results_md + solutions_md,
+        )
 
-    context = {
-        "Nexpose.Asset(val.AssetId==obj.AssetId)": asset,
-    }
+    if vulnerability_outputs.get("CVES"):
+        results = [result]
 
-    if len(cves) > 0:
-        context["CVE(val.ID==obj.ID)"] = cves
+        results.extend([CommandResults(
+            indicator=Common.CVE(
+                id=cve,
+                cvss=None,  # type: ignore
+                description=None,  # type: ignore
+                modified=None,  # type: ignore
+                published=None,  # type: ignore
+            )) for cve in vulnerability_outputs["CVES"]])
 
-    return {
-        "Type": entryTypes["note"],
-        "Contents": vulnerability_data,
-        "ContentsFormat": formats["json"],
-        "ReadableContentsFormat": formats["markdown"],
-        "HumanReadable": md,
-        "EntryContext": context
-    }
+        return results
+
+    return result
 
 
 def get_generated_report_status_command(client: Client, report_id: str, instance_id: str) -> CommandResults:
