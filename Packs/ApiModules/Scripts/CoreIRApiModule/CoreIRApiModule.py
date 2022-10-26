@@ -2581,11 +2581,11 @@ def handle_user_unassignment(update_args):
 
 def handle_outgoing_issue_closure(remote_args):
     update_args = remote_args.delta
-    current_remote_status = remote_args.data.get('status')
+    current_remote_status = remote_args.data.get('status') if remote_args.data else None
     # force closing remote incident only if:
-    #   XSOAR incident are closed
-    #   the closingUserId was changed
-    #   remote incident aren't already closed
+    #   The XSOAR incident is closed
+    #   and the closingUserId was changed
+    #   and the remote incident isn't already closed
     if remote_args.inc_status == 2 and \
        update_args.get('closingUserId') and \
        current_remote_status not in XDR_RESOLVED_STATUS_TO_XSOAR:
