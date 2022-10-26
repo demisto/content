@@ -76,7 +76,7 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.CONF_JSON,
     FileType.MODELING_RULE_SCHEMA,
     FileType.LAYOUTS_CONTAINER,
-    FileType.AGENT_CONFIG,
+    FileType.,
 }
 
 IGNORED_FILE_TYPES: set[FileType] = {
