@@ -3,7 +3,7 @@ commonfields:
   id: Cisco Umbrella Reporting
   version: -1
 configuration:
-- additionalinfo: Cisco Umbrella Reporting api base url.
+- additionalinfo: Cisco Umbrella Reporting API base URL.
   defaultvalue: https://reports.api.umbrella.com
   display: API URL
   hidden: false
@@ -37,7 +37,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: true
-      description: 'Specify the type of traffic. Valid values: dns, proxy, firewall, or ip. By default value will be all i.e. dns, proxy, firewall and ip.'
+      description: Specify the type of traffic. By default, all supported traffic types are included. 
       isArray: false
       name: traffic_type
       predefined:
@@ -48,7 +48,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A domain name or comma-delimited list of domain name.
+      description: A domain name or comma-separated list of domain names.
       isArray: false
       name: domains
       required: false
@@ -60,13 +60,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: A URL or comma-delimited list of URL.
+      description: A URL or comma-separated list of URLs.
       isArray: false
       name: urls
       required: false
       secret: false
     - default: false
-      description: A port number or comma-delimited list of port number.
+      description: A port number or comma-separated list of port numbers.
       isArray: false
       name: ports
       required: false
@@ -78,20 +78,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: A threat name or comma-delimited list of threat name.
+      description: A threat name or comma-separated list of threat names.
       isArray: false
       name: threats
       required: false
       secret: false
     - default: false
-      description: A threat type or comma-delimited list of threat type.
+      description: A threat type or comma-separated list of threat types.
       isArray: false
       name: threat_types
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: An AMP disposition string.
+      description: An Advanced Malware Protection (AMP) disposition string.
       isArray: false
       name: amp_disposition
       predefined:
@@ -101,25 +101,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. By default value is -7days.
+      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. By default value is 'now'.
+      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'.
       isArray: false
       name: to
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Default value of limit is 50.
+      description: The maximum number of records to return from the collection. Default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: An identity type or comma-delimited list of identity type.
+      description: An identity type or comma-separated list of identity types.
       isArray: false
       name: identity_types
       required: false
@@ -136,7 +136,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The page number. Default Page number is 1.
+      description: The page number. Default is 1.
       isArray: false
       name: page
       required: false
@@ -153,34 +153,34 @@ script:
     name: umbrella-reporting-destination-list
     outputs:
     - contextPath: UmbrellaReporting.Destination.count
-      description: Total number of requests made for this destination
+      description: Total number of requests made for this destination.
       type: Number
     - contextPath: UmbrellaReporting.Destination.domain
-      description: Destination
+      description: Destination.
       type: String
     - contextPath: UmbrellaReporting.Destination.bandwidth
-      description: Bandwidth
+      description: Bandwidth.
       type: Number
     - contextPath: UmbrellaReporting.Destination.rank
-      description: The rank of the result based on the number of requests
+      description: The rank of the result based on the number of requests.
       type: Number
     - contextPath: UmbrellaReporting.Destination.policycategories.id
-      description: ID of category.
+      description: ID of the category.
       type: Number
     - contextPath: UmbrellaReporting.Destination.policycategories.label
       description: The human readable label of the category.
       type: String
     - contextPath: UmbrellaReporting.Destination.policycategories.type
-      description: the type of category.
+      description: The type of category.
       type: String
     - contextPath: UmbrellaReporting.Destination.policycategories.deprecated
-      description: If the category is a legacy category.
+      description: Whether the category is a legacy category.
       type: Boolean
     - contextPath: UmbrellaReporting.Destination.policycategories.integration
-      description: If the category is an integration.
+      description: Whether the category is an integration.
       type: Boolean
     - contextPath: UmbrellaReporting.Destination.categories.id
-      description: ID of category.
+      description: ID of the category.
       type: Number
     - contextPath: UmbrellaReporting.Destination.categories.label
       description: The human readable label of the category.
@@ -189,24 +189,24 @@ script:
       description: The type of category.
       type: String
     - contextPath: UmbrellaReporting.Destination.categories.deprecated
-      description: if the category is a legacy category.
+      description: Whether the category is a legacy category.
       type: Boolean
     - contextPath: UmbrellaReporting.Destination.categories.integration
-      description: If the category is an integration.
+      description: Whether the category is an integration.
       type: Boolean
     - contextPath: UmbrellaReporting.Destination.counts.allowedrequests
-      description: Number of requests that were allowed
+      description: Number of requests that were allowed.
       type: Number
     - contextPath: UmbrellaReporting.Destination.counts.blockedrequests
-      description: Number of requests that were blocked
+      description: Number of requests that were blocked.
       type: Number
     - contextPath: UmbrellaReporting.Destination.counts.requests
-      description: Total number of requests
+      description: Total number of requests.
       type: Number
   - arguments:
     - auto: PREDEFINED
       default: true
-      description: 'Specify the type of traffic. Valid values: dns, proxy, or ip. By default value will be all i.e dns, proxy and ip.'
+      description: Specify the type of traffic. By default, all supported traffic types are included. 
       isArray: false
       name: traffic_type
       predefined:
@@ -216,31 +216,31 @@ script:
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. By default value is -7days.
+      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. By default value is 'now'.
+      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'.
       isArray: false
       name: to
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Default value of limit is 50.
+      description: The maximum number of records to return from the collection. Default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: A domain name or comma-delimited list of domain name.
+      description: A domain name or comma-separated list of domain names.
       isArray: false
       name: domains
       required: false
       secret: false
     - default: false
-      description: A URL or comma-delimited list of URL.
+      description: A URL or comma-separated list of URLs.
       isArray: false
       name: urls
       required: false
@@ -258,20 +258,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: A threat name or comma-delimited list of threat name.
+      description: A threat name or comma-separated list of threat names.
       isArray: false
       name: threats
       required: false
       secret: false
     - default: false
-      description: A threat type or comma-delimited list of threat type.
+      description: A threat type or comma-separated list of threat types.
       isArray: false
       name: threat_types
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: An AMP disposition string.
+      description: An Advanced Malware Protection (AMP) disposition string.
       isArray: false
       name: amp_disposition
       predefined:
@@ -281,7 +281,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: An identity type or comma-delimited list of identity type.
+      description: An identity type or comma-separated list of identity types.
       isArray: false
       name: identity_types
       required: false
@@ -298,7 +298,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The page number. Default Page number is 1.
+      description: The page number. Default is 1.
       isArray: false
       name: page
       required: false
@@ -321,27 +321,27 @@ script:
       description: Bandwidth
       type: String
     - contextPath: UmbrellaReporting.Category.category.id
-      description: Category ID
+      description: Category ID.
       type: Number
     - contextPath: UmbrellaReporting.Category.category.type
-      description: Category Type
+      description: Category type.
       type: String
     - contextPath: UmbrellaReporting.Category.category.label
-      description: Category Label
+      description: Category label.
       type: String
     - contextPath: UmbrellaReporting.Category.category.integration
-      description: Category integration
+      description: Category integration.
       type: Boolean
     - contextPath: UmbrellaReporting.Category.category.deprecated
-      description: Category deprecated
+      description: Category deprecated.
       type: String
     - contextPath: UmbrellaReporting.Category.rank
-      description: Rank
+      description: Rank of the category.
       type: Number
   - arguments:
     - auto: PREDEFINED
       default: true
-      description: 'Specify the type of traffic. Valid values: dns, proxy, firewall or ip. By default value will be all i.e. dns, proxy, firewall and ip.'
+      description: Specify the type of traffic. By default, all supported traffic types are included. 
       isArray: false
       name: traffic_type
       predefined:
@@ -352,31 +352,31 @@ script:
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. By default value is -7days.
+      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. By default value is 'now'.
+      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'.
       isArray: false
       name: to
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Default value of limit is 50.
+      description: The maximum number of records to return from the collection. Default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: A domain name or comma-delimited list of domain name.
+      description: A domain name or comma-separated list of domain names.
       isArray: false
       name: domains
       required: false
       secret: false
     - default: false
-      description: A URL or comma-delimited list of URL.
+      description: A URL or comma-separated list of URLs.
       isArray: false
       name: urls
       required: false
@@ -388,7 +388,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A port number or comma-delimited list of port number.
+      description: A port number or comma-separated list of port numbers.
       isArray: false
       name: ports
       required: false
@@ -411,20 +411,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: A threat name or comma-delimited list of threat name.
+      description: A threat name or comma-separated list of threat names.
       isArray: false
       name: threats
       required: false
       secret: false
     - default: false
-      description: A threat type or comma-delimited list of threat type.
+      description: A threat type or comma-separated list of threat types.
       isArray: false
       name: threat_types
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: An AMP disposition string.
+      description: An Advanced Malware Protection (AMP) disposition string.
       isArray: false
       name: amp_disposition
       predefined:
@@ -434,13 +434,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: An identity type or comma-delimited list of identity type.
+      description: An identity type or comma-separated list of identity types.
       isArray: false
       name: identity_types
       required: false
       secret: false
     - default: false
-      description: The page number. Default Page number is 1.
+      description: The page number. Default is 1.
       isArray: false
       name: page
       required: false
@@ -457,62 +457,62 @@ script:
     name: umbrella-reporting-identity-list
     outputs:
     - contextPath: UmbrellaReporting.Identity.requests
-      description: Total number of requests made by this identity
+      description: Total number of requests made by this identity.
       type: Number
     - contextPath: UmbrellaReporting.Identity.bandwidth
       description: Bandwidth
       type: Number
     - contextPath: UmbrellaReporting.Identity.rank
-      description: The rank of the result based on the number of requests
+      description: The rank of the result based on the number of requests.
       type: Number
     - contextPath: UmbrellaReporting.Identity.counts.allowedrequests
-      description: Number of requests that were allowed
+      description: Number of requests that were allowed.
       type: Number
     - contextPath: UmbrellaReporting.Identity.counts.blockedrequests
-      description: Number of requests that were blocked
+      description: Number of requests that were blocked.
       type: Number
     - contextPath: UmbrellaReporting.Identity.counts.requests
-      description: Total number of requests
+      description: Total number of requests.
       type: Number
     - contextPath: UmbrellaReporting.Identity.identity.id
-      description: ID of identity.
+      description: Identity ID.
       type: Number
     - contextPath: UmbrellaReporting.Identity.identity.type.id
-      description: Origin type for identity
+      description: Origin type for the identity.
       type: Number
     - contextPath: UmbrellaReporting.Identity.identity.type.type
-      description: Origin type name for identity
+      description: Origin type name for the identity.
       type: String
     - contextPath: UmbrellaReporting.Identity.identity.type.label
-      description: Origin type label for identity
+      description: Origin type label for the identity.
       type: String
     - contextPath: UmbrellaReporting.Identity.identity.label
-      description: Label for identity
+      description: Label for the identity.
       type: String
     - contextPath: UmbrellaReporting.Identity.identity.deleted
-      description: Indicates whether the identity was deleted or not
+      description: Indicates whether the identity was deleted.
       type: Boolean
   - arguments:
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. By default value is -7days.
+      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. By default value is 'now'.
+      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'.
       isArray: false
       name: to
       required: false
       secret: false
     - default: false
-      description: A domain name or comma-delimited list of domain name.
+      description: A domain name or comma-separated list of domain names.
       isArray: false
       name: domains
       required: false
       secret: false
     - default: false
-      description: A URL or comma-delimited list of URL.
+      description: A URL or comma-separated list of URLs.
       isArray: false
       name: urls
       required: false
@@ -524,7 +524,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: An identity type or comma-delimited list of identity type.
+      description: An identity type or comma-separated list of identity types.
       isArray: false
       name: identity_types
       required: false
@@ -541,20 +541,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: A threat name or comma-delimited list of threat name.
+      description: A threat name or comma-separated list of threat names.
       isArray: false
       name: threats
       required: false
       secret: false
     - default: false
-      description: A threat type or comma-delimited list of threat type.
+      description: A threat type or comma-separated list of threat types.
       isArray: false
       name: threat_types
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: An AMP disposition string.
+      description: An Advanced Malware Protection (AMP) disposition string.
       isArray: false
       name: amp_disposition
       predefined:
@@ -564,7 +564,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The page number. Default Page number is 1.
+      description: The page number. Default is 1.
       isArray: false
       name: page
       required: false
@@ -581,44 +581,44 @@ script:
     name: umbrella-reporting-event-type-list
     outputs:
     - contextPath: UmbrellaReporting.Eventtype.eventtype
-      description: The eventtype. One of "domain_security", "domain_integration", "url_security", "url_integration", "cisco_amp" and "antivirus".
+      description: The event type. One of "domain_security", "domain_integration", "url_security", "url_integration", "cisco_amp" and "antivirus".
       type: String
     - contextPath: UmbrellaReporting.Eventtype.count
-      description: Number of requests made that match this eventtype.
+      description: Number of requests made that match this event type.
       type: Number
   - arguments:
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. By default value is -7days.
+      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. By default value is 'now'.
+      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'.
       isArray: false
       name: to
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Default value of limit is 50.
+      description: The maximum number of records to return from the collection. Default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: A domain name or comma-delimited list of domain name.
+      description: A domain name or comma-separated list of domain names.
       isArray: false
       name: domains
       required: false
       secret: false
     - default: false
-      description: A URL or comma-delimited list of URL.
+      description: A URL or comma-separated list of URLs.
       isArray: false
       name: urls
       required: false
       secret: false
     - default: false
-      description: An IP address
+      description: An IP address.
       isArray: false
       name: ip
       required: false
@@ -642,7 +642,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: An AMP disposition string.
+      description: An Advanced Malware Protection (AMP) disposition string.
       isArray: false
       name: amp_disposition
       predefined:
@@ -652,13 +652,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: An identity type or comma-delimited list of identity type.
+      description: An identity type or comma-separated list of identity types.
       isArray: false
       name: identity_types
       required: false
       secret: false
     - default: false
-      description: The page number. Default Page number is 1.
+      description: The page number. Default is 1.
       isArray: false
       name: page
       required: false
@@ -670,7 +670,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List of files within a timeframe. Only returns proxy data.
+    description: List of files within a time frame. Only returns proxy data.
     execution: false
     name: umbrella-reporting-file-list
     outputs:
@@ -678,36 +678,36 @@ script:
       description: Number of requests.
       type: Number
     - contextPath: UmbrellaReporting.File.identitycount
-      description: count of identities for entry
+      description: Number of identities for entry.
       type: Number
     - contextPath: UmbrellaReporting.File.sha256
-      description: Sha256 for entry
+      description: SHA256 for entry.
       type: String
     - contextPath: UmbrellaReporting.File.filenames
-      description: array of filenames for entry
+      description: Array of filenames for entry.
       type: Unknown
     - contextPath: UmbrellaReporting.File.filetypes
-      description: array of filetypes for entry
+      description: Array of file types for entry.
       type: Unknown
     - contextPath: UmbrellaReporting.File.categories.id
-      description: id of category
+      description: ID of the category.
       type: Number
     - contextPath: UmbrellaReporting.File.categories.label
-      description: The human readable label of the category
+      description: The human readable label of the category.
       type: String
     - contextPath: UmbrellaReporting.File.categories.type
-      description: The type of category
+      description: The type of category.
       type: String
     - contextPath: UmbrellaReporting.File.categories.deprecated
-      description: If the category is a legacy category
+      description: Whether the category is a legacy category.
       type: Boolean
     - contextPath: UmbrellaReporting.File.categories.integration
-      description: If the category is an integration
+      description: Whether the category is an integration.
       type: Boolean
   - arguments:
     - auto: PREDEFINED
       default: true
-      description: 'Specify the type of traffic. Valid values: dns or proxy. By default value will be all i.e. dns and proxy.'
+      description: Specify the type of traffic. By default, all supported traffic types are included. 
       isArray: false
       name: traffic_type
       predefined:
@@ -716,25 +716,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. By default value is -7days.
+      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. By default value is 'now'.
+      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'.
       isArray: false
       name: to
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Default value of limit is 50.
+      description: The maximum number of records to return from the collection. Default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: A domain name or comma-delimited list of domain name.
+      description: A domain name or comma-separated list of domain names.
       isArray: false
       name: domains
       required: false
@@ -746,7 +746,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: An identity type or comma-delimited list of identity type.
+      description: An identity type or comma-separated list of identity types.
       isArray: false
       name: identity_types
       required: false
@@ -763,19 +763,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: A threat name or comma-delimited list of threat name.
+      description: A threat name or comma-separated list of threat names.
       isArray: false
       name: threats
       required: false
       secret: false
     - default: false
-      description: A threat type or comma-delimited list of threat type.
+      description: A threat type or comma-separated list of threat types.
       isArray: false
       name: threat_types
       required: false
       secret: false
     - default: false
-      description: The page number. Default Page number is 1.
+      description: The page number. Default is 1.
       isArray: false
       name: page
       required: false
@@ -787,46 +787,46 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List of top threats within a timeframe. Returns both DNS and Proxy data.
+    description: List of top threats within a time frame. Returns both DNS and Proxy data.
     execution: false
     name: umbrella-reporting-threat-list
     outputs:
     - contextPath: UmbrellaReporting.Threat.threat
-      description: The threat name
+      description: The threat name.
       type: String
     - contextPath: UmbrellaReporting.Threat.threattype
-      description: The threat type
+      description: The threat type.
       type: String
     - contextPath: UmbrellaReporting.Threat.count
-      description: The number of requests for that threat name
+      description: The number of requests for that threat name.
       type: Number
   - arguments:
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. By default value is -7days.
+      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. By default value is 'now'.
+      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'.
       isArray: false
       name: to
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Default value of limit is 50.
+      description: The maximum number of records to return from the collection. Default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: A domain name or comma-delimited list of domain name.
+      description: A domain name or comma-separated list of domain names.
       isArray: false
       name: domains
       required: false
       secret: false
     - default: false
-      description: A URL or comma-delimited list of URL.
+      description: A URL or comma-separated list of URLs.
       isArray: false
       name: urls
       required: false
@@ -838,13 +838,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: A port number or comma-delimited list of port number.
+      description: A port number or comma-separated list of port numbers.
       isArray: false
       name: ports
       required: false
       secret: false
     - default: false
-      description: An identity type or comma-delimited list of identity type.
+      description: An identity type or comma-separated list of identity types.
       isArray: false
       name: identity_types
       required: false
@@ -861,26 +861,26 @@ script:
       required: false
       secret: false
     - default: false
-      description: A string that identifies a filename. Filter request by the filename. Supports globbing or use of the wildcard character (''). The asterisk (*) matches zero or more occurrences of any character.
+      description: A string that identifies a filename. Filter the request by the filename. Supports globbing or use of the wildcard character (''). The asterisk (*) matches zero or more occurrences of any character.
       isArray: false
       name: file_name
       required: false
       secret: false
     - default: false
-      description: A threat name or comma-delimited list of threat name.
+      description: A threat name or comma-separated list of threat names.
       isArray: false
       name: threats
       required: false
       secret: false
     - default: false
-      description: A threat type or comma-delimited list of threat type.
+      description: A threat type or comma-separated list of threat types.
       isArray: false
       name: threat_types
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: An AMP disposition string.
+      description: An Advanced Malware Protection (AMP) disposition string.
       isArray: false
       name: amp_disposition
       predefined:
@@ -890,7 +890,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The page number. Default Page number is 1.
+      description: The page number. Default is 1.
       isArray: false
       name: page
       required: false
@@ -902,48 +902,48 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within timeframe.
+    description: List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time frame.
     execution: false
     name: umbrella-reporting-activity-list
     outputs:
     - contextPath: UmbrellaReporting.Activity.type
-      description: External IP for entry.
+      description: External IP address for entry.
       type: String
     - contextPath: UmbrellaReporting.Activity.externalip
-      description: External IP for entry.
+      description: External IP address for entry.
       type: String
     - contextPath: UmbrellaReporting.Activity.internalip
-      description: Internal IP for entry.
+      description: Internal IP address for entry.
       type: String
     - contextPath: UmbrellaReporting.Activity.policycategories.id
-      description: ID of category.
+      description: ID of the category.
       type: Number
     - contextPath: UmbrellaReporting.Activity.policycategories.label
       description: The human readable label of the category.
       type: String
     - contextPath: UmbrellaReporting.Activity.policycategories.type
-      description: Type of the request. a dns request always has type dns.
+      description: Type of the request. A DNS request always has type dns.
       type: String
     - contextPath: UmbrellaReporting.Activity.policycategories.deprecated
-      description: If the category is a legacy category.
+      description: Whether the category is a legacy category.
       type: Boolean
     - contextPath: UmbrellaReporting.Activity.policycategories.integration
-      description: If the category is an integration.
+      description: Whether the category is an integration.
       type: Boolean
     - contextPath: UmbrellaReporting.Activity.categories.id
-      description: id of category
+      description: ID of the category.
       type: Number
     - contextPath: UmbrellaReporting.Activity.categories.label
-      description: The human readable label of the category
+      description: The human readable label of the category.
       type: String
     - contextPath: UmbrellaReporting.Activity.categories.type
-      description: The type of category
+      description: The type of category.
       type: String
     - contextPath: UmbrellaReporting.Activity.categories.deprecated
-      description: If the category is a legacy category
+      description: Whether the category is a legacy category.
       type: Boolean
     - contextPath: UmbrellaReporting.Activity.categories.integration
-      description: If the category is an integration
+      description: Whether the category is an integration.
       type: Boolean
     - contextPath: UmbrellaReporting.Activity.verdict
       description: Verdict for entry.
@@ -955,28 +955,28 @@ script:
       description: Timestamp in ms.
       type: Number
     - contextPath: UmbrellaReporting.Activity.time
-      description: The time in 24 hour format based on the timezone parameter.
+      description: The time in 24 hour format based on the time zone parameter.
       type: String
     - contextPath: UmbrellaReporting.Activity.date
-      description: The date from the timestamp based on the timezone parameter.
+      description: The date from the timestamp based on the time zone parameter.
       type: String
     - contextPath: UmbrellaReporting.Activity.identities.id
-      description: ID of identity.
+      description: ID of the identity.
       type: Number
     - contextPath: UmbrellaReporting.Activity.identities.type.id
-      description: Origin type for identity
+      description: Origin type for the identity.
       type: Number
     - contextPath: UmbrellaReporting.Activity.identities.type.type
-      description: Origin type name for identity
+      description: Origin type name for the identity.
       type: String
     - contextPath: UmbrellaReporting.Activity.identities.type.label
-      description: Origin type label for identity
+      description: Origin type label for the identity.
       type: String
     - contextPath: UmbrellaReporting.Activity.identities.label
-      description: Label for identity
+      description: Label for the identity.
       type: String
     - contextPath: UmbrellaReporting.Activity.identities.deleted
-      description: Indicates whether the identity was deleted or not
+      description: Indicates whether the identity was deleted.
       type: Boolean
     - contextPath: UmbrellaReporting.Activity.threats.label
       description: The threat name or label.
@@ -1039,14 +1039,14 @@ script:
     - auto: PREDEFINED
       default: true
       description: |-
-        Specify the type of traffic. Valid values are: dns, proxy, firewall, intrusion, ip, amp.
+       Specify the type of traffic.  By default, all supported traffic types are included.
 
-        Supported optional parameter for DNS traffic type are limit, from,  to, offset, domains, ip, verdict, threats, threat_types.
-         Supported optional parameter for Proxy traffic type are limit, from, to, offset, domains, ip, verdict, threats, threat_types, urls, ports, identity_types, file_name, amp_disposition.
-         Supported optional parameter for Firewall traffic type are limit, from, to, offset, ip, ports, verdict.
-         Supported optional parameter for Intrusion traffic type are limit, from, to, offset, ip, ports, signatures, intrusion_action.
-         Supported optional parameter for IP traffic type are limit, from, to, offset, ip, ports, identity_types, verdict.
-         Supported optional parameter for AMP traffic type are limit, from, to, offset, amp_disposition, sha256.
+        Supported optional parameters for DNS traffic type are limit, from,  to, offset, domains, ip, verdict, threats, threat_types.
+         Supported optional parameters for Proxy traffic type are limit, from, to, offset, domains, ip, verdict, threats, threat_types, urls, ports, identity_types, file_name, amp_disposition.
+         Supported optional parameters for Firewall traffic type are limit, from, to, offset, ip, ports, verdict.
+         Supported optional parameters for Intrusion traffic type are limit, from, to, offset, ip, ports, signatures, intrusion_action.
+         Supported optional parameters for IP traffic type are limit, from, to, offset, ip, ports, identity_types, verdict.
+         Supported optional parameters for Advanced Malware Protection (AMP) traffic type are limit, from, to, offset, amp_disposition, sha256.
       isArray: false
       name: traffic_type
       predefined:
@@ -1059,31 +1059,31 @@ script:
       required: true
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. By default value is -7days.
+      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. By default value is 'now'.
+      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'.
       isArray: false
       name: to
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Default value of limit is 50.
+      description: The maximum number of records to return from the collection. Default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: A domain name or comma-delimited list of domain name.
+      description: A domain name or comma-separated list of domain names.
       isArray: false
       name: domains
       required: false
       secret: false
     - default: false
-      description: A URL or comma-delimited list of URL.
+      description: A URL or comma-separated list of URLs.
       isArray: false
       name: urls
       required: false
@@ -1095,13 +1095,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: A port number or comma-delimited list of port number.
+      description: A port number or comma-separated list of port numbers.
       isArray: false
       name: ports
       required: false
       secret: false
     - default: false
-      description: An identity type or comma-delimited list of identity type.
+      description: An identity type or comma-separated list of identity types.
       isArray: false
       name: identity_types
       required: false
@@ -1118,26 +1118,26 @@ script:
       required: false
       secret: false
     - default: false
-      description: A string that identifies a filename. Filter request by the filename. Supports globbing or use of the wildcard character (''). The asterisk (*) matches zero or more occurrences of any character.
+      description: A string that identifies a filename. Filter the request by the filename. Supports globbing or use of the wildcard character (''). The asterisk (*) matches zero or more occurrences of any character.
       isArray: false
       name: file_name
       required: false
       secret: false
     - default: false
-      description: A threat name or comma-delimited list of threat name.
+      description: A threat name or comma-separated list of threat names.
       isArray: false
       name: threats
       required: false
       secret: false
     - default: false
-      description: A threat type or comma-delimited list of threat type.
+      description: A threat type or comma-separated list of threat types.
       isArray: false
       name: threat_types
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: An AMP disposition string.
+      description: An Advanced Malware Protection (AMP) disposition string.
       isArray: false
       name: amp_disposition
       predefined:
@@ -1147,7 +1147,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The page number. Default Page number is 1.
+      description: The page number. Default is 1.
       isArray: false
       name: page
       required: false
@@ -1159,62 +1159,62 @@ script:
       required: false
       secret: false
     - default: false
-      description: List of -, comma delimited.
+      description: List of -, comma separated.
       isArray: false
       name: signatures
       required: false
       secret: false
     - default: false
-      description: 'List of intrusion actions, comma delimited. possible values: would_block, blocked, detected.'
+      description: 'Comma-separated list of intrusion actions. Possible values: would_block, blocked, detected.'
       isArray: false
       name: intrusion_action
       required: false
       secret: false
     deprecated: false
     description: |-
-      List all entries within a timeframe based on the traffic type selected. Valid activity types are dns, proxy, firewall, intrusion, ip, amp.
+      List all entries within a time frame based on the traffic type selected. Valid activity types are dns, proxy, firewall, intrusion, ip, amp.
       Only one activity type can be selected at a time.
     execution: false
     name: umbrella-reporting-activity-get
     outputs:
     - contextPath: UmbrellaReporting.ActivityDns.type
-      description: External IP for entry.
+      description: External IP address for entry.
       type: String
     - contextPath: UmbrellaReporting.ActivityDns.externalip
-      description: External IP for entry.
+      description: External IP address for entry.
       type: String
     - contextPath: UmbrellaReporting.ActivityDns.internalip
-      description: Internal IP for entry.
+      description: Internal IP address for entry.
       type: String
     - contextPath: UmbrellaReporting.ActivityDns.policycategories.id
-      description: ID of category.
+      description: ID of the category.
       type: Number
     - contextPath: UmbrellaReporting.ActivityDns.policycategories.label
       description: The human readable label of the category.
       type: String
     - contextPath: UmbrellaReporting.ActivityDns.policycategories.type
-      description: Type of the request. a dns request always has type dns.
+      description: Type of the request. A DNS request always has type dns.
       type: String
     - contextPath: UmbrellaReporting.ActivityDns.policycategories.deprecated
-      description: If the category is a legacy category.
+      description: Whether the category is a legacy category.
       type: Boolean
     - contextPath: UmbrellaReporting.ActivityDns.policycategories.integration
-      description: If the category is an integration.
+      description: Whether the category is an integration.
       type: Boolean
     - contextPath: UmbrellaReporting.ActivityDns.categories.id
-      description: id of category
+      description: ID of the category.
       type: Number
     - contextPath: UmbrellaReporting.ActivityDns.categories.label
-      description: The human readable label of the category
+      description: The human readable label of the category.
       type: String
     - contextPath: UmbrellaReporting.ActivityDns.categories.type
-      description: The type of category
+      description: The type of category.
       type: String
     - contextPath: UmbrellaReporting.ActivityDns.categories.deprecated
-      description: If the category is a legacy category
+      description: Whether the category is a legacy category.
       type: Boolean
     - contextPath: UmbrellaReporting.ActivityDns.categories.integration
-      description: If the category is an integration
+      description: Whether the category is an integration.
       type: Boolean
     - contextPath: UmbrellaReporting.ActivityDns.verdict
       description: Verdict for entry.
@@ -1226,28 +1226,28 @@ script:
       description: Timestamp in ms.
       type: Number
     - contextPath: UmbrellaReporting.ActivityDns.time
-      description: The time in 24 hour format based on the timezone parameter.
+      description: The time in 24 hour format based on the time zone parameter.
       type: String
     - contextPath: UmbrellaReporting.ActivityDns.date
-      description: The date from the timestamp based on the timezone parameter.
+      description: The date from the timestamp based on the time zone parameter.
       type: String
     - contextPath: UmbrellaReporting.ActivityDns.identities.id
-      description: ID of identity.
+      description: ID of the identity.
       type: Number
     - contextPath: UmbrellaReporting.ActivityDns.identities.type.id
-      description: Origin type for identity
+      description: Origin type for the identity.
       type: Number
     - contextPath: UmbrellaReporting.ActivityDns.identities.type.type
-      description: Origin type name for identity
+      description: Origin type name for the identity.
       type: String
     - contextPath: UmbrellaReporting.ActivityDns.identities.type.label
-      description: Origin type label for identity
+      description: Origin type label for the identity.
       type: String
     - contextPath: UmbrellaReporting.ActivityDns.identities.label
-      description: Label for identity
+      description: Label for the identity.
       type: String
     - contextPath: UmbrellaReporting.ActivityDns.identities.deleted
-      description: Indicates whether the identity was deleted or not
+      description: Indicates whether the identity was deleted.
       type: Boolean
     - contextPath: UmbrellaReporting.ActivityDns.threats.label
       description: The threat name or label.
@@ -1311,7 +1311,7 @@ script:
       default: true
       description: |-
         Get summary list of different summary types. Valid values for summary_type are category, destination, intrusion_rule.
-        If summary type is not provided by the user, then all summary types i.e. category, destination, intrusion_rule will be considered.
+        If summary type is not provided by the user, then all summary types i.e., category, destination, intrusion_rule will be considered.
         Supported optional parameters for category summary type are domain, urls, ip, identity_types, verdict, file_name, threats, threat_types, amp_disposition.
         Supported optional parameters for destination summary type are domain, urls, ip, identity_types, verdict, file_name, threats, threat_types, amp_disposition.
         Supported optional parameters for intrusion_rule summary type are signatures, ip, identity_types, intrusion_action, ports.
@@ -1324,31 +1324,31 @@ script:
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. By default value is -7days.
+      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. By default value is 'now'.
+      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'.
       isArray: false
       name: to
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Default value of limit is 50.
+      description: The maximum number of records to return from the collection. Default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: A domain name or comma-delimited list of domain name.
+      description: A domain name or comma-separated list of domain names.
       isArray: false
       name: domains
       required: false
       secret: false
     - default: false
-      description: A URL or comma-delimited list of URL.
+      description: A URL or comma-separated list of URLs.
       isArray: false
       name: urls
       required: false
@@ -1360,13 +1360,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: A port number or comma-delimited list of port number.
+      description: A port number or comma-separated list of port numbers.
       isArray: false
       name: ports
       required: false
       secret: false
     - default: false
-      description: An identity type or comma-delimited list of identity type.
+      description: An identity type or comma-separated list of identity types.
       isArray: false
       name: identity_types
       required: false
@@ -1383,26 +1383,26 @@ script:
       required: false
       secret: false
     - default: false
-      description: A string that identifies a filename. Filter request by the filename. Supports globbing or use of the wildcard character (''). The asterisk (*) matches zero or more occurrences of any character.
+      description: A string that identifies a filename. Filter the request by the filename. Supports globbing or use of the wildcard character (''). The asterisk (*) matches zero or more occurrences of any character.
       isArray: false
       name: file_name
       required: false
       secret: false
     - default: false
-      description: A threat name or comma-delimited list of threat name.
+      description: A threat name or comma-separated list of threat names.
       isArray: false
       name: threats
       required: false
       secret: false
     - default: false
-      description: A threat type or comma-delimited list of threat type.
+      description: A threat type or comma-separated list of threat types.
       isArray: false
       name: threat_types
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: An AMP disposition string.
+      description: An Advanced Malware Protection (AMP) disposition string.
       isArray: false
       name: amp_disposition
       predefined:
@@ -1412,7 +1412,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The page number. Default Page number is 1.
+      description: The page number. Default is 1.
       isArray: false
       name: page
       required: false
@@ -1424,13 +1424,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: List of -, comma delimited.
+      description: List of -, comma separated.
       isArray: false
       name: signatures
       required: false
       secret: false
     - default: false
-      description: 'List of intrusion actions, comma delimited. possible values: would_block, blocked, detected.'
+      description: 'Comma-separated List of intrusion actions. Possible values: would_block, blocked, detected.'
       isArray: false
       name: intrusion_action
       required: false
