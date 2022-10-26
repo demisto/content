@@ -142,6 +142,7 @@ def main():  # pragma: no cover
                      'course-of-action', 'intrusion-set', 'tool', 'threat-actor', 'infrastructure']
     objects_to_fetch = argToList(params.get('objects_to_fetch') or objects_types)
     default_api_root = params.get('default_api_root', 'public')
+    seconds_to_sleep = arg_to_number(params.get('seconds_to_sleep')) or 1
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
@@ -160,6 +161,7 @@ def main():  # pragma: no cover
             certificate=certificate,
             key=key,
             default_api_root=default_api_root,
+            seconds_to_sleep=seconds_to_sleep
         )
         client.initialise()
 

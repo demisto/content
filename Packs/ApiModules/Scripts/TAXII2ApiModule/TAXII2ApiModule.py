@@ -134,6 +134,7 @@ class Taxii2FeedClient:
             certificate: str = None,
             key: str = None,
             default_api_root: str = None,
+            seconds_to_sleep: int = 1,
     ):
         """
         TAXII 2 Client used to poll and parse indicators in XSOAR formar
@@ -204,6 +205,7 @@ class Taxii2FeedClient:
         self.id_to_object: Dict[str, Any] = {}
         self.objects_to_fetch = objects_to_fetch
         self.default_api_root = default_api_root
+        self.seconds_to_sleep = seconds_to_sleep
 
     def init_server(self, version=TAXII_VER_2_0):
         """
@@ -884,10 +886,10 @@ class Taxii2FeedClient:
         """
         Polls the taxii server and builds a list of cortex indicators objects from the result
         :param limit: max amount of indicators to fetch
+        :param recover_http_errors: A boolean that determines whether we recover and try to send the same request again when
+            encountering http errors.
         :return: Cortex indicators list
         """
-        demisto.debug(f'in build_iterator, {limit=}')
-
         if not isinstance(self.collection_to_fetch, (v20.Collection, v21.Collection)):
             raise DemistoException(
                 "Could not find a collection to fetch from. "
@@ -899,11 +901,8 @@ class Taxii2FeedClient:
         page_size = self.get_page_size(limit, limit)
         if page_size <= 0:
             return []
-        demisto.debug('before poll_collection')
         envelopes = self.poll_collection(page_size, **kwargs)  # got data from server
-        demisto.debug('before load_stix_objects_from_envelope')
         indicators = self.load_stix_objects_from_envelope(envelopes, limit, recover_http_errors)
-        demisto.debug('at build_iterator end')
         return indicators
 
     def load_stix_objects_from_envelope(self, envelopes: Dict[str, Any], limit: int = -1, recover_http_errors: bool = False):
@@ -980,7 +979,6 @@ class Taxii2FeedClient:
         relationships_list: List[Dict[str, Any]] = []
         for obj_type, envelope in envelopes.items():
             if exceeded_limit(limit, len(indicators) + len(relationships_list)):
-                demisto.debug('exceeded_limit')
                 break
             stix_objects = envelope.get("objects", [])
             if obj_type != "relationship":
@@ -1026,10 +1024,11 @@ class Taxii2FeedClient:
                     if not recover_http_errors:
                         raise e
                     if i <= 3:
-                        demisto.debug(f'Got HTTPError in while loop for {obj_type=}, sleeping for 10 seconds and trying again')
-                        time.sleep(10)
+                        demisto.debug(f'Got HTTPError in while loop number {i} for {obj_type=}, '
+                                      f'sleeping for {self.seconds_to_sleep} seconds and trying again.')
+                        time.sleep(self.seconds_to_sleep)
                     else:
-                        demisto.debug(f'Got HTTPError in while loop number {i}, getting out of while loop for {obj_type=}')
+                        demisto.debug(f'Got HTTPError in while loop number {i}, getting out of while loop for {obj_type=}.')
                         break
 
         if relationships_list:
@@ -1066,11 +1065,9 @@ class Taxii2FeedClient:
         collection = self.collection_to_fetch
         collection._verify_can_read()
         query_params = _filter_kwargs_to_query_params(filter_kwargs)
-        demisto.debug(f'{query_params=}')
         merged_headers = collection._conn._merge_headers({"Accept": accept, "Content-Type": "application/taxii+json"})
 
         resp = collection._conn.session.get(collection.objects_url, headers=merged_headers, params=query_params)
-        demisto.debug(f'resp.text={resp.text}')
         if len(resp.text) <= len('{}'):  # in case it is not a json that has to have {}
             return {}
 
