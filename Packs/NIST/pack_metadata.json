@@ -11,10 +11,10 @@
         "Case Management"
     ],
     "tags": [
-        "Incident Handling"
+        "Use Case"
     ],
     "useCases": [
-        "NIST"
+        "Compliance"
     ],
     "keywords": [],
     "dependencies": {

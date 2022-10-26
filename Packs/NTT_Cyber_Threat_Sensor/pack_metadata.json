@@ -8,11 +8,9 @@
     "email": "servicedesk@global.ntt",
     "created": "2020-06-25T07:27:48Z",
     "categories": [
-        "Network Security"
+        "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Pcap",
-        "Alerts"
     ],
     "useCases": [],
     "keywords": [],

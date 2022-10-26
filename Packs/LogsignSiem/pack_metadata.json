@@ -10,13 +10,8 @@
         "Analytics & SIEM"
     ],
     "tags": [
-        "Alerts",
-        "Incident Handling",
-        "Incident Response",
-        "Security Analytics"
     ],
     "useCases": [
-        "Case Management"
     ],
     "keywords": [
         "Incident",

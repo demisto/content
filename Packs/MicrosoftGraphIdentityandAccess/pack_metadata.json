@@ -7,11 +7,10 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Identity and Access Management"
+        "Authentication"
     ],
     "tags": [],
     "useCases": [
-        "Identity and Access Management"
     ],
     "keywords": [],
     "marketplaces": [

@@ -10,15 +10,8 @@
     "categories": [
         "Case Management"
     ],
-    "tags": [
-        "IT",
-        "Incident Handling",
-        "Incident Mirroring"
-    ],
-    "useCases": [
-        "Case Management",
-        "IT Services"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "Service",
         "ServiceDesk",

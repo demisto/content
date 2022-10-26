@@ -7,9 +7,9 @@
     "url": "",
     "email": "",
     "created": "2020-12-18T18:12:56Z",
-    "categories": [],
-    "tags": [],
-    "useCases": [],
+    "categories": ["Forensics & Malware Analysis"],
+    "tags": ["Use Case"],
+    "useCases": ["Malware"],
     "keywords": [],
     "marketplaces": [
         "xsoar",
