@@ -58,7 +58,7 @@ class BlockCarrier:
         """
         self.entitlement_string = str()
         self.default_response = default_response
-        self.blocks_as_json_str = str()
+        self.blocks_ready_for_args = dict()
         self.url = url
         self.list_name = list_name
         self.persistent = persistent
@@ -196,14 +196,13 @@ class BlockCarrier:
         Inevitably, the blocks will need to be converted to a json string and then fed into the send-notification command.
         This handles that process.
         """
-        blocks_result_as_args = {
+        self.blocks_ready_for_args = {
             'blocks': json.dumps(self.blocks_dict),
             'entitlement': self.entitlement_string,
             'reply': self.reply,
             'expiry': self.expiry,
             'default_response': self.default_response
         }
-        self.blocks_as_json_str = blocks_result_as_args
 
     def format_blocks(self):
         """Finalizes the blocks for the send-notification command.
@@ -224,7 +223,7 @@ class SendNotification:
         self.command_args: dict = {
             'ignoreAddURL': 'true',
             'using-brand': 'SlackV3',
-            'blocks': json.dumps(self.blocks_carrier.blocks_as_json_str)
+            'blocks': json.dumps(self.blocks_carrier.blocks_ready_for_args)
         }
         if slack_instance:
             self.command_args['using'] = slack_instance
