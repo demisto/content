@@ -742,7 +742,7 @@ def get_mapping_fields_command():
     return: Elasticsearch schema structure
     """
     indexes = FETCH_INDEX.split(',')
-    elastic_mapping = {}
+    elastic_mapping = {}  # type:ignore[var-annotated]
     for index in indexes:
         if index == '':
             res = requests.get(SERVER + '/_mapping', auth=(USERNAME, PASSWORD), verify=INSECURE)
