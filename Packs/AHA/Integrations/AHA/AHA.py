@@ -40,11 +40,11 @@ class Client(BaseClient):
         """
         Retrieves a list of features from AHA
         Args:
-            feature_name: str if given it will fetch the feature specified. if not will fetch all features.
-            fields: str optional feature fields to retrive from service
-            from_date: str format: YYYY-MM-DD get feature created after from_date
-            page: str pagination specify the number of the page
-            per_page: str pagination specify the number of maximum features per page.
+            feature_name: str if given it will fetch the feature specified. if not, it will fetch all features.
+            fields: str optional feature fields to retrive from the service.
+            from_date: str format: YYYY-MM-DD get features created after from_date.
+            page: str pagination specify the number of the page.
+            per_page: str pagination specify the maximum number of features per page.
         """
         headers = self._headers
         params = {
@@ -120,7 +120,7 @@ def test_module(client: Client) -> str:
             message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure API Key is correctly set'
+            message = 'Authorization Error: make sure that the API Key is setup correctly.'
         else:
             raise e
     return message
