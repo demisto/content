@@ -1614,7 +1614,7 @@ class TestImagesUpload:
         dummy_build_bucket.copy_blob.return_value = Blob('copied_blob', dummy_prod_bucket)
         images_data = {"TestPack": {BucketUploadFlow.PREVIEW_IMAGES: [blob_name]}}
         task_status = dummy_pack.copy_preview_images(dummy_prod_bucket, dummy_build_bucket, images_data,
-                                                         GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH)
+                                                     GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH)
         assert task_status
 
     def test_copy_author_image(self, mocker, dummy_pack):
