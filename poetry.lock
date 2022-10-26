@@ -170,14 +170,14 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.25.1"
+version = "1.25.2"
 description = "The AWS SDK for Python"
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.28.1,<1.29.0"
+botocore = ">=1.28.2,<1.29.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -186,7 +186,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.28.1"
+version = "1.28.2"
 description = "Low-level, data-driven core of boto 3."
 category = "dev"
 optional = false
@@ -505,8 +505,8 @@ build = ["gsutil (==5.14)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "16afab6fc062536b65399a4531e987ef691dcdb9"
-resolved_reference = "16afab6fc062536b65399a4531e987ef691dcdb9"
+reference = "hotfix_agent_config"
+resolved_reference = "8122778aa1b17b8b0abfeb6a36b22d0145271513"
 
 [[package]]
 name = "Deprecated"
@@ -2292,7 +2292,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "7806ca67b08847d195da1e73dbb7332e97dcdb8d48b3c06721781e5aebbcef2f"
+content-hash = "614f737d3d4eff1d635ebd4ae56ea39a65043facab765ddd1826263e5f13db79"
 
 [metadata.files]
 aiohttp = [
@@ -2467,12 +2467,12 @@ blessings = [
     {file = "blessings-1.7.tar.gz", hash = "sha256:98e5854d805f50a5b58ac2333411b0482516a8210f23f43308baeb58d77c157d"},
 ]
 boto3 = [
-    {file = "boto3-1.25.1-py3-none-any.whl", hash = "sha256:5684030fb1fa742c9bec33bee1a0829ff4b4bb2cdef40d9465969fdb55b501bc"},
-    {file = "boto3-1.25.1.tar.gz", hash = "sha256:9517b1d517b024a259a116a0206ae4a471e2ffab57db1b41a3ce6e3f8042001a"},
+    {file = "boto3-1.25.2-py3-none-any.whl", hash = "sha256:bc711ab94f90af40a52ddb56c4ef9d997edfbeae9fe39c76a802574fab92ccd9"},
+    {file = "boto3-1.25.2.tar.gz", hash = "sha256:43a93f8cecd882cccb2815cd76fc07a73b076027ab092a1c7cede89cb9b075f8"},
 ]
 botocore = [
-    {file = "botocore-1.28.1-py3-none-any.whl", hash = "sha256:e751045bee771d99d1baa06775df38511a5025cab6ceb2219a2a27cc2abd3ee5"},
-    {file = "botocore-1.28.1.tar.gz", hash = "sha256:2ebaf48c9cd61ad5532ac639569837bce3e0470991c5f1bee9fe3ef7d0362c42"},
+    {file = "botocore-1.28.2-py3-none-any.whl", hash = "sha256:cedc8e76cf4baa411fa6af62eec1fc569053b5f9c059e0f2ac074c649039200a"},
+    {file = "botocore-1.28.2.tar.gz", hash = "sha256:9890005735652555d1183b44bad729603d26922dc08e261e1e0a35a7bf26ba38"},
 ]
 bracex = [
     {file = "bracex-2.3.post1-py3-none-any.whl", hash = "sha256:351b7f20d56fb9ea91f9b9e9e7664db466eb234188c175fd943f8f755c807e73"},
