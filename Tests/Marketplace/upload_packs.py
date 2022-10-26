@@ -1126,7 +1126,7 @@ def main():
 
         # upload author and integration images
         if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list,
-                                  override_all_packs, marketplace, build_number, ci_branch):
+                                  override_all_packs, marketplace):
             continue
 
         # detect if the pack is modified and return modified RN files

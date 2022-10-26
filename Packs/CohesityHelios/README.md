@@ -18,4 +18,3 @@ Cohesity’s comprehensive, end-to-end solution [Cohesity Ransomware](https://ww
 
 - Command to ignore a specified ransomware alert.
 
-Edit of the readme for testing. 
