@@ -7,9 +7,9 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Network Security"
+        "Cloud Services"
     ],
-    "tags": [],
+    "tags": ["Palo Alto Networks Products"],
     "created": "2020-05-11T18:00:53Z",
     "useCases": [],
     "keywords": [],

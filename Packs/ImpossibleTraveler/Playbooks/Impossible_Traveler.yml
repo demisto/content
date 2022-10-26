@@ -61,11 +61,29 @@ tasks:
           root: SourceIPGeo
           transformers:
           - operator: uniq
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: ':'
       src_coords:
         complex:
           root: PreviousSourceIPGeo
           transformers:
           - operator: uniq
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: ':'
     reputationcalc: 1
     separatecontext: false
     view: |-
