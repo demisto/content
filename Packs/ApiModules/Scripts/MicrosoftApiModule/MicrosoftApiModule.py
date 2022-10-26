@@ -528,21 +528,13 @@ class MicrosoftClient(BaseClient):
 
     def handle_error_with_metrics(self, res):
         self.create_api_metrics(res.status_code)
-        err_msg = 'Error in API call [{}] - {}' .format(res.status_code, res.reason)
-        try:
-            # Try to parse json error response
-            error_entry = res.json()
-            err_msg += '\n{}'.format(json.dumps(error_entry))
-            raise DemistoException(err_msg, res=res)
-        except ValueError:
-            err_msg += '\n{}'.format(res.text)
-            raise DemistoException(err_msg, res=res)
+        self.client_error_handler(res)
 
     def create_api_metrics(self, status_code):
         execution_metrics = ExecutionMetrics()
         ok_codes = (200, 201, 202, 204, 206)
 
-        if not execution_metrics.is_supported() or demisto.command() == 'test-module':
+        if not execution_metrics.is_supported():
             return
         if status_code == 429:
             execution_metrics.quota_error += 1

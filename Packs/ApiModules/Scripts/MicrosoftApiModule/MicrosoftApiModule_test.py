@@ -508,7 +508,7 @@ def test_general_error_metrics(requests_mock, mocker):
     try:
         client.http_request(method='GET', url_suffix='test_id')
         assert False
-    except DemistoException as err:
+    except DemistoException:
         metric_results = demisto.results.call_args_list[0][0][0]
         assert metric_results.get('Contents') == 'Metrics reported successfully.'
         assert metric_results.get('APIExecutionMetrics') == [{'Type': 'GeneralError', 'APICallsCount': 1}]
