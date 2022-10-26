@@ -267,7 +267,6 @@ if __name__ == "__main__":
     gcp = GCP(service_account, storage_bucket_name, storage_base_path)
 
     bv = BucketVerifier(gcp, versions_dict)
-
     # verify new pack - TestUploadFlow
     bv.verify_new_pack('TestUploadFlow', items_dict.get('TestUploadFlow'))
 
