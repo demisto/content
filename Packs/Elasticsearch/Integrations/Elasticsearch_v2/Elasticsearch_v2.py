@@ -727,7 +727,7 @@ def parse_subtree(my_map):
     return res
 
 
-def update_elastic_mapping(res_json: dict, elastic_mapping: dict, key: str):
+def update_elastic_mapping(res_json, elastic_mapping, key):
     """
     A helper function for get_mapping_fields_command, updates the elastic mapping.
     """
