@@ -257,12 +257,12 @@ class TestMetadataParsing:
         }
         tags = dummy_pack._collect_pack_tags(dummy_pack_metadata, section_tags, [], 'xsoar')
         assert 'Featured' in tags
-    
+
     @pytest.mark.parametrize('pack_metadata,marketplace,expected_result',
                              [({'tags': ['tag']}, 'xsoar', {'tag'}),
                               ({'tags': ['tag']}, 'marketplacev2', {'tag'}),
-                              ({'tags': {'xsoar': ['tags'], 'marketplacev2': []}}, 'xsoar', {'tag'},
-                              ({'tags': {'xsoar': ['tags'], 'marketplacev2': []}}, 'marketplacev2', set()))])
+                              ({'tags': {'xsoar': ['tags'], 'marketplacev2': []}}, 'xsoar', {'tag'}),
+                              ({'tags': {'xsoar': ['tags'], 'marketplacev2': []}}, 'marketplacev2', set())])
     def test_get_tags_by_marketplace(self, dummy_pack, pack_metadata, marketplace, expected_result):
         output = dummy_pack._get_tags_by_marketplace(pack_metadata, marketplace)
         assert output == expected_result
