@@ -317,6 +317,7 @@ registryKey
 emailRep
 accountRep
 cveRep
+VerifyCIDR
 
 [file:classifier-Mail-listener.json]
 ignore=BA101

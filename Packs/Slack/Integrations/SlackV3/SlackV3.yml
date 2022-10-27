@@ -163,7 +163,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Both
-      description: The mirroring direction. 
+      description: The mirroring direction.
       isArray: false
       name: direction
       predefined:
@@ -175,7 +175,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: group
-      description: The channel type. 
+      description: The channel type.
       isArray: false
       name: mirrorTo
       predefined:
@@ -244,7 +244,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to include a URL to the relevant component in Cortex XSOAR. 
+      description: Whether to include a URL to the relevant component in Cortex XSOAR.
       isArray: false
       name: ignoreAddURL
       predefined:
@@ -363,7 +363,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: private
-      description: The channel type. 
+      description: The channel type.
       isArray: false
       name: type
       predefined:
@@ -571,7 +571,7 @@ script:
     - contextPath: Slack.Thread.Text
       description: The text the message was updated with.
       type: String
-  dockerimage: demisto/slackv3:1.0.0.33611
+  dockerimage: demisto/slackv3:1.0.0.36137
   feed: false
   isfetch: false
   longRunning: true
