@@ -17,7 +17,7 @@ urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def __init__(self, base_url: str, username: str, password: str, use_ssl: bool, proxy: bool, max_fetch: int):
+    def __init__(self, base_url: str, username: str, password: str, use_ssl: bool, proxy: bool):
         super().__init__(base_url=base_url, verify=use_ssl, proxy=proxy)
         self._username = username
         self._password = password
@@ -33,9 +33,15 @@ class Client(BaseClient):
         headers = {
             'Content-Type': 'application/json',
         }
-        response = self._http_request("POST", "/aioc-rest-web/rest/login", json_data=body, headers=headers,
-                                      resp_type='response')
-        return response.headers.get("XSRF-TOKEN")
+        try:
+            response = self._http_request("POST", "/aioc-rest-web/rest/login", json_data=body, headers=headers,
+                                          resp_type='response')
+            return response.headers.get("XSRF-TOKEN")
+        except Exception as e:
+            if '401' in str(e):
+                raise DemistoException('Authentication Error: Make sure username and password are correctly set')
+            else:
+                raise e
 
     def _logout(self):
         self._http_request("POST", "/aioc-rest-web/rest/logout")
@@ -73,37 +79,55 @@ class Client(BaseClient):
 
 
 def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
+    """Tests API connectivity and authentication
 
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
     Raises exceptions if something goes wrong.
     """
 
-    message: str = ''
     try:
-        return 'ok'
-    except DemistoException as e:
+        response = client.list_all_sapm_accounts()
+        search_results = response.get("searchResults")
+        if search_results:
+            if len(search_results) > 0:
+                sapmAccount = search_results[0]
+                if not sapmAccount.get("dbId"):
+                    raise Exception("SAPM Accounts from Single Connect are missing mandatory fields: dbId")
+            else:
+                return "There are no SAPM Accounts but connection is ok"
+            return "ok"
+        else:
+            raise Exception("Unexpected response format")
+    except Exception as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure API Key is correctly set'
+            return 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
-    return message
 
 
 def list_all_sapm_accounts_command(client: Client) -> CommandResults:
     response = client.list_all_sapm_accounts()
+    if response.get("searchResults"):
+        return CommandResults(
+            outputs_prefix='SingleConnect.SapmAccount',
+            outputs_key_field='dbId',
+            outputs=response.get("searchResults")
+        )
+    else:
+        raise Exception("Unexpected response format")
 
-    return CommandResults(
-        outputs_prefix='SingleConnect.SapmAccount',
-        outputs_key_field='dbId',
-        outputs=response.get("searchResults")
-    )
 
-
-def search_sapm_with_secret_name_command(client: Client, secret_name: str) -> Dict[str, str]:
+def search_sapm_with_secret_name_command(client: Client, secret_name: str) -> CommandResults:
     response = client.search_sapm_with_secret_name(secret_name)
-    return response
+    if response.get("searchResults"):
+        return CommandResults(
+            outputs_prefix='SingleConnect.SapmAccount',
+            outputs_key_field='dbId',
+            outputs=response.get("searchResults")
+        )
+    else:
+        raise Exception("Unexpected response format")
 
 
 def show_password_command(client: Client, password_expiration_in_minute=int, sapm_db_id=int,
@@ -131,7 +155,6 @@ def main(params: dict, args: dict, command: str) -> None:
     base_url = params['url']
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    max_fetch = 50
     demisto.debug(f'Command being called is {command}')
     try:
         client = Client(
@@ -139,8 +162,7 @@ def main(params: dict, args: dict, command: str) -> None:
             use_ssl=verify_certificate,
             username=username,
             password=password,
-            proxy=proxy,
-            max_fetch=max_fetch)
+            proxy=proxy)
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
