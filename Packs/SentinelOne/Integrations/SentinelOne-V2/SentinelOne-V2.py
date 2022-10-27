@@ -21,6 +21,9 @@ requests.packages.urllib3.disable_warnings()
 IS_VERSION_2_1: bool
 OS_COUNT = 4
 
+API_VERSION = demisto.params().get('api_version', '2.1')
+IS_VERSION_2_1 = API_VERSION == '2.1'
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -2905,14 +2908,10 @@ def main():
     token = params.get('token') or params.get('credentials', {}).get('password')
     if not token:
         raise ValueError('The API Token parameter is required.')
-    api_version = params.get('api_version', '2.1')
     server = params.get('url', '').rstrip('/')
-    base_url = urljoin(server, f'/web/api/v{api_version}/')
+    base_url = urljoin(server, f'/web/api/v{API_VERSION}/')
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-
-    IS_VERSION_2_1 = api_version == '2.1'  # noqa: F821
-
     first_fetch_time = params.get('fetch_time', '3 days')
     fetch_threat_rank = int(params.get('fetch_threat_rank', 0))
     fetch_limit = int(params.get('fetch_limit', 10))
@@ -3009,10 +3008,10 @@ def main():
         else:
             if command in commands['common']:
                 return_results(commands['common'][command](client, demisto.args()))
-            elif command in commands[api_version]:
-                return_results(commands[api_version][command](client, demisto.args()))
+            elif command in commands[API_VERSION]:
+                return_results(commands[API_VERSION][command](client, demisto.args()))
             else:
-                raise NotImplementedError(f'The {command} command is not supported for API version {api_version}')
+                raise NotImplementedError(f'The {command} command is not supported for API version {API_VERSION}')
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
