@@ -596,10 +596,11 @@ def threat_search_command(client: Client, args: Dict) -> List[CommandResults]:
                          '[release-date, release-version]')
 
     if (from_release_date or from_release_version) and (release_date or release_version):
-        raise ValueError('')  ## not done
+        raise ValueError('When using a release version range or a release date range in a query'
+                         'it is not possible to use with the following arguments -> [release-date, release-version]')  ## not done
 
     if from_release_date and from_release_version:
-        raise ValueError('')  ## not done
+        raise ValueError('Using both from-release-version from-release-date arguments is illegal.')  ## not done
 
     type_ = args.get('type')
     page = arg_to_number(args.get('page'))

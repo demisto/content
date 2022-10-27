@@ -32,7 +32,7 @@ from Threat_Vault_v2 import Client, threat_batch_search_command, release_note_ge
         (
             threat_search_command,
             {},
-            'One of following arguments is required -> [cve, vendor, name]'
+            'One of following arguments is required -> [cve, vendor, signature-name]'
         ),
         (
             threat_search_command,

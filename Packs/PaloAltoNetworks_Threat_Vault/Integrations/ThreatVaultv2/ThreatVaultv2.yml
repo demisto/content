@@ -58,7 +58,7 @@ name: Palo Alto Networks Threat Vault v2
 script:
   commands:
   - arguments:
-    - default: true
+    - default: false
       description: The SHA256 or MD5 hash of the antivirus signature.
       isArray: true
       name: file
@@ -94,7 +94,7 @@ script:
       description: For malicious files, the vendor that made the decision.
       type: String
   - arguments:
-    - default: true
+    - default: false
       description: The CVE name.
       isArray: true
       name: cve
@@ -127,19 +127,19 @@ script:
       description: The timestamp of when the CVE was published.
       type: String
   - arguments:
-    - default: true
+    - default: false
       description: The SHA256 hash of the antivirus signature. ## checks
       isArray: true
       name: sha256
       required: false
       secret: false
-    - default: true
+    - default: false
       description: The md5 hash of the antivirus signature. ## checks
       isArray: true
       name: md5
       required: false
       secret: false
-    - default: true
+    - default: false
       description: ID of the antispyware or antivirus signature ## checks
       isArray: true
       name: signature_id
@@ -286,13 +286,13 @@ script:
       description: The default action when the signature is triggered.
       type: String
   - arguments:
-    - default: true
+    - default: false
       description: The type of the release notes (ex. Content).
       isArray: false
       name: type
       required: true
       secret: false
-    - default: true
+    - default: false
       description: The release version (ex. 8446) or content version (ex. 8446-6886) of the release notes.
       isArray: false
       name: version
@@ -346,31 +346,31 @@ script:
       description: List of obsoleted entries.
       type: Array
   - arguments:
-    - default: true
+    - default: false
       description: The signature ids.
       isArray: true
       name: id
       required: false
       secret: false
-    - default: true
+    - default: false
       description: The hash of the sample.
       isArray: true
       name: md5
       required: false
       secret: false
-    - default: true
+    - default: false
       description: The signature names.
       isArray: true
       name: name
       required: false
       secret: false
-    - default: true
+    - default: false
       description: The hash of the sample.
       isArray: true
       name: sha256
       required: false
       secret: false
-    - default: true
+    - default: false
       description: Use together with the other fields to filter out the results.
       isArray: false
       name: type
@@ -449,61 +449,61 @@ script:
       description: The signatures.
       type: String
   - arguments:
-    - default: true
+    - default: false
       description: The CVE tied to the signature.
       isArray: false
       name: cve
       required: false
       secret: false
-    - default: true
+    - default: false
       description: The vendor ID tied to the signatures.
       isArray: false
       name: vendor
       required: false
       secret: false
-    - default: true
+    - default: false
       description: The signature name.
       isArray: false
       name: signature-name
       required: false
       secret: false
-    - default: true
+    - default: false
       description: The release dates range (Used together with to-release-date field).
       isArray: false
       name: from-release-date
       required: false
       secret: false
-    - default: true
+    - default: false
       description: The right boundary of date range query (Must use with from-release-date).
       isArray: false
       name: to-release-date
       required: false
       secret: false
-    - default: true
+    - default: false
       description: The release versions range (Used together with to-release-version field).
       isArray: false
       name: from-release-version
       required: false
       secret: false
-    - default: true
+    - default: false
       description: The right boundary of version range query (must use with from-release-version). ## not done
       isArray: false
       name: to-release-version
       required: false
       secret: false
-    - default: true
+    - default: false
       description: The release date.
       isArray: false
       name: release-date
       required: false
       secret: false
-    - default: true
+    - default: false
       description: The release version.
       isArray: false
       name: release-version
       required: false
       secret: false
-    - default: true
+    - default: false
       description: The threat type. Use together with the other fields to filter out the results.
       isArray: false
       name: type
@@ -519,19 +519,19 @@ script:
       - dns
       - rtdns
       - spywarec2
-    - default: true
+    - default: false
       description:  Page number to get result from. Needs to be used with page_size argument.
       isArray: false
       name: page
       required: false
       secret: false
-    - default: true
+    - default: false
       description:  The page size of the returned results. Needs to be used with the page argument.
       isArray: false
       name: page_size
       required: false
       secret: false
-    - default: true
+    - default: false
       description: The maximum number of results to return.
       isArray: false
       name: limit
