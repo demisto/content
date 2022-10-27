@@ -546,3 +546,29 @@ def test_create_query(query: str, types: list[str], expected_response: str):
             Validate that right query is returned.
     """
     assert create_query(query, types) == expected_response
+
+
+@pytest.mark.parametrize('endpoint', [
+    ('/threatintel/collections/4c649e16-2bb7-50f5-8826-2a2d0a0b9631/manifest/?limit=4&added_after=2022-06-03T00:00:00Z'),
+    ('/threatintel/collections/4c649e16-2bb7-50f5-8826-2a2d0a0b9631/manifest/?limit=4&added_after=2022-06-03T13:54:27.234765Z')
+])
+def test_parse_manifest_and_object_args_with_valid_date(mocker, taxii2_server_v21, endpoint):
+    """
+        Given
+            case 1: endpoint with utc date format.
+            case 2: endpoint with stix date format.
+        When
+            testing parse_manifest_and_object_args.
+        Then
+            Ensure that Should parsing was done correctly and a valid results message was returned.
+    """
+    iocs = util_load_json('test_files/ip_iocs.json')
+    manifest = util_load_json('test_files/manifest21.json')
+    mocker.patch.object(demisto, 'params', return_value={'res_size': '100'})
+    mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
+    mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
+    with APP.test_client() as test_client:
+        response = test_client.get(endpoint, headers=HEADERS)
+        assert response.status_code == 200
+        assert response.content_type == 'application/taxii+json;version=2.1'
+        assert response.json == manifest
