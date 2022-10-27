@@ -694,19 +694,12 @@ def project_list_command(client: Client, args: Dict) -> CommandResults:
                 }
             }
             partial_results.append(temp)
-
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix='Bitbucket.Project',
-            outputs=partial_results,
-            raw_response=partial_results,
-            outputs_key_field='key'
-        )
+    outputs = partial_results if partial_response else results
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Bitbucket.Project',
-        outputs=results,
-        raw_response=results,
+        outputs=outputs,
+        raw_response=outputs,
         outputs_key_field='key'
     )
 
@@ -751,18 +744,12 @@ def open_branch_list_command(client: Client, args: Dict) -> CommandResults:
         for result in results:
             temp = branch_partial_result(result)
             partial_result.append(temp)
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix='Bitbucket.Branch',
-            outputs=partial_result,
-            raw_response=partial_result,
-            outputs_key_field='name'
-        )
+    outputs = partial_result if partial_response else results
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Bitbucket.Branch',
-        outputs=results,
-        raw_response=results,
+        outputs=outputs,
+        raw_response=outputs,
         outputs_key_field='name'
     )
 
@@ -793,18 +780,12 @@ def branch_get_command(client: Client, args: Dict) -> CommandResults:
     )
     if partial_response:
         partial_result = branch_partial_result(response)
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix='Bitbucket.Branch',
-            outputs=partial_result,
-            raw_response=partial_result,
-            outputs_key_field='name'
-        )
+    outputs = partial_result if partial_response else response
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Bitbucket.Branch',
-        outputs=response,
-        raw_response=response,
+        outputs=outputs,
+        raw_response=outputs,
         outputs_key_field='name'
     )
 
@@ -824,18 +805,12 @@ def branch_create_command(client: Client, args: Dict) -> CommandResults:
     response = client.branch_create_request(name, target_branch, repo)
     if partial_response:
         partial_result = branch_partial_result(response)
-        return CommandResults(
-            readable_output=f'The branch "{name}" was created successfully.',
-            outputs_prefix='Bitbucket.Branch',
-            outputs=partial_result,
-            raw_response=partial_result,
-            outputs_key_field='name'
-        )
+    outputs = partial_result if partial_response else response
     return CommandResults(
         readable_output=f'The branch "{name}" was created successfully.',
         outputs_prefix='Bitbucket.Branch',
-        outputs=response,
-        raw_response=response,
+        outputs=outputs,
+        raw_response=outputs,
         outputs_key_field='name'
     )
 
@@ -945,19 +920,13 @@ def commit_list_command(client: Client, args: Dict) -> CommandResults:
                 'message': res.get('message')
             }
             partial_result.append(temp)
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix='Bitbucket.Commit',
-            outputs=partial_result,
-            raw_response=partial_result,
-            outputs_key_field='hash'
-        )
+    outputs = partial_result if partial_response else results
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Bitbucket.Commit',
-        outputs=results,
-        raw_response=results,
+        outputs=outputs,
+        raw_response=outputs,
         outputs_key_field='hash'
     )
 
@@ -1060,15 +1029,11 @@ def issue_create_command(client: Client, args: Dict) -> CommandResults:
     response = client.issue_create_request(repo, body)
     if partial_response:
         partial_result = issue_partial_result(response)
-        return CommandResults(readable_output=f'The issue "{title}" was created successfully',
-                              outputs_prefix='Bitbucket.Issue',
-                              outputs=partial_result,
-                              raw_response=partial_result,
-                              outputs_key_field='id')
+    outputs = partial_result if partial_response else response
     return CommandResults(readable_output=f'The issue "{title}" was created successfully',
                           outputs_prefix='Bitbucket.Issue',
-                          outputs=response,
-                          raw_response=response,
+                          outputs=outputs,
+                          raw_response=outputs,
                           outputs_key_field='id')
 
 
@@ -1119,18 +1084,12 @@ def issue_list_command(client: Client, args: Dict) -> CommandResults:
         for res in results:
             temp = issue_partial_result(res)
             partial_results.append(temp)
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix='Bitbucket.Issue',
-            outputs=partial_results,
-            raw_response=partial_results,
-            outputs_key_field='id'
-        )
+    outputs = partial_results if partial_response else results
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Bitbucket.Issue',
-        outputs=results,
-        raw_response=results,
+        outputs=outputs,
+        raw_response=outputs,
         outputs_key_field='id'
     )
 
@@ -1174,15 +1133,11 @@ def issue_update_command(client: Client, args: Dict) -> CommandResults:
     response = client.issue_update_request(repo, body, issue_id)
     if partial_response:
         partial_result = issue_partial_result(response)
-        return CommandResults(readable_output=f'The issue with id "{issue_id}" was updated successfully',
-                              outputs_prefix='Bitbucket.Issue',
-                              outputs=partial_result,
-                              raw_response=partial_result,
-                              outputs_key_field='id')
+    outputs = partial_result if partial_response else response
     return CommandResults(readable_output=f'The issue with id "{issue_id}" was updated successfully',
                           outputs_prefix='Bitbucket.Issue',
-                          outputs=response,
-                          raw_response=response,
+                          outputs=outputs,
+                          raw_response=outputs,
                           outputs_key_field='id')
 
 
@@ -1207,15 +1162,11 @@ def pull_request_create_command(client: Client, args: Dict) -> CommandResults:
     response = client.pull_request_create_request(repo, body)
     if partial_response:
         partial_result = pull_request_partial_result(response)
-        return CommandResults(readable_output='The pull request was created successfully',
-                              outputs_prefix='Bitbucket.PullRequest',
-                              outputs=partial_result,
-                              raw_response=partial_result,
-                              outputs_key_field='id')
+    outputs = partial_result if partial_response else response
     return CommandResults(readable_output='The pull request was created successfully',
                           outputs_prefix='Bitbucket.PullRequest',
-                          outputs=response,
-                          raw_response=response,
+                          outputs=outputs,
+                          raw_response=outputs,
                           outputs_key_field='id')
 
 
@@ -1241,15 +1192,11 @@ def pull_request_update_command(client: Client, args: Dict) -> CommandResults:
     response = client.pull_request_update_request(repo, body, pull_request_id)
     if partial_response:
         partial_result = pull_request_partial_result(response)
-        return CommandResults(readable_output=f'The pull request {pull_request_id} was updated successfully',
-                              outputs_prefix='Bitbucket.PullRequest',
-                              outputs=partial_result,
-                              raw_response=partial_result,
-                              outputs_key_field='id')
+    outputs = partial_result if partial_response else response
     return CommandResults(readable_output=f'The pull request {pull_request_id} was updated successfully',
                           outputs_prefix='Bitbucket.PullRequest',
-                          outputs=response,
-                          raw_response=response,
+                          outputs=outputs,
+                          raw_response=outputs,
                           outputs_key_field='id')
 
 
@@ -1304,18 +1251,12 @@ def pull_request_list_command(client: Client, args: Dict) -> CommandResults:
         for res in results:
             temp = pull_request_partial_result(res)
             partial_result.append(temp)
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix='Bitbucket.PullRequest',
-            outputs=partial_result,
-            raw_response=partial_result,
-            outputs_key_field='id'
-        )
+    outputs = partial_result if partial_response else results
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Bitbucket.PullRequest',
-        outputs=results,
-        raw_response=results,
+        outputs=outputs,
+        raw_response=outputs,
         outputs_key_field='id'
     )
 
@@ -1340,15 +1281,11 @@ def issue_comment_create_command(client: Client, args: Dict) -> CommandResults:
     response = client.issue_comment_create_request(repo, issue_id, body)
     if partial_response:
         partial_result = comment_partial_result(response, 'issue')
-        return CommandResults(readable_output='The comment was created successfully',
-                              outputs_prefix='Bitbucket.IssueComment',
-                              outputs=partial_result,
-                              raw_response=partial_result,
-                              outputs_key_field='id')
+    outputs = partial_result if partial_response else response
     return CommandResults(readable_output='The comment was created successfully',
                           outputs_prefix='Bitbucket.IssueComment',
-                          outputs=response,
-                          raw_response=response,
+                          outputs=outputs,
+                          raw_response=outputs,
                           outputs_key_field='id')
 
 
@@ -1388,15 +1325,11 @@ def issue_comment_update_command(client: Client, args: Dict) -> CommandResults:
     response = client.issue_comment_update_request(repo, issue_id, comment_id, body)
     if partial_response:
         partial_result = comment_partial_result(response, 'issue')
-        return CommandResults(readable_output='The comment was updated successfully',
-                              outputs_prefix='Bitbucket.IssueComment',
-                              outputs=partial_result,
-                              raw_response=partial_result,
-                              outputs_key_field='id')
+    outputs = partial_result if partial_response else response
     return CommandResults(readable_output='The comment was updated successfully',
                           outputs_prefix='Bitbucket.IssueComment',
-                          outputs=response,
-                          raw_response=response,
+                          outputs=outputs,
+                          raw_response=outputs,
                           outputs_key_field='id')
 
 
@@ -1447,18 +1380,12 @@ def issue_comment_list_command(client: Client, args: Dict) -> CommandResults:
         for res in results:
             temp = comment_partial_result(res, 'issue')
             partial_results.append(temp)
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix='Bitbucket.IssueComment',
-            outputs=partial_results,
-            raw_response=partial_results,
-            outputs_key_field='id'
-        )
+    outputs = partial_results if partial_response else results
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Bitbucket.IssueComment',
-        outputs=results,
-        raw_response=results,
+        outputs=outputs,
+        raw_response=outputs,
         outputs_key_field='id'
     )
 
@@ -1483,15 +1410,11 @@ def pull_request_comment_create_command(client: Client, args: Dict) -> CommandRe
     response = client.pull_request_comment_create_request(repo, pr_id, body)
     if partial_response:
         partial_result = comment_partial_result(response, 'pr')
-        return CommandResults(readable_output='The comment was created successfully',
-                              outputs_prefix='Bitbucket.PullRequestComment',
-                              outputs=partial_result,
-                              raw_response=partial_result,
-                              outputs_key_field='id')
+    outputs = partial_result if partial_response else response
     return CommandResults(readable_output='The comment was created successfully',
                           outputs_prefix='Bitbucket.PullRequestComment',
-                          outputs=response,
-                          raw_response=response,
+                          outputs=outputs,
+                          raw_response=outputs,
                           outputs_key_field='id')
 
 
@@ -1552,18 +1475,12 @@ def pull_request_comment_list_command(client: Client, args: Dict) -> CommandResu
         for res in results:
             temp = comment_partial_result(res, 'pr')
             partial_result.append(temp)
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix='Bitbucket.PullRequestComment',
-            outputs=partial_result,
-            raw_response=partial_result,
-            outputs_key_field='id'
-        )
+    outputs = partial_result if partial_response else results
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Bitbucket.PullRequestComment',
-        outputs=results,
-        raw_response=results,
+        outputs=outputs,
+        raw_response=outputs,
         outputs_key_field='id'
     )
 
@@ -1589,17 +1506,12 @@ def pull_request_comment_update_command(client: Client, args: Dict) -> CommandRe
     response = client.pull_request_comment_update_request(repo, pr_id, body, comment_id)
     if partial_response:
         partial_result = comment_partial_result(response, 'pr')
-        return CommandResults(
-            readable_output='The comment was updated successfully',
-            outputs_prefix='Bitbucket.PullRequestComment',
-            outputs=partial_result,
-            raw_response=partial_result,
-            outputs_key_field='id')
+    outputs = partial_result if partial_response else response
     return CommandResults(
         readable_output='The comment was updated successfully',
         outputs_prefix='Bitbucket.PullRequestComment',
-        outputs=response,
-        raw_response=response,
+        outputs=outputs,
+        raw_response=outputs,
         outputs_key_field='id')
 
 
@@ -1661,18 +1573,12 @@ def workspace_member_list_command(client: Client, args: Dict) -> CommandResults:
                 }
             }
             partial_result.append(temp)
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix='Bitbucket.WorkspaceMember',
-            outputs=partial_result,
-            raw_response=partial_result,
-            outputs_key_field='user.account_id'
-        )
+    outputs = partial_result if partial_response else results
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='Bitbucket.WorkspaceMember',
-        outputs=results,
-        raw_response=results,
+        outputs=outputs,
+        raw_response=outputs,
         outputs_key_field='user.account_id'
     )
 
