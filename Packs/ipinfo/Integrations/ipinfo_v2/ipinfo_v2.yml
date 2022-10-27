@@ -45,7 +45,7 @@ script:
   - arguments:
     - default: true
       description: IP address to query, e.g., 1.1.1.1.
-      isArray: false
+      isArray: true
       name: ip
       required: true
       secret: false
@@ -160,7 +160,7 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: String
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.8.36650
   feed: false
   isfetch: false
   longRunning: false
