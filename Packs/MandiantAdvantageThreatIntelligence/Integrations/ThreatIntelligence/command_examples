@@ -1,0 +1,11 @@
+!ip ip=8.8.8.8
+!domain domain=google.com
+!url url=https://google.com
+!file file=fe09cf6d3a358305f8c2f687b6f6da02
+!get-indicator indicator_value=8.8.8.8
+!cve cve=CVE-2022-38418
+!get-actor actor_name=APT29
+!get-malware malware_name=BADRABBIT
+
+
+

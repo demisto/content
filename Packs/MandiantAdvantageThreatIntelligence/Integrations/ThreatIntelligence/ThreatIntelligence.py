@@ -749,6 +749,9 @@ def fetch_indicator_by_value(client: MandiantClient, args: Dict = None):
     indicators_list = client.get_indicators_by_value(indicator_value=indicator_value)
     indicators = [INDICATOR_FUNC_MAP[indicator["type"]](indicator) for indicator in indicators_list]
 
+    for indicator in indicators_list:
+        indicator['value'] = indicators_value_to_clickable([indicator['value']])
+
     return CommandResults(
         outputs_prefix=INDICATOR_TYPE_MAP[indicators_list[0]["type"]],
         outputs=indicators_list,
@@ -760,11 +763,11 @@ def fetch_threat_actor(client: MandiantClient, args: Dict = None):
     args = args if args else {}
     actor_name = args.get("actor_name")
 
-    indicator = client.get_indicator_info(identifier=actor_name, indicator_type="Actors")
-    indicator = [create_actor_indicator(client, indicator)]
+    indicator_obj = client.get_indicator_info(identifier=actor_name, indicator_type="Actors")
+    indicator = [create_actor_indicator(client, indicator_obj)]
 
     if client.enrichment:
-        enrich_indicators(client, indicator, "Malware")
+        enrich_indicators(client, indicator, "Actors")
 
         dummy_indicator = [{
             "value": "$$DummyIndicator$$",
@@ -774,10 +777,13 @@ def fetch_threat_actor(client: MandiantClient, args: Dict = None):
 
     demisto.createIndicators(indicator)
 
+    indicator[0]['fields']['name'] = indicators_value_to_clickable([indicator[0]['fields']['name']])
+
     return CommandResults(
+        content_format=formats['json'],
+        outputs=indicator[0]['fields'],
         outputs_prefix="MANDIANTTI.ThreatActor",
         outputs_key_field="name",
-        outputs=indicator,
         ignore_auto_extract=True)
 
 
@@ -798,10 +804,13 @@ def fetch_malware_family(client: MandiantClient, args: Dict = None):
 
     demisto.createIndicators(indicator)
 
+    indicator[0]['fields']['name'] = indicators_value_to_clickable([indicator[0]['fields']['name']])
+
     return CommandResults(
+        content_format=formats['json'],
+        outputs=indicator[0]['fields'],
         outputs_prefix="MANDIANTTI.Malware",
         outputs_key_field="name",
-        outputs=indicator,
         ignore_auto_extract=True)
 
 
@@ -820,13 +829,16 @@ def fetch_reputation(client: MandiantClient, args: Dict = None):
     if input_type in INDICATOR_TYPE_MAP.keys():
         indicators_list = client.get_indicators_by_value(indicator_value=indicator_value)
         indicators = [INDICATOR_TYPE_MAP[input_type](indicator) for indicator in indicators_list]
+        indicators_list[0]['value'] = indicators_value_to_clickable([indicators_list[0]['value']])
     elif input_type == "cve":
         indicators_list = [client.get_indicator_info(indicator_value, "Vulnerability")]
         indicators = [create_cve_indicator(indicator) for indicator in indicators_list]
+        indicators_list[0]['cve_id'] = indicators_value_to_clickable([indicators_list[0]['cve_id']])
 
     return CommandResults(
+        content_format=formats['json'],
+        outputs=indicators_list[0],
         outputs_prefix=input_type,
-        outputs=indicators_list,
         indicators=indicators
     )
 

@@ -60,6 +60,7 @@ configuration:
   required: false
   type: 15
 - name: feedExpirationPolicy
+  display: Feed Expiration Policy
   options:
   - never
   - interval
@@ -68,6 +69,7 @@ configuration:
   required: false
   type: 17
 - name: feedExpirationInterval
+  display: Feed Expiration Interval
   required: false
   type: 1
 - defaultvalue: '240'
