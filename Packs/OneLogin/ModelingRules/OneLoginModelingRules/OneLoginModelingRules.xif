@@ -1,6 +1,7 @@
 [MODEL: dataset=onelogin_iam_raw, model=Auth]
 alter  XDM.Auth.original_event_id = to_string(id),
     XDM.Auth.original_event_description = notes,
+    XDM.Auth.original_event_type = event_type_name,
     XDM.Auth.event_timestamp = created_at,
     XDM.Auth.Target.user.employee_id = to_string(user_id),
     XDM.Auth.Target.host.ipv4_addresses = arraycreate(ipaddr),

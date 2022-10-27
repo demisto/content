@@ -8,6 +8,10 @@
       "type": "string",
       "is_array": false
     },
+    "event_type_name": {
+      "type": "string",
+      "is_array": false
+    },
     "created_at": {
       "type": "string",
       "is_array": false
