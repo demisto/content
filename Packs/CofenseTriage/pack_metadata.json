@@ -10,13 +10,9 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "Email",
-        "Threat Intelligence"
-    ],
+    "tags": [],
     "useCases": [
-        "Phishing",
-        "Threat Intelligence Management"
+        "Phishing"
     ],
     "keywords": [
         "email",
