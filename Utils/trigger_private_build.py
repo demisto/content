@@ -63,7 +63,6 @@ def branch_has_private_build_infra_change(branch_name: str = None) -> bool:
     Returns: True if private build infrastructure files modified, False otherwise.
 
     """
-    return True
     modified_files = get_modified_files(branch_name)
     for infra_file in modified_files:
         if infra_file in NON_PRIVATE_BUILD_FILES:
