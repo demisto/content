@@ -8,7 +8,6 @@ args:
 - description: An array to merge from
   isArray: true
   name: merge_with
-  required: true
 - description: A comma separated list of pairs [key of merge_with]:[key of value.arrah_path].
     e.g. ip:dst_ip, hostname:dst_host
   name: mapping
