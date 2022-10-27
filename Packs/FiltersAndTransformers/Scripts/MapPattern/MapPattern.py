@@ -125,7 +125,7 @@ class ContextData:
         self.__demisto = context
         self.__value = arg_value
 
-    def get(self, key: Optional[str], node: Optional[Any] = None, ignore_errors: bool=False) -> Any:
+    def get(self, key: Optional[str], node: Optional[Any] = None, ignore_errors: bool = False) -> Any:
         """ Get the context value given the key
 
         :param key: The dt expressions (string within ${}).
@@ -321,7 +321,7 @@ class Translator:
                 pattern: str,
                 value: Any,
                 exclusions: List[str],
-                ignore_syntax: bool=False) -> Union[bool, re.Match]:
+                ignore_syntax: bool = False) -> Union[bool, re.Match]:
         """ Perform the pattern matching.
 
           Supported algorithms:
