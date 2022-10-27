@@ -47,4 +47,3 @@ def test_AquatoneDiscover(mocker):
         assert demisto.results.call_count == 1
         results = demisto.results.call_args[0]
         assert results[0] == expected_entry_result
-
