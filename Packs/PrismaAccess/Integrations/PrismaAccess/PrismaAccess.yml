@@ -1,8 +1,8 @@
 commonfields:
-  id: Prisma Access Test
+  id: Prisma Access
   version: -1
-name: Prisma Access Test
-display: Prisma Access Test
+name: Prisma Access
+display: Prisma Access
 category: Network Security
 description: |+
   Integrate with Prisma Access to monitor the status of the Service, alert and take actions.
