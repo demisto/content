@@ -9,16 +9,8 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "Threat Intelligence",
-        "Network",
-        "Security"
-    ],
-    "useCases": [
-        "Asset Management",
-        "Threat Intelligence Management",
-        "Vulnerability Management"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "Attack Surface Management",
         "Cortex",
