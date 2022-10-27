@@ -28,7 +28,7 @@ client_mocker = MsClient(
     tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name', base_url='url', verify='use_ssl',
     proxy='proxy', self_deployed='self_deployed', alert_severities_to_fetch='Informational,Low,Medium,High',
     alert_time_to_fetch='3 days', alert_status_to_fetch='New', max_fetch='10', is_gcc=False, auth_code='',
-    auth_type='', redirect_uri='')
+    auth_type='', redirect_uri='', alert_detectionsource_to_fetch='')
 
 
 def atp_mocker(mocker, file_name):
@@ -1349,10 +1349,10 @@ QUERY_BUILDING_CASES = [
         }
     ),
     (
-        'New, Resolved', 'Informational,Low,Medium,High', '5', False, '2022-02-17T14:39:01.391001Z', 'CustomDetection,CustomerTI',
+        'New, Resolved', 'Informational,Low,Medium,High', '5', False, '2022-02-17T14:39:01.391001Z', 'CustomDetection,CustomTI',
         {
             '$filter': "alertCreationTime+gt+2022-02-17T14:39:01.391001Z and "
-                       "((detectionSource+eq+'CustomDetection') or (detectionSource+eq+'CustomTI')) and"
+                       "((detectionSource+eq+'CustomDetection') or (detectionSource+eq+'CustomTI')) and "
                        "((status+eq+'New') or (status+eq+'Resolved')) and "
                        "((severity+eq+'Informational') or (severity+eq+'Low') or (severity+eq+'Medium') "
                        "or (severity+eq+'High'))",
@@ -1363,7 +1363,8 @@ QUERY_BUILDING_CASES = [
 ]
 
 
-@pytest.mark.parametrize('status, severity, limit, evidence, last_fetch_time, expected_result', QUERY_BUILDING_CASES)
+@pytest.mark.parametrize('status, severity, limit, evidence, last_fetch_time, detection_sources, expected_result',
+                         QUERY_BUILDING_CASES)
 def test_get_incidents_query_params(status, severity, limit, evidence, last_fetch_time, detection_sources, expected_result):
     from copy import deepcopy
     from MicrosoftDefenderAdvancedThreatProtection import _get_incidents_query_params
@@ -1371,7 +1372,7 @@ def test_get_incidents_query_params(status, severity, limit, evidence, last_fetc
     client = deepcopy(client_mocker)
     client.max_alerts_to_fetch = limit
     client.alert_severities_to_fetch = severity
-    client.alert_detection_sources_to_fetch = detection_sources
+    client.alert_detectionsource_to_fetch = detection_sources
     client.alert_status_to_fetch = status
 
     query = _get_incidents_query_params(client, fetch_evidence=evidence, last_fetch_time=last_fetch_time)
@@ -2369,7 +2370,7 @@ def test_gcc_resource(mocker, is_gcc: bool):
         verify='use_ssl',
         proxy='proxy', self_deployed='self_deployed', alert_severities_to_fetch='Informational,Low,Medium,High',
         alert_time_to_fetch='3 days', alert_status_to_fetch='New', max_fetch='10', is_gcc=is_gcc, auth_code='',
-        auth_type='', redirect_uri='')
+        auth_type='', redirect_uri='', alert_detectionsource_to_fetch='')
     # use requests_mock to catch a get to example.com
     req = mocker.patch.object(client.ms_client, 'http_request')
     with requests_mock.Mocker() as m:
