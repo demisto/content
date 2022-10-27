@@ -1,5 +1,4 @@
 Use the Palo Alto Networks Threat Vault to research the latest threats (vulnerabilities/exploits, viruses, and spyware) that Palo Alto Networks next-generation firewalls can detect and prevent.
-This integration was integrated and tested with version xx of Palo Alto Networks Threat Vault v2
 
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-palo-alto-networks-threat-vault-v2).

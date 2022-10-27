@@ -1,7 +1,6 @@
 from typing import Tuple
 from CommonServerPython import *
-from html_to_json import convert
-
+from bs4 import BeautifulSoup as bs
 
 BASE_URL = 'https://api.threatvault.paloaltonetworks.com/service/v1/'
 SCORE_TABLE_FILE = {
@@ -15,7 +14,7 @@ LIST_OF_RN_KEYS = [
     'vulnerability',
     'fileformat',
     'antivirus',
-    'file_type', 
+    'file_type',
     'data_correlation',
     'decoders',
     'applications'
@@ -281,30 +280,18 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
 
 def extract_rn_from_html_to_json(raw_incident):
     '''
-    Extracts the release notes from the incident (recursive) and converts them to JSON.
+    Extracts the release notes from the incident and converts them to JSON.
     '''
 
     values: list = []
-    if isinstance(raw_incident, list):
-        for item in raw_incident:
-            if isinstance(item, dict):
-                values.extend(extract_rn_from_html_to_json(item))
-    if isinstance(raw_incident, dict):
-        for key in raw_incident.keys():
-            if key == '_values':
-                values.append({'Values': raw_incident['_values']})
-            else:
-                values.extend(extract_rn_from_html_to_json(raw_incident[key]))
+    html_values = bs(raw_incident, 'html.parser')
+    rns = html_values.find_all('li')
+    for value in rns:
+        value_text = value.get_text()
+        value_link = '\n'.join([link.get('href') for link in value.find_all('a')])
+        values.append({'Release Note': f'{value_text} [More information]({value_link})'.replace('\xa0', ' ')})
+
     return values
-
-
-def organization_release_notes(rn: list):
-
-    release_notes = []
-    for release_note in rn:
-        rn_one = ' '.join(release_note['Values']).replace('\xa0', ' ')
-        release_notes.append({'Release Note': rn_one})
-    return release_notes
 
 
 def parse_incident(incident: dict):
@@ -315,12 +302,8 @@ def parse_incident(incident: dict):
     4. Deletes keys from the incident when no values were found in them
     '''
 
-    table_for_md = organization_release_notes(
-        extract_rn_from_html_to_json(
-            convert(
-                incident['data'][0]['release_notes']['notes'][0]
-            )
-        )
+    table_for_md = extract_rn_from_html_to_json(
+        incident['data'][0]['release_notes']['notes'][0]
     )
 
     incident['data'][0]['release_notes_md'] = tableToMarkdown(
@@ -600,7 +583,7 @@ def threat_search_command(client: Client, args: Dict) -> List[CommandResults]:
                          'it is not possible to use with the following arguments -> [release-date, release-version]')  ## not done
 
     if from_release_date and from_release_version:
-        raise ValueError('Using both from-release-version from-release-date arguments is illegal.')  ## not done
+        raise ValueError('From-release-version and from-release-date cannot be used together.')
 
     type_ = args.get('type')
     page = arg_to_number(args.get('page'))

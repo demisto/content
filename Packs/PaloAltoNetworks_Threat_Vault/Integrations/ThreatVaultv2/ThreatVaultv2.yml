@@ -58,7 +58,7 @@ name: Palo Alto Networks Threat Vault v2
 script:
   commands:
   - arguments:
-    - default: false
+    - default: true
       description: The SHA256 or MD5 hash of the antivirus signature.
       isArray: true
       name: file
@@ -94,7 +94,7 @@ script:
       description: For malicious files, the vendor that made the decision.
       type: String
   - arguments:
-    - default: false
+    - default: true
       description: The CVE name.
       isArray: true
       name: cve
@@ -704,7 +704,7 @@ script:
     - contextPath: ThreatVault.fileformat.latest_release_time
       description: The latest release time of the signature.
       type: String
-  dockerimage: devdemisto/python3:3.10.8.36800
+  dockerimage: demisto/crypto:1.0.0.36225
   isfetch: true
   longRunning: false
   longRunningPort: false

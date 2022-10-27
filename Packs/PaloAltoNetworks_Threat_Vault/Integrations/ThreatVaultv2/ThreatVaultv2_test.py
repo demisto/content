@@ -2,8 +2,8 @@ from CommonServerPython import *
 import pytest
 
 
-from Threat_Vault_v2 import Client, threat_batch_search_command, release_note_get_command, threat_signature_get_command, \
-    threat_search_command, file_command, cve_command, pagination, parse_resp_by_type, resp_to_hr
+from ThreatVaultv2 import Client, threat_batch_search_command, release_note_get_command, threat_signature_get_command, \
+    threat_search_command, file_command, cve_command, pagination, parse_resp_by_type, resp_to_hr, extract_rn_from_html_to_json
 
 
 @pytest.mark.parametrize(
@@ -55,8 +55,15 @@ from Threat_Vault_v2 import Client, threat_batch_search_command, release_note_ge
         (
             threat_search_command,
             {'cve': 'test', 'release-date': 'test', 'from-release-date': 'test', 'to-release-date': 'test'},
-            ''
+            ('When using a release version range or a release date range in a query'
+             'it is not possible to use with the following arguments -> [release-date, release-version]')
         ),
+        (
+            threat_search_command,
+            {'cve': 'test', 'from-release-version': 'test', 'to-release-version': 'test',
+             'from-release-date': 'test', 'to-release-date': 'test'},
+            'From-release-version and from-release-date cannot be used together.'
+        )
     ]
 )
 def test_commands_failure(command, demisto_args, expected_results):
@@ -181,7 +188,7 @@ def test_pagination(page, page_size, limit, expected_result):
 )
 def test_parse_resp_by_type(mocker, resp, expanded, expected_results):
 
-    mocker.patch('Threat_Vault_v2.resp_to_hr', return_value={})
+    mocker.patch('ThreatVaultv2.resp_to_hr', return_value={})
 
     results = parse_resp_by_type(response=resp, expanded=expanded)
     for i in range(len(expected_results)):
@@ -734,9 +741,9 @@ def test_threat_signature_get_command(mocker, args, expected_results):
         proxy=False,
         reliability='E - Unreliable'
     )
-    call_hashes_command = mocker.patch('Threat_Vault_v2.file_command', return_value=['file'])
+    call_hashes_command = mocker.patch('ThreatVaultv2.file_command', return_value=['file'])
     call_ids_command = mocker.patch.object(client, 'antivirus_signature_get_request', return_value='ids')
-    mocker.patch('Threat_Vault_v2.parse_resp_by_type', return_value=['ids'])
+    mocker.patch('ThreatVaultv2.parse_resp_by_type', return_value=['ids'])
     results = threat_signature_get_command(client, args)
 
     assert results[0] == expected_results['result']
@@ -764,7 +771,7 @@ def test_release_note_get_command(mocker, args, expected_results):
     )
 
     mocker.patch.object(client, 'release_notes_get_request', return_value={'data': []})
-    mocker.patch('Threat_Vault_v2.resp_to_hr', return_value={'release_notes': 'test'})
+    mocker.patch('ThreatVaultv2.resp_to_hr', return_value={'release_notes': 'test'})
     results = release_note_get_command(client, args)
 
     assert results.outputs_prefix == expected_results['prefix']
@@ -792,7 +799,7 @@ def test_threat_batch_search_command(mocker, args, mocking, expected_args, expec
     )
 
     call_request = mocker.patch.object(client, 'threat_batch_search_request', return_value='')
-    mocker.patch('Threat_Vault_v2.parse_resp_by_type', return_value=mocking)
+    mocker.patch('ThreatVaultv2.parse_resp_by_type', return_value=mocking)
     results = threat_batch_search_command(client, args)
 
     assert results[0] == expected_results
@@ -831,7 +838,31 @@ def test_threat_search_command(mocker, args, expected_results):
     )
 
     call_request = mocker.patch.object(client, 'threat_search_request', return_value={'data': []})
-    mocker.patch('Threat_Vault_v2.parse_resp_by_type', return_value=['test'])
+    mocker.patch('ThreatVaultv2.parse_resp_by_type', return_value=['test'])
     threat_search_command(client, args)
 
     assert call_request.call_args_list[0][1]['args'] == expected_results
+
+
+@pytest.mark.parametrize(
+    'html_input, expected_results',
+    [
+        (
+            'test_data/html_test_data.txt',
+            ('(10/13/22) We intend to release new placeholder App-IDs for several new OT/ICS App-IDs'
+             ' as part of the update scheduled for October 18, 2022. We then plan to activate these new App-IDs'
+             ' (Rockwell-ThinManager, SEL acSELerator RTAC, BACnet, ToolsNet Open Protocol, Ethernet Powerlink,'
+             ' sick-sopas-webserver, and IEEE 61850 R-SV) with the new App-IDs content update scheduled for January 17,'
+             ' 2023. Be sure to review this article for details. ')
+        )
+    ]
+)
+def test_extract_rn_from_html_to_json(html_input, expected_results):
+
+    with open(html_input, 'r') as f:
+        html_rns = f.read()
+
+        json_rns = extract_rn_from_html_to_json(html_rns)
+
+    assert json_rns
+    assert expected_results in json_rns[0]['Release Note']
