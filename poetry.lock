@@ -505,8 +505,8 @@ build = ["gsutil (==5.14)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "hotfix_agent_config"
-resolved_reference = "8122778aa1b17b8b0abfeb6a36b22d0145271513"
+reference = "f1d93289a8cbfb5898197ba5e0c6e466c0fc48eb"
+resolved_reference = "f1d93289a8cbfb5898197ba5e0c6e466c0fc48eb"
 
 [[package]]
 name = "deprecated"
@@ -2292,7 +2292,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "614f737d3d4eff1d635ebd4ae56ea39a65043facab765ddd1826263e5f13db79"
+content-hash = "682ddfd842be11ec6a1a1fcd8d828ecbe563fe37b86c8cfab00ebb11e64cb5d2"
 
 [metadata.files]
 aiohttp = [
