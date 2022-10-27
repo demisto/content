@@ -116,7 +116,7 @@ def set_pack_hidden(pack: Path):
 
 @add_changed_pack
 def update_readme(pack: Path):
-    for path in pack.glob('**/*.README.md'):
+    for path in pack.glob('**/*README.md'):
         with path.open('a') as f:
             f.write("readme test upload flow")
     return pack, get_current_version(pack), None
@@ -149,7 +149,10 @@ def modify_pack(pack: Path, integration: str):
     with integration.open('a') as f:
         f.write('\n#  CHANGE IN PACK')
     enhance_release_notes(pack)
-    return pack, get_current_version(pack), get_all_packs_items_dict(pack)
+    items_dict = {}
+    # TODO: here should add a section that collects all of the pack's content items, and returns it as a dict
+    #  (same handling as in TestUploadFlow dummy pack, in create_new_pack
+    return pack, get_current_version(pack), items_dict
 
 
 @add_changed_pack

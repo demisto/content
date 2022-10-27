@@ -20,7 +20,7 @@ MSG_DICT = {
                           'changelog',
     'verify_rn': 'Verify the content of the RN is in the changelog under the right version',
     'verify_hidden': 'Verify the pack does not exist in index',
-    'verify_readme': 'Verify readme content is parsed correctly, verify that there was no version bump'
+    'verify_readme': 'Verify readme content is parsed correctly, verify that there was no version bump '
                      'if only readme was modified',
     'verify_failed_pack': 'Verify commit hash is not updated in the pack metadata in the index.zip',
     'verify_modified_path': 'Verify the path of the item is modified',
@@ -37,10 +37,10 @@ def logger(func):
         try:
             result, pack_id = func(self, *args, **kwargs)
             self.is_valid = self.is_valid and result
-            logging.info(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} for {pack_id} is {result}')
+            #logging.info(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} for {pack_id} is {result}')
             print(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} for {pack_id} is {result}') # TODO: remove all prints once logging is present in the gitlab build
         except FileNotFoundError as e:
-            logging.info(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} is False: {e}')
+            #logging.info(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} is False: {e}')
             print(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} is False: {e}')
             self.is_valid = False
 
@@ -70,7 +70,7 @@ class BucketVerifier:
         verify all the new items are present in the pack
         """
         pack_path = self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
-        version_exists = [self.gcp.is_in_index(pack_id), pack_path]
+        version_exists = [self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])]
         items_exists = [get_items_dict(pack_path, pack_id) == pack_items]
         return all(version_exists) and all(items_exists), pack_id
 
@@ -81,7 +81,7 @@ class BucketVerifier:
         """
         new_version_exists = self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
         new_version_exists_in_changelog = rn in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])
-        new_version_exists_in_metadata = self.gcp.get_pack_metadata(pack_id)
+        new_version_exists_in_metadata = self.gcp.get_pack_metadata(pack_id).get('currentVersion') == self.versions[pack_id]
         return all([new_version_exists, new_version_exists_in_changelog, new_version_exists_in_metadata]), pack_id
 
     @logger
@@ -103,15 +103,14 @@ class BucketVerifier:
         """
         Verify readme content is parsed correctly, verify that there was no version bump if only readme was modified
         """
-        return gcp.get_max_version(pack_id) and \
-               readme in self.gcp.get_pack_item(pack_id, self.versions[pack_id], '', 'README.md'), pack_id
+        gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
+        return gcp.get_max_version(pack_id) and readme in self.gcp.get_pack_readme(pack_id), pack_id
 
     @logger
     def verify_failed_pack(self, pack_id):
         """
         Verify commit hash is not updated in the pack's metadata in the index.zip
         """
-        gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
         return self.gcp.get_flow_commit_hash() != self.gcp.get_pack_metadata(pack_id).get('commit'), pack_id
 
     @logger
@@ -144,14 +143,15 @@ class GCP:
         storage_client = init_storage_client(service_account)
         self.storage_bucket = storage_client.bucket(storage_bucket_name)
         self.storage_base_path = storage_base_path
+
         self.extracting_destination = tempfile.mkdtemp()
-        self.index_path, _, _ = download_and_extract_index(self.storage_bucket, self.extracting_destination,
-                                                           self.storage_base_path)
-        print(f'temp_dir contains: {os.listdir(self.extracting_destination)}')
-        print(f'index path: {self.index_path}')
+        self.index_path, _, _ = download_and_extract_index(self.storage_bucket, self.extracting_destination, self.storage_base_path)
+        # TODO: for testing, use these lines instead of the 2 above
+        # self.extracting_destination = os.path.join(os.getcwd(), 'results')
+        # self.index_path = '/Users/nmaimon/dev/demisto/content/Utils/test_upload_flow/results/index' TODO: download the index once to this path and then work with it, instead of downloading it again and again
 
     def download_and_extract_pack(self, pack_id, pack_version):
-        pack_path = os.path.join(storage_base_path, pack_id, pack_version, f"{pack_id}.zip")
+        pack_path = os.path.join(self.storage_base_path, pack_id, pack_version, f"{pack_id}.zip")
         pack = self.storage_bucket.blob(pack_path)
         if pack.exists():
             download_pack_path = os.path.join(self.extracting_destination, f"{pack_id}.zip")
@@ -179,33 +179,24 @@ class GCP:
     def get_changelog_rn_by_version(self, pack_id, version):
         changelog_path = os.path.join(self.index_path, pack_id, 'changelog.json')
         changelog = read_json(changelog_path)
-        return changelog.get(version, {}).get('releaseNotes')
+        return changelog.get(version, {}).get('releaseNotes', '')
 
     def get_pack_metadata(self, pack_id):
         """
         returns the metadata.json of the latest pack version from the pack's zip
         """
-        metadata_path = os.path.join(self.extracting_destination, pack_id, 'metadata.json')
+        metadata_path = os.path.join(self.extracting_destination, 'index', pack_id, 'metadata.json')
         return read_json(metadata_path)
 
     def is_item_in_pack(self, pack_id, item_type, item_file_path):
         """
         Check if an item is inside the pack.
         """
-        item_name = Path(item_file_path).stem
         item_name_with_extension = Path(item_file_path).name
-        if item_type in ['Integrations', 'Scripts']:
-            # for integrations and scripts, add the sub-folder hierarchy
-            extracted_item_path = os.path.join(self.extracting_destination, pack_id, item_type, item_name,
-                                               f'{item_type.lower()[:-1]}-{item_name_with_extension}')
-        elif item_type == 'IndicatorTypes':
-            # for indicator types, use the 'reputation' prefix
-            extracted_item_path = os.path.join(self.extracting_destination, pack_id, item_type,
-                                               f'reputation-{item_name_with_extension}')
-        else:
-            extracted_item_path = os.path.join(self.extracting_destination, pack_id, item_type,
-                                               f'{item_type.lower()[:-1]}-{item_name_with_extension}')
-        return os.path.exists(extracted_item_path)
+        extracted_item_path = os.path.join(self.extracting_destination, pack_id, item_type,
+                                               item_name_with_extension)
+        exists = os.path.exists(extracted_item_path)
+        return exists
 
     def get_index_json(self):
         index_json_path = os.path.join(storage_base_path, 'index.json')
@@ -229,8 +220,8 @@ class GCP:
         changelog_path = os.path.join(self.index_path, pack_id, 'changelog.json')
         return read_json(changelog_path)
 
-    def get_pack_item(self, pack_id, version, item_type, item_file_name):
-        item_path = os.path.join(self.extracting_destination, pack_id, version, item_type, item_file_name)
+    def get_pack_readme(self, pack_id):
+        item_path = os.path.join(self.extracting_destination, pack_id, 'README.md')
         with open(item_path, 'r') as f:
             return f.read()
 
@@ -318,8 +309,7 @@ if __name__ == "__main__":
     bv.verify_new_image('Armis', Path(
         __file__).parent / 'TestUploadFlow' / 'Integrations' / 'TestUploadFlow' / 'TestUploadFlow_image.png')
     is_valid = 'valid' if bv.is_valid else 'not valid'
-    logging.info(f'The bucket {gcp.storage_bucket.name} was found as {is_valid}')  # check how to show in gitlab
-    print(f'The bucket {gcp.storage_bucket.name} was found as {is_valid}')
+    logging.info(f'The bucket {gcp.storage_bucket.name}/{gcp.storage_base_path} was found as {is_valid}')
 
     if not is_valid:
         sys.exit(1)
