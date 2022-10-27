@@ -9,14 +9,8 @@
     "categories": [
         "Authentication"
     ],
-    "tags": [
-        "Alerts",
-        "Security",
-        "IAM"
-    ],
-    "useCases": [
-        "Identity and Access Management"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "Fraud",
         "Account",
