@@ -481,7 +481,7 @@ def release_note_get_command(client: Client, args: Dict) -> CommandResults:
     readable_output = tableToMarkdown(name="Release notes:", t=table_for_md,
                                       removeNull=True)
     return CommandResults(outputs_prefix='ThreatVault.ReleaseNote',
-                          outputs_key_field='',  ## not done
+                          outputs_key_field='release_version',
                           outputs=data,
                           readable_output=readable_output)
 
@@ -580,7 +580,7 @@ def threat_search_command(client: Client, args: Dict) -> List[CommandResults]:
 
     if (from_release_date or from_release_version) and (release_date or release_version):
         raise ValueError('When using a release version range or a release date range in a query'
-                         'it is not possible to use with the following arguments -> [release-date, release-version]')  ## not done
+                         'it is not possible to use with the following arguments -> [release-date, release-version]')
 
     if from_release_date and from_release_version:
         raise ValueError('From-release-version and from-release-date cannot be used together.')
