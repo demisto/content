@@ -131,14 +131,22 @@ def search_sapm_with_secret_name_command(client: Client, secret_name: str) -> Co
 
 
 def show_password_command(client: Client, password_expiration_in_minute=int, sapm_db_id=int,
-                          comment=str) -> Dict[str, str]:
+                          comment=str) -> CommandResults:
     response = client.show_password(password_expiration_in_minute, sapm_db_id, comment)
-    return response
+    return CommandResults(
+        outputs_prefix='SingleConnect.SapmAccount',
+        outputs_key_field='dbId',
+        outputs=response
+    )
 
 
-def get_sapm_user_info_command(client: Client, device_ip: str) -> Dict[str, str]:
+def get_sapm_user_info_command(client: Client, device_ip: str) -> CommandResults:
     response = client.get_sapm_user_info(device_ip)
-    return response
+    return CommandResults(
+        outputs_prefix='SingleConnect.SapmAccount',
+        outputs_key_field='dbId',
+        outputs=response
+    )
 
 
 ''' MAIN FUNCTION '''
