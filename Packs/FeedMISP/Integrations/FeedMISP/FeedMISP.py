@@ -246,10 +246,18 @@ def get_ip_type(ip_attribute: Dict[str, Any]) -> str:
         ip_attribute: the ip attribute
     Returns: FeedIndicatorType
     """
-    if ':' in ip_attribute['value']:
-        return FeedIndicatorType.IPv6
-    else:
+    indicator_value = ip_attribute['value']
+    if re.match(ipv4cidrRegex, indicator_value):
+        return FeedIndicatorType.CIDR
+
+    if re.match(ipv6cidrRegex, indicator_value):
+        return FeedIndicatorType.IPv6CIDR
+
+    if re.match(ipv4Regex, indicator_value):
         return FeedIndicatorType.IP
+
+    if re.match(ipv6Regex, indicator_value):
+        return FeedIndicatorType.IPv6
 
 
 def get_attribute_indicator_type(attribute: Dict[str, Any]) -> Optional[str]:
@@ -260,6 +268,8 @@ def get_attribute_indicator_type(attribute: Dict[str, Any]) -> Optional[str]:
         attribute: Dictionary containing information about the attribute
     Returns: The matching indicator type or None if the attribute type is not supported
     """
+    demisto.debug(f'This is the attribute: {attribute}')
+
     attribute_type = attribute['type']
     if attribute_type == 'ip-src' or attribute_type == 'ip-dst':
         return get_ip_type(attribute)
@@ -346,6 +356,7 @@ def fetch_indicators(client: Client,
         params_dict = build_params_dict(tags, attribute_type)
 
     response = client.search_query(params_dict)
+    demisto.debug(f'The length of the response is: {len(response)}')
     indicators_iterator = build_indicators_iterator(response, url)
     added_indicators_iterator = update_indicators_iterator(indicators_iterator, params_dict, is_fetch)
     indicators = []
