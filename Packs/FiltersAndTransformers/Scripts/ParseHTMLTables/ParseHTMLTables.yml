@@ -38,7 +38,7 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/bs4-py3:1.0.0.34176
+dockerimage: demisto/bs4-py3:1.0.0.36286
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:
