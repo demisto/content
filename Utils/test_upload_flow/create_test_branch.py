@@ -93,7 +93,8 @@ def change_image(pack: Path):
 
 @add_changed_pack
 def update_existing_release_notes(pack: Path, version: str):
-    path = pack / 'ReleaseNotes' / f'{version}.md'
+    version_rn = version.replace('.', '_')
+    path = pack / 'ReleaseNotes' / f'{version_rn}.md'
     if not path.exists():
         raise Exception("path is not valid release note")
 
@@ -224,7 +225,7 @@ if __name__ == "__main__":
         enhance_release_notes(packs_path / 'ZeroFox')
         change_image(packs_path / 'Armis')
 
-        update_existing_release_notes(packs_path / 'Box', "2_1_2")
+        update_existing_release_notes(packs_path / 'Box', "2.1.2")
         add_1_0_0_release_notes(packs_path / 'BPA')
         # set_pack_hidden(packs_path / 'Microsoft365Defender') TODO: fix after hidden pack mechanism is fixed
         update_readme(packs_path / 'Maltiverse')

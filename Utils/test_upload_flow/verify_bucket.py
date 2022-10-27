@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 import tempfile
 
 from Tests.Marketplace.upload_packs import download_and_extract_index
@@ -146,6 +147,8 @@ class GCP:
         self.extracting_destination = tempfile.mkdtemp()
         self.index_path, _, _ = download_and_extract_index(self.storage_bucket, self.extracting_destination,
                                                            self.storage_base_path)
+        print(f'temp_dir contains: {os.listdir(self.extracting_destination)}')
+        print(f'index path: {self.index_path}')
 
     def download_and_extract_pack(self, pack_id, pack_version):
         pack_path = os.path.join(storage_base_path, pack_id, pack_version, f"{pack_id}.zip")
