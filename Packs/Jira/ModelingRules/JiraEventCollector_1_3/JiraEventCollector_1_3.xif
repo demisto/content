@@ -1,4 +1,4 @@
-[MODEL:dataset="atlassian_jira_lookup_raw"]
+[MODEL:dataset="atlassian_jira_raw"]
 alter
 	xdm.event.operation = summary,
     xdm.source.ipv4 = remoteAddress,
