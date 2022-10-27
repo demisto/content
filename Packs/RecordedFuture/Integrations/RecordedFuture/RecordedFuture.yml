@@ -17,32 +17,38 @@ configuration:
     defaultvalue: ""
     type: 4
     required: true
-  - display: File Threshold. Minimum risk score from Recorded Future to consider the file malicious.
+  - display: File Threshold
+    additionalinfo: Minimum risk score from Recorded Future to consider the file malicious.
     name: file_threshold
     defaultvalue: "65"
     type: 0
     required: false
-  - display: CVE Threshold. Minimum risk score from Recorded Future to consider the CVE malicious.
+  - display: CVE Threshold
+    additionalinfo: Minimum risk score from Recorded Future to consider the CVE malicious.
     name: cve_threshold
     defaultvalue: "65"
     type: 0
     required: false
-  - display: IP Threshold. Minimum risk score from RF to consider the IP malicious.
+  - display: IP Threshold
+    additionalinfo: Minimum risk score from RF to consider the IP malicious.
     name: ip_threshold
     defaultvalue: "65"
     type: 0
     required: false
-  - display: Domain Threshold. Minimum risk score from Recorded Future to consider the domain malicious.
+  - display: Domain Threshold
+    additionalinfo: Minimum risk score from Recorded Future to consider the domain malicious.
     name: domain_threshold
     defaultvalue: "65"
     type: 0
     required: false
-  - display: URL Threshold. Minimum risk score from Recorded Future to consider the URL malicious.
+  - display: URL Threshold
+    additionalinfo: Minimum risk score from Recorded Future to consider the URL malicious.
     name: url_threshold
     defaultvalue: "65"
     type: 0
     required: false
-  - display: Vulnerability Threshold. Minimum risk score from Recorded Future to consider the vulnerability critical.
+  - display: Vulnerability Threshold
+    additionalinfo: Minimum risk score from Recorded Future to consider the vulnerability critical.
     name: vulnerability_threshold
     defaultvalue: "65"
     type: 0
@@ -67,11 +73,12 @@ configuration:
     name: isFetch
     required: false
     type: 8
-  - display: Rule names to fetch alerts by, separated by semicolon. If empty, all alerts will be fetched.
+  - display: Rule names to fetch alerts by
+    additionalinfo: Rule names to fetch alerts by, separated by semicolon. If empty, all alerts will be fetched.
     name: rule_names
     required: false
     type: 12
-  - display: Alert Statuses to include in the fetch.
+  - display: Alert Statuses to include in the fetch
     name: fetch_statuses
     required: false
     type: 0
@@ -83,8 +90,9 @@ configuration:
     required: false
     type: 8
     additionalinfo: If selected, alerts with a status of 'no-action' will be updated to 'pending' once fetched by the integration.
-  - defaultvalue: 24 hours
-    display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year).
+  - display: First fetch time
+    additionalinfo: 'Format: <number> <time unit>, e.g., "12 hours", "7 days", "3 months", "1 year".'
+    defaultvalue: 24 hours
     name: first_fetch
     required: false
     type: 0
@@ -92,9 +100,9 @@ configuration:
     display: 'Incident type'
     required: false
     type: 13
-  - defaultvalue: "50"
+  - display: Maximum number of incidents per fetch
     name: max_fetch
-    display: 'Maximum number of incidents per fetch'
+    defaultvalue: "50"
     required: false
     type: 0
   - display: Source Reliability
@@ -121,8 +129,8 @@ configuration:
       - suddenDeath
     required: false
     type: 17
-  - name: feedExpirationInterval
-    display: Incidents Fetch Interval
+  - display: Incidents Fetch Interval
+    name: feedExpirationInterval
     defaultvalue: "20160"
     required: false
     type: 1
@@ -135,7 +143,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.8.35482
+  dockerimage: demisto/python3:3.10.8.36650
   commands:
     - name: domain
       description: Gets a quick indicator of the risk associated with a domain.
