@@ -17,6 +17,15 @@ def parse_word_doc(entry_id):
         file_path = cmd_res.get('path')
         document = Document(file_path)
         file_data = '\n'.join([para.text for para in document.paragraphs])
+
+        # extract urls
+        rels = document.part.rels
+        for rel in rels:
+            if rels[rel].reltype == RT.HYPERLINK:
+                urls.append(rels[rel]._target)
+
+        file_data = file_data + '\n\n\nExtracted links:\n* ' + '\n* '.join([url for url in urls])
+
         file_name = cmd_res.get('name')
         output_file_name = file_name[0:file_name.rfind('.')] + '.txt'
         res = fileResult(output_file_name, file_data.encode('utf8'))
