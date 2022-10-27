@@ -161,7 +161,7 @@ def test_pagination(page, page_size, limit, expected_result):
         (
             {"data": {"vulnerability": [{"id": "test", "name": "test", "description": "test"}]}},
             True,
-            ['ThreatVault.vulnerability']
+            ['ThreatVault.Vulnerability']
         ),
         (
             {
@@ -171,7 +171,7 @@ def test_pagination(page, page_size, limit, expected_result):
                 }
             },
             False,
-            ['ThreatVault.antivirus', "ThreatVault.vulnerability"]
+            ['ThreatVault.Antivirus', "ThreatVault.Vulnerability"]
         ),
         (
             {
@@ -183,7 +183,7 @@ def test_pagination(page, page_size, limit, expected_result):
                 }
             },
             False,
-            ['ThreatVault.antivirus', "ThreatVault.spyware", "ThreatVault.vulnerability", "ThreatVault.fileformat"]
+            ['ThreatVault.Antivirus', "ThreatVault.Spyware", "ThreatVault.Vulnerability", "ThreatVault.Fileformat"]
         )
     ]
 )

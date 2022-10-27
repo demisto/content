@@ -181,43 +181,43 @@ Gets the antivirus or antispyware or files signature.
 | File.SHA1 | String | The SHA1 hash of the file. | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. | 
-| ThreatVault.vulnerability.id | String | The unique id of the signature. | 
-| ThreatVault.vulnerability.name | String | The name of the signature. | 
-| ThreatVault.vulnerability.description | String | The description of the signature. | 
-| ThreatVault.vulnerability.category | String | The threat category of the signature. | 
-| ThreatVault.vulnerability.min_version | String | The PAN-OS minimum version. | 
-| ThreatVault.vulnerability.max_version | String | The PAN-OS maximum version. | 
-| ThreatVault.vulnerability.severity | String | The severity of the threat. | 
-| ThreatVault.vulnerability.default_action | String | The default action when the signature is triggered. | 
-| ThreatVault.vulnerability.cve | Array | The CVE \(Common Vulnerabilities and Exposures\) of the threat. | 
-| ThreatVault.vulnerability.vendor. | Array | The vulnerability identifier issued by vendor on advisories. | 
-| ThreatVault.vulnerability.reference | Array | The public reference of the threat. | 
-| ThreatVault.vulnerability.status | String | The status of the signature. | 
-| ThreatVault.vulnerability.details | Object | Any additional details of the signature. | 
-| ThreatVault.vulnerability.ori_release_version | String | The original release version of the signature. | 
-| ThreatVault.vulnerability.latest_release_version | String | The latest release version of the signature. | 
-| ThreatVault.vulnerability.ori_release_time | String | The original release time of the signature. | 
-| ThreatVault.vulnerability.latest_release_time | String | The latest release time of the signature. | 
-| ThreatVault.spyware.id | String | The unique id of the signature. | 
-| ThreatVault.spyware.name | String | The name of the signature. | 
-| ThreatVault.spyware.description | String | The description of the signature. | 
-| ThreatVault.spyware.vendor | Array | The spyware identifier issued by the vendor on advisories. | 
-| ThreatVault.spyware.severity | String | The severity of the threat. | 
-| ThreatVault.spyware.default_action | String | The default action when the signature is triggered. | 
-| ThreatVault.spyware.details | Object | Any additional details of the signature. | 
-| ThreatVault.spyware.reference | Array | The public reference of the threat. | 
-| ThreatVault.spyware.status | String | The status of the signature. | 
-| ThreatVault.spyware.min_version | String | The PAN-OS minimum version. | 
-| ThreatVault.spyware.max_version | String | The PAN-OS maximum version. | 
-| ThreatVault.spyware.cve | Array | The CVE \(Common Vulnerabilities and Exposures\) of the threat. | 
-| ThreatVault.antivirus.id | String | The unique id of the signature. | 
-| ThreatVault.antivirus.name | String | The name of the signature. | 
-| ThreatVault.antivirus.description | String | The description of the signature. | 
-| ThreatVault.antivirus.subtype | String | The subtype of the signature. | 
-| ThreatVault.antivirus.type | String | The type of the signature. | 
-| ThreatVault.antivirus.create_time | String | The create_time of the signature. | 
-| ThreatVault.antivirus.related_sha256_hashes | String | The related_sha256_hashes of the threat. | 
-| ThreatVault.antivirus.release | String | The default action when the signature is triggered. | 
+| ThreatVault.Vulnerability.id | String | The unique id of the signature. | 
+| ThreatVault.Vulnerability.name | String | The name of the signature. | 
+| ThreatVault.Vulnerability.description | String | The description of the signature. | 
+| ThreatVault.Vulnerability.category | String | The threat category of the signature. | 
+| ThreatVault.Vulnerability.min_version | String | The PAN-OS minimum version. | 
+| ThreatVault.Vulnerability.max_version | String | The PAN-OS maximum version. | 
+| ThreatVault.Vulnerability.severity | String | The severity of the threat. | 
+| ThreatVault.Vulnerability.default_action | String | The default action when the signature is triggered. | 
+| ThreatVault.Vulnerability.cve | Array | The CVE \(Common Vulnerabilities and Exposures\) of the threat. | 
+| ThreatVault.Vulnerability.vendor. | Array | The vulnerability identifier issued by vendor on advisories. | 
+| ThreatVault.Vulnerability.reference | Array | The public reference of the threat. | 
+| ThreatVault.Vulnerability.status | String | The status of the signature. | 
+| ThreatVault.Vulnerability.details | Object | Any additional details of the signature. | 
+| ThreatVault.Vulnerability.ori_release_version | String | The original release version of the signature. | 
+| ThreatVault.Vulnerability.latest_release_version | String | The latest release version of the signature. | 
+| ThreatVault.Vulnerability.ori_release_time | String | The original release time of the signature. | 
+| ThreatVault.Vulnerability.latest_release_time | String | The latest release time of the signature. | 
+| ThreatVault.Spyware.id | String | The unique id of the signature. | 
+| ThreatVault.Spyware.name | String | The name of the signature. | 
+| ThreatVault.Spyware.description | String | The description of the signature. | 
+| ThreatVault.Spyware.vendor | Array | The spyware identifier issued by the vendor on advisories. | 
+| ThreatVault.Spyware.severity | String | The severity of the threat. | 
+| ThreatVault.Spyware.default_action | String | The default action when the signature is triggered. | 
+| ThreatVault.Spyware.details | Object | Any additional details of the signature. | 
+| ThreatVault.Spyware.reference | Array | The public reference of the threat. | 
+| ThreatVault.Spyware.status | String | The status of the signature. | 
+| ThreatVault.Spyware.min_version | String | The PAN-OS minimum version. | 
+| ThreatVault.Spyware.max_version | String | The PAN-OS maximum version. | 
+| ThreatVault.Spyware.cve | Array | The CVE \(Common Vulnerabilities and Exposures\) of the threat. | 
+| ThreatVault.Antivirus.id | String | The unique id of the signature. | 
+| ThreatVault.Antivirus.name | String | The name of the signature. | 
+| ThreatVault.Antivirus.description | String | The description of the signature. | 
+| ThreatVault.Antivirus.subtype | String | The subtype of the signature. | 
+| ThreatVault.Antivirus.type | String | The type of the signature. | 
+| ThreatVault.Antivirus.create_time | String | The create_time of the signature. | 
+| ThreatVault.Antivirus.related_sha256_hashes | String | The related_sha256_hashes of the threat. | 
+| ThreatVault.Antivirus.release | String | The default action when the signature is triggered. | 
 
 #### Command example
 ```!threatvault-threat-signature-get signature_id=93534285```
@@ -742,25 +742,25 @@ Retrieve the threats signature metadata by id, name or sample hash (sha256 or md
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatVault.antivirus.id | String | The unique id of the signature. | 
-| ThreatVault.antivirus.name | String | The name of the signature. | 
-| ThreatVault.antivirus.description | String | The description of the signature. | 
-| ThreatVault.antivirus.subtype | String | The subtype of the signature. | 
-| ThreatVault.antivirus.type | String | The type of the signature. | 
-| ThreatVault.antivirus.create_time | String | The create_time of the signature. | 
-| ThreatVault.antivirus.related_sha256_hashes | String | The related_sha256_hashes of the threat. | 
-| ThreatVault.antivirus.release | String | The default action when the signature is triggered. | 
-| ThreatVault.fileinfo.filetype | String | The file type of the file. | 
-| ThreatVault.fileinfo.sha256 | String | The sha256 of the file. | 
-| ThreatVault.fileinfo.sha1 | String | The md5 of the file. | 
-| ThreatVault.fileinfo.md5 | String | The md5 of the file. | 
-| ThreatVault.fileinfo.size | String | The size of the file. | 
-| ThreatVault.fileinfo.type | String | The type of the file. | 
-| ThreatVault.fileinfo.family | String | The family of the file. | 
-| ThreatVault.fileinfo.platform | String | The platform of the file. | 
-| ThreatVault.fileinfo.wildfire_verdict | String | The wildfire verdict. | 
-| ThreatVault.fileinfo.create_time | String | The threat signature creation time. | 
-| ThreatVault.fileinfo.signatures | String | The signatures. | 
+| ThreatVault.Antivirus.id | String | The unique id of the signature. | 
+| ThreatVault.Antivirus.name | String | The name of the signature. | 
+| ThreatVault.Antivirus.description | String | The description of the signature. | 
+| ThreatVault.Antivirus.subtype | String | The subtype of the signature. | 
+| ThreatVault.Antivirus.type | String | The type of the signature. | 
+| ThreatVault.Antivirus.create_time | String | The create_time of the signature. | 
+| ThreatVault.Antivirus.related_sha256_hashes | String | The related_sha256_hashes of the threat. | 
+| ThreatVault.Antivirus.release | String | The default action when the signature is triggered. | 
+| ThreatVault.FileInfo.filetype | String | The file type of the file. | 
+| ThreatVault.FileInfo.sha256 | String | The sha256 of the file. | 
+| ThreatVault.FileInfo.sha1 | String | The md5 of the file. | 
+| ThreatVault.FileInfo.md5 | String | The md5 of the file. | 
+| ThreatVault.FileInfo.size | String | The size of the file. | 
+| ThreatVault.FileInfo.type | String | The type of the file. | 
+| ThreatVault.FileInfo.family | String | The family of the file. | 
+| ThreatVault.FileInfo.platform | String | The platform of the file. | 
+| ThreatVault.FileInfo.wildfire_verdict | String | The wildfire verdict. | 
+| ThreatVault.FileInfo.create_time | String | The threat signature creation time. | 
+| ThreatVault.FileInfo.signatures | String | The signatures. | 
 
 #### Command example
 ```!threatvault-threat-batch-search sha256=380082fbf9e57bcd524648efce14c92a4cb58cb745c30ef29730959d79164549```
@@ -894,60 +894,60 @@ Retrieve threat metadata, the nature of the query is determined by the query par
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatVault.vulnerability.id | String | The unique id of the signature. | 
-| ThreatVault.vulnerability.name | String | The name of the signature. | 
-| ThreatVault.vulnerability.description | String | The description of the signature. | 
-| ThreatVault.vulnerability.category | String | The threat category of the signature. | 
-| ThreatVault.vulnerability.min_version | String | The PAN-OS minimum version. | 
-| ThreatVault.vulnerability.max_version | String | The PAN-OS maximum version. | 
-| ThreatVault.vulnerability.severity | String | The severity of the threat. | 
-| ThreatVault.vulnerability.default_action | String | The default action when the signature is triggered. | 
-| ThreatVault.vulnerability.cve | Array | The CVE \(Common Vulnerabilities and Exposures\) of the threat. | 
-| ThreatVault.vulnerability.vendor. | Array | The vulnerability identifier issued by vendor on advisories. | 
-| ThreatVault.vulnerability.reference | Array | The public reference of the threat. | 
-| ThreatVault.vulnerability.status | String | The status of the signature. | 
-| ThreatVault.vulnerability.details | Object | Any additional details of the signature. | 
-| ThreatVault.vulnerability.ori_release_version | String | The original release version of the signature. | 
-| ThreatVault.vulnerability.latest_release_version | String | The latest release version of the signature. | 
-| ThreatVault.vulnerability.ori_release_time | String | The original release time of the signature. | 
-| ThreatVault.vulnerability.latest_release_time | String | The latest release time of the signature. | 
-| ThreatVault.spyware.id | String | The unique id of the signature. | 
-| ThreatVault.spyware.name | String | The name of the signature. | 
-| ThreatVault.spyware.description | String | The description of the signature. | 
-| ThreatVault.spyware.vendor | Array | The spyware identifier issued by the vendor on advisories. | 
-| ThreatVault.spyware.severity | String | The severity of the threat. | 
-| ThreatVault.spyware.default_action | String | The default action when the signature is triggered. | 
-| ThreatVault.spyware.details | Object | Any additional details of the signature. | 
-| ThreatVault.spyware.reference | Array | The public reference of the threat. | 
-| ThreatVault.spyware.status | String | The status of the signature. | 
-| ThreatVault.spyware.min_version | String | The PAN-OS minimum version. | 
-| ThreatVault.spyware.max_version | String | The PAN-OS maximum version. | 
-| ThreatVault.spyware.cve | Array | The CVE \(Common Vulnerabilities and Exposures\) of the threat. | 
-| ThreatVault.antivirus.id | String | The unique id of the signature. | 
-| ThreatVault.antivirus.name | String | The name of the signature. | 
-| ThreatVault.antivirus.description | String | The description of the signature. | 
-| ThreatVault.antivirus.subtype | String | The subtype of the signature. | 
-| ThreatVault.antivirus.type | String | The type of the signature. | 
-| ThreatVault.antivirus.create_time | String | The create_time of the signature. | 
-| ThreatVault.antivirus.related_sha256_hashes | String | The related_sha256_hashes of the threat. | 
-| ThreatVault.antivirus.release | String | The default action when the signature is triggered. | 
-| ThreatVault.fileformat.id | String | The unique id of the signature. | 
-| ThreatVault.fileformat.name | String | The name of the signature. | 
-| ThreatVault.fileformat.description | String | The description of the signature. | 
-| ThreatVault.fileformat.category | String | The threat category of the signature. | 
-| ThreatVault.fileformat.min_version | String | The PAN-OS minimum version. | 
-| ThreatVault.fileformat.max_version | String | The PAN-OS maximum version. | 
-| ThreatVault.fileformat.severity | String | The severity of the threat. | 
-| ThreatVault.fileformat.default_action | String | The default action when the signature is triggered. | 
-| ThreatVault.fileformat.cve | Array | The CVE \(Common Vulnerabilities and Exposures\) of the threat. | 
-| ThreatVault.fileformat.vendor | Array | The fileformat identifier issued by vendor on advisories. | 
-| ThreatVault.fileformat.reference | Array | The public reference of the threat. | 
-| ThreatVault.fileformat.status | String | The status of the signature. | 
-| ThreatVault.fileformat.details | Array | Any additional details of the signature. | 
-| ThreatVault.fileformat.ori_release_version | String | The original release version of the signature. | 
-| ThreatVault.fileformat.latest_release_version | String | The latest release version of the signature. | 
-| ThreatVault.fileformat.ori_release_time | String | The original release time of the signature. | 
-| ThreatVault.fileformat.latest_release_time | String | The latest release time of the signature. | 
+| ThreatVault.Vulnerability.id | String | The unique id of the signature. | 
+| ThreatVault.Vulnerability.name | String | The name of the signature. | 
+| ThreatVault.Vulnerability.description | String | The description of the signature. | 
+| ThreatVault.Vulnerability.category | String | The threat category of the signature. | 
+| ThreatVault.Vulnerability.min_version | String | The PAN-OS minimum version. | 
+| ThreatVault.Vulnerability.max_version | String | The PAN-OS maximum version. | 
+| ThreatVault.Vulnerability.severity | String | The severity of the threat. | 
+| ThreatVault.Vulnerability.default_action | String | The default action when the signature is triggered. | 
+| ThreatVault.Vulnerability.cve | Array | The CVE \(Common Vulnerabilities and Exposures\) of the threat. | 
+| ThreatVault.Vulnerability.vendor. | Array | The vulnerability identifier issued by vendor on advisories. | 
+| ThreatVault.Vulnerability.reference | Array | The public reference of the threat. | 
+| ThreatVault.Vulnerability.status | String | The status of the signature. | 
+| ThreatVault.Vulnerability.details | Object | Any additional details of the signature. | 
+| ThreatVault.Vulnerability.ori_release_version | String | The original release version of the signature. | 
+| ThreatVault.Vulnerability.latest_release_version | String | The latest release version of the signature. | 
+| ThreatVault.Vulnerability.ori_release_time | String | The original release time of the signature. | 
+| ThreatVault.Vulnerability.latest_release_time | String | The latest release time of the signature. | 
+| ThreatVault.Spyware.id | String | The unique id of the signature. | 
+| ThreatVault.Spyware.name | String | The name of the signature. | 
+| ThreatVault.Spyware.description | String | The description of the signature. | 
+| ThreatVault.Spyware.vendor | Array | The spyware identifier issued by the vendor on advisories. | 
+| ThreatVault.Spyware.severity | String | The severity of the threat. | 
+| ThreatVault.Spyware.default_action | String | The default action when the signature is triggered. | 
+| ThreatVault.Spyware.details | Object | Any additional details of the signature. | 
+| ThreatVault.Spyware.reference | Array | The public reference of the threat. | 
+| ThreatVault.Spyware.status | String | The status of the signature. | 
+| ThreatVault.Spyware.min_version | String | The PAN-OS minimum version. | 
+| ThreatVault.Spyware.max_version | String | The PAN-OS maximum version. | 
+| ThreatVault.Spyware.cve | Array | The CVE \(Common Vulnerabilities and Exposures\) of the threat. | 
+| ThreatVault.Antivirus.id | String | The unique id of the signature. | 
+| ThreatVault.Antivirus.name | String | The name of the signature. | 
+| ThreatVault.Antivirus.description | String | The description of the signature. | 
+| ThreatVault.Antivirus.subtype | String | The subtype of the signature. | 
+| ThreatVault.Antivirus.type | String | The type of the signature. | 
+| ThreatVault.Antivirus.create_time | String | The create_time of the signature. | 
+| ThreatVault.Antivirus.related_sha256_hashes | String | The related_sha256_hashes of the threat. | 
+| ThreatVault.Antivirus.release | String | The default action when the signature is triggered. | 
+| ThreatVault.Fileformat.id | String | The unique id of the signature. | 
+| ThreatVault.Fileformat.name | String | The name of the signature. | 
+| ThreatVault.Fileformat.description | String | The description of the signature. | 
+| ThreatVault.Fileformat.category | String | The threat category of the signature. | 
+| ThreatVault.Fileformat.min_version | String | The PAN-OS minimum version. | 
+| ThreatVault.Fileformat.max_version | String | The PAN-OS maximum version. | 
+| ThreatVault.Fileformat.severity | String | The severity of the threat. | 
+| ThreatVault.Fileformat.default_action | String | The default action when the signature is triggered. | 
+| ThreatVault.Fileformat.cve | Array | The CVE \(Common Vulnerabilities and Exposures\) of the threat. | 
+| ThreatVault.Fileformat.vendor | Array | The fileformat identifier issued by vendor on advisories. | 
+| ThreatVault.Fileformat.reference | Array | The public reference of the threat. | 
+| ThreatVault.Fileformat.status | String | The status of the signature. | 
+| ThreatVault.Fileformat.details | Array | Any additional details of the signature. | 
+| ThreatVault.Fileformat.ori_release_version | String | The original release version of the signature. | 
+| ThreatVault.Fileformat.latest_release_version | String | The latest release version of the signature. | 
+| ThreatVault.Fileformat.ori_release_time | String | The original release time of the signature. | 
+| ThreatVault.Fileformat.latest_release_time | String | The latest release time of the signature. | 
 
 #### Command example
 ```!threatvault-threat-search signature-name=Code+Injection+JS```
