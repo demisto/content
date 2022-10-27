@@ -26,8 +26,12 @@ def _get_behavioral_task_id(value):
 
 def test_module(client: Client) -> str:
     r = client._http_request(
-        "GET", "users", resp_type="response", ok_codes=(200, 401, 404)
+        "GET", "me", resp_type="response", ok_codes=(200, 401, 404)
     )
+    if r.status_code == 404:
+        r = client._http_request(
+            "GET", "users", resp_type="response", ok_codes=(200, 401, 404)
+        )
 
     if r.status_code == 404:
         return "Page not found, possibly wrong base_url"
