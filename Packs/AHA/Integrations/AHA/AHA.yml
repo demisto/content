@@ -14,14 +14,14 @@ configuration:
   required: true
   defaultvalue: DEMO
   type: 0
-  additionalinfo: "Check the Aha! project name in the URL. Replace the <PROJECT_NAME> placeholder in the following : exmaple.com.aha.io/products/<PROJECT_NAME>/features"
+  additionalinfo: "Check the Aha! project name in the URL. Replace the <PROJECT_NAME> placeholder in the following : example.com.aha.io/products/<PROJECT_NAME>/features."
 - name: api_key
   displaypassword: Api Key
   required: true
   defaultvalue:
   type: 9
   hiddenusername: true
-  additionalinfo: "API Key to access service REST API "
+  additionalinfo: "API Key to access the service REST API."
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
@@ -38,31 +38,31 @@ name: Aha
 script:
   commands:
   - name: aha-get-features
-    description: Will list all features from service, unless a specific feature is specified
+    description: Lists all features from service, unless a specific feature is specified.
     deprecated: false
     arguments:
     - name: from_date
-      description: Show features created after that date
+      description: Show features created after this date.
       required: false
       isArray: false
       defaultValue: "2020-01-01"
     - name: feature_name
-      description: get a specific feature
+      description: The name of a specific feature to retrieve. 
       required: false
       isArray: false
       defaultValue: ""
     - name: fields
-      description: Specify fields in comma sepereated manner to include in Aha! service response
+      description: A comma-separated list of fields to include in the Aha! service response.
       required: false
       isArray: false
       defaultValue: "name,reference_num,id,created_at"
     - name: page
-      description: "result set pagination: get a specific result page"
+      description: The specific results page to retrieve.
       required: false
       isArray: false
       defaultValue: "1"
     - name: per_page
-      description: "result set pagination: set max items per page"
+      description: The maximum number of results per page.
       required: false
       isArray: false
       defaultValue: "30"
@@ -74,23 +74,23 @@ script:
       description: The feature name.
       type: String
     - contextPath: AHA.Feature.reference_num
-      description: A feature reference num unique.
+      description: The feature reference number.
       type: String
     - contextPath: AHA.Feature.workflow_status
-      description: Feature status description.
+      description: The feature status description.
       type: String
     - contextPath: AHA.Feature.description
-      description: Description of the feature.
+      description: The feature description.
       type: String
     - contextPath: AHA.Feature.created_at
-      description: Feature creation date.
+      description: The feature creation date.
       type: Date
   - name: aha-edit-feature
-    description: "Edit of the following fields in a feature: Name, Status and Description"
+    description: "You can edit any of the following fields in a feature: Name, Status and Description."
     deprecated: false
     arguments:
     - name: feature_name
-      description: Select features to edit
+      description: The name of the features to edit.
       required: true
       isArray: false
       defaultValue: ""
@@ -107,16 +107,16 @@ script:
       description: The feature name.
       type: String
     - contextPath: AHA.Feature.reference_num
-      description: A feature reference number.
+      description: The feature reference number.
       type: String
     - contextPath: AHA.Feature.workflow_status
-      description: Status name.
+      description: The feature status description.
       type: String
     - contextPath: AHA.Feature.description
-      description: Description of the feature.
+      description: The feature description.
       type: String
     - contextPath: AHA.Feature.created_at
-      description: Feature creation date.
+      description: The feature creation date.
       type: Date
   isfetch: false
   runonce: false
