@@ -1212,7 +1212,7 @@ def main():  # pragma: no cover
         elif command == 'xdr-get-audit-agent-reports':
             return_outputs(*get_audit_agent_reports_command(client, args))
 
-        elif command == 'xdr-quarantine-files':
+        elif command == 'xdr-file-quarantine':
             return_results(quarantine_files_command(client, args))
 
         elif command == 'core-quarantine-files':
