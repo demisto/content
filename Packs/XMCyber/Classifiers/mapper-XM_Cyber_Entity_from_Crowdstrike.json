@@ -11,7 +11,7 @@
                     "complex": null,
                     "simple": "device.local_ip"
                 },
-                "Entity Name": {
+                "Entity name": {
                     "complex": null,
                     "simple": "device.hostname"
                 },
@@ -28,7 +28,7 @@
                     "complex": null,
                     "simple": "device.local_ip"
                 },
-                "Entity Name": {
+                "Entity name": {
                     "complex": null,
                     "simple": "device.hostname"
                 },

@@ -10,12 +10,11 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [
-        "Cloudflare",
-        "Feed"
+    "tags": [
+        "Threat Intelligence Management"
     ],
+    "useCases": [],
+    "keywords": [],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
