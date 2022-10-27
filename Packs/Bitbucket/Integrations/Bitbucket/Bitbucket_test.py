@@ -138,7 +138,7 @@ def test_project_list_command_with_project_key(mocker, bitbucket_client):
                                '|---|---|---|---|\n| T1 | Test1 | description | true |\n'
     readable_output = result.readable_output
     assert readable_output == expected_readable_output
-    assert result.raw_response == expected_partial_result
+    assert result.outputs == expected_partial_result
 
 
 def test_open_branch_list_command(mocker, bitbucket_client):
@@ -162,7 +162,7 @@ def test_open_branch_list_command(mocker, bitbucket_client):
                               '| master | Some User | 2022-09-18T00:00:00+00:00 | 1111111111111111111111111111111111111111 |\n'
     result = open_branch_list_command(bitbucket_client, {'partial_response': 'false'})
     assert result.readable_output == expected_human_readable
-    assert result.raw_response == expected_result
+    assert result.outputs == expected_result
 
 
 def test_branch_get_command(mocker, bitbucket_client):
@@ -186,7 +186,7 @@ def test_branch_get_command(mocker, bitbucket_client):
                               '| master | Some User | 2022-09-18T00:00:00+00:00 | 1111111111111111111111111111111111111111 |\n'
     result = branch_get_command(bitbucket_client, args)
     assert result.readable_output == expected_human_readable
-    assert result.raw_response == expected_partial_result
+    assert result.outputs == expected_partial_result
 
 
 def test_branch_create_command(mocker, bitbucket_client):
@@ -349,7 +349,7 @@ def test_issue_list_command(mocker, bitbucket_client):
                               '| 2022-09-22T00:00:00.000000+00:00 |\n'
     result = issue_list_command(bitbucket_client, args)
     assert result.readable_output == expected_human_readable
-    assert result.raw_response == expected_partial_result
+    assert result.outputs == expected_partial_result
 
 
 def test_issue_update_command(mocker, bitbucket_client):
@@ -455,7 +455,7 @@ def test_pull_request_update_command(mocker, bitbucket_client):
     expected_human_readable = 'The pull request 8 was updated successfully'
     result = pull_request_update_command(bitbucket_client, args)
     assert result.readable_output == expected_human_readable
-    assert result.raw_response == expected_partial_result
+    assert result.outputs == expected_partial_result
 
 
 def test_issue_comment_create_command(mocker, bitbucket_client):
@@ -585,7 +585,7 @@ def test_pull_request_comment_list_command(mocker, bitbucket_client):
                               '| 2022-09-12T00:00:00.000000+00:00 | 6 | uuuupdate |\n'
     result = pull_request_comment_list_command(bitbucket_client, args)
     assert result.readable_output == expected_human_readable
-    assert result.raw_response == expected_partial_result
+    assert result.outputs == expected_partial_result
 
 
 def test_workspace_member_list_command(mocker, bitbucket_client):
@@ -610,7 +610,7 @@ def test_workspace_member_list_command(mocker, bitbucket_client):
                               '| Another User | 222222222222222222222222 |\n'
     result = workspace_member_list_command(bitbucket_client, args)
     assert result.readable_output == expected_human_readable
-    assert result.raw_response == expected_partial_result
+    assert result.outputs == expected_partial_result
 
 
 def test_pull_request_comment_update_command(mocker, bitbucket_client):
@@ -631,4 +631,4 @@ def test_pull_request_comment_update_command(mocker, bitbucket_client):
     expected_human_readable = 'The comment was updated successfully'
     result = pull_request_comment_update_command(bitbucket_client, args)
     assert result.readable_output == expected_human_readable
-    assert result.raw_response == response
+    assert result.outputs == response
