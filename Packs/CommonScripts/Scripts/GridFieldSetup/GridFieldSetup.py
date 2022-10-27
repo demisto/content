@@ -2,10 +2,10 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-from typing import Dict
+from typing import Dict, List
 
 
-def grid_field_setup(keys: Optional[str], vals: dict, res_list: list) -> list[str]:
+def grid_field_setup(keys: List[str], vals: Dict, res_list: List) -> List[str]:
     """Returns a list of dictionaries based on the key/values provided.
     :type keys: ``str``
     :type vals: ``dict``
@@ -15,14 +15,9 @@ def grid_field_setup(keys: Optional[str], vals: dict, res_list: list) -> list[st
     :param res_list: list of current entries in gridfield (or blank list)
     :return: list of dictionaries
     """
-    key_list = argToList(keys)
-    num_entries = len(key_list)
     temp = {}
-    count = 0
-    while count < num_entries:
-        tkey = 'val' + str(count + 1)
-        temp[key_list[count]] = vals[tkey]
-        count += 1
+    for i, key in enumerate(keys, start=1):
+        temp[key] = vals[f'val{i}']
     res_list.append(temp)
 
     return res_list
@@ -32,28 +27,23 @@ def grid_field_setup(keys: Optional[str], vals: dict, res_list: list) -> list[st
 
 
 def grid_field_setup_command(args: Dict[str, str]) -> CommandResults:
-    keys = args.get('keys')
-    overwrite = args.get('overwrite')
-    gridfield = args.get('gridfield')
+    keys = argToList(args.pop('keys', []))
+    overwrite = args.pop('overwrite', False)
+    gridfield = args.pop('gridfield', None)
 
     # logic here to check if empty result and set default list
     fields = demisto.incidents()[0].get('CustomFields')
     if not fields:
         raise ValueError('no Custom Fields present')
     orig = fields.get(gridfield)
-    if not orig or overwrite == "true":
+    if not orig or argToBoolean(overwrite):
         orig = []
 
-    # list of all val keys
-    valkeys = sorted([k for k in args.keys() if k.startswith('val')])
-
     # dictionary or all vals
-    vals = {}
-    for i, val in enumerate(valkeys, start=1):
-        vals[f'val{i}'] = args.get(f'val{i}')
+    vals = {k: v for k, v in args.items() if k.startswith('val')}
 
     # error is keys and value numbers don't align
-    if len(argToList(keys)) != len(vals.keys()):
+    if len(keys) != len(vals):
         raise ValueError('number of keys and values needs to be the same')
 
     # Call the standalone function and get the raw response
