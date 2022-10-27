@@ -2210,20 +2210,30 @@ class Pack(object):
                         })
 
                     elif current_directory == PackFolders.XSIAM_DASHBOARDS.value:
-                        folder_collected_items.append({
+                        preview = self.get_preview_image_gcp_path(pack_file_name, PackFolders.XSIAM_DASHBOARDS.value)
+                        dashboard = {
                             'id': content_item.get('dashboards_data', [{}])[0].get('global_id', ''),
                             'name': content_item.get('dashboards_data', [{}])[0].get('name', ''),
                             'description': content_item.get('dashboards_data', [{}])[0].get('description', ''),
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
-                        })
+                        }
+
+                        if preview:
+                            dashboard.update({"preview": preview})
+                        folder_collected_items.append(dashboard)
 
                     elif current_directory == PackFolders.XSIAM_REPORTS.value:
-                        folder_collected_items.append({
+                        preview = self.get_preview_image_gcp_path(pack_file_name, PackFolders.XSIAM_REPORTS.value)
+                        report = {
                             'id': content_item.get('templates_data', [{}])[0].get('global_id', ''),
                             'name': content_item.get('templates_data', [{}])[0].get('report_name', ''),
                             'description': content_item.get('templates_data', [{}])[0].get('report_description', ''),
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
-                        })
+                        }
+
+                        if preview:
+                            report.update({"preview": preview})
+                        folder_collected_items.append(report)
 
                     elif current_directory == PackFolders.TRIGGERS.value:
                         folder_collected_items.append({
@@ -3314,6 +3324,83 @@ class Pack(object):
             versions_dict[rn_version] = pr_numbers
 
         return versions_dict
+
+    def get_preview_image_gcp_path(self, pack_file_name: str, folder_name: str) -> Optional[str]:
+        """ Genrate the preview image path as it stored in the gcp
+        Args:
+            pack_file_name: File name.
+            folder_name: Folder name.
+
+        Returns:
+            The preview image path as it stored in the gcp if preview image exists, or None otherwise.
+        """
+        preview_image_name = self.find_preview_image_path(pack_file_name)
+        try:
+            preview_image_path = os.path.join(self.path, folder_name, preview_image_name)  # disable-secrets-detection
+            if os.path.exists(preview_image_path):
+                if not self._current_version:
+                    self._current_version = ''
+                return urllib.parse.quote(os.path.join(GCPConfig.CONTENT_PACKS_PATH, self.name,
+                                                       self.current_version, folder_name, preview_image_name))
+        except Exception:
+            logging.exception(f"Failed uploading {self.name} pack preview image.")
+        return None
+
+    def upload_preview_images(self, storage_bucket, storage_base_path, diff_files_list):
+        """ Uploads pack preview images to gcs.
+        Args:
+            storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where image will be uploaded.
+            storage_base_path (str): The target destination of the upload in the target bucket.
+            diff_files_list (list): The list of all modified/added files found in the diff
+        Returns:
+            bool: whether the operation succeeded.
+        """
+        pack_storage_root_path = os.path.join(storage_base_path, self.name, self.current_version)
+
+        try:
+            for file in diff_files_list:
+                if self.is_preview_image(file.a_path):
+                    logging.info(f"adding preview image {file.a_path} to pack preview images")
+                    image_folder = os.path.dirname(file.a_path).split('/')[-1] or ''
+                    image_name = os.path.basename(file.a_path)
+                    image_storage_path = os.path.join(pack_storage_root_path, image_folder, image_name)
+                    pack_image_blob = storage_bucket.blob(image_storage_path)
+                    with open(file.a_path, "rb") as image_file:
+                        pack_image_blob.upload_from_file(image_file)
+            return True
+        except Exception as e:
+            logging.exception(f"Failed uploading {self.name} pack preview image. Additional info: {e}")
+            return False
+
+    def is_preview_image(self, file_path: str) -> bool:
+        """ Indicates whether a file_path is a preview image or not
+        Args:
+            file_path (str): The file path
+        Returns:
+            bool: True if the file is a preview image or False otherwise
+        """
+        return all([
+            file_path.startswith(os.path.join(PACKS_FOLDER, self.name)),
+            file_path.endswith('.png'),
+            '_image' in os.path.basename(file_path.lower()),
+            (PackFolders.XSIAM_DASHBOARDS.value in file_path or PackFolders.XSIAM_REPORTS.value in file_path)
+        ])
+
+    @staticmethod
+    def find_preview_image_path(file_name: str) -> str:
+        """ Generate preview image file name according to related file.
+        Args:
+            file_name: File name.
+
+        Returns:
+            Preview image file path.
+        """
+        prefixes = ['xsiamdashboard', 'xsiamreport']
+        file_name = file_name.replace('external-', '')
+        for prefix in prefixes:
+            file_name = file_name.replace(f'{prefix}-', '')
+        image_file_name = os.path.splitext(file_name)[0] + '_image.png'
+        return image_file_name
 
 
 # HELPER FUNCTIONS
