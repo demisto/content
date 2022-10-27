@@ -164,31 +164,21 @@ class IdSet(DictFileBased):
 class Graph:
     def __init__(self, marketplace: MarketplaceVersions) -> None:
         with Neo4jContentGraphInterface() as content_graph_interface:
-            integrations = content_graph_interface.search_nodes(marketplace=marketplace,
-                                                                content_type=ContentType.INTEGRATION)
-            scripts = content_graph_interface.search_nodes(marketplace=marketplace,
-                                                           content_type=ContentType.SCRIPT)
-            test_playbooks = content_graph_interface.search_nodes(marketplace=marketplace,
-                                                                  content_type=ContentType.TEST_PLAYBOOK)
+            integrations = content_graph_interface.search(marketplace=marketplace,
+                                                          content_type=ContentType.INTEGRATION)
+            scripts = content_graph_interface.search(marketplace=marketplace,
+                                                     content_type=ContentType.SCRIPT)
+            test_playbooks = content_graph_interface.search(marketplace=marketplace,
+                                                            content_type=ContentType.TEST_PLAYBOOK)
+            playbooks = content_graph_interface.search(marketplace=marketplace,
+                                                       content_type=ContentType.PLAYBOOK)
             # maps content_items to test playbook where they are used recursively
-            scripts_to_tests = content_graph_interface.get_relationship_between_items(marketplace=marketplace,
-                                                                                      relationship_type=Relationship.USES,
-                                                                                      content_type_from=ContentType.SCRIPT,
-                                                                                      content_type_to=ContentType.TEST_PLAYBOOK,
-                                                                                      recursive=True,)
-
-            playbook_to_tests = content_graph_interface.get_relationship_between_items(marketplace=marketplace,
-                                                                                       relationship_type=Relationship.USES,
-                                                                                       content_type_from=ContentType.PLAYBOOK,
-                                                                                       content_type_to=ContentType.TEST_PLAYBOOK,
-                                                                                       recursive=True,
-                                                                                       )
 
             self.id_to_integration = {integration.object_id: IdSetItem.from_model(integration) for integration in integrations}
             self.id_to_script = {script.object_id: IdSetItem.from_model(script) for script in scripts}
             self.id_to_test_playbook = {
                 test_playbook.object_id: IdSetItem.from_model(test_playbook) for test_playbook in test_playbooks}
-            self.implemented_playbooks_to_tests = {item.object_id: [IdSetItem.from_model(test) for test in tests]
-                                                   for item, _, tests in playbook_to_tests}
-            self.implemented_scripts_to_tests = {item.object_id: [IdSetItem.from_model(test) for test in tests]
-                                                 for item, _, tests in scripts_to_tests}
+            self.implemented_playbooks_to_tests = {playbook.object_id: [IdSetItem.from_model(test) for test in playbook.tested_by]
+                                                   for playbook in playbooks}
+            self.implemented_scripts_to_tests = {script.object_id: [IdSetItem.from_model(test) for test in script.tested_by]
+                                                 for script in scripts}

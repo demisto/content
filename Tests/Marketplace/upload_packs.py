@@ -267,7 +267,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
                             previous_commit_hash: str = None, landing_page_sections: dict = None,
                             artifacts_dir: Optional[str] = None,
                             storage_bucket: Optional[Bucket] = None,
-                            id_set = None,
+                            id_set=None,
                             ):
     """
     Upload updated index zip to cloud storage.
