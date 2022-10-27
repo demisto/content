@@ -19,10 +19,7 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBALS '''
 
 IS_VERSION_2_1: bool
-GLOBAL_BLOCK: bool
-BLOCK_SITEIDS: str
 OS_COUNT = 4
-
 
 
 ''' HELPER FUNCTIONS '''
@@ -86,10 +83,11 @@ def get_agents_outputs(agents):
 
 
 class Client(BaseClient):
-    """
-    Client will implement the service API, and should not contain any Demisto logic.
-    Should only do requests and return data.
-    """
+
+    def __init__(self, base_url, verify=True, proxy=False, headers=None, global_block=None, block_site_ids=None):
+        super().__init__(base_url, verify, proxy, headers)
+        self.block_site_ids = block_site_ids
+        self.global_block = global_block == 'None'
 
     def remove_hash_from_blocklist_request(self, hash_id) -> dict:
         body = {
@@ -2638,8 +2636,8 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
         raise DemistoException("You must specify a valid SHA1 hash")
 
     try:
-        if not GLOBAL_BLOCK:
-            sites = BLOCK_SITEIDS.split(',')
+        if not client.global_block:
+            sites = client.block_site_ids.split(',')
             demisto.debug(f'Sites: {sites}')
             result = client.add_hash_to_blocklists_request(value=sha1, description=args.get('description'),
                                                            os_type=args.get('os_type'), site_ids=sites, source=args.get('source'))
@@ -2912,15 +2910,15 @@ def main():
     base_url = urljoin(server, f'/web/api/v{api_version}/')
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    BLOCK_SITEIDS = params.get('block_site_ids', 'None') or 'None'
-    GLOBAL_BLOCK = BLOCK_SITEIDS == 'None'
 
-    IS_VERSION_2_1 = api_version == '2.1'
+    IS_VERSION_2_1 = api_version == '2.1'  # noqa: F821
 
     first_fetch_time = params.get('fetch_time', '3 days')
     fetch_threat_rank = int(params.get('fetch_threat_rank', 0))
     fetch_limit = int(params.get('fetch_limit', 10))
     fetch_site_ids = params.get('fetch_site_ids', None)
+    block_site_ids = params.get('block_site_ids', 'None') or 'None'
+    global_block = block_site_ids == 'None'
 
     headers = {
         'Authorization': 'ApiToken ' + token if token else 'ApiToken',
@@ -2993,13 +2991,14 @@ def main():
     ''' COMMANDS MANAGER / SWITCH PANEL '''
     demisto.info(f'Command being called is {demisto.command()}')
     command = demisto.command()
-
     try:
         client = Client(
             base_url=base_url,
             verify=use_ssl,
             headers=headers,
             proxy=proxy,
+            block_site_ids=block_site_ids,
+            global_block=global_block
         )
 
         if command == 'test-module':
