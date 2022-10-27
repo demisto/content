@@ -264,6 +264,14 @@ class TestMetadataParsing:
                               ({'tags': {'xsoar': ['tag'], 'marketplacev2': []}}, 'xsoar', {'tag'}),
                               ({'tags': {'xsoar': ['tag'], 'marketplacev2': []}}, 'marketplacev2', set())])
     def test_get_tags_by_marketplace(self, dummy_pack, pack_metadata, marketplace, expected_result):
+        """
+        Given:
+            Pack, metadata and a marketplace
+        When:
+            Getting tags by marketplace
+        Then:
+            Validating the output
+        """
         output = dummy_pack._get_tags_by_marketplace(pack_metadata, marketplace)
         assert output == expected_result
 

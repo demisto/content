@@ -2351,6 +2351,8 @@ class Pack(object):
         return tags
 
     def _get_tags_by_marketplace(self, user_metadata, marketplace):
+        """ Returns tags in according to the current marketplace"""
+        
         if isinstance(user_metadata.get('tags', []), list):
             return set(input_to_list(input_data=user_metadata.get('tags')))
         
