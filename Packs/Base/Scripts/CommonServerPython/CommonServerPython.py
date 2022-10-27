@@ -7887,11 +7887,11 @@ def is_demisto_version_ge(version, build_number=''):
     def versionzfill(v):
         """ Split version on . and zfill. So we can compare 6.10 to 6.5 properly.
 
-        :type version: ``str``
-        :param version: Version to check
+        :type v: ``srt``
+        :param v: Version str to fill
 
-        :return: True if running within a Server version greater or equal than the passed version
-        :rtype: ``bool``
+        :return: Version with zfill
+        :rtype: ``str``
         """
         vzfill = []
         for ver in v.split("."):
