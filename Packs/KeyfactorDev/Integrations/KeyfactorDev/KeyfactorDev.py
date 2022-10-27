@@ -81,14 +81,17 @@ class Client(BaseClient):
             Post Enrollment CSR
             Send the certifcate CSR and return the certificate
         Args:
-            csr_base64
-            cert_authority
-            include_chain
-            time_stamp
-            template
-            sans_ip4
-            keyAlgorithm
-            metadata
+            csr_base64: The base-64 encoded CSR that will be passed in for enrollment.
+            cert_authority:  A string that sets the name of the certificate authority
+            include_chain: A Boolean that sets whether to include the certificate chain
+                            in theresponse (true) or not (false). The default is false.
+            time_stamp: The current date and time. The date and time should be given using
+                        the ISO 8601 UTC time format YYYY-MM-DDTHH:mm:ss.000Z (e.g.2021-05-19T16:23:01Z).
+            template: A string that sets the name of the certificate template thatshould be used to
+                        issue the certificate.
+            sans_ip4: Subject alternative name (SAN) ip addresses
+            keyAlgorithm: A string indicating the cryptographic algorithm to use to generate the key
+            metadata: An array of key/value pairs that set the values for the metadata fields
 
         Returns:
             Json response as dictionary
@@ -237,13 +240,14 @@ def post_enrollment_csr_command(client: Client,
         Send the certifcate CSR and return the certificate created
     Args:
         client: Client object with request
-        csr_base64
-        cert_authority
-        include_chain
-        template
-        sans_ip4
-        keyAlgorithm
-        metadata
+        csr_base64: The base-64 encoded CSR that will be passed in for enrollment.
+        cert_authority:  A string that sets the name of the certificate authority
+        include_chain: A Boolean that sets whether to include the certificate chain in theresponse (true) or not (false).
+                        The default is false.
+        template: A string that sets the name of the certificate template thatshould be used to issue the certificate.
+        sans_ip4: Subject alternative name (SAN) ip addresses
+        keyAlgorithm: A string indicating the cryptographic algorithm to use to generate the key
+        metadata: An array of key/value pairs that set the values for the metadata fields
 
     Returns:
         human readable (markdown format), entry context and raw response
