@@ -11,11 +11,9 @@ expected_entry_result = {'Contents': 'hosts_json_test',
                          'ReadableContentsFormat': 'markdown',
                          'Type': 1}
 
-expected_calls = [call(['aquatone-discover', '--domain', MOCK_DOMAIN],
-                       stdout=PIPE, stderr=PIPE, encoding='utf-8'),
+expected_calls = [call(['aquatone-discover', '--domain', 'test.com'], stdout=PIPE, stderr=PIPE, encoding='utf-8'),
                   call().communicate(),
-                  call(['cat', '/root/aquatone/', MOCK_DOMAIN, '/hosts.json'],
-                       stdout=PIPE, stderr=PIPE, encoding='utf-8'),
+                  call(['cat', '/root/aquatone/test.com/hosts.json'], stdout=PIPE, stderr=PIPE, encoding='utf-8'),
                   call().communicate()]
 
 

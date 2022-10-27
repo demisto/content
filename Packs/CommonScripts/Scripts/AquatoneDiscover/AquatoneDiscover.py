@@ -18,7 +18,7 @@ def main():
         demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": stdout + stderr})
     else:
         res = stdout
-        cmd = ['cat', '/root/aquatone/', domain, '/hosts.json']
+        cmd = ['cat', '/root/aquatone/' + domain + '/hosts.json']
         p = Popen(cmd, stdout=PIPE, stderr=PIPE, encoding="utf-8")
         stdout, stderr = p.communicate()
         if p.returncode > 0:
