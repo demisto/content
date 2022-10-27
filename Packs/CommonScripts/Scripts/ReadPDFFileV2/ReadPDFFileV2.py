@@ -10,7 +10,7 @@ import re
 import shutil
 import json
 from typing import List, Set
-from pikepdf import Pdf
+from pikepdf import Pdf, PasswordError
 from tempfile import TemporaryDirectory
 
 URL_EXTRACTION_REGEX = (
@@ -109,11 +109,9 @@ def mark_suspicious(suspicious_reason: str, entry_id: str, path: str, file_name:
         score=Common.DBotScore.SUSPICIOUS,
     )
     # TODO No use for command results?
-    command_results = CommandResults(readable_output=human_readable, indicator=file)
-    return_warning(message=human_readable)
+    # command_results = CommandResults(readable_output=human_readable, indicator=file)
+    return_warning(message=human_readable, outputs=file.to_context())
     # return_warning(message=human_readable, outputs=command_results)
-    # TODO Should I use return_results since return_outputs is deprecated
-    # return_outputs(human_readable, dbot, {})
 
 
 def return_error_without_exit(message):
@@ -138,10 +136,9 @@ def run_shell_command(command, *args):
     exit_codes = completed_process.returncode
     if exit_codes != 0:
         error_string = completed_process.stderr.decode('utf-8')
-        # if exit_codes == 3:  # Error related to PDF permissions
-        #     raise PdfPermissionsException(error_string)
-        # if 'Copying of text from this document is not allowed' in error_string:
-        #     raise PdfPermissionsException(error_string)
+        if "Incorrect password" in error_string:
+            raise PdfPermissionsException(
+                "The provided password is either incorrect or missing. Please provide a correct password")
         raise ShellException(
             f'Failed with the following error code: {exit_codes}.\n'
             f' Error: {error_string}'
@@ -175,23 +172,14 @@ def get_images_paths_in_path(path):
     return res
 
 
-def get_pdf_metadata(file_path, user_password=None):
+def get_pdf_metadata(file_path, user_password=None) -> dict:
     """Gets the metadata from the pdf as a dictionary"""
-    # if user_password:
-    #     metadata_txt = run_shell_command('pdfinfo', '-upw', user_password, file_path)
-    # else:
-    #     metadata_txt = run_shell_command('pdfinfo', '-enc', 'UTF-8', file_path)
-    try:
-        if user_password:
-            metadata_txt = run_shell_command(
-                "pdfinfo", "-upw", user_password, file_path
-            )
-        else:
-            metadata_txt = run_shell_command("pdfinfo", "-enc", "UTF-8", file_path)
-    except Exception as e:
-        if "Incorrect password" in str(e):
-            return_warning("The provided password is either incorrect or missing. Please provide a correct password")
-            return
+    if user_password:
+        metadata_txt = run_shell_command(
+            "pdfinfo", "-upw", user_password, file_path
+        )
+    else:
+        metadata_txt = run_shell_command("pdfinfo", "-enc", "UTF-8", file_path)
     metadata = {}
     metadata_str = metadata_txt.decode("utf8", "replace")
     for line in metadata_str.split("\n"):
@@ -563,40 +551,41 @@ def setting_pdf_to_extractable(pdf_path: str, user_password='') -> None:
             pdf.save(pdf_path)
 
 
+def handling_pdf_permissions(pdf_path: str, working_dir: str, working_file: str, user_password='') -> str:
+    cpy_file_path = f'{working_dir}/{working_file}'
+    shutil.copy(pdf_path, cpy_file_path)
+    try:
+        with Pdf.open(cpy_file_path, allow_overwriting_input=True, password=user_password) as pdf:
+            pdf.save(cpy_file_path)
+    except PasswordError:
+        raise PdfPermissionsException("The provided password is either incorrect or missing. Please provide a correct password")
+    return cpy_file_path
+
+
 def extract_data_from_pdf(path: str, user_password: str, entry_id: str) -> None:
     # URLS
     urls_ec = []
     emails_ec = []
     if path:
-        with TemporaryDirectory(dir='./', prefix='ReadPDFTemp', suffix='') as temp_working_dir:
-            # try:
-            #     output_folder = "ReadPDFTemp"
-            #     os.makedirs(output_folder)
-            # except OSError as e:
-            #     if e.errno != errno.EEXIST:
-            #         raise e
-            cpy_file_path = f"{temp_working_dir}/ReadPDF.pdf"
-            shutil.copy(path, cpy_file_path)
-            setting_pdf_to_extractable(pdf_path=cpy_file_path, user_password=user_password)
-
+        with TemporaryDirectory(dir='./', prefix='ReadPDFTemp', suffix='') as working_dir:
+            # cpy_file_path = f'{working_dir}/WorkingReadPDF.pdf'
             # Get metadata:
-            metadata = get_pdf_metadata(cpy_file_path, user_password)
+            metadata = get_pdf_metadata(path, user_password)
 
-            if not metadata:
-                return
-
-            if user_password:  # The PDF is encrypted
-                dec_file_path = f"{temp_working_dir}/DecryptedPDF.pdf"
-                decrypt_pdf_file(cpy_file_path, user_password, dec_file_path)
-                cpy_file_path = dec_file_path
+            cpy_file_path = handling_pdf_permissions(pdf_path=path,
+                                                     working_dir=working_dir,
+                                                     working_file='WorkingReadPDF.pdf',
+                                                     user_password=user_password)
+            # if not metadata:
+            #     return
 
             # Get text:
-            pdf_text_output_path = f"{temp_working_dir}/PDFText.txt"
+            pdf_text_output_path = f"{working_dir}/PDFText.txt"
             text = get_pdf_text(cpy_file_path, pdf_text_output_path)
 
             # Get URLS + emails:
             urls_set, emails_set = extract_urls_and_emails_from_pdf_file(
-                cpy_file_path, temp_working_dir
+                cpy_file_path, working_dir
             )
 
             for url in urls_set:
@@ -605,7 +594,7 @@ def extract_data_from_pdf(path: str, user_password: str, entry_id: str) -> None:
                 emails_ec.append(email)
 
             # Get images:
-            images = get_images_paths_in_path(temp_working_dir)
+            images = get_images_paths_in_path(working_dir)
             readpdf_entry_object = build_readpdf_entry_object(entry_id,
                                                               metadata,
                                                               text,
@@ -632,9 +621,11 @@ def main():
         path = demisto.getFilePath(entry_id).get("path")
         file_name = demisto.getFilePath(entry_id).get("name")
         extract_data_from_pdf(path=path, user_password=user_password, entry_id=entry_id)
+    except PdfPermissionsException as e:
+        return_warning(str(e))
     except ShellException as e:
         mark_suspicious(
-            suspicious_reason=f"The script {INTEGRATION_NAME} failed due to an error: {str(e)}",
+            suspicious_reason=f'The script {INTEGRATION_NAME} failed due to an error: {str(e)}',
             entry_id=entry_id,
             path=path,
             file_name=file_name,
@@ -644,10 +635,6 @@ def main():
         # return_error_without_exit(
         #     f"The script failed read PDF file due to an error: {str(e)}"
         # )
-    # finally:
-    #     os.chdir(ROOT_PATH)
-    #     for folder in folders_to_remove:
-    #         shutil.rmtree(folder, onerror=handle_error_read_only)
 
 
 if __name__ in ["__main__", "__builtin__", "builtins"]:
