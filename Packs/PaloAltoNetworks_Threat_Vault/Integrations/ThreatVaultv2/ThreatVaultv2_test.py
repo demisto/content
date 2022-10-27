@@ -32,7 +32,8 @@ from ThreatVaultv2 import Client, threat_batch_search_command, release_note_get_
         (
             threat_search_command,
             {},
-            'One of following arguments is required -> [cve, vendor, signature-name]'
+            ('One of following arguments is required -> [cve, vendor, signature-name, type,'
+             ' from-release-version, from-release-date, release-date, release-version]')
         ),
         (
             threat_search_command,
@@ -62,7 +63,7 @@ from ThreatVaultv2 import Client, threat_batch_search_command, release_note_get_
             threat_search_command,
             {'cve': 'test', 'from-release-version': 'test', 'to-release-version': 'test',
              'from-release-date': 'test', 'to-release-date': 'test'},
-            'From-release-version and from-release-date cannot be used together.'
+            'from-release-version and from-release-date cannot be used together.'
         )
     ]
 )

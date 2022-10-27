@@ -214,7 +214,7 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
                                               removeNull=True)
             command_results_list.append(
                 CommandResults(
-                    outputs_prefix='ThreatVault.antivirus',
+                    outputs_prefix='ThreatVault.Antivirus',
                     outputs_key_field='id',
                     outputs=response.get('data', {}).get('antivirus', []),
                     readable_output=readable_output,
@@ -232,7 +232,7 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
                                               removeNull=True)
             command_results_list.append(
                 CommandResults(
-                    outputs_prefix='ThreatVault.spyware',
+                    outputs_prefix='ThreatVault.Spyware',
                     outputs_key_field='id',
                     outputs=response.get('data', {}).get('spyware', []),
                     readable_output=readable_output,
@@ -250,7 +250,7 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
                                               removeNull=True)
             command_results_list.append(
                 CommandResults(
-                    outputs_prefix='ThreatVault.vulnerability',
+                    outputs_prefix='ThreatVault.Vulnerability',
                     outputs_key_field='id',
                     outputs=response.get('data', {}).get('vulnerability', []),
                     readable_output=readable_output,
@@ -268,7 +268,7 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
                                               removeNull=True)
             command_results_list.append(
                 CommandResults(
-                    outputs_prefix='ThreatVault.fileformat',
+                    outputs_prefix='ThreatVault.Fileformat',
                     outputs_key_field='id',
                     outputs=response.get('data', {}).get('fileformat', []),
                     readable_output=readable_output,
@@ -550,10 +550,7 @@ def threat_search_command(client: Client, args: Dict) -> List[CommandResults]:
     vendor = args.get('vendor')
     name = args.get('signature-name')
 
-    length = len([x for x in (cve, vendor, name) if x])
-    if length == 0:
-        raise ValueError('One of following arguments is required -> [cve, vendor, signature-name]')
-    elif length > 1:
+    if len([x for x in (cve, vendor, name) if x]) > 1:
         raise ValueError('There can only be one argument from the following list in the command ->'
                          '[release-date, release-version]')
 
@@ -583,9 +580,18 @@ def threat_search_command(client: Client, args: Dict) -> List[CommandResults]:
                          'it is not possible to use with the following arguments -> [release-date, release-version]')
 
     if from_release_date and from_release_version:
-        raise ValueError('From-release-version and from-release-date cannot be used together.')
+        raise ValueError('from-release-version and from-release-date cannot be used together.')
 
     type_ = args.get('type')
+
+    if len([x for x in (cve, vendor, name, type_,
+                        from_release_date,
+                        from_release_version,
+                        release_date,
+                        release_version) if x]) == 0:
+        raise ValueError('One of following arguments is required -> [cve, vendor, signature-name, type, '
+                         'from-release-version, from-release-date, release-date, release-version]')
+
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     offset, limit = pagination(page, page_size, arg_to_number(args.get('limit')))
@@ -636,7 +642,7 @@ def fetch_incidents(client: Client, args: dict) -> List:
     today = datetime.now(timezone.utc).date().strftime('%Y-%m-%d')
     try:
         demisto.debug(f'Time for request fetch-incidents -> {today}')
-        response = client.threat_search_request({'releaseDate': '2022-10-17'})
+        response = client.threat_search_request({'releaseDate': '2022-09-01'})
     except Exception as err:
         if 'Error in API call [404] - Not Found' in str(err):
             return []

@@ -5,7 +5,7 @@ ignore=RM104
 ignore=BA108,BA109,IN145
 
 [file:ThreatVaultv2.yml]
-ignore=IN145
+ignore=IN145,IN126
 
 [known_words]
 ThreatVault
