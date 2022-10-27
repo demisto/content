@@ -10,7 +10,7 @@ import time
 import re
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 SERVER = demisto.params().get('server', '')
