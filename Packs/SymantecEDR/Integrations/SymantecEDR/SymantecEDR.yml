@@ -1,0 +1,224 @@
+category: Authentication
+commonfields:
+  id: SymantecEDR
+  version: -1
+configuration:
+- additionalinfo: Symantec EDR Appliance Console URL
+  defaultvalue: https://192.168.20.8
+  display: Server URL (e.g. https://192.168.20.8)
+  name: api_url
+  required: true
+  type: 0
+- additionalinfo: OAuth Client ID and Client Secret for authorizes third-party applications
+    to communicate with Symantec EDR
+  display: Client ID
+  name: credentials
+  required: true
+  type: 9
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Queries Symantec EDR endpoints help to detect threats on your network
+  (on-premise) by filter endpoints data to find Indicators of Compromise (IoCs) and
+  take actions to remediate the threat(s)
+display: Symantec Endpoint Detection and Response (EDR)
+name: SymantecEDR
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'The action to perform on the endpoints. Possible values are: isolate_endpoint,
+        rejoin_endpoint, delete_endpoint_file'
+      isArray: false
+      name: action
+      predefined:
+      - isolate_endpoint
+      - rejoin_endpoint
+      - delete_endpoint_file
+      required: true
+      secret: false
+    - default: false
+      description: For isolate and rejoin a list of endpoint ids(array or comma-separated).
+        For delete, array of object, each with hash and device_uid attributes (supports
+        comma-delimited hash:uid, hash:uid as well).
+      isArray: true
+      name: targets
+      predefined:
+      - ''
+      required: false
+      secret: false
+    deprecated: false
+    description: "Isolates endpoints by cutting connections that the endpoint(s) has\
+      \ to internal networks and external networks, based on the endpoint IDs \n\n\
+      Rejoins endpoints by re-establishing connections that the endpoint(s) has to\
+      \ internal networks and external networks, based on the endpoint IDs \n\nDeletes\
+      \ a file, i.e. deletes all instances of the file, based on the file hash that\
+      \ you have specified from the endpoint that you have specified using the Device\
+      \ ID"
+    execution: false
+    name: symantec-edr-endpoint-command
+    outputs:
+    - contextPath: hello
+      description: Should be Hello **something** here
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: query
+      description: Specify a search condition
+      isArray: false
+      name: verb
+      predefined:
+      - query
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '20'
+      description: Maximum number of events to return, Default is 20
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get associations Between domains and files
+    execution: false
+    name: symantec-edr-domain-file-association-get
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: query
+      description: Specify a search condition
+      isArray: false
+      name: verb
+      predefined:
+      - query
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '20'
+      description: Maximum number of events to return, Default is 20
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get Associations between endpooints and domains
+    execution: false
+    name: symantec-edr-endpoint-domain-association-get
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: query
+      description: Specify a search condition
+      isArray: false
+      name: verb
+      predefined:
+      - query
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '20'
+      description: Maximum number of events to return, Default is 20
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get Associations between domains and files
+    execution: false
+    name: symantec-edr-endpoint-file-association-get
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: query
+      description: Specify a search condition
+      isArray: false
+      name: verb
+      predefined:
+      - query
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '20'
+      description: Maximum number of events to return, Default is 20
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get Domain Instances
+    execution: false
+    name: symantec-edr-domain-instance-get
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: query
+      description: Specify a search condition
+      isArray: false
+      name: verb
+      predefined:
+      - query
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '20'
+      description: Maximum number of events to return, Default is 20
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get Endpoint Instances
+    execution: false
+    name: symantec-edr-endpoint-instance-get
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: query
+      description: Specify a search condition
+      isArray: false
+      name: verb
+      predefined:
+      - query
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '20'
+      description: Maximum number of events to return, Default is 20
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Get File Instances for specific SHA2
+      isArray: false
+      name: sha2
+      required: false
+      secret: false
+    deprecated: false
+    description: Get File Instances
+    execution: false
+    name: symantec-edr-file-instance-get
+  dockerimage: demisto/python3:3.7.4.2245
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
