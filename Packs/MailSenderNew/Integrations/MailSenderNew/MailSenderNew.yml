@@ -36,7 +36,7 @@ configuration:
   - None
   - STARTTLS
   - SSL/TLS
-- display: Intercept Recipient(s) Field
+- display: Intercept Recipient(s)
   additionalinfo: "Intercepts 'to' value in playbook tasks with email address specified in the 'Overwritten Email Address' field. The intended use is for DEV or QA environments where users want to prevent extemperanious emails from being sent to employees."
   name: intercept_recipients
   required: false
