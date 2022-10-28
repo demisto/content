@@ -1,8 +1,8 @@
 import io
 import json
 import traceback
-from datetime import datetime
 import zipfile
+from datetime import datetime
 from typing import Callable, List, Optional, Tuple
 
 import demistomock as demisto  # noqa: F401
@@ -2749,9 +2749,7 @@ def main():
     global IS_VERSION_2_1
 
     params = demisto.params()
-    token = params.get('token') or params.get('credentials', {}).get('password')
-    if not token:
-        raise ValueError('The API Token parameter is required.')
+
     api_version = params.get('api_version', '2.1')
     server = params.get('url', '').rstrip('/')
     base_url = urljoin(server, f'/web/api/v{api_version}/')
@@ -2765,11 +2763,39 @@ def main():
     fetch_limit = int(params.get('fetch_limit', 10))
     fetch_site_ids = params.get('fetch_site_ids', None)
 
-    headers = {
-        'Authorization': 'ApiToken ' + token if token else 'ApiToken',
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-    }
+    if params.get('credentials', {}).get('password'):
+        token = params.get('credentials', {}).get('password')
+        headers = {
+            'Authorization': 'ApiToken ' + token if token else 'ApiToken',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+
+    elif params.get('usercred', {}).get('identifier'):
+        username = params.get('usercred', {}).get('identifier')
+        password = params.get('usercred', {}).get('password')
+
+        data = {
+            "username": username,
+            "password": password,
+            "rememberMe": "true"
+        }
+        headers = {"Content-Type": "application/json"}
+        try:
+            token = requests.post(base_url + 'users/login', headers=headers,
+                                  data=json.dumps(data), verify=False).json()["data"]["token"]
+
+        except:
+            return_error('Authentication failed.')
+
+        headers = {
+            'Authorization': 'Token ' + token,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+
+    else:
+        raise ValueError('API Token or Username/Password required.')
 
     commands: Dict[str, Dict[str, Callable]] = {
         'common': {
