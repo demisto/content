@@ -1,3 +1,4 @@
+Note: Support for this Pack will be moved to the Partner on NOV, 01, 2022
 # EclecticIQ Cortex XSOAR User Manual
 ## Introduction
 ### EclecticIQ Platform

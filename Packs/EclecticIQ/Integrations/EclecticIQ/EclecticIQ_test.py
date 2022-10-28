@@ -158,4 +158,3 @@ def test_create_observable(mocker):
     result = create_observable(client, args)
     assert result.outputs_prefix == 'Observables.Data'
     assert result.outputs_key_field == 'value'
-
