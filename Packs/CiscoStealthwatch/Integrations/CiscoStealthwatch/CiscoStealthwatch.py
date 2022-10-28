@@ -1,13 +1,13 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
+import urllib3
 import requests
 import dateparser
 from datetime import datetime
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
@@ -29,7 +29,6 @@ class Client(BaseClient):
             headers.update({'X-XSRF-TOKEN': token})
         return self._http_request(method=method, url_suffix=url_suffix, json_data=json_data, data=data, cookies=cookies,
                                   headers=headers, resp_type=resp_type)
-
 
     def list_tenants(self):
         return self.prepare_request(method='GET', url_suffix='/sw-reporting/v1/tenants')
