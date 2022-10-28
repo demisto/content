@@ -11,7 +11,6 @@ def test_cisco_stealthwatch_query_flows_initialize_command(requests_mock):
     from CiscoStealthwatch import Client, cisco_stealthwatch_query_flows_initialize_command
     mock_response = util_load_json('test_data/query_flow_initialize.json')
     req_mock = requests_mock.post('https://token/v2/authenticate', cookies={'cookies': 'jar', 'XSRF-TOKEN': 'some token'})
-    # req_mock = requests_mock.post('https://token/v2/authenticate', cookies={'cookies': 'jar'})
     requests_mock.post('https://sw-reporting/v2/tenants//flows/queries', json=mock_response,
                        headers={'X-XSRF-TOKEN': 'some token'})
     client = Client(base_url='https://', auth=('', ''), verify=False, proxy=False)
