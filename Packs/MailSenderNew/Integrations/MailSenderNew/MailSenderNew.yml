@@ -36,6 +36,16 @@ configuration:
   - None
   - STARTTLS
   - SSL/TLS
+- display: Intercept Recipient(s) Field
+  additionalinfo: "Intercepts 'to' value in playbook tasks with email address specified in the 'Overwritten Email Address' field. The intended use is for DEV or QA environments where users want to prevent extemperanious emails from being sent to employees."
+  name: intercept_recipients
+  required: false
+  type: 8
+- display: Overwritten Email Address
+  additionalinfo: "Email address that replaces 'to' values sent from automations, the CLI or playbooks to the integration instance."
+  name: replacement_recipient
+  required: false
+  type: 0
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
@@ -156,5 +166,5 @@ script:
   subtype: python2
   dockerimage: demisto/python:2.7.18.27799
 tests:
-- Mail Sender (New) Test
+- Mail Sender (New)
 fromversion: 5.0.0

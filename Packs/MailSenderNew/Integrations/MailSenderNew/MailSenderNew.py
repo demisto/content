@@ -234,6 +234,10 @@ def create_msg():
     """
     # Collect all parameters
     to = argToList(demisto.getArg('to'))
+    if bool(demisto.getParam('intercept_recipients')) is True:
+        to = argToList(demisto.getParam('replacement_recipient'))
+    else:
+        to = argToList(demisto.getArg('to'))
     cc = argToList(demisto.getArg('cc'))
     bcc = argToList(demisto.getArg('bcc'))
     additional_header = argToList(demisto.getArg('additionalHeader'))
@@ -379,7 +383,11 @@ def main():
         elif demisto.command() == 'send-mail':
             raw_message = demisto.getArg('raw_message')
             if raw_message:
-                to = argToList(demisto.getArg('to'))
+                #  Check if intercept_recipients is set
+                if bool(demisto.getParam('intercept_recipients')) is True:
+                    to = argToList(demisto.getParam('replacement_recipient'))
+                else:
+                    to = argToList(demisto.getArg('to'))
                 cc = argToList(demisto.getArg('cc'))
                 bcc = argToList(demisto.getArg('bcc'))
                 str_msg = raw_message
