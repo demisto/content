@@ -145,7 +145,7 @@ class Client(BaseClient):
 
         demisto.debug(f"Could not find the event type id '{str(event['event_type_id'])}' "
                       f"in the event types from OneLogin, returning an empty value")
-        return event_type_name
+        return ''
 
     def get_access_token(self):
         """
