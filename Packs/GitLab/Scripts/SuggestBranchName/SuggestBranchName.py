@@ -1,11 +1,10 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import demistomock as demisto
 
 ATTEMPS = 10
 
 
-def find_available_branch(pack_name,command):
+def find_available_branch(pack_name, command):
 
     branch_name = pack_name
     for i in range(ATTEMPS):
