@@ -2052,7 +2052,7 @@ def main():
     BASE_URL = params.get('url', 'https://api.github.com')
     USER = params.get('user')
     TOKEN = params.get('token') or (params.get('api_token') or {}).get('password', '')
-    creds: dict = params.get('credentials', {})
+    creds: dict = params.get('credentials', {}).get('credentials', {})
     PRIVATE_KEY = creds.get('sshkey', '') if creds else ''
     INTEGRATION_ID = params.get('integration_id')
     INSTALLATION_ID = params.get('installation_id')
