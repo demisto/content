@@ -2304,13 +2304,21 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                 'Type': EntryType.NOTE,
                 'Contents': {
                     'dbotIncidentClose': True,
-                    'closeReason': f'From ServiceNow: {ticket.get("close_notes")}'
+                    'closeNotes': f'From ServiceNow: {ticket.get("close_notes")}',
+                    'closeReason': converts_state_close_reason(ticket.get("state"))
                 },
                 'ContentsFormat': EntryFormat.JSON
             })
 
     demisto.debug(f'Pull result is {ticket}')
     return [ticket] + entries
+
+
+def converts_state_close_reason(ticket_state):
+    if ticket_state in ['6', '7']:
+        return 'Resolved'
+
+    return 'Other'
 
 
 def update_remote_system_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> str:
