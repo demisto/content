@@ -311,13 +311,12 @@ class STIX2Parser:
         :param report_obj: report object
         :return: report extracted from the report object in cortex format
         """
-        # todo: parse refs
         object_refs = report_obj.get('object_refs')
         new_relationships = []
         for obj_id in object_refs:
             new_relationships.append({
                 "type": "relationship",
-                "id": "relationship--todo",
+                "id": "relationship--fakeid",
                 "created": report_obj.get('created'),
                 "modified": report_obj.get('modified'),
                 "relationship_type": "contains",
@@ -778,7 +777,6 @@ class STIX2Parser:
                         continue
                     self.id_to_object[obj.get('id')] = obj
                     if obj.get('type') == 'report':
-                        # TODO: test it
                         result, relationships = self.parse_report(obj)
                         relationships_list.extend(relationships)
                     else:
