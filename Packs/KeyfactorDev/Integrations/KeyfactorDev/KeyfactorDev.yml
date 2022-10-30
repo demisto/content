@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Keyfactor Dev
+  id: Keyfactor
   version: -1
 configuration:
 - display: API URL
@@ -21,29 +21,18 @@ configuration:
   name: credentials
   required: true
   type: 9
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: a31bac0a-84df-464a-8991-e4a738448479
-    packName: Keyfactor Dev Contribution Pack
-    propagationLabels:
-    - all
-    toServerVersion: ""
-description: "Basic Keyfactor Integration that Posts CSR and Retrieves the certificates. \nVersion 1.0"
-display: Keyfactor Dev
-name: Keyfactor Dev
+description: "Basic Keyfactor Integration that Posts CSR and Retrieves the certificates"
+display: Keyfactor
+name: Keyfactor
 script:
   commands:
   - arguments: []
     description: Retrieve a list of Certificate Templates
-    name: keyfactor-get-enrollment-csr-context-my
+    name: keyfactor-get-enrollment-csr
     outputs:
     - contextPath: Keyfactor.CSRTemplate.Lists.Name
       description: list of csr template name
       type: string
-    - {}
   - arguments:
     - description: Certificate Signing Request in Base64 format
       name: csr_base64
@@ -74,6 +63,7 @@ script:
       required: true
       type: unknown
     - name: keyAlgorithm
+      description: the key algorithm
       type: textArea
     description: Send CSR request and return certificate info
     name: keyfactor-post-enrollment-csr
@@ -82,7 +72,7 @@ script:
       description: Certificate Serial Number
       type: string
     - contextPath: Keyfactor.CSRTemplate.Lists.IssuerDN
-      description: Certificate Issuer Daomain
+      description: Certificate Issuer Domain
       type: string
     - contextPath: Keyfactor.CSRTemplate.Lists.Thumbprint
       description: Certificate Thumb Print
@@ -111,9 +101,11 @@ script:
     - contextPath: Keyfactor.CertInfo.Lists.formated_chain
       description: Formatted Certificate's Trust Chain
       type: string
-  dockerimage: demisto/akamai:1.0.0.13142
+  dockerimage: demisto/akamai:1.0.0.34769
   runonce: false
   script: ''
   subtype: python3
   type: python
-sourcemoduleid: Keyfactor Dev
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

@@ -182,7 +182,6 @@ def post_enrollment_csr_command_ec(raw_response: dict) -> Tuple[list, list]:
         certificates: List = certificateinfo['Certificates']
 
         for certs in certificates:
-
             matches = re.findall(regex, certs)
             formated_certs = formated_certs + matches
         new_formated_certs = []
@@ -350,7 +349,7 @@ def main():
     command = demisto.command()
     commands = {
         'test-module': test_module_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-enrollment-csr-context-my': get_enrollment_csr_context_template_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-enrollment-csr': get_enrollment_csr_context_template_command,
         f'{INTEGRATION_COMMAND_NAME}-post-enrollment-csr': post_enrollment_csr_command
     }
 
@@ -368,5 +367,5 @@ def main():
         return_error(err_msg, error=e)
 
 
-if __name__ == 'builtins':
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
