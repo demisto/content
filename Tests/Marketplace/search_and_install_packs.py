@@ -398,7 +398,7 @@ def install_packs(client: demisto_client,
 
     except Exception as e:
         logging.exception(f'The request to install packs has failed. Additional info: {str(e)}')
-        global SUCCESS_FLAG
+        # global SUCCESS_FLAG
         SUCCESS_FLAG = False
 
     finally:
