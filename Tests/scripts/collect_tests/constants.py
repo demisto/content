@@ -76,7 +76,7 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.CONF_JSON,
     FileType.MODELING_RULE_SCHEMA,
     FileType.LAYOUTS_CONTAINER,
-    FileType.AGENT_CONFIG,
+    FileType.XDRC_TEMPLATE,
 }
 
 IGNORED_FILE_TYPES: set[FileType] = {
@@ -91,7 +91,7 @@ IGNORED_FILE_TYPES: set[FileType] = {
     FileType.WHITE_LIST,
     FileType.TEST_SCRIPT,
     FileType.LANDING_PAGE_SECTIONS_JSON,
-    FileType.AGENT_CONFIG_YML,
+    FileType.XDRC_TEMPLATE_YML,
     FileType.XSIAM_DASHBOARD_IMAGE,
     FileType.XSIAM_REPORT_IMAGE,
 }
