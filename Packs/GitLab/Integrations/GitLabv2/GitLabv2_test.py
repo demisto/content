@@ -365,9 +365,9 @@ def test_group_list_command(mocker):
     mocker.patch.object(Client, '_http_request', return_value=response_client)
     result = group_list_command(client, args)
     expected_hr = '### List Groups\n' \
-                  '|Id|Name|Path|CreatedAt|Visibility|\n' \
-                  '|---|---|---|---|---|\n' \
-                  '| 55694272 | demistoTest | demistotest1 | 2022-07-18T12:19:46.363Z | private |\n'
+                  '|Id|Name|Path|Description|CreatedAt|Visibility|\n' \
+                  '|---|---|---|---|---|---|\n' \
+                  '| 55694272 | demistoTest | demistotest1 | exaple unit test | 2022-07-18T12:19:46.363Z | private |\n'
     assert result.readable_output == expected_hr
     assert result.raw_response == response_client
 
@@ -392,10 +392,10 @@ def test_issue_note_list_command(mocker):
     mocker.patch.object(Client, '_http_request', return_value=response_client)
     result = issue_note_list_command(client, args)
     expected_hr = '### List Issue notes\n' \
-                  '|Id|Text|CreatedAt|UpdatedAt|\n' \
-                  '|---|---|---|---|\n' \
-                  '| 112 | body1 | 2022-07-27T10:47:38.028Z | 2022-07-27T10:47:38.032Z |\n' \
-                  '| 113 | body2 | 2022-07-27T10:47:38.028Z | 2022-07-27T10:47:38.032Z |\n'
+                  '|Id|Author|Text|CreatedAt|UpdatedAt|\n' \
+                  '|---|---|---|---|---|\n' \
+                  '| 112 | user test | body1 | 2022-07-27T10:47:38.028Z | 2022-07-27T10:47:38.032Z |\n' \
+                  '| 113 | user test | body2 | 2022-07-27T10:47:38.028Z | 2022-07-27T10:47:38.032Z |\n'
     assert result.readable_output == expected_hr
     assert result.raw_response == response_client
 
@@ -684,7 +684,7 @@ def test_get_raw_file_command(mocker):
     mocker.patch.object(CommonServerPython, 'fileResult', return_value="/command_examples.txt")
     result = get_raw_file_command(client, args)
     expected_hr = '### Raw file\n' \
-                  '|path|refrence|content|\n' \
+                  '|path|reference|content|\n' \
                   '|---|---|---|\n' \
                   '| unit |  | I am a file. |\n'
     assert result[0].raw_response == response_client
@@ -774,8 +774,8 @@ ARGS_FOR_PARTIAL_RESPONSE = [
                 "merged": 'false',
                 "protected": 'false'
             }], "Branch",  # branch
-        [{'name': 'Test', 'commit': {'id': '7d', 'short_id': '7d', 'commited_date': '',
-         'author_name': 'Test Account'}, 'merged': 'false'}]
+        [{'name': 'Test', 'commit': {'id': '7d', 'short_id': '7d',
+          'committed_date': '2022-10-11T09:05:11.000+00:00', 'author_name': 'Test Account'}, 'merged': 'false'}]
     )
 ]
 
