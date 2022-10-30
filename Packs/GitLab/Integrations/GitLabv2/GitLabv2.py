@@ -1456,7 +1456,7 @@ def code_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     Returns a results of code search.
     Args:
         client (Client): Client to perform calls to GitLab services.
-        args (Dict[str, Any]): XSOAR arguments
+        args (Dict[str, Any]): XSOAR arguments.
     Returns:
         (CommandResults).
     """
