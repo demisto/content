@@ -5,12 +5,13 @@ from demisto_sdk.commands.common.constants import MarketplaceVersions
 from demisto_sdk.commands.content_graph.objects.repository import ContentDTO
 from Tests.scripts.utils.log_util import install_logging
 import logging as logger
+from demisto_sdk.commands.common.logger import logging_setup
 
 
 import json
 
-
-install_logging("collect_tests.log", logger=logger)
+logging_setup(3)
+install_logging("create_artifacts.log", logger=logger)
 
 
 def main():
