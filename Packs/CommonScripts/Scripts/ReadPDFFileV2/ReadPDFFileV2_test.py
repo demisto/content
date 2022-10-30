@@ -183,9 +183,9 @@ def test_get_urls_from_binary_file():
 
 
 def test_build_readpdf_entry_object_empty_extract(mocker):
-    from ReadPDFFileV2 import build_readpdf_entry_object
+    from ReadPDFFileV2 import build_readpdf_entry_object, DEFAULT_NUM_IMAGES
     mocker.patch.object(demisto, 'executeCommand', return_value=[{u'Contents': ''}])
-    res = build_readpdf_entry_object('test', {}, '', '', '', '')
+    res = build_readpdf_entry_object('test', {}, '', [], [], [], DEFAULT_NUM_IMAGES)
     assert res[0]['HumanReadable'] == '### Metadata\n\n### URLs\n\n### Text\n'
 
 
