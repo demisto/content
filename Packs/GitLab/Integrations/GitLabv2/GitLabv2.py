@@ -18,7 +18,7 @@ class Client(BaseClient):
 
     def get_project_list_request(self, params: dict | None) -> dict:
         headers = self._headers
-        suffix = 'projects'
+        suffix = '/projects'
         response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202])
         return response
 
@@ -121,8 +121,8 @@ class Client(BaseClient):
 
     def version_get_request(self) -> dict:
         headers = self._headers
-        suffix = self._base_url + '/version'
-        response = self._http_request('GET', full_url=suffix, headers=headers, ok_codes=[200, 202])
+        suffix = '/version'
+        response = self._http_request('GET', suffix, headers=headers, ok_codes=[200, 202])
         return response
 
     def issue_update_request(self, issue_id: str | Any, params: dict) -> dict:
