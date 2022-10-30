@@ -25,7 +25,7 @@ configuration:
   name: timeout
   required: false
   type: 0
-description: Deprecated. Use CiscoSMA instead.
+description: Deprecated. Use Cisco Security Management Appliance instead.
 display: CiscoEmailSecurity (Beta) (Deprecated)
 name: CiscoEmailSecurity
 script:
