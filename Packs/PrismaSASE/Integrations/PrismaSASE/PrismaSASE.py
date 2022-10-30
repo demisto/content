@@ -381,7 +381,7 @@ class Client(BaseClient):
 
         If there is an existing access token, and it has not expired, set it as the access token for this request
         Else request a new access token for the provided TSG and store it in the integration context and add the TSG ID
-        as a prefix
+        as a prefix.
         """
         previous_token = get_integration_context()
         integration_context = get_integration_context()
@@ -431,6 +431,11 @@ class Client(BaseClient):
                     # store received token and expiration time in the integration context
                     set_integration_context(new_token)
                     return access_token
+
+                else:
+                    raise DemistoException(f"Error occurred while creating an access token. Access token field"
+                                           f" has not found in the response data. Please check the instance "
+                                           f"configuration.\n")
 
             except Exception as e:
                 raise DemistoException(f'Error occurred while creating an access token. Please check the instance'
