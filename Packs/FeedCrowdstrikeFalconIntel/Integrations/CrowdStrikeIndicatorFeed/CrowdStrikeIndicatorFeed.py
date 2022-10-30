@@ -7,10 +7,10 @@ from CrowdStrikeApiModule import *  # noqa: E402
 
 # IMPORTS
 from datetime import datetime
-import requests
+import urllib3
 
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
+
 
 XSOAR_TYPES_TO_CROWDSTRIKE = {
     'account': "username",
