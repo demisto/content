@@ -151,12 +151,13 @@ class VulnerabilityExceptionReason(Enum, metaclass=FlexibleEnum):
 
 
 class VulnerabilityExceptionScopeType(Enum, metaclass=FlexibleEnum):
-    """An Enum of possible vulnerability exception scope type values."""
+    """An Enum of possible vulnerability exception scope type values.
+       Note: The API has another option, "Instance", which we had issues with, so it's not currently supported."""
     GLOBAL = "Global"
     SITE = "Site"
     ASSET = "Asset"
     ASSET_GROUP = "Asset Group"
-    INSTANCE = "Instance"
+    # INSTANCE = "Instance"
 
 
 class VulnerabilityExceptionState(Enum, metaclass=FlexibleEnum):
@@ -914,7 +915,8 @@ class Client(BaseClient):
 
     def create_vulnerability_exception(self, vulnerability_id: str, scope_type: VulnerabilityExceptionScopeType,
                                        state: VulnerabilityExceptionState, reason: VulnerabilityExceptionReason,
-                                       expires: Optional[str] = None, comment: Optional[str] = None):
+                                       scope_id: Optional[int] = None, expires: Optional[str] = None,
+                                       comment: Optional[str] = None) -> dict:
         """
         | Create a new vulnerability exception.
         |
@@ -928,25 +930,24 @@ class Client(BaseClient):
             reason (VulnerabilityExceptionReason): The reason the vulnerability exception was submitted.
                 Can be one of: "False Positive", "Compensating Control", "Acceptable Use",
                 "Acceptable Risk", and "Other".
+            scope_id (int): ID of the chosen `scope_type` (site ID, asset ID, etc.).
+                Required if `scope_type` is anything other than `Global`
             expires (str | None, optional): The date and time the vulnerability exception is set to expire.
             comment (str | None, optional): A comment from the submitter as to why the exception was submitted.
 
         Returns:
             dict: API response with information about the newly created vulnerability exception.
         """
-        scope_obj = find_valid_params(
-            id=vulnerability_id,
-            type=scope_type.value,
-        )
+        scope_obj = {
+            "id": scope_id,
+            "type": scope_type.value,
+            "vulnerability": vulnerability_id,
+        }
 
         submit_obj = find_valid_params(
             reason=reason.value,
             comment=comment,
         )
-
-        # Change to None if empty dict (no parameters used).
-        submit_obj = submit_obj if submit_obj else None
-        scope_obj = scope_obj if scope_obj else None
 
         post_data = find_valid_params(
             expires=expires,
@@ -1603,7 +1604,7 @@ class Client(BaseClient):
             dict: API response with information about a specific exception made on a vulnerability.
         """
         return self._http_request(
-            url_suffix=f"/vulnerabilities/{vulnerability_exception_id}",
+            url_suffix=f"/vulnerability_exceptions/{vulnerability_exception_id}",
             method="GET",
             resp_type="json",
         )
@@ -3312,6 +3313,7 @@ def create_site_scan_credential_command(client: Client, site: Site, name: str,
 def create_vulnerability_exception_command(client: Client, vulnerability_id: str,
                                            scope_type: VulnerabilityExceptionScopeType,
                                            state: VulnerabilityExceptionState, reason: VulnerabilityExceptionReason,
+                                           scope_id: Optional[str] = None,
                                            expires: Optional[str] = None,
                                            comment: Optional[str] = None) -> CommandResults:
     """
@@ -3323,14 +3325,22 @@ def create_vulnerability_exception_command(client: Client, vulnerability_id: str
         scope_type (VulnerabilityExceptionScopeType): The type of the exception scope.
         state (VulnerabilityExceptionState): The state of the vulnerability exception.
         reason (VulnerabilityExceptionReason): The reason the vulnerability exception was submitted.
+        scope_id (int): ID of the chosen `scope_type` (site ID, asset ID, etc.).
+            Required if `scope_type` is anything other than `Global`
         expires (str | None, optional): The date and time the vulnerability exception is set to expire.
         comment (str | None, optional): A comment from the submitter as to why the exception was submitted.
     """
+    final_item_id: Optional[int] = None
+
+    if isinstance(scope_id, str):
+        final_item_id = int(scope_id)
+
     response_data = client.create_vulnerability_exception(
         vulnerability_id=vulnerability_id,
         scope_type=scope_type,
         state=state,
         reason=reason,
+        scope_id=final_item_id,
         expires=expires,
         comment=comment,
     )
@@ -5396,9 +5406,9 @@ def main():
                 scope_type=scope_type,
                 state=state,
                 reason=reason,
+                scope_id=args.get("id"),
                 expires=args.get("expires"),
                 comment=args.get("comment"),
-
             )
         elif command == "nexpose-delete-asset":
             results = delete_asset_command(

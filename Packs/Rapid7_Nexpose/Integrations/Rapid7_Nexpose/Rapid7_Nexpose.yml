@@ -779,7 +779,7 @@ script:
           - Site
           - Asset
           - Asset Group
-          - Instance
+#          - Instance  # We had issues with this option, so it's not currently supported
         required: true
         secret: false
       - auto: PREDEFINED
@@ -813,13 +813,19 @@ script:
           - Other
         required: true
         secret: false
+      - default: false
+        description: ID of the chosen `scope_type` (site ID, asset ID, etc.). Required if `scope_type` is anything other than `Global`
+        isArray: false
+        name: id
+        required: false
+        secret: false
     deprecated: false
     description: Create a new vulnerability exception.
     execution: false
     name: nexpose-create-vulnerability-exception
     outputs:
       - contextPath: Nexpose.VulnerabilityException.id
-        description: The created site Id
+        description: ID of the generated vulnerability exception.
         type: number
   - arguments:
     - default: false
