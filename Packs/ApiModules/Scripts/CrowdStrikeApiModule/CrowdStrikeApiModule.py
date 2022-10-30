@@ -118,13 +118,18 @@ class CrowdStrikeClient(BaseClient):
             # new token is needed
             auth_token = self._generate_token()
         else:
-            time_passed = now - dateparser.parse(ctx.get('generation_time'))
+            generation_time = dateparser.parse(ctx.get('generation_time'))
+            if generation_time and now:
+                time_passed = now - generation_time
+            else:
+                time_passed = TOKEN_LIFE_TIME
             if time_passed < TOKEN_LIFE_TIME:
                 # token hasn't expired
                 return ctx.get('auth_token')
             else:
                 # token expired
                 auth_token = self._generate_token()
+                
         ctx.update({'auth_token': auth_token, 'generation_time': now.strftime("%Y-%m-%dT%H:%M:%S")})
         set_integration_context(ctx)
         return auth_token
