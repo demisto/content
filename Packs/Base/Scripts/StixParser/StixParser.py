@@ -311,7 +311,7 @@ class STIX2Parser:
         :param report_obj: report object
         :return: report extracted from the report object in cortex format
         """
-        object_refs = report_obj.get('object_refs')
+        object_refs = report_obj.get('object_refs', [])
         new_relationships = []
         for obj_id in object_refs:
             new_relationships.append({
