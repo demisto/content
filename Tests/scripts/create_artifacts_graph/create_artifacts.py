@@ -33,8 +33,7 @@ def main():
                 all_level_dependencies.append(dependency.content_item.name)
                 if dependency.is_direct:
                     first_level_dependencies.append(
-                        {"display_name": dependency.related_to.name,
-                         "mandatory": dependency.is_direct}
+                        {"display_name": dependency.related_to.name, "mandatory": dependency.is_direct}
                     )
                     displayed_images.extend(pack.content_items.integration)
             pack_dependencies[pack.name] = {
@@ -46,3 +45,7 @@ def main():
             }
         with open(args.dependencies_output, "w") as f:
             json.dump(pack_dependencies, f)
+
+
+if __name__ == "__main__":
+    main()
