@@ -1,3 +1,6 @@
+"""
+Tests module for Prisma SASE integration.
+"""
 
 import json
 import pytest

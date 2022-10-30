@@ -433,9 +433,8 @@ class Client(BaseClient):
                     return access_token
 
                 else:
-                    raise DemistoException(f"Error occurred while creating an access token. Access token field"
-                                           f" has not found in the response data. Please check the instance "
-                                           f"configuration.\n")
+                    raise DemistoException(f"Error occurred while creating an access token. Access token field has not"
+                                           f" found in the response data. Please check the instance configuration.\n")
 
             except Exception as e:
                 raise DemistoException(f'Error occurred while creating an access token. Please check the instance'
