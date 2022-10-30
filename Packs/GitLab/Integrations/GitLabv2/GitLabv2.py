@@ -121,8 +121,8 @@ class Client(BaseClient):
 
     def version_get_request(self) -> dict:
         headers = self._headers
-        suffix = self._base_url+'/version'
-        response = self._http_request('GET', full_url= suffix, headers=headers, ok_codes=[200, 202])
+        suffix = self._base_url + '/version'
+        response = self._http_request('GET', full_url=suffix, headers=headers, ok_codes=[200, 202])
         return response
 
     def issue_update_request(self, issue_id: str | Any, params: dict) -> dict:
