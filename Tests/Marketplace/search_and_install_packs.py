@@ -358,7 +358,7 @@ def install_packs(client: demisto_client,
                 packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for pack in
                               ast.literal_eval(response_data)]
                 logging.success(f'Packs were successfully installed on server {host}')
-                logging.debug(f'The packs that were successfully installed on server {host}:\n{packs_data}')
+                logging.info(f'The packs that were successfully installed on server {host}:\n{packs_data}')
 
         except ApiException as ex:
             if 'timeout awaiting response' in ex.body:
@@ -371,6 +371,8 @@ def install_packs(client: demisto_client,
 
     try:
         logging.info(f'Installing packs on server {host}')
+        logging.info(f'Installing the following ids: {packs_to_install}')
+        logging.info(f'The SUCCESS_FLAG is {SUCCESS_FLAG}')
         try:
             call_install_packs_request(packs_to_install)
 
@@ -399,6 +401,7 @@ def install_packs(client: demisto_client,
         SUCCESS_FLAG = False
 
     finally:
+        logging.info(f'In the end the SUCCESS_FLAG is {SUCCESS_FLAG}')
         return SUCCESS_FLAG
 
 
