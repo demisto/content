@@ -1,0 +1,2 @@
+!GridFieldSetup keys=url,verified val1="https://xsoar.pan.dev/" val2="verified" gridfield="urlsslverification"
+!GridFieldSetup keys=url,verified val1="https://www.paloaltonetworks.com" val2="verified" gridfield="urlsslverification" overwrite=true
