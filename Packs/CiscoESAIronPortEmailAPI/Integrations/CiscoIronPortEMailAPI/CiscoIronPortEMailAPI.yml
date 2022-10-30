@@ -21,7 +21,7 @@ configuration:
   required: true
   type: 0
 deprecated: true
-description: Deprecated. Use CiscoESA instead.
+description: Deprecated. Use Cisco Email Security Appliance (IronPort) V2 instead.
 display: Cisco IronPort EMail API (Deprecated)
 name: Cisco IronPort EMail API
 script:
