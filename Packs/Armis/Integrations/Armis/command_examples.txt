@@ -6,3 +6,4 @@
 !armis-search-devices-by-aql aql_string="macAddress:(a4:5d:36:c5:32:69)"
 !armis-update-alert-status alert_id=3819 status=RESOLVED
 !armis-search-alerts-by-aql-string aql_string="alertId:(3821)"
+!armis-get-users

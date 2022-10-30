@@ -5,8 +5,6 @@ from typing import List
 import pytz
 import urllib3
 
-from CommonServerPython import *
-
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -177,6 +175,16 @@ class Client(BaseClient):
         """
         token = self._get_token()
         return self._http_request('POST', f'/devices/{device_id}/tags/', json_data={'tags': tags},
+                                  headers={'accept': 'application/json', 'Authorization': str(token)})
+
+    def get_users(self):
+        """
+        Returns a user, or all if user not set
+        Args:
+            none
+        """
+        token = self._get_token()
+        return self._http_request('GET', '/users/',
                                   headers={'accept': 'application/json', 'Authorization': str(token)})
 
     def untag_device(self, device_id: str, tags: List[str]):
@@ -625,6 +633,51 @@ def search_alerts_by_aql_command(client: Client, args: dict):
     return 'No alerts found'
 
 
+def get_user_command(client: Client, args: dict):
+    """
+    armis-get-user command: returns
+    Args:
+        client (Client): An Armis client object
+        args (dict): A dict object containing the arguments for this command
+    """
+    response = client.get_users()
+    results = response.get('data')
+    if results:
+        headers = [
+            'id',
+            'name',
+            'title',
+            'username',
+            'email',
+            'location',
+            'phone',
+            'isActive',
+            'lastLoginTime',
+            'role',
+            'roleAssignment',
+            'reportPermissions',
+            'twoFactorAuthentication',
+        ]
+        
+        # transform multiple roleAssignments to string
+        user_index = 0
+        if (results.get('users')):
+          for user in results.get('users'):
+                if user.get('roleAssignment'):  
+                    results['users'][user_index]['roleAssignment'] = ', '.join(user['roleAssignment'][0]['name'])
+                user_index += 1
+            
+        return CommandResults(
+            outputs_prefix='Armis.Users',
+            outputs_key_field='id',
+            outputs=results,
+            raw_response=response,
+            readable_output=tableToMarkdown('armis users', results.get('users'), headers=headers, removeNull=False, date_fields=['lastLoginTime'],
+                                            headerTransform=pascalToSpace)
+        )
+    return 'no users found'
+
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -694,6 +747,9 @@ def main():
 
         elif command == 'armis-search-alerts-by-aql-string':
             return_results(search_alerts_by_aql_command(client, args))
+
+        elif command == 'armis-get-users':
+            return_results(get_user_command(client, args))
 
     # Log exceptions
     except Exception as e:
