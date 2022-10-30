@@ -1,5 +1,5 @@
 Beta integration that provides commands for interaction with Prisma SASE API.
-This integration was integrated and tested with version xx of Prisma SASE
+This integration was integrated and tested with version 1.0 of Prisma SASE API.
 
 ## Configure Prisma SASE (Beta) on Cortex XSOAR
 
