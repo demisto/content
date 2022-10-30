@@ -2189,10 +2189,12 @@ class Pack(object):
 
                     elif current_directory == PackFolders.MODELING_RULES.value:
                         self.add_pack_type_tags(content_item, 'ModelingRule')
+                        schema: Dict[str, Any] = json.loads(content_item.get('schema') or '{}')
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
+                            'datasets': list(schema.keys()),
                         })
 
                     elif current_directory == PackFolders.CORRELATION_RULES.value:
