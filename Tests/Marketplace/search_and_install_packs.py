@@ -370,6 +370,7 @@ def install_packs(client: demisto_client,
             raise ex
 
     try:
+        global SUCCESS_FLAG
         logging.info(f'Installing packs on server {host}')
         logging.info(f'Installing the following ids: {packs_to_install}')
         logging.info(f'The SUCCESS_FLAG is {SUCCESS_FLAG}')
