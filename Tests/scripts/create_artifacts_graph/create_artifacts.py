@@ -18,7 +18,7 @@ def main():
 
     with Neo4jContentGraphInterface() as interface:
         content_dto: ContentDTO = interface.marshal_graph(args.marketplace, all_level_dependencies=True)
-        content_dto.dump(args.artifacts_output, args.marketplace, args.zip)
+        content_dto.dump(Path(args.artifacts_output), args.marketplace, args.zip)
         pack_dependencies = {}
         for pack in content_dto.packs:
             displayed_images = []
