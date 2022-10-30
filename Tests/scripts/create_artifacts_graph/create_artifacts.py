@@ -9,6 +9,9 @@ from demisto_sdk.commands.common.logger import logging_setup
 
 
 import json
+import demisto_sdk.commands.content_graph.objects.repository as r
+
+r.USE_FUTURE = False
 
 logging_setup(3)
 install_logging("create_artifacts.log", logger=logger)
