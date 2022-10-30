@@ -273,17 +273,17 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def check_args_for_update(args: dict, optinal_params: list) -> dict:
+def check_args_for_update(args: dict, optional_params: list) -> dict:
     '''
-    This function checks that at least one argument from optinal params is in args.
-    input: optinal params, args from user.
+    This function checks that at least one argument from optional params is in args.
+    input: optional params, args from user.
     output: if there isn't at least one argument then throw an exception.
             otherwise- dict of params for update and True boolean argument.
     '''
     params, args_valid = {}, False
-    for optinal_param in optinal_params:
-        if args.get(optinal_param):
-            params[optinal_param] = args.get(optinal_param)
+    for optional_param in optional_params:
+        if args.get(optional_param):
+            params[optional_param] = args.get(optional_param)
             args_valid = True
     if not args_valid:
         raise DemistoException('At least one of arguments is required for the'
@@ -304,12 +304,12 @@ def validate_pagination_values(limit: int, page_number: int) -> tuple[int, int, 
 def response_according_pagination(client_function: Any, limit: int, page_number: int,
                                   params: dict, suffix_id: str | None):
     '''
-    This function gets results accoring to the pagination values.
-    input: 1. paramters for the client function
+    This function gets results according to the pagination values.
+    input: 1. parameters for the client function
            2. suffix_id- if the suffix contain id(issue id for example) suffix_id would contain it,
             otherwise None.
            3. name of the client function.
-    output: list(representing the pages) of list of raw dictonary results.
+    output: list(representing the pages) of list of raw dictionary results.
     '''
     limit, per_page, page_number = validate_pagination_values(limit, page_number)
     params.update({'per_page': per_page})
@@ -329,7 +329,7 @@ def response_according_pagination(client_function: Any, limit: int, page_number:
 
 def partial_response_fields(object_name: str):
     '''
-    This function returns the fields for context data after filtring them. If a wanted field
+    This function returns the fields for context data after filtering them. If a wanted field
     is inside a dict it the name of the dict would be his data, otherwise the data is empty,
     input: name of object
     returns: wanted fields.
@@ -337,7 +337,7 @@ def partial_response_fields(object_name: str):
     if object_name == 'Branch':
         return {
             'name': None,
-            'commit': ['id', 'short_id', 'commited_date', 'author_name'],
+            'commit': ['id', 'short_id', 'committed_date', 'author_name'],
             'merged': None
         }
     if object_name == 'Issue':
@@ -412,9 +412,9 @@ def partial_response_fields(object_name: str):
 
 def partial_response(response: list, object_type: str):
     '''
-    This function filters the raw response from the API accroding to the dict of fields given.
-    input: raw response which is a list of dictionaries, fields for the context data dispaly.
-    output: parital dictonary results.
+    This function filters the raw response from the API according to the dict of fields given.
+    input: raw response which is a list of dictionaries, fields for the context data display.
+    output: partial dictionary results.
     '''
     partial_response: List[Dict[str, Any]] = []
     fields = partial_response_fields(object_type)
@@ -530,7 +530,7 @@ def issue_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         (CommandResults).
     """
     response_to_hr, human_readable = [], ''
-    headers = ['Issue_iid', 'Title', 'CreatedAt', 'CreatedBy', 'UpdatedAt', 'Milstone', 'State', ' Assignee']
+    headers = ['Issue_iid', 'Title', 'CreatedAt', 'CreatedBy', 'UpdatedAt', 'Milestone', 'State', ' Assignee']
     page_number = arg_to_number(args.get('page')) or 1
     limit = arg_to_number(args.get('limit')) or 50
     params = assign_params(assignee_id=args.get('assignee_id'), assignee_username=args.get('assignee_username'),
@@ -580,7 +580,7 @@ def create_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults
     Returns:
         (CommandResults).
     """
-    headers = ['Iid', 'Title', 'CreatedAt', 'CreatedBy', 'UpdatedAt', 'Milstone', 'State', 'Assignee']
+    headers = ['Iid', 'Title', 'CreatedAt', 'CreatedBy', 'UpdatedAt', 'Milestone', 'State', 'Assignee']
     labels = args.get('labels', '')
     title = args.get('title', '')
     description = args.get('description', '')
@@ -705,7 +705,7 @@ def get_raw_file_command(client: Client, args: Dict[str, Any]) -> List:
     """
     ref = args.get('ref', 'main')
     file_path = args.get('file_path', '')
-    headers = ['path', 'refrence', 'content']
+    headers = ['path', 'reference', 'content']
     response = client.get_raw_file_request(file_path, ref)
     file_ = response
     outputs = {'path': file_path, 'content': response, 'ref': ref}
@@ -729,7 +729,7 @@ def issue_update_command(client: Client, args: Dict[str, Any]) -> CommandResults
         args (Dict[str, Any]): XSOAR arguments:
             - 'issue_iid': The iid of the issue.
 
-        [at least one of the following args is needed for the opertion to be successfull:
+        [at least one of the following args is needed for the operation to be successful:
             'add_labels', 'assignee_ids', 'confidential', 'description', 'discussion_locked',
             'due_date', 'epic_id', 'epic_iid', 'issue_type', 'milestone_id', 'remove_labels',
             'state_event', 'title']
@@ -741,7 +741,7 @@ def issue_update_command(client: Client, args: Dict[str, Any]) -> CommandResults
     params_optional = ['add_labels', 'assignee_ids', 'confidential', 'description', 'discussion_locked',
                        'due_date', 'epic_id', 'epic_iid', 'issue_type', 'milestone_id', 'remove_labels',
                        'state_event', 'title']
-    headers = ['Iid', 'Title', 'CreatedAt', 'CreatedBy', 'UpdatedAt', 'Milstone', 'State', 'Assignee']
+    headers = ['Iid', 'Title', 'CreatedAt', 'CreatedBy', 'UpdatedAt', 'Milestone', 'State', 'Assignee']
     params = check_args_for_update(args, params_optional)
     response = client.issue_update_request(issue_iid, params)
     human_readable_dict = {'Iid': response.get('iid', ''),
@@ -754,7 +754,7 @@ def issue_update_command(client: Client, args: Dict[str, Any]) -> CommandResults
     if response.get('author'):
         human_readable_dict['CreatedBy'] = response['author'].get('name', '')
     if response.get('milestone'):
-        human_readable_dict['Milstone'] = response['milestone'].get('title', '')
+        human_readable_dict['Milestone'] = response['milestone'].get('title', '')
     return_partial = args.get('partial_response') == 'true'
     outputs = partial_response([response], 'Issue') if return_partial else response
     human_readable = tableToMarkdown('Update Issue', human_readable_dict, removeNull=True, headers=headers)
@@ -881,7 +881,7 @@ def file_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     file_content = args.get('file_content', '')
     branch = args.get('branch')
     start_branch = args.get('start_branch')
-    encoding = args.get('endcoding')
+    encoding = args.get('encoding')
     author_email = args.get('author_email')
     author_name = args.get('author_name')
     commit_message = args.get('commit_message')
@@ -1042,7 +1042,7 @@ def group_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         response_to_hr.append({'Id': group.get('id'),
                                'Name': group.get('name'),
                                'Path': group.get('path'),
-                               'Description': group.get('descrition', ''),
+                               'Description': group.get('description', ''),
                                'CreatedAt': group.get('created_at', ''),
                                'Visibility': group.get('visibility', '')})
     human_readable = tableToMarkdown(response_title, response_to_hr, removeNull=True, headers=headers)
@@ -1154,7 +1154,7 @@ def issue_note_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
     for issue_note in response:
         issue_note_edit = {'Id': issue_note.get('id'),
                            'Text': issue_note.get('body', ''),
-                           'Autor': issue_note.get('author', {}).get('name', ''),
+                           'Author': issue_note.get('author', {}).get('name', ''),
                            'UpdatedAt': issue_note.get('updated_at', ''),
                            'CreatedAt': issue_note.get('created_at', ''),
                            }
@@ -1194,7 +1194,6 @@ def merge_request_list_command(client: Client, args: Dict[str, Any]) -> CommandR
                            target_branch=args.get('target_branch'), search=args.get('search'))
 
     response = response_according_pagination(client.merge_request_list_request, limit, page_number, params, None)
-
     for merge_request in response:
         merge_request_edit = {'Iid': merge_request.get('iid', ''),
                               'Title': merge_request.get('Title', ''),
@@ -1331,7 +1330,7 @@ def merge_request_note_list_command(client: Client, args: Dict[str, Any]) -> Com
                                    'UpdatedAt': merge_request_note.get('updated_at', ''),
                                    'CreatedAt': merge_request_note.get('created_at', '')}
         if merge_request_note.get('author'):
-            merge_request_note_edit['Autor'] = merge_request_note.get('author', {}).get('name', '')
+            merge_request_note_edit['Author'] = merge_request_note.get('author', {}).get('name', '')
         response_to_hr.append(merge_request_note_edit)
     return_partial = args.get('partial_response') == 'true'
     outputs = partial_response(response, 'Merge Request Note') if return_partial else response
