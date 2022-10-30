@@ -281,7 +281,7 @@ class Client(BaseClient):
             return []
 
         if not page:
-            total_pages = response["page"].get("totalPages", 1)
+            total_pages = response.get("page", {}).get("totalPages", 1)
             page_count = 1
 
             while page_count < total_pages and (limit is None or len(result) < limit):
@@ -1340,32 +1340,21 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_shared_credentials(self, page_size: Optional[int] = DEFAULT_PAGE_SIZE, page: Optional[int] = None,
-                               limit: Optional[int] = None) -> list[dict]:
+    def get_shared_credentials(self) -> list[dict]:
         """
         | Retrieve information about all shared credentials.
         |
         | For more information see:
             https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getSharedCredentials
 
-        Args:
-            page_size (int | None, optional): Number of assets to return per page when using pagination.
-                Defaults to DEFAULT_PAGE_SIZE.
-            page (int | None, optional): Specific pagination page to retrieve. Defaults to None.
-            limit (int | None, optional): Limit the number of sites to return. None means to not use a limit.
-                Defaults to None.
-
         Returns:
             list[dict]: A list with all shared credentials.
         """
-        return self._paged_http_request(
-            url_suffix="shared_credentials",
+        return self._http_request(
+            url_suffix="/shared_credentials",
             method="GET",
-            page_size=page_size,
-            page=page,
-            limit=limit,
             resp_type="json",
-        )
+        ).get("resources")
 
     def get_site_assets(self, site_id: str, page_size: Optional[int] = DEFAULT_PAGE_SIZE,
                         page: Optional[int] = None, sort: Optional[str] = None,
@@ -1485,9 +1474,7 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_site_scan_schedules(self, site_id: str, page_size: Optional[int] = None,
-                                page: Optional[int] = None, sort: Optional[str] = None,
-                                limit: Optional[int] = None) -> list[dict]:
+    def get_site_scan_schedules(self, site_id: str) -> list[dict]:
         """
         | Retrieve information about scan schedules for a specific site.
         |
@@ -1496,23 +1483,15 @@ class Client(BaseClient):
 
         Args:
             site_id (str): ID of the site to retrieve scan schedules from.
-            page_size (int | None, optional): Number of scans to return per page when using pagination.
-                Defaults to DEFAULT_PAGE_SIZE.
-            page (int | None, optional): Specific pagination page to retrieve. Defaults to None.
-            sort (str | None, optional): Sort results by fields. Uses a `property[,ASC|DESC]...` format.
-                Defaults to None.
-            limit (int | None, optional): Limit the number of scans to return. None means to not use a limit.
-                Defaults to None.
+
+        Returns:
+            list[dict]: A list of scan schedules for the site.
         """
-        return self._paged_http_request(
+        return self._http_request(
             url_suffix=f"/sites/{site_id}/scan_schedules",
             method="GET",
-            page_size=page_size,
-            page=page,
-            sort=sort,
-            limit=limit,
             resp_type="json",
-        )
+        ).get("resources")
 
     def get_sites(self, page_size: Optional[int] = DEFAULT_PAGE_SIZE, page: Optional[int] = None,
                   sort: Optional[str] = None, limit: Optional[int] = None) -> list[dict]:
@@ -1632,6 +1611,7 @@ class Client(BaseClient):
             page=page,
             sort=sort,
             limit=limit,
+            resp_type="json",
         )
 
     def search_assets(self, filters: Optional[list[dict]], match: str,
@@ -2620,7 +2600,6 @@ def get_scan_entry(scan: dict) -> CommandResults:
             "moderate": "Moderate",
             "total": "Total",
         },
-        recursive=True,
         use_reference=True,
     )
 
@@ -4174,7 +4153,6 @@ def get_sites_command(client: Client, page_size: Optional[int] = None, page: Opt
 
 
 def list_scan_schedule_command(client: Client, site: Site, schedule_id: Optional[str] = None,
-                               page_size: Optional[int] = None, page: Optional[int] = None,
                                limit: Optional[int] = None) -> CommandResults:
     """
     Retrieve information about scan schedules for a specific site or a specific scan schedule.
@@ -4184,20 +4162,14 @@ def list_scan_schedule_command(client: Client, site: Site, schedule_id: Optional
         site (Site): Site to retrieve scan schedules from.
         schedule_id (str): ID of a specific scan schedule to retrieve.
             Defaults to None (Results in getting all scan schedules for the site).
-        page_size (int | None, optional): Number of scans to return per page when using pagination.
-            Defaults to DEFAULT_PAGE_SIZE.
-        page (int | None, optional): Specific pagination page to retrieve. Defaults to None.
-            Defaults to None.
         limit (int | None, optional): Limit the number of scans to return. None means to not use a limit.
             Defaults to None.
     """
     if not schedule_id:
-        scan_schedules_data = client.get_site_scan_schedules(
-            site_id=site.id,
-            page_size=page_size,
-            page=page,
-            limit=limit,
-        )
+        scan_schedules_data = client.get_site_scan_schedules(site_id=site.id,)
+
+        if limit is not None and limit < len(scan_schedules_data):
+            scan_schedules_data = scan_schedules_data[:limit]
 
     else:
         scan_schedules_data = client.get_site_scan_schedule(
@@ -4250,8 +4222,8 @@ def list_scan_schedule_command(client: Client, site: Site, schedule_id: Optional
     )
 
 
-def list_shared_credential_command(client: Client, credential_id: Optional[str], page_size: Optional[int] = None,
-                                   page: Optional[int] = None, limit: Optional[int] = None) -> CommandResults:
+def list_shared_credential_command(client: Client, credential_id: Optional[str],
+                                   limit: Optional[int] = None) -> CommandResults:
     """
     Retrieve information about all or a specific vulnerability.
 
@@ -4259,19 +4231,14 @@ def list_shared_credential_command(client: Client, credential_id: Optional[str],
         client (Client): Client to use for API requests.
         credential_id (str | None, optional): ID of a specific shared credential to retrieve.
             Defaults to None (Results in getting all vulnerabilities).
-        page_size (int | None, optional): Number of credentials to return per page when using pagination.
-            Defaults to DEFAULT_PAGE_SIZE.
-        page (int | None, optional): Specific pagination page to retrieve. Defaults to None.
-            Defaults to None.
         limit (int | None, optional): Limit the number of credentials to return. None means to not use a limit.
             Defaults to None.
     """
     if not credential_id:
-        shared_credentials_data = client.get_shared_credentials(
-            page_size=page_size,
-            page=page,
-            limit=limit,
-        )
+        shared_credentials_data = client.get_shared_credentials()
+
+        if limit is not None and limit < len(shared_credentials_data):
+            shared_credentials_data = shared_credentials_data[:limit]
 
     else:
         shared_credentials_data = client.get_shared_credential(credential_id)
@@ -5586,16 +5553,12 @@ def main():
                     client=client,
                 ),
                 schedule_id=args.get("schedule_id"),
-                page_size=arg_to_number(args.get("page_size")),
-                page=arg_to_number(args.get("page")),
                 limit=arg_to_number(args.get("limit")),
             )
         elif command == "nexpose-list-shared-credential":
             results = list_shared_credential_command(
                 client=client,
                 credential_id=args.get("id"),
-                page_size=arg_to_number(args.get("page_size")),
-                page=arg_to_number(args.get("page")),
                 limit=arg_to_number(args.get("limit")),
             )
         elif command == "nexpose-pause-scan":

@@ -1845,18 +1845,6 @@ script:
         required: false
         secret: false
       - default: false
-        description: The number of records to retrieve in each API call when pagination is used.
-        isArray: false
-        name: page_size
-        required: false
-        secret: false
-      - default: false
-        description: An option to retrieve a specific page when pagination is used.
-        isArray: false
-        name: page
-        required: false
-        secret: false
-      - default: false
         description: The number of records retrieve.
         isArray: false
         name: limit
@@ -1921,18 +1909,6 @@ script:
         description: ID of a specific shared credential to retrieve.
         isArray: false
         name: id
-        required: false
-        secret: false
-      - default: false
-        description: The number of records to retrieve in each API call when pagination is used.
-        isArray: false
-        name: page_size
-        required: false
-        secret: false
-      - default: false
-        description: An option to retrieve a specific page when pagination is used.
-        isArray: false
-        name: page
         required: false
         secret: false
       - default: false
