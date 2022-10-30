@@ -21,7 +21,17 @@
 			"zsh": {
 				"path": "/bin/zsh"
 			}
-		}
+		},
+		"cSpell.words": [
+			"demisto",
+			"xsoar",
+			"xsiam",
+			"fromversion",
+			"toversion",
+			"marketplacev",
+			"ciac",
+			"whois",
+		]
 	},
 	"extensions": [
 		"cortexxsoarext.xsoar",
