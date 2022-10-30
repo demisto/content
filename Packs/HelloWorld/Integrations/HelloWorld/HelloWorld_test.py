@@ -55,6 +55,8 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 import json
 import io
 
+import pytest
+
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
@@ -62,12 +64,18 @@ def util_load_json(path):
 
 
 def test_say_hello():
-    """Tests helloworld-say-hello command function.
+    """
+    Tests helloworld-say-hello command function.
 
-    Checks the output of the command function with the expected output.
+        Given:
+            - No mock is needed here because the say_hello_command does not call any external API.
 
-    No mock is needed here because the say_hello_command does not call
-    any external API.
+        When:
+            - Running the 'say_hello_command'.
+
+        Then:
+            - Checks the output of the command function with the expected output.
+
     """
     from HelloWorld import Client, say_hello_command
 
@@ -81,11 +89,20 @@ def test_say_hello():
 
 
 def test_start_scan(requests_mock):
-    """Tests helloworld-scan-start command function.
+    """
+    Tests helloworld-scan-start command function.
 
-    Configures requests_mock instance to generate the appropriate start_scan
-    API response when the correct start_scan API request is performed. Checks
-    the output of the command function with the expected output.
+        Given:
+            - requests_mock instance to generate the appropriate start_scan API
+              response when the correct start_scan API request is performed.
+            - A hostname.
+
+        When:
+            - Running the 'scan_start_command'.
+
+        Then:
+            -  Checks the output of the command function with the expected output.
+
     """
     from HelloWorld import Client, scan_start_command
 
@@ -119,12 +136,21 @@ def test_start_scan(requests_mock):
 
 
 def test_status_scan(requests_mock):
-    """Tests helloworld-scan-status command function.
+    """
+    Tests helloworld-scan-status command function.
 
-    Configures requests_mock instance to generate the appropriate check_scan
-    API responses based on the scan ID provided. For scan_id 100, 300 status
-    should be COMPLETE while for scan ID 200 is RUNNING. Checks the output of
-    the command function with the expected output.
+        Given:
+            - requests_mock instance to generate the appropriate check_scan
+              API responses based on the scan ID provided.
+            - Scan IDs.
+
+        When:
+            - Running the 'scan_status_command'.
+
+        Then:
+            - Checks the output of the command function with the expected output.
+              For scan_id 100, 300 status should be COMPLETE while for scan ID 200 is RUNNING.
+
     """
     from HelloWorld import Client, scan_status_command
 
@@ -178,12 +204,19 @@ def test_status_scan(requests_mock):
     ]
 
 
-def test_scan_results(mocker, requests_mock):
-    """Tests helloworld-scan-results command function.
+def test_scan_results(requests_mock):
+    """
+    Tests helloworld-scan-results command function.
 
-    Configures requests_mock instance to generate the appropriate
-    get_scan_results API response, loaded from a local JSON file. Checks
-    the output of the command function with the expected output.
+        Given:
+            - requests_mock instance to generate the appropriate get_scan_results API response,
+              loaded from a local JSON file.
+
+        When:
+            - Running the 'scan_results_command'.
+
+        Then:
+            - Checks the output of the command function with the expected output.
     """
     from HelloWorld import Client, scan_results_command
     from CommonServerPython import Common
@@ -218,11 +251,18 @@ def test_scan_results(mocker, requests_mock):
 
 
 def test_search_alerts(requests_mock):
-    """Tests helloworld-search-alerts command function.
+    """
+    Tests helloworld-search-alerts command function.
 
-    Configures requests_mock instance to generate the appropriate
-    get_alerts API response, loaded from a local JSON file. Checks
-    the output of the command function with the expected output.
+        Given:
+            - requests_mock instance to generate the appropriate get_alerts API response,
+              loaded from a local JSON file.
+
+        When:
+            - Running the 'search_alerts_command'.
+
+        Then:
+            - Checks the output of the command function with the expected output.
     """
     from HelloWorld import Client, search_alerts_command
 
@@ -259,11 +299,19 @@ def test_search_alerts(requests_mock):
 
 
 def test_get_alert(requests_mock):
-    """Tests helloworld-get-alert command function.
+    """
+    Tests helloworld-get-alert command function.
 
-    Configures requests_mock instance to generate the appropriate
-    get_alerts API response, loaded from a local JSON file. Checks
-    the output of the command function with the expected output.
+        Given:
+            - requests_mock instance to generate the appropriate get_alert_details API response,
+              loaded from a local JSON file.
+            - An alert ID.
+
+        When:
+            - Running the 'get_alert_command'.
+
+        Then:
+            - Checks the output of the command function with the expected output.
     """
     from HelloWorld import Client, get_alert_command
 
@@ -295,11 +343,19 @@ def test_get_alert(requests_mock):
 
 
 def test_update_alert_status(requests_mock):
-    """Tests helloworld-update-alert-status command function.
+    """
+    Tests helloworld-update-alert-status command function.
 
-    Configures requests_mock instance to generate the appropriate
-    get_alerts API response, loaded from a local JSON file. Checks
-    the output of the command function with the expected output.
+        Given:
+            - requests_mock instance to generate the appropriate change_alert_status API response,
+              loaded from a local JSON file.
+            - Alert ID and a status.
+
+        When:
+            - Running the 'update_alert_status_command'.
+
+        Then:
+            - Checks the output of the command function with the expected output.
     """
     from HelloWorld import Client, update_alert_status_command
 
@@ -333,11 +389,19 @@ def test_update_alert_status(requests_mock):
 
 
 def test_ip(requests_mock):
-    """Tests the ip reputation command function.
+    """
+    Tests the ip reputation command function.
 
-    Configures requests_mock instance to generate the appropriate
-    ip reputation API response, loaded from a local JSON file. Checks
-    the output of the command function with the expected output.
+        Given:
+            - requests_mock instance to generate the appropriate ip reputation API response,
+              loaded from a local JSON file.
+            - An IP address to check.
+
+        When:
+            - Running the 'ip_reputation_command'.
+
+        Then:
+            - Checks the output of the command function with the expected output.
     """
     from HelloWorld import Client, ip_reputation_command
     from CommonServerPython import Common, DBotScoreReliability
@@ -373,11 +437,19 @@ def test_ip(requests_mock):
 
 
 def test_domain(requests_mock):
-    """Tests the domain reputation command function.
+    """
+    Tests the domain reputation command function.
 
-    Configures requests_mock instance to generate the appropriate
-    domain reputation API response, loaded from a local JSON file. Checks
-    the output of the command function with the expected output.
+        Given:
+            - requests_mock instance to generate the appropriate domain reputation API response,
+              loaded from a local JSON file.
+            - A domain to check.
+
+        When:
+            - Running the 'domain_reputation_command'.
+
+        Then:
+            - Checks the output of the command function with the expected output.
     """
     from HelloWorld import Client, domain_reputation_command
     from CommonServerPython import Common, DBotScoreReliability
@@ -419,11 +491,18 @@ def test_domain(requests_mock):
 
 
 def test_fetch_incidents(requests_mock):
-    """Tests the fetch-incidents command function.
+    """
+    Tests the fetch-incidents command function.
 
-    Configures requests_mock instance to generate the appropriate
-    get_alert API response, loaded from a local JSON file. Checks
-    the output of the command function with the expected output.
+        Given:
+            - requests_mock instance to generate the appropriate get_alert API response,
+              loaded from a local JSON file.
+
+        When:
+            - Running the 'fetch_incidents' command.
+
+        Then:
+            - Checks the output of the command function with the expected output.
     """
     from HelloWorld import Client, fetch_incidents
 
@@ -469,3 +548,78 @@ def test_fetch_incidents(requests_mock):
             'severity': 2,  # medium, this is XSOAR severity (already converted)
         }
     ]
+
+
+def test_invalid_ip():
+    """
+        Given:
+            - An invalid IP address to check.
+
+        When:
+            - Running the 'ip_reputation_command'.
+
+        Then:
+            - Checks that the command raises a suitable error message (Invalid IP).
+    """
+    from HelloWorld import Client, ip_reputation_command
+    from CommonServerPython import DBotScoreReliability
+
+    ip_to_check = '1.1.1'  # an invalid ip
+
+    client = Client(
+        base_url='http://test.com/api/v1',
+        verify=False,
+        headers={
+            'Authorization': 'Bearer some_api_key'
+        }
+    )
+
+    args = {
+        'ip': ip_to_check,
+        'threshold': 65,
+    }
+
+    with pytest.raises((Exception, ValueError)) as e:
+        ip_reputation_command(client, args, 65, DBotScoreReliability.C)
+
+    assert e.value.args[0] == f'IP "{ip_to_check}" is not valid'
+
+
+@pytest.mark.parametrize('domain_date, expected_parsed_date', [
+    ('1997-09-15 04:00:00', '1997-09-15T04:00:00.000Z'),
+    (['1997-09-15 04:00:00'], '1997-09-15T04:00:00.000Z')
+])
+def test_parse_domain_date(domain_date, expected_parsed_date):
+    """
+        Given:
+            1. A string of a date.
+            2. A list including a string of a date.
+
+        When:
+            - Running the 'parse_domain_date' function.
+
+        Then:
+            - Verify that the dates were parsed to ISO8601 format correctly.
+    """
+    from HelloWorld import parse_domain_date
+
+    assert parse_domain_date(domain_date) == expected_parsed_date
+
+
+@pytest.mark.parametrize('hello_world_severity, expected_xsoar_severity', [
+    ('Low', 1), ('Medium', 2), ('High', 3), ('Critical', 4)
+])
+def test_convert_to_demisto_severity(hello_world_severity, expected_xsoar_severity):
+    """
+        Given:
+            - A string represent an HelloWorld severity.
+
+        When:
+            - Running the 'convert_to_demisto_severity' function.
+
+        Then:
+            - Verify that the severity was translated to an XSOAR severity correctly.
+    """
+    from HelloWorld import convert_to_demisto_severity
+
+    assert convert_to_demisto_severity(hello_world_severity) == expected_xsoar_severity

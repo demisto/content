@@ -1,8 +1,10 @@
 TAEGIS_ALERT = {
     "id": "c4f33b53-eaba-47ac-8272-199af0f7935b",
-    "description": "Test Alert",
-    "message": "This is a test alert",
-    "severity": 0.5,
+    "metadata": {
+        "title": "Test Alert",
+        "description": "This is a test alert",
+        "severity": 0.5
+    }
 }
 
 TAEGIS_ENVIRONMENT = "us1"
@@ -16,7 +18,8 @@ TAEGIS_INVESTIGATION = {
     "priority": 2,
     "service_desk_id": "",
     "service_desk_type": "",
-    "status": "Open"
+    "status": "Open",
+    "alerts2": []
 }
 
 TAEGIS_PLAYBOOK_EXECUTION = {
@@ -73,7 +76,23 @@ EXECUTE_PLAYBOOK_BAD_RESPONSE = {
 
 FETCH_ALERTS_RESPONSE = {
     "data": {
-        "alerts": [TAEGIS_ALERT]
+        "alertsServiceSearch": {
+            "alerts": {
+                "list": [TAEGIS_ALERT]
+            },
+            "total_results": 1,
+        }
+    }
+}
+
+FETCH_ALERTS_BY_ID_RESPONSE = {
+    "data": {
+        "alertsServiceRetrieveAlertsById": {
+            "alerts": {
+                "list": [TAEGIS_ALERT]
+            },
+            "total_results": 1,
+        }
     }
 }
 

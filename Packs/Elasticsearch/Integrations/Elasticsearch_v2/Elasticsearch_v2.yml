@@ -38,6 +38,7 @@ configuration:
   name: fetch_query
   required: false
   type: 0
+  additionalinfo: The query will be used when fetching incidents. Index time field will be used as a filter in the query.
 - display: Index time field (for sorting sort and limiting data)
   name: fetch_time_field
   required: false
@@ -46,7 +47,7 @@ configuration:
   name: raw_query
   required: false
   type: 12
-  additionalinfo: Will override the 'Query String' Lucene syntax string.
+  additionalinfo: Will override the 'Query String' Lucene syntax string. Results will not be filtered.
   hidden: false
 - display: Time field type
   defaultvalue: 'Simple-Date'
@@ -438,7 +439,7 @@ script:
     - contextPath: Elasticsearch.Search.Size
       description: The maximum number of scores that a search can return.
       type: Number
-  dockerimage: demisto/py3-tools:1.0.0.32758
+  dockerimage: demisto/py3-tools:1.0.0.36436
   feed: false
   isfetch: true
   longRunning: false

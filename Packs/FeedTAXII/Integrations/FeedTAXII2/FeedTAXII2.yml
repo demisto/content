@@ -132,6 +132,16 @@ configuration:
   - tool
   - threat-actor
   - infrastructure
+  - autonomous-system
+  - domain-name
+  - email-addr
+  - file
+  - ipv4-addr
+  - ipv6-addr
+  - mutex
+  - url
+  - user-account
+  - windows-registry-key
 - additionalinfo: Add a certificate file as text to connect to the TAXII server
   display: Certificate File as Text
   name: certificate
@@ -244,7 +254,7 @@ script:
     description: 'WARNING: This command will reset your fetch history.'
     execution: false
     name: taxii2-reset-fetch-indicators
-  dockerimage: demisto/taxii2:1.0.0.23423
+  dockerimage: demisto/taxii2:1.0.0.35879
   feed: true
   isfetch: false
   longRunning: false

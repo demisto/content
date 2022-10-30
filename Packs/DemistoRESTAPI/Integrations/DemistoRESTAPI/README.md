@@ -18,6 +18,9 @@ Use Demisto REST APIs
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+***Please Note:*** When updating or making changes to a custom content item (integration, script, list, etc.), it may be necessary to increment the version of the item. To do so, first fetch the current version (usually via a GET command) and then increment the version by 1. Lastly, when updating an item, please use this incremented value for the `version` field.
+
 ### demisto-api-post
 ***
 send HTTP POST request
