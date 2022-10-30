@@ -1407,7 +1407,7 @@ def search_device(filter_operator='AND'):
     device_ids = raw_res.get('resources')
     if not device_ids:
         return None
-    return http_request('GET', '/devices/entities/devices/v1', params={'ids': device_ids})
+    return http_request('GET', '/devices/entities/devices/v2', params={'ids': device_ids})
 
 
 def behavior_to_entry_context(behavior):

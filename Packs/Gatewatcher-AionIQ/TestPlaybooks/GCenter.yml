@@ -1,0 +1,690 @@
+id: Gcenter Test Playbook
+version: -1
+name: Gcenter Test Playbook
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 533d4312-cfc1-485f-81fc-707e988a05f0
+    type: start
+    task:
+      id: 533d4312-cfc1-485f-81fc-707e988a05f0
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '3'
+      - '7'
+      - '9'
+      - '11'
+      - '13'
+      - '15'
+      - '14'
+      - '16'
+      - '21'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 68839c44-4da9-4d7c-8f83-39020b65f58d
+    type: regular
+    task:
+      id: 68839c44-4da9-4d7c-8f83-39020b65f58d
+      version: -1
+      name: gw-es-query
+      description: Get Elasticsearch data
+      script: GCenter|||gw-es-query
+      type: regular
+      iscommand: true
+      brand: GCenter
+    scriptarguments:
+      index:
+        simple: suricata
+      query:
+        simple: '{"size":0,"query":{"bool":{"filter":[{"range":{"@timestamp":{"gte":"now-200h"}}},{"term":{"alert.severity":"1"}},{"term":{"event_type":"alert"}}]}},"aggs":{"src_ip":{"terms":{"field":"src_ip","size":100}}}}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": -270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: 4dfe09d0-c77a-4398-8338-026cda62c6e1
+    type: regular
+    task:
+      id: 4dfe09d0-c77a-4398-8338-026cda62c6e1
+      version: -1
+      name: gw-send-malware
+      description: Send malware
+      script: GCenter|||gw-send-malware
+      type: regular
+      iscommand: true
+      brand: GCenter
+    scriptarguments:
+      file_id:
+        simple: ${File.EntryID}
+      filename:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1130,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 51be93c2-05b4-4035-8135-e14edaf3fa2c
+    type: regular
+    task:
+      id: 51be93c2-05b4-4035-8135-e14edaf3fa2c
+      version: -1
+      name: gw-send-powershell
+      description: Send powershell
+      script: GCenter|||gw-send-powershell
+      type: regular
+      iscommand: true
+      brand: GCenter
+    scriptarguments:
+      file_id:
+        simple: ${File.EntryID}
+      filename:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -720,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 05f80d58-3f1f-41bd-8c90-b91cd8f5feb8
+    type: regular
+    task:
+      id: 05f80d58-3f1f-41bd-8c90-b91cd8f5feb8
+      version: -1
+      name: gw-send-shellcode
+      description: Send shellcode
+      script: GCenter|||gw-send-shellcode
+      type: regular
+      iscommand: true
+      brand: GCenter
+    scriptarguments:
+      file_id:
+        simple: ${File.EntryID}
+      filename:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: 8313286d-69ee-4159-83ba-6bed677f8380
+    type: regular
+    task:
+      id: 8313286d-69ee-4159-83ba-6bed677f8380
+      version: -1
+      name: gw-add-dga-list-entry
+      description: Add dga whitelist/blacklist entry
+      script: GCenter|||gw-add-dga-list-entry
+      type: regular
+      iscommand: true
+      brand: GCenter
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      domain:
+        simple: malware.com
+      type:
+        simple: black
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1040,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: de0614d1-011e-46c3-8f6d-0d6899157dd1
+    type: regular
+    task:
+      id: de0614d1-011e-46c3-8f6d-0d6899157dd1
+      version: -1
+      name: gw-del-dga-list-entry
+      description: Delete dga whitelist/blacklist entry
+      script: GCenter|||gw-del-dga-list-entry
+      type: regular
+      iscommand: true
+      brand: GCenter
+    scriptarguments:
+      domain:
+        simple: malware.com
+      type:
+        simple: black
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1040,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: 11d4302c-49b8-453b-8538-e991f7f92b87
+    type: regular
+    task:
+      id: 11d4302c-49b8-453b-8538-e991f7f92b87
+      version: -1
+      name: gw-add-malcore-list-entry
+      description: Add malcore whitelist/blacklist entry
+      script: GCenter|||gw-add-malcore-list-entry
+      type: regular
+      iscommand: true
+      brand: GCenter
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      sha256:
+        simple: d955e262d7a05fc436e65c2a312593e4c7031482d90cebd29e69059053b1351e
+      type:
+        simple: black
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -550,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
+    taskid: cfbc2bc0-a3cc-4fe2-826d-578207b0474f
+    type: regular
+    task:
+      id: cfbc2bc0-a3cc-4fe2-826d-578207b0474f
+      version: -1
+      name: gw-del-malcore-list-entry
+      description: Delete malcore whitelist/blacklist entry
+      script: GCenter|||gw-del-malcore-list-entry
+      type: regular
+      iscommand: true
+      brand: GCenter
+    scriptarguments:
+      sha256:
+        simple: d955e262d7a05fc436e65c2a312593e4c7031482d90cebd29e69059053b1351e
+      type:
+        simple: black
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -550,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '11':
+    id: '11'
+    taskid: 9f74494a-7797-473a-8880-8a9b06fea0fa
+    type: regular
+    task:
+      id: 9f74494a-7797-473a-8880-8a9b06fea0fa
+      version: -1
+      name: gw-list-alerts
+      description: List all alerts
+      script: GCenter|||gw-list-alerts
+      type: regular
+      iscommand: true
+      brand: GCenter
+    nexttasks:
+      '#none#':
+      - '12'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": -365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '12':
+    id: '12'
+    taskid: 40444156-0089-4153-86e5-716cf7212e66
+    type: regular
+    task:
+      id: 40444156-0089-4153-86e5-716cf7212e66
+      version: -1
+      name: gw-get-alert
+      description: Get an alert by it's uid
+      script: GCenter|||gw-get-alert
+      type: regular
+      iscommand: true
+      brand: GCenter
+    scriptarguments:
+      uid:
+        simple: ${GCenter.Alert.List.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": -195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '13':
+    id: '13'
+    taskid: c3ca95d9-59bb-4fce-86a4-321c20686c15
+    type: regular
+    task:
+      id: c3ca95d9-59bb-4fce-86a4-321c20686c15
+      version: -1
+      name: gw-add-ignore-asset-name
+      description: Ignore asset name
+      script: GCenter|||gw-add-ignore-asset-name
+      type: regular
+      iscommand: true
+      brand: GCenter
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments:
+      name:
+        simple: test_asset
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '14':
+    id: '14'
+    taskid: 2ac0bad1-7b58-4ff2-8e56-b8b7997596d9
+    type: regular
+    task:
+      id: 2ac0bad1-7b58-4ff2-8e56-b8b7997596d9
+      version: -1
+      name: gw-add-ignore-kuser-ip
+      description: Ignore kuser IP
+      script: GCenter|||gw-add-ignore-kuser-ip
+      type: regular
+      iscommand: true
+      brand: GCenter
+    nexttasks:
+      '#none#':
+      - '18'
+    scriptarguments:
+      ip:
+        simple: 10.10.10.10
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '15':
+    id: '15'
+    taskid: dcdb9c1e-5366-4925-8c8c-47637ed1c50d
+    type: regular
+    task:
+      id: dcdb9c1e-5366-4925-8c8c-47637ed1c50d
+      version: -1
+      name: gw-add-ignore-kuser-name
+      description: Ignore kuser name
+      script: GCenter|||gw-add-ignore-kuser-name
+      type: regular
+      iscommand: true
+      brand: GCenter
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments:
+      name:
+        simple: test_kuser_name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '16':
+    id: '16'
+    taskid: 739ecef5-6550-4e53-8e31-258717833a15
+    type: regular
+    task:
+      id: 739ecef5-6550-4e53-8e31-258717833a15
+      version: -1
+      name: gw-add-ignore-mac-address
+      description: Ignore mac address
+      script: GCenter|||gw-add-ignore-mac-address
+      type: regular
+      iscommand: true
+      brand: GCenter
+    nexttasks:
+      '#none#':
+      - '20'
+    scriptarguments:
+      mac:
+        simple: AA:BB:CC:DD:EE:FF
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1510,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '17':
+    id: '17'
+    taskid: e5b665ef-8fb9-4f89-86e0-1b0be3844073
+    type: regular
+    task:
+      id: e5b665ef-8fb9-4f89-86e0-1b0be3844073
+      version: -1
+      name: gw-del-ignore-asset-name
+      description: Delete an ignore asset ID
+      script: GCenter|||gw-del-ignore-asset-name
+      type: regular
+      iscommand: true
+      brand: GCenter
+    scriptarguments:
+      ignore_id:
+        simple: ${GCenter.Ignore.AssetName.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '18':
+    id: '18'
+    taskid: e95ee3c5-14be-4b21-89be-571b807a78c4
+    type: regular
+    task:
+      id: e95ee3c5-14be-4b21-89be-571b807a78c4
+      version: -1
+      name: gw-del-ignore-kuser-ip
+      description: Delete an ignore kuser IP ID
+      script: GCenter|||gw-del-ignore-kuser-ip
+      type: regular
+      iscommand: true
+      brand: GCenter
+    scriptarguments:
+      ignore_id:
+        simple: ${GCenter.Ignore.KuserIP.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '19':
+    id: '19'
+    taskid: b5838214-187f-4164-86ad-585cfc6d4f57
+    type: regular
+    task:
+      id: b5838214-187f-4164-86ad-585cfc6d4f57
+      version: -1
+      name: gw-del-ignore-kuser-name
+      description: Delete an ignore kuser name ID
+      script: GCenter|||gw-del-ignore-kuser-name
+      type: regular
+      iscommand: true
+      brand: GCenter
+    scriptarguments:
+      ignore_id:
+        simple: ${GCenter.Ignore.KuserName.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '20':
+    id: '20'
+    taskid: d0c0f1e2-6809-41a8-8352-107d70060a90
+    type: regular
+    task:
+      id: d0c0f1e2-6809-41a8-8352-107d70060a90
+      version: -1
+      name: gw-del-ignore-mac-address
+      description: Delete an ignore mac address ID
+      script: GCenter|||gw-del-ignore-mac-address
+      type: regular
+      iscommand: true
+      brand: GCenter
+    scriptarguments:
+      ignore_id:
+        simple: ${GCenter.Ignore.MacAddress.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1510,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '21':
+    id: '21'
+    taskid: 7538f037-c13f-43c5-8f0b-f4aaab56a765
+    type: regular
+    task:
+      id: 7538f037-c13f-43c5-8f0b-f4aaab56a765
+      version: -1
+      name: FileCreateAndUpload
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+      - '5'
+      - '6'
+    scriptarguments:
+      data:
+        simple: azerty
+      filename:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -720,
+          "y": -340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 830,
+        "width": 3020,
+        "x": -1130,
+        "y": -365
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: fdd8cadb-08ce-492c-8963-56bfc950b03b
+fromversion: 6.2.0
+description: An example playbook for each command of the GCenter integration.
