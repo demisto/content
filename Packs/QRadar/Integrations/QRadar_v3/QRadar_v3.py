@@ -10,7 +10,8 @@ import pytz
 import urllib3
 from CommonServerUserPython import *  # noqa
 
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from CommonServerPython import *
+# from Integrations.QRadar_v3.demistomock import params  # noqa # pylint: disable=unused-wildcard-import
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -670,6 +671,15 @@ class Client(BaseClient):
             url_suffix=f'/siem/{address_suffix}',
             params=assign_params(filter=filter_, fields=fields),
             additional_headers={'Range': range_} if range_ else None
+        )
+
+    def create_remote_network_cidr(self, body: Dict[str, Any], headers: Dict[str, str]):
+        print(body)
+        return self.http_request(
+            method='POST',
+            url_suffix='/staged_config/remote_networks',
+            json_data=body,
+            additional_headers=headers
         )
 
     def test_connection(self):
@@ -3596,6 +3606,47 @@ def qradar_search_retrieve_events_command(
                           )
 
 
+def qradar_remote_network_cidr_create_command(client: Client, args) -> CommandResults:
+    cidrs_list = argToList(args.get('cidrs'))
+    name = args.get('name')
+    id = args.get('id')
+    description = args.get('description')
+    group = args.get('group')
+    fields = args.get('fields')
+
+    body = {
+        "name": name,
+        "description": description,
+        "cidrs": cidrs_list,
+        "id": id,
+        "group": group
+    }
+    headers = fields
+
+    try:
+        response = client.create_remote_network_cidr(body=body, headers=headers)
+    except Exception as e:
+        print(e)
+        print('sdf')
+    print(response)
+
+
+def qradar_remote_network_cidr_list_command():
+    pass
+
+
+def qradar_remote_network_cidr_delete_command():
+    pass
+
+
+def qradar_remote_network_cidr_update_command():
+    pass
+
+
+def qradar_remote_network_deploy_execution_command():
+    pass
+
+
 def migrate_integration_ctx(ctx: dict) -> dict:
     """Migrates the old context to the current context
 
@@ -3819,6 +3870,22 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'qradar-search-retrieve-events':
             return_results(qradar_search_retrieve_events_command(client, params, args))
+
+        elif command == 'qradar-remote-network-cidr-create':
+            return_results(qradar_remote_network_cidr_create_command(client, args))
+
+        elif command == 'qradar-remote-network-cidr-list':
+            return_results(qradar_remote_network_cidr_list_command(client, args))
+
+        elif command == 'qradar-remote-network-cidr-delete':
+            return_results(qradar_remote_network_cidr_delete_command(client, args))
+
+        elif command == 'qradar-remote-network-cidr-update':
+            return_results(qradar_remote_network_cidr_update_command(client, args))
+
+        elif command == 'qradar-remote-network-deploy-execution':
+            return_results(qradar_remote_network_deploy_execution_command(client, args))
+
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
 
