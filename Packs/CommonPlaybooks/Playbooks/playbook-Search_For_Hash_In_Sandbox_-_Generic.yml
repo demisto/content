@@ -698,8 +698,8 @@ tasks:
     task:
       id: 157ba2a0-d8e3-4d38-8360-d1dac15d5ec6
       version: -1
-      name: Is Joe Sandbox enabled?
-      description: Returns 'yes' if the CrowdStrike Falcon X integration is available.
+      name: Is JoeSecurity Sandbox enabled?
+      description: Returns 'yes' if the JoeSecurity Sandbox integration is available.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
