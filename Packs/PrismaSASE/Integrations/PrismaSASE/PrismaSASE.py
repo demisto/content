@@ -58,8 +58,8 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers, **kwargs)
 
     @staticmethod
-    def build_security_rule(args: dict):
-        """Build a dictionary of security rule paramters to be used to create or edit a rule
+    def build_security_rule(args: Dict[str, Any]):
+        """Build a dictionary of security rule parameters to be used to create or edit a rule
         Args:
             args: demisto.args()
         Returns:
@@ -92,7 +92,7 @@ class Client(BaseClient):
         Args:
             rule: Security rule dictionary
             folder: Prisma Access Folder
-            postition: Prisma access rule position
+            position: Prisma access rule position
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -432,16 +432,14 @@ class Client(BaseClient):
                     return access_token
 
             except Exception as e:
-                raise DemistoException(f'Error occurred while creating an access token. Please check the instance configuration.'
-                                       f'\n\n{e}')
+                raise DemistoException(f'Error occurred while creating an access token. Please check the instance'
+                                       f' configuration.\n\n{e}')
 
 
-def test_module(client: Client, default_tsg_id: str):
+def test_module(client: Client, default_tsg_id: str) -> CommandResults:
     """Test command to determine if integration is working correctly.
     Args:
         client: Client object with request
-        params: demisto.params()
-        args: demisto.args()
         default_tsg_id: Default Prisma SASE TSG configured for integration
     Returns:
         Outputs.
@@ -463,11 +461,10 @@ def test_module(client: Client, default_tsg_id: str):
     )
 
 
-def create_security_rule_command(client: Client, args: dict, default_tsg_id: str):
+def create_security_rule_command(client: Client, args: Dict[str, Any], default_tsg_id: str) -> CommandResults:
     """Command to create new Prisma Access security rule within the given Folder, Position, and Tenant/TSG
     Args:
         client: Client object with request
-        params: demisto.params()
         args: demisto.args()
         default_tsg_id: Default Prisma SASE TSG configured for integration
     Returns:
@@ -490,7 +487,7 @@ def create_security_rule_command(client: Client, args: dict, default_tsg_id: str
     )
 
 
-def create_address_object_command(client: Client, args: dict, default_tsg_id: str):
+def create_address_object_command(client: Client, args: Dict[str, Any], default_tsg_id: str) -> CommandResults:
     """Command to create new Prisma Access address object
     Args:
         client: Client object with request
@@ -525,11 +522,10 @@ def create_address_object_command(client: Client, args: dict, default_tsg_id: st
     )
 
 
-def edit_address_object_command(client: Client, args: dict, default_tsg_id: str):
+def edit_address_object_command(client: Client, args: Dict[str, Any], default_tsg_id: str) -> CommandResults:
     """Command to create new Prisma Access address object
     Args:
         client: Client object with request
-        params: demisto.params()
         args: demisto.args()
         default_tsg_id: Default Prisma SASE TSG configured for integration
     Returns:
@@ -559,11 +555,10 @@ def edit_address_object_command(client: Client, args: dict, default_tsg_id: str)
     )
 
 
-def delete_address_object_command(client: Client, args: dict, default_tsg_id: str):
+def delete_address_object_command(client: Client, args: Dict[str, Any], default_tsg_id: str) -> CommandResults:
     """Command to delete Prisma Access address object
     Args:
         client: Client object with request
-        params: demisto.params()
         args: demisto.args()
         default_tsg_id: Default Prisma SASE TSG configured for integration
     Returns:
@@ -584,11 +579,10 @@ def delete_address_object_command(client: Client, args: dict, default_tsg_id: st
     )
 
 
-def list_address_objects_command(client: Client, args: dict, default_tsg_id: str):
+def list_address_objects_command(client: Client, args: Dict[str, Any], default_tsg_id: str) -> CommandResults:
     """Command to get address objects for a given Prisma Access Folder / Position
     Args:
         client: Client object with request
-        params: demisto.params()
         args: demisto.args()
         default_tsg_id: Default Prisma SASE TSG configured for integration
     Returns:
@@ -623,11 +617,10 @@ def list_address_objects_command(client: Client, args: dict, default_tsg_id: str
     )
 
 
-def delete_security_rule_command(client: Client, args: dict, default_tsg_id: str):
+def delete_security_rule_command(client: Client, args: Dict[str, Any], default_tsg_id: str) -> CommandResults:
     """Command to delete the specified security rule within the targeted Prisma Access tenant / TSG
     Args:
         client: Client object with request
-        params: demisto.params()
         args: demisto.args()
         default_tsg_id: Default Prisma SASE TSG configured for integration
     Returns:
@@ -649,12 +642,16 @@ def delete_security_rule_command(client: Client, args: dict, default_tsg_id: str
     )
 
 
-def query_agg_monitor_api_command(client: Client, args: dict, default_tsg_id: str):
+def query_agg_monitor_api_command(client: Client, args: Dict[str, Any], default_tsg_id: str) -> CommandResults:
     """Command to query the SASE aggregate monitor API
     Args:
-        uri: Aggregate Monitor URI to query (for example: mt/monitor/v1/agg/threats)
-        tsg_id: Tenant services group ID
-        query_data: JSON structure query data
+        client: Client object with request
+        args: demisto.args()
+            uri: Aggregate Monitor URI to query (for example: mt/monitor/v1/agg/threats)
+            tsg_id: Tenant services group ID
+            query_data: JSON structure query data
+        default_tsg_id: Default Prisma SASE TSG configured for integration
+
     Returns:
         Query Results
     """
@@ -676,11 +673,10 @@ def query_agg_monitor_api_command(client: Client, args: dict, default_tsg_id: st
     )
 
 
-def edit_security_rule_command(client: Client, args: dict, default_tsg_id: str):
+def edit_security_rule_command(client: Client, args: Dict[str, Any], default_tsg_id: str) -> CommandResults:
     """Command to Update / Edit an existing Prisma Access security rule
     Args:
         client: Client object with request
-        params: demisto.params()
         args: demisto.args()
         default_tsg_id: Default Prisma SASE TSG configured for integration
     Returns:
@@ -702,11 +698,10 @@ def edit_security_rule_command(client: Client, args: dict, default_tsg_id: str):
     )
 
 
-def push_candidate_config_command(client: Client, args: dict, default_tsg_id: str):
+def push_candidate_config_command(client: Client, args: Dict[str, Any], default_tsg_id: str) -> CommandResults:
     """Command to Trigger a configuration push for the identified Folder/Devices
     Args:
         client: Client object with request
-        params: demisto.params()
         args: demisto.args()
         default_tsg_id: Default Prisma SASE TSG configured for integration
     Returns:
@@ -729,11 +724,10 @@ def push_candidate_config_command(client: Client, args: dict, default_tsg_id: st
     )
 
 
-def list_security_rules_command(client: Client, args: dict, default_tsg_id: str):
+def list_security_rules_command(client: Client, args: Dict[str, Any], default_tsg_id: str) -> CommandResults:
     """Command to Get all security rules for a given Prisma Access Folder / Position
     Args:
         client: Client object with request
-        params: demisto.params()
         args: demisto.args()
         default_tsg_id: Default Prisma SASE TSG configured for integration
     Returns:
@@ -762,16 +756,16 @@ def list_security_rules_command(client: Client, args: dict, default_tsg_id: str)
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Security Rules', outputs, headers=[
-                                        'id', 'name', 'description', 'action', 'destination', 'folder'], removeNull=True),
+                                        'id', 'name', 'description', 'action', 'destination', 'folder'],
+                                        removeNull=True),
         raw_response=raw_response
     )
 
 
-def get_security_rule_by_name_command(client: Client, args: dict, default_tsg_id: str):
+def get_security_rule_by_name_command(client: Client, args: Dict[str, Any], default_tsg_id: str) -> CommandResults:
     """Command to return single security rule from Prisma Access based on name
     Args:
         client: Client object with request
-        params: demisto.params()
         args: demisto.args()
         default_tsg_id: Default Prisma SASE TSG configured for integration
     Returns:
@@ -800,11 +794,10 @@ def get_security_rule_by_name_command(client: Client, args: dict, default_tsg_id
     )
 
 
-def get_config_jobs_by_id_command(client: Client, args: dict, default_tsg_id: str):
+def get_config_jobs_by_id_command(client: Client, args: Dict[str, Any], default_tsg_id: str) -> CommandResults:
     """Command to list config jobs from Prisma Access filtered by command id
     Args:
         client: Client object with request
-        params: demisto.params()
         args: demisto.args()
         default_tsg_id: Default Prisma SASE TSG configured for integration
     Returns:
@@ -834,11 +827,10 @@ def get_config_jobs_by_id_command(client: Client, args: dict, default_tsg_id: st
     )
 
 
-def list_config_jobs_command(client: Client, args: dict, default_tsg_id: str):
+def list_config_jobs_command(client: Client, args: Dict[str, Any], default_tsg_id: str) -> CommandResults:
     """Command to list config jobs from Prisma Access
     Args:
         client: Client object with request
-        params: demisto.params()
         args: demisto.args()
         default_tsg_id: Default Prisma SASE TSG configured for integration
     Returns:
