@@ -741,7 +741,7 @@ class Pack(object):
             changelog_entry[Changelog.DISPLAY_NAME].split('-')[1]
 
         changelog_entry[Changelog.RELEASE_NOTES] = release_notes
-        changelog_entry = self.filter_changelog_entries(
+        changelog_entry, _ = self.filter_changelog_entries(
             changelog_entry=changelog_entry,
             version=version,
             marketplace=marketplace,
