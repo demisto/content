@@ -842,3 +842,26 @@ def test_overriding_severity_xdr_to_demisto():
     Client.override_severity = True
     Client.severity = severity_value_backup
     Client.xsoar_severity_field = xsoar_severity_field_backup
+
+
+@pytest.mark.parametrize('value', (
+    'info',
+    'Info'
+    'informational',
+    'INformationAL'
+))
+def test_severity_fix(value: str):
+    """
+    given
+            a severity value that should be fixed to INFO
+    when
+            calling validate_fix_severity_value
+    then
+            make sure the value returned INFO
+    """
+    assert validate_fix_severity_value(value) == 'INFO'
+
+@pytest.mark.parametrized('value',('','a','foo','severity','infoo','informationall'))
+def test_severity_validate(value:str):
+    with pytest.raises(DemistoException):
+        validate_fix_severity_value(value)

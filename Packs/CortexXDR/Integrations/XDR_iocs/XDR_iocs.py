@@ -513,9 +513,33 @@ def to_cli_name(field_name: str):
     return field_name.lower().replace(' ', '')
 
 
+def validate_fix_severity_value(severity: str) -> str:
+    """raises error if the value is invalid, returns the value (fixes informational->info)
+
+    Args:
+        severity (str): the severity value, must be of INFO,LOW,MEDIUM,HIGH,CRITICAL,UNKNOWN
+
+    Raises:
+        DemistoException: when the value isn't allowed (nor can be fixed automatically)
+
+    Returns:
+        _type_: str, validated severity value
+    """
+    allowed_values = xdr_severity_to_demisto.values()
+    severity = severity.upper()
+
+    if severity == "INFORMATIONAL":
+        severity = "INFO"
+
+    if severity not in allowed_values:
+        raise DemistoException(f"the severity value must be one of {', '.join(allowed_values)}")
+
+    return severity
+
+
 def main():  # pragma: no cover
     params = demisto.params()
-    Client.severity = params.get('severity', '').upper()
+    Client.severity = validate_fix_severity_value(params.get('severity', ''))
     Client.override_severity = argToBoolean(params.get('override_severity', True))
     Client.tlp_color = params.get('tlp_color')
 
