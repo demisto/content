@@ -14,7 +14,8 @@
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "xsoar"
+        "xsoar",
+        "xpanse"
     ],
     "dependencies": {
         "ServiceNow": {

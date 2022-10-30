@@ -1,3 +1,4 @@
+
 {
     "name": "Carbon Black Cloud Enterprise EDR",
     "description": "Advanced threat hunting and incident response solution.",
@@ -15,6 +16,7 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "xpanse"
     ]
 }

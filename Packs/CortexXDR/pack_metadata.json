@@ -73,7 +73,8 @@
         }
     },
     "marketplaces": [
-        "xsoar"
+        "xsoar",
+        "xpanse"
     ],
     "displayedImages": [
         "ServiceNow",
