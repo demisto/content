@@ -2711,7 +2711,6 @@ def normalize_scan_data(scan_data: dict) -> dict:
             "status": "Status",
             "message": "Message",
         },
-        recursive=False,
         use_reference=True,
     )
 
@@ -2794,66 +2793,55 @@ def readable_duration_time(duration: str) -> str:
     return ", ".join(result)
 
 
-# TODO: Disable "recursive" if it's not actually needed.
-def replace_key_names(data: Union[dict, list, tuple], name_mapping: dict[str, str],
-                      recursive: bool = False, use_reference: bool = False) -> Union[dict, list, tuple, set]:
+def replace_key_names(data: Union[dict, list, tuple],
+                      name_mapping: dict[str, str], use_reference: bool = False,
+                      original_reference: Union[dict, list, tuple, None] = None) -> Union[dict, list, tuple, set]:
     """
     Replace key names in a dictionary.
 
     Args:
         data (dict | list | tuple): An iterable to replace key names for dictionaries within it.
-        name_mapping (dict): A dictionary in a `from (key): to (value)` mapping format
-                             of which key names to replace with what.
-                             The value of the keys can represent nested dict items in a "parent.child" format.
-        recursive (bool, optional): Whether to replace key names in all sub-dictionaries. Defaults to False.
+        name_mapping (dict): A dictionary in a `from (key): to (value)` mapping format of which key names
+                             to replace with what. The value of the keys (and only keys)
+                             can represent nested dict items in a "parent.child" format.
         use_reference (bool, optional): If set to true, the function will replace the keys in the original dictionary
                                   and return it, instead of creating, applying changes, and returning a new copy.
+        original_reference (dict | list | tuple | None, optional): Used internally for recursion. Should not be used.
 
     Returns:
         Union[dict, list, tuple]: The data-structure (original or copy)
                                   with key names of dicts replaced according to mapping.
     """
-    # TODO: Fix issue when nested key is inside a list
-
     if not use_reference:
         data = deepcopy(data)
 
+    if original_reference is None and isinstance(data, dict):
+        original_reference = data
+
     if isinstance(data, (list, tuple)):
-        return [replace_key_names(
-            data=data[i],
-            name_mapping=name_mapping,
-            recursive=recursive,
-            use_reference=True,
-        ) for i in range(len(data))]
+        for i in range(len(data)):
+            replace_key_names(
+                data=data[i],
+                name_mapping=name_mapping,
+                use_reference=True,
+                original_reference=original_reference,
+            )
 
     elif isinstance(data, dict):
         for key, value in name_mapping.items():
             nested_keys = key.split(".")
-            data_iterator = data
 
-            while nested_keys:
-                current_key = nested_keys.pop()
-
-                if data.get(current_key):
-                    if len(nested_keys) == 0:
-                        data[value] = data.pop(current_key)
-                        break
-
-                    else:
-                        data_iterator = data_iterator[current_key]
+            if nested_keys[0] in data:
+                if len(nested_keys) > 1:
+                    replace_key_names(
+                        data=data[nested_keys[0]],
+                        name_mapping={".".join(nested_keys[1:]): value},
+                        use_reference=True,
+                        original_reference=original_reference,
+                    )
 
                 else:
-                    break
-
-        if recursive:
-            for item in data:
-                if isinstance(data[item], (dict, list, tuple)):
-                    data[item] = replace_key_names(
-                        data=data[item],
-                        name_mapping=name_mapping,
-                        recursive=recursive,
-                        use_reference=True,
-                    )
+                    original_reference[value] = data.pop(key)
 
     return data
 
@@ -3525,7 +3513,6 @@ def get_asset_command(client: Client, asset_id: str) -> Union[CommandResults, Li
             "cpe.v2.3": "CPE",
             "riskScore": "RiskScore",
         },
-        recursive=True,
         use_reference=True,
     )
 
@@ -3544,7 +3531,6 @@ def get_asset_command(client: Client, asset_id: str) -> Union[CommandResults, Li
                 "description": "Software",
                 "version": "Version",
             },
-            recursive=True,
             use_reference=True,
         )
 
@@ -3564,7 +3550,6 @@ def get_asset_command(client: Client, asset_id: str) -> Union[CommandResults, Li
                 "product": "Product",
                 "protocol": "Protocol",
             },
-            recursive=True,
             use_reference=True,
         )
 
@@ -3582,7 +3567,6 @@ def get_asset_command(client: Client, asset_id: str) -> Union[CommandResults, Li
                 "fullName": "FullName",
                 "id": "UserId",
             },
-            recursive=True,
             use_reference=True,
         )
 
@@ -3732,7 +3716,6 @@ def get_assets_command(client: Client, page_size: Optional[int] = None,
             "riskScore": "RiskScore",
             "assessedForVulnerabilities": "Assessed",
         },
-        recursive=True,
         use_reference=True,
     )
 
@@ -3811,7 +3794,6 @@ def get_asset_vulnerability_command(client: Client, asset_id: str,
             "categories": "Categories",
             "cves": "CVES",
         },
-        recursive=True,
         use_reference=True,
     )
 
@@ -3827,7 +3809,6 @@ def get_asset_vulnerability_command(client: Client, asset_id: str,
                 "proof": "Proof",
                 "status": "Status",
             },
-            recursive=True,
             use_reference=True,
         )
 
@@ -3850,7 +3831,6 @@ def get_asset_vulnerability_command(client: Client, asset_id: str,
                 "estimate": "Estimate",
                 "additionalInformation.text": "AdditionalInformation",
             },
-            recursive=True,
             use_reference=True,
         )
 
@@ -3985,7 +3965,6 @@ def get_report_templates_command(client: Client) -> CommandResults:
             "description": "Description",
             "type": "Type",
         },
-        recursive=True,
         use_reference=True,
     )
 
@@ -4140,7 +4119,6 @@ def get_sites_command(client: Client, page_size: Optional[int] = None, page: Opt
             "type": "Type",
             "lastScanTime": "LastScan",
         },
-        recursive=True,
     )
 
     return CommandResults(
@@ -4195,7 +4173,6 @@ def list_scan_schedule_command(client: Client, site: Site, schedule_id: Optional
             "repeat.every": "Repeat",
             "nextRuntimes": "NextStart",
         },
-        recursive=True,
     )
 
     for scan_schedule in hr_outputs:
@@ -4268,7 +4245,6 @@ def list_shared_credential_command(client: Client, credential_id: Optional[str],
             "account.domain": "Domain",
             "account.username": "UserName",
         },
-        recursive=True,
     )
 
     for shared_credential in shared_credentials_hr:
@@ -4321,7 +4297,6 @@ def list_assigned_shared_credential_command(client: Client, site: Site, limit: O
             "service": "Service",
             "enabled": "Domain",
         },
-        recursive=True,
     )
 
     return CommandResults(
@@ -4384,7 +4359,6 @@ def list_site_scan_credential_command(client: Client, site: Site, credential_id:
             "hostRestriction": "RestrictToHostName",
             "portRestriction": "RestrictToPort",
         },
-        recursive=True,
     )
 
     return CommandResults(
@@ -4450,14 +4424,13 @@ def list_vulnerability_command(client: Client, vulnerability_id: Optional[str], 
             "title": "Title",
             "malwareKits": "MalwareKits",
             "exploits": "Exploits",
-            "CVSS.v2.score": "CVSS",
-            "CVSS.v3.score": "CVSSv3",
+            "cvss.v2.score": "CVSS",
+            "cvss.v3.score": "CVSSv3",
             "riskScore": "Risk",
             "published": "PublishedOn",
             "modified": "ModifiedOn",
             "severity": "Severity",
         },
-        recursive=True,
     )
 
     return CommandResults(
@@ -4530,7 +4503,6 @@ def list_vulnerability_exceptions_command(client: Client, vulnerability_exceptio
             "review.date": "ReviewedOn",
             "expires": "ExpiresOn",
         },
-        recursive=True,
     )
 
     return CommandResults(
@@ -4657,7 +4629,6 @@ def search_assets_command(client: Client, filter_query: Optional[str] = None, ip
             "riskScore": "RiskScore",
             "assessedForVulnerabilities": "Assessed",
         },
-        recursive=True,
         use_reference=True,
     )
 
