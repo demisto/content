@@ -17,7 +17,7 @@ URL_EXTRACTION_REGEX = (
     r"[-\w\d]+(?::\d+)?(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?"
 )
 INTEGRATION_NAME = "ReadPDFFileV2"
-DEAFULT_NUM_IMAGES = 20
+DEFAULT_NUM_IMAGES = 20
 
 
 class PdfPermissionsException(Exception):
@@ -597,7 +597,7 @@ def handling_pdf_credentials(cpy_file_path: str, dec_file_path: str, user_passwo
 
 
 def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_images: int | None, working_dir: str) -> None:
-    max_images = max_images if max_images else DEAFULT_NUM_IMAGES
+    max_images = max_images if max_images else DEFAULT_NUM_IMAGES
     # URLS
     urls_ec = []
     emails_ec = []
