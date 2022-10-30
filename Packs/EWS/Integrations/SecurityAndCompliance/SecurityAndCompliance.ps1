@@ -1517,7 +1517,7 @@ function Main {
         }
 
         # Refreshing tokens if expired
-        if ( $command -ne "$script:COMMAND_PREFIX-auth-start")
+        if ($command -ne "$script:COMMAND_PREFIX-auth-start")
         {
             $oauth2_client.RefreshTokenIfExpired()
         }
