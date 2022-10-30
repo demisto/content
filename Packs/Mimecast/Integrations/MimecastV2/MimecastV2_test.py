@@ -223,8 +223,8 @@ def test_mimecast_add_remove_member_to_group_with_domain(mocker):
     mocker.patch.object(MimecastV2, 'create_add_remove_group_member_request',
                         return_value=add_member_req_response_no_email)
     mocker.patch.object(MimecastV2, 'create_get_group_members_request', return_value=get_group_members_req_response)
-    readable, _, _ = MimecastV2.add_remove_member_to_group('add')
-    assert readable == 'Address had been added to group ID folder_id'
+    results = MimecastV2.add_remove_member_to_group('add')
+    assert results.readable_output == 'Address had been added to group ID folder_id'
 
 
 CREATE_MANAGED_URL_SUCCESSFUL_MOCK = {
