@@ -50,7 +50,7 @@ EMAIL_REGXEX = "[a-zA-Z0-9-_.]+@[a-zA-Z0-9-_.]+"
 IMG_FORMATS = ["jpg", "jpeg", "png", "gif"]
 
 
-def handle_error_read_only(fun, path, exp):
+def handle_error_read_only(fun, path, exp) -> None:
     """
     Handling errors that can be encountered in `shutil.rmtree()` execution.
     """
@@ -155,7 +155,7 @@ def run_shell_command(command: str, *args) -> bytes:
     return completed_process.stdout
 
 
-def get_files_names_in_path(path: str, name_of_file: str, full_path=False) -> list:
+def get_files_names_in_path(path: str, name_of_file: str, full_path: bool = False) -> list:
     """Returns a list[str] of file names in path, will return full path if given full_path=True"""
     os.chdir(ROOT_PATH)
     os.chdir(path)
@@ -581,7 +581,7 @@ def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str) ->
     return urls_set, emails_set
 
 
-def handling_pdf_credentials(cpy_file_path: str, dec_file_path: str, user_password='') -> str:
+def handling_pdf_credentials(cpy_file_path: str, dec_file_path: str, user_password: str = '') -> str:
     """
     This function is in charge of decrypting the pdf if needed,
     and handling the case where the pdf is `copy-protected` (remove this limitation)
@@ -634,22 +634,22 @@ def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_imag
 
         demisto.results(readpdf_entry_object)
     else:
-        return_error(f"EntryID {entry_id} path could not be found")
+        raise Exception(f"EntryID {entry_id} path could not be found")
 
 
 def main():  # pragma: no cover
     args = demisto.args()
-    working_dir = "ReadPDFTemp"
+    working_dir = 'ReadPDFTemp'
     try:
         if not os.path.exists(working_dir):
             """ Check if the working directory does not exist and create it """
             os.makedirs(working_dir)
-
-        entry_id = args["entryID"]
-        user_password = str(args.get("userPassword", ""))
+        entry_id = args.get('entryID')
+        file_name = demisto.getFilePath(entry_id).get('name')
+        user_password = str(args.get('userPassword', ''))
         max_images = arg_to_number(args.get('maxImages', None))
-        path = demisto.getFilePath(entry_id).get("path")
-        file_name = demisto.getFilePath(entry_id).get("name")
+        path = demisto.getFilePath(entry_id).get('path')
+
         extract_data_from_pdf(path=path, user_password=user_password, entry_id=entry_id, max_images=max_images,
                               working_dir=working_dir)
     except PdfPermissionsException as e:
