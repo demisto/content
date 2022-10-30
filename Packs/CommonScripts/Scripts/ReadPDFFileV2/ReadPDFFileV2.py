@@ -9,15 +9,15 @@ import stat
 import re
 import shutil
 import json
-from typing import List, Set
+from typing import List, Set, Tuple
 from pikepdf import Pdf, PasswordError
-from tempfile import TemporaryDirectory
 
 URL_EXTRACTION_REGEX = (
     r"(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+"
     r"[-\w\d]+(?::\d+)?(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?"
 )
 INTEGRATION_NAME = "ReadPDFFileV2"
+DEAFULT_NUM_IMAGES = 20
 
 
 class PdfPermissionsException(Exception):
@@ -39,15 +39,10 @@ class ShellException(Exception):
 
 try:
     ROOT_PATH = os.getcwd()
-    MAX_IMAGES = int(demisto.args().get("maxImages", 20))
 except OSError:
     return_error(
         "The script failed to access the current working directory. This might happen if your docker isn't "
         "set up correctly. Please contact customer support"
-    )
-except ValueError:
-    return_error(
-        "Value provided for maxImages is of the wrong type. Please provide an integer for maxImages"
     )
 
 EMAIL_REGXEX = "[a-zA-Z0-9-_.]+@[a-zA-Z0-9-_.]+"
@@ -93,17 +88,17 @@ def create_file_instance(entry_id: str, path: str, file_name: str, score: int | 
     return file
 
 
-def mark_suspicious(suspicious_reason: str, entry_id: str, path: str, file_name: str):
+def mark_suspicious(suspicious_reason: str, entry_id: str, path: str, file_name: str) -> None:
     """Missing EOF, file may be corrupted or suspicious file"""
 
-    dbot = {
-        "DBotScore": {
-            "Indicator": entry_id,
-            "Type": "file",
-            "Vendor": "PDFx",
-            "Score": 2,
-        }
-    }
+    # dbot = {
+    #     "DBotScore": {
+    #         "Indicator": entry_id,
+    #         "Type": "file",
+    #         "Vendor": "PDFx",
+    #         "Score": 2,
+    #     }
+    # }
     human_readable = (
         f'{suspicious_reason}\nFile marked as suspicious for entry id: {entry_id}'
     )
@@ -120,20 +115,20 @@ def mark_suspicious(suspicious_reason: str, entry_id: str, path: str, file_name:
     # return_warning(message=human_readable, outputs=command_results)
 
 
-def return_error_without_exit(message):
-    """Same as return_error, without the sys.exit"""
-    LOG(message)
-    LOG.print_log()
-    demisto.results(
-        {
-            "Type": entryTypes["error"],
-            "ContentsFormat": formats["text"],
-            "Contents": str(message),
-        }
-    )
+# def return_error_without_exit(message):
+#     """Same as return_error, without the sys.exit"""
+#     LOG(message)
+#     LOG.print_log()
+#     demisto.results(
+#         {
+#             "Type": entryTypes["error"],
+#             "ContentsFormat": formats["text"],
+#             "Contents": str(message),
+#         }
+#     )
 
 
-def run_shell_command(command, *args):
+def run_shell_command(command: str, *args) -> bytes:
     """Runs shell command and returns the result if not encountered an error"""
     cmd = [command] + list(args)
     completed_process = subprocess.run(
@@ -160,7 +155,7 @@ def run_shell_command(command, *args):
     return completed_process.stdout
 
 
-def get_files_names_in_path(path, name_of_file, full_path=False):
+def get_files_names_in_path(path: str, name_of_file: str, full_path=False) -> list:
     """Returns a list[str] of file names in path, will return full path if given full_path=True"""
     os.chdir(ROOT_PATH)
     os.chdir(path)
@@ -172,7 +167,7 @@ def get_files_names_in_path(path, name_of_file, full_path=False):
     return res
 
 
-def get_images_paths_in_path(path):
+def get_images_paths_in_path(path: str) -> List[str]:
     """Gets images paths from path"""
     res: List[str] = []
     for img_type in IMG_FORMATS:
@@ -181,7 +176,7 @@ def get_images_paths_in_path(path):
     return res
 
 
-def get_pdf_metadata(file_path, user_password=None) -> dict:
+def get_pdf_metadata(file_path: str, user_password: str | None = None) -> dict:
     """Gets the metadata from the pdf as a dictionary"""
     if user_password:
         metadata_txt = run_shell_command(
@@ -214,7 +209,7 @@ def get_pdf_metadata(file_path, user_password=None) -> dict:
     return metadata
 
 
-def get_pdf_text(file_path, pdf_text_output_path):
+def get_pdf_text(file_path: str, pdf_text_output_path: str) -> str:
     """Creates a txt file from the pdf in the pdf_text_output_path and returns the content of the txt file"""
     # pdf = Pdf.open(file_path)
     # pdf.save(pdf_text_output_path)
@@ -232,7 +227,7 @@ def get_pdf_text(file_path, pdf_text_output_path):
     return text
 
 
-def get_pdf_htmls_content(pdf_path, output_folder):
+def get_pdf_htmls_content(pdf_path: str, output_folder: str) -> str:
     """Creates an html file and images from the pdf in output_folder and returns the text content of the html files"""
     pdf_html_output_path = f'{output_folder}/PDF_html'
     # run_shell_command("pdftohtml", pdf_path, output_folder)
@@ -251,7 +246,8 @@ def get_pdf_htmls_content(pdf_path, output_folder):
     return html_content
 
 
-def build_readpdf_entry_object(entry_id: str, metadata, text, urls, emails, images):
+def build_readpdf_entry_object(entry_id: str, metadata: dict, text: str, urls: list, emails: list, images: list[str],
+                               max_images: int) -> list[dict[str, Any]]:
     """Builds an entry object for the main script flow"""
     pdf_file = {"EntryID": entry_id}
     # Add Text to file entity
@@ -284,7 +280,7 @@ def build_readpdf_entry_object(entry_id: str, metadata, text, urls, emails, imag
         results[0]["HumanReadable"] = f"{results[0]['HumanReadable']}\n### Images"
         os.chdir(ROOT_PATH)
         for i, img in enumerate(images):
-            if i >= MAX_IMAGES:
+            if i >= max_images:
                 break
             file = file_result_existing_file(img)
             results.append(file)
@@ -323,7 +319,7 @@ def build_readpdf_entry_object(entry_id: str, metadata, text, urls, emails, imag
     return results
 
 
-def build_readpdf_entry_context(indicators_map):
+def build_readpdf_entry_context(indicators_map: Any) -> dict:
     ec = {}
     if isinstance(indicators_map, dict):
         if "URL" in indicators_map:
@@ -339,7 +335,7 @@ def build_readpdf_entry_context(indicators_map):
     return ec
 
 
-def get_urls_from_binary_file(file_path):
+def get_urls_from_binary_file(file_path: str) -> set:
     """Reading from the binary pdf in the pdf_text_output_path and returns a list of the urls in the file"""
     with open(file_path, "rb") as file:
         # the urls usually appear in the form: '/URI (url)'
@@ -353,7 +349,7 @@ def get_urls_from_binary_file(file_path):
     return binary_file_urls
 
 
-def get_urls_and_emails_from_pdf_html_content(cpy_file_path, output_folder):
+def get_urls_and_emails_from_pdf_html_content(cpy_file_path: str, output_folder: str) -> Tuple[set, set]:
     """
     Extract the URLs and emails from the pdf html content.
 
@@ -367,22 +363,22 @@ def get_urls_and_emails_from_pdf_html_content(cpy_file_path, output_folder):
     return set(re.findall(URL_EXTRACTION_REGEX, pdf_html_content)), set(re.findall(EMAIL_REGXEX, pdf_html_content))
 
 
-def decrypt_pdf_file(file_path, user_password, path_to_decrypted_file):  # TODO Don't forget to delete
-    """
-    Gets a path to an encrypted PDF file and its password, and decrypts the file using pikepdf package.
-    Args:
-        file_path (str): A path to the encrypted PDF file.
-        user_password (str): The password to the encrypted PDF file.
-        path_to_decrypted_file (str): A path to save the decrypted PDF file to.
+# def decrypt_pdf_file(file_path, user_password, path_to_decrypted_file):  # TODO Don't forget to delete
+#     """
+#     Gets a path to an encrypted PDF file and its password, and decrypts the file using pikepdf package.
+#     Args:
+#         file_path (str): A path to the encrypted PDF file.
+#         user_password (str): The password to the encrypted PDF file.
+#         path_to_decrypted_file (str): A path to save the decrypted PDF file to.
 
-    Returns: None.
+#     Returns: None.
 
-    """
-    pdf_file = Pdf.open(file_path, password=user_password)
-    pdf_file.save(path_to_decrypted_file)
+#     """
+#     pdf_file = Pdf.open(file_path, password=user_password)
+#     pdf_file.save(path_to_decrypted_file)
 
 
-def extract_url_from_annot_object(annot_object):
+def extract_url_from_annot_object(annot_object: Any):
     """
     Extracts the URLs from the Annot object (under key: '/A').
 
@@ -405,7 +401,7 @@ def extract_url_from_annot_object(annot_object):
             return url
 
 
-def extract_url(extracted_object):
+def extract_url(extracted_object: Any):
     """
     Extracts URL (if exists) from the extracted object, according to the URL_EXTRACTION_REGEX.
 
@@ -423,7 +419,7 @@ def extract_url(extracted_object):
     return match
 
 
-def extract_email(extracted_object):
+def extract_email(extracted_object: Any):
     """
     Extracts Email (if exists) from the extracted object, according to the EMAIL_REGXEX.
 
@@ -441,7 +437,7 @@ def extract_email(extracted_object):
     return match
 
 
-def extract_urls_and_emails_from_annot_objects(annot_objects):
+def extract_urls_and_emails_from_annot_objects(annot_objects: list | Any):
     """
     Extracts URLs and Emails from the Annot objects, and separate them into two different sets.
 
@@ -478,7 +474,7 @@ def extract_urls_and_emails_from_annot_objects(annot_objects):
     return urls, emails
 
 
-def get_urls_and_emails_from_pdf_annots(file_path):
+def get_urls_and_emails_from_pdf_annots(file_path: str) -> Tuple[set, set]:
     """
     Extracts the URLs and Emails from the pdf's Annots (Annotations and Commenting) using PyPDF2 package.
     Args:
@@ -522,42 +518,42 @@ def get_urls_and_emails_from_pdf_annots(file_path):
     return all_urls, all_emails
 
 
-def extract_urls_emails_images(file_path, working_dir):  # TODO Don't forget to delete
-    """
-    Extract URLs, Emails, and images from the PDF file.
+# def extract_urls_emails_images(file_path: str, working_dir: str):  # TODO Don't forget to delete
+#     """
+#     Extract URLs, Emails, and images from the PDF file.
 
-    Args:
-        file_path (str): The path of the PDF file.
-        working_dir (str): The working directory of the application.
-    Returns:
-        tuple[set, set, List[set]]: A set including the URLs and emails that were found, a set including only emails that were
-         extracted from the html content, and a List of images that were extracted from the html content.
-    """
+#     Args:
+#         file_path (str): The path of the PDF file.
+#         working_dir (str): The working directory of the application.
+#     Returns:
+#         tuple[set, set, List[set]]: A set including the URLs and emails that were found, a set including only emails that were
+#          extracted from the html content, and a List of images that were extracted from the html content.
+#     """
 
-    # Get urls from the binary file:
-    binary_file_urls = get_urls_from_binary_file(file_path)
+#     # Get urls from the binary file:
+#     binary_file_urls = get_urls_from_binary_file(file_path)
 
-    # Get URLS + emails:
-    annots_urls, annots_emails = get_urls_and_emails_from_pdf_annots(file_path)
-    to_html_output_folder = f'{working_dir}/PDF_html'
-    html_urls, html_emails = get_urls_and_emails_from_pdf_html_content(
-        file_path, to_html_output_folder
-    )
-    # Get images:
-    images = get_images_paths_in_path(to_html_output_folder)
+#     # Get URLS + emails:
+#     annots_urls, annots_emails = get_urls_and_emails_from_pdf_annots(file_path)
+#     to_html_output_folder = f'{working_dir}/PDF_html'
+#     html_urls, html_emails = get_urls_and_emails_from_pdf_html_content(
+#         file_path, to_html_output_folder
+#     )
+#     # Get images:
+#     images = get_images_paths_in_path(to_html_output_folder)
 
-    # html_urls.remove('http://www.w3.org/1999/xhtml')
-    # This url might get generated with the pdf html file, and that's why we remove it if founded
-    html_urls.discard("http://www.w3.org/1999/xhtml")
+#     # html_urls.remove('http://www.w3.org/1999/xhtml')
+#     # This url might get generated with the pdf html file, and that's why we remove it if founded
+#     html_urls.discard("http://www.w3.org/1999/xhtml")
 
-    # Unify urls:
-    urls_set = annots_urls.union(html_urls, binary_file_urls)
-    emails_set = annots_emails.union(html_emails)
+#     # Unify urls:
+#     urls_set = annots_urls.union(html_urls, binary_file_urls)
+#     emails_set = annots_emails.union(html_emails)
 
-    return urls_set, emails_set, images
+#     return urls_set, emails_set, images
 
 
-def extract_urls_and_emails_from_pdf_file(file_path, output_folder):
+def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str) -> Tuple[set, set]:
     """
     Extract URLs and Emails from the PDF file.
     Args:
@@ -600,57 +596,63 @@ def handling_pdf_credentials(cpy_file_path: str, dec_file_path: str, user_passwo
     return cpy_file_path
 
 
-def extract_data_from_pdf(path: str, user_password: str, entry_id: str) -> None:
+def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_images: int | None, working_dir: str) -> None:
+    max_images = max_images if max_images else DEAFULT_NUM_IMAGES
     # URLS
     urls_ec = []
     emails_ec = []
     if path:
-        with TemporaryDirectory(dir='./', prefix='ReadPDFTemp', suffix='') as working_dir:
-            cpy_file_path = f'{working_dir}/WorkingReadPDF.pdf'
-            shutil.copy(path, cpy_file_path)
-            metadata = get_pdf_metadata(path, user_password)
+        cpy_file_path = f'{working_dir}/WorkingReadPDF.pdf'
+        shutil.copy(path, cpy_file_path)
+        metadata = get_pdf_metadata(path, user_password)
 
-            cpy_file_path = handling_pdf_credentials(cpy_file_path=cpy_file_path,
-                                                     dec_file_path=f'{working_dir}/DecWorkingReadPDF.pdf',
-                                                     user_password=user_password)
+        cpy_file_path = handling_pdf_credentials(cpy_file_path=cpy_file_path,
+                                                 dec_file_path=f'{working_dir}/DecWorkingReadPDF.pdf',
+                                                 user_password=user_password)
 
-            # Get text:
-            pdf_text_output_path = f"{working_dir}/PDFText.txt"
-            text = get_pdf_text(cpy_file_path, pdf_text_output_path)
+        # Get text:
+        pdf_text_output_path = f"{working_dir}/PDFText.txt"
+        text = get_pdf_text(cpy_file_path, pdf_text_output_path)
 
-            # Get URLS + emails:
-            urls_set, emails_set = extract_urls_and_emails_from_pdf_file(cpy_file_path, working_dir)
-            # urls_set, emails_set, images = extract_urls_emails_images(cpy_file_path, working_dir)
-            for url in urls_set:
-                urls_ec.append({"Data": url})
-            for email in emails_set:
-                emails_ec.append(email)
+        # Get URLS + emails:
+        urls_set, emails_set = extract_urls_and_emails_from_pdf_file(cpy_file_path, working_dir)
+        # urls_set, emails_set, images = extract_urls_emails_images(cpy_file_path, working_dir)
+        for url in urls_set:
+            urls_ec.append({"Data": url})
+        for email in emails_set:
+            emails_ec.append(email)
 
-            # Get images:
-            images = get_images_paths_in_path(working_dir)
-            readpdf_entry_object = build_readpdf_entry_object(entry_id,
-                                                              metadata,
-                                                              text,
-                                                              urls_ec,
-                                                              emails_ec,
-                                                              images)
+        # Get images:
+        images = get_images_paths_in_path(working_dir)
+        readpdf_entry_object = build_readpdf_entry_object(entry_id,
+                                                          metadata,
+                                                          text,
+                                                          urls_ec,
+                                                          emails_ec,
+                                                          images,
+                                                          max_images=max_images)
 
-            demisto.results(readpdf_entry_object)
+        demisto.results(readpdf_entry_object)
     else:
         return_error(f"EntryID {entry_id} path could not be found")
 
 
 def main():  # pragma: no cover
-    entry_id = demisto.args()["entryID"]
-    user_password = str(demisto.args().get("userPassword", ""))
-
+    args = demisto.args()
+    working_dir = "ReadPDFTemp"
     try:
+        if not os.path.exists(working_dir):
+            """ Check if the working directory does not exist and create it """
+            os.makedirs(working_dir)
+
+        entry_id = args["entryID"]
+        user_password = str(args.get("userPassword", ""))
+        max_images = arg_to_number(args.get('maxImages', None))
         path = demisto.getFilePath(entry_id).get("path")
         file_name = demisto.getFilePath(entry_id).get("name")
-        extract_data_from_pdf(path=path, user_password=user_password, entry_id=entry_id)
+        extract_data_from_pdf(path=path, user_password=user_password, entry_id=entry_id, max_images=max_images,
+                              working_dir=working_dir)
     except PdfPermissionsException as e:
-        # demisto.error(traceback.format_exc())
-        # return_warning(traceback.format_exc())
         return_warning(str(e))
     except ShellException as e:
         mark_suspicious(
@@ -666,6 +668,9 @@ def main():  # pragma: no cover
         # return_error_without_exit(
         #     f"The script failed read PDF file due to an error: {str(e)}"
         # )
+    finally:
+        os.chdir(ROOT_PATH)
+        shutil.rmtree(working_dir, onerror=handle_error_read_only)
 
 
 if __name__ in ["__main__", "__builtin__", "builtins"]:
