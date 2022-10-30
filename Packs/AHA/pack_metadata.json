@@ -1,20 +1,19 @@
 {
-    "name": "Common Dashboards",
-    "description": "Frequently used dashboards pack.",
+    "name": "AHA",
+    "description": "Use the Aha! integration to edit name/title description and status of features in Aha! according to their status in Jira",
     "support": "xsoar",
-    "currentVersion": "1.2.3",
+    "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "created": "2020-05-26T08:37:22Z",
     "categories": [
         "Utilities"
     ],
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "dependencies": {},
     "marketplaces": [
-        "xsoar"
+        "xsoar",
+        "marketplacev2"
     ]
 }
