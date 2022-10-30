@@ -9,25 +9,25 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 * IP Enrichment - Generic v2
-* Active Directory - Get User Manager Details
 * Block IP - Generic v3
+* Active Directory - Get User Manager Details
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
-* CalculateTimeDifference
-* CalculateGeoDistance
 * EmailAskUser
+* CalculateGeoDistance
 * Set
+* CalculateTimeDifference
 
 ### Commands
+* setIncident
 * rasterize
+* ad-get-user
+* closeInvestigation
 * ad-disable-account
 * ip
-* closeInvestigation
-* setIncident
-* ad-get-user
 
 ## Playbook Inputs
 ---
