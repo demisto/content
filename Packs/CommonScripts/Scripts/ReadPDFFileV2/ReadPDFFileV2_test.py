@@ -100,7 +100,7 @@ def test_get_pdf_text_with_encrypted(tmp_path):
     file_path = f'{CWD}/encrypted.pdf'
     dec_file_path = f'{CWD}/decrypted.pdf'
     dec_file_path = handling_pdf_credentials(cpy_file_path=file_path, user_password='1234', dec_file_path=dec_file_path)
-    text = get_pdf_text(file_path, f'{tmp_path}/encrypted.txt')
+    text = get_pdf_text(dec_file_path, f'{tmp_path}/encrypted.txt')
     expected = "XSL FO Sample Copyright © 2002-2005 Antenna House, Inc. All rights reserved.\n\n" \
                "Links in PDF\nPDF link is classified into two parts, link to the specified position in the PDF " \
                "document, and link to the external document.\n" \
@@ -151,15 +151,15 @@ def test_get_pdf_htmls_content_with_encrypted(mocker, tmp_path):
     file_path = f'{CWD}/encrypted.pdf'
     dec_file_path = f'{CWD}/decrypted.pdf'
     dec_file_path = handling_pdf_credentials(cpy_file_path=file_path, user_password='1234', dec_file_path=dec_file_path)
-    to_html_output_folder = f'{tmp_path}/PDF_html'
-    html_text = get_pdf_htmls_content(dec_file_path, to_html_output_folder)
+    # to_html_output_folder = f'{tmp_path}/PDF_html'
+    html_text = get_pdf_htmls_content(dec_file_path, tmp_path)
     expected = 'If you are end user who wishes to use XSL Formatter yourself, you may purchase ' \
                'from our Reseller or direct from Antenna<br/>House.<br/>'
 
     if os.path.exists(dec_file_path):
         os.remove(dec_file_path)
 
-    assert len(get_images_paths_in_path(to_html_output_folder)) != 0, 'Failed to get images from html'
+    assert len(get_images_paths_in_path(tmp_path)) != 0, 'Failed to get images from html'
     assert expected in html_text
 
 
