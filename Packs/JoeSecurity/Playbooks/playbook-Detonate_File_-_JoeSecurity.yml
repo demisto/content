@@ -3,9 +3,7 @@ version: -1
 name: Detonate File - JoeSecurity
 fromversion: 5.0.0
 description: |-
-  Detonates one or more files using the Joe Security - Joe Sandbox integration.
-  Returns relevant reports to the War Room and file reputations to the context data.
-  All file types are supported.
+  Deprecated. Use the joe-submit-sample command instead.
 starttaskid: "0"
 tasks:
   "0":
@@ -499,3 +497,4 @@ outputs:
 tests:
 - Detonate File - Generic Test
 - JoeSecurityTestDetonation
+deprecated: true

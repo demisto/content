@@ -4,9 +4,7 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Detonate and Analyze File - JoeSecurity
 description: |-
-  Detonates one or more files using the Joe Security - Joe Sandbox integration.
-  Returns relevant reports to the War Room and file reputations to the context data.
-  All file types are supported.
+  Deprecated. Use the joe-submit-sample command instead.
 starttaskid: "0"
 tasks:
   "0":
@@ -756,3 +754,4 @@ outputs:
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
+deprecated: true
