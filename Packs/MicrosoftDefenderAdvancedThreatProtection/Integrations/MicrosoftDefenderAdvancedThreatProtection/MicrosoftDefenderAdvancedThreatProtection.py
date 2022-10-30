@@ -4289,7 +4289,7 @@ def tampering_command(client, args):  # pragma: no cover
         page=args.get('page'),
         device_name=args.get('device_name'),
         device_id=args.get('device_id')
-        )
+    )
     query_builder = HuntingQueryBuilder.Tampering(**quey_args)
     query = query_builder.build_query()
 
