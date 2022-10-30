@@ -500,13 +500,13 @@ wcmatch = "^8.3"
 yamlordereddictloader = "^0.4.0"
 
 [package.extras]
-build = ["gsutil (==5.14)"]
+build = ["gsutil (==5.8)"]
 
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "8e49b17eeb80f045e783a596e4c7bdd6c617c8aa"
-resolved_reference = "8e49b17eeb80f045e783a596e4c7bdd6c617c8aa"
+reference = "d875352fee7713160a87e1956ab9487151752ac6"
+resolved_reference = "d875352fee7713160a87e1956ab9487151752ac6"
 
 [[package]]
 name = "deprecated"
@@ -2292,7 +2292,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "f290e811af351d84a2c4ac2e362416e8897728b7b5ce24693d1600ce1a8515ed"
+content-hash = "8c13ac99f9242303b6b8ec2847de26c3cbb2dcd07475ba2ba58595d01d6f6456"
 
 [metadata.files]
 aiohttp = [
