@@ -105,7 +105,7 @@ def test_get_pdf_text_with_encrypted(tmp_path):
                "Links in PDF\nPDF link is classified into two parts, link to the specified position in the PDF " \
                "document, and link to the external document.\n" \
                "The internal-destination property of fo:basic-link indicates to link to the position in the same" \
-               " document. The external destination property indicates to link to external document. " \
+               " document. The externaldestination property indicates to link to external document. " \
                "Below shows the example.\n\nExample of a link to internal destination\nRefer to Purchasing " \
                "Assistance to get more information.\nExample of a link to external destination\nRefer to Purchasing " \
                "Assistance to get more information."
