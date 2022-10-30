@@ -5142,7 +5142,7 @@ def main():
         elif command == "nexpose-create-asset":
             hostname_source = None
 
-            if args.get("host_name_source"):
+            if args.get("host_name_source") is not None:
                 hostname_source = HostnameSource[args["host_name_source"]]
 
             results = create_asset_command(
@@ -5159,23 +5159,31 @@ def main():
             )
         elif command == "nexpose-create-assets-report":
             report_format = None
+            download_immediately = None
 
-            if args.get("format"):
+            if args.get("format") is not None:
                 report_format = ReportFileFormat[args["format"]]
+
+            if args.get("download_immediately") is not None:
+                download_immediately = argToBoolean(args["download_immediately"])
 
             results = create_assets_report_command(
                 client=client,
-                asset_ids=argToList(args.get("assets")),
+                asset_ids=argToList(args["assets"]),
                 template_id=args.get("template"),
                 report_name=args.get("name"),
                 report_format=report_format,
-                download_immediately=argToBoolean(args.get("download_immediately"))
+                download_immediately=download_immediately,
             )
         elif command == "nexpose-create-scan-report":
             report_format = None
+            download_immediately = None
 
-            if args.get("format"):
+            if args.get("format") is not None:
                 report_format = ReportFileFormat[args["format"]]
+
+            if args.get("download_immediately") is not None:
+                download_immediately = argToBoolean(args["download_immediately"])
 
             results = create_scan_report_command(
                 client=client,
@@ -5183,14 +5191,51 @@ def main():
                 template_id=args.get("template"),
                 report_name=args.get("name"),
                 report_format=report_format,
-                download_immediately=argToBoolean(args.get("download_immediately")),
+                download_immediately=download_immediately,
             )
         elif command == "nexpose-create-scan-schedule":
-            repeat_behaviour = RepeatBehaviour[args["on_scan_repeat"]]
+            excluded_asset_groups = None
+            excluded_targets = None
             frequency = None
+            included_asset_groups = None
+            included_targets = None
+            duration_days = None
+            duration_hours = None
+            duration_minutes = None
+            interval = None
+            date_of_month = None
+            scan_name = None
+            scan_template_id = None
 
-            if args.get("frequency"):
+            if args.get("excluded_asset_groups") is not None:
+                excluded_asset_groups = [int(asset_id) for asset_id in argToList(args["excluded_asset_group_ids"])]
+
+            if args.get("excluded_targets") is not None:
+                excluded_targets = argToList(args.get("excluded_addresses"))
+
+            if args.get("frequency") is not None:
                 frequency = RepeatFrequencyType[args.get("frequency")]
+
+            if args.get("included_asset_groups") is not None:
+                included_asset_groups = [int(asset_id) for asset_id in argToList(args["included_asset_group_ids"])]
+
+            if args.get("included_targets") is not None:
+                included_targets = argToList(args["included_addresses"])
+
+            if args.get("duration_days") is not None:
+                duration_days = arg_to_number(args["duration_days"])
+
+            if args.get("duration_hours") is not None:
+                duration_hours = arg_to_number(args["duration_hours"])
+
+            if args.get("duration_minutes") is not None:
+                duration_minutes = arg_to_number(args["duration_minutes"])
+
+            if args.get("interval") is not None:
+                interval = arg_to_number(args["interval_time"])
+
+            if args.get("date_of_month") is not None:
+                date_of_month = arg_to_number(args["date_of_month"])
 
             results = create_scan_schedule_command(
                 client=client,
@@ -5199,30 +5244,43 @@ def main():
                     site_name=args.get("site_name"),
                     client=client,
                 ),
-                enabled=args.get("enabled"),
-                repeat_behaviour=repeat_behaviour,
+                enabled=args["enabled"],
+                repeat_behaviour=RepeatBehaviour[args["on_scan_repeat"]],
                 start_date=args["start"],
-                excluded_asset_groups=[int(asset_id) for asset_id in argToList(args.get("excluded_asset_group_ids"))],
-                excluded_targets=argToList(args.get("excluded_addresses")),
-                included_asset_groups=[int(asset_id) for asset_id in argToList(args.get("included_asset_group_ids"))],
-                included_targets=argToList(args.get("included_addresses")),
-                duration_days=arg_to_number(args.get("duration_days")),
-                duration_hours=arg_to_number(args.get("duration_hours")),
-                duration_minutes=arg_to_number(args.get("duration_minutes")),
+                excluded_asset_groups=excluded_asset_groups,
+                excluded_targets=excluded_targets,
+                included_asset_groups=included_asset_groups,
+                included_targets=included_targets,
+                duration_days=duration_days,
+                duration_hours=duration_hours,
+                duration_minutes=duration_minutes,
                 frequency=frequency,
-                interval=arg_to_number(args.get("interval_time")),
-                date_of_month=arg_to_number(args.get("date_of_month")),
+                interval=interval,
+                date_of_month=date_of_month,
                 scan_name=args.get("scan_name"),
-                scan_template_id=args.get("scan_template_id"))
+                scan_template_id=args.get("scan_template_id"),
+            )
         elif command == "nexpose-create-shared-credential":
+            oracle_enumerate_sids = None
+            sites = None
             snmpv3_privacy_type = None
             ssh_permission_elevation = None
+            use_windows_authentication = None
+
+            if args.get("oracle_enumerate_sids") is not None:
+                oracle_enumerate_sids = argToBoolean(args["oracle_enumerate_sids"])
+
+            if args.get("sites") is not None:
+                sites = [int(item) for item in argToList(args["sites"])]
 
             if args.get("snmpv3_privacy_type") is not None:
                 snmpv3_privacy_type = SNMPv3PrivacyType[args["snmpv3_privacy_type"]]
 
             if args.get("ssh_permission_elevation") is not None:
                 ssh_permission_elevation = SSHElevationType[args["ssh_permission_elevation"]]
+
+            if args.get("use_windows_authentication") is not None:
+                use_windows_authentication = argToBoolean(args["use_windows_authentication"])
 
             results = create_shared_credential_command(
                 client=client,
@@ -5236,12 +5294,12 @@ def main():
                 http_realm=args.get("http_realm"),
                 notes_id_password=args.get("notes_id_password"),
                 ntlm_hash=args.get("ntlm_hash"),
-                oracle_enumerate_sids=argToBoolean(args.get("oracle_enumerate_sids")),
+                oracle_enumerate_sids=oracle_enumerate_sids,
                 oracle_listener_password=args.get("oracle_listener_password"),
                 oracle_sid=args.get("oracle_sid"),
                 password=args.get("password"),
                 port_restriction=args.get("port_restriction"),
-                sites=[int(item) for item in argToList(args.get("sites"))],
+                sites=sites,
                 snmp_community_name=args.get("community_name"),
                 snmpv3_authentication_type=args.get("authentication_type"),
                 snmpv3_privacy_password=args.get("privacy_password"),
@@ -5251,20 +5309,24 @@ def main():
                 ssh_permission_elevation_password=args.get("ssh_permission_elevation_password"),
                 ssh_permission_elevation_username=args.get("ssh_permission_elevation_username"),
                 ssh_private_key_password=args.get("ssh_private_key_password"),
-                use_windows_authentication=argToBoolean(args.get("use_windows_authentication")),
+                use_windows_authentication=use_windows_authentication,
                 username=args.get("username"),
             )
         elif command == "nexpose-create-site":
+            assets = None
             site_importance = None
 
-            if args.get("importance"):
+            if args["assets"] is not None:
+                assets = argToList(args["assets"])
+
+            if args.get("importance") is not None:
                 site_importance = SiteImportance[args["importance"]]
 
             results = create_site_command(
                 client=client,
                 name=args["name"],
                 description=args.get("description"),
-                assets=argToList(args.get("assets")),
+                assets=assets,
                 site_importance=site_importance,
                 template_id=args.get("scanTemplateId"),
             )
@@ -5277,9 +5339,13 @@ def main():
             if not sites_list:
                 raise Exception("At least one site ID or site name must be provided.")
 
+            download_immediately = None
             report_format = None
 
-            if args.get("format"):
+            if args.get("download_immediately") is not None:
+                download_immediately = argToBoolean(args["download_immediately"]),
+
+            if args.get("format") is not None:
                 report_format = ReportFileFormat[args["format"]]
 
             results = create_sites_report_command(
@@ -5288,17 +5354,25 @@ def main():
                 template_id=args.get("template"),
                 report_name=args.get("name"),
                 report_format=report_format,
-                download_immediately=argToBoolean(args.get("download_immediately")),
+                download_immediately=download_immediately,
             )
         elif command == "nexpose-create-site-scan-credential":
+            oracle_enumerate_sids = None
             snmpv3_privacy_type = None
             ssh_permission_elevation = None
+            use_windows_authentication = None
+
+            if args.get("oracle_enumerate_sids") is not None:
+                oracle_enumerate_sids = argToBoolean(args["oracle_enumerate_sids"])
 
             if args.get("snmpv3_privacy_type") is not None:
                 snmpv3_privacy_type = SNMPv3PrivacyType[args["snmpv3_privacy_type"]]
 
             if args.get("ssh_permission_elevation") is not None:
                 ssh_permission_elevation = SSHElevationType[args["ssh_permission_elevation"]]
+
+            if args.get("use_windows_authentication") is not None:
+                use_windows_authentication = argToBoolean(args["use_windows_authentication"])
 
             results = create_site_scan_credential_command(
                 client=client,
@@ -5316,7 +5390,7 @@ def main():
                 http_realm=args.get("http_realm"),
                 notes_id_password=args.get("notes_id_password"),
                 ntlm_hash=args.get("ntlm_hash"),
-                oracle_enumerate_sids=argToBoolean(args.get("oracle_enumerate_sids")),
+                oracle_enumerate_sids=oracle_enumerate_sids,
                 oracle_listener_password=args.get("oracle_listener_password"),
                 oracle_sid=args.get("oracle_sid"),
                 password=args.get("password"),
@@ -5330,7 +5404,7 @@ def main():
                 ssh_permission_elevation_password=args.get("ssh_permission_elevation_password"),
                 ssh_permission_elevation_username=args.get("ssh_permission_elevation_username"),
                 ssh_private_key_password=args.get("ssh_private_key_password"),
-                use_windows_authentication=argToBoolean(args.get("use_windows_authentication")),
+                use_windows_authentication=use_windows_authentication,
                 username=args.get("username"),
             )
         elif command == "nexpose-create-vulnerability-exception":
@@ -5439,12 +5513,25 @@ def main():
                 vulnerability_id=args["vulnerabilityId"],
             )
         elif command == "nexpose-get-assets":
+            page_size = None
+            page = None
+            limit = None
+
+            if args.get("page_size") is not None:
+                page_size = arg_to_number(args["page_size"])
+
+            if args.get("page") is not None:
+                page = arg_to_number(args["page"])
+
+            if args.get("limit") is not None:
+                limit = arg_to_number(args["limit"])
+
             results = get_assets_command(
                 client=client,
-                page=arg_to_number(args.get("page")),
-                page_size=arg_to_number(args.get("page_size")),
+                page=page,
+                page_size=page_size,
                 sort=args.get("sort"),
-                limit=arg_to_number(args.get("limit"))
+                limit=limit,
             )
         elif command == "nexpose-get-report-templates":
             results = get_report_templates_command(
@@ -5459,26 +5546,57 @@ def main():
         elif command == "nexpose-get-scan":
             results = get_scan_command(
                 client=client,
-                scan_ids=argToList(args.get("id")),
+                scan_ids=argToList(args["id"]),
             )
         elif command == "nexpose-get-scans":
+            page_size = None
+            page = None
+            limit = None
+
+            if args.get("page_size") is not None:
+                page_size = arg_to_number(args["page_size"])
+
+            if args.get("page") is not None:
+                page = arg_to_number(args["page"])
+
+            if args.get("limit") is not None:
+                limit = arg_to_number(args["limit"])
+
             results = get_scans_command(
                 client=client,
                 active=args.get("active"),
-                page_size=arg_to_number(args.get("page_size")),
-                page=arg_to_number(args.get("page")),
+                page_size=page_size,
+                page=page,
                 sort=args.get("sort"),
-                limit=arg_to_number(args.get("limit")),
+                limit=limit,
             )
         elif command == "nexpose-get-sites":
+            page_size = None
+            page = None
+            limit = None
+
+            if args.get("page_size") is not None:
+                page_size = arg_to_number(args["page_size"])
+
+            if args.get("page") is not None:
+                page = arg_to_number(args["page"])
+
+            if args.get("limit") is not None:
+                limit = arg_to_number(args["limit"])
+
             results = get_sites_command(
                 client=client,
-                page_size=arg_to_number(args.get("page_size")),
-                page=arg_to_number(args.get("page")),
+                page_size=page_size,
+                page=page,
                 sort=args.get("sort"),
-                limit=arg_to_number(args.get("limit")),
+                limit=limit,
             )
         elif command == "nexpose-list-assigned-shared-credential":
+            limit = None
+
+            if args.get("limit"):
+                limit = arg_to_number(args["limit"])
+
             results = list_assigned_shared_credential_command(
                 client=client,
                 site=Site(
@@ -5486,9 +5604,14 @@ def main():
                     site_name=args.get("site_name"),
                     client=client,
                 ),
-                limit=arg_to_number(args.get("limit")),
+                limit=limit,
             )
         elif command == "nexpose-list-site-scan-credential":
+            limit = None
+
+            if args.get("limit"):
+                limit = arg_to_number(args["limit"])
+
             results = list_site_scan_credential_command(
                 client=client,
                 site=Site(
@@ -5497,25 +5620,56 @@ def main():
                     client=client,
                 ),
                 credential_id=args.get("credential_id"),
-                limit=arg_to_number(args.get("limit")),
+                limit=limit,
             )
         elif command == "nexpose-list-vulnerability":
+            page_size = None
+            page = None
+            limit = None
+
+            if args.get("page_size") is not None:
+                page_size = arg_to_number(args["page_size"])
+
+            if args.get("page") is not None:
+                page = arg_to_number(args["page"])
+
+            if args.get("limit") is not None:
+                limit = arg_to_number(args["limit"])
+
             results = list_vulnerability_command(
                 client=client,
                 vulnerability_id=args.get("id"),
-                page_size=arg_to_number(args.get("page_size")),
-                page=arg_to_number(args.get("page")),
-                limit=arg_to_number(args.get("limit")),
+                page_size=page_size,
+                page=page,
+                limit=limit,
             )
         elif command == "nexpose-list-vulnerability-exceptions":
+            page_size = None
+            page = None
+            limit = None
+
+            if args.get("page_size") is not None:
+                page_size = arg_to_number(args["page_size"])
+
+            if args.get("page") is not None:
+                page = arg_to_number(args["page"])
+
+            if args.get("limit") is not None:
+                limit = arg_to_number(args["limit"])
+
             results = list_vulnerability_exceptions_command(
                 client=client,
                 vulnerability_exception_id=args.get("id"),
-                page_size=arg_to_number(args.get("page_size")),
-                page=arg_to_number(args.get("page")),
-                limit=arg_to_number(args.get("limit")),
+                page_size=page_size,
+                page=page,
+                limit=limit,
             )
         elif command == "nexpose-list-scan-schedule":
+            limit = None
+
+            if args.get("limit") is not None:
+                limit = arg_to_number(args["limit"])
+
             results = list_scan_schedule_command(
                 client=client,
                 site=Site(
@@ -5524,13 +5678,18 @@ def main():
                     client=client,
                 ),
                 schedule_id=args.get("schedule_id"),
-                limit=arg_to_number(args.get("limit")),
+                limit=limit,
             )
         elif command == "nexpose-list-shared-credential":
+            limit = None
+
+            if args.get("limit") is not None:
+                limit = arg_to_number(args["limit"])
+
             results = list_shared_credential_command(
                 client=client,
                 credential_id=args.get("id"),
-                limit=arg_to_number(args.get("limit")),
+                limit=limit,
             )
         elif command == "nexpose-pause-scan":
             results = update_scan_command(
@@ -5545,14 +5704,26 @@ def main():
                 scan_status=ScanStatus.RESUME,
             )
         elif command == "nexpose-update-shared-credential":
+            oracle_enumerate_sids = None
+            sites = None
             snmpv3_privacy_type = None
             ssh_permission_elevation = None
+            use_windows_authentication = None
+
+            if args.get("oracle_enumerate_sids") is not None:
+                oracle_enumerate_sids = argToBoolean(args["oracle_enumerate_sids"])
+
+            if args.get("sites") is not None:
+                sites = [int(item) for item in argToList(args["sites"])]
 
             if args.get("snmpv3_privacy_type") is not None:
                 snmpv3_privacy_type = SNMPv3PrivacyType[args["snmpv3_privacy_type"]]
 
             if args.get("ssh_permission_elevation") is not None:
                 ssh_permission_elevation = SSHElevationType[args["ssh_permission_elevation"]]
+
+            if args.get("use_windows_authentication") is not None:
+                use_windows_authentication = argToBoolean(["use_windows_authentication"])
 
             results = update_shared_credential_command(
                 client=client,
@@ -5567,12 +5738,12 @@ def main():
                 http_realm=args.get("http_realm"),
                 notes_id_password=args.get("notes_id_password"),
                 ntlm_hash=args.get("ntlm_hash"),
-                oracle_enumerate_sids=argToBoolean(args.get("oracle_enumerate_sids")),
+                oracle_enumerate_sids=oracle_enumerate_sids,
                 oracle_listener_password=args.get("oracle_listener_password"),
                 oracle_sid=args.get("oracle_sid"),
                 password=args.get("password"),
                 port_restriction=args.get("port_restriction"),
-                sites=[int(item) for item in argToList(args.get("sites"))],
+                sites=sites,
                 snmp_community_name=args.get("community_name"),
                 snmpv3_authentication_type=args.get("authentication_type"),
                 snmpv3_privacy_password=args.get("privacy_password"),
@@ -5582,18 +5753,26 @@ def main():
                 ssh_permission_elevation_password=args.get("ssh_permission_elevation_password"),
                 ssh_permission_elevation_username=args.get("ssh_permission_elevation_username"),
                 ssh_private_key_password=args.get("ssh_private_key_password"),
-                use_windows_authentication=argToBoolean(args.get("use_windows_authentication")),
+                use_windows_authentication=use_windows_authentication,
                 username=args.get("username"),
             )
         elif command == "nexpose-update-site-scan-credential":
+            oracle_enumerate_sids = None
             snmpv3_privacy_type = None
             ssh_permission_elevation = None
+            use_windows_authentication = None
+
+            if args.get("oracle_enumerate_sids") is not None:
+                oracle_enumerate_sids = argToBoolean(args["oracle_enumerate_sids"])
 
             if args.get("snmpv3_privacy_type") is not None:
                 snmpv3_privacy_type = SNMPv3PrivacyType[args["snmpv3_privacy_type"]]
 
             if args.get("ssh_permission_elevation") is not None:
                 ssh_permission_elevation = SSHElevationType[args["ssh_permission_elevation"]]
+
+            if args.get("use_windows_authentication") is not None:
+                use_windows_authentication = argToBoolean(args["use_windows_authentication"])
 
             results = update_site_scan_credential_command(
                 client=client,
@@ -5612,7 +5791,7 @@ def main():
                 http_realm=args.get("http_realm"),
                 notes_id_password=args.get("notes_id_password"),
                 ntlm_hash=args.get("ntlm_hash"),
-                oracle_enumerate_sids=argToBoolean(args.get("oracle_enumerate_sids")),
+                oracle_enumerate_sids=oracle_enumerate_sids,
                 oracle_listener_password=args.get("oracle_listener_password"),
                 oracle_sid=args.get("oracle_sid"),
                 password=args.get("password"),
@@ -5626,15 +5805,50 @@ def main():
                 ssh_permission_elevation_password=args.get("ssh_permission_elevation_password"),
                 ssh_permission_elevation_username=args.get("ssh_permission_elevation_username"),
                 ssh_private_key_password=args.get("ssh_private_key_password"),
-                use_windows_authentication=argToBoolean(args.get("use_windows_authentication")),
+                use_windows_authentication=use_windows_authentication,
                 username=args.get("username"),
             )
         elif command == "nexpose-update-scan-schedule":
-            repeat_behaviour = RepeatBehaviour[args["on_scan_repeat"]]
+            excluded_asset_groups = None
+            excluded_targets = None
             frequency = None
+            included_asset_groups = None
+            included_targets = None
+            duration_days = None
+            duration_hours = None
+            duration_minutes = None
+            interval = None
+            date_of_month = None
 
-            if args.get("frequency"):
+            if args.get("excluded_asset_groups") is not None:
+                excluded_asset_groups = [int(asset_id) for asset_id in argToList(args["excluded_asset_group_ids"])]
+
+            if args.get("excluded_targets") is not None:
+                excluded_targets = argToList(args["excluded_addresses"])
+
+            if args.get("frequency") is not None:
                 frequency = RepeatFrequencyType[args.get("frequency")]
+
+            if args.get("included_asset_groups") is not None:
+                included_asset_groups = [int(asset_id) for asset_id in argToList(args["included_asset_group_ids"])]
+
+            if args.get("included_targets") is not None:
+                included_targets = argToList(args["included_addresses"])
+
+            if args.get("duration_days") is not None:
+                duration_days = arg_to_number(args["duration_days"])
+
+            if args.get("duration_hours") is not None:
+                duration_hours = arg_to_number(args["duration_hours"])
+
+            if args.get("duration_minutes") is not None:
+                duration_minutes = arg_to_number(args["duration_minutes"])
+
+            if args.get("interval") is not None:
+                interval = arg_to_number(args["interval_time"])
+
+            if args.get("date_of_month") is not None:
+                date_of_month = arg_to_number(args["date_of_month"])
 
             results = update_scan_schedule_command(
                 client=client,
@@ -5644,21 +5858,22 @@ def main():
                     client=client,
                 ),
                 scan_schedule_id=args["schedule_id"],
-                enabled=args.get("enabled"),
-                repeat_behaviour=repeat_behaviour,
+                enabled=args["enabled"],
+                repeat_behaviour=RepeatBehaviour[args["on_scan_repeat"]],
                 start_date=args["start"],
-                excluded_asset_groups=[int(asset_id) for asset_id in argToList(args.get("excluded_asset_group_ids"))],
-                excluded_targets=argToList(args.get("excluded_addresses")),
-                included_asset_groups=[int(asset_id) for asset_id in argToList(args.get("included_asset_group_ids"))],
-                included_targets=argToList(args.get("included_addresses")),
-                duration_days=arg_to_number(args.get("duration_days")),
-                duration_hours=arg_to_number(args.get("duration_hours")),
-                duration_minutes=arg_to_number(args.get("duration_minutes")),
+                excluded_asset_groups=excluded_asset_groups,
+                excluded_targets=excluded_targets,
+                included_asset_groups=included_asset_groups,
+                included_targets=included_targets,
+                duration_days=duration_days,
+                duration_hours=duration_hours,
+                duration_minutes=duration_minutes,
                 frequency=frequency,
-                interval=arg_to_number(args.get("interval_time")),
-                date_of_month=arg_to_number(args.get("date_of_month")),
+                interval=interval,
+                date_of_month=date_of_month,
                 scan_name=args.get("scan_name"),
-                scan_template_id=args.get("scan_template_id"))
+                scan_template_id=args.get("scan_template_id"),
+            )
         elif command == "nexpose-update-vulnerability-exception":
             status = None
 
@@ -5672,13 +5887,25 @@ def main():
                 status=status,
             )
         elif command == "nexpose-search-assets":
-            sites: list[Site] = []
+            sites = []
+            page_size = None
+            page = None
+            limit = None
 
             for site_id in argToList(args.get("siteIdIn")):
                 sites.append(Site(site_id=site_id, client=client))
 
             for site_name in argToList(args.get("siteNameIn")):
                 sites.append(Site(site_name=site_name, client=client))
+
+            if args.get("page_size") is not None:
+                page_size = arg_to_number(args["page_size"])
+
+            if args.get("page") is not None:
+                page = arg_to_number(args["page"])
+
+            if args.get("limit") is not None:
+                limit = arg_to_number(args["limit"])
 
             results = search_assets_command(
                 client=client,
@@ -5689,19 +5916,33 @@ def main():
                 vulnerability_title=args.get("vulnerabilityTitleContains"),
                 sites=sites,
                 match=args.get("match"),
-                page_size=arg_to_number(args.get("page_size")),
-                page=arg_to_number(args.get("page")),
+                page_size=page_size,
+                page=page,
                 sort=args.get("sort"),
-                limit=arg_to_number(args.get("limit")),
+                limit=limit,
             )
         elif command == "nexpose-start-assets-scan":
+            ips = None
+            hostnames = None
+
+            if args.get("IPs") is not None:
+                ips = argToList(args["IPs"])
+
+            if args.get("hostNames") is not None:
+                hostnames = argToList(args["hostNames"])
+
             results = start_assets_scan_command(
                 client=client,
-                ips=argToList(args.get("IPs")),
-                hostnames=argToList(args.get("hostNames")),
+                ips=ips,
+                hostnames=hostnames,
                 scan_name=args.get("name"),
             )
         elif command == "nexpose-start-site-scan":
+            hosts = None
+
+            if args.get("hosts") is not None:
+                hosts = argToList(args["hosts"])
+
             results = start_site_scan_command(
                 client=client,
                 site=Site(
@@ -5710,7 +5951,7 @@ def main():
                     client=client,
                 ),
                 scan_name=args.get("name"),
-                hosts=argToList(args.get("hosts")),
+                hosts=hosts,
             )
         elif command == "nexpose-stop-scan":
             results = update_scan_command(
