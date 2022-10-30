@@ -13,7 +13,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any integrations.
 
 ### Scripts
-* IsIntegrationAvailable
+IsIntegrationAvailable
 
 ### Commands
 * extractIndicators
@@ -41,8 +41,8 @@ This playbook does not use any integrations.
 | WildFire.Report | The Wildfire findings. | string |
 | AttackPattern | The MITRE Attack pattern information. | unknown |
 | MITREATTACK | Full MITRE data for the attack pattern. | unknown |
-| DBotScore | DBotScore object | unknown |
-| Joe.Analysis | Joe Analysis object | unknown |
+| DBotScore | DBotScore object. | unknown |
+| Joe.Analysis | Joe Analysis object. | unknown |
 
 ## Playbook Image
 ---
