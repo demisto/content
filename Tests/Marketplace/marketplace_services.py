@@ -744,7 +744,7 @@ class Pack(object):
         changelog_entry[Changelog.PULL_REQUEST_NUMBERS] = pull_request_numbers
         return changelog_entry
 
-    def _create_changelog_entry(self, release_notes, version_display_name, build_number, modified_files_data=None,
+    def _create_changelog_entry(self, release_notes, version_display_name, build_number,
                                 new_version=True, initial_release=False, pull_request_numbers=None,
                                 marketplace='xsoar', id_set=None):
         """ Creates dictionary entry for changelog.
@@ -753,15 +753,14 @@ class Pack(object):
             release_notes (str): release notes md.
             version_display_name (str): display name version.
             build_number (srt): current build number.
-            modified_files_data (dict): The data of the modified files given from id-set.
             new_version (bool): whether the entry is new or not. If not new, R letter will be appended to build number.
             initial_release (bool): whether the entry is an initial release or not.
+            id_set (dict): The content id set dict.
         Returns:
             dict: release notes entry of changelog
             bool: Whether the pack is not updated
 
         """
-        modified_files_data = modified_files_data if modified_files_data else {}
         id_set = id_set if id_set else {}
         entry_result = {}
 
@@ -1501,7 +1500,7 @@ class Pack(object):
         return modified_rn_files
 
     def prepare_release_notes(self, index_folder_path, build_number, modified_rn_files_paths=None,
-                              modified_files_data=None, marketplace='xsoar', id_set=None):
+                              marketplace='xsoar', id_set=None):
         """
         Handles the creation and update of the changelog.json files.
 
@@ -1509,7 +1508,6 @@ class Pack(object):
             index_folder_path (str): Path to the unzipped index json.
             build_number (str): circleCI build number.
             modified_rn_files_paths (list): list of paths of the pack's modified file
-            modified_files_data (dict): data from id set of the modified files.
             marketplace (str): The marketplace to which the upload is made.
 
         Returns:
@@ -1521,7 +1519,6 @@ class Pack(object):
         release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
 
         modified_rn_files_paths = modified_rn_files_paths if modified_rn_files_paths else []
-        modified_files_data = modified_files_data if modified_files_data else {}
         id_set = id_set if id_set else {}
 
         try:
@@ -1563,7 +1560,6 @@ class Pack(object):
                                 release_notes=release_notes_lines,
                                 version_display_name=latest_release_notes,
                                 build_number=build_number,
-                                modified_files_data=modified_files_data,
                                 new_version=False,
                                 pull_request_numbers=prs_for_version,
                                 marketplace=marketplace,
@@ -1576,7 +1572,6 @@ class Pack(object):
                                 release_notes=release_notes_lines,
                                 version_display_name=latest_release_notes,
                                 build_number=build_number,
-                                modified_files_data=modified_files_data,
                                 new_version=True,
                                 pull_request_numbers=prs_for_version,
                                 marketplace=marketplace,
@@ -1587,7 +1582,8 @@ class Pack(object):
                             changelog[latest_release_notes] = version_changelog
 
                         if modified_release_notes_lines_dict:
-                            logging.info(f"Updating changelog entries for modified release notes: {modified_release_notes_lines_dict}")
+                            logging.info(f"Updating changelog entries for modified release notes: "
+                                         f"{modified_release_notes_lines_dict}")
                             for version, modified_release_notes_lines in modified_release_notes_lines_dict.items():
                                 versions, _ = self.get_same_block_versions(release_notes_dir, version, changelog)
                                 all_relevant_pr_nums_for_unified = list({pr_num for version in versions.keys()
@@ -1614,7 +1610,6 @@ class Pack(object):
                             release_notes=self.description,
                             version_display_name=first_key_in_changelog,
                             build_number=build_number,
-                            modified_files_data=modified_files_data,
                             initial_release=True,
                             new_version=False,
                             marketplace=marketplace,
@@ -1640,7 +1635,6 @@ class Pack(object):
                     release_notes=self.description,
                     version_display_name=self._current_version,
                     build_number=build_number,
-                    modified_files_data=modified_files_data,
                     new_version=True,
                     initial_release=True,
                     marketplace=marketplace,
@@ -1684,8 +1678,8 @@ class Pack(object):
         Args:
             changelog_entry: The version changelog object.
             version: The changelog's version.
-            modified_files_data: The data from id_set for the modified entities.
             marketplace: The marketplace to which the upload is made.
+            id_set: The id set dict.
 
         Returns:
             (dict) The filtered changelog entry.
@@ -1763,30 +1757,31 @@ class Pack(object):
             (dict) The filtered release notes entries.
         """
         filtered_release_notes: dict = {}
-        for rn_header in release_notes:
-            filtered_entries: dict = {}
+        for content_type, content_type_rn_entries in release_notes.items():
+            content_type_to_filtered_entries: dict = {}
 
-            for display_name, rn_entry in release_notes[rn_header].items():
+            for content_item_display_name, content_item_rn_notes in content_type_rn_entries.items():
 
-                logging.debug(f"Searching display name '{display_name}' with rn header '{rn_header}' in in id set.")
-                if display_name != '[special_msg]' and not get_id_set_entity_by_display_name(
-                        display_name.replace("New: ", ""), rn_header, id_set):
+                logging.debug(f"Searching display name '{content_item_display_name}' with rn header "
+                              f"'{content_type}' in in id set.")
+                if content_item_display_name != '[special_msg]' and not is_content_item_in_id_set(
+                        content_item_display_name.replace("New: ", ""), content_type, id_set):
                     continue
 
-                if display_name == '[special_msg]':
-                    extracted_names_from_rn = SPECIAL_DISPLAY_NAMES_PATTERN.findall(rn_entry)
+                if content_item_display_name == '[special_msg]':
+                    extracted_names_from_rn = SPECIAL_DISPLAY_NAMES_PATTERN.findall(content_item_rn_notes)
 
                     for name in extracted_names_from_rn:
-                        if not get_id_set_entity_by_display_name(name.replace("New: ", ""), rn_header, id_set):
-                            rn_entry = rn_entry.replace(f'- **{name}**', '').strip()
+                        if not is_content_item_in_id_set(name.replace("New: ", ""), content_type, id_set):
+                            content_item_rn_notes = content_item_rn_notes.replace(f'- **{name}**', '').strip()
 
-                    if not rn_entry:
+                    if not content_item_rn_notes:
                         continue
 
-                filtered_entries[display_name] = rn_entry
+                content_type_to_filtered_entries[content_item_display_name] = content_item_rn_notes
 
-            if filtered_entries:
-                filtered_release_notes[rn_header] = filtered_entries
+            if content_type_to_filtered_entries:
+                filtered_release_notes[content_type] = content_type_to_filtered_entries
 
         if not filtered_release_notes:
             logging.debug(f"Didn't find relevant release notes entries after filtering by display name.\n \
@@ -3874,7 +3869,7 @@ def get_id_set_entity_by_path(entity_path: Path, pack_folder: str, id_set: dict)
     return {}
 
 
-def get_id_set_entity_by_display_name(display_name: str, rn_header: str, id_set: dict):
+def is_content_item_in_id_set(display_name: str, rn_header: str, id_set: dict):
     """
     Get the full entity dict from the id set of the entity given it's display name, if it does not exist in the id set
     return None.
@@ -3885,16 +3880,16 @@ def get_id_set_entity_by_display_name(display_name: str, rn_header: str, id_set:
         id_set: id set dict.
 
     Returns:
-        id set dict entity if exists, otherwise None.
+        (bool) True if the item exists in id set, otherwise False.
     """
     logging.debug(f"Checking if the entity with the display name {display_name} is present in the id set")
 
     if not id_set:
-        return None
+        return False
 
     for id_set_entity in id_set[RN_HEADER_TO_ID_SET_KEYS[rn_header]]:
 
         if list(id_set_entity.values())[0]['display_name'] == display_name:
-            return id_set_entity
+            return True
 
-    return None
+    return False
