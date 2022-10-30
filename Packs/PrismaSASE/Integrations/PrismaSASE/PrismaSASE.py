@@ -42,11 +42,12 @@ class Client(BaseClient):
     This Client implements API calls to the Saas Security platform, and does not contain any XSOAR logic.
     Handles the token retrieval.
 
-    :param base_url (str): Saas Security server url.
-    :param client_id (str): client ID.
-    :param client_secret (str): client secret.
-    :param verify (bool): specifies whether to verify the SSL certificate or not.
-    :param proxy (bool): specifies if to use XSOAR proxy settings.
+    Args:
+       base_url (str): Saas Security server url.
+       client_id (str): client ID.
+       client_secret (str): client secret.
+       verify (bool): specifies whether to verify the SSL certificate or not.
+       proxy (bool): specifies if to use XSOAR proxy settings.
     """
 
     def __init__(self, base_url: str, client_id: str,
