@@ -103,7 +103,7 @@ graph-prepare-testing-bucket-mpv2:
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
     # - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "xsoar" -fbi -idp ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
-    - python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "marketplacev2" --artifacts-output $ARTIFACTS_FOLDER --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --no-zip
+    - python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "marketplacev2" --artifacts-output $ARTIFACTS_FOLDER/artifacts --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --no-zip
 
     # - demisto-sdk create-content-artifacts-v2 -o $ARTIFACTS_FOLDER --marketplace "marketplacev2" --no-zip --dependencies true >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"

@@ -35,7 +35,8 @@ def main():
                     first_level_dependencies.append(
                         {"display_name": dependency.content_item.name, "mandatory": dependency.is_direct}
                     )
-                    displayed_images.extend((integration.object_id for integration in pack.content_items.integration))  # check if use object_id or name
+                    # check if use object_id or name
+                    displayed_images.extend((integration.object_id for integration in pack.content_items.integration))
             pack_dependencies[pack.name] = {
                 "path": Path.relative_to(pack.path, Path.cwd()),
                 "fullPath": pack.path,

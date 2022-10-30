@@ -433,7 +433,7 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "demisto-py"
-version = "3.2.3"
+version = "3.2.4"
 description = "A Python library for the Demisto API"
 category = "dev"
 optional = false
@@ -543,8 +543,8 @@ build = ["gsutil (==5.14)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "4c99cedbe63f413ff3f7483358dd58a06bc3d143"
-resolved_reference = "4c99cedbe63f413ff3f7483358dd58a06bc3d143"
+reference = "5a5479a0a8ace2db11c9ef2efe1697686aa64bd8"
+resolved_reference = "5a5479a0a8ace2db11c9ef2efe1697686aa64bd8"
 
 [[package]]
 name = "deprecated"
@@ -2433,7 +2433,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "tzdata"
-version = "2022.5"
+version = "2022.6"
 description = "Provider of IANA time zone data"
 category = "dev"
 optional = false
@@ -2599,7 +2599,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "35076a2177931e6253999d4c898641321147602e1094b7d030085d1e574c73a4"
+content-hash = "ec9e8935743a9d7cf722dfb38a99cedb98c584bc49e46df281f33fea37ddf015"
 
 [metadata.files]
 aiohttp = [
@@ -3000,8 +3000,8 @@ decorator = [
     {file = "decorator-5.1.1.tar.gz", hash = "sha256:637996211036b6385ef91435e4fae22989472f9d571faba8927ba8253acbc330"},
 ]
 demisto-py = [
-    {file = "demisto-py-3.2.3.tar.gz", hash = "sha256:66ae5b8d7cb8fdff88fad6b55a8f3833b3a30fe4712d37434ed158eb0bdfd6f9"},
-    {file = "demisto_py-3.2.3-py3-none-any.whl", hash = "sha256:bde773aa16e672e19333cf3e09bcaedb390cb86d64e12850941ee919490d73e7"},
+    {file = "demisto-py-3.2.4.tar.gz", hash = "sha256:fa0c29341005c91553f0586899f98550a288e0649fb4ade839d508ab3ee6d742"},
+    {file = "demisto_py-3.2.4-py3-none-any.whl", hash = "sha256:2ca229d440166d75d6a8abb48a1947eca06c319099e66597775732357af3b62b"},
 ]
 demisto-sdk = []
 deprecated = [
@@ -4403,8 +4403,8 @@ typing-extensions = [
     {file = "typing_extensions-4.4.0.tar.gz", hash = "sha256:1511434bb92bf8dd198c12b1cc812e800d4181cfcb867674e0f8279cc93087aa"},
 ]
 tzdata = [
-    {file = "tzdata-2022.5-py2.py3-none-any.whl", hash = "sha256:323161b22b7802fdc78f20ca5f6073639c64f1a7227c40cd3e19fd1d0ce6650a"},
-    {file = "tzdata-2022.5.tar.gz", hash = "sha256:e15b2b3005e2546108af42a0eb4ccab4d9e225e2dfbf4f77aad50c70a4b1f3ab"},
+    {file = "tzdata-2022.6-py2.py3-none-any.whl", hash = "sha256:04a680bdc5b15750c39c12a448885a51134a27ec9af83667663f0b3a1bf3f342"},
+    {file = "tzdata-2022.6.tar.gz", hash = "sha256:91f11db4503385928c15598c98573e3af07e7229181bee5375bd30f1695ddcae"},
 ]
 tzlocal = [
     {file = "tzlocal-4.2-py3-none-any.whl", hash = "sha256:89885494684c929d9191c57aa27502afc87a579be5cdd3225c77c463ea043745"},
