@@ -38,8 +38,8 @@ def main():
                     # check if use object_id or name
                     displayed_images.extend((integration.object_id for integration in pack.content_items.integration))
             pack_dependencies[pack.name] = {
-                "path": Path.relative_to(pack.path, Path.cwd()),
-                "fullPath": pack.path,
+                "path": str(Path.relative_to(pack.path, Path.cwd())),
+                "fullPath": str(pack.path),
                 "dependencies": first_level_dependencies,
                 "displayedImages": displayed_images,
                 "allLevelDependencies": all_level_dependencies,
