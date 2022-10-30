@@ -17,7 +17,7 @@ tasks:
       id: d8a91f9c-40f6-48f2-8dd2-1c7e59b6abdb
       version: -1
       name: ""
-      description: Detonates a file using JoeSecurity
+      description: Detonates a file using JoeSecurity.
       iscommand: false
       brand: ""
     nexttasks:
@@ -75,7 +75,7 @@ tasks:
       id: 942e1e7f-d8dd-4ece-8eb9-d8ece9c0711b
       version: -1
       name: Is there a File to detonate?
-      description: Look for files to detonate
+      description: Look for files to detonate.
       type: condition
       iscommand: false
       brand: ""
@@ -125,7 +125,7 @@ tasks:
       id: 8daf6b47-b716-46dd-8347-6649d3cce6fd
       version: -1
       name: Is JoeSecurity sandbox enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -358,7 +358,7 @@ tasks:
       id: 8ee5852c-4658-4d36-8cbc-1b2db474c586
       version: -1
       name: Get Joe Sandbox Status
-      description: Check if the Joe Sandbox analysis back end is online or in maintenance mode.
+      description: Check if the Joe Sandbox analysis backend is online or in maintenance mode.
       script: JoeSecurityV2|||joe-is-online
       type: regular
       iscommand: true
@@ -390,7 +390,7 @@ tasks:
       id: e0d67191-a6fa-43f1-80ba-60a5812df6eb
       version: -1
       name: Check if Joe Security is online
-      description: Check if Joe Security is online
+      description: Check if Joe Security is online.
       type: condition
       iscommand: false
       brand: ""
@@ -442,24 +442,24 @@ inputs:
     complex:
       root: File
   required: false
-  description: File object of the file to detonate. The File is taken from the context.
+  description: File object of the file to detonate. The file is taken from the context.
   playbookInputQuery:
 - key: Interval
   value:
     simple: "1"
   required: false
-  description: Duration for executing the pooling (in minutes)
+  description: Duration for executing the pooling (in minutes).
   playbookInputQuery:
 - key: Timeout
   value:
     simple: "1200"
   required: false
-  description: The duration after which to stop pooling and to resume the playbook (in minutes)
+  description: The duration after which to stop pooling and to resume the playbook (in minutes).
   playbookInputQuery:
 - key: Systems
   value: {}
   required: false
-  description: 'Operating system to run the analysis on (comma-separated). Supported values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l, w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4, w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs, w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
+  description: 'Comma-separated list of operating systems to run the analysis on. Supported values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l, w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4, w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs, w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
   playbookInputQuery:
 - key: Comments
   value: {}
@@ -480,7 +480,7 @@ inputs:
 - key: Cookbook
   value: {}
   required: false
-  description: Uploads a cookbook together with the sample. Needs to be a file-like object or a tuple in the shape (filename, file-like object)
+  description: Uploads a cookbook together with the sample. Needs to be a file-like object or a tuple in the format (filename, file-like object).
   playbookInputQuery:
 - key: FullDisplay
   value:
@@ -509,7 +509,7 @@ inputs:
   value:
     simple: "false"
   required: false
-  description: Whether to enable fast mode, focuses on fast analysis and detection versus deep forensic analysis.
+  description: Whether to enable fast mode. Focuses on fast analysis and detection versus deep forensic analysis.
   playbookInputQuery:
 - key: CommandLineArgument
   value: {}
@@ -554,37 +554,37 @@ outputs:
   description: The vendor used to calculate the score.
   type: string
 - contextPath: Joe.Analysis.ID
-  description: Web ID
+  description: Web ID.
   type: string
 - contextPath: Joe.Analysis.Status
-  description: Analysis Status
+  description: Analysis status.
   type: string
 - contextPath: Joe.Analysis.Comments
-  description: Analysis Comments
+  description: Analysis comments.
   type: string
 - contextPath: Joe.Analysis.Time
-  description: Submitted Time
+  description: Submitted time.
   type: date
 - contextPath: Joe.Analysis.Runs
-  description: Sub-Analysis Information
+  description: Sub-Analysis information.
 - contextPath: Joe.Analysis.Result
-  description: Analysis Results
+  description: Analysis results.
   type: string
 - contextPath: Joe.Analysis.Errors
-  description: Raised errors during sampling
+  description: Raised errors during sampling.
 - contextPath: Joe.Analysis.Systems
-  description: Analysis OS
+  description: Analysis operating system.
 - contextPath: Joe.Analysis.MD5
-  description: MD5 of analysis sample
+  description: MD5 hash of analysis sample.
   type: string
 - contextPath: Joe.Analysis.SHA1
-  description: SHA1 of analysis sample
+  description: SHA1 hash of analysis sample.
   type: string
 - contextPath: Joe.Analysis.SHA256
-  description: SHA256 of analysis sample
+  description: SHA256 hash of analysis sample.
   type: string
 - contextPath: Joe.Analysis.SampleName
-  description: Sample Data, could be a file name or URL
+  description: Sample data. Can be a file name or URL.
   type: string
 - contextPath: DBotScore.Indicator
   description: The indicator that was tested.
@@ -599,46 +599,46 @@ outputs:
   description: The vendor used to calculate the score.
   type: string
 - contextPath: DBotScore.Malicious.Detections
-  description: The sub analysis detection statuses
+  description: The sub-analysis detection statuses.
   type: string
 - contextPath: DBotScore.Malicious.SHA1
-  description: The SHA1 of the file
+  description: The SHA1 hash of the file.
   type: string
 - contextPath: InfoFile.Name
-  description: FileName
+  description: File name.
   type: string
 - contextPath: InfoFile.EntryID
-  description: The EntryID of the sample
+  description: The entry ID of the sample.
   type: string
 - contextPath: InfoFile.Size
-  description: File Size
+  description: File size.
   type: number
 - contextPath: InfoFile.Type
-  description: File type e.g. "PE"
+  description: File type, e.g., "PE".
   type: string
 - contextPath: InfoFile.Info
-  description: Basic information of the file
+  description: Basic information of the file.
   type: string
 - contextPath: File.Extension
-  description: File Extension
+  description: File extension.
   type: string
 - contextPath: InfoFile
-  description: Report file object
+  description: Report file object.
   type: unknown
 - contextPath: File
-  description: File object
+  description: File object.
   type: unknown
 - contextPath: Joe.Analysis
-  description: Joe Analysis object
+  description: Joe Analysis object.
   type: unknown
 - contextPath: DBotScore
-  description: DBotScore object
+  description: DBotScore object.
   type: unknown
 - contextPath: DBotScore.Malicious
-  description: DBotScore Malicious object
+  description: DBotScore malicious object.
   type: unknown
 - contextPath: DBotScore.Reliability
-  description: Reailbilty of the score itself.
+  description: Reliability of the score.
 - contextPath: File.Hashes
   description: The hashes of the file.
   type: unknown
@@ -647,13 +647,13 @@ outputs:
 - contextPath: File.Hashes.value
   description: Hash value.
 - contextPath: File.MD5
-  description: MD5 value.
+  description: MD5 hash value.
 - contextPath: File.Name
   description: File name.
 - contextPath: File.SHA1
-  description: SHA1 value.
+  description: SHA1 hash value.
 - contextPath: File.SHA256
-  description: SHA256 value.
+  description: SHA256 hash value.
 - contextPath: Joe.Analysis.analysisid
   description: Joe Security Sandbox analysis ID value.
 - contextPath: Joe.Analysis.classification
@@ -669,60 +669,60 @@ outputs:
 - contextPath: Joe.Analysis.filename
   description: The filename information listed in the analysis.
 - contextPath: Joe.Analysis.md5
-  description: MD5 value.
+  description: MD5 hash value.
 - contextPath: Joe.Analysis.score
-  description: Joe Security Sandbox score for the anlaysis.
+  description: Joe Security Sandbox score for the analysis.
 - contextPath: Joe.Analysis.scriptname
-  description: Joe Security Sandbox anlysis script name.
+  description: Joe Security Sandbox analysis script name.
 - contextPath: Joe.Analysis.sha1
-  description: SHA1 value.
+  description: SHA1 hash value.
 - contextPath: Joe.Analysis.sha256
-  description: SHA256 value.
+  description: SHA256 hash value.
 - contextPath: Joe.Analysis.status
-  description: Anlaysis Status in Joe Security Sandbox.
+  description: Analysis status in Joe Security Sandbox.
 - contextPath: Joe.Analysis.threatname
-  description: Threat name assoicated with the Joe Security Sandbox analysis verdict.
+  description: Threat name associated with the Joe Security Sandbox analysis verdict.
 - contextPath: Joe.Analysis.time
   description: Analysis time.
 - contextPath: Joe.Analysis.webid
   description: WebID value for the analysis in Joe Security Sandbox.
 - contextPath: Joe.Analysis.runs
-  description: Analysis running informaiotn.
+  description: Analysis running information.
   type: unknown
 - contextPath: Joe.Analysis.runs.detection
   description: Detection in that particular run.
 - contextPath: Joe.Analysis.runs.error
-  description: Indicates if any errors occured during the analysis.
+  description: Indicates if any errors occurred during the analysis.
 - contextPath: Joe.Analysis.runs.score
   description: Analysis score for that particular run.
 - contextPath: Joe.Analysis.runs.sigma
-  description: Signa value.
+  description: Sigma value.
 - contextPath: Joe.Analysis.runs.snort
   description: Any snort detected rules.
 - contextPath: Joe.Analysis.runs.system
-  description: which system was involved in the analysis.
+  description: The system that was involved in the analysis.
 - contextPath: Joe.Analysis.runs.yara
-  description: Detected yara rules
+  description: Detected YARA rules.
 - contextPath: Joe.Submission.most_relevant_analysis
-  description: Joe security Sandbox most relevant analysis information.
+  description: Joe Security Sandbox most relevant analysis information.
   type: unknown
 - contextPath: Joe.Submission.most_relevant_analysis.detection
-  description: Joe security Sandbox most relevant analysis detection.
+  description: Joe Security Sandbox most relevant analysis detection.
 - contextPath: Joe.Submission.most_relevant_analysis.score
-  description: Joe security Sandbox most relevant analysis score.
+  description: Joe Security Sandbox most relevant analysis score.
 - contextPath: Joe.Submission.most_relevant_analysis.webid
-  description: Joe security Sandbox most relevant analysis webid.
+  description: Joe Security Sandbox most relevant analysis web ID.
 - contextPath: Joe.Submission
-  description: Joe security Sandbox Submission information.
+  description: Joe Security Sandbox submission information.
   type: unknown
 - contextPath: Joe.Submission.name
-  description: Joe security Sandbox Submission name.
+  description: Joe Security Sandbox submission name.
 - contextPath: Joe.Submission.status
-  description: Joe security Sandbox Submission status.
+  description: Joe Security Sandbox submission status.
 - contextPath: Joe.Submission.submission_id
-  description: Joe security Sandbox Submission submission_id.
+  description: Joe Security Sandbox submission submission ID.
 - contextPath: Joe.Submission.time
-  description: Joe security Sandbox Submission time.
+  description: Joe Security Sandbox submission time.
 - contextPath: Joe
   description: Joe Secuirity Sandbox information.
   type: unknown
@@ -751,7 +751,7 @@ outputs:
 - contextPath: Joe.ServerStatus.Online
   description: The server status.
 - contextPath: Joe.ServerStatus
-  description: Joe security Sandbox Server Status.
+  description: Joe Security Sandbox server status.
   type: unknown
 tests:
 - No tests (auto formatted)
