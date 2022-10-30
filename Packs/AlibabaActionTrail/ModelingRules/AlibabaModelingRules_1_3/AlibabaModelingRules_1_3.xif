@@ -11,7 +11,8 @@ filter
     xdm.source.ipv4 = event_sourceipaddress,
     xdm.source.user.user_type = event_useridentity_type,
     xdm.source.user.identifier = event_useridentity_principalid,
-    xdm.source.user.username = event_useridentity_username;
+    xdm.source.user.username = event_useridentity_username,
+    xdm.event.outcome=event_errormessage;
 
 filter
     event_eventtype in("ConsoleSignin","ConsoleSignout")
@@ -22,4 +23,5 @@ filter
     xdm.source.ipv4 = event_sourceipaddress,
     xdm.source.user.user_type = event_useridentity_type,
     xdm.source.user.identifier = event_useridentity_principalid,
-    xdm.source.user.username = event_useridentity_username;
+    xdm.source.user.username = event_useridentity_username,
+    xdm.event.outcome=event_errormessage;
