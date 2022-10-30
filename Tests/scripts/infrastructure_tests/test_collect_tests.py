@@ -380,7 +380,7 @@ ONLY_COLLECT_PACK_TYPES = {
     FileType.CONF_JSON,
     FileType.MODELING_RULE_SCHEMA,
     FileType.LAYOUTS_CONTAINER,
-    FileType.AGENT_CONFIG,
+    FileType.XDRC_TEMPLATE,
 }
 
 
