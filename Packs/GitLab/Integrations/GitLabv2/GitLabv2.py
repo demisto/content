@@ -707,7 +707,6 @@ def get_raw_file_command(client: Client, args: Dict[str, Any]) -> List:
     file_path = args.get('file_path', '')
     headers = ['path', 'reference', 'content']
     response = client.get_raw_file_request(file_path, ref)
-    file_ = response
     outputs = {'path': file_path, 'content': response, 'ref': ref}
     human_readable = tableToMarkdown('Raw file', outputs, headers=headers)
     file_name = file_path.split('/')[-1]
