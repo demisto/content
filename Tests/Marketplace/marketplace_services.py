@@ -740,8 +740,9 @@ class Pack(object):
             build_number_with_prefix if build_number_with_prefix else \
             changelog_entry[Changelog.DISPLAY_NAME].split('-')[1]
 
-        changelog_entry[Changelog.RELEASE_NOTES] = self.filter_changelog_entries(
-            changelog_entry=release_notes or changelog_entry[Changelog.RELEASE_NOTES],
+        changelog_entry[Changelog.RELEASE_NOTES] = release_notes
+        changelog_entry = self.filter_changelog_entries(
+            changelog_entry=changelog_entry,
             version=version,
             marketplace=marketplace,
             id_set=id_set
