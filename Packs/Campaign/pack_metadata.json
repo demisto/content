@@ -8,12 +8,10 @@
     "email": "",
     "created": "2021-03-01T16:31:47Z",
     "categories": [
-        "Messaging"
+        "Case Management"
     ],
     "tags": [
-        "Scam",
-        "Spam",
-        "Email"
+        "Use Case"
     ],
     "useCases": [
         "Phishing"
