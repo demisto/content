@@ -189,7 +189,6 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 
 ### Grant the Demisto Bot Permissions in Microsoft Graph
 
-
 1. Go to your Microsoft Azure portal, and from the left navigation pane select **Azure Active Directory > App registrations**.
 2. Search for and click **Demisto Bot**.
 3. Click **API permissions > Add a permission > Microsoft Graph > Application permissions**.
