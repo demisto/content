@@ -156,7 +156,9 @@ class Client(CrowdStrikeClient):
                 timestamp = response.get('resources', [])[-1].get('last_updated')
 
         if response.get('meta', {}).get('pagination', {}).get('total', 0) and fetch_command:
-            demisto.setIntegrationContext({'last_modified_time': timestamp})
+            ctx = demisto.getIntegrationContext()
+            ctx.update({'last_modified_time': timestamp})
+            demisto.setIntegrationContext(ctx)
             demisto.info(f'set last_run: {timestamp}')
 
         indicators = self.create_indicators_from_response(response, self.tlp_color, self.feed_tags, self.create_relationships)
