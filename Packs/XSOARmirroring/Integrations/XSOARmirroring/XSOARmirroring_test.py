@@ -95,6 +95,12 @@ INCIDENTS = [
     }
 ]
 
+INCIDENT = {
+        "id": 1,
+        "created": (datetime.now() - timedelta(minutes=10)).strftime(XSOAR_DATE_FORMAT),
+        "CustomFields": {"custom_field": "some_custom_field"}
+    }
+
 
 def test_fetch_incidents(mocker):
     """
@@ -117,3 +123,7 @@ def test_fetch_incidents(mocker):
 
     assert len(incidents_result) == 3
     assert dateparser.parse(next_run['last_fetch']) == dateparser.parse(INCIDENTS[-1]['created']) + timedelta(microseconds=1)
+
+
+def test_update_remote_system(mocker):
+    pass
