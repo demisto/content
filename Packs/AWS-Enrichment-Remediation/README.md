@@ -16,5 +16,9 @@ This content pack includes the following playbooks:
 #### AWS - Enrichment
 AWS - Enrichment playbook reports EC2 and IAM information Given an IP address of an EC2 instance.
 
+![AWS - Enrichment](./doc_files/AWS_-_Enrichment.png)
+
 #### AWS - Security Group Remediation
 AWS - Security Group Remediation playbook replaces current securtiy groups associated to NIC with Remediation securtiy group.
+
+![AWS - Security Group Remediation](./doc_files/AWS_-_Security_Group_Remediation.png)
