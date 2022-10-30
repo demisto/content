@@ -117,7 +117,7 @@ script:
       isArray: false
     - auto: PREDEFINED
       name: execute_filemode
-      description: Enables or disables the execute flag on the file. 
+      description: Enables or disables the execute flag on the file.
       required: false
       isArray: false
       predefined:
@@ -149,7 +149,7 @@ script:
     - auto: PREDEFINED
       defaultValue: text
       name: encoding
-      description: Change encoding to base64. 
+      description: Change encoding to base64.
       required: false
       isArray: false
       type: String
@@ -165,7 +165,7 @@ script:
       required: false
       isArray: false
     - name: entry_id
-      description: Entry ID of the file. 
+      description: Entry ID of the file.
       required: false
       isArray: false
     - name: file_content
@@ -182,7 +182,7 @@ script:
       isArray: false
     - auto: PREDEFINED
       name: execute_filemode
-      description: Enables or disables the execute flag on the file. 
+      description: Enables or disables the execute flag on the file.
       required: false
       isArray: false
       predefined:
@@ -253,7 +253,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - auto: PREDEFINED 
+    - auto: PREDEFINED
       name: due_date
       description: Return issues based on this due date.
       type: List
@@ -274,7 +274,7 @@ script:
       isArray: false
     - auto: PREDEFINED
       name: issue_type
-      description: Filter to a given type of issue. 
+      description: Filter to a given type of issue.
       required: false
       isArray: false
       predefined:
@@ -292,7 +292,7 @@ script:
     - auto: PREDEFINED
       name: order_by
       defaultValue: created_at
-      description: The method used to order the retrieved issues. 
+      description: The method used to order the retrieved issues.
       required: false
       predefined:
       - created_at
@@ -321,7 +321,7 @@ script:
     - auto: PREDEFINED
       name: sort
       defaultValue: desc
-      description: Return issues sorted in asc or desc order. 
+      description: Return issues sorted in asc or desc order.
       required: false
       isArray: false
       predefined:
@@ -422,7 +422,7 @@ script:
       isArray: false
     - auto: PREDEFINED
       name: issue_type
-      description: Updates the type of issue. 
+      description: Updates the type of issue.
       required: false
       isArray: false
       predefined:
@@ -441,7 +441,7 @@ script:
       isArray: false
       predefined:
       - 'true'
-      - 'false' 
+      - 'false'
     - name: remove_labels
       description: Comma-separated list of label names to remove from an issue.
       required: false
@@ -643,7 +643,7 @@ script:
       isArray: false
       predefined:
       - 'true'
-      - 'false' 
+      - 'false'
     outputs:
     - contextPath: GitLab.Commit.id
       description: The commit ID.
@@ -699,7 +699,7 @@ script:
     - auto: PREDEFINED
       name: order_by
       defaultValue: created_at
-      description: The method used to order the retrieved issues. 
+      description: The method used to order the retrieved issues.
       required: false
       predefined:
       - created_at
@@ -708,7 +708,7 @@ script:
     - auto: PREDEFINED
       name: sort
       defaultValue: desc
-      description: Return requests sorted in asc or desc order. 
+      description: Return requests sorted in asc or desc order.
       required: false
       isArray: false
       predefined:
@@ -797,7 +797,7 @@ script:
       isArray: false
       predefined:
       - 'true'
-      - 'false' 
+      - 'false'
     outputs:
     - type: Number
       contextPath: GitLab.MergeRequest.iid
@@ -893,7 +893,7 @@ script:
       isArray: false
       predefined:
       - 'true'
-      - 'false' 
+      - 'false'
     outputs:
     - type: Number
       contextPath: GitLab.MergeRequest.id
@@ -1207,7 +1207,7 @@ script:
       isArray: false
       predefined:
       - 'true'
-      - 'false' 
+      - 'false'
     outputs:
     - type: Number
       contextPath: GitLab.MergeRequest.id
@@ -1534,7 +1534,7 @@ script:
       isArray: false
       predefined:
       - 'true'
-      - 'false' 
+      - 'false'
     outputs:
     - contextPath: GitLab.IssueNote.id
       description: The issue note ID.
@@ -1631,7 +1631,7 @@ script:
       isArray: false
       predefined:
       - 'true'
-      - 'false' 
+      - 'false'
     outputs:
     - type: Number
       contextPath: GitLab.IssueNote.id
@@ -1700,7 +1700,7 @@ script:
     - auto: PREDEFINED
       name: order_by
       defaultValue: created_at
-      description: The method used to order the retrieved issues. 
+      description: The method used to order the retrieved issues.
       required: false
       predefined:
       - created_at
@@ -1732,7 +1732,7 @@ script:
       isArray: false
       predefined:
       - 'true'
-      - 'false' 
+      - 'false'
     outputs:
     - type: Number
       contextPath: GitLab.IssueNote.id
@@ -1810,7 +1810,7 @@ script:
     - auto: PREDEFINED
       defaultValue: created_at
       name: order_by
-      description: The method used to order the retrieved issues. 
+      description: The method used to order the retrieved issues.
       required: false
       isArray: false
       predefined:
@@ -1834,7 +1834,7 @@ script:
       isArray: false
       predefined:
       - 'true'
-      - 'false' 
+      - 'false'
     outputs:
     - type: Number
       contextPath: GitLab.MergeRequestNote.id
@@ -1912,7 +1912,7 @@ script:
       isArray: false
       predefined:
       - 'true'
-      - 'false' 
+      - 'false'
     outputs:
     - type: Number
       contextPath: GitLab.MergeRequestNote.id
@@ -1994,7 +1994,7 @@ script:
       isArray: false
       predefined:
       - 'true'
-      - 'false' 
+      - 'false'
     outputs:
     - type: Number
       contextPath: GitLab.MergeRequestNote.id
@@ -2088,7 +2088,7 @@ script:
       isArray: false
       predefined:
       - 'true'
-      - 'false' 
+      - 'false'
     outputs:
     - contextPath: GitLab.Issue.iid
       description: The issue's internal ID.
@@ -2289,7 +2289,7 @@ script:
       isArray: false
       predefined:
       - 'true'
-      - 'false' 
+      - 'false'
     outputs:
     - type: Number
       contextPath: GitLab.Project.id
@@ -2690,7 +2690,7 @@ script:
       description: Group project web URL star count.
     - type: Date
       contextPath: GitLab.GroupProject.last_activity_at
-      description: The date of the last activity of the project. 
+      description: The date of the last activity of the project.
     - type: Number
       contextPath: GitLab.GroupProject.namespace.id
       description: The namespace ID.
@@ -3001,7 +3001,7 @@ script:
       isArray: false
       predefined:
       - 'true'
-      - 'false'     
+      - 'false'
     outputs:
     - contextPath: GitLab.Branch.commit.author_email
       description: The branch commit's author's email.
@@ -3098,7 +3098,7 @@ script:
       isArray: false
       predefined:
       - 'true'
-      - 'false' 
+      - 'false'
     outputs:
     - contextPath: GitLab.Branch.name
       description: The branch's name.
