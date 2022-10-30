@@ -716,7 +716,8 @@ class Pack(object):
 
     def _get_updated_changelog_entry(self, changelog: dict, version: str, release_notes: str = None,
                                      version_display_name: str = None, build_number_with_prefix: str = None,
-                                     released_time: str = None, pull_request_numbers=None, marketplace: str = 'xsoar'):
+                                     released_time: str = None, pull_request_numbers=None, marketplace: str = 'xsoar',
+                                     id_set: dict = None):
         """
         Args:
             changelog (dict): The changelog from the production bucket.
@@ -728,6 +729,8 @@ class Pack(object):
             marketplace (str): The marketplace to which the upload is made.
 
         """
+        id_set = id_set if id_set else {}
+
         changelog_entry = changelog.get(version)
         if not changelog_entry:
             raise Exception('The given version is not a key in the changelog')
@@ -737,8 +740,12 @@ class Pack(object):
             build_number_with_prefix if build_number_with_prefix else \
             changelog_entry[Changelog.DISPLAY_NAME].split('-')[1]
 
-        changelog_entry[Changelog.RELEASE_NOTES] = self.filter_release_notes_by_tags(
-            release_notes or changelog_entry[Changelog.RELEASE_NOTES], marketplace)
+        changelog_entry[Changelog.RELEASE_NOTES] = self.filter_changelog_entries(
+            changelog_entry=release_notes or changelog_entry[Changelog.RELEASE_NOTES],
+            version=version,
+            marketplace=marketplace,
+            id_set=id_set
+        )
         changelog_entry[Changelog.DISPLAY_NAME] = f'{version_display_name} - {build_number_with_prefix}'
         changelog_entry[Changelog.RELEASED] = released_time if released_time else changelog_entry[Changelog.RELEASED]
         changelog_entry[Changelog.PULL_REQUEST_NUMBERS] = pull_request_numbers
@@ -1590,8 +1597,13 @@ class Pack(object):
                                                                         for pr_num in version_to_prs[version]})
                                 logging.debug(f"{all_relevant_pr_nums_for_unified=}")
                                 updated_entry = self._get_updated_changelog_entry(
-                                    changelog, version, release_notes=modified_release_notes_lines,
-                                    pull_request_numbers=all_relevant_pr_nums_for_unified, marketplace=marketplace)
+                                    changelog=changelog,
+                                    version=version,
+                                    release_notes=modified_release_notes_lines,
+                                    pull_request_numbers=all_relevant_pr_nums_for_unified,
+                                    marketplace=marketplace,
+                                    id_set=id_set
+                                )
                                 changelog[version] = updated_entry
 
                 else:
