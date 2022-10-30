@@ -7,8 +7,8 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-03-10T08:37:18Z",
-    "categories": [],
-    "tags": [],
+    "categories": ["Cloud Services"],
+    "tags": ["Palo Alto Networks Products"],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

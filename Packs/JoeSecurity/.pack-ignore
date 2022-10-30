@@ -12,3 +12,10 @@ ignore=RM104
 
 [file:JoeSecurity.yml]
 ignore=IN145
+
+[known_words]
+html
+README
+webid
+RESTful
+JoeSandbox

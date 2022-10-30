@@ -10,12 +10,12 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": ["TIM"],
-    "useCases": [],
-    "keywords": [
-        "URLhaus",
-        "Feed"
+    "tags": [
+        "Threat Intelligence Management",
+        "Getting Started"
     ],
+    "useCases": [],
+    "keywords": [],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
