@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 import json
-from Orca import OrcaClient, BaseClient, DEMISTO_OCCURRED_FORMAT, fetch_incidents
+from Orca import OrcaClient, BaseClient, DEMISTO_OCCURRED_FORMAT, fetch_incidents, STEP_INIT, STEP_FETCH
 
 DUMMY_ORCA_API_DNS_NAME = "https://dummy.io/api"
 
@@ -21,7 +21,8 @@ mock_alerts_response = {
             "category": "Malware",
             "description": "Malware EICAR-Test-File found on asset",
             "details": "We have detected a file infected with EICAR-Test-File on the asset.",
-            "recommendation": "Remediate the host and attend additional alerts on the host to close the infection path.",
+            "recommendation": "Remediate the host and attend additional "
+                              "alerts on the host to close the infection path.",
             "alert_labels": [
                 "malware_found"
             ],
@@ -149,7 +150,8 @@ mock_alerts_response = {
             "category": "Malware",
             "description": "Malware EICAR-Test-File found on asset",
             "details": "We have detected a file infected with EICAR-Test-File on the asset.",
-            "recommendation": "Remediate the host and attend additional alerts on the host to close the infection path.",
+            "recommendation": "Remediate the host and attend additional "
+                              "alerts on the host to close the infection path.",
             "alert_labels": [
                 "malware_found"
             ],
@@ -264,12 +266,12 @@ mock_alerts_response = {
 
 @pytest.fixture
 def orca_client() -> OrcaClient:
-    api_key = "dummy api key"
+    api_token = "dummy api key"
     client = BaseClient(
         base_url=DUMMY_ORCA_API_DNS_NAME,
         verify=True,
         headers={
-            'Authorization': f'Bearer {api_key}'
+            'Authorization': f'Token {api_token}'
         },
         proxy=True)
     return OrcaClient(client=client)
@@ -291,7 +293,8 @@ def test_get_alerts_by_type_malware_should_succeed(requests_mock, orca_client: O
                 "category": "Malware",
                 "description": "Malware EICAR-Test-File found on asset",
                 "details": "We have detected a file infected with EICAR-Test-File on the asset.",
-                "recommendation": "Remediate the host and attend additional alerts on the host to close the infection path.",
+                "recommendation": "Remediate the host and attend additional "
+                                  "alerts on the host to close the infection path.",
                 "alert_labels": [
                     "malware_found"
                 ],
@@ -434,7 +437,7 @@ def test_get_alerts_by_non_existent_type_should_return_empty_list(requests_mock,
 
 
 def test_fetch_incidents_first_run_should_succeed(requests_mock, orca_client: OrcaClient) -> None:
-    requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/query/alerts", json=mock_alerts_response)
+    requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query/alerts", json=mock_alerts_response)
     last_run, fetched_incidents = fetch_incidents(
         orca_client,
         last_run={'lastRun': None},
@@ -455,7 +458,7 @@ def test_fetch_incidents_not_first_run_return_empty(orca_client: OrcaClient) -> 
     # validates that fetch-incidents is returning an a empty list when it is not the first run
     last_run, fetched_incidents = fetch_incidents(
         orca_client,
-        last_run={'lastRun': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)},
+        last_run={'step': "fetch", 'lastRun': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)},
         max_fetch=20,
         pull_existing_alerts=True,
         first_fetch_time=None
@@ -568,21 +571,9 @@ def test_get_asset_nonexistent(requests_mock, orca_client: OrcaClient) -> None:
 def test_test_module_success(requests_mock, orca_client: OrcaClient) -> None:
     mock_response = {
         "status": "success",
-        "data": {
-            "user_id": "77777634-7777-7777-7777-f49f77777777",
-            "email": "system_testing@orca.security",
-            "first": "System",
-            "last": "Testing",
-            "full_name": "System Testing",
-            "profile_picture": "",
-            "organization_id": "e3dab69a-5555-5555-5555-c5b8881cd2fe",
-            "organization_name": "Orca Security",
-            "feature_flags": {},
-            "has_cloud_accounts": True,
-            "has_scanned_cloud_accounts": True
-        }
+        "data": []
     }
-    requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/user/action?", json=mock_response)
+    requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query/alerts", json=mock_response)
     res = orca_client.validate_api_key()
     assert res == "ok"
 
@@ -602,13 +593,13 @@ def test_test_module_fail(requests_mock, orca_client: OrcaClient) -> None:
     }
     requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/user/action?", json=mock_response)
     res = orca_client.validate_api_key()
-    assert res == "Test failed becasue the Orca API key that was entered is invalid, please provide a valid API key"
+    assert res == "Test failed because the Orca API token that was entered is invalid, please provide a valid API token"
 
 
 def test_fetch_all_alerts(requests_mock, orca_client: OrcaClient) -> None:
     mock_response = mock_alerts_response.copy()  # deepcopy not needed
     mock_response["next_page_token"] = "NEXT_PAGE"
-    requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/query/alerts", json=mock_response)
+    requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query/alerts", json=mock_response)
 
     # Get first page
     last_run, fetched_incidents = fetch_incidents(
@@ -619,8 +610,9 @@ def test_fetch_all_alerts(requests_mock, orca_client: OrcaClient) -> None:
     )
     assert len(fetched_incidents) == 2
     assert last_run['next_page_token'] == 'NEXT_PAGE'
+    assert last_run['step'] == STEP_INIT
     mock_response["next_page_token"] = None  # type: ignore
-    requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/query/alerts", json=mock_response)
+    requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query/alerts", json=mock_response)
 
     # Get next page
     last_run, fetched_incidents = fetch_incidents(
@@ -630,8 +622,10 @@ def test_fetch_all_alerts(requests_mock, orca_client: OrcaClient) -> None:
         first_fetch_time=None
     )
     assert len(fetched_incidents) == 2
+    assert last_run['step'] == STEP_FETCH
     assert 'next_page_token' not in last_run
 
+    requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query/alerts", json={"status": "success", "data": []})
     # No pages and no updates
     last_run, fetched_incidents = fetch_incidents(
         orca_client, last_run,
@@ -639,4 +633,5 @@ def test_fetch_all_alerts(requests_mock, orca_client: OrcaClient) -> None:
         pull_existing_alerts=True,
         first_fetch_time=None
     )
+    assert last_run['step'] == STEP_FETCH
     assert len(fetched_incidents) == 0

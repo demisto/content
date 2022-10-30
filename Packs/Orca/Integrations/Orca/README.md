@@ -8,7 +8,7 @@ This integration was integrated and tested with Orca
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | apikey | API Key | True |
+    | apitoken | API Token | True |
     | api_host | API Host without schema. Default: `api.orcasecurity.io` | False
     | first_fetch | First fetch timestamp \(`<number>` `<time unit>`, e.g., 12 hours, 7 days\) | False |
     | incidentType | Incident type | False |
