@@ -2251,8 +2251,8 @@ class Pack(object):
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
-                    elif current_directory == PackFolders.AGENT_CONFIGS.value:
-                        self.add_pack_type_tags(content_item, 'AgentConfig')
+                    elif current_directory == PackFolders.XDRC_TEMPLATES.value:
+                        self.add_pack_type_tags(content_item, 'XDRCTemplate')
                         folder_collected_items.append({
                             'id': content_item.get('content_global_id', ''),
                             'content_global_id': content_item.get('content_global_id', ''),
