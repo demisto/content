@@ -43,7 +43,7 @@ tasks:
       id: 2d74acbf-eb10-4ede-8880-21e9afb7325a
       version: -1
       name: 'FalconX Detonate and Analyze File'
-      description: Env ID - return to transformer
+      description: Env ID - return to transformer.
       playbookName: FalconX Detonate and Analyze File
       type: playbook
       iscommand: false
@@ -206,7 +206,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: 'Is there a file?'
+      description: Is there a file?
     nexttasks:
       '#default#':
       - "3"
@@ -290,7 +290,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: 'Are there MITRE findings?'
+      description: Are there MITRE findings?
     nexttasks:
       '#default#':
       - "3"
@@ -392,7 +392,7 @@ tasks:
       id: e0390fd8-4e73-42bc-8fdb-8480bf9af4d9
       version: -1
       name: Is JoeSecurity sandbox enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -615,7 +615,7 @@ tasks:
     task:
       id: d4b713f1-b7b9-4689-8964-f70d44dec5dd
       version: -1
-      name: Extract Indicators from the report
+      name: Extract Indicators from the Report
       description: commands.local.cmd.extract.indicators
       script: Builtin|||extractIndicators
       type: regular
@@ -824,7 +824,7 @@ outputs:
   description: The SHA256 hash of the scanned file.
   type: string
 - contextPath: csfalconx.resource.file_name
-  description: 'The name of the uploaded file. '
+  description: The name of the uploaded file. 
   type: string
 - contextPath: csfalconx.resource.sandbox
   description: The Falcon X findings.
@@ -842,10 +842,10 @@ outputs:
   description: Full MITRE data for the attack pattern.
   type: unknown
 - contextPath: DBotScore
-  description: DBotScore object
+  description: DBotScore object.
   type: unknown
 - contextPath: Joe.Analysis
-  description: Joe Analysis object
+  description: Joe Analysis object.
   type: unknown
 tests:
 - No tests (auto formatted)
