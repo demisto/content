@@ -3,8 +3,14 @@ from pathlib import Path
 from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 from demisto_sdk.commands.content_graph.objects.repository import ContentDTO
+from Tests.scripts.utils.log_util import install_logging
+import logging as logger
+
 
 import json
+
+
+install_logging("collect_tests.log", logger=logger)
 
 
 def main():
