@@ -201,7 +201,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: 'Is there a hash to check?'
+      description: Is there a hash to check?
     nexttasks:
       '#default#':
       - "35"
@@ -317,7 +317,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: 'Are there MITRE findings?'
+      description: Are there MITRE findings?
     nexttasks:
       '#default#':
       - "9"
@@ -412,7 +412,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: 'Were all hashes found?'
+      description: Were all hashes found?
     nexttasks:
       '#default#':
       - "9"
@@ -657,7 +657,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: 'Is there a report to rasterize?'
+      description: Is there a report to rasterize?
     nexttasks:
       '#default#':
       - "19"
