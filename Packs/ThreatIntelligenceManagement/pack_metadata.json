@@ -10,8 +10,10 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": ["Use Case"],
-    "useCases": ["Threat Intelligence Management"],
+    "tags": [
+        "Threat Intelligence Management"
+    ],
+    "useCases": [],
     "keywords": [],
     "marketplaces": [
         "xsoar",

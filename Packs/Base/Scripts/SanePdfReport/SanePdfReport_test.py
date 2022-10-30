@@ -78,4 +78,11 @@ def test_markdown_image_server(mocker, capfd):
         res3 = conn.getresponse()
         assert res3.status == 404
 
+        # correct image with file that is not accessible (simulates permission problems)
+        mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'notfound.png', 'name': 'noutfound.png'})
+        conn.request("GET", "/markdown/image/dummyFile.png")
+        res3 = conn.getresponse()
+        assert res3.status == 404
+
         conn.close()
+        quit_driver_and_reap_children(True)
