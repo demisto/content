@@ -1,5 +1,5 @@
 id: 6d0f513e-b88a-4ef1-8ba1-e497461abe33
-version: 12
+version: 18
 vcShouldKeepItemLegacyProdMachine: false
 name: Pull Request Creation - Bitbucket
 description: This playbook creates a pull request using Github integration.
@@ -17,7 +17,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "47"
+      - "55"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -86,7 +86,7 @@ tasks:
       brand: Bitbucket
     nexttasks:
       '#none#':
-      - "39"
+      - "53"
     scriptarguments:
       name:
         simple: ${BranchName}
@@ -99,8 +99,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 367.5,
-          "y": 2410
+          "x": -2.5,
+          "y": 2330
         }
       }
     note: false
@@ -342,7 +342,7 @@ tasks:
       '#default#':
       - "3"
       "yes":
-      - "39"
+      - "54"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -424,7 +424,7 @@ tasks:
       '#default#':
       - "27"
       "yes":
-      - "50"
+      - "25"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -454,13 +454,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 9533442c-4be5-4ed5-8fc3-acbd1d9928e9
+    taskid: 17f33ea9-35f0-4596-889b-594c51e3dd81
     type: regular
     task:
-      id: 9533442c-4be5-4ed5-8fc3-acbd1d9928e9
+      id: 17f33ea9-35f0-4596-889b-594c51e3dd81
       version: -1
-      name: Suggest branch name - UPDATE
-      scriptName: SuggestBranchName
+      name: Suggest branch name
+      description: |
+        The script gets the pack name as input and suggests an available branch name, for example:
+        pack name is "MyPack" the branch name will be "MyPack".
+        If a branch with the name "MyPack" exists, the script return "MyPack_1".
+      scriptName: NewBranchName
       type: regular
       iscommand: false
       brand: ""
@@ -468,11 +472,13 @@ tasks:
       '#none#':
       - "28"
     scriptarguments:
+      command_get_branch:
+        simple: bitbucket-branch-get
       pack:
-        complex:
-          root: PackName
+        simple: something
     separatecontext: false
-    continueonerrortype: ""
+    continueonerror: true
+    continueonerrortype: errorPath
     view: |-
       {
         "position": {
@@ -643,10 +649,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 137c5e17-11bc-40ea-8aaa-d730b5d1cbf5
+    taskid: d46c8eb9-c768-4953-80a9-8d5c0eea8018
     type: regular
     task:
-      id: 137c5e17-11bc-40ea-8aaa-d730b5d1cbf5
+      id: d46c8eb9-c768-4953-80a9-8d5c0eea8018
       version: -1
       name: Set MessageText value for update action
       description: Set a value in context under the key you entered.
@@ -660,14 +666,14 @@ tasks:
       value:
         simple: |-
           This pull request for the pack ${PackName} was updated by ${DemistoUsers.[0].username}:
-          https://github.com/${GitHub.PR.Head.Repo.FullName}/pull/${GitHub.PR.Number}
+          ${Bitbucket.PullRequest.links.html.href}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 807.5,
-          "y": 4245
+          "y": 4265
         }
       }
     note: false
@@ -993,10 +999,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: a326f1e6-831c-41fe-8fc0-512d1bbd6cba
+    taskid: 950b295d-d6fd-4e9b-89d1-3c9b56039ee8
     type: condition
     task:
-      id: a326f1e6-831c-41fe-8fc0-512d1bbd6cba
+      id: 950b295d-d6fd-4e9b-89d1-3c9b56039ee8
       version: -1
       name: Does branch exist?
       type: condition
@@ -1009,16 +1015,16 @@ tasks:
       - "41"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: condition-1
       condition:
       - - operator: isEqualString
           left:
             value:
-              simple: Bitbucket.Branch.name
+              simple: ${IsNewBranch}
             iscontext: true
           right:
             value:
-              simple: ${BranchName}
+              simple: "False"
     continueonerrortype: ""
     view: |-
       {
@@ -1073,38 +1079,37 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 1078cba8-695b-40a7-8df9-9d2b2307a329
-    type: condition
+    taskid: 1117a231-8047-465d-8ca4-fd273590aa88
+    type: regular
     task:
-      id: 1078cba8-695b-40a7-8df9-9d2b2307a329
+      id: 1117a231-8047-465d-8ca4-fd273590aa88
       version: -1
-      name: relevant pr
-      type: condition
+      name: Find Relevant pr_id
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
-      "yes":
-      - "35"
+      '#none#':
+      - "52"
+    scriptarguments:
+      key:
+        simple: pr_id
+      value:
+        complex:
+          root: Bitbucket.PullRequest
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Bitbucket.PullRequest.source.branch.name
+                iscontext: true
+              right:
+                value:
+                  simple: ${BranchName}
+          accessor: id
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: Bitbucket.PullRequest
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Bitbucket.PullRequest.source.branch.name
-                      iscontext: true
-                    right:
-                      value:
-                        simple: ${BranchName}
-                accessor: id
-            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -1120,14 +1125,164 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 25496886-b91f-4949-815c-ff8952d1f697
+    type: regular
+    task:
+      id: 25496886-b91f-4949-815c-ff8952d1f697
+      version: -1
+      name: Get relevant Pull Request
+      description: Returns a list of the pull requests. If a state is provided than
+        the list will contain only PRs with the wanted status. If a state is not provided,
+        by default a list of the open pull requests will return.
+      script: Bitbucket|||bitbucket-pull-request-list
+      type: regular
+      iscommand: true
+      brand: Bitbucket
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      partial_response:
+        simple: "false"
+      pull_request_id:
+        simple: ${pr_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 4090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: b2e91d57-79c1-4bc6-8986-b7362ddd1beb
+    type: regular
+    task:
+      id: b2e91d57-79c1-4bc6-8986-b7362ddd1beb
+      version: -1
+      name: Set New Branch
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      key:
+        simple: IsNewBranch
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2.5,
+          "y": 2490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 2db85fa5-cfb2-4d75-8f10-7a8232198379
+    type: regular
+    task:
+      id: 2db85fa5-cfb2-4d75-8f10-7a8232198379
+      version: -1
+      name: Set Existing Branch
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      key:
+        simple: IsNewBranch
+      value:
+        simple: "False"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: bb54c740-3ecd-4cf5-8d6a-2d87cb9b97dd
+    type: regular
+    task:
+      id: bb54c740-3ecd-4cf5-8d6a-2d87cb9b97dd
+      version: -1
+      name: Set pack name - temporary
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      key:
+        simple: PackName
+      value:
+        simple: hi
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3725,
-        "width": 1590,
-        "x": 50,
+        "height": 3745,
+        "width": 1642.5,
+        "x": -2.5,
         "y": 615
       }
     }

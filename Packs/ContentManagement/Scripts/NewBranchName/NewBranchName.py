@@ -11,15 +11,9 @@ def find_available_branch(pack_name, command_get_branch):
     for i in range(ATTEMPS):
         if i > 0:
             branch_name = f'{pack_name}_{i}'
-        try:
-            print("*** in try ***")
-            status, get_branch_res = execute_command(command_get_branch, {'branch_name': branch_name},
-                                                     fail_on_error=False)
-        except Exception as ex:
-            print("*** in except ***")
-            return branch_name
+        status, get_branch_res = execute_command(command_get_branch, {'branch_name': branch_name}, fail_on_error=False)
         if not status:
-            if 'Branch not found' in get_branch_res:
+            if 'Bad Request' or 'Branch not found' or 'Not Found' in get_branch_res:
                 return branch_name
             else:
                 raise DemistoException(get_branch_res)
