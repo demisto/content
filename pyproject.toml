@@ -9,8 +9,10 @@ license = "MIT"
 python = "^3.8,<3.11"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "1.7.6-mypy-hotfix"}
+demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "8f0918c16e705e4349699b2b22f447b310116231"}
 requests = "^2.22.0"
+ipykernel = "^6.16.0"
+
 
 [tool.poetry.group.linters.dependencies]
 mypy = "^0.982"
@@ -49,9 +51,6 @@ boto3 = "^1.23.5"
 jsonschema = "^4.6.0"
 google-cloud-bigquery = "^3.2.0"
 db-dtypes = "^1.0.1"
-
-[tool.poetry.group.dev.dependencies]
-ipykernel = "^6.16.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
