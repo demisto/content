@@ -308,7 +308,6 @@ class RefreshToken:
     Returns:
         None: No data returned.
     """
-
     def __init__(self, base_url: str, client_id: str, client_secret: str, verify_ssl: bool, proxy: bool) -> None:
         self.base_url: str = base_url
         self.client_id: str = client_id
