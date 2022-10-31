@@ -700,7 +700,26 @@ class Client(BaseClient):
         # successful request
         response_headers = response.headers
         token = response_headers.get('X-FeApi-Token')
+        self._auth = None  # the authentication now is based on the token
         return token
+
+    def token_logout(self):
+        """
+        perform logout for the active session
+        """
+        
+        if self._headers['X-FeApi-Token']:
+            try:
+                self._http_request(
+                    method='DELETE',
+                    url_suffix='token',
+                    resp_type='response'
+                )
+            except Exception as e:
+                demisto.debug(f'Encountered an error when tring to logout')
+
+            # successful request
+            self._headers['X-FeApi-Token'] = None
 
     """
     POLICIES REQUEST
@@ -3164,6 +3183,7 @@ def main() -> None:
     proxy = params.get('proxy', False)
     command = demisto.command()
     args = demisto.args()
+    client = None
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -3192,6 +3212,10 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+    finally:
+        # perform logout to avoid open sessions
+        if client:
+            client.token_logout()
 
 
 ''' ENTRY POINT '''
