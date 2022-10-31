@@ -1,0 +1,11 @@
+filebeat.inputs:
+- type: filestream
+  enabled: true
+  paths:
+    - /var/log/syslog
+    - /var/log/auth.log
+  processors:
+    - add_fields:
+        fields:
+          vendor: linux
+          product: linux

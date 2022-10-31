@@ -5195,7 +5195,20 @@
             ]
         },
         {
+            "playbookID": "GridFieldSetup_test"
+        },
+        {
+            "integrations": "Aha",
+            "playbookID": "AHA_TestPlaybook",
+            "fromversion": "6.5.0"
+        },
+        {
             "playbookID": "VerifyCIDR-Test"
+        },
+        {
+            "integrations": "JoeSecurityV2",
+            "fromversion": "6.2.0",
+            "playbookID": "testplaybook- JoeSecuirtyV2"
         }
     ],
     "skipped_tests": {
