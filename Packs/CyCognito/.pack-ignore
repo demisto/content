@@ -1,9 +1,6 @@
 [file:README.md]
 ignore=RM104
 
-[file:CyCognito_image.png]
-ignore=IM111
-
 [file:incidentfield-CyCognito-Affected-Asset.json]
 ignore=IF115
 
