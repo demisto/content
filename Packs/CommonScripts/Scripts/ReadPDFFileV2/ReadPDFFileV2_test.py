@@ -13,7 +13,7 @@ def open_html_file(file):
 
 
 COPY_PROTECTED_CASES = [
-    (f'{CWD}/copy_protect.pdf', 'ahsdkljhakjhdasjk', 1)
+    (f'{CWD}/copy_protect.pdf', 'ahsdkljhakjhdasjk\n\n\x0c', 1)
 ]
 
 
