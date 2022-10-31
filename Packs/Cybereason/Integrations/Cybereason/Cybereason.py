@@ -8,6 +8,7 @@ import json
 from datetime import datetime, timedelta
 import time
 import re
+import urllib3
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -1767,10 +1768,9 @@ def malware_query_command(client: Client, args: dict):
     malware_status = str(args.get('status'))
     time_stamp = str(args.get('timestamp'))
     limit_range = arg_to_number(args.get('limit'))
-    if limit_range:
-        if limit_range > 0:
-            filter_response = malware_query_filter(client, needs_attention, malware_type, malware_status, time_stamp, limit_range)
-            return CommandResults(raw_response=filter_response)
+    if limit_range > 0:
+        filter_response = malware_query_filter(client, needs_attention, malware_type, malware_status, time_stamp, limit_range)
+        return CommandResults(raw_response=filter_response)
     else:
         raise DemistoException("Limit cannot be zero or a negative number.")
 
