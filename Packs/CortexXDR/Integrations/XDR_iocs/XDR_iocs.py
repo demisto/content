@@ -513,7 +513,7 @@ def to_cli_name(field_name: str):
     return field_name.lower().replace(' ', '')
 
 
-def validate_fix_severity_value(severity: str) -> str:
+def validate_fix_severity_value(severity_upper: str) -> str:
     """raises error if the value is invalid, returns the value (fixes informational->info)
 
     Args:
@@ -526,15 +526,15 @@ def validate_fix_severity_value(severity: str) -> str:
         _type_: str, validated severity value
     """
     allowed_values = xdr_severity_to_demisto.values()
-    severity = severity.upper()
+    severity_upper = severity_upper.upper()
 
-    if severity == "INFORMATIONAL":
-        severity = "INFO"
+    if severity_upper == "INFORMATIONAL":
+        severity_upper = "INFO"
 
-    if severity not in allowed_values:
-        raise DemistoException(f"the severity value must be one of {', '.join(allowed_values)}")
+    if severity_upper not in allowed_values:
+        raise DemistoException(f"the severity value must be one of {', '.join(allowed_values)} (got {severity_upper})")
 
-    return severity
+    return severity_upper
 
 
 def main():  # pragma: no cover
