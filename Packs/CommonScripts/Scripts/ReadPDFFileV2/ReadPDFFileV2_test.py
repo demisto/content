@@ -13,7 +13,7 @@ def open_html_file(file):
 
 
 COPY_PROTECTED_CASES = [
-    (f'{CWD}/copy_protect.pdf', 'ahsdkljhakjhdasjk\n\n\x0c', 1)
+    (f'{CWD}/copy_protect_with_images.pdf', 'ahsdkljhakjhdasjk\n\n\x0c\x0c', 1)
 ]
 
 
@@ -29,11 +29,14 @@ def test_copy_protected(tmp_path, pdf_file, expected_text, num_of_images):
     """
     from ReadPDFFileV2 import get_pdf_text, get_images_paths_in_path, get_pdf_htmls_content
     from pikepdf import Pdf
+    import shutil
     with Pdf.open(pdf_file) as pdf:
         assert not pdf._allow_extract, 'The file provided must be `copy-protected`'
+    cpy_file_path = f'{tmp_path}/WorkingReadPDF.pdf'
+    shutil.copy(pdf_file, cpy_file_path)
 
-    text = get_pdf_text(file_path=pdf_file, pdf_text_output_path=f'{tmp_path}/text_output.txt')
-    get_pdf_htmls_content(pdf_file, tmp_path)
+    text = get_pdf_text(file_path=cpy_file_path, pdf_text_output_path=f'{tmp_path}/text_output.txt')
+    get_pdf_htmls_content(cpy_file_path, tmp_path)
     images = get_images_paths_in_path(tmp_path)
     assert text in expected_text
     assert len(images) == num_of_images, 'Failed to extract images'
