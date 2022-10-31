@@ -9,9 +9,6 @@ from demisto_sdk.commands.common.logger import logging_setup
 
 
 import json
-import demisto_sdk.commands.content_graph.objects.repository as r
-
-r.USE_FUTURE = False
 
 logging_setup(3)
 install_logging("create_artifacts.log", logger=logger)
@@ -33,19 +30,16 @@ def main():
         for pack in content_dto.packs:
             displayed_images = []
             dependencies = pack.depends_on
-            first_level_dependencies = [
-                {"display_name": dependency.content_item.name, "mandatory": dependency.is_direct}
-                for dependency in dependencies
-            ]
-            first_level_dependencies = []
+            first_level_dependencies = {}
             all_level_dependencies = []
             for dependency in dependencies:
-                all_level_dependencies.append(dependency.content_item.name)
+                all_level_dependencies.append(dependency.content_item.object_id)
                 if dependency.is_direct:
-                    first_level_dependencies.append(
-                        {"display_name": dependency.content_item.name, "mandatory": dependency.is_direct}
-                    )
-                    # check if use object_id or name
+                    first_level_dependencies[dependency.content_item.object_id] = {
+                        "display_name": dependency.content_item.name,
+                        "mandatory": dependency.is_direct,
+                    }
+
                     displayed_images.extend((integration.object_id for integration in pack.content_items.integration))
             pack_dependencies[pack.name] = {
                 "path": str(Path.relative_to(pack.path, Path.cwd())),
