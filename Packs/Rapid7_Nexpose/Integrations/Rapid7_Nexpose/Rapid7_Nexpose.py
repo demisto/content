@@ -300,7 +300,7 @@ class Client(BaseClient):
         """
         | Create a new asset on a site.
         |
-        | https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getAssets
+        | https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createAsset
 
         Note:
             The API endpoint that's used has additional parameters, and can be also used to update existing assets.
@@ -314,20 +314,29 @@ class Client(BaseClient):
             hostname_source (HostnameSource | None, optional): Source of the hostname.
 
         Returns:
-            dict: API response from POST /sites/{siteId}/assets.
+            dict: API response with information about the newly generated asset.
         """
         if hostname_source is not None:
             hostname_source = hostname_source.value
 
+        if ip_address is None and hostname is None:
+            raise ValueError("At least one of \"ip\" and \"host_name\" arguments must be passed.")
+        post_data = {"date": date}
+
+        if ip_address is not None:
+            post_data["ip"] = ip_address
+
+        if hostname is not None:
+            post_data["hostName"] = {"name": hostname}
+
+            if hostname_source is not None:
+                post_data["hostName"]["source"] = hostname_source.value
+
         return self._http_request(
             method="POST",
             url_suffix=f"/sites/{site_id}/assets",
-            json_data=find_valid_params(
-                date=date,
-                ip_address=ip_address,
-                hostname=hostname,
-                hostname_source=hostname_source,
-            ),
+            json_data=post_data,
+            resp_type="json",
         )
 
     def create_report(self, report_id: str) -> dict:
@@ -340,7 +349,7 @@ class Client(BaseClient):
             report_id (str): ID of the configured report to generate.
 
         Returns:
-            str: ID of the generated report instance.
+            dict: API response with information about the newly created report instance.
         """
         return self._http_request(
             url_suffix=f"/reports/{report_id}/generate",
