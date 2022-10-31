@@ -14,9 +14,10 @@ import requests
 from datetime import timedelta
 from urllib.error import HTTPError
 from typing import Dict, Tuple
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
