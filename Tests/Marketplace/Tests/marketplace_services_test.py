@@ -1612,6 +1612,27 @@ class TestImagesUpload:
                                                          GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH)
         assert task_status
 
+    def test_copy_preview_images(self, mocker, dummy_pack):
+        """
+           Given:
+               - preview image.
+           When:
+               - Performing copy and upload of all the pack's preview images
+           Then:
+               - Validate that the image has been copied from build bucket to prod bucket
+       """
+        dummy_build_bucket = mocker.MagicMock()
+        dummy_prod_bucket = mocker.MagicMock()
+        dummy_pack.current_version = '1.0.0'
+        blob_name = "TestPack/XSIAMDashboards/MyDashboard_image.png"
+        dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
+        mocker.patch("Tests.Marketplace.marketplace_services.logging")
+        dummy_build_bucket.copy_blob.return_value = Blob('copied_blob', dummy_prod_bucket)
+        images_data = {"TestPack": {BucketUploadFlow.PREVIEW_IMAGES: [blob_name]}}
+        task_status = dummy_pack.copy_preview_images(dummy_prod_bucket, dummy_build_bucket, images_data,
+                                                     GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH)
+        assert task_status
+
     def test_copy_author_image(self, mocker, dummy_pack):
         """
            Given:
