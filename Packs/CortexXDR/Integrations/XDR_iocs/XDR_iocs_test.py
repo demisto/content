@@ -789,7 +789,7 @@ def test_overriding_severity_xsoar():
     severity_value_backup = Client.severity
 
     # for testing
-    Client.severity = 'some hardcoded severity value'
+    Client.severity = 'LOW'
 
     # constants
     custom_severity_field = 'custom_severity_field'
@@ -798,7 +798,7 @@ def test_overriding_severity_xsoar():
 
     # default behavior
     assert Client.override_severity is True
-    assert demisto_ioc_to_xdr(dummy_demisto_ioc)['severity'] == Client.severity
+    assert demisto_ioc_to_xdr(dummy_demisto_ioc)['severity'] == 'LOW'
 
     # behavior when override_severity is False
     Client.override_severity = False
