@@ -257,6 +257,8 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
             # Override is False: use the value from the xsoar_severity_field, or Client.severity as default
             xdr_ioc['severity'] = custom_severity.upper()  # NOTE: these do NOT need translation to XDR's 0x0_xxxx_xxxx format
 
+        xdr_ioc['severity'] = validate_fix_severity_value(xdr_ioc['severity'])
+
         demisto.debug(f'Processed outgoing IOC: {xdr_ioc}')
         return xdr_ioc
 
@@ -513,7 +515,7 @@ def to_cli_name(field_name: str):
     return field_name.lower().replace(' ', '')
 
 
-def validate_fix_severity_value(severity_upper: str) -> str:
+def validate_fix_severity_value(severity: str) -> str:
     """raises error if the value is invalid, returns the value (fixes informational->info)
 
     Args:
@@ -526,7 +528,7 @@ def validate_fix_severity_value(severity_upper: str) -> str:
         _type_: str, validated severity value
     """
     allowed_values = xdr_severity_to_demisto.values()
-    severity_upper = severity_upper.upper()
+    severity_upper = severity.upper()
 
     if severity_upper == "INFORMATIONAL":
         severity_upper = "INFO"
@@ -539,7 +541,7 @@ def validate_fix_severity_value(severity_upper: str) -> str:
 
 def main():  # pragma: no cover
     params = demisto.params()
-    Client.severity = validate_fix_severity_value(params.get('severity', ''))
+    Client.severity = params.get('severity', '')
     Client.override_severity = argToBoolean(params.get('override_severity', True))
     Client.tlp_color = params.get('tlp_color')
 
