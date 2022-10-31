@@ -12,7 +12,7 @@ def find_available_branch(pack_name, command):
             branch_name = f'{pack_name}_{i}'
         status, get_branch_res = execute_command(command, {'branch_name': branch_name}, fail_on_error=False)
         if not status:
-            if [] == get_branch_res:
+            if 'Bad Request' or 'Branch not found' or 'Not Found' in get_branch_res:
                 return branch_name
             else:
                 raise DemistoException(get_branch_res)
