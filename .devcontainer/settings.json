@@ -16,14 +16,4 @@
         "-v"
     ],
     "python.testing.cwd": "${workspaceFolder}/Packs/HelloWorld/Integrations/HelloWorld",
-  "cSpell.words": [
-    "demisto",
-    "xsoar",
-    "xsiam",
-    "fromversion",
-    "toversion",
-    "marketplacev",
-    "ciac",
-    "whois"
-  ]
 }
