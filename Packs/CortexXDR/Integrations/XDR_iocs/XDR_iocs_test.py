@@ -846,7 +846,7 @@ def test_overriding_severity_xdr_to_demisto():
 
 @pytest.mark.parametrize('value', (
     'info',
-    'Info'
+    'Info',
     'informational',
     'INformationAL'
 ))
