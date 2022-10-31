@@ -48,7 +48,7 @@ def test_dict2md_complex_lists():
     Then:
     - Validate that the returned text is converted to a markdown correctly
 
-    """
+        """
     markdown_multi_dict = dict2md(MOCK_MULTI_LEVEL_DICT)
     markdown_multi_list = dict2md(MOCK_MULTI_LEVEL_LIST)
     markdown_multi_list_id_name = dict2md(MOCK_MULTI_LEVEL_LIST_ID_NAMES)
@@ -127,10 +127,10 @@ def test_generate_ansible_inventory_creds():
     """
     Scenario: Given different types of credentials the appropriate one should be selected
 
-    Given:
-    A. username / sshkey for NXOS host
-    B. SSH credential for Linux host
-    C. windows winrm credentials
+        Given:
+        A. username / sshkey for NXOS host
+        B. SSH credential for Linux host
+        C. windows winrm credentials
 
     When:
     - valid host address
@@ -274,11 +274,8 @@ def test_generic_ansible_with_problematic_stdout():
                                     'parent_uuid': 'a736a224-f5d0-0add-444b-000000000009', 'event_data': {}}]
 
     # Expected results
-    expected_readable = """# \x1b[0;32m10.2.25.44 -  SUCCESS 
-  * changed: False
-  * ## Deprecations
-  * ## Warnings
-"""
+    expected_readable = """# \x1b[0;32m10.2.25.44 -  SUCCESS \n  * changed: False\n  * ## Deprecations
+  * ## Warnings\n"""
 
     expected_outputs = [
         {'changed': False, 'deprecations': [], 'warnings': [], 'host': '\x1b[0;32m10.2.25.44', 'status': 'SUCCESS'}]
