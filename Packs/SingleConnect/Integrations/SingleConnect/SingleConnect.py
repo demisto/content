@@ -150,12 +150,15 @@ def get_sapm_user_info_command(client: Client, device_ip: str) -> CommandResults
 ''' MAIN FUNCTION '''
 
 
-def main(params: dict, args: dict, command: str) -> None:
+def main() -> None:
     """main function, parses params and runs command functions
 
     :return:
     :rtype:
     """
+    params: Dict[str, Any] = demisto.params()
+    args: Dict[str, Any] = demisto.args()
+    command = demisto.command()
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
     base_url = params['url']
@@ -196,4 +199,4 @@ def main(params: dict, args: dict, command: str) -> None:
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    main(demisto.params(), demisto.args(), demisto.command())
+    main()
