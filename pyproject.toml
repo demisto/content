@@ -23,6 +23,10 @@ pytest-mock = "^3.7.0"
 freezegun = "^1.1.0"
 mock-open = "^1.4.0"
 
+[tool.poetry.group.typing.dependencies]
+# If mypy requires for a `typed-*` package, add it here with `poetry add --group typing <package>`
+
+
 [tool.poetry.group.ci]
 optional = true
 
