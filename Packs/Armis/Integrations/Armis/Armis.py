@@ -5,8 +5,6 @@ from typing import List
 import pytz
 import urllib3
 
-from CommonServerPython import *
-
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -656,19 +654,22 @@ def get_user_command(client: Client, args: dict):
             'isActive',
             'lastLoginTime',
             'role',
-            'roleAssignment',
+            'rolesAssigned',
+            'sites',
             'reportPermissions',
             'twoFactorAuthentication',
         ]
-        
+
         # transform multiple roleAssignments to string
         user_index = 0
         if (results.get('users')):
-          for user in results.get('users'):
-                if user.get('roleAssignment'):  
-                    results['users'][user_index]['roleAssignment'] = ', '.join(user['roleAssignment'][0]['name'])
+            for user in results.get('users'):
+                if user.get('roleAssignment'):
+                    results['users'][user_index]['rolesAssigned'] = ', '.join(user['roleAssignment'][0]['name'])
+                    if 'sites' in user['roleAssignment'][0]:
+                        results['users'][user_index]['sites'] = ', '.join(user['roleAssignment'][0]['sites'])
                 user_index += 1
-            
+
         return CommandResults(
             outputs_prefix='Armis.Users',
             outputs_key_field='id',
