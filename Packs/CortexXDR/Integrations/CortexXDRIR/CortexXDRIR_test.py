@@ -6,7 +6,6 @@ from freezegun import freeze_time
 
 import demistomock as demisto
 from CommonServerPython import Common
-from CoreIRApiModule import MIRROR_IN_CLOSE_REASON
 from CortexXDRIR import XDR_RESOLVED_STATUS_TO_XSOAR
 
 XDR_URL = 'https://api.xdrurl.com'
@@ -615,7 +614,7 @@ def test_get_remote_data_command_should_close_issue(requests_mock, mocker, incid
     raw_incident['reply']['incident']['resolve_comment'] = 'Handled'
 
     close_notes_prefix = 'Known Issue.\n' if incident_status == 'resolved_known_issue' else ''
-    close_notes = f'{close_notes_prefix}{MIRROR_IN_CLOSE_REASON}\nHandled'
+    close_notes = f'{close_notes_prefix}Handled'
 
     expected_modified_incident = raw_incident['reply']['incident'].copy()
     expected_modified_incident['alerts'] = copy.deepcopy(raw_incident['reply'].get('alerts').get('data'))
