@@ -9,7 +9,7 @@ configuration:
   type: 0
 - displaypassword: Client Secret
   display: Client Id
-  additionalinfo: The API Key to use for connection
+  additionalinfo: The API Key to use for connection.
   name: credentials
   required: true
   hiddenusername: false
@@ -50,7 +50,7 @@ script:
       - 'false'
       required: true
     - default: false
-      description: Number of results to return, maximum is 2000.
+      description: Number of results to return. Maximum is 2000.
       isArray: false
       name: limit
       defaultValue: 10
@@ -76,7 +76,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The type ID of events to include. The value can be comma separated with multiple type IDs.
+      description: A comma-separated list of type IDs of events to include. 
       isArray: false
       name: event_type_id
       required: false
