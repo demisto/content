@@ -255,9 +255,9 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
         if (not Client.override_severity) and (custom_severity := custom_fields.get(Client.xsoar_severity_field)):
             # Override is True: use Client.severity
             # Override is False: use the value from the xsoar_severity_field, or Client.severity as default
-            xdr_ioc['severity'] = custom_severity.upper()  # NOTE: these do NOT need translation to XDR's 0x0_xxxx_xxxx format
+            xdr_ioc['severity'] = custom_severity  # NOTE: these do NOT need translation to XDR's 0x0_xxxx_xxxx format
 
-        xdr_ioc['severity'] = validate_fix_severity_value(xdr_ioc['severity'])
+        xdr_ioc['severity'] = validate_fix_severity_value(xdr_ioc['severity'], ioc['value'])
 
         demisto.debug(f'Processed outgoing IOC: {xdr_ioc}')
         return xdr_ioc
@@ -515,11 +515,12 @@ def to_cli_name(field_name: str):
     return field_name.lower().replace(' ', '')
 
 
-def validate_fix_severity_value(severity: str) -> str:
+def validate_fix_severity_value(severity: str, indicator_value: Optional[str] = None) -> str:
     """raises error if the value is invalid, returns the value (fixes informational->info)
 
     Args:
         severity (str): the severity value, must be of INFO,LOW,MEDIUM,HIGH,CRITICAL,UNKNOWN
+        indicator_value (Optional[str]): displayed in case of error
 
     Raises:
         DemistoException: when the value isn't allowed (nor can be fixed automatically)
@@ -534,7 +535,8 @@ def validate_fix_severity_value(severity: str) -> str:
         severity_upper = "INFO"
 
     if severity_upper not in allowed_values:
-        raise DemistoException(f"the severity value must be one of {', '.join(allowed_values)} (got {severity_upper})")
+        prefix = f'indicator {indicator_value}: ' if indicator_value else ''
+        raise DemistoException(f"{prefix}the severity value must be one of {', '.join(allowed_values)} (got {severity})")
 
     return severity_upper
 
