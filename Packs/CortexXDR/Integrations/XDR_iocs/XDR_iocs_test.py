@@ -861,7 +861,8 @@ def test_severity_fix(value: str):
     """
     assert validate_fix_severity_value(value) == 'INFO'
 
-@pytest.mark.parametrized('value',('','a','foo','severity','infoo','informationall'))
-def test_severity_validate(value:str):
+
+@pytest.mark.parametrize('value', ('', 'a', 'foo', 'severity', 'infoo', 'informationall'))
+def test_severity_validate(value: str):
     with pytest.raises(DemistoException):
         validate_fix_severity_value(value)
