@@ -2350,13 +2350,18 @@ class Pack(object):
 
         return tags
 
-    def _get_tags_by_marketplace(self, user_metadata, marketplace):
+    def _get_tags_by_marketplace(self, user_metadata: dict, marketplace: str):
         """ Returns tags in according to the current marketplace"""
-        
-        if isinstance(user_metadata.get('tags', []), list):
-            return set(input_to_list(input_data=user_metadata.get('tags')))
-        
-        return set(input_to_list(input_data=user_metadata.get('tags', {}).get(marketplace, [])))
+        tags = []
+        for tag in user_metadata.get('tags', []):
+            if ':' in tag:
+                tag_data = tag.split(':')
+                if tag_data[0] == marketplace:
+                    tags.append(tag_data[1])
+            else:
+                tags.append(tag)
+
+        return set(input_to_list(input_data=tags))
 
     def _enhance_pack_attributes(self, index_folder_path, dependencies_metadata_dict, marketplace,
                                  statistics_handler=None, format_dependencies_only=False):
