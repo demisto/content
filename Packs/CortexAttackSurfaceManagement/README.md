@@ -14,9 +14,13 @@ This pack contains all of the integrations, automations, and playbooks necessary
 - Includes pdf reporting capabilities for preserving and communicating the investigation summary.
 
 ### Playbooks
-1. <place_holder>
+1. Cortex ASM - ASM Alert
 2. Cortex ASM - Detect Service
 3. Cortex ASM - Enrichment
+
+### Cortex ASM - ASM Alert
+Playbook that enriches asset information for ASM alerts and provides means of remediation.
+<place_holder: Add absolute link after PR>
 
 #### Cortex ASM - Detect Service
 Playbook that looks at what ASM sub-type the alert is and direct to different pre/post mitigation scans (such as NMAP).
@@ -33,4 +37,3 @@ This content pack includes the following scripts:
 
 #### GetRemediationGuidance
 This automation helps determine remediation guidance based on a list of Xpanse issueTypeId to remediationGuidance pairings.
-![GetRemediationGuidance](<ADD ABSOLUTE LINK GetRemediationGuidance.png>)
