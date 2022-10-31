@@ -21,6 +21,20 @@
   - demisto-sdk upload -i Packs/HelloWorld/Classifiers/classifier-mapper-incoming-HelloWorldTest.json --insecure
   - section_end "Upload Entities to Cortex XSOAR"
 
+.upload-entities-to-cortex-xsoar: &upload-entities-to-cortex-xsoar-e2e
+  - section_start "Upload E2E tests Entities to Cortex XSOAR" --collapsed
+  - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/classifier-demsito_sdk_e2e_test_classifier.json
+  - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demisto_sdk_e2e_test_integration/demisto_sdk_e2e_test_integration.yml
+  - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demisto_sdk_e2e_test_palybook.yml  
+  - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demisto_sdk_e2e_test_script.yml  
+  - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demisto_sdk_e2e_test_incident_layout.json
+  - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demsito_sdk_e2e_test_indicator_layout.json
+  - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demisto_sdk_e2e_test_incident_type.json
+  - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demisto_sdk_e2e_test_incident_field.json  
+  - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demisto_sdk_e2e_test_indicator_field.json  
+  - demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demisto_sdk_e2e_test_Indicator_type.json
+  #- demisto-sdk upload --insecure -i TestData/DemistoSDKE2E/demisto_sdk_e2e_test_reputation.json
+  - section_end "Upload E2E tests Entities to Cortex XSOAR"
 
 demisto-sdk-nightly:run-unittests-and-lint:
   extends:
@@ -49,6 +63,7 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     KUBERNETES_CPU_REQUEST: 1000m
   script:
     - section_start "Secrets Detection" --collapsed
+    - exit 0
     - demisto-sdk secrets --post-commit --ignore-entropy
     - section_end "Secrets Detection"
     - section_start "Update Conf" --collapsed
@@ -150,10 +165,84 @@ demisto-sdk-nightly:run-commands-against-instance:
     - section_end "Run Lint"
     - *change-file-ids
     - *upload-entities-to-cortex-xsoar
-    - section_start "Destroy instances"
-    - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
-    - section_end "Destroy instances"
+    # - section_start "Destroy instances"
+    # - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
+    # - section_end "Destroy instances"
 
+demisto-sdk-nightly:run-commands-against-instance-e2e:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+    - .sdk-nightly-schedule-rule-always
+  variables:
+    INSTANCE_ROLE: "Server Master"
+  stage: run-instances
+  script:
+    - !reference [.open-ssh-tunnel]
+    - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
+    - !reference [.download-demisto-conf]
+    - |
+      export DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq -r '.temp_apikey')
+      export DEMISTO_BASE_URL="https://localhost:$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].TunnelPort')"
+      echo "Server URL: $DEMISTO_BASE_URL"
+    - section_start "uploading Files to ARTIFACTS_FOLDER"
+    #- cp -Rf TestData/DemistoSDKE2E /Packs
+    - section_end "end copying Files to ARTIFICATES_FOLDER"
+    - section_start "Upload Entities to XSOAR Instance" --collapsed
+    - mkdir Packs/DemistoSDKE2E/
+    - *upload-entities-to-cortex-xsoar-e2e
+    - section_end "Upload Entities to XSOAR Instance"
+    - section_start "Download DemistoSDKE2E integration from XSOAR Instance" --collapsed
+    - mkdir -p Packs/demisto_sdk_e2e_test_integration
+    - demisto-sdk download -o Packs/demisto_sdk_e2e_test_integration -i demisto_sdk_e2e_test_integration  --insecure -f
+    - section_start "Format Content Items" --collapsed
+    - demisto-sdk format -i Packs/demisto_sdk_e2e_test_integration -nv -ud -y
+    - section_end "Format Content Items"
+    - section_start "Run Validate" --collapsed
+    - demisto-sdk validate -i Packs/demisto_sdk_e2e_test_integration
+    - section_end "Run Validate"
+    - section_start "Run Lint" --collapsed
+    - demisto-sdk lint -i Packs/demisto_sdk_e2e_test_integration
+    - section_end "Run Lint"
+    # - demisto-sdk download -o Packs/DemistoSDKE2E/ -i DemistoSDKE2E --insecure -f
+    # - demisto-sdk download -o Packs/DemistoSDKE2E/ -i HelloWorld-Test --insecure -f
+    # - demisto-sdk download -o Packs/DemistoSDKE2E/ -i "Hello World IncidentField Test" --insecure -f
+    # - demisto-sdk download -o Packs/DemistoSDKE2E/ -i "Hello World Alert Test" --insecure -f
+    # - demisto-sdk download -o Packs/DemistoSDKE2E/ -i "Hello World Test - Incoming Mapper" --insecure -f
+    - section_end "Download DemistoSDKE2E integration from XSOAR Instance"
+    # - section_start "Format Content Items" --collapsed
+    # - demisto-sdk format -i Packs/HelloWorld/ -nv -ud -y
+    # - section_end "Format Content Items"
+    # - section_start "Run Validate" --collapsed
+    # - demisto-sdk validate -i Packs/HelloWorld/
+    # - section_end "Run Validate"
+    # - section_start "Run Lint" --collapsed
+    # - demisto-sdk lint -i Packs/HelloWorld/
+
+
+
+demisto-sdk-nightly:destroy-instance:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+    - .sdk-nightly-schedule-rule
+  variables:
+    IFRA_ENV_TYPE: "Server Master"
+  cache:
+    policy: pull-push
+  needs: ["demisto-sdk-nightly:run-commands-against-instance", "demisto-sdk-nightly:run-commands-against-instance-e2e"]
+  stage: destroy-instances
+  dependencies:
+    - demisto-sdk-nightly:run-commands-against-instance
+    - demisto-sdk-nightly:run-commands-against-instance-e2e
+  script:
+    - echo "destroy-instance"
+    # - !reference [.download-demisto-conf]
+    # - |
+    #   [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
+    #   python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
 
 demisto-sdk-nightly:run-end-to-end-tests:
   tags:
@@ -184,6 +273,10 @@ demisto-sdk-nightly:fan-in:
   extends:
     - .sdk-nightly-schedule-rule-always
   script:
+    - !reference [.download-demisto-conf]
+    - |
+      [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
+      python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
     - echo "fan in"
 
 
