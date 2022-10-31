@@ -138,8 +138,7 @@ def main():  # pragma: no cover
     initial_interval = params.get('initial_interval', '24 hours')
     limit = arg_to_number(params.get('limit')) or -1
     limit_per_request = arg_to_number(params.get('limit_per_request')) or DFLT_LIMIT_PER_REQUEST
-    objects_types = ['report', 'indicator', 'malware', 'campaign', 'attack-pattern',
-                     'course-of-action', 'intrusion-set', 'tool', 'threat-actor', 'infrastructure']
+    objects_types = ['indicator']
     objects_to_fetch = argToList(params.get('objects_to_fetch') or objects_types)
     default_api_root = params.get('default_api_root', 'public')
     seconds_to_sleep = arg_to_number(params.get('seconds_to_sleep')) or 1

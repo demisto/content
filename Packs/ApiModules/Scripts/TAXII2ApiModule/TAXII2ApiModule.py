@@ -981,19 +981,21 @@ class Taxii2FeedClient:
             if exceeded_limit(limit, len(indicators) + len(relationships_list)):
                 break
             stix_objects = envelope.get("objects", [])
-            if obj_type != "relationship":
-                for obj in stix_objects:
-                    # we currently don't support extension object
-                    if obj.get('type') == 'extension-definition':
-                        continue
-                    self.id_to_object[obj.get('id')] = obj
-                    result = parse_objects_func[obj_type](obj)
-                    if not result:
-                        continue
-                    indicators.extend(result)
-                    self.update_last_modified_indicator_date(obj.get("modified"))
-            else:
-                relationships_list.extend(stix_objects)
+            for obj in stix_objects:
+                obj_type_got_from_remote = obj.get('type')
+                if obj_type_got_from_remote == 'relationship':
+                    relationships_list.extend([obj])
+                    continue
+
+                # we currently don't support extension object
+                if obj_type_got_from_remote == 'extension-definition':
+                    continue
+                self.id_to_object[obj.get('id')] = obj
+                result = parse_objects_func[obj_type](obj)
+                if not result:
+                    continue
+                indicators.extend(result)
+                self.update_last_modified_indicator_date(obj.get("modified"))
 
             i = 0
             while envelope.get("more", False) and not exceeded_limit(limit, len(indicators) + len(relationships_list)):
@@ -1045,8 +1047,9 @@ class Taxii2FeedClient:
         types_envelopes = {}
         if len(self.objects_to_fetch) > 1:  # when fetching one type no need to fetch relationship
             self.objects_to_fetch.append('relationship')
+        demisto.debug(f'before loop on objects_to_fetch {time.time()=}, {time.ctime()=}')
         for obj_type in self.objects_to_fetch:
-            kwargs['type'] = obj_type
+            # kwargs['type'] = obj_type
             if isinstance(self.collection_to_fetch, v20.Collection):
                 demisto.debug('In v2.0, calling collection default get_objects')
                 envelope = v20.as_pages(self.collection_to_fetch.get_objects, per_request=page_size, **kwargs)
@@ -1062,12 +1065,14 @@ class Taxii2FeedClient:
         This function overrides the v2.1 collection default get_objects, because the original function doesn't handle properly
         responses that are not in a json format.
         """
+        demisto.debug(f'in v21_get_objects start {time.time()=}, {time.ctime()=}')
         collection = self.collection_to_fetch
         collection._verify_can_read()
         query_params = _filter_kwargs_to_query_params(filter_kwargs)
         merged_headers = collection._conn._merge_headers({"Accept": accept, "Content-Type": "application/taxii+json"})
 
         resp = collection._conn.session.get(collection.objects_url, headers=merged_headers, params=query_params)
+        demisto.debug(f'after get request {time.time()=}, {time.ctime()=}')
         if len(resp.text) <= len('{}'):  # in case it is not a json that has to have {}
             return {}
 

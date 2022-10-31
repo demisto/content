@@ -125,7 +125,7 @@ configuration:
   type: 0
 - display: STIX Objects To Fetch
   name: objects_to_fetch
-  defaultvalue: indicator,report,malware,campaign,attack-pattern,course-of-action,intrusion-set,tool,threat-actor,infrastructure
+  defaultvalue: indicator
   type: 16
   required: false
   options:
