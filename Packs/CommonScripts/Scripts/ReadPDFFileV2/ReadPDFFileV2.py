@@ -230,7 +230,7 @@ def get_pdf_text(file_path: str, pdf_text_output_path: str) -> str:
     text = ""
     with open(pdf_text_output_path, "rb") as f:
         for line in f:
-            text += line.decode("utf-8")  # TODO DON'T FORGET TO DELETE errors ARGS
+            text += line.decode("utf-8")
     return text
 
 
@@ -371,21 +371,6 @@ def get_urls_and_emails_from_pdf_html_content(cpy_file_path: str, output_folder:
     return set(re.findall(URL_EXTRACTION_REGEX, pdf_html_content)), set(re.findall(EMAIL_REGXEX, pdf_html_content))
 
 
-# def decrypt_pdf_file(file_path, user_password, path_to_decrypted_file):  # TODO Don't forget to delete
-#     """
-#     Gets a path to an encrypted PDF file and its password, and decrypts the file using pikepdf package.
-#     Args:
-#         file_path (str): A path to the encrypted PDF file.
-#         user_password (str): The password to the encrypted PDF file.
-#         path_to_decrypted_file (str): A path to save the decrypted PDF file to.
-
-#     Returns: None.
-
-#     """
-#     pdf_file = Pdf.open(file_path, password=user_password)
-#     pdf_file.save(path_to_decrypted_file)
-
-
 def extract_url_from_annot_object(annot_object: Any):
     """
     Extracts the URLs from the Annot object (under key: '/A').
@@ -524,41 +509,6 @@ def get_urls_and_emails_from_pdf_annots(file_path: str) -> Tuple[set, set]:
         demisto.debug('No Emails were extracted from the PDF.')
 
     return all_urls, all_emails
-
-
-# def extract_urls_emails_images(file_path: str, working_dir: str):  # TODO Don't forget to delete
-#     """
-#     Extract URLs, Emails, and images from the PDF file.
-
-#     Args:
-#         file_path (str): The path of the PDF file.
-#         working_dir (str): The working directory of the application.
-#     Returns:
-#         tuple[set, set, List[set]]: A set including the URLs and emails that were found, a set including only emails that were
-#          extracted from the html content, and a List of images that were extracted from the html content.
-#     """
-
-#     # Get urls from the binary file:
-#     binary_file_urls = get_urls_from_binary_file(file_path)
-
-#     # Get URLS + emails:
-#     annots_urls, annots_emails = get_urls_and_emails_from_pdf_annots(file_path)
-#     to_html_output_folder = f'{working_dir}/PDF_html'
-#     html_urls, html_emails = get_urls_and_emails_from_pdf_html_content(
-#         file_path, to_html_output_folder
-#     )
-#     # Get images:
-#     images = get_images_paths_in_path(to_html_output_folder)
-
-#     # html_urls.remove('http://www.w3.org/1999/xhtml')
-#     # This url might get generated with the pdf html file, and that's why we remove it if founded
-#     html_urls.discard("http://www.w3.org/1999/xhtml")
-
-#     # Unify urls:
-#     urls_set = annots_urls.union(html_urls, binary_file_urls)
-#     emails_set = annots_emails.union(html_emails)
-
-#     return urls_set, emails_set, images
 
 
 def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str) -> Tuple[set, set]:
