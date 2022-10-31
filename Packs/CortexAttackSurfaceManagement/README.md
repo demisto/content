@@ -37,3 +37,4 @@ This content pack includes the following scripts:
 
 #### GetRemediationGuidance
 This automation helps determine remediation guidance based on a list of Xpanse issueTypeId to remediationGuidance pairings.
+<place_holder: Add absolute link after PR>
