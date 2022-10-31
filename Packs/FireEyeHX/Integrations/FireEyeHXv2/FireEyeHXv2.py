@@ -691,7 +691,10 @@ class Client(BaseClient):
                 resp_type='response'
             )
         except Exception as e:
-            demisto.debug(f'Encountered an error for url {self._base_url}/token: {e}')
+            exception_str = str(e)
+            demisto.debug(f'Encountered an error for url {self._base_url}/token: {exception_str}')
+            if 'Incorrect user id or password' in exception_str:
+                raise DemistoException('Unauthorized - Incorrect user id or password')
             raise ValueError("Server URL incorrect")
 
         # successful request
