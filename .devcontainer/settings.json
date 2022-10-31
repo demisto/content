@@ -16,5 +16,4 @@
         "-v"
     ],
     "python.testing.cwd": "${workspaceFolder}/Packs/HelloWorld/Integrations/HelloWorld"
-
-}
+    }
