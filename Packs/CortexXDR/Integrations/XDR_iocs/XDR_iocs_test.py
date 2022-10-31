@@ -850,7 +850,7 @@ def test_overriding_severity_xdr_to_demisto():
     'informational',
     'INformationAL'
 ))
-def test_severity_fix(value: str):
+def test_severity_fix_info(value: str):
     """
     given
             a severity value that should be fixed to INFO
