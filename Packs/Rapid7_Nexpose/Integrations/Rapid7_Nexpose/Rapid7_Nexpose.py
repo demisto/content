@@ -448,7 +448,7 @@ class Client(BaseClient):
         Returns:
             dict: API response with information about the newly created shared credential.
         """
-        account_data: dict = {}
+        account_data: dict = {"service": service.value}
 
         S = CredentialService  # Simplify object name for shorter lines
 
@@ -456,7 +456,7 @@ class Client(BaseClient):
         if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL, S.ORACLE,
                        S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SNMPV3, S.SSH, S.SSH_KEY, S.SYBASE, S.TELNET):
             if username is None:
-                raise ValueError(f"Username is required for \"{service.value}\" services.")
+                raise ValueError(f"Username is required for {service.value} services.")
 
             account_data["username"] = username
 
@@ -464,7 +464,7 @@ class Client(BaseClient):
         if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL,
                        S.ORACLE, S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SSH, S.SYBASE, S.TELNET):
             if password is None:
-                raise ValueError(f"Password is required for \"{service.value}\" services.")
+                raise ValueError(f"Password is required for {service.value} services.")
 
             account_data["password"] = password
 
@@ -487,7 +487,7 @@ class Client(BaseClient):
 
         if service == S.CIFSHASH:
             if ntlm_hash is None:
-                raise ValueError(f"NTLM hash is required for \"{service.value}\" services.")
+                raise ValueError(f"NTLM hash is required for {service.value} services.")
 
             account_data["ntlmHash"] = ntlm_hash
 
@@ -511,19 +511,19 @@ class Client(BaseClient):
 
         if service == S.SNMP:
             if snmp_community_name is None:
-                raise ValueError(f"Community name is required for \"{service.value}\" services.")
+                raise ValueError(f"Community name is required for {service.value} services.")
 
             account_data["community"] = snmp_community_name
 
         if service == S.SNMPV3:
             if snmpv3_authentication_type is None:
-                raise ValueError(f"Authentication type is required for \"{service.value}\" services.")
+                raise ValueError(f"Authentication type is required for {service.value} services.")
 
             account_data["authenticationType"] = snmpv3_authentication_type.value
 
             if snmpv3_authentication_type != SNMPv3AuthenticationType.NO_AUTHENTICATION:
                 if password is None:
-                    raise ValueError(f"Password is required for \"{service.value}\" services when authentication "
+                    raise ValueError(f"Password is required for {service.value} services when authentication "
                                      f"is md5 to anything other than \"no-authentication\".")
 
                 account_data["password"] = password
@@ -532,7 +532,7 @@ class Client(BaseClient):
                 account_data["privacyType"] = snmpv3_privacy_type.value
 
                 if snmpv3_privacy_type != SNMPv3PrivacyType.NO_PRIVACY and snmpv3_privacy_password is None:
-                    raise ValueError(f"Privacy password is required for \"{service.value}\" services when the "
+                    raise ValueError(f"Privacy password is required for {service.value} services when the "
                                      f"authentication type is set to a value other than \"no-authentication\", "
                                      f"and privacy type is set to a value other than \"no-privacy\".")
 
@@ -552,7 +552,7 @@ class Client(BaseClient):
 
         if service == S.SSH_KEY:
             if ssh_key_pem is None:
-                raise ValueError(f"SSH private key password is required for \"{service.value}\" services.")
+                raise ValueError(f"SSH private key password is required for {service.value} services.")
 
             account_data["pemKey"] = ssh_key_pem
 
@@ -784,7 +784,7 @@ class Client(BaseClient):
         Returns:
             dict: API response with information about the newly created shared credential.
         """
-        account_data: dict = {}
+        account_data: dict = {"service": service.value}
 
         S = CredentialService  # Simplify object name for shorter lines
 
@@ -792,7 +792,7 @@ class Client(BaseClient):
         if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL, S.ORACLE,
                        S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SNMPV3, S.SSH, S.SSH_KEY, S.SYBASE, S.TELNET):
             if username is None:
-                raise ValueError(f"Username is required for \"{service.value}\" services.")
+                raise ValueError(f"Username is required for {service.value} services.")
 
             account_data["username"] = username
 
@@ -800,7 +800,7 @@ class Client(BaseClient):
         if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL,
                        S.ORACLE, S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SSH, S.SYBASE, S.TELNET):
             if password is None:
-                raise ValueError(f"Password is required for \"{service.value}\" services.")
+                raise ValueError(f"Password is required for {service.value} services.")
 
             account_data["password"] = password
 
@@ -823,7 +823,7 @@ class Client(BaseClient):
 
         if service == S.CIFSHASH:
             if ntlm_hash is None:
-                raise ValueError(f"NTLM hash is required for \"{service.value}\" services.")
+                raise ValueError(f"NTLM hash is required for {service.value} services.")
 
             account_data["ntlmHash"] = ntlm_hash
 
@@ -847,19 +847,19 @@ class Client(BaseClient):
 
         if service == S.SNMP:
             if snmp_community_name is None:
-                raise ValueError(f"Community name is required for \"{service.value}\" services.")
+                raise ValueError(f"Community name is required for {service.value} services.")
 
             account_data["community"] = snmp_community_name
 
         if service == S.SNMPV3:
             if snmpv3_authentication_type is None:
-                raise ValueError(f"Authentication type is required for \"{service.value}\" services.")
+                raise ValueError(f"Authentication type is required for {service.value} services.")
 
             account_data["authenticationType"] = snmpv3_authentication_type.value
 
             if snmpv3_authentication_type != SNMPv3AuthenticationType.NO_AUTHENTICATION:
                 if password is None:
-                    raise ValueError(f"Password is required for \"{service.value}\" services when authentication "
+                    raise ValueError(f"Password is required for {service.value} services when authentication "
                                      f"is md5 to anything other than \"no-authentication\".")
 
                 account_data["password"] = password
@@ -868,7 +868,7 @@ class Client(BaseClient):
                 account_data["privacyType"] = snmpv3_privacy_type.value
 
                 if snmpv3_privacy_type != SNMPv3PrivacyType.NO_PRIVACY and snmpv3_privacy_password is None:
-                    raise ValueError(f"Privacy password is required for \"{service.value}\" services when the "
+                    raise ValueError(f"Privacy password is required for {service.value} services when the "
                                      f"authentication type is set to a value other than \"no-authentication\", "
                                      f"and privacy type is set to a value other than \"no-privacy\".")
 
@@ -888,7 +888,7 @@ class Client(BaseClient):
 
         if service == S.SSH_KEY:
             if ssh_key_pem is None:
-                raise ValueError(f"SSH private key password is required for \"{service.value}\" services.")
+                raise ValueError(f"SSH private key password is required for {service.value} services.")
 
             account_data["pemKey"] = ssh_key_pem
 
@@ -1788,7 +1788,7 @@ class Client(BaseClient):
         Returns:
             dict: API response with information about the newly created shared credential.
         """
-        account_data: dict = {}
+        account_data: dict = {"service": service.value}
 
         S = CredentialService  # Simplify object name for shorter lines
 
@@ -1796,7 +1796,7 @@ class Client(BaseClient):
         if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL, S.ORACLE,
                        S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SNMPV3, S.SSH, S.SSH_KEY, S.SYBASE, S.TELNET):
             if username is None:
-                raise ValueError(f"Username is required for \"{service.value}\" services.")
+                raise ValueError(f"Username is required for {service.value} services.")
 
             account_data["username"] = username
 
@@ -1804,7 +1804,7 @@ class Client(BaseClient):
         if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL,
                        S.ORACLE, S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SSH, S.SYBASE, S.TELNET):
             if password is None:
-                raise ValueError(f"Password is required for \"{service.value}\" services.")
+                raise ValueError(f"Password is required for {service.value} services.")
 
             account_data["password"] = password
 
@@ -1827,7 +1827,7 @@ class Client(BaseClient):
 
         if service == S.CIFSHASH:
             if ntlm_hash is None:
-                raise ValueError(f"NTLM hash is required for \"{service.value}\" services.")
+                raise ValueError(f"NTLM hash is required for {service.value} services.")
 
             account_data["ntlmHash"] = ntlm_hash
 
@@ -1851,19 +1851,19 @@ class Client(BaseClient):
 
         if service == S.SNMP:
             if snmp_community_name is None:
-                raise ValueError(f"Community name is required for \"{service.value}\" services.")
+                raise ValueError(f"Community name is required for {service.value} services.")
 
             account_data["community"] = snmp_community_name
 
         if service == S.SNMPV3:
             if snmpv3_authentication_type is None:
-                raise ValueError(f"Authentication type is required for \"{service.value}\" services.")
+                raise ValueError(f"Authentication type is required for {service.value} services.")
 
             account_data["authenticationType"] = snmpv3_authentication_type.value
 
             if snmpv3_authentication_type != SNMPv3AuthenticationType.NO_AUTHENTICATION:
                 if password is None:
-                    raise ValueError(f"Password is required for \"{service.value}\" services when authentication "
+                    raise ValueError(f"Password is required for {service.value} services when authentication "
                                      f"is md5 to anything other than \"no-authentication\".")
 
                 account_data["password"] = password
@@ -1872,7 +1872,7 @@ class Client(BaseClient):
                 account_data["privacyType"] = snmpv3_privacy_type.value
 
                 if snmpv3_privacy_type != SNMPv3PrivacyType.NO_PRIVACY and snmpv3_privacy_password is None:
-                    raise ValueError(f"Privacy password is required for \"{service.value}\" services when the "
+                    raise ValueError(f"Privacy password is required for {service.value} services when the "
                                      f"authentication type is set to a value other than \"no-authentication\", "
                                      f"and privacy type is set to a value other than \"no-privacy\".")
 
@@ -1892,7 +1892,7 @@ class Client(BaseClient):
 
         if service == S.SSH_KEY:
             if ssh_key_pem is None:
-                raise ValueError(f"SSH private key password is required for \"{service.value}\" services.")
+                raise ValueError(f"SSH private key password is required for {service.value} services.")
 
             account_data["pemKey"] = ssh_key_pem
 
@@ -1988,7 +1988,7 @@ class Client(BaseClient):
         Returns:
             dict: API response with information about the newly created shared credential.
         """
-        account_data: dict = {}
+        account_data: dict = {"service": service.value}
 
         S = CredentialService  # Simplify object name for shorter lines
 
@@ -1996,7 +1996,7 @@ class Client(BaseClient):
         if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL, S.ORACLE,
                        S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SNMPV3, S.SSH, S.SSH_KEY, S.SYBASE, S.TELNET):
             if username is None:
-                raise ValueError(f"Username is required for \"{service.value}\" services.")
+                raise ValueError(f"Username is required for {service.value} services.")
 
             account_data["username"] = username
 
@@ -2004,7 +2004,7 @@ class Client(BaseClient):
         if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL,
                        S.ORACLE, S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SSH, S.SYBASE, S.TELNET):
             if password is None:
-                raise ValueError(f"Password is required for \"{service.value}\" services.")
+                raise ValueError(f"Password is required for {service.value} services.")
 
             account_data["password"] = password
 
@@ -2027,7 +2027,7 @@ class Client(BaseClient):
 
         if service == S.CIFSHASH:
             if ntlm_hash is None:
-                raise ValueError(f"NTLM hash is required for \"{service.value}\" services.")
+                raise ValueError(f"NTLM hash is required for {service.value} services.")
 
             account_data["ntlmHash"] = ntlm_hash
 
@@ -2051,19 +2051,19 @@ class Client(BaseClient):
 
         if service == S.SNMP:
             if snmp_community_name is None:
-                raise ValueError(f"Community name is required for \"{service.value}\" services.")
+                raise ValueError(f"Community name is required for {service.value} services.")
 
             account_data["community"] = snmp_community_name
 
         if service == S.SNMPV3:
             if snmpv3_authentication_type is None:
-                raise ValueError(f"Authentication type is required for \"{service.value}\" services.")
+                raise ValueError(f"Authentication type is required for {service.value} services.")
 
             account_data["authenticationType"] = snmpv3_authentication_type.value
 
             if snmpv3_authentication_type != SNMPv3AuthenticationType.NO_AUTHENTICATION:
                 if password is None:
-                    raise ValueError(f"Password is required for \"{service.value}\" services when authentication "
+                    raise ValueError(f"Password is required for {service.value} services when authentication "
                                      f"is md5 to anything other than \"no-authentication\".")
 
                 account_data["password"] = password
@@ -2072,7 +2072,7 @@ class Client(BaseClient):
                 account_data["privacyType"] = snmpv3_privacy_type.value
 
                 if snmpv3_privacy_type != SNMPv3PrivacyType.NO_PRIVACY and snmpv3_privacy_password is None:
-                    raise ValueError(f"Privacy password is required for \"{service.value}\" services when the "
+                    raise ValueError(f"Privacy password is required for {service.value} services when the "
                                      f"authentication type is set to a value other than \"no-authentication\", "
                                      f"and privacy type is set to a value other than \"no-privacy\".")
 
@@ -2092,7 +2092,7 @@ class Client(BaseClient):
 
         if service == S.SSH_KEY:
             if ssh_key_pem is None:
-                raise ValueError(f"SSH private key password is required for \"{service.value}\" services.")
+                raise ValueError(f"SSH private key password is required for {service.value} services.")
 
             account_data["pemKey"] = ssh_key_pem
 
