@@ -12,6 +12,33 @@ def open_html_file(file):
         return f.read()
 
 
+COPY_PROTECTED_CASES = [
+    (f'{CWD}/copy_protect.pdf', 'ahsdkljhakjhdasjk', 1)
+]
+
+
+@pytest.mark.parametrize('pdf_file, expected_text, num_of_images', COPY_PROTECTED_CASES)
+def test_copy_protected(tmp_path, pdf_file, expected_text, num_of_images):
+    """
+    Given:
+        - A `copy-protected` file that has text and images in it.
+    When:
+        - Trying to extract data from it.
+    Then:
+        - We bypass this limitation and proceed to extract the relevant data.
+    """
+    from ReadPDFFileV2 import get_pdf_text, get_images_paths_in_path, get_pdf_htmls_content
+    from pikepdf import Pdf
+    with Pdf.open(pdf_file) as pdf:
+        assert not pdf._allow_extract, 'The file provided must be `copy-protected`'
+
+    text = get_pdf_text(file_path=pdf_file, pdf_text_output_path=f'{tmp_path}/text_output.txt')
+    get_pdf_htmls_content(pdf_file, tmp_path)
+    images = get_images_paths_in_path(tmp_path)
+    assert text in expected_text
+    assert len(images) == num_of_images, 'Failed to extract images'
+
+
 def test_urls_are_found_correctly(mocker):
     """
     Given
@@ -25,6 +52,28 @@ def test_urls_are_found_correctly(mocker):
     mocker.patch('ReadPDFFileV2.get_pdf_htmls_content', return_value=open_html_file(f'{CWD}/pdf-html-content.html'))
     urls, _ = get_urls_and_emails_from_pdf_html_content('', '')
     assert urls == {'http://www.w3.org/1999/xhtml'}
+
+
+def test_incorrect_authentication():
+    """
+    Given
+        - An encrypted pdf file and an incorrect password.
+    When
+        - Trying to decrypt the file(using the password) to extract data.
+    Then
+        - The program will catch this error and raise the appropriate exception.
+    """
+    from ReadPDFFileV2 import get_pdf_metadata, handling_pdf_credentials
+    file_path = f'{CWD}/encrypted.pdf'
+    dec_file_path = f'{CWD}/decrypted.pdf'
+
+    with pytest.raises(PdfCredentialsException) as e:
+        get_pdf_metadata(file_path=file_path, user_password='12')
+    assert 'Incorrect password' in str(e)
+
+    with pytest.raises(PdfCredentialsException) as e:
+        handling_pdf_credentials(cpy_file_path=file_path, dec_file_path=dec_file_path, user_password='12')
+    assert 'Incorrect password' in str(e)
 
 
 def test_get_files_names_in_path():

@@ -209,6 +209,12 @@ def get_pdf_metadata(file_path: str, user_password: str | None = None) -> dict:
     return metadata
 
 
+def bypass_copy_protected_limitations(pdf_file: str) -> None:
+    """ This function is in charge of bypassing the limitations of `copy-protected` files """
+    with Pdf.open(pdf_file, allow_overwriting_input=True) as pdf:
+        pdf.save(pdf_file)
+
+
 def get_pdf_text(file_path: str, pdf_text_output_path: str) -> str:
     """Creates a txt file from the pdf in the pdf_text_output_path and returns the content of the txt file"""
     # pdf = Pdf.open(file_path)
@@ -216,14 +222,15 @@ def get_pdf_text(file_path: str, pdf_text_output_path: str) -> str:
     try:
         run_shell_command("pdftotext", file_path, pdf_text_output_path)
     except PdfCopyingException:
-        pdf = Pdf.open(file_path, allow_overwriting_input=True)
-        pdf.save(file_path)
+        bypass_copy_protected_limitations(pdf_file=file_path)
+        # pdf = Pdf.open(file_path, allow_overwriting_input=True)
+        # pdf.save(file_path)
         run_shell_command("pdftotext", file_path, pdf_text_output_path)
     # run_shell_command("pdftotext", file_path, pdf_text_output_path)
     text = ""
     with open(pdf_text_output_path, "rb") as f:
         for line in f:
-            text += line.decode("utf-8", errors='ignore')  # TODO DON'T FORGET TO DELETE errors ARGS
+            text += line.decode("utf-8")  # TODO DON'T FORGET TO DELETE errors ARGS
     return text
 
 
@@ -234,8 +241,9 @@ def get_pdf_htmls_content(pdf_path: str, output_folder: str) -> str:
     try:
         run_shell_command("pdftohtml", pdf_path, pdf_html_output_path)
     except PdfCopyingException:
-        pdf = Pdf.open(pdf_path, allow_overwriting_input=True)
-        pdf.save(pdf_path)
+        bypass_copy_protected_limitations(pdf_file=pdf_path)
+        # pdf = Pdf.open(pdf_path, allow_overwriting_input=True)
+        # pdf.save(pdf_path)
         run_shell_command("pdftohtml", pdf_path, pdf_html_output_path)
     html_file_names = get_files_names_in_path(output_folder, "*.html")
     html_content = ""
