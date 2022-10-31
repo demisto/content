@@ -3203,7 +3203,7 @@ class Pack(object):
         """
         # Open the url image, set stream to True, this will return the stream content.
         readme_original_url = urllib.parse.urlparse(readme_original_url)
-        r = requests.get(readme_original_url.geturl(), stream=True, verify=False)
+        r = requests.get(readme_original_url.geturl(), stream=True)
 
         # Check if the image was retrieved successfully
         if r.status_code == 200:
