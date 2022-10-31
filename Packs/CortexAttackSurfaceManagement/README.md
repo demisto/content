@@ -16,9 +16,12 @@ This pack contains all of the integrations, automations, and playbooks necessary
 ### Playbooks
 1. <place_holder>
 2. Cortex ASM - Detect Service
-3. <place_holder>
+3. Cortex ASM - Enrichment
 
 #### Cortex ASM - Detect Service
 Playbook that looks at what ASM sub-type the alert is and direct to different pre/post mitigation scans (such as NMAP).
 <place_holder: Add absolute link after PR>
-   
+
+#### Cortex ASM - Enrichment
+Playbook that is used as a container folder for all enrichments of ASM alerts.
+<place_holder: Add absolute link after PR>
