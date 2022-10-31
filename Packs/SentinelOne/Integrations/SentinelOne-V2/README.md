@@ -2679,3 +2679,49 @@ Initiate the endpoint virus scan on provided agent IDs.
 #### Command Example
 ```!sentinelone-initiate-endpoint-scan agent_ids="1463801667584541849,1463801667584545236"```
 
+### sentinelone-run-remote-script
+***
+Run a remote script that was uploaded to the SentinelOne Script Library.
+
+
+#### Base Command
+
+`sentinelone-run-remote-script`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| output_destination | Output Destination : DataSetCloud/Local/None/SentinelCloud | Required | 
+| task_description | Task description | Required |
+| script_id | script ID | Required |
+| output_directory | Output Directory | Required |
+| account_ids | A comma-separated list of Account IDs. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.RunRemoteScript.pendingExecutionId | String | ID of created pending execution, present only if pending flag is true. | 
+| SentinelOne.RunRemoteScript.pending | Boolean | Flag indicating if requested script execution requires approval and is created as pending execution. |
+| SentinelOne.RunRemoteScript.affected | Number | Number of entities affected by the requested operation |
+| SentinelOne.RunRemoteScript.parentTaskId | String | The parent task id of the script execution task, null in case of pending execution.|
+
+#### Command Example
+```!sentinelone-run-remote-script output_destination=<value> task_description=<value> script_id=<value> output_directory=<value> account_ids=<value>```
+
+### sentinelone-get-threats-info
+***
+Get SentinelOne threats information.
+
+
+#### Base Command
+
+`sentinelone-get-threats-info`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| threat_ids | A comma-separated list of Threat IDs. | Required |
+
+#### Command Example
+```!sentinelone-get-threats-info threat_ids=<value>```
