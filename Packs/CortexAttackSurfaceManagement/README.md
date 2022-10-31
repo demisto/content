@@ -25,3 +25,12 @@ Playbook that looks at what ASM sub-type the alert is and direct to different pr
 #### Cortex ASM - Enrichment
 Playbook that is used as a container folder for all enrichments of ASM alerts.
 <place_holder: Add absolute link after PR>
+
+### Automation Scripts
+This content pack includes the following scripts: 
+1. GetRemediationGuidance
+2. GenerateASMReport
+
+#### GetRemediationGuidance
+This automation helps determine remediation guidance based on a list of Xpanse issueTypeId to remediationGuidance pairings.
+![GetRemediationGuidance](<ADD ABSOLUTE LINK GetRemediationGuidance.png>)
