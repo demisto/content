@@ -1,5 +1,5 @@
 id: 6d0f513e-b88a-4ef1-8ba1-e497461abe33
-version: 18
+version: 36
 vcShouldKeepItemLegacyProdMachine: false
 name: Pull Request Creation - Bitbucket
 description: This playbook creates a pull request using Github integration.
@@ -17,14 +17,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "55"
+      - "47"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 615
+          "y": 340
         }
       }
     note: false
@@ -112,13 +112,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: b135ca4c-a15a-4fd3-8bb2-49ec75a699ec
+    taskid: b79e25e5-2e98-4696-8f4f-bdb1fb0b1a51
     type: regular
     task:
-      id: b135ca4c-a15a-4fd3-8bb2-49ec75a699ec
+      id: b79e25e5-2e98-4696-8f4f-bdb1fb0b1a51
       version: -1
       name: Commit files - UPDATE
-      scriptName: CommitFiles
+      description: This script gets content files as input from the context, commits
+        the files in the correct folder and creates the pull request text.
+      scriptName: CommitFilesBitbucket
       type: regular
       iscommand: false
       brand: ""
@@ -133,6 +135,8 @@ tasks:
         complex:
           root: incident
           accessor: cicdpullrequestcomment
+      email:
+        simple: ${inputs.Email}
       files:
         complex:
           root: File
@@ -144,7 +148,7 @@ tasks:
           root: inputs.PullRequestTemplate
       user:
         complex:
-          root: DemistoUsers
+          root: inputs.UserName
           transformers:
           - operator: FirstArrayElement
     separatecontext: false
@@ -793,7 +797,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "48"
+      - "6"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -999,10 +1003,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 950b295d-d6fd-4e9b-89d1-3c9b56039ee8
+    taskid: 89da2aa4-120e-4947-8c61-0b54cbac638b
     type: condition
     task:
-      id: 950b295d-d6fd-4e9b-89d1-3c9b56039ee8
+      id: 89da2aa4-120e-4947-8c61-0b54cbac638b
       version: -1
       name: Does branch exist?
       type: condition
@@ -1015,16 +1019,17 @@ tasks:
       - "41"
     separatecontext: false
     conditions:
-    - label: condition-1
+    - label: "yes"
       condition:
       - - operator: isEqualString
           left:
             value:
-              simple: ${IsNewBranch}
+              complex:
+                root: IsExistingBranch
             iscontext: true
           right:
             value:
-              simple: "False"
+              simple: "True"
     continueonerrortype: ""
     view: |-
       {
@@ -1127,16 +1132,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 25496886-b91f-4949-815c-ff8952d1f697
+    taskid: 17598967-645f-41e7-8c64-07a8be279569
     type: regular
     task:
-      id: 25496886-b91f-4949-815c-ff8952d1f697
+      id: 17598967-645f-41e7-8c64-07a8be279569
       version: -1
-      name: Get relevant Pull Request
-      description: Returns a list of the pull requests. If a state is provided than
-        the list will contain only PRs with the wanted status. If a state is not provided,
-        by default a list of the open pull requests will return.
-      script: Bitbucket|||bitbucket-pull-request-list
+      name: Update relevant Pull Request
+      description: Updates a pull request in Bitbucket.
+      script: Bitbucket|||bitbucket-pull-request-update
       type: regular
       iscommand: true
       brand: Bitbucket
@@ -1144,6 +1147,8 @@ tasks:
       '#none#':
       - "35"
     scriptarguments:
+      description:
+        simple: ${PR_text}
       partial_response:
         simple: "false"
       pull_request_id:
@@ -1166,10 +1171,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: b2e91d57-79c1-4bc6-8986-b7362ddd1beb
+    taskid: 96b1cfd8-f95b-4130-8515-316d85d10bad
     type: regular
     task:
-      id: b2e91d57-79c1-4bc6-8986-b7362ddd1beb
+      id: 96b1cfd8-f95b-4130-8515-316d85d10bad
       version: -1
       name: Set New Branch
       description: Set a value in context under the key you entered.
@@ -1182,9 +1187,9 @@ tasks:
       - "39"
     scriptarguments:
       key:
-        simple: IsNewBranch
+        simple: IsExistingBranch
       value:
-        simple: "True"
+        simple: "False"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1203,10 +1208,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 2db85fa5-cfb2-4d75-8f10-7a8232198379
+    taskid: fbb31f4c-a016-424b-8e8a-bb0a26574e4c
     type: regular
     task:
-      id: 2db85fa5-cfb2-4d75-8f10-7a8232198379
+      id: fbb31f4c-a016-424b-8e8a-bb0a26574e4c
       version: -1
       name: Set Existing Branch
       description: Set a value in context under the key you entered.
@@ -1219,9 +1224,9 @@ tasks:
       - "39"
     scriptarguments:
       key:
-        simple: IsNewBranch
+        simple: IsExistingBranch
       value:
-        simple: "False"
+        simple: "True"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1238,22 +1243,84 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "55":
-    id: "55"
-    taskid: bb54c740-3ecd-4cf5-8d6a-2d87cb9b97dd
+  "56":
+    id: "56"
+    taskid: 5acdba6c-01d8-4661-8fd8-282694f21d3b
     type: regular
     task:
-      id: bb54c740-3ecd-4cf5-8d6a-2d87cb9b97dd
+      id: 5acdba6c-01d8-4661-8fd8-282694f21d3b
       version: -1
-      name: Set pack name - temporary
+      name: Unzip pack
+      description: Unzip a file using fileName or entryID to specify a file. Unzipped
+        files will be loaded to the War Room and names will be put into the context.
+      scriptName: UnzipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2.5,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 8bfb4478-55a5-4168-8334-c6e3f9c41ad7
+    type: regular
+    task:
+      id: 8bfb4478-55a5-4168-8334-c6e3f9c41ad7
+      version: -1
+      name: read metadata - temp
+      description: Load the contents of a file into context.
+      scriptName: ReadFile
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2.5,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 8557a822-d10f-461c-8d68-05f0d4310e59
+    type: regular
+    task:
+      id: 8557a822-d10f-461c-8d68-05f0d4310e59
+      version: -1
+      name: set pack name - temp
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "47"
     scriptarguments:
       key:
         simple: PackName
@@ -1264,8 +1331,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 710
+          "x": -2.5,
+          "y": 800
         }
       }
     note: false
@@ -1280,10 +1347,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3745,
+        "height": 4020,
         "width": 1642.5,
         "x": -2.5,
-        "y": 615
+        "y": 340
       }
     }
   }
@@ -1305,6 +1372,16 @@ inputs:
     simple: Bitbucket
   required: false
   description: The name of the Git integration that the user want to use
+  playbookInputQuery: null
+- key: UserName
+  value: {}
+  required: false
+  description: The user name in Bitbucket
+  playbookInputQuery: null
+- key: Email
+  value: {}
+  required: false
+  description: The email in Bitbucket
   playbookInputQuery: null
 outputs: []
 sourceplaybookid: Pull Request Creation - Github

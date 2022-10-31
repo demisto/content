@@ -9,23 +9,26 @@ args:
 - description: The name of the pack.
   name: pack
   required: true
-- description: The current user details from the command "getUsers".
+- description: The UserName in Bitbucket.
   name: user
-  required: true
+  required: false
+- description: The email in Bitbucket.
+  name: email
+  required: false
 - description: Short description to add to the pull request text.
   name: comment
 - description: Pull request description template.
   name: template
 comment: This script gets content files as input from the context, commits the files in the correct folder and creates the pull request text.
 commonfields:
-  id: CommitFiles
+  id: CommitFilesBitbucket
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
 dockerimage: demisto/xsoar-tools:1.0.0.32456
 enabled: true
-name: CommitFiles
+name: CommitFilesBitbucket
 outputs:
 - contextPath: PR_text
   description: The pull request text.
