@@ -24,7 +24,14 @@
                         ]
                     }
                 },
-                "CiscoSMA Email From": {
+                "Email Body HTML": {
+                    "complex": {
+                        "filters": [],
+                        "root": "messageBody",
+                        "transformers": []
+                    }
+                },
+                "Email From": {
                     "complex": {
                         "filters": [],
                         "root": "fromAddress",
@@ -42,13 +49,21 @@
                         ]
                     }
                 },
-                "CiscoSMA Email Message ID": {
-                    "simple": "mid"
+                "Email Message ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mid",
+                        "transformers": []
+                    }
                 },
-                "CiscoSMA Email Subject": {
-                    "simple": "subject"
+                "Email Subject": {
+                    "complex": {
+                        "filters": [],
+                        "root": "subject",
+                        "transformers": []
+                    }
                 },
-                "CiscoSMA Email To": {
+                "Email To": {
                     "complex": {
                         "filters": [],
                         "root": "toAddress",
@@ -65,27 +80,6 @@
                             }
                         ]
                     }
-                },
-                "CiscoSMA Envelope Recipient": {
-                    "complex": {
-                        "filters": [],
-                        "root": "envelopeRecipient",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "separator": {
-                                        "value": {
-                                            "simple": ","
-                                        }
-                                    }
-                                },
-                                "operator": "join"
-                            }
-                        ]
-                    }
-                },
-                "CiscoSMA Message Body": {
-                    "simple": "messageBody"
                 }
             }
         },

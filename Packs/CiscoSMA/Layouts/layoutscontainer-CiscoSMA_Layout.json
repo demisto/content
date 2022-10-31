@@ -312,28 +312,28 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "ciscosmaemailmessageid",
+                                "fieldId": "emailmessageid",
                                 "height": 53,
-                                "id": "a42aee00-3276-11ed-b2b1-cff928cb00da",
+                                "id": "81eae080-5921-11ed-92f3-a7f94e8ed24a",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "ciscosmaemailsubject",
+                                "fieldId": "ciscosmaattriutes",
                                 "height": 53,
-                                "id": "85863bd0-3276-11ed-b2b1-cff928cb00da",
+                                "id": "36e10d80-33fb-11ed-892b-ab9999778868",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 2
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "ciscosmaattriutes",
+                                "fieldId": "emailsubject",
                                 "height": 53,
-                                "id": "36e10d80-33fb-11ed-892b-ab9999778868",
-                                "index": 1,
+                                "id": "6f727bc0-5921-11ed-92f3-a7f94e8ed24a",
+                                "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 2
                             },
@@ -343,25 +343,25 @@
                                 "fieldId": "ciscosmaattachments",
                                 "height": 53,
                                 "id": "3389f340-33fb-11ed-892b-ab9999778868",
-                                "index": 1,
+                                "index": 0,
                                 "listId": "caseinfoid-73268f30-3276-11ed-b2b1-cff928cb00da",
                                 "sectionItemType": "field",
                                 "startCol": 2
                             },
                             {
                                 "endCol": 6,
-                                "fieldId": "ciscosmaemailfrom",
+                                "fieldId": "emailfrom",
                                 "height": 53,
-                                "id": "96c9a300-3276-11ed-b2b1-cff928cb00da",
+                                "id": "745f5130-5921-11ed-92f3-a7f94e8ed24a",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 4
                             },
                             {
                                 "endCol": 6,
-                                "fieldId": "ciscosmaemailto",
+                                "fieldId": "emailto",
                                 "height": 53,
-                                "id": "9fe30b20-3276-11ed-b2b1-cff928cb00da",
+                                "id": "792b5830-5921-11ed-92f3-a7f94e8ed24a",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 4
@@ -378,17 +378,17 @@
                     },
                     {
                         "displayType": "CARD",
-                        "h": 3,
+                        "h": 5,
                         "hideItemTitleOnlyOne": false,
                         "hideName": true,
                         "i": "caseinfoid-1ec62170-3407-11ed-9f6b-2551c689e625",
                         "items": [
                             {
-                                "endCol": 6,
-                                "fieldId": "ciscosmamessagebody",
+                                "endCol": 2,
+                                "fieldId": "emailbodyhtml",
                                 "height": 106,
-                                "id": "25fc4aa0-3407-11ed-9f6b-2551c689e625",
-                                "index": 1,
+                                "id": "7d825640-5921-11ed-92f3-a7f94e8ed24a",
+                                "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
