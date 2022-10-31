@@ -854,7 +854,7 @@ def file_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                                           file_content, execute_filemode)
     return CommandResults(
         outputs_prefix='GitLab.File',
-        outputs_key_field='path',
+        outputs_key_field='file_path',
         readable_output='File created successfully.',
         outputs=response,
         raw_response=response
@@ -892,16 +892,12 @@ def file_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         file_path_entry_id = demisto.getFilePath(entry_id).get('path')
         with open(file_path_entry_id, 'rb') as f:
             file_content = f.read()
-    else:
-        file_content = bytes(file_content, encoding='utf8')
     response = client.file_update_request(file_path, branch, start_branch, encoding, author_email, author_name, commit_message,
                                           last_commit_id, execute_filemode, file_content)
-
-    human_readable_str = 'File updated successfully.'
     return CommandResults(
         outputs_prefix='GitLab.File',
-        outputs_key_field='path',
-        readable_output=human_readable_str,
+        outputs_key_field='file_path',
+        readable_output='File updated successfully.',
         outputs=response,
         raw_response=response
     )
