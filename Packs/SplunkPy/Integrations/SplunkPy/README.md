@@ -46,6 +46,9 @@ This integration was integrated and tested with Splunk v7.2.
 | enabled_enrichments | The possible types of enrichment are: Drilldown, Asset, and Identity | False |
 | num_enrichment_events | The maximal number of event to retrieve per enrichment type. Default to 20. | False | 
 | enrichment_timeout | The maximal time for an enrichment to be processed. Default to 5min. When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment. | False
+| extensive_logs | Extensive logging (for debugging purposes). Do not use this option unless advised otherwise. | False
+| occurrence_look_behind | The fetch time range will be at least the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk. | False
+| unique_id_fields | A comma-separated list of fields, which together are a unique identifier for the events to fetch in order to avoid fetching duplicates incidents. | False
 
 The (!) *Earliest time to fetch* and *Latest time to fetch* are search parameters options. The search uses *All Time* as the default time range when you run a search from the CLI. Time ranges can be specified using one of the CLI search parameters, such as *earliest_time*, *index_earliest*, or *latest_time*.
 
@@ -84,7 +87,7 @@ where the **$IDENTITY_VALUE** is replaced with the **user** and **src_user** fro
 When fetching incidents from Splunk to Cortex XSOAR and when mirroring incidents between Splunk and Cortex XSOAR, the Splunk Owner Name (user) associated with an incident needs to be mapped to the relevant Cortex XSOAR Owner Name (user).  
 You can use Splunk to define a user lookup table and then configure the SplunkPy integration instance to enable the user mapping. Alternatively, you can map the users with a script or a transformer.  
 
-**note:** Owner field in Xsoar incident can only be uses for mirroring-out and cannot be changed according to Splunk values. Mirroring-in will be available via the *Assigned User* incident field. 
+**note:** Owner field in Cortex XSOAR incident can only be uses for mirroring-out and cannot be changed according to Splunk values. Mirroring-in will be available via the *Assigned User* incident field. 
 
 **Configure User Mapping Using Splunk**  
 1. Define the lookup table in Splunk.  
@@ -901,7 +904,7 @@ Deletes the specified object in store. Search can be a basic key-value pair or a
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| app_name | The name of the Splunk application that contains the KV store collection. The deafult is "search". | Required | 
+| app_name | The name of the Splunk application that contains the KV store collection. The default is "search". | Required | 
 | kv_store_collection_name | The name of the KV store collection. | Required | 
 | indicator_path | The path to the indicator value in kv_store_data. | Optional | 
 | key | The key name to search in the store. If the query argument is used, this argument will be ignored. | Optional | 
@@ -934,7 +937,7 @@ Gets data from a notable event. This method does not update the current incident
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | The remote event ID. | Required | 
-| lastUpdate | ISO format date with timezone, e.g. 2021-02-09T16:41:30.589575+02:00. The incident is only updated if it was modified after the last update time.  | Required | 
+| lastUpdate | ISO format date with timezone, e.g., 2021-02-09T16:41:30.589575+02:00. The incident is only updated if it was modified after the last update time.  | Required | 
 
 
 #### Context Output
@@ -954,7 +957,7 @@ Gets the list of notable events that were modified since the last update. This c
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| lastUpdate | ISO format date with timezone, e.g. 2021-02-09T16:41:30.589575+02:00. The incident is only returned if it was modified after the last update time. | Required | 
+| lastUpdate | ISO format date with timezone, e.g., 2021-02-09T16:41:30.589575+02:00. The incident is only returned if it was modified after the last update time. | Required | 
 
 
 #### Context Output
@@ -989,7 +992,7 @@ There is no context output for this command.
 
 ### splunk-get-username-by-xsoar-user
 ***
-Returns the Splunk's username matching the given Xsoar's username.
+Returns the Splunk's username matching the given Cortex XSOAR's username.
 
 
 #### Base Command
@@ -999,14 +1002,14 @@ Returns the Splunk's username matching the given Xsoar's username.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| xsoar_username | Xsoar username to match in splunk's usernames records. | Required | 
+| xsoar_username | Cortex XSOAR username to match in Splunk's usernames records. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Splunk.UserMapping.XsoarUser | String | xsoar user mapping. | 
-| Splunk.UserMapping.SplunkUser | String | splunk user mapping. | 
+| Splunk.UserMapping.XsoarUser | String | Cortex XSOAR user mapping. | 
+| Splunk.UserMapping.SplunkUser | String | Splunk user mapping. | 
 
 
 #### Command Example
