@@ -1,7 +1,7 @@
 id: IOC Alert
 version: -1
 name: IOC Alert
-description: "IOCs provide the ability to alert on known malicious objects on endpoints across the organization. \n\n**Analysis Actions:**\nThe playbook will use serval enrichment sources to determine the IOC verdict. Additionally, will use the Analytics module to run a prevalence check for the IOC.\n\n**Response Actions**\nThe playbook's first response action is a containment plan which is based on the playbook input. In that phase, the playbook will execute endpoint isolation\n\n**Investigative Actions:**\nWhen the playbook executes, it checks for additional abnormal activity using the Endpoint Investigation Plan playbook that can indicate the endpoint might be compromised.\n\n**Remediation Actions:**\nIn case there are results found within the investigation phase, the playbook will execute remediation actions which includes containment and eradication.\n\nThis phase will execute the following containment actions:\n\n* File quarantine\n* Endpoint isolation\n\nAnd the following eradication actions:\n\n* Manual process termination\n* Manual file deletion"
+description: "IOCs provide the ability to alert on known malicious objects on endpoints across the organization. \n\n**Analysis Actions:**\nThe playbook will use several enrichment sources to determine the IOC verdict. Additionally, will use the Analytics module to run a prevalence check for the IOC.\n\n**Response Actions:**\nThe playbook's first response action is a containment plan that is based on the playbook input. In that phase, the playbook will execute endpoint isolation\n\n**Investigative Actions:**\nWhen the playbook executes, it checks for additional abnormal activity using the Endpoint Investigation Plan playbook that can indicate the endpoint might be compromised.\n\n**Remediation Actions:**\nIn case there are results found within the investigation phase, the playbook will execute remediation actions that includes containment and eradication.\n\nThis phase will execute the following containment actions:\n\n* File quarantine\n* Endpoint isolation\n\nAnd the following eradication actions:\n\n* Manual process termination\n* Manual file deletion"
 starttaskid: "0"
 tasks:
   "0":
@@ -42,7 +42,7 @@ tasks:
       id: e0f81dd8-c1b5-4641-80c2-d06d57e246e9
       version: -1
       name: Found suspicious IOC?
-      description: Checks if found any suspicious IOCs to continue with the alert investigation
+      description: Checks if any suspicious IOCs were found to continue with the alert investigation.
       type: condition
       iscommand: false
       brand: ""
@@ -237,7 +237,7 @@ tasks:
       id: b772f110-939d-4f2b-8850-088e8cf36343
       version: -1
       name: Should continue with the investigation?
-      description: Asks the user whether the alert investigation should continue 
+      description: Asks the user whether the alert investigation should continue.
       type: condition
       iscommand: false
       brand: ""
@@ -270,7 +270,7 @@ tasks:
       id: a0697551-115b-4674-8204-ba39af9247f5
       version: -1
       name: Continue with the incident investigation
-      description: Continue with the incident investigation
+      description: Continue with the incident investigation.
       type: regular
       iscommand: false
       brand: ""
@@ -332,7 +332,7 @@ tasks:
       id: eedbc660-cd5d-4fa8-8b6b-c6ad6acba120
       version: -1
       name: Found relevant information?
-      description: Checks if relevant information found
+      description: Checks if relevant information was found.
       type: condition
       iscommand: false
       brand: ""
@@ -405,7 +405,7 @@ tasks:
       id: d28beff8-6a1a-47ab-8fe9-f894e9a17cfc
       version: -1
       name: Enrichment for Verdict
-      description: This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then  returns the information needed to establish the alert's verdict.
+      description: This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then returns the information needed to establish the alert's verdict.
       playbookName: Enrichment for Verdict
       type: playbook
       iscommand: false
@@ -465,7 +465,7 @@ tasks:
       id: 42c60c2c-36bc-43db-8a99-2120db91b67c
       version: -1
       name: Containment Plan
-      description: "This playbook handles all the containment actions available with Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine file\n* Block indicators\n* Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+      description: "This playbook handles all the containment actions available with Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine file\n* Block indicators\n* Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
       playbookName: Containment Plan
       type: playbook
       iscommand: false
@@ -531,7 +531,7 @@ tasks:
       id: 323c4f4e-36a1-4cc9-8c31-d54582ed410e
       version: -1
       name: Endpoint Investigation Plan
-      description: "This playbook handles all the endpoint investigation actions available with Cortex XSIAM, including the following tasks:\n* Pre-defined MITRE Tactics\n* Host fields (Host ID)\n* Attacker fields (Attacker IP, External host)\n* MITRE techniques\n* File hash (currently, the playbook supports only SHA256)  \n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+      description: "This playbook handles all the endpoint investigation actions available with Cortex XSIAM, including the following tasks:\n* Pre-defined MITRE Tactics\n* Host fields (Host ID)\n* Attacker fields (Attacker IP, External host)\n* MITRE techniques\n* File hash (currently, the playbook supports only SHA256)  \n\nNote: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
       playbookName: Endpoint Investigation Plan
       type: playbook
       iscommand: false
@@ -674,7 +674,7 @@ tasks:
       id: b7c41b05-77b0-435c-885e-015688350d6c
       version: -1
       name: close alert
-      description: Closes the alert in Cortex XSIAM
+      description: Closes the alert in Cortex XSIAM.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -806,7 +806,7 @@ tasks:
         * Unisolate endpoint
         * Restore quarantined file
 
-        Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
+        Note: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details.
       playbookName: Recovery Plan
       type: playbook
       iscommand: false
@@ -878,7 +878,7 @@ tasks:
       id: c2cbe10d-8222-4923-89bf-affca982e631
       version: -1
       name: Should run pre-investigation containment?
-      description: Checks whether to isolate the host after the investigation phase
+      description: Checks whether to isolate the host after the investigation phase.
       type: condition
       iscommand: false
       brand: ""
@@ -958,7 +958,7 @@ tasks:
       id: 9ea917dd-abb0-425f-81b1-0496a82a1d86
       version: -1
       name: Containment Plan
-      description: "This playbook handles all the containment actions available with Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine file\n* Block indicators\n* Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+      description: "This playbook handles all the containment actions available with Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine file\n* Block indicators\n* Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
       playbookName: Containment Plan
       type: playbook
       iscommand: false
@@ -1050,7 +1050,7 @@ tasks:
       id: 527b0732-8b4e-45eb-8c22-a61057190ef3
       version: -1
       name: Eradication Plan
-      description: "This playbook handles all the eradication actions available with Cortex XSIAM, including the following tasks:\n* Reset user password\n* Delete file\n* Kill process (currently, the playbook supports terminating a process by name)  \n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+      description: "This playbook handles all the eradication actions available with Cortex XSIAM, including the following tasks:\n* Reset user password\n* Delete file\n* Kill process (currently, the playbook supports terminating a process by name)  \n\nNote: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
       playbookName: Eradication Plan
       type: playbook
       iscommand: false
@@ -1158,24 +1158,24 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: Should we block suspicious/malicious indicators automatically? Specify True/False.
+  description: Whether to block suspicious/malicious indicators automatically. Specify True/False.
   playbookInputQuery:
 - key: ShouldCloseAutomatically
   value:
     simple: "True"
   required: false
-  description: Should close the alert automatically if it's established verdict is False Positive? Specify True/False.
+  description: Whether to close the alert automatically if it's established verdict is False Positive. Specify True/False.
   playbookInputQuery:
 - key: PreHostContainment
   value:
     simple: "False"
   required: false
-  description: Isolate the host before the investigation phase in case IOC found as suspicious. Specify True/False.
+  description: Whether to isolate the host before the investigation phase in case an IOC was found to be suspicious. Specify True/False.
   playbookInputQuery:
 - key: ShouldHandleFPautomatically
   value: {}
   required: false
-  description: Should we automatically handle false positive alerts? Specify true/false.
+  description: Whether to automatically handle false positive alerts. Specify true/false.
   playbookInputQuery:
 - key: AutoRestoreEndpoint
   value: {}
