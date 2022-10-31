@@ -1,5 +1,24 @@
-The **Cortex Attack Surface Management** Pack provides content for working with Attack Surface Management (ASM) data. 
+The **Cortex Attack Surface Management** pack supported by Cortex Xpanse Expander and the ASM module for Cortex XSIAM.
+
+Cortex Xpanse Expander and the ASM module for Cortex XSIAM are both best in class External Attack Surface Management solutions that strive to proactively reduce the frequency and severity of security incidents caused by internet-exposed risks. These solutions deliver comprehensive attack surface visibility by combining thorough, ML enhanced asset attribution with continuous attack surface assessment. Discovered risks are prioritized using contextual information and exploitability data and findings are actioned on through curated automated playbooks to investigate, remediate, and summarize every new alert.
 
 ## What does this pack do?
-- The **Cortex Attack Surface Management** integration pulls assets and other ASM-related information.
-- Includes playbooks for enrichment and response to alerts detected impacting your external attack surface.
+This pack contains all of the integrations, automations, and playbooks necessary to fully automate the investigation, remediation, verification, and reporting on ASM risks within Cortex Xpanse Expander and XSIAM.
+
+- Enriches services, assets, and alerts based on out of the box integrations with sources like CMDBs, Cloud Service Providers, VM solutions, and more.
+- Uses ML assisted analysis to identify critical context useful for analyst decision making.
+- Keeps human analysts in the loop to direct the desired remediation action depending on the type of risk and discovered context.
+- Includes automated notification and ticket creation workflows for delegating remediation tasks to the appropriate service owners.
+- Includes full automated remediation options for automatically removing risky services from the public Internet.
+- Supports validation rescanning to ensure that remediation efforts have been applied successfully.
+- Includes pdf reporting capabilities for preserving and communicating the investigation summary.
+
+### Playbooks
+1. <place_holder>
+2. Cortex ASM - Detect Service
+3. <place_holder>
+
+#### Cortex ASM - Detect Service
+Playbook that looks at what ASM sub-type the alert is and direct to different pre/post mitigation scans (such as NMAP).
+<place_holder: Add absolute link after PR>
+   
