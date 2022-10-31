@@ -501,8 +501,8 @@ script:
         isArray: false
         name: site_assignment
         predefined:
-          - All Sites
-          - Specific Sites
+          - All-Sites
+          - Specific-Sites
         required: true
         secret: false
       - auto: PREDEFINED
@@ -524,11 +524,11 @@ script:
           - Oracle
           - POP
           - PostgresSQL
-          - Remote Exec
+          - Remote-Exec
           - SNMP
           - SNMPv3
           - SSH
-          - SSH Key
+          - SSH-Key
           - Sybase
           - Telnet
         required: true
@@ -627,7 +627,7 @@ script:
         isArray: false
         name: authentication_type
         predefined:
-          - No Authentication
+          - No-Authentication
           - MD5
           - SHA
         required: false
@@ -643,13 +643,13 @@ script:
         isArray: false
         name: privacy_type
         predefined:
-          - No Privacy
+          - No-Privacy
           - DES
           - AES-128
           - AES-192
-          - AES-192 With 3 DES Key Extension
+          - AES-192-With-3-DES-Key-Extension
           - AES-256
-          - AES-256 with 3 DES Key Extension
+          - AES-256-With-3-DES-Key-Extension
         required: false
         secret: false
       - default: false
@@ -668,7 +668,7 @@ script:
           - sudosu
           - su
           - pbrun
-          - Privileged Exec
+          - Privileged-Exec
         required: false
         secret: false
       - default: false
@@ -778,7 +778,7 @@ script:
           - Global
           - Site
           - Asset
-          - Asset Group
+          - Asset-Group
 #          - Instance  # We had issues with this option, so it's not currently supported
         required: true
         secret: false
@@ -791,7 +791,7 @@ script:
           - Expired
           - Approved
           - Rejected
-          - Under review
+          - Under-Review
         required: true
         secret: false
       - default: false
@@ -806,10 +806,10 @@ script:
         isArray: false
         name: reason
         predefined:
-          - False Positive
-          - Compensating Control
-          - Acceptable Use
-          - Acceptable Risk
+          - False-Positive
+          - Compensating-Control
+          - Acceptable-Use
+          - Acceptable-Risk
           - Other
         required: true
         secret: false
@@ -1238,11 +1238,11 @@ script:
         - Oracle
         - POP
         - PostgresSQL
-        - Remote Exec
+        - Remote-Exec
         - SNMP
         - SNMPv3
         - SSH
-        - SSH Key
+        - SSH-Key
         - Sybase
         - Telnet
       required: true
@@ -1334,7 +1334,7 @@ script:
       isArray: false
       name: authentication_type
       predefined:
-        - No Authentication
+        - No-Authentication
         - MD5
         - SHA
       required: false
@@ -1350,13 +1350,13 @@ script:
       isArray: false
       name: privacy_type
       predefined:
-        - No Privacy
+        - No-Privacy
         - DES
         - AES-128
         - AES-192
-        - AES-192 With 3 DES Key Extension
+        - AES-192-With-3-DES-Key-Extension
         - AES-256
-        - AES-256 with 3 DES Key Extension
+        - AES-256-With-3-DES-Key-Extension
       required: false
       secret: false
     - default: false
@@ -1375,7 +1375,7 @@ script:
         - sudosu
         - su
         - pbrun
-        - Privileged Exec
+        - Privileged-Exec
       required: false
       secret: false
     - default: false
@@ -1522,8 +1522,8 @@ script:
       isArray: false
       name: on_scan_repeat
       predefined:
-        - 'Restart Scan'
-        - 'Resume Scan'
+        - Restart-Scan
+        - Resume-Scan
       required: true
       secret: false
     - default: false
@@ -1581,10 +1581,10 @@ script:
       isArray: false
       name: frequency
       predefined:
-        - 'Hour'
-        - 'Day'
-        - 'Week'
-        - 'Date of month'
+        - Hour
+        - Day
+        - Week
+        - Date-of-month
       required: false
       secret: false
     - default: false
@@ -2546,8 +2546,8 @@ script:
         isArray: false
         name: on_scan_repeat
         predefined:
-          - 'Restart Scan'
-          - 'Resume Scan'
+          - Restart-Scan
+          - Resume-Scan
         required: true
         secret: false
       - default: false
@@ -2605,10 +2605,10 @@ script:
         isArray: false
         name: frequency
         predefined:
-          - 'Hour'
-          - 'Day'
-          - 'Week'
-          - 'Date of month'
+          - Hour
+          - Day
+          - Week
+          - Date-of-month
         required: false
         secret: false
       - default: false
@@ -2689,11 +2689,11 @@ script:
         - Oracle
         - POP
         - PostgresSQL
-        - Remote Exec
+        - Remote-Exec
         - SNMP
         - SNMPv3
         - SSH
-        - SSH Key
+        - SSH-Key
         - Sybase
         - Telnet
       required: true
@@ -2785,7 +2785,7 @@ script:
       isArray: false
       name: authentication_type
       predefined:
-        - No Authentication
+        - No-Authentication
         - MD5
         - SHA
       required: false
@@ -2801,13 +2801,13 @@ script:
       isArray: false
       name: privacy_type
       predefined:
-        - No Privacy
+        - No-Privacy
         - DES
         - AES-128
         - AES-192
-        - AES-192 With 3 DES Key Extension
+        - AES-192-With-3-DES-Key-Extension
         - AES-256
-        - AES-256 with 3 DES Key Extension
+        - AES-256-With-3-DES-Key-Extension
       required: false
       secret: false
     - default: false
@@ -2912,8 +2912,8 @@ script:
       isArray: false
       name: site_assignment
       predefined:
-        - All Sites
-        - Specific Sites
+        - All-Sites
+        - Specific-Sites
       required: true
       secret: false
     - auto: PREDEFINED
@@ -2935,11 +2935,11 @@ script:
         - Oracle
         - POP
         - PostgresSQL
-        - Remote Exec
+        - Remote-Exec
         - SNMP
         - SNMPv3
         - SSH
-        - SSH Key
+        - SSH-Key
         - Sybase
         - Telnet
       required: true
@@ -3038,7 +3038,7 @@ script:
       isArray: false
       name: authentication_type
       predefined:
-        - No Authentication
+        - No-Authentication
         - MD5
         - SHA
       required: false
@@ -3054,13 +3054,13 @@ script:
       isArray: false
       name: privacy_type
       predefined:
-        - No Privacy
+        - No-Privacy
         - DES
         - AES-128
         - AES-192
-        - AES-192 With 3 DES Key Extension
+        - AES-192-With-3-DES-Key-Extension
         - AES-256
-        - AES-256 with 3 DES Key Extension
+        - AES-256-With-3-DES-Key-Extension
       required: false
       secret: false
     - default: false
@@ -3079,7 +3079,7 @@ script:
         - sudosu
         - su
         - pbrun
-        - Privileged Exec
+        - Privileged-Exec
       required: false
       secret: false
     - default: false
