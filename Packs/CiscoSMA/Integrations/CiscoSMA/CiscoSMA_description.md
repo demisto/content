@@ -14,4 +14,3 @@ The time zone should be configured to GMT +00:00.
     - Region: GMT offset
     - Country: GMT
     - Time zone: GMT (GMT)
-
