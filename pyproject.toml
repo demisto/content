@@ -7,9 +7,9 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.8,<3.11"
+demisto-sdk = "1.7.7"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "d875352fee7713160a87e1956ab9487151752ac6"}
 requests = "^2.22.0"
 
 [tool.poetry.group.linters.dependencies]
@@ -22,9 +22,6 @@ requests-mock = "^1.9.3"
 pytest-mock = "^3.7.0"
 freezegun = "^1.1.0"
 mock-open = "^1.4.0"
-
-[tool.poetry.group.typing.dependencies]
-# If mypy requires for a `typed-*` package, add it here with `poetry add --group typing <package>`
 
 [tool.poetry.group.ci]
 optional = true
