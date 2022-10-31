@@ -84,6 +84,7 @@ MIRRORED_OFFENSES_FINISHED_CTX_KEY = 'mirrored_offenses_finished'
 LAST_MIRROR_KEY = 'last_mirror_update'
 UTC_TIMEZONE = pytz.timezone('utc')
 ID_QUERY_REGEX = re.compile(r'(?:\s+|^)id((\s)*)>(=?)((\s)*)((\d)+)(?:\s+|$)')
+NAME_AND_GROUP_REGEX = re.compile(r'^[\w-]+$')
 ASCENDING_ID_ORDER = '+id'
 EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
 
@@ -673,8 +674,9 @@ class Client(BaseClient):
             additional_headers={'Range': range_} if range_ else None
         )
 
-    def create_remote_network_cidr(self, body: Dict[str, Any], headers: Dict[str, str]):
-        print(body)
+    def create_remote_network_cidr(self, body: Dict[str, Any], fields: str):   
+        headers = {'fields': fields}
+
         return self.http_request(
             method='POST',
             url_suffix='/staged_config/remote_networks',
@@ -3606,29 +3608,90 @@ def qradar_search_retrieve_events_command(
                           )
 
 
+def get_cidrs_indicators(query):
+    """Extracts cidrs from a query"""
+    if not query:
+        return []
+
+    res = demisto.searchIndicators(query=query)
+
+    indicators = []
+    for indicator in res.get('iocs', []):
+        if indicator.get('indicator_type') == 'CIDR':
+            indicators.append(indicator.get('value'))
+
+    return indicators
+
+
+def verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, id, group, fields):
+    # verify that only one of the arguments is given
+    if cidrs_list and cidrs_from_query:
+        raise DemistoException('Cannot specify both cidrs and query arguments.')
+
+    # verify that at least one of the arguments is given
+    if not cidrs_list and not cidrs_from_query:
+        raise DemistoException('Must specify either cidrs or query arguments.')
+
+    # verify that the given cidrs are valid
+    for cidr in cidrs_list:
+        if not re.match(ipv4cidrRegex, cidr) and not re.match(ipv6cidrRegex, cidr):
+            raise DemistoException(f'{cidr} is not a valid CIDR.')
+
+    # verify that the given name and group are valid
+    if not NAME_AND_GROUP_REGEX.match(name) or not NAME_AND_GROUP_REGEX.match(group):
+        raise DemistoException('Name and group arguments only allow letters, numbers, \'_\' and \'-\'.')
+
+    # verify that id is given only if a single cidr is given
+    if (len(cidrs_list) > 1 or len(cidrs_from_query) > 1) and id:
+        raise DemistoException('ID is possible only when a single CIDR is created.')
+
+    # verify that the given id is valid
+    if id and id < 0:
+        raise DemistoException('ID must be a positive number.')
+
+    fields_list = argToList(fields)
+    if fields_list:
+        possible_fields = ['id', 'name', 'group', 'cidrs', 'description']
+        for field in fields_list:
+            if field not in possible_fields:
+                raise DemistoException(f'{field} is not a valid field. Possible fields are: {possible_fields}.')
+
+
 def qradar_remote_network_cidr_create_command(client: Client, args) -> CommandResults:
+    """Create remote network cidrs
+    Args:
+        client (Client): The QRadar client to use.
+        args (dict): Demisto arguments.
+
+    Raises:
+        DemistoException: If the args are not valid.
+
+    Returns:
+        CommandResults.
+    """
     cidrs_list = argToList(args.get('cidrs'))
+    cidrs_from_query = get_cidrs_indicators(args.get('query'))
     name = args.get('name')
-    id = args.get('id')
+    id = arg_to_number(args.get('id'))
     description = args.get('description')
     group = args.get('group')
     fields = args.get('fields')
 
+    verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, id, group, fields)
+
     body = {
         "name": name,
         "description": description,
-        "cidrs": cidrs_list,
+        "cidrs": cidrs_list or cidrs_from_query,
         "id": id,
         "group": group
     }
-    headers = fields
 
-    try:
-        response = client.create_remote_network_cidr(body=body, headers=headers)
-    except Exception as e:
-        print(e)
-        print('sdf')
-    print(response)
+    response = client.create_remote_network_cidr(body, fields)
+
+    return CommandResults(
+        readable_output=tableToMarkdown('The new staged remote network was successfully created.', response)
+    )
 
 
 def qradar_remote_network_cidr_list_command():
@@ -3752,7 +3815,7 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     api_version = params.get('api_version')
-    if float(api_version) < MINIMUM_API_VERSION:
+    if api_version and float(api_version) < MINIMUM_API_VERSION:
         raise DemistoException(f'API version cannot be lower than {MINIMUM_API_VERSION}')
     credentials = params.get('credentials')
 
