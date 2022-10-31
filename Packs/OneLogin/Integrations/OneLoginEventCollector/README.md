@@ -33,11 +33,11 @@ Manual command to fetch events from OneLogin and display them.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| limit | Number of results to return, maximum is 2000. Default is 10. | Optional | 
+| limit | Number of results to return. Maximum is 2000. Default is 10. | Optional | 
 | cursor | A string pointing at the next page of results. The cursor can be found within the response_metadata field, as part of the raw response of the OneLogin Events API call. | Optional | 
 | since | Occurrence time of the least recent event to include (inclusive). Default is 3 days. | Optional | 
 | until | Occurrence time of the most recent event to include (inclusive). | Optional | 
-| event_type_id | The type ID of events to include. The value can be comma separated with multiple type IDs. | Optional | 
+| event_type_id | A comma-separated list of type IDs of events to include. | Optional | 
 
 
 #### Context Output
