@@ -307,6 +307,7 @@ def generic_ansible(integration_name: str, command: str,
                 result = json.loads(str_to_parse)
             except JSONDecodeError as e:  # pragma: no cover
                 demisto.debug(e)
+                demisto.debug('failed to parse response as JSON, will try to clean it from special characters and parse again')
                 ansi_escape = re.compile(r'(?:\x1B[@-_]|[\x80-\x9F])[0-?]*[ -/]*[@-~]')
                 str_to_parse = ansi_escape.sub('', str_to_parse)
                 result = json.loads(str_to_parse)
