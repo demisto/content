@@ -1,0 +1,21 @@
+{
+    "name": "Fortanix DSM",
+    "description": "Manage Secrets and Protect Confidential Data using Fortanix Data Security Manager (Fortanix DSM)",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Fortanix",
+    "url": "",
+    "email": "",
+    "created": "2022-10-31T21:46:47Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "arvin-dt"
+    ]
+}
