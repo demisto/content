@@ -24,31 +24,35 @@
                         ]
                     }
                 },
-                "CiscoESA Email From": {
+                "Email Body HTML": {
+                    "complex": {
+                        "filters": [],
+                        "root": "messageBody",
+                        "transformers": []
+                    }
+                },
+                "Email From": {
                     "complex": {
                         "filters": [],
                         "root": "fromAddress",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "separator": {
-                                        "value": {
-                                            "simple": ","
-                                        }
-                                    }
-                                },
-                                "operator": "join"
-                            }
-                        ]
+                        "transformers": []
                     }
                 },
-                "CiscoESA Email Message ID": {
-                    "simple": "mid"
+                "Email Message ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mid",
+                        "transformers": []
+                    }
                 },
-                "CiscoESA Email Subject": {
-                    "simple": "subject"
+                "Email Subject": {
+                    "complex": {
+                        "filters": [],
+                        "root": "subject",
+                        "transformers": []
+                    }
                 },
-                "CiscoESA Email To": {
+                "Email To": {
                     "complex": {
                         "filters": [],
                         "root": "toAddress",
@@ -57,24 +61,6 @@
                                 "args": {
                                     "separator": {
                                         "value": {
-                                            "simple": "\\n"
-                                        }
-                                    }
-                                },
-                                "operator": "join"
-                            }
-                        ]
-                    }
-                },
-                "CiscoESA Envelope Recipient": {
-                    "complex": {
-                        "filters": [],
-                        "root": "envelopeRecipient",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "separator": {
-                                        "value": {
                                             "simple": ","
                                         }
                                     }
@@ -83,9 +69,6 @@
                             }
                         ]
                     }
-                },
-                "CiscoESA Message Body": {
-                    "simple": "messageBody"
                 }
             }
         },

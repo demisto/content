@@ -312,9 +312,9 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "ciscoesaemailmessageid",
+                                "fieldId": "emailmessageid",
                                 "height": 53,
-                                "id": "461e3f40-38ef-11ed-9f44-196446ce6159",
+                                "id": "f92c5b60-5921-11ed-92f3-a7f94e8ed24a",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -329,11 +329,13 @@
                                 "startCol": 2
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "ciscoesaemailsubject",
+                                "fieldId": "emailsubject",
                                 "height": 53,
-                                "id": "4dea18c0-38ef-11ed-9f44-196446ce6159",
+                                "id": "fd4eb4e0-5921-11ed-92f3-a7f94e8ed24a",
                                 "index": 0,
+                                "listId": "caseinfoid-vulovtvwjh-field-changed-vulovtvwjh-caseinfoid-73268f30-3276-11ed-b2b1-cff928cb00da",
                                 "sectionItemType": "field",
                                 "startCol": 2
                             },
@@ -348,28 +350,19 @@
                             },
                             {
                                 "endCol": 6,
-                                "fieldId": "ciscoesaemailfrom",
+                                "fieldId": "emailfrom",
                                 "height": 53,
-                                "id": "547cfd10-38ef-11ed-9f44-196446ce6159",
+                                "id": "011755a0-5922-11ed-92f3-a7f94e8ed24a",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 4
                             },
                             {
                                 "endCol": 6,
-                                "fieldId": "ciscoesaenveloperecipient",
+                                "fieldId": "emailto",
                                 "height": 53,
-                                "id": "daea3b00-38f5-11ed-9f44-196446ce6159",
+                                "id": "04dfcf50-5922-11ed-92f3-a7f94e8ed24a",
                                 "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 4
-                            },
-                            {
-                                "endCol": 6,
-                                "fieldId": "ciscoesaemailto",
-                                "height": 53,
-                                "id": "55a8f9f0-38ef-11ed-9f44-196446ce6159",
-                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 4
                             }
@@ -390,13 +383,11 @@
                         "i": "caseinfoid-vulovtvwjh-field-changed-vulovtvwjh-caseinfoid-1ec62170-3407-11ed-9f6b-2551c689e625",
                         "items": [
                             {
-                                "dropEffect": "move",
-                                "endCol": 6,
-                                "fieldId": "ciscoesamessagebody",
+                                "endCol": 2,
+                                "fieldId": "emailbodyhtml",
                                 "height": 106,
-                                "id": "491670a0-38ef-11ed-9f44-196446ce6159",
+                                "id": "1263e490-5922-11ed-92f3-a7f94e8ed24a",
                                 "index": 0,
-                                "listId": "caseinfoid-vulovtvwjh-field-changed-vulovtvwjh-caseinfoid-1ec62170-3407-11ed-9f6b-2551c689e625",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
