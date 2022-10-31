@@ -38,3 +38,7 @@ This content pack includes the following scripts:
 #### GetRemediationGuidance
 This automation helps determine remediation guidance based on a list of Xpanse issueTypeId to remediationGuidance pairings.
 <place_holder: Add absolute link after PR>
+
+#### GenerateASMReport
+This automation helps generate an ASM alert summary report with important information found via the playbook run.
+<place_holder: Add absolute link after PR>

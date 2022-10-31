@@ -1,0 +1,52 @@
+args:
+- description: Name of the Alert that triggered this playbook
+  name: alert_name
+- description: Details of the Alert that triggered this playbook
+  name: alert_details
+- description: Potential service owners gathered through playbook.
+  isArray: true
+  name: asmserviceowner
+- description: Collect information on remediation action(s).
+  isArray: true
+  name: asmremediation
+- description: Pre/Post remediation scan to check if service is still detectable.
+  isArray: true
+  name: asmservicedetection
+- description: Related system identifiers.
+  isArray: true
+  name: asmsystemids
+- description: Information on cloud assets.
+  isArray: true
+  name: asmcloud
+- description: Information on notification(s) sent via the ASM playbook.
+  isArray: true
+  name: asmnotification
+- description: Collect information on data collection tasks.
+  isArray: true
+  name: asmdatacollection
+- description: Tags from objects that can be used to determine other information (if server is Dev for example).
+  isArray: true
+  name: asmtags
+- description: Private IP addresses found.
+  isArray: true
+  name: asmprivateip
+- description: Related or duplicate objects (more of a nice to have because not sure how to track this)
+  isArray: true
+  name: asmrelated
+comment: Generate an ASM Alert Summary report.
+commonfields:
+  id: GenerateASMReport
+  version: -1
+dockerimage: demisto/python3:3.10.8.36650
+enabled: true
+name: GenerateASMReport
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
