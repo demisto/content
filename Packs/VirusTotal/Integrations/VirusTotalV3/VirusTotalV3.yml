@@ -954,6 +954,7 @@ script:
       - url
       - domain
       - file
+      - hash
     - name: limit
       description: Maximum comments to fetch.
       defaultValue: 10
