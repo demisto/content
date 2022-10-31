@@ -15,5 +15,5 @@
     "python.testing.pytestArgs": [
         "-v"
     ],
-    "python.testing.cwd": "${workspaceFolder}/Packs/HelloWorld/Integrations/HelloWorld",
+    "python.testing.cwd": "${workspaceFolder}/Packs/HelloWorld/Integrations/HelloWorld"
 }
