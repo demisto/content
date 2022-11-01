@@ -280,6 +280,90 @@ script:
     - contextPath: ThreatVault.Antivirus.release
       description: The default action when the signature is triggered.
       type: String
+    - contextPath: ThreatVault.Fileformat.id
+      description: The unique id of the signature.
+      type: String
+    - contextPath: ThreatVault.Fileformat.name
+      description: The name of the signature.
+      type: String
+    - contextPath: ThreatVault.Fileformat.description
+      description: The description of the signature.
+      type: String
+    - contextPath: ThreatVault.Fileformat.category
+      description: The threat category of the signature.
+      type: String
+    - contextPath: ThreatVault.Fileformat.min_version
+      description: The PAN-OS minimum version.
+      type: String
+    - contextPath: ThreatVault.Fileformat.max_version
+      description: The PAN-OS maximum version.
+      type: String
+    - contextPath: ThreatVault.Fileformat.severity
+      description: The severity of the threat.
+      type: String
+    - contextPath: ThreatVault.Fileformat.default_action
+      description: The default action when the signature is triggered.
+      type: String
+    - contextPath: ThreatVault.Fileformat.cve
+      description: The CVE (Common Vulnerabilities and Exposures) of the threat. ## not done
+      type: Array
+    - contextPath: ThreatVault.Fileformat.vendor
+      description: The fileformat identifier issued by vendor on advisories.
+      type: Array
+    - contextPath: ThreatVault.Fileformat.reference
+      description: The public reference of the threat.
+      type: Array
+    - contextPath: ThreatVault.Fileformat.status
+      description: The status of the signature.
+      type: String
+    - contextPath: ThreatVault.Fileformat.details
+      description: Any additional details of the signature.
+      type: Array
+    - contextPath: ThreatVault.Fileformat.ori_release_version
+      description: The original release version of the signature.
+      type: String
+    - contextPath: ThreatVault.Fileformat.latest_release_version
+      description: The latest release version of the signature.
+      type: String
+    - contextPath: ThreatVault.Fileformat.ori_release_time
+      description: The original release time of the signature.
+      type: String
+    - contextPath: ThreatVault.Fileformat.latest_release_time
+      description: The latest release time of the signature.
+      type: String
+    - contextPath: ThreatVault.FileInfo.filetype
+      description: The file type of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.sha256
+      description: The sha256 of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.sha1
+      description: The md5 of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.md5
+      description: The md5 of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.size
+      description: The size of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.type
+      description: The type of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.family
+      description: The family of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.platform
+      description: The platform of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.wildfire_verdict
+      description: The wildfire verdict.
+      type: String
+    - contextPath: ThreatVault.FileInfo.create_time
+      description: The threat signature creation time.
+      type: String
+    - contextPath: ThreatVault.FileInfo.signatures
+      description: The signatures.
+      type: String
   - arguments:
     - default: false
       description: The type of the release notes (ex. Content).

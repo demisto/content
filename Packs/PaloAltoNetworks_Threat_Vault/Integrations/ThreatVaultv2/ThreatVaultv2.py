@@ -639,32 +639,37 @@ def fetch_incidents(client: Client, args: dict) -> List:
     '''
 
     # Bringing the daily date for the first api call
-    today = datetime.now(timezone.utc).date().strftime('%Y-%m-%d')
-    try:
-        demisto.debug(f'Time for request fetch-incidents -> {today}')
-        response = client.threat_search_request({'releaseDate': '2022-09-01'})
-    except Exception as err:
-        if 'Error in API call [404] - Not Found' in str(err):
-            return []
-        else:
-            raise ValueError(err)
+    today = datetime.now(timezone.utc).date()
+    fetch_first: str = args.get('first_fetch', '')
+    if fetch_first is not None:
+        first = int(fetch_first.split('d')[0])
 
-    if keys_of_resp := [x for x in response['data'].keys() if x in ('spyware', 'vulnerability', 'fileformat', 'antivirus')]:
+    incidents: List[dict] = []
+    for i in range(first, -1, -1):
+        try:
+            demisto.debug(f'Time for request fetch-incidents -> {today}')
+            release_date = (today - timedelta(days=i)).strftime('%Y-%m-%d')
+            response = client.threat_search_request({'releaseDate': release_date})
+        except Exception as err:
+            if 'Error in API call [404] - Not Found' in str(err):
+                continue
+            else:
+                raise ValueError(err)
 
-        # The version of the release notes for the second API call can be extracted
-        number_version = response['data'][keys_of_resp[0]][0]['latest_release_version']
-        # The API is called by the version number
-        release = client.release_notes_get_request('content', number_version)
+        if keys_of_resp := [x for x in response['data'].keys() if x in ('spyware', 'vulnerability', 'fileformat', 'antivirus')]:
 
-        # Incident organization and arrangement
-        incident = {
-            'name': 'THREAT VAULT - RELEASE NOTES',
-            'occurred': release['data'][0]['release_time'],
-            'rawJSON': json.dumps(parse_incident(release))
-        }
-        return [incident]
-    else:
-        return []
+            # The version of the release notes for the second API call can be extracted
+            number_version = response['data'][keys_of_resp[0]][0]['latest_release_version']
+            # The API is called by the version number
+            release = client.release_notes_get_request('content', number_version)
+
+            # Incident organization and arrangement
+            incidents.append({
+                'name': 'THREAT VAULT - RELEASE NOTES',
+                'occurred': release['data'][0]['release_time'],
+                'rawJSON': json.dumps(parse_incident(release))
+            })
+    return incidents
 
 
 def test_module(client: Client, *_) -> str:
