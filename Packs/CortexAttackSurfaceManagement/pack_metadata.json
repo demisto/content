@@ -19,21 +19,21 @@
         "Palo Alto Networks"
     ],
     "dependencies": {
-        "CommonTypes": {
+        "ServiceNow": {
             "mandatory": true,
-            "display_name": "Common Types"
+            "display_name": "ServiceNow"
+        },
+        "Nmap": {
+            "mandatory": true,
+            "display_name": "Nmap"
         },
         "CommonScripts": {
             "mandatory": true,
             "display_name": "Common Scripts"
         },
-        "Tenable_io": {
-            "mandatory": false,
-            "display_name": "Tenable.io"
-        },
-        "ServiceNow": {
-            "mandatory": false,
-            "display_name": "ServiceNow"
+        "AWS-Enrichment-Remediation": {
+            "mandatory": true,
+            "display_name": "AWS Enrichment and Remediaton"
         }
     },
     "marketplaces": [
@@ -41,5 +41,11 @@
     ],
     "itemPrefix": [
         "ASM"
+    ],
+    "displayedImages": [
+        "ServiceNow",
+        "Nmap",
+        "CommonScripts",
+        "AWS-Enrichment-Remediation"
     ]
 }
