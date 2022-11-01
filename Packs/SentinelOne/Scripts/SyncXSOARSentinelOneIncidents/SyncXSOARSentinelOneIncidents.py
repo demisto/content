@@ -98,7 +98,6 @@ def get_xsoar_s1_incidents(page, size):
                     xsoar_s1_incidents[xsoar_incident.get('id')] = xsoar_incident_info
 
     except Exception as ex:
-        # ToDo - Throw exception from here
         demisto.error(f'Exception when getting data: {str(ex)}')
 
     return xsoar_s1_incidents
@@ -177,9 +176,7 @@ def sync_s1_xsoar_incidents():
                        (s1_inc_modified_time != xsoar_s1_inc_modified_time or not xsoar_job_updated_inc):
                         # The Incident in XSOAR is present in S1, processing further
                         # Updating the labels response for next pull, only if the incident on S1 was modified
-                        # Update the incident status if it has changed on S1
-
-                        # Getting XSOAR and S1 incident's status
+                        # Update the incident status if it has changed on S1 and getting XSOAR and S1 incidents status
                         s1_incident_status = s1_inc_threat_info.get("incidentStatus")
                         xsoar_incident_status = incident_info.get("xsoarIncStatus")
                         if S1_XSOAR_STATUS_MAPPING.get(s1_incident_status) != xsoar_incident_status and \
@@ -203,7 +200,6 @@ def sync_s1_xsoar_incidents():
         except Exception as ex:
             demisto.error(f'Exception when getting data: {str(ex)}')
 
-    # Return how many incidents updated
     output_res = {"Total Incidents": total_incidents, "Updated Incidents": updated_incidents}
     return CommandResults(readable_output=tableToMarkdown("Results", output_res))
 
@@ -233,9 +229,6 @@ def sync_xsoar_s1_incidents():
                     s1_xsoar_threat_id = incident_info.get("threatId")
                     if latest_s1_threat_contents.get("id") == s1_xsoar_threat_id:
                         # The Incident in XSOAR is present in S1, processing further
-                        # Updating the labels response for next pull, only if the incident on S1 was modified
-                        # Update the incident status if it has changed on S1
-
                         # Getting XSOAR and S1 incident's status
                         s1_incident_status = s1_inc_threat_info.get("incidentStatus")
                         xsoar_incident_status = incident_info.get("xsoarIncStatus")
@@ -260,7 +253,6 @@ def sync_xsoar_s1_incidents():
         except Exception as ex:
             demisto.error(f'Exception when getting data: {str(ex)}')
 
-    # Return how many incidents updated
     output_res = {"Total Incidents": total_incidents, "Updated Incidents": updated_incidents}
     return CommandResults(readable_output=tableToMarkdown("Results", output_res))
 
