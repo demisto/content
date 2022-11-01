@@ -70,7 +70,7 @@
         },
         "CVE_2021_30190": {
             "mandatory": false,
-            "display_name": "CVE-2022-30190 - MSDT RCE",
+            "display_name": "CVE-2022-30190 - MSDT RCE"
         },
         "CVE-2022-3786 & CVE-2022-3602 - OpenSSL X.509 Buffer Overflows": {
             "mandatory": false,
