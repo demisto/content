@@ -11,7 +11,7 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-* SyncXSOAR-SentinelOneIncidents
+* SyncXSOARSentinelOneIncidents
 
 ### Commands
 This playbook does not use any commands.

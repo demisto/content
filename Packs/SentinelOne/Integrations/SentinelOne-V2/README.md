@@ -2725,3 +2725,18 @@ Get SentinelOne threats information.
 
 #### Command Example
 ```!sentinelone-get-threats-info threat_ids=<value>```
+
+### Using Playbooks for sync Incidents
+***
+There are 2 playbooks to sync incidents and uses automation script.
+1. SyncSentinelOneToXSOARIncidents - By running this playbook user can sync incidents from SentinelOne to XSOAR if any changes made in 
+SentinelOne.
+2. SyncXSOARToSentinelOneIncidents - By running this playbook user can sync incidents from XSOAR to SentinelOne if any changes made in XSOAR.
+
+### Script 
+
+`SyncXSOARSentinelOneIncidents`
+
+### Description
+***
+This script is used to sync incidents from XSOAR to SentinelOne and SentinelOne to XSOAR.
