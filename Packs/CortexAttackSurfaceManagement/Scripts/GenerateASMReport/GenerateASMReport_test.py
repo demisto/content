@@ -8,13 +8,13 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_get_asm_args_keys(mocker):
-    from GenerateASMReport import get_asm_args_keys
+def test_get_asm_args(mocker):
+    from GenerateASMReport import get_asm_args
 
     args = util_load_json("test_data/args.json")
-    result = get_asm_args_keys(args)
-    assert isinstance(result, tuple)
-    assert result[0]["asmdatacollection"] == [
+    result = get_asm_args(args)
+    assert isinstance(result, dict)
+    assert result["asmdatacollection"] == [
         {
             "answerer": "fake_user@domain.com",
             "options": "NoAutomatedRemediation",

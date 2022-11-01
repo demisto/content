@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa: F401
 
 import traceback
 import json
-from typing import Any, Tuple, List, Dict
+from typing import Any, List, Dict
 from base64 import b64decode
 
 
@@ -47,8 +47,8 @@ def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
     cur_date = demisto.executeCommand("GetTime", {"dateFormat": "ISO"})[0]["Contents"]
 
-    # Grab ASM args & keys from demisto.args()
-    asm_args, asm_keys = get_asm_args_keys(args)
+    # Grab ASM args from demisto.args()
+    asm_args = get_asm_args(args)
 
     asm_tag = []
     for tag in asm_args["asmtags"]:
@@ -297,16 +297,16 @@ def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     return template
 
 
-def get_asm_args_keys(
+def get_asm_args(
     args: Dict[str, Any]
-) -> Tuple[Dict[str, Any], Dict[str, List[Any]]]:
+) -> Dict[str, Any]:
     """Get relevant ASM Arguments & Keys for Report template
 
     Args:
         args (Dict[str, Any]): Demisto.args() object
 
     Returns:
-        tuple[Dict, List]: Tuple containing ASM Args in KV, & ASM Args Keys
+        Dict[str, Any]: Dictionary containing ASM Args in KV
     """
 
     # Set up default object for any empty arguments
@@ -376,21 +376,12 @@ def get_asm_args_keys(
         else {"Type": "n/a", "Link": "n/a"},
     }
 
-    asm_keys = {}
-
     for arg in asm_args:
         # Force all ASM args to List types
         if not isinstance(asm_args[arg], list):
             asm_args.update({arg: [asm_args.get(arg)]})
 
-        # Capitalize all keys
-        # for item in asm_args[arg]:
-        #    asm_args.update({arg: [{k.capitalize(): v for k, v in item.items()}]})
-
-        # Grab List of keys for tables in Template
-        asm_keys[arg] = [k for k in asm_args[arg][0].keys()]
-
-    return asm_args, asm_keys
+    return asm_args
 
 
 """ MAIN FUNCTION """
