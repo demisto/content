@@ -136,12 +136,14 @@ def test_malop_processes_command(mocker):
     assert command_output.outputs[0].get('Name', '') == 'bdata.bin'
     assert command_output.outputs[0].get('SHA1', '') ==\
         'f56238da9fbfa3864d443a85bb80743bd2415682'
+
     args = {"malopGuids": "11.-6236127207710541535", "machineName": "desktop", "dateTime": None}
     mocker.patch.object(demisto, 'results')
     command_output = malop_processes_command(client, args)
     assert command_output.outputs[0].get('Name', '') == 'bdata.bin'
     assert command_output.outputs[0].get('SHA1', '') ==\
         'f56238da9fbfa3864d443a85bb80743bd2415682'
+
     args = {"malopGuids": None, "machineName": "desktop", "dateTime": "2022/08/01 00:00:00"}
     mocker.patch.object(demisto, 'results')
     with pytest.raises(Exception) as exc_info:
