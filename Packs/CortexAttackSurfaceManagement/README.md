@@ -20,15 +20,15 @@ This pack contains all of the integrations, automations, and playbooks necessary
 
 ### Cortex ASM - ASM Alert
 Playbook that enriches asset information for ASM alerts and provides means of remediation.
-<place_holder: Add absolute link after PR>
+![Cortex ASM - ASM Alert](https://raw.githubusercontent.com/demisto/content/d6d88d2066ef1f0868e8e61c5f20a71766f3cae1/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_ASM_Alert.png)
 
 #### Cortex ASM - Detect Service
 Playbook that looks at what ASM sub-type the alert is and direct to different pre/post mitigation scans (such as NMAP).
-<place_holder: Add absolute link after PR>
+![Cortex ASM - Detect Service](https://raw.githubusercontent.com/demisto/content/d6d88d2066ef1f0868e8e61c5f20a71766f3cae1/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Detect_Service.png)
 
 #### Cortex ASM - Enrichment
 Playbook that is used as a container folder for all enrichments of ASM alerts.
-<place_holder: Add absolute link after PR>
+![Cortex ASM - Enrichment](https://raw.githubusercontent.com/demisto/content/d6d88d2066ef1f0868e8e61c5f20a71766f3cae1/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Enrichment.png)
 
 ### Automation Scripts
 This content pack includes the following scripts: 
@@ -37,8 +37,8 @@ This content pack includes the following scripts:
 
 #### GetRemediationGuidance
 This automation helps determine remediation guidance based on a list of Xpanse issueTypeId to remediationGuidance pairings.
-<place_holder: Add absolute link after PR>
+![GetRemediationGuidance](https://raw.githubusercontent.com/demisto/content/d6d88d2066ef1f0868e8e61c5f20a71766f3cae1/Packs/CortexAttackSurfaceManagement/doc_files/GetRemediationGuidance.png)
 
 #### GenerateASMReport
 This automation helps generate an ASM alert summary report with important information found via the playbook run.
-<place_holder: Add absolute link after PR>
+![GenerateASMReport](https://raw.githubusercontent.com/demisto/content/d6d88d2066ef1f0868e8e61c5f20a71766f3cae1/Packs/CortexAttackSurfaceManagement/doc_files/GenerateASMReport.png)
