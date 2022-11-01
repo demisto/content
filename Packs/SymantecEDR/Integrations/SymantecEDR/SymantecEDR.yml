@@ -52,14 +52,16 @@ script:
       required: true
       secret: false
     - default: false
-      description: For isolate and rejoin a list of endpoint ids(array or comma-separated).
-        For delete, array of object, each with hash and device_uid attributes (supports
-        comma-delimited hash:uid, hash:uid as well).
+      description: "The targets field is specific to the type of command For isolate_endpoint\
+        \ and rejoin_endpoint the field is an array of strings each representing a\
+        \ device_uid of the target computer. \nFor delete, array of object, each with\
+        \ hash and device_uid attributes (supports comma-delimited hash:uid, hash:uid\
+        \ as well)."
       isArray: true
       name: targets
       predefined:
       - ''
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: "Isolates endpoints by cutting connections that the endpoint(s) has\
@@ -213,6 +215,174 @@ script:
     description: Get File Instances
     execution: false
     name: symantec-edr-file-instance-get
+  - arguments:
+    - default: false
+      defaultValue: query
+      isArray: false
+      name: verb
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get System Activities
+    execution: false
+    name: symantec-edr-system-activity-get
+  - arguments:
+    - default: false
+      defaultValue: query
+      isArray: false
+      name: verb
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get  Audit Events
+    execution: false
+    name: symantec-edr-audit-event-get
+  - arguments:
+    - default: false
+      defaultValue: query
+      isArray: false
+      name: verb
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get Events
+    execution: false
+    name: symantec-edr-event-list
+  - arguments:
+    - default: false
+      defaultValue: query
+      isArray: false
+      name: verb
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get Incident Event List
+    execution: false
+    name: symantec-edr-incident-event-list
+  - arguments:
+    - default: false
+      defaultValue: query
+      isArray: false
+      name: verb
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get Incident List
+    execution: false
+    name: symantec-edr-incident-list
+  - arguments:
+    - default: false
+      defaultValue: query
+      isArray: false
+      name: verb
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: 'Incidents UUID (example :  "uuid": "0d219490-5900-11ed-f646-000000000001")'
+      isArray: false
+      name: uuid
+      required: true
+      secret: false
+    deprecated: false
+    description: Get Incident Comments
+    execution: false
+    name: symantec-edr-incident-comment-get
+  - deprecated: false
+    description: Get Deny List Policies
+    execution: false
+    name: symantec-edr-deny-list-policy-get
+  - deprecated: false
+    description: Get Blacklist Policies
+    execution: false
+    name: symantec-edr-black-list-policy-get
+  - deprecated: false
+    description: Get Allowlist Policies
+    execution: false
+    name: symantec-edr-allow-list-policy-get
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: analyze
+      description: "Specifies the type of action to take on the specified target(s)\
+        \ \naction value: \"analyze\"  "
+      isArray: false
+      name: action
+      predefined:
+      - analyze
+      required: false
+      secret: false
+    - default: false
+      description: 'The targets field is specific to the type of command. For analyze,
+        the field is an array of strings each representing a SHA256 of the target
+        file. '
+      isArray: false
+      name: targets
+      required: false
+      secret: false
+    - default: false
+      description: Command ID to query to Query Sandbox Command Status
+      isArray: false
+      name: command_id
+      required: false
+      secret: false
+    - default: false
+      description: 'Query unique file identifier (SHA2) to get  Verdict '
+      isArray: false
+      name: sha2
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: File Sandbox command types issue,status,verdict
+      isArray: false
+      name: type
+      predefined:
+      - issue
+      - status
+      - verdict
+      required: true
+      secret: false
+    deprecated: false
+    description: Issue Sandbox Command, Query Sandbox Command Status, Get Sandbox
+      Verdict of specific SHA2
+    execution: false
+    name: file
   dockerimage: demisto/python3:3.7.4.2245
   feed: false
   isfetch: false
