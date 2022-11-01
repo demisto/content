@@ -74,7 +74,7 @@ def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         },
         {
             "type": "text",
-            "data": args.get("alert_name", "Alert Name Here"),
+            "data": args.get("alert_name", "Alert name not found"),
             "layout": {
                 "rowPos": 2,
                 "columnPos": 1,
@@ -132,7 +132,7 @@ def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
         },
         {
             "type": "text",
-            "data": args.get("alert_details", "Alert Details Here"),
+            "data": args.get("alert_details", "Alert details not found"),
             "layout": {
                 "rowPos": 6,
                 "columnPos": 1,
@@ -297,9 +297,7 @@ def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     return template
 
 
-def get_asm_args(
-    args: Dict[str, Any]
-) -> Dict[str, Any]:
+def get_asm_args(args: Dict[str, Any]) -> Dict[str, Any]:
     """Get relevant ASM Arguments & Keys for Report template
 
     Args:
