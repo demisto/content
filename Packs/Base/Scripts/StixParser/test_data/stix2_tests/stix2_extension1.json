@@ -1,0 +1,68 @@
+{
+    "objects": [
+        {
+            "created": "2022-10-18T00:36:30.810380Z",
+            "extensions": {
+                "extension-definition--f8a40fd3-36c4-4676-a908-01ec605b8585": {
+                    "extension_type": "property_extension",
+                    "score": 3,
+                    "tags": [
+                        "malicious-activity"
+                    ]
+                }
+            },
+            "id": "ipv4-addr--d1c97fce-6bc2-52aa-a48f-26ed9c4cd496",
+            "modified": "2022-10-18T00:36:44.898686Z",
+            "spec_version": "2.1",
+            "type": "ipv4-addr",
+            "value": "1.1.1.1"
+        },
+        {
+            "created": "2022-10-18T00:36:30.810380Z",
+            "created_by_ref": "identity--749249c0-f7c7-5428-a4ad-ea5e1627a221",
+            "description": "This schema adds TIM data to the object",
+            "extension_types": [
+                "property-extension"
+            ],
+            "id": "extension-definition--f8a40fd3-36c4-4676-a908-01ec605b8585",
+            "modified": "2022-10-18T00:36:44.898686Z",
+            "name": "Cortex XSOAR TIM IP",
+            "schema": "https://github.com/demisto/content/blob/4265bd5c71913cd9d9ed47d9c37d0d4d3141c3eb/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
+            "spec_version": "2.1",
+            "type": "extension-definition",
+            "version": "1.0"
+        },
+        {
+            "created": "2022-10-18T00:36:30.810261Z",
+            "extensions": {
+                "extension-definition--15de6acd-766b-42b6-a40d-19d8cbf21fe8": {
+                    "extension_type": "property_extension",
+                    "score": 3,
+                    "tags": [
+                        "malicious-activity"
+                    ]
+                }
+            },
+            "id": "ipv4-addr--1fcbdfb3-c3a7-5ac2-9721-0cd9b973f24c",
+            "modified": "2022-10-18T00:36:44.899216Z",
+            "spec_version": "2.1",
+            "type": "ipv4-addr",
+            "value": "2.2.2.2"
+        },
+        {
+            "created": "2022-10-18T00:36:30.810261Z",
+            "created_by_ref": "identity--749249c0-f7c7-5428-a4ad-ea5e1627a221",
+            "description": "This schema adds TIM data to the object",
+            "extension_types": [
+                "property-extension"
+            ],
+            "id": "extension-definition--15de6acd-766b-42b6-a40d-19d8cbf21fe8",
+            "modified": "2022-10-18T00:36:44.899216Z",
+            "name": "Cortex XSOAR TIM IP",
+            "schema": "https://github.com/demisto/content/blob/4265bd5c71913cd9d9ed47d9c37d0d4d3141c3eb/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
+            "spec_version": "2.1",
+            "type": "extension-definition",
+            "version": "1.0"
+        }
+    ]
+}

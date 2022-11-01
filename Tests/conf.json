@@ -91,6 +91,11 @@
             "fromversion": "6.1.0"
         },
         {
+            "integrations": "Bitbucket",
+            "playbookID": "Test_Bitbucket",
+            "fromversion": "6.5.0"
+        },
+        {
             "playbookID": "Generic Polling Test",
             "timeout": 250
         },
@@ -458,10 +463,6 @@
             "fromversion": "5.5.0"
         },
         {
-            "playbookID": "CreateIndicatorFromSTIXTest",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "SpamhausFeed",
             "playbookID": "Spamhaus_Feed_Test",
             "fromversion": "5.5.0"
@@ -542,7 +543,7 @@
             "instance_names": "ms_azure_compute_self_deployed"
         },
         {
-            "integrations": "Symantec Data Loss Prevention",
+            "integrations": ["Symantec Data Loss Prevention", "Symantec Data Loss Prevention v2"],
             "playbookID": "Symantec Data Loss Prevention - Test",
             "fromversion": "4.5.0"
         },
@@ -1134,10 +1135,6 @@
             "timeout": 3600
         },
         {
-            "playbookID": "Luminate-TestPlaybook",
-            "integrations": "Luminate"
-        },
-        {
             "integrations": "MxToolBox",
             "playbookID": "MxToolbox-test"
         },
@@ -1405,6 +1402,7 @@
         },
         {
             "integrations": [
+                "EWSO365",
                 "EWS v2",
                 "EWS Mail Sender"
             ],
@@ -1830,7 +1828,7 @@
             "timeout": 500
         },
         {
-            "integrations": "EWS v2",
+            "integrations": ["EWS v2", "EWSO365"],
             "playbookID": "pyEWS_Test",
             "instance_names": "ewv2_regular",
             "is_mockable": false
@@ -2243,9 +2241,6 @@
             ],
             "playbookID": "Detonate File - Generic Test",
             "timeout": 2400
-        },
-        {
-            "playbookID": "STIXParserTest"
         },
         {
             "playbookID": "VerifyJSON - Test",
@@ -2917,7 +2912,7 @@
         {
             "playbookID": "Test Convert file hash to corresponding hashes",
             "fromversion": "4.5.0",
-            "integrations": "VirusTotal",
+            "integrations": ["VirusTotal", "Zimperium"],
             "instance_names": "virus_total_general"
         },
         {
@@ -5174,6 +5169,10 @@
             "memory_threshold": 95
         },
         {
+            "integrations": "Cortex Attack Surface Management",
+            "playbookID": "CortexAttackSurfaceManagement_Test"
+        },
+        {
             "integrations": "checkpointdome9",
             "playbookID": "Dome9",
             "fromversion": "6.2.0"
@@ -5201,7 +5200,20 @@
             ]
         },
         {
+            "playbookID": "GridFieldSetup_test"
+        },
+        {
+            "integrations": "Aha",
+            "playbookID": "AHA_TestPlaybook",
+            "fromversion": "6.5.0"
+        },
+        {
             "playbookID": "VerifyCIDR-Test"
+        },
+        {
+            "integrations": "JoeSecurityV2",
+            "fromversion": "6.2.0",
+            "playbookID": "testplaybook- JoeSecuirtyV2"
         }
     ],
     "skipped_tests": {
@@ -5221,7 +5233,6 @@
         "Tidy - Test": "Will run it manually.",
         "Protectwise-Test": "Issue 28168",
         "TestDedupIncidentsPlaybook": "Issue 24344",
-        "CreateIndicatorFromSTIXTest": "Issue 24345",
         "Endpoint data collection test": "Uses a deprecated playbook called Endpoint data collection",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get Prisma Access instance - Issue 27112",
         "Prisma_Access-Test": "unskip after we will get Prisma Access instance - Issue 27112",
@@ -5353,7 +5364,8 @@
         "Carbon Black Enterprise Protection V2 Test": "No credentials",
         "TruSTAR v2-Test": "No credentials",
         "Process Email - Generic - Test - Incident Starter": "Issue CIAC-4161",
-        "AD v2 - debug-mode": "No credentials"
+        "AD v2 - debug-mode": "No credentials",
+        "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449"
     },
     "skipped_integrations": {
         "AbuseIPDB": "License expired",
