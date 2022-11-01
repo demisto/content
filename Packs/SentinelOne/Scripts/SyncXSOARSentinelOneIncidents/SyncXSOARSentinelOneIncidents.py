@@ -156,7 +156,6 @@ def sync_s1_xsoar_incidents():
             if not xsoar_s1_incidents:
                 break
             total_incidents += len(xsoar_s1_incidents)
-            # print(xsoar_s1_incidents)
 
             xsoar_s1_threat_ids = extract_s1_threat_ids(xsoar_s1_incidents)
             latest_s1_threats_info = get_s1_threat_data(xsoar_s1_threat_ids)
