@@ -2707,7 +2707,7 @@ Run a remote script that was uploaded to the SentinelOne Script Library.
 | SentinelOne.RunRemoteScript.parentTaskId | String | The parent task id of the script execution task, null in case of pending execution.|
 
 #### Command Example
-```!sentinelone-run-remote-script output_destination=<value> task_description=<value> script_id=<value> output_directory=<value> account_ids=<value>```
+```!sentinelone-run-remote-script output_destination=Local task_description="" script_id=1463801667584547825 output_directory="" account_ids="1463801667584541849,1463801667584545236"```
 
 ### sentinelone-get-threats-info
 ***
@@ -2724,19 +2724,39 @@ Get SentinelOne threats information.
 | threat_ids | A comma-separated list of Threat IDs. | Required |
 
 #### Command Example
-```!sentinelone-get-threats-info threat_ids=<value>```
+```!sentinelone-get-threats-info threat_ids="1463801667584541849,1463801667584545236"```
 
-### Using Playbooks for sync Incidents
+### Playbooks for sync Incidents
 ***
-There are 2 playbooks to sync incidents and uses automation script.
-1. SyncSentinelOneToXSOARIncidents - By running this playbook user can sync incidents from SentinelOne to XSOAR if any changes made in 
-SentinelOne.
-2. SyncXSOARToSentinelOneIncidents - By running this playbook user can sync incidents from XSOAR to SentinelOne if any changes made in XSOAR.
+Sync the status of a threat in S1 to XSOAR
 
-### Script 
+Sync the status of a threat in XSOAR to SentinelOne
 
-`SyncXSOARSentinelOneIncidents`
+#### Playbook to Sync the status of a threat in S1 to XSOAR
+```SyncSentinelOneToXSOARIncidents```
 
-### Description
-***
-This script is used to sync incidents from XSOAR to SentinelOne and SentinelOne to XSOAR.
+#### Description
+
+If you have XSOAR, that’s your system of record, threats will be receiving updates in S1 that need to be updated in XSOAR.
+
+#### Example
+
+1. New threats from S1 to XSOAR
+2. Threat is updated in S1
+3. New threat status reflected in XSOAR
+Open the Playbook in XSOAR and run it will give result showing how many incidents updated in XSOAR from Total number of incidents.
+
+#### Playbook to Sync the status of a threat in XSOAR to SentinelOne
+```SyncXSOARToSentinelOneIncidents```
+
+#### Description 
+
+In XSOAR if status or verdict of an incident updated, related changes will be reflected in SentinelOne.
+
+#### Example
+
+1. New threat syncs from S1 to XSOAR
+2. Threat is updated in XSOAR
+3. New threat status and analyst verdict reflected in XSOAR
+Open the Playbook in XSOAR and run it will give result showing how many incidents updated to SentinelOne from Total number of incidents.
+
