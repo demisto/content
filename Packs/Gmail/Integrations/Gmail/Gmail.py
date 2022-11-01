@@ -1,3 +1,4 @@
+from time import sleep
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -1076,7 +1077,9 @@ def get_user_tokens(user_id):
     return result.get('items', [])
 
 
-def search_all_mailboxes(receive_only_accounts):
+def get_all_mailboxes():
+    all_accounts = []
+    number_of_accounts = 0
     users_next_page_token = None
     service = get_service('admin', 'directory_v1')
     while True:
@@ -1085,46 +1088,163 @@ def search_all_mailboxes(receive_only_accounts):
             'domain': ADMIN_EMAIL.split('@')[1],  # type: ignore
             'pageToken': users_next_page_token
         }
-
         result = service.users().list(**command_args).execute()
-        users_count = len(result['users'])
+        number_of_accounts += len(result['users'])
+        all_accounts.append(result['users'])
         users_next_page_token = result.get('nextPageToken')
+        if users_next_page_token is None:
+            return all_accounts, number_of_accounts
 
+
+def mangment_polling(args: Dict, list_of_accounts):
+
+    # if args.get('item') and args.get('item') == '4':
+    #     print(f"##### INDEX -> {args.get('index')} \n ###### ARGS -> {args}")
+    print(f"INDEX -> {args.get('index')} \n ITEM -> {args.get('item')} \n\n ARGS -> {args}")
+    value1 = args.get('index') or args.get('item') or 0
+    value = arg_to_number(value1)
+    if value == 0 or value == 1:
+        print('israel in')
+        args1 = {k: v for k, v in args.items() if k != 'index' and k != 'item'}
+        if args.get('index'):
+            args1.update({'item': value + 1})
+            print('if')
+        elif args.get('item'):
+            args1.update({'index': value + 1})
+            print('elif')
+        else:
+            print('else')
+            args1.update({'index': value + 1})
+        print(f"#### ARGS1 -> {args1}")
+        test = ScheduledCommand(
+            command='gmail-search-all-mailboxes',
+            next_run_in_seconds=10,
+            args=args1,
+            timeout_in_seconds=100
+        )
+        return_results(
+            CommandResults(
+                readable_output='test',
+                scheduled_command=test
+            )
+        )
+    else:
+        print('israel out')
+        return
+    # index = arg_to_number(args.get('index', '0'))
+    # if len(list_of_accounts) < index:
+    #     # print(list_of_accounts, index)
+    #     return
+    # elif len(list_of_accounts) <= index + 5:
+    #     list_of_accounts = list_of_accounts[index: len(list_of_accounts)]
+    #     # print(list_of_accounts, index)
+    # else:
+    #     list_of_accounts = list_of_accounts[index: index + 5]
+    #     # print(list_of_accounts, index)
+    # for i in range(len(list_of_accounts)):
+    #     args1 = {k: v for k, v in args.items()}
+    #     if args1.get('item'):
+    #         del args['item']
+    #     args1['item'] = i
+    #     if args1.get('root'):
+    #         del args1['root']
+    #         del args1['index']
+    #     args1['todo'] = 'true'
+    #     args1['list_account'] = list_of_accounts[i]
+    #     if i == 4:
+    #         args1['root'] = 'true'
+    #         args1['index'] = index + 5
+    #         print(f"LIST OF ACCOUNTS -> {list_of_accounts} \n INDEX -> {args.get('index')} \n ARGS1 -> {args1}")
+    #     scheduled_command = ScheduledCommand(
+    #         command='gmail-search-all-mailboxes',
+    #         next_run_in_seconds=10,
+    #         args=args1,
+    #         timeout_in_seconds=150
+    #     )
+    #     command_results = CommandResults(
+    #         readable_output='test',
+    #         scheduled_command=scheduled_command
+    #     )
+    #     return_results(command_results)
+    #     args1.clear()
+    # args.clear()
+    return 'test'
+
+
+def search_all_mailboxes(receive_only_accounts, max_results, writing_to_logs, todo):
+
+    if todo:
+
+        accounts_counter, matching_accounts_counter, msg_counter = 0, 0, 0
+        log_msg_target = max_results
+        list_accounts = argToList(demisto.args().get('list_account'))
+        # raise ValueError('Done')
+        # support_multithreading()
+        # sleep(180.0)
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            accounts_counter = 0
             futures = []
             entries = []
-            for user in result['users']:
-                futures.append(executor.submit(search_command, mailbox=user['primaryEmail']))
+            for user in list_accounts:
+                futures.append(executor.submit(search_command, mailbox=user,
+                                               receive_only_accounts=receive_only_accounts))
             for future in concurrent.futures.as_completed(futures):
                 accounts_counter += 1
-                result = future.result()
-                if result is None:
-                    continue
-                entries.append(future.result())
-                if accounts_counter % 100 == 0:
+                entry, num_of_messages = future.result()
+                if entry:
+                    matching_accounts_counter += 1
+                    entries.append(entry)
+                if accounts_counter % writing_to_logs == 0:
                     demisto.info(
-                        f'Still searching. Searched {int((accounts_counter / users_count) * 100)}%  \
-                        of total accounts ({accounts_counter} / {users_count}), \
-                        and found {len(entries)} results so far',
+                        f'Still searching. Searched {int((accounts_counter / number_of_accounts) * 100)}%'
+                        f' of total accounts ({accounts_counter} / {number_of_accounts}),'
+                        f' and found {matching_accounts_counter} matching accounts so far'
                     )
+                if not receive_only_accounts:
+                    msg_counter += num_of_messages
+                    if (accounts_counter % writing_to_logs == 0) and msg_counter >= log_msg_target:
+                        log_msg_target = msg_counter + max_results
+                        demisto.info(
+                            f'Still searching. Searched {int((accounts_counter / number_of_accounts) * 100)}%'
+                            f' of total accounts ({accounts_counter} / {number_of_accounts}),'
+                            f' and found {msg_counter} results so far'
+                        )
 
-        if receive_only_accounts:
-            entries = [mailboxes_to_entry(entries)]
-
-        # if these are the final result push - return them
-        if users_next_page_token is None:
             if entries:
-                entries.append("Search completed")
-            else:
-                entries.append("No entries.")
-                return entries
+                if receive_only_accounts:
+                    entries = [mailboxes_to_entry(entries)]
+                demisto.results(entries)
+                entries = []
 
-        # return midway results
-        return entries
+    if not todo:
+        all_accounts, number_of_accounts = get_all_mailboxes()
+        list_of_accounts = []
+        list_of_accounts1 = []
+        for account in all_accounts[0]:
+            list_of_accounts.append(account['primaryEmail'])
+            if len(list_of_accounts) == 1:
+                list_of_accounts1.append(list_of_accounts)
+                list_of_accounts = []
+        if list_of_accounts:
+            list_of_accounts1.append(list_of_accounts)
+
+        return mangment_polling(demisto.args(), list_of_accounts1)
+
+    if argToBoolean(demisto.args().get('root', 'false')):
+        all_accounts, number_of_accounts = get_all_mailboxes()
+        list_of_accounts = []
+        list_of_accounts1 = []
+        for account in all_accounts[0]:
+            list_of_accounts.append(account['primaryEmail'])
+            if len(list_of_accounts) == 1:
+                list_of_accounts1.append(list_of_accounts)
+                list_of_accounts = []
+        if list_of_accounts:
+            list_of_accounts1.append(list_of_accounts)
+
+        return mangment_polling(demisto.args(), list_of_accounts1)
 
 
-def search_command(mailbox=None):
+def search_command(mailbox=None, receive_only_accounts=False):
     """
     Searches for Gmail records of a specified Google user.
     """
@@ -1149,27 +1269,35 @@ def search_command(mailbox=None):
     has_attachments = args.get('has-attachments')
     has_attachments = None if has_attachments is None else bool(
         strtobool(has_attachments))
-    receive_only_accounts = argToBoolean(args.get('show-only-mailboxes', 'false'))
 
     if max_results > 500:
         raise ValueError(
             'maxResults must be lower than 500, got %s' % (max_results,))
+    try:
 
-    mails, q = search(user_id, subject, _from, to,
-                      before, after, filename, _in, query,
-                      fields, label_ids, max_results, page_token,
-                      include_spam_trash, has_attachments, receive_only_accounts,
-                      )
-
+        mails, q = search(
+            user_id, subject, _from, to,
+            before, after, filename, _in, query,
+            fields, label_ids, max_results, page_token,
+            include_spam_trash, has_attachments, receive_only_accounts,
+        )
+    except Exception as err:
+        if 'HttpError 429 when requesting' in str(err):
+            print('israel')
+            return None, 0
+        else:
+            raise ValueError(err)
     # In case the user wants only account list without content.
     if receive_only_accounts:
         if mails:
-            return {'Mailbox': mailbox, 'q': q}
-        return {'Mailbox': None, 'q': q}
+            return {'Mailbox': mailbox, 'q': q}, 0
+        return None, 0
+
     if mails:
         res = emails_to_entry(f'Search in {mailbox}:\nquery: "{q}"', mails, 'full', mailbox)
-        return res
-    return
+        return res, len(mails)
+    else:
+        return None, 0
 
 
 def search(user_id, subject='', _from='', to='', before='', after='', filename='', _in='', query='',
@@ -2168,8 +2296,13 @@ def main():
 
         else:
             if command == 'gmail-search-all-mailboxes':
-                receive_only_accounts = argToBoolean(demisto.args().get('show-only-mailboxes', 'false'))
-                return_results(cmd_func(receive_only_accounts))  # type: ignore
+                receive_only_accounts = argToBoolean(demisto.args().get('show-only-mailboxes', 'true'))
+                max_results = arg_to_number(demisto.args().get('max-results', 100))
+                writing_to_logs = arg_to_number(demisto.args().get('writing-to-logs', 100))
+                todo = argToBoolean(demisto.args().get('todo', 'false'))
+                cmd_func(receive_only_accounts, max_results, writing_to_logs, todo)  # type: ignore
+            elif command == 'gmail-search':
+                demisto.results(cmd_func()[0])
             else:
                 return_results(cmd_func())  # type: ignore
 

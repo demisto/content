@@ -1,6 +1,6 @@
 category: Email Gateway
 commonfields:
-  id: Gmail
+  id: Gmail Dev
   version: -1
 configuration:
 - display: Email of user with admin privileges
@@ -44,8 +44,8 @@ configuration:
   required: false
   type: 0
 description: Gmail API and user management (This integration replaces the Gmail functionality in the GoogleApps API and G Suite integration).
-display: Gmail
-name: Gmail
+display: Gmail Dev
+name: Gmail Dev
 script:
   commands:
   - arguments:
@@ -606,9 +606,35 @@ script:
       - "true"
       required: false
       secret: false
+    - default: false
+      description: This argument is hidden
+      name: todo
+      required: false
+      secret: false
+    - default: false
+      description: This argument is hidden
+      name: list_account
+      required: false
+      secret: false
+    - default: false
+      description: This argument is hidden
+      name: root
+      required: false
+      secret: false
+    - default: false
+      description: This argument is hidden
+      name: index
+      required: false
+      secret: false
+    - default: false
+      description: This argument is hidden
+      name: item
+      required: false
+      secret: false
     deprecated: false
     description: Searches the Gmail records for all Google users.
     execution: false
+    polling: true
     name: gmail-search-all-mailboxes
     outputs:
     - contextPath: Gmail.ID
