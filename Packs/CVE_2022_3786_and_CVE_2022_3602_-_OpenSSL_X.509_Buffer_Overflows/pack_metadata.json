@@ -1,5 +1,5 @@
 {
-    "name": "CVE-2022-41040 & CVE-2022-41082 - ProxyNotShell",
+    "name": "CVE-2022-3786 & CVE-2022-3602 - OpenSSL X.509 Buffer Overflows",
     "description": "This pack handles OpenSSL X.609 Buffer Overflows CVE-2022-3786 & RCE CVE-2022-3602 vulnerabilities.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
