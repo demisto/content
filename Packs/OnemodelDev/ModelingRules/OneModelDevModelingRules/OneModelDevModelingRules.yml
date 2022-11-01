@@ -3,5 +3,4 @@ id: OneModel
 name: OneModel
 rules: ''
 schema: ''
-to_xdr_version: 3.4.9
 toversion: 6.9.9
