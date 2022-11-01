@@ -1,0 +1,86 @@
+id: SyncSentinelOneToXSOARIncidents
+version: -1
+name: SyncSentinelOneToXSOARIncidents
+fromversion: "5.0.0"
+description: |
+  This playbook will run based on the option selected in the input to sync SentinelOne incidents to XSOAR.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7886be17-4107-4d16-8c01-873428bcb854
+    type: start
+    task:
+      id: 7886be17-4107-4d16-8c01-873428bcb854
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 8e2e390c-61cd-4959-8304-e1213be3bea5
+    type: regular
+    task:
+      id: 8e2e390c-61cd-4959-8304-e1213be3bea5
+      version: -1
+      name: SyncXSOAR-SentinelOneIncidents
+      scriptName: SyncXSOAR-SentinelOneIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    scriptarguments:
+      playbook_to_run:
+        simple: SyncSentinelOneToXSOAR
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
