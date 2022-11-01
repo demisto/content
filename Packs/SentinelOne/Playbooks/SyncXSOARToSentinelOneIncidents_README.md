@@ -26,4 +26,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Playbook-SyncXSOAR-SentinelOneIncidents](../doc_files/Playbook-SyncXSOAR-SentinelOneIncidents.png)
+![Playbook-SyncXSOAR-SentinelOneIncidents](../doc_files/SyncXSOARSentinelOneIncidents.png)

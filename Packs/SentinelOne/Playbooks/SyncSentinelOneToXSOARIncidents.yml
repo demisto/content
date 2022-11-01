@@ -1,17 +1,17 @@
 id: SyncSentinelOneToXSOARIncidents
 version: -1
-name: SyncSentinelOneToXSOARIncidents
 fromversion: "5.0.0"
+name: SyncSentinelOneToXSOARIncidents
 description: |
   This playbook will run based on the option selected in the input to sync SentinelOne incidents to XSOAR.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7886be17-4107-4d16-8c01-873428bcb854
+    taskid: 258829d2-f0dc-4433-890a-0f2ba1ac1b35
     type: start
     task:
-      id: 7886be17-4107-4d16-8c01-873428bcb854
+      id: 258829d2-f0dc-4433-890a-0f2ba1ac1b35
       version: -1
       name: ""
       iscommand: false
@@ -38,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 8e2e390c-61cd-4959-8304-e1213be3bea5
+    taskid: df8588f7-bb6c-4cb4-855a-07ee41193458
     type: regular
     task:
-      id: 8e2e390c-61cd-4959-8304-e1213be3bea5
+      id: df8588f7-bb6c-4cb4-855a-07ee41193458
       version: -1
       name: SyncXSOARSentinelOneIncidents
       scriptName: SyncXSOARSentinelOneIncidents
@@ -49,6 +49,9 @@ tasks:
       iscommand: false
       brand: ""
       description: ""
+    nexttasks:
+      '#none#':
+      - "2"
     scriptarguments:
       playbook_to_run:
         simple: SyncSentinelOneToXSOAR
@@ -68,12 +71,40 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 48148bab-7d04-4904-8d4c-740367f8ec56
+    type: title
+    task:
+      id: 48148bab-7d04-4904-8d4c-740367f8ec56
+      version: -1
+      name: Task Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 275,
+        "height": 415,
         "width": 380,
         "x": 450,
         "y": 50
@@ -83,4 +114,4 @@ view: |-
 inputs: []
 outputs: []
 tests:
-- No tests (auto formatted)
+- No test
