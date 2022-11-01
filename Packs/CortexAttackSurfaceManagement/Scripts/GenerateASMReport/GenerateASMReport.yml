@@ -1,8 +1,12 @@
 args:
+- description: Numerical ID of the ASM Alert
+  name: alert_id
 - description: Name of the Alert that triggered this playbook
   name: alert_name
 - description: Details of the Alert that triggered this playbook
   name: alert_details
+- description: ASM Alert Severity String
+  name: alert_severityStr
 - description: Potential service owners gathered through playbook.
   isArray: true
   name: asmserviceowner

@@ -6,14 +6,17 @@ Generate an ASM Alert Summary report.
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
+| Cortex XSOAR Version | 6.5.0 |
 
 ## Inputs
 ---
 
 | **Argument Name** | **Description** |
 | --- | --- |
+| alert_id | Numerical ID of the ASM Alert |
 | alert_name | Name of the Alert that triggered this playbook |
 | alert_details | Details of the Alert that triggered this playbook |
+| alert_severityStr | ASM Alert Severity String |
 | asmserviceowner | Potential service owners gathered through playbook. |
 | asmremediation | Collect information on remediation action\(s\). |
 | asmservicedetection | Pre/Post remediation scan to check if service is still detectable. |

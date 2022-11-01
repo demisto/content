@@ -16,12 +16,19 @@ def test_get_asm_args(mocker):
     assert isinstance(result, dict)
     assert result["asmdatacollection"] == [
         {
-            "answerer": "fake_user@domain.com",
-            "options": "NoAutomatedRemediation",
-            "selected": "File a ServiceNow Ticket",
-            "timestamp": "1666033665586",
+            "Answerer": "fake_user@domain.com",
+            "Options": "NoAutomatedRemediation",
+            "Selected": "File a ServiceNow Ticket",
+            "Timestamp": "1666033665586",
         }
     ]
+
+
+def test_color_for_severity(mocker):
+    from GenerateASMReport import color_for_severity
+
+    result = color_for_severity("High")
+    assert result == "red"
 
 
 def test_build_template(mocker):
@@ -38,13 +45,18 @@ def test_build_template(mocker):
     assert isinstance(result, list)
     for item in result:
         assert isinstance(item, dict)
-    assert result[0] == {
+    assert result[1] == {
         "type": "header",
-        "data": "Investigation Summary Report",
+        "data": "ASM Investigation Summary Report",
         "layout": {
             "rowPos": 1,
-            "columnPos": 1,
-            "style": {"textAlign": "center", "fontSize": 32},
+            "columnPos": 2,
+            "style": {
+                "textAlign": "center",
+                "fontSize": 28,
+                "color": "black",
+                "background-color": "white",
+            },
         },
     }
 
@@ -55,6 +67,6 @@ def test_build_report(mocker):
     template = util_load_json("test_data/template.json")
     sanepdf_raw = util_load_json("test_data/sanepdf_raw.json")
     mocker.patch.object(demisto, "executeCommand", return_value=sanepdf_raw)
-    result = build_report(template)
+    result = build_report(template, 1234)
     assert isinstance(result, dict)
     assert result["Type"] == EntryType.ENTRY_INFO_FILE
