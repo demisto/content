@@ -128,16 +128,9 @@ def test_malop_processes_command(mocker):
         verify=False,
         headers=HEADERS,
         proxy=True)
-    args = {"malopGuids": "11.-6236127207710541535", "machineName": "desktop", "dateTime": "2022/08/01 00:00:00"}
+    args = {"malopGuids": "11.-6236127207710541535", "machineName": "desktop", "dateTime": "None"}
     raw_response = json.loads(load_mock_response('malop_processes_raw_response.json'))
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
-    mocker.patch.object(demisto, 'results')
-    command_output = malop_processes_command(client, args)
-    assert command_output.outputs[0].get('Name', '') == 'bdata.bin'
-    assert command_output.outputs[0].get('SHA1', '') ==\
-        'f56238da9fbfa3864d443a85bb80743bd2415682'
-
-    args = {"malopGuids": "11.-6236127207710541535", "machineName": "desktop", "dateTime": None}
     mocker.patch.object(demisto, 'results')
     command_output = malop_processes_command(client, args)
     assert command_output.outputs[0].get('Name', '') == 'bdata.bin'
