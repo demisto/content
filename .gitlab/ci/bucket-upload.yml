@@ -69,6 +69,19 @@ prepare-testing-bucket-mpv2-upload-flow:
    - if: '$FORCE_BUCKET_UPLOAD == "true"'
 
 
+prepare-testing-bucket-xpanse-upload-flow:
+ extends:
+   - prepare-testing-bucket-xpanse
+ variables:
+   IFRA_ENV_TYPE: "Bucket-Upload"
+   ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
+ rules:
+   - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+     when: never
+   - if: '$BUCKET_UPLOAD == "true"'
+   - if: '$FORCE_BUCKET_UPLOAD == "true"'
+
+
 .install_packs_in_xsoar_server:
   tags:
     - gke
