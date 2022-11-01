@@ -185,12 +185,6 @@ prepare-testing-bucket-mpv2:
       python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY
     - section_end "Collect Tests and Content Packs"
     
-    - section_start "Collect Tests V2"
-    - |
-      [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-      python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY
-    - section_end "Collect Tests V2"
-
     - section_start "Prepare Content Packs for Testing"
     - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_V2_BUCKET" "$STORAGE_BASE_PATH" "marketplacev2"
     - section_end "Prepare Content Packs for Testing"
@@ -397,7 +391,20 @@ slack-notify-nightly-build:
     - exit $EXIT_CODE
 
 
-xsiam_server_master:
+#xsiam_server_dev:
+#  extends:
+#    - .test_content_on_xsiam_server_instances_base
+#  rules:
+#    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+#    - if: '$NIGHTLY'
+#      when: always
+#  variables:
+#    INSTANCE_ROLE: "XSIAM Master"
+#    GCS_QUEUE_FILE: "queue-master"
+#    TEST_MACHINES_LIST: "test-machines-master"
+
+
+xsiam_server_ga:
   extends:
     - .test_content_on_xsiam_server_instances_base
   rules:
@@ -405,6 +412,6 @@ xsiam_server_master:
     - if: '$NIGHTLY'
       when: always
   variables:
-    INSTANCE_ROLE: "XSIAM Master"
-    GCS_QUEUE_FILE: "queue-master"
-    TEST_MACHINES_LIST: "test-machines-master"
+    INSTANCE_ROLE: "XSIAM 1.2"
+    GCS_QUEUE_FILE: "queue-ga"
+    TEST_MACHINES_LIST: "test-machines-ga"

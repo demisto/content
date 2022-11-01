@@ -198,10 +198,13 @@ check_branch(){
 #   None
 # Arguments:
 #   $1: Option
+#   $2: README
+#   $3: Release Note
+#   $4: Pack metadata
 #######################################
 commit(){
 
-	git add .
+	git add "$2" "$3" "$4"
 	git commit -m "$pack_name adoption $1" -q
 
 }
@@ -302,7 +305,8 @@ get_today_date(){
 }
 
 #######################################
-# Append adoption message to top of README.md 
+# Append adoption message to top of README.md
+# Handles empty README file
 # Globals:
 #   None
 # Arguments:
@@ -313,15 +317,21 @@ add_msg_to_readme(){
 
 	readme=$1
 	message=$2
-	os=$(detect_os)
+	os="$(detect_os)"
 
-	if [ "$os" == "Mac OS" ] 
-	then
-		sed -i '' "1s/^/$message\n\n/" "$readme"
+	# Check if README exists, create if not
+	[ ! -f "$readme" ] && touch "$readme"
+
+	# The file is empty
+	if ! [[ -s "$readme" ]]; then
+		echo "$message" > "$readme"
 	else
-		sed -i "1s/^/$message\n\n/" "$readme"
+		if [ "$os" == "Mac OS" ]; then
+			sed -i '' "1s/^/$message\n\n/" "$readme"
+		else
+			sed -i "1s/^/$message\n\n/" "$readme"
+		fi
 	fi
-
 }
 
 #######################################
@@ -545,7 +555,7 @@ adopt() {
 	add_msg_to_readme "$readme" "$message"
 	echo "✓ Adoption $option message added to README.md"
 
-	commit "$option"
+	commit "$option" "$readme" "$release_note" "$pack_metadata"
 	echo "✓ Changes committed."
 
 	pr_url=$(push "$branch")

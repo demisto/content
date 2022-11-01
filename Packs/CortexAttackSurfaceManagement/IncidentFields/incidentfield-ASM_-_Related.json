@@ -40,7 +40,7 @@
     "description": "Related or duplicate objects",
     "editForm": true,
     "group": 0,
-    "hidden": false,
+    "hidden": true,
     "id": "incident_asmrelated",
     "isReadOnly": false,
     "locked": false,
