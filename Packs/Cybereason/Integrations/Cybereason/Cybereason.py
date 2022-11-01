@@ -643,8 +643,6 @@ def malop_processes_command(client: Client, args: dict):
         date_time_parser = dateparser.parse(date_time).timestamp()
         milliseconds = int(date_time_parser * 1000)
         filter_input = [{"facetName": "creationTime", "filterType": "GreaterThan", "values": [milliseconds], "isResult":True}]
-    else:
-        raise Exception('dateTime should not be empty or None')
 
     if isinstance(malop_guids, str):
         malop_guids = malop_guids.split(',')
