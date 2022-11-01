@@ -8,6 +8,7 @@ import json
 from datetime import datetime, timedelta
 import time
 import re
+import urllib3
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -638,9 +639,9 @@ def malop_processes_command(client: Client, args: dict):
     date_time = str(args.get('dateTime'))
 
     filter_input = []
-    if date_time:
-        date_time = dateparser.parse(date_time).timestamp()
-        milliseconds = int(date_time * 1000)
+    if date_time != 'None':
+        date_time_parser = dateparser.parse(date_time).timestamp()
+        milliseconds = int(date_time_parser * 1000)
         filter_input = [{"facetName": "creationTime", "filterType": "GreaterThan", "values": [milliseconds], "isResult":True}]
 
     if isinstance(malop_guids, str):
@@ -657,8 +658,7 @@ def malop_processes_command(client: Client, args: dict):
     for item in list(elements.values()):
         simple_values = dict_safe_get(item, ['simpleValues'], default_return_value={}, return_type=dict)
         element_values = dict_safe_get(item, ['elementValues'], default_return_value={}, return_type=dict)
-
-        if machine_name_list:
+        if machine_name_list != ['none']:
             machine_list = dict_safe_get(element_values, ['ownerMachine', 'elementValues'], default_return_value=[],
                                          return_type=list)
             wanted_machine = False
@@ -671,6 +671,14 @@ def malop_processes_command(client: Client, args: dict):
             if not wanted_machine:
                 continue
 
+            output = {}
+            for info in PROCESS_INFO:
+                if info.get('type', '') == 'filterData':
+                    output[info['header']] = dict_safe_get(item, ['filterData', 'groupByValue'])
+
+            output = update_output(output, simple_values, element_values, PROCESS_INFO)
+            outputs.append(output)
+        else:
             output = {}
             for info in PROCESS_INFO:
                 if info.get('type', '') == 'filterData':

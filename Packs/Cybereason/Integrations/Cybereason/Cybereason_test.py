@@ -109,13 +109,14 @@ def test_two_query_file(mocker):
 
     raw_response = {'status': "SUCCESS", "data": None}
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         query_file_command(client, args)
-
+    assert exc_info.match(r"No results found.")
     args = {'file_hash': 'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad'}
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value={})
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         query_file_command(client, args)
+    assert exc_info.match(r"Hash type is not supported.")
 
 
 def test_malop_processes_command(mocker):
@@ -127,7 +128,7 @@ def test_malop_processes_command(mocker):
         verify=False,
         headers=HEADERS,
         proxy=True)
-    args = {"malopGuids": "11.-6236127207710541535", "machineName": "desktop", "dateTime": "2022/08/01 00:00:00"}
+    args = {"malopGuids": "11.-6236127207710541535", "machineName": "desktop", "dateTime": "None"}
     raw_response = json.loads(load_mock_response('malop_processes_raw_response.json'))
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
     mocker.patch.object(demisto, 'results')
@@ -138,8 +139,9 @@ def test_malop_processes_command(mocker):
 
     args = {"malopGuids": None, "machineName": "desktop", "dateTime": "2022/08/01 00:00:00"}
     mocker.patch.object(demisto, 'results')
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         command_output = malop_processes_command(client, args)
+    assert exc_info.match(r"malopGuids must be array of strings")
 
 
 def test_is_probe_connected_command(mocker):
@@ -199,12 +201,14 @@ def test_query_connections_command(mocker):
     assert command_output.outputs[0]['Name'] == "svchost.exe"
 
     args = {"machine": "desktop", "ip": "192.168.1.103"}
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         command_output = query_connections_command(client, args)
+    assert exc_info.match(r"Too many arguments given.")
 
     args = {}
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         command_output = query_connections_command(client, args)
+    assert exc_info.match(r"Not enough arguments given.")
 
 
 def test_isolate_machine_command(mocker):
@@ -283,12 +287,14 @@ def test_update_malop_status_command(mocker):
         'status': "SUCESS"
     }
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         command_output = update_malop_status_command(client, args)
+    assert exc_info.match(r"message")
 
     args = {"malopGuid": "11.-7780537507363356527", "status": "test"}
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         command_output = update_malop_status_command(client, args)
+    assert exc_info.match(r"Invalid status.")
 
 
 def test_prevent_file_command(mocker):
@@ -311,8 +317,9 @@ def test_prevent_file_command(mocker):
         'outcome': "failure"
     }
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         command_output = prevent_file_command(client, args)
+    assert exc_info.match(r"Failed to prevent file")
 
 
 def test_unprevent_file_command(mocker):
@@ -334,8 +341,9 @@ def test_unprevent_file_command(mocker):
         'outcome': "failure"
     }
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         command_output = unprevent_file_command(client, args)
+    assert exc_info.match(r"Failed to unprevent file")
 
 
 def test_query_domain_command(mocker):
@@ -354,13 +362,15 @@ def test_query_domain_command(mocker):
     assert command_output.outputs_prefix == "Cybereason.Domain"
 
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value={})
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         command_output = query_domain_command(client, args)
+    assert exc_info.match(r"Error occurred while trying to query the file.")
 
     raw_response = {'status': "SUCCESS", "data": None}
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         command_output = query_domain_command(client, args)
+    assert exc_info.match(r"No results found.")
 
 
 def test_query_user_command(mocker):
@@ -379,13 +389,15 @@ def test_query_user_command(mocker):
     assert command_output.outputs[0]['Username'] == "desktop-vg9ke2u"
 
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value={})
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         command_output = query_user_command(client, args)
+    assert exc_info.match(r"Error occurred while trying to query the file.")
 
     raw_response = {'status': "SUCCESS", "data": None}
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         command_output = query_user_command(client, args)
+    assert exc_info.match(r"No results found.")
 
 
 def test_available_remediation_actions_command(mocker):
@@ -460,8 +472,9 @@ def test_quarantine_file_command(mocker):
     mocker.patch("Cybereason.get_remediation_action", return_value=raw_response)
     raw_response = json.loads(load_mock_response('get_remediation_action_status.json'))
     mocker.patch("Cybereason.get_remediation_action_status", return_value=raw_response)
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         quarantine_file_command(client, args)
+    assert exc_info.match(r"Quarantine file remediation")
 
 
 def test_unquarantine_file_command(mocker):
@@ -484,8 +497,9 @@ def test_unquarantine_file_command(mocker):
     mocker.patch("Cybereason.get_remediation_action", return_value=raw_response)
     raw_response = json.loads(load_mock_response('get_remediation_action_status.json'))
     mocker.patch("Cybereason.get_remediation_action_status", return_value=raw_response)
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         unquarantine_file_command(client, args)
+    assert exc_info.match(r"Unquarantine file remediation")
 
 
 def test_block_file_command(mocker):
@@ -508,8 +522,9 @@ def test_block_file_command(mocker):
     mocker.patch("Cybereason.get_remediation_action", return_value=raw_response)
     raw_response = json.loads(load_mock_response('get_remediation_action_status.json'))
     mocker.patch("Cybereason.get_remediation_action_status", return_value=raw_response)
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         block_file_command(client, args)
+    assert exc_info.match(r"Block file remediation")
 
 
 def test_kill_process_command(mocker):
@@ -531,8 +546,9 @@ def test_kill_process_command(mocker):
     mocker.patch("Cybereason.get_remediation_action", return_value=raw_response)
     raw_response = json.loads(load_mock_response('get_remediation_action_status.json'))
     mocker.patch("Cybereason.get_remediation_action_status", return_value=raw_response)
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         kill_process_command(client, args)
+    assert exc_info.match(r"Kill process remediation")
 
 
 def test_get_sensor_id_command(mocker):
@@ -551,8 +567,9 @@ def test_get_sensor_id_command(mocker):
                                               "'5e77883de4b0575ddcf824ef:PYLUMCLIENT_INTEGRATION_DESKTOP-VG9KE2U_0800273ADC2F'}")
 
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value={"sensors": []})
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         command_output = get_sensor_id_command(client, args)
+    assert exc_info.match(r"Could not find any Sensor ID for the machine")
 
 
 def test_number_one_fetch_scan_status_command(mocker):
@@ -592,8 +609,9 @@ def test_malware_query_command(mocker):
     args = {
         "limit": "0"
     }
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         command_output = malware_query_command(client, args)
+    assert exc_info.match(r"Limit cannot be zero or a negative number.")
 
 
 def test_unsuspend_process_command(mocker):
@@ -615,8 +633,9 @@ def test_unsuspend_process_command(mocker):
     mocker.patch("Cybereason.get_remediation_action", return_value=raw_response)
     raw_response = json.loads(load_mock_response('get_remediation_action_status.json'))
     mocker.patch("Cybereason.get_remediation_action_status", return_value=raw_response)
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         unsuspend_process_command(client, args)
+    assert exc_info.match(r"Unsuspend process remediation")
 
 
 def test_kill_prevent_unsuspend_command(mocker):
@@ -639,8 +658,9 @@ def test_kill_prevent_unsuspend_command(mocker):
     mocker.patch("Cybereason.get_remediation_action", return_value=raw_response)
     raw_response = json.loads(load_mock_response('get_remediation_action_status.json'))
     mocker.patch("Cybereason.get_remediation_action_status", return_value=raw_response)
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         kill_prevent_unsuspend_command(client, args)
+    assert exc_info.match(r"Kill prevent unsuspend")
 
 
 def test_delete_registry_key_command(mocker):
@@ -663,8 +683,9 @@ def test_delete_registry_key_command(mocker):
     mocker.patch("Cybereason.get_remediation_action", return_value=raw_response)
     raw_response = json.loads(load_mock_response('get_remediation_action_status.json'))
     mocker.patch("Cybereason.get_remediation_action_status", return_value=raw_response)
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         delete_registry_key_command(client, args)
+    assert exc_info.match(r"Delete registry key")
 
 
 def test_add_comment_command(mocker):
@@ -723,8 +744,9 @@ def test_archive_sensor_command(mocker):
     args = {
         "sensorID": "5e778834ef:PYLUMCLIENT_INTEGRATION_EC2AMAZ"}
     mocker.patch('Cybereason.Client.cybereason_api_call', return_value=test_reponse)
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         command_output = archive_sensor_command(client, args)
+    assert exc_info.match(r"Your request failed")
 
 
 def test_unarchive_sensor_command(mocker):
@@ -748,8 +770,9 @@ def test_unarchive_sensor_command(mocker):
     args = {
         "sensorID": "5e778834ef:PYLUMCLIENT_INTEGRATION_EC2AMAZ"}
     mocker.patch('Cybereason.Client.cybereason_api_call', return_value=test_reponse)
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         command_output = unarchive_sensor_command(client, args)
+    assert exc_info.match(r"Your request failed")
 
 
 def test_delete_sensor_command(mocker):
@@ -780,8 +803,9 @@ def test_delete_sensor_command(mocker):
     args = {
         "sensorID": "5e778834ef:PYLUMCLIENT_INTEGRATION_EC2AMAZ"}
     mocker.patch('Cybereason.Client.cybereason_api_call', return_value=test_reponse)
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         command_output = delete_sensor_command(client, args)
+    assert exc_info.match(r"Your request failed")
 
 
 def test_start_host_scan_command(mocker):
@@ -804,8 +828,9 @@ def test_start_host_scan_command(mocker):
 
     test_reponse = MockResponse({"key1": "val1"}, 404)
     mocker.patch('Cybereason.Client.cybereason_api_call', return_value=test_reponse)
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         command_output = start_host_scan_command(client, args)
+    assert exc_info.match(r"Your request failed")
 
 
 def test_number_two_fetch_scan_status_command(mocker):
@@ -853,8 +878,9 @@ def test_download_fetchfile_command(mocker):
 
     test_reponse = MockResponse({"key1": "val1"}, 404)
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=test_reponse)
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         command_output = download_fetchfile_command(client, args)
+    assert exc_info.match(r"request failed with the following error:")
 
     test_reponse = MockResponse({"key1": "val1"}, 200)
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=test_reponse)
@@ -874,8 +900,9 @@ def test_close_fetchfile_command(mocker):
 
     test_reponse = MockResponse({"key1": "val1"}, 200)
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=test_reponse)
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         close_fetchfile_command(client, args)
+    assert exc_info.match(r"The given Batch ID does not exist")
 
 
 def test_malop_to_incident(mocker):
@@ -887,8 +914,9 @@ def test_malop_to_incident(mocker):
 
     assert command_output['name'] == "Cybereason Malop 12345A"
 
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         command_output = malop_to_incident("args")
+    assert exc_info.match(r"Cybereason raw response is not valid")
 
 
 def test_get_pylum_id(mocker):
@@ -922,8 +950,9 @@ def test_get_pylum_id(mocker):
     assert command_output == "PYLUMCLIENT_INTEGRATION_DESKTOP-VG9KE2U_0800273ADC2F"
 
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=test_reponse)
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as exc_info:
         command_output = get_pylum_id(client, "test_machine")
+    assert exc_info.match(r"Could not find machine")
 
 
 def test_get_machine_guid(mocker):
