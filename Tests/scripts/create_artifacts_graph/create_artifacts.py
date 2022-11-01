@@ -42,7 +42,7 @@ def main():
 
                     displayed_images.extend((integration.object_id for integration in pack.content_items.integration))
             pack_dependencies[pack.object_id] = {
-                "path": str(Path.relative_to(pack.path, Path.cwd())),
+                "path": str(pack.path.relative_to(Path.cwd())),
                 "fullPath": str(pack.path),
                 "dependencies": first_level_dependencies,
                 "displayedImages": displayed_images,
