@@ -34,6 +34,10 @@
         "AWS-Enrichment-Remediation": {
             "mandatory": true,
             "display_name": "AWS Enrichment and Remediaton"
+        },
+        "CoreAlertFields": {
+            "mandatory": true,
+            "display_name": "Core Alert Fields"
         }
     },
     "marketplaces": [
@@ -43,6 +47,7 @@
         "ASM"
     ],
     "displayedImages": [
+        "CoreAlertFields",
         "ServiceNow",
         "Nmap",
         "CommonScripts",
