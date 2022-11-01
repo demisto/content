@@ -508,7 +508,7 @@ class TestCleanPacks:
                                                    pack_list=[])
 
         assert not skipped_cleanup
-        shutil.rmtree.assert_called_once_with(os.path.join(index_folder_path, invalid_pack))
+        shutil.rmtree.assert_called_with(os.path.join(index_folder_path, invalid_pack))
 
 
 class TestUpdatedPrivatePacks:
