@@ -639,10 +639,12 @@ def malop_processes_command(client: Client, args: dict):
     date_time = str(args.get('dateTime'))
 
     filter_input = []
-    if date_time:
-        date_time = dateparser.parse(date_time).timestamp()
-        milliseconds = int(date_time * 1000)
+    if date_time != 'None':
+        date_time_parser = dateparser.parse(date_time).timestamp()
+        milliseconds = int(date_time_parser * 1000)
         filter_input = [{"facetName": "creationTime", "filterType": "GreaterThan", "values": [milliseconds], "isResult":True}]
+    else:
+        raise Exception('dateTime should not be empty or None')
 
     if isinstance(malop_guids, str):
         malop_guids = malop_guids.split(',')
@@ -1768,9 +1770,10 @@ def malware_query_command(client: Client, args: dict):
     malware_status = str(args.get('status'))
     time_stamp = str(args.get('timestamp'))
     limit_range = arg_to_number(args.get('limit'))
-    if limit_range > 0:
-        filter_response = malware_query_filter(client, needs_attention, malware_type, malware_status, time_stamp, limit_range)
-        return CommandResults(raw_response=filter_response)
+    if limit_range:
+        if limit_range > 0:
+            filter_response = malware_query_filter(client, needs_attention, malware_type, malware_status, time_stamp, limit_range)
+            return CommandResults(raw_response=filter_response)
     else:
         raise DemistoException("Limit cannot be zero or a negative number.")
 
