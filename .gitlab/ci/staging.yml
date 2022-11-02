@@ -90,7 +90,7 @@ graph-prepare-testing-bucket-mpv2:
     - section_start "Replace Cortex XSOAR" --collapsed
     - pushd "$ARTIFACTS_FOLDER"
     - find content_packs -type f -not \( -path "*/ReleaseNotes/*" \) -exec sed -i -e 's/Cortex XSOAR/'"$PRODUCT_NAME"'/gI' {} \;
-    - pushd content_packs; zip -r ../content_packs.zip *; popd
+    - pushd content_packs; zip -r ../content_packs.zip * 1> /dev/null; popd
     - rm -rf content_packs
     - popd
     - section_end "Replace Cortex XSOAR"
