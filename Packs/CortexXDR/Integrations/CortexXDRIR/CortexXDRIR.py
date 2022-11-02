@@ -1212,8 +1212,20 @@ def main():  # pragma: no cover
         elif command == 'xdr-get-audit-agent-reports':
             return_outputs(*get_audit_agent_reports_command(client, args))
 
-        elif command == 'xdr-file-quarantine':
+        elif command == 'xdr-quarantine-files':
             return_results(quarantine_files_command(client, args))
+
+        elif command == 'xdr-file-quarantine':
+            return_results(run_polling_command(client=client,
+                                               args=args,
+                                               cmd="xdr-file-quarantine",
+                                               command_function=quarantine_files_command,
+                                               command_decision_field="action_id",
+                                               results_function=action_status_get_command,
+                                               polling_field="status",
+                                               polling_value=["PENDING",
+                                                              "IN_PROGRESS",
+                                                              "PENDING_ABORT"]))
 
         elif command == 'core-quarantine-files':
             polling_args = {
