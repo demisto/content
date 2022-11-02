@@ -674,7 +674,7 @@ class Client(BaseClient):
             additional_headers={'Range': range_} if range_ else None
         )
 
-    def create_remote_network_cidr(self, body: Dict[str, Any], fields: str):   
+    def create_remote_network_cidr(self, body: Dict[str, Any], fields: str):
         headers = {'fields': fields}
 
         return self.http_request(
@@ -1457,6 +1457,55 @@ def validate_long_running_params(params: Dict) -> None:
         if param_field not in params:
             raise DemistoException(f'Parameter {param_display} is required when enabling long running execution.'
                                    ' Please set a value for it.')
+
+
+def get_cidrs_indicators(query):
+    """Extracts cidrs from a query"""
+    if not query:
+        return []
+
+    res = demisto.searchIndicators(query=query)
+
+    indicators = []
+    for indicator in res.get('iocs', []):
+        if indicator.get('indicator_type') == 'CIDR':
+            indicators.append(indicator.get('value'))
+
+    return indicators
+
+
+def verify_args_for_remote_network_cidr(cidrs_list: list, cidrs_from_query: list, name: str, id: Optional[int], group: str, fields: str):
+    # verify that only one of the arguments is given
+    if cidrs_list and cidrs_from_query:
+        return 'Cannot specify both cidrs and query arguments.'
+
+    # verify that at least one of the arguments is given
+    if not cidrs_list and not cidrs_from_query:
+        return 'Must specify either cidrs or query arguments.'
+
+    # verify that the given cidrs are valid
+    for cidr in cidrs_list:
+        if not re.match(ipv4cidrRegex, cidr) and not re.match(ipv6cidrRegex, cidr):
+            return f'{cidr} is not a valid CIDR.'
+
+    # verify that the given name and group are valid
+    if not NAME_AND_GROUP_REGEX.match(name) or not NAME_AND_GROUP_REGEX.match(group):
+        return 'Name and group arguments only allow letters, numbers, \'_\' and \'-\'.'
+
+    # verify that id is given only if a single cidr is given
+    if (len(cidrs_list) > 1 or len(cidrs_from_query) > 1) and id:
+        return 'ID is possible only when a single CIDR is created.'
+
+    # verify that the given id is valid
+    if id and id < 0:
+        return 'ID must be a positive number.'
+
+    fields_list = argToList(fields)
+    if fields_list:
+        possible_fields = ['id', 'name', 'group', 'cidrs', 'description']
+        for field in fields_list:
+            if field not in possible_fields:
+                return f'{field} is not a valid field. Possible fields are: {possible_fields}.'
 
 
 ''' COMMAND FUNCTIONS '''
@@ -3608,55 +3657,6 @@ def qradar_search_retrieve_events_command(
                           )
 
 
-def get_cidrs_indicators(query):
-    """Extracts cidrs from a query"""
-    if not query:
-        return []
-
-    res = demisto.searchIndicators(query=query)
-
-    indicators = []
-    for indicator in res.get('iocs', []):
-        if indicator.get('indicator_type') == 'CIDR':
-            indicators.append(indicator.get('value'))
-
-    return indicators
-
-
-def verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, id, group, fields):
-    # verify that only one of the arguments is given
-    if cidrs_list and cidrs_from_query:
-        raise DemistoException('Cannot specify both cidrs and query arguments.')
-
-    # verify that at least one of the arguments is given
-    if not cidrs_list and not cidrs_from_query:
-        raise DemistoException('Must specify either cidrs or query arguments.')
-
-    # verify that the given cidrs are valid
-    for cidr in cidrs_list:
-        if not re.match(ipv4cidrRegex, cidr) and not re.match(ipv6cidrRegex, cidr):
-            raise DemistoException(f'{cidr} is not a valid CIDR.')
-
-    # verify that the given name and group are valid
-    if not NAME_AND_GROUP_REGEX.match(name) or not NAME_AND_GROUP_REGEX.match(group):
-        raise DemistoException('Name and group arguments only allow letters, numbers, \'_\' and \'-\'.')
-
-    # verify that id is given only if a single cidr is given
-    if (len(cidrs_list) > 1 or len(cidrs_from_query) > 1) and id:
-        raise DemistoException('ID is possible only when a single CIDR is created.')
-
-    # verify that the given id is valid
-    if id and id < 0:
-        raise DemistoException('ID must be a positive number.')
-
-    fields_list = argToList(fields)
-    if fields_list:
-        possible_fields = ['id', 'name', 'group', 'cidrs', 'description']
-        for field in fields_list:
-            if field not in possible_fields:
-                raise DemistoException(f'{field} is not a valid field. Possible fields are: {possible_fields}.')
-
-
 def qradar_remote_network_cidr_create_command(client: Client, args) -> CommandResults:
     """Create remote network cidrs
     Args:
@@ -3677,7 +3677,9 @@ def qradar_remote_network_cidr_create_command(client: Client, args) -> CommandRe
     group = args.get('group')
     fields = args.get('fields')
 
-    verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, id, group, fields)
+    error_message = verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, id, group, fields)
+    if error_message:
+        raise DemistoException(error_message)
 
     body = {
         "name": name,
@@ -3694,19 +3696,19 @@ def qradar_remote_network_cidr_create_command(client: Client, args) -> CommandRe
     )
 
 
-def qradar_remote_network_cidr_list_command():
+def qradar_remote_network_cidr_list_command(client, args):
     pass
 
 
-def qradar_remote_network_cidr_delete_command():
+def qradar_remote_network_cidr_delete_command(client, args):
     pass
 
 
-def qradar_remote_network_cidr_update_command():
+def qradar_remote_network_cidr_update_command(client, args):
     pass
 
 
-def qradar_remote_network_deploy_execution_command():
+def qradar_remote_network_deploy_execution_command(client, args):
     pass
 
 

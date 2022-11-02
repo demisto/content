@@ -30,11 +30,13 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_log_sources_list_command, qradar_get_custom_properties_command, enrich_asset_properties, \
     flatten_nested_geolocation_values, get_modified_remote_data_command, get_remote_data_command, is_valid_ip, \
     qradar_ips_source_get_command, qradar_ips_local_destination_get_command, \
+    qradar_remote_network_cidr_create_command, get_cidrs_indicators, verify_args_for_remote_network_cidr, \
     migrate_integration_ctx, enrich_offense_with_events, \
     perform_long_running_loop, validate_integration_context, FetchMode
 
 from CommonServerPython import DemistoException, set_integration_context, CommandResults, \
     GetModifiedRemoteDataResponse, GetRemoteDataResponse, get_integration_context
+import demistomock as demisto
 
 QRadar_v3.FAILURE_SLEEP = 0
 QRadar_v3.SLEEP_FETCH_EVENT_RETRIES = 0
@@ -1363,3 +1365,58 @@ def test_convert_ctx_to_new_structure():
                                          LAST_FETCH_KEY: 15,
                                          LAST_MIRROR_KEY: 0,
                                          'samples': []}
+
+
+@pytest.mark.parametrize('query, expected', [
+    ('', []),
+    ('cidr', ['1.2.3.4/32', '5.6.7.8/2'])
+])
+def test_get_cidrs_indicators(query, expected, mocker):
+    """
+    Given: A query to get cidr indicators
+
+    When: Calling the function
+
+    Then: Extract and return a clean list of cidrs only
+    """
+    mocker.patch.object(demisto, 'searchIndicators', return_value={'iocs': [
+        {'id': '14', 'version': 1, 'indicator_type': 'CIDR', 'value': '1.2.3.4/32'},
+        {'id': '12', 'version': 1, 'indicator_type': 'CIDR', 'value': '5.6.7.8/2'},
+    ]})
+
+    assert get_cidrs_indicators(query) == expected
+
+
+VERIFY_MESSAGES_ERRORS = [
+    'Cannot specify both cidrs and query arguments.',
+    'Must specify either cidrs or query arguments.',
+    '1.2.3.4 is not a valid CIDR.',
+    'Name and group arguments only allow letters, numbers, \'_\' and \'-\'.',
+    'ID is possible only when a single CIDR is created.',
+    'ID must be a positive number.',
+    "cidr is not a valid field. Possible fields are: ['id', 'name', 'group', 'cidrs', 'description']."
+]
+
+
+@pytest.mark.parametrize('cidrs_list, cidrs_from_query, name, id, group, fields, expected', [
+    (['1.2.3.4/32', '5.6.7.8/2'], ['8.8.8.8/12'], 'test1', '', 'test_group1', '', VERIFY_MESSAGES_ERRORS[0]),
+    ([], [], 'test2', '', 'test_group2', '', VERIFY_MESSAGES_ERRORS[1]),
+    (['1.2.3.4'], [], 'test3', '', 'test_group3', '', VERIFY_MESSAGES_ERRORS[2]),
+    (['1.2.3.4/32'], [], 'test4!', '', 'test_group4', '', VERIFY_MESSAGES_ERRORS[3]),
+    (['1.2.3.4/32'], [], 'test5', '', 'test_group5!', '', VERIFY_MESSAGES_ERRORS[3]),
+    (['1.2.3.4/32', '5.6.7.8/2'], [], 'test6', '6', 'test_group6', '', VERIFY_MESSAGES_ERRORS[4]),
+    ([], ['1.2.3.4/32', '5.6.7.8/2'], 'test7', '7', 'test_group7', '', VERIFY_MESSAGES_ERRORS[4]),
+    (['1.2.3.4/32'], [], 'test8', -1, 'test_group8', '', VERIFY_MESSAGES_ERRORS[5]),
+    (['1.2.3.4/32'], [], 'test9', '', 'test_group9', 'id,cidr', VERIFY_MESSAGES_ERRORS[6]),
+])
+def test_verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, id, group, fields, expected):
+    """
+    Given: Command arguments
+
+    When: Calling to verify arguments
+
+    Then: Verify that the correct error message is returned
+    """
+    error_message = verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, id, group, fields)
+
+    assert error_message == expected
