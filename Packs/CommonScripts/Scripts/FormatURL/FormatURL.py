@@ -33,12 +33,16 @@ class URLCheck(object):
     """
     This class will build and validate a URL based on "URL Living Standard" (https://url.spec.whatwg.org)
     """
+    sub_delims = ("!", "$", "&", "'", "(", ")", "*", "+", ",", ";", "=")
+    brackets = ("\"", "'", "[", "]", "{", "}", "(", ")", ",")
+    url_code_points = ("!", "$", "&", "\"", "(", ")", "*", "+", ",", "-", ".", "/", ":", ";", "=", "?", "@",
+                            "_", "~")
 
     def __init__(self, original_url):
         self.modified_url = original_url
         self.original_url = original_url
         self.url = URLType(original_url)
-        self.base = 0
+        self.base = 0  # This attribute increases as the url is being parsed
         self.output = ''
 
         self.inside_brackets = False
@@ -47,11 +51,7 @@ class URLCheck(object):
         self.fragment = False
         self.done = False
 
-        self.sub_delims = ("!", "$", "&", "'", "(", ")", "*", "+", ",", ";", "=")
-        self.brackets = ("\"", "'", "[", "]", "{", "}", "(", ")", ",")
-        self.url_code_points = ("\u0021", "\u0024", "\u0026", "\u0027", "\u0028", "\u0029", "\u002A", "\u002B",
-                                "\u002C", "\u002D", "\u002E", "\u002F", "\u003A", "\u003B", "\u003D", "\u003F",
-                                "\u0040", "\u005F", "\u007E")
+
 
         if self.original_url:
             self.remove_leading_chars()
@@ -60,9 +60,7 @@ class URLCheck(object):
             raise URLError("Empty string given")
 
         if "//" in self.modified_url[:8]:
-            """
-            The URL seems to have a scheme indicated by presence of "//"
-            """
+            # The URL seems to have a scheme indicated by presence of "//"
             self.scheme_check()
 
         try:
@@ -73,9 +71,8 @@ class URLCheck(object):
 
         try:
             if "@" in self.modified_url[:first_slash]:
-                """
-                Checks if url has '@' sign in its authority part
-                """
+                # Checks if url has '@' sign in its authority part
+
                 self.user_info_check()
 
         except ValueError:
@@ -111,9 +108,6 @@ class URLCheck(object):
         scheme = ''
 
         while self.modified_url[index].isascii() or self.modified_url[index] in ("+", "-", "."):
-            """
-            Scheme State checker
-            """
 
             char = self.modified_url[index]
             if char in self.sub_delims:
@@ -125,7 +119,7 @@ class URLCheck(object):
                 index += 1
 
                 if self.modified_url[index:index + 2] != "//":
-                    "If URL has ascii chars and ':' with no '//' it is invalid"
+                    # If URL has ascii chars and ':' with no '//' it is invalid
 
                     raise URLError(f"Invalid character {char} at position {index}")
 
@@ -534,7 +528,7 @@ def main():
             formatted_url = URLFormatter(url).output
 
         except URLError as e:
-            demisto.info(e.__str__())
+            demisto.error(e.__str__())
 
         except Exception as e:
             demisto.error(traceback.format_exc() + str(e))  # print the traceback
