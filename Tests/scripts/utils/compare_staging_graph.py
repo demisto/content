@@ -167,8 +167,8 @@ def main():
     ]
     for file in dir_cmp.common_files:
         pack = file.removesuffix(".zip")
-        diff_files = compare_zips(zip_id_set / file, zip_graph / file, output_path / pack)
-        message.append(f'Different files for pack {pack}: {", ".join(diff_files)}')
+        if diff_files := compare_zips(zip_id_set / file, zip_graph / file, output_path / pack)
+           message.append(f'Detected differences in the following files for pack {pack}: {", ".join(diff_files)}')
     if compare_indexes(index_id_set_path, index_graph_path, output_path):
         message.append("Detected differences between index.json files")
     if file_diff_text(output_path / "collect_tests_diff.json", collected_packs_id_set, collected_packs_graph):

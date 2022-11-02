@@ -9,7 +9,7 @@ PACK_ARTIFACTS=$ARTIFACTS_FOLDER/content_packs.zip
 EXTRACT_FOLDER=$(mktemp -d)
 ID_SET=$ARTIFACTS_FOLDER/id_set.json
 
-# check if ID_SET exists
+# build type is staging if ID_SET doesn't exist
 STAGING_SUFFIX=""
 if [ ! -f "$ID_SET" ]; then
     echo "ID_SET file not found at $ID_SET"
