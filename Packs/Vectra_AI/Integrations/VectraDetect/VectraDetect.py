@@ -1541,7 +1541,7 @@ def fetch_incidents(client: Client, integration_params: Dict):
                 )
 
             if (api_response is None) or (api_response.get('count') is None):
-                raise VectraException("API issue")
+                raise VectraException("API issue - Response is empty or invalid")
 
             if api_response.get('count') == 0:
                 demisto.info(f"{entity_type} - No results")
@@ -1555,7 +1555,7 @@ def fetch_incidents(client: Client, integration_params: Dict):
 
                 # 1st pass
                 if api_response.get('results') is None:
-                    raise VectraException("API issue")
+                    raise VectraException("API issue - Response is empty or invalid")
 
                 api_results = api_response.get('results', {})
                 for event in api_results:
@@ -1643,14 +1643,14 @@ def vectra_search_accounts_command(client: Client, **kwargs) -> CommandResults:
 
     count = api_response.get('count')
     if count is None:
-        raise VectraException('API issue')
+        raise VectraException('API issue - Response is empty or invalid')
 
     accounts_data = list()
     if count == 0:
         readable_output = 'Cannot find any Account.'
     else:
         if api_response.get('results') is None:
-            raise VectraException('API issue')
+            raise VectraException('API issue - Response is empty or invalid')
 
         api_results = api_response.get('results', [])
 
@@ -1691,14 +1691,14 @@ def vectra_search_detections_command(client: Client, **kwargs) -> CommandResults
 
     count = api_response.get('count')
     if count is None:
-        raise VectraException('API issue')
+        raise VectraException('API issue - Response is empty or invalid')
 
     detections_data = list()
     if count == 0:
         readable_output = 'Cannot find any Detection.'
     else:
         if api_response.get('results') is None:
-            raise VectraException('API issue')
+            raise VectraException('API issue - Response is empty or invalid')
 
         api_results = api_response.get('results', [])
 
@@ -1746,14 +1746,14 @@ def vectra_search_hosts_command(client: Client, **kwargs) -> CommandResults:
 
     count = api_response.get('count')
     if count is None:
-        raise VectraException('API issue')
+        raise VectraException('API issue - Response is empty or invalid')
 
     hosts_data = list()
     if count == 0:
         readable_output = 'Cannot find any Host.'
     else:
         if api_response.get('results') is None:
-            raise VectraException('API issue')
+            raise VectraException('API issue - Response is empty or invalid')
 
         api_results = api_response.get('results', [])
 
@@ -1794,14 +1794,14 @@ def vectra_search_assignments_command(client: Client, **kwargs) -> CommandResult
 
     count = api_response.get('count')
     if count is None:
-        raise VectraException('API issue')
+        raise VectraException('API issue - Response is empty or invalid')
 
     assignments_data = list()
     if count == 0:
         readable_output = 'Cannot find any Assignments.'
     else:
         if api_response.get('results') is None:
-            raise VectraException('API issue')
+            raise VectraException('API issue - Response is empty or invalid')
 
         api_results = api_response.get('results', [])
 
@@ -1841,14 +1841,14 @@ def vectra_search_outcomes_command(client: Client, **kwargs) -> CommandResults:
 
     count = api_response.get('count')
     if count is None:
-        raise VectraException('API issue')
+        raise VectraException('API issue - Response is empty or invalid')
 
     outcomes_data = list()
     if count == 0:
         readable_output = 'Cannot find any Outcomes.'
     else:
         if api_response.get('results') is None:
-            raise VectraException('API issue')
+            raise VectraException('API issue - Response is empty or invalid')
 
         api_results = api_response.get('results', [])
 
@@ -1887,14 +1887,14 @@ def vectra_search_users_command(client: Client, **kwargs) -> CommandResults:
 
     count = api_response.get('count')
     if count is None:
-        raise VectraException('API issue')
+        raise VectraException('API issue - Response is empty or invalid')
 
     users_data = list()
     if count == 0:
         readable_output = 'Cannot find any Vectra Users.'
     else:
         if api_response.get('results') is None:
-            raise VectraException('API issue')
+            raise VectraException('API issue - Response is empty or invalid')
 
         api_results = api_response.get('results', [])
 
@@ -1940,7 +1940,7 @@ def vectra_get_account_by_id_command(client: Client, id: str) -> CommandResults:
 
     count = api_response.get('count')
     if count is None:
-        raise VectraException('API issue')
+        raise VectraException('API issue - Response is empty or invalid')
     if count > 1:
         raise VectraException('Multiple Accounts found')
 
@@ -1949,7 +1949,7 @@ def vectra_get_account_by_id_command(client: Client, id: str) -> CommandResults:
         readable_output = f'Cannot find Account with ID "{id}".'
     else:
         if api_response.get('results') is None:
-            raise VectraException('API issue')
+            raise VectraException('API issue - Response is empty or invalid')
 
         api_results = api_response.get('results', [])
         account_data = extract_account_data(api_results[0])
@@ -1992,7 +1992,7 @@ def vectra_get_detection_by_id_command(client: Client, id: str) -> CommandResult
 
     count = api_response.get('count')
     if count is None:
-        raise VectraException('API issue')
+        raise VectraException('API issue - Response is empty or invalid')
     if count > 1:
         raise VectraException('Multiple Detections found')
 
@@ -2001,7 +2001,7 @@ def vectra_get_detection_by_id_command(client: Client, id: str) -> CommandResult
         readable_output = f'Cannot find Detection with ID "{id}".'
     else:
         if api_response.get('results') is None:
-            raise VectraException('API issue')
+            raise VectraException('API issue - Response is empty or invalid')
 
         api_results = api_response.get('results', [])
         detection_data = extract_detection_data(api_results[0])
@@ -2044,7 +2044,7 @@ def vectra_get_host_by_id_command(client: Client, id: str) -> CommandResults:
 
     count = api_response.get('count')
     if count is None:
-        raise VectraException('API issue')
+        raise VectraException('API issue - Response is empty or invalid')
     if count > 1:
         raise VectraException('Multiple Hosts found')
 
@@ -2053,7 +2053,7 @@ def vectra_get_host_by_id_command(client: Client, id: str) -> CommandResults:
         readable_output = f'Cannot find Host with ID "{id}".'
     else:
         if api_response.get('results') is None:
-            raise VectraException('API issue')
+            raise VectraException('API issue - Response is empty or invalid')
 
         api_results = api_response.get('results', [])
         host_data = extract_host_data(api_results[0])
