@@ -36,7 +36,10 @@ def test_continue_on_blacklisted_error_arg(mocker, requests_mock, continue_on_bl
         assert return_error_mock.call_count == 0
     else:
         assert response[0].get('is_error') is True
-        assert "The submitted domain is on our blacklist, we will not scan it." in response[0].get('error_string')
+        assert (
+            'The submitted domain is on our blacklist. '
+            'For your own safety we did not perform this scan...'
+        ) in response[0].get('error_string')
 
 
 def test_endless_loop_on_failed_response(requests_mock, mocker):

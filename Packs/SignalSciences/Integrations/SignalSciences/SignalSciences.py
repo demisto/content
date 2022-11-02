@@ -1335,7 +1335,7 @@ def get_sites_command():
 
 def fetch_incidents():
     now_utc = datetime.utcnow()
-    most_recent_event_time = None
+    most_recent_event_time = ""
 
     last_run_data = demisto.getLastRun()
     if last_run_data:

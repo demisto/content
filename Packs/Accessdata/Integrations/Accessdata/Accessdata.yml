@@ -2,9 +2,10 @@ commonfields:
   id: Accessdata
   version: -1
 name: Accessdata
-display: Accessdata
+display: Accessdata (Deprecated)
 category: Forensics & Malware Analysis
-description: Use the Accessdata integration to protect against and provide additional visibility into phishing and other malicious email attacks.
+description: Deprecated. Use Exterro FTK instead.
+deprecated: true
 configuration:
 - display: Server URL with scheme (FQDN or IP address in X.X.X.X format with scheme specified)
   name: server_name
