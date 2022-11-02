@@ -1,0 +1,21 @@
+{
+    "name": "Quadrant SIEM",
+    "description": "This integration is to fetch alerts from the alert API of Quadrant, https://quadrantsec.com/, a MSSP SIEM and IDS/IPS security solution.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "jabierbaum",
+    "url": "",
+    "email": "",
+    "created": "2022-11-02T20:29:43Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "jabierbaum"
+    ]
+}
