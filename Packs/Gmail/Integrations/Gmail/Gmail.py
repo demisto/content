@@ -2385,6 +2385,8 @@ def main():
         else:
             if command == 'gmail-search':
                 demisto.results(cmd_func()[0])
+            elif command == 'gmail-search-all-mailboxes':
+                search_all_mailboxes()
             else:
                 return_results(cmd_func())  # type: ignore
 
