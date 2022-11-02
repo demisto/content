@@ -85,21 +85,14 @@ configuration:
   name: key
   required: false
   type: 4
-- name: feedTags
-  display: Tags
-  required: false
-  type: 0
-  additionalinfo: Supports CSV values.
-- name: tlp_color
-  display: Traffic Light Protocol Color
-  options:
-  - RED
-  - AMBER
-  - GREEN
-  - WHITE
-  required: false
-  type: 15
-  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: c51ed6ea-3b89-4a07-8bd7-8eaf0749e1e6
+    propagationLabels:
+    - all
+    toServerVersion: ""
 description: This is the Hello World integration for getting started.
 display: Indicator Feed
 name: Indicator Feed
@@ -114,12 +107,9 @@ script:
     - contextPath: hello
       description: Should be Hello **something** here
       type: String
-  dockerimage: demisto/python3:3.10.8.36650
+  dockerimage: demisto/python3:3.7.4.2245
   feed: true
   runonce: false
   script: ''
   subtype: python3
   type: python
-fromversion: 6.0.0
-tests:
-- No tests (auto formatted)

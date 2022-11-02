@@ -1,18 +1,24 @@
 contentitemexportablefields:
   contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: c51ed6ea-3b89-4a07-8bd7-8eaf0749e1e6
     propagationLabels:
     - all
-description: This playbook executes when no other playbook is associated with an incident. It enriches indicators in an incident using one or more integrations.
-id: Default_bar_Test
+    toServerVersion: ""
+description: This playbook executes when no other playbook is associated with an incident.
+  It enriches indicators in an incident using one or more integrations.
+id: 96ece067-b394-4635-8fd5-a9d41c307500
 inputs:
 - description: Determines whether to enrich all indicators in the incident.
   key: Enrich
-  playbookInputQuery:
+  playbookInputQuery: null
   required: false
   value:
     simple: "True"
 name: Default_bar_Test
 outputs: []
+sourceplaybookid: playbook0
 starttaskid: "0"
 tasks:
   "0":
@@ -31,7 +37,6 @@ tasks:
       iscommand: false
       name: ""
       version: -1
-      description: ''
     taskid: 7de2f931-67e5-430f-885a-bfb2af176b4a
     timertriggers: []
     type: start
@@ -143,7 +148,6 @@ tasks:
       name: Enrich indicators
       type: title
       version: -1
-      description: ''
     taskid: 0a6dd57f-d279-411c-8009-b078ac115f1a
     timertriggers: []
     type: title
@@ -242,7 +246,9 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: Extracts all indicators that match the regex for the indicator type, and enriches the repuration using the reputation command defined for the indicator type.
+      description: Extracts all indicators that match the regex for the indicator
+        type, and enriches the repuration using the reputation command defined for
+        the indicator type.
       id: ad2debde-d8bc-4a21-8caa-6c1cbf85bc3a
       iscommand: true
       name: Extract indicators from incident
@@ -337,7 +343,6 @@ tasks:
       name: Done
       type: title
       version: -1
-      description: ''
     taskid: d607f1da-53ae-4b18-8fa6-5763b255859d
     timertriggers: []
     type: title
@@ -365,6 +370,3 @@ view: |-
       }
     }
   }
-tests:
-- No tests (auto formatted)
-fromversion: 6.0.0
