@@ -8235,15 +8235,19 @@ class Topology:
                         state = find_text_in_element(panorama_ha_state_result, "./result/group/local-info/state")
 
                     if "active" in state:
-                        peer_serial = "Peer unknown"
+                        peer_serial = None
                         try:
                             # For panorama, there is no serial stored in the HA output, so we can't get it.
                             # Instead, we can get the mgmt IP in it's place.
                             peer_serial = find_text_in_element(panorama_ha_state_result, "./result/peer-info/mgmt-ip")
                         except LookupError:
-                            peer_serial = "Peer unknown"
+                            peer_serial = None
 
                         self.ha_active_devices[serial_number_or_hostname] = peer_serial
+                        self.ha_pair_serials[serial_number_or_hostname] = peer_serial
+                        if peer_serial:
+                            self.ha_pair_serials[peer_serial] = serial_number_or_hostname
+
                         self.get_all_child_firewalls(device)
                         self.panorama_objects[serial_number_or_hostname] = device
                         return
