@@ -822,7 +822,16 @@ tasks:
             value:
               complex:
                 root: alert.asmtags
-                accessor: Name
+                accessor: Key
+            iscontext: true
+          right:
+            value:
+              simple: dev
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              simple: alert.asmtags.Value
             iscontext: true
           right:
             value:
