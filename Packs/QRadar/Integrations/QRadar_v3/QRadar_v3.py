@@ -1772,7 +1772,7 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
                 enrich_offense_with_events,
                 client=client,
                 offense=offense,
-                fetch_mode=str(fetch_mode),
+                fetch_mode=fetch_mode,  # type: ignore
                 events_columns=events_columns,
                 events_limit=events_limit,
             ))
