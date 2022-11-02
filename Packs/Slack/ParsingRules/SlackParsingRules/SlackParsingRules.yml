@@ -1,0 +1,6 @@
+name: Slack Rule
+id: _parsing_rule_id
+fromversion: 3.5.0
+tags: []
+rules: ''
+samples: ''
