@@ -4,13 +4,13 @@ commonfields:
 name: CiscoESA
 display: Cisco ESA
 category: Email Gateway
-description: The Cisco Email Security Appliance is an email security gateway product. It is designed to detect and block a wide variety of email-borne threats, such as malware, spam and phishing attempts.
+description: The Cisco Email Security Appliance is an email security gateway product. It is designed to detect and block a wide variety of email-born threats, such as malware, spam and phishing attempts.
 configuration:
 - name: base_url
   display: Server URL
   required: true
   type: 0
-  additionalinfo: Base URL, e.g. https://XXX.eu.iphmx.com
+  additionalinfo: Base URL, e.g., https://XXX.eu.iphmx.com
 - name: credentials
   display: Username
   required: true
@@ -31,12 +31,12 @@ configuration:
   type: 0
   additionalinfo: |-
     Timestamp in ISO format or <number> <time unit>,
-    e.g. 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+    e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
 - name: filter_by
   display: Filter by
   required: false
   type: 15
-  additionalinfo: Filter results to fetch by message field.
+  additionalinfo: The message field by which to fetch results.
   options:
   - from_address
   - to_address
@@ -45,7 +45,7 @@ configuration:
   display: Filter operator
   required: false
   type: 15
-  additionalinfo: Filter operator to fetch by message field.
+  additionalinfo: The message field operator by which to fetch results.
   options:
   - contains
   - is
@@ -56,12 +56,12 @@ configuration:
   display: Filter value
   required: false
   type: 0
-  additionalinfo: Filter value to fetch by message field.
+  additionalinfo: The message filter value by which to fetch results.
 - name: recipient_filter_operator
   display: Recipient filter operator
   required: false
   type: 15
-  additionalinfo: Recipient filter operator to fetch by message field.
+  additionalinfo: The message recipient filter operator by which to fetch results.
   options:
   - contains
   - is
@@ -72,7 +72,7 @@ configuration:
   display: Recipient filter value
   required: false
   type: 0
-  additionalinfo: Filter value to fetch by message field.
+  additionalinfo: The message recipient filter value by which to fetch results.
 - name: proxy
   display: Use system proxy settings
   required: false
@@ -107,17 +107,17 @@ script:
     - name: start_date
       description: |-
         Start date in ISO format or <number> <time unit>,
-        e.g. 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+        e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
       required: true
       isArray: false
     - name: end_date
       description: |-
         End date in ISO format or <number> <time unit>,
-        e.g. 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+        e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
       required: true
       isArray: false
     - name: filter_by
-      description: Filter by.
+      description: The message field by which to filter the results.
       required: false
       isArray: false
       auto: PREDEFINED
@@ -126,7 +126,7 @@ script:
       - to_address
       - subject
     - name: filter_operator
-      description: Filter operator.
+      description: Filter operator by which to filter the results.
       required: false
       isArray: false
       auto: PREDEFINED
@@ -137,11 +137,11 @@ script:
       - ends_with
       - does_not_contain
     - name: filter_value
-      description: The value to search for. This is a user defined value. e.g. filterValue=abc.com.
+      description: The value to search for. This is a user defined value. D.g., filterValue=abc.com.
       required: false
       isArray: false
     - name: recipient_filter_operator
-      description: Recipient operator filter.
+      description: Recipient operator filter by which to filter the results.
       required: false
       isArray: false
       auto: PREDEFINED
@@ -152,11 +152,11 @@ script:
       - ends_with
       - does_not_contain
     - name: recipient_filter_value
-      description: Recipient filter.
+      description: Recipient filter by which to filter the results.
       required: false
       isArray: false
     - name: order_by
-      description: Results order by.
+      description: The attribute by which to order the data in the response.
       required: false
       isArray: false
       auto: PREDEFINED
@@ -176,7 +176,7 @@ script:
     - name: page
       description: |-
         Page number of paginated results.
-        min value: 1.
+        Minimum value: 1.
       isArray: false
       required: false
     - name: page_size
@@ -190,10 +190,10 @@ script:
       required: false
     outputs:
     - contextPath: CiscoESA.SpamQuarantineMessage.envelopeRecipient
-      description: Recipient Email address.
+      description: Recipient email address.
       type: String
     - contextPath: CiscoESA.SpamQuarantineMessage.toAddress
-      description: Recipient Email address.
+      description: Recipient email address.
       type: String
     - contextPath: CiscoESA.SpamQuarantineMessage.subject
       description: Email subject.
@@ -202,10 +202,10 @@ script:
       description: Email due date.
       type: String
     - contextPath: CiscoESA.SpamQuarantineMessage.fromAddress
-      description: Sender Email address.
+      description: Sender email address.
       type: String
     - contextPath: CiscoESA.SpamQuarantineMessage.size
-      description: Email size.
+      description: email size.
       type: String
     - contextPath: CiscoESA.SpamQuarantineMessage.mid
       description: Message ID.
@@ -214,7 +214,7 @@ script:
     description: Get spam quarantine message details.
     arguments:
     - name: message_id
-      description: Message IDs.
+      description: Message ID.
       required: true
       isArray: false
     outputs:
@@ -243,7 +243,7 @@ script:
     description: Release quarantine emails.
     arguments:
     - name: message_ids
-      description: Message IDs.
+      description: A comma-separated list of message IDs.
       required: true
       isArray: true
     outputs: []
@@ -251,7 +251,7 @@ script:
     description: Delete quarantine emails.
     arguments:
     - name: message_ids
-      description: Message IDs to delete.
+      description: A comma-separated list of message IDs to delete.
       required: true
       isArray: true
     outputs: []
@@ -269,7 +269,7 @@ script:
     - name: page
       description: |-
         Page number of paginated results.
-        min value: 1.
+        Minimum value: 1.
       isArray: false
       required: false
     - name: page_size
@@ -282,7 +282,7 @@ script:
       isArray: false
       required: false
     - name: order_by
-      description: Results order by.
+      description: The attribute by which to order the data in the response.
       required: false
       isArray: false
       auto: PREDEFINED
@@ -309,35 +309,35 @@ script:
     - name: search
       description: |-
         Search for recipients or senders in blocklist/safelist with 'contains' operator.
-        e.g. test@test.com, test.com
+        e.g., test@test.com, test.com
         This is only supported for the argument view_by=recipient.
       isArray: false
       required: false
     outputs:
     - type: String
       contextPath: CiscoESA.ListEntry.Blocklist.senderList
-      description: Sender list.
+      description: Block list sender list.
     - type: String
       contextPath: CiscoESA.ListEntry.Blocklist.recipientAddress
-      description: Recipient address.
+      description: Block list recipient address.
     - type: String
       contextPath: CiscoESA.ListEntry.Blocklist.recipientList
-      description: Recipient list.
+      description: Block list recipient list.
     - type: String
       contextPath: CiscoESA.ListEntry.Blocklist.senderAddress
-      description: Sender address.
+      description: Block list sender address.
     - type: String
       contextPath: CiscoESA.ListEntry.Safelist.senderList
-      description: Sender list.
+      description: Safe list sender list.
     - type: String
       contextPath: CiscoESA.ListEntry.Safelist.recipientAddress
-      description: Recipient address.
+      description: Safe list recipient address.
     - type: String
       contextPath: CiscoESA.ListEntry.Safelist.recipientList
-      description: Recipient list.
+      description: Safe list recipient list.
     - type: String
       contextPath: CiscoESA.ListEntry.Safelist.senderAddress
-      description: Sender address.
+      description: Safe list sender address.
   - name: cisco-esa-list-entry-add
     description: Add spam quarantine blocklist/safelist entry.
     arguments:
@@ -352,8 +352,8 @@ script:
     - name: view_by
       description: |-
         Add list entry by recipient/sender.
-        When view_by = recipient: recipient_addresses and sender_list are mandatory.
-        When view_by = sender: sender_addresses and recipient_list are mandatory.
+        When view_by = recipient, recipient_addresses and sender_list are mandatory.
+        When view_by = sender, sender_addresses and recipient_list are mandatory.
       required: false
       isArray: false
       defaultValue: recipient
@@ -362,7 +362,7 @@ script:
       - recipient
       - sender
     - name: recipient_addresses
-      description: A comma-separated list of recipients to add.
+      description: A comma-separated list of recipient addresses to add.
       required: false
       isArray: true
     - name: sender_list
@@ -370,7 +370,7 @@ script:
       required: false
       isArray: true
     - name: sender_addresses
-      description: A comma-separated list of senders to add.
+      description: A comma-separated list of sender addresses to add.
       required: false
       isArray: true
     - name: recipient_list
@@ -392,8 +392,8 @@ script:
     - name: view_by
       description: |-
         Append list entry by recipient/sender.
-        When view_by = recipient: recipient_addresses and sender_list are mandatory.
-        When view_by = sender: sender_addresses and recipient_list are mandatory.
+        When view_by = recipient, recipient_addresses and sender_list are mandatory.
+        When view_by = sender, sender_addresses and recipient_list are mandatory.
       required: false
       isArray: false
       defaultValue: recipient
@@ -410,16 +410,16 @@ script:
       required: false
       isArray: false
     - name: recipient_addresses
-      description: A comma-separated list of recipients to append.
+      description: A comma-separated list of recipient addresses to append.
       required: false
       isArray: false
     - name: sender_addresses
-      description: A comma-separated list of senders to append.
+      description: A comma-separated list of sender addresses to append.
       required: false
       isArray: false
     outputs: []
   - name: cisco-esa-list-entry-edit
-    description: Edit spam quarantine blocklist/safelist entry. Using this command will overide the existing value.
+    description: Edit spam quarantine blocklist/safelist entry. Using this command will override the existing value.
     arguments:
     - name: entry_type
       description: List entry type.
@@ -432,8 +432,8 @@ script:
     - name: view_by
       description: |-
         Edit list entry by recipient/sender.
-        When view_by = recipient: recipient_addresses and sender_list are mandatory.
-        When view_by = sender: sender_addresses and recipient_list are mandatory.
+        When view_by = recipient, recipient_addresses and sender_list are mandatory.
+        When view_by = sender, sender_addresses and recipient_list are mandatory.
       required: false
       isArray: false
       defaultValue: recipient
@@ -450,11 +450,11 @@ script:
       required: false
       isArray: false
     - name: recipient_addresses
-      description: A comma-separated list of recipients to edit.
+      description: A comma-separated list of recipient addresses to edit.
       required: false
       isArray: false
     - name: sender_addresses
-      description: A comma-separated list of senders to edit.
+      description: A comma-separated list of sender addresses to edit.
       required: false
       isArray: false
     outputs: []
@@ -472,8 +472,8 @@ script:
     - name: view_by
       description: |-
         Delete list entry by recipient/sender.
-        When view_by = recipient: recipient_list is mandatory.
-        When view_by = sender: sender_list is mandatory.
+        When view_by = recipient, recipient_list is mandatory.
+        When view_by = sender, sender_list is mandatory.
       required: false
       isArray: false
       defaultValue: recipient
@@ -497,19 +497,19 @@ script:
     - name: start_date
       description: |-
         Start date in ISO format or <number> <time unit>,
-        e.g. 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+        e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
       required: true
       isArray: false
     - name: end_date
       description: |-
         End date in ISO format or <number> <time unit>,
-        e.g. 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+        e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
       required: true
       isArray: false
     - name: page
       description: |-
         Page number of paginated results.
-        min value: 1.
+        Minimum value: 1.
       isArray: false
       required: false
     - name: page_size
@@ -575,7 +575,7 @@ script:
       isArray: false
     - name: file_sha_256
       description: |-
-        SHA256 must be 64 characters long and can contain only "0-9" and "a-f" symbols.
+        SHA256 must be 64 characters long and can contain only "0-9" and "a-f" characters.
         e.g. e0d123e5f316bef78bfdf5a008837577e0d123e5f316bef78bfdf5a008837577
       required: false
       isArray: false
@@ -583,19 +583,19 @@ script:
       description: |-
         Custom query for cisco ESA's advanced filters.
         Syntax: <key>=<value>;<key>=<value>;<key>=<value>
-        e.g.  graymail=True;message_delivered=True
+        e.g., graymail=True;message_delivered=True
       required: false
       isArray: false
     outputs:
     - type: String
       contextPath: CiscoESA.Message.hostName
-      description: Email Gateway Hostname.
+      description: Email gateway hostname.
     - type: String
       contextPath: CiscoESA.Message.friendly_from
-      description: Friendly formatted sender Email address.
+      description: Friendly formatted sender email address.
     - type: String
       contextPath: CiscoESA.Message.isCompleteData
-      description: Is complete data pulled.
+      description: Whether the entire data was pulled.
     - type: String
       contextPath: CiscoESA.Message.messageStatus
       description: Message delivery status.
@@ -628,13 +628,13 @@ script:
       description: Message direction, incoming or outgoing.
     - type: Number
       contextPath: CiscoESA.Message.icid
-      description: An Injection Connection ID (ICID) is a numerical identifier for an individual SMTP connection to the system.
+      description: An Injection Connection ID (ICID). A numerical identifier for an individual SMTP connection to the system.
     - type: String
       contextPath: CiscoESA.Message.replyTo
       description: Email message reply to.
     - type: String
       contextPath: CiscoESA.Message.timestamp
-      description: Time of email message.
+      description: Time of the email message.
     - type: String
       contextPath: CiscoESA.Message.messageID
       description: Extended message ID.
@@ -643,13 +643,13 @@ script:
       description: Verdict visual chart ID.
     - type: String
       contextPath: CiscoESA.Message.recipient
-      description: Recipients Email addresses List.
+      description: Recipients email addresses list.
     - type: String
       contextPath: CiscoESA.Message.sender
-      description: Sender Email address.
+      description: Sender email address.
     - type: String
       contextPath: CiscoESA.Message.serialNumber
-      description: Cisco ESA Email Gateway serial number.
+      description: Cisco ESA email gateway serial number.
     - type: Number
       contextPath: CiscoESA.Message.allIcid
       description: ICIDs list.
@@ -657,10 +657,10 @@ script:
       contextPath: CiscoESA.Message.sbrs
       description: Sender Base Reputation Scores.
   - name: cisco-esa-message-details-get
-    description: Get more details on message.
+    description: Get message details.
     arguments:
     - name: serial_number
-      description: Email Gateway serial number.
+      description: Email gateway serial number.
       required: true
       isArray: false
     - name: message_ids
@@ -668,22 +668,22 @@ script:
       required: true
       isArray: true
     - name: injection_connection_id
-      description: Injection Connection ID.
+      description: Injection connection ID.
       required: false
       isArray: false
     outputs:
     - type: String
       contextPath: CiscoESA.Message.sdrAge
-      description: Sender Domain Reputation Age.
+      description: Sender domain reputation age.
     - type: String
       contextPath: CiscoESA.Message.attachments
-      description: Message attachements.
+      description: Message attachments.
     - type: String
       contextPath: CiscoESA.Message.hostName
-      description: Email Gateway Hostname.
+      description: Email gateway hostname.
     - type: Boolean
       contextPath: CiscoESA.Message.isCompleteData
-      description: Is complete data pulled.
+      description: Whether the entire data was pulled.
     - type: String
       contextPath: CiscoESA.Message.messageStatus
       description: Message delivery status.
@@ -695,13 +695,13 @@ script:
       description: Matched sender group.
     - type: String
       contextPath: CiscoESA.Message.subject
-      description: Email message subject.
+      description: Subject of email message.
     - type: Boolean
       contextPath: CiscoESA.Message.showSummaryTimeBox
-      description: Is show summary timebox.
+      description: Whether to display the summary timebox.
     - type: String
       contextPath: CiscoESA.Message.sdrCategory
-      description: Sender Domain Reputation Category.
+      description: Sender domain reputation category.
     - type: Number
       contextPath: CiscoESA.Message.mid
       description: Message ID.
@@ -713,13 +713,13 @@ script:
       description: Sending host IP address.
     - type: String
       contextPath: CiscoESA.Message.sendingHostSummary.sbrsScore
-      description: Sending host Sender Base Reputation Scores.
+      description: Sending host sender base reputation scores.
     - type: String
       contextPath: CiscoESA.Message.direction
       description: Message direction, incoming or outgoing.
     - type: String
       contextPath: CiscoESA.Message.smtpAuthId
-      description: SMTP auth ID.
+      description: SMTP authorization ID.
     - type: String
       contextPath: CiscoESA.Message.midHeader
       description: Message ID header.
@@ -728,25 +728,25 @@ script:
       description: Email message time.
     - type: Boolean
       contextPath: CiscoESA.Message.showDLP
-      description: Is DLP report available boolean.
+      description: Whether the DLP report is available.
     - type: String
       contextPath: CiscoESA.Message.messageSize
       description: Email message size.
     - type: String
       contextPath: CiscoESA.Message.sdrReputation
-      description: Sender Domain Reputation.
+      description: Sender domain reputation.
     - type: Boolean
       contextPath: CiscoESA.Message.showURL
-      description: Is URL report available boolean.
+      description: Whether the URL report is available.
     - type: String
       contextPath: CiscoESA.Message.recipient
-      description: Message recipient Email address.
+      description: Message recipient email address.
     - type: String
       contextPath: CiscoESA.Message.sender
-      description: Message sender Email address.
+      description: Message sender email address.
     - type: Boolean
       contextPath: CiscoESA.Message.showAMP
-      description: Is AMP report available boolean.
+      description: Whether the AMP report is available.
     - type: String
       contextPath: CiscoESA.Message.summary.timestamp
       description: Event summary time.
@@ -755,30 +755,30 @@ script:
       description: Event summary description
     - type: Boolean
       contextPath: CiscoESA.Message.summary.lastEvent
-      description: Event summary is last event boolean.
+      description: Whether this is the last summary event.
     - type: Number
       contextPath: CiscoESA.Message.allIcid
       description: ICIDs list.
     - type: String
       contextPath: CiscoESA.Message.headerFrom
-      description: Email header from.
+      description: Email message header from.
   # - name: cisco-esa-message-amp-details-get
   #   description: Get message AMP summary details.
   #   arguments:
   #   - name: start_date
   #     description: |-
   #       Start date in ISO format or <number> <time unit>,
-  #       e.g. 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+  #       e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
   #     required: false
   #     isArray: false
   #   - name: end_date
   #     description: |-
   #       End date in ISO format or <number> <time unit>,
-  #       e.g. 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+  #       e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
   #     required: false
   #     isArray: false
   #   - name: icid
-  #     description: Injection Connection ID.
+  #     description: Injection connection ID.
   #     required: false
   #     isArray: false
   #   - name: message_ids
@@ -786,25 +786,25 @@ script:
   #     required: true
   #     isArray: false
   #   - name: serial_number
-  #     description: Email Gateway serial number.
+  #     description: Email gateway serial number.
   #     required: true
   #     isArray: false
   #   outputs:
   #   - type: Boolean
   #     contextPath: CiscoESA.Message.showAMPDetails
-  #     description: Is show AMP details.
+  #     description: Whether to show AMP details.
   #   - type: String
   #     contextPath: CiscoESA.Message.direction
   #     description: Message direction, incoming or outgoing.
   #   - type: String
   #     contextPath: CiscoESA.Message.smtpAuthId
-  #     description: SMTP auth ID.
+  #     description: SMTP authorization ID.
   #   - type: Date
   #     contextPath: CiscoESA.Message.sdrAge
-  #     description: Sender Domain Reputation Age.
+  #     description: Sender domain reputation age.
   #   - type: String
   #     contextPath: CiscoESA.Message.sender
-  #     description: Message sender Email address.
+  #     description: Message sender email address.
   #   - type: String
   #     contextPath: CiscoESA.Message.midHeader
   #     description: Message ID header.
@@ -813,10 +813,10 @@ script:
   #     description: Email message time.
   #   - type: String
   #     contextPath: CiscoESA.Message.sdrCategory
-  #     description: Sender Domain Reputation Category.
+  #     description: Sender domain reputation category.
   #   - type: String
   #     contextPath: CiscoESA.Message.hostName
-  #     description: Email Gateway Hostname.
+  #     description: Email gateway hostname.
   #   - type: Number
   #     contextPath: CiscoESA.Message.mid
   #     description: Message ID.
@@ -828,7 +828,7 @@ script:
   #     description: Message size.
   #   - type: String
   #     contextPath: CiscoESA.Message.sdrReputation
-  #     description: Sender Domain Reputation.
+  #     description: Sender domain reputation.
   #   - type: String
   #     contextPath: CiscoESA.Message.messageStatus
   #     description: Message status.
@@ -840,7 +840,7 @@ script:
   #     description: AMP event description.
   #   - type: Boolean
   #     contextPath: CiscoESA.Message.ampDetails.lastEvent
-  #     description: AMP is last event.
+  #     description: AMP event summary details last event.
   #   - type: Number
   #     contextPath: CiscoESA.Message.allIcid
   #     description: ICIDs list.
@@ -849,10 +849,10 @@ script:
   #     description: Matched sender group.
   #   - type: String
   #     contextPath: CiscoESA.Message.recipient
-  #     description: Message recipient Email address.
+  #     description: Message recipient email address.
   #   - type: String
   #     contextPath: CiscoESA.Message.headerFrom
-  #     description: Email header from.
+  #     description: Email message header from.
   #   - type: String
   #     contextPath: CiscoESA.Message.subject
   #     description: Email message subject.
@@ -860,7 +860,7 @@ script:
     description: Get message AMP summary details.
     arguments:
     - name: serial_number
-      description: Email Gateway serial number.
+      description: Email gateway serial number.
       required: true
       isArray: false
     - name: message_ids
@@ -870,13 +870,13 @@ script:
     outputs:
     - type: String
       contextPath: CiscoESA.AMPDetail.sdrAge
-      description: Sender Domain Reputation Age.
+      description: Sender domain reputation age.
     - type: String
       contextPath: CiscoESA.AMPDetail.attachments
-      description: Message attachements.
+      description: Message attachments.
     - type: String
       contextPath: CiscoESA.AMPDetail.hostName
-      description: Email Gateway Hostname.
+      description: Email gateway hostname.
     - type: String
       contextPath: CiscoESA.AMPDetail.direction
       description: Message direction, incoming or outgoing.
@@ -891,7 +891,7 @@ script:
       description: Email message subject.
     - type: String
       contextPath: CiscoESA.AMPDetail.sdrCategory
-      description: Sender Domain Reputation Category.
+      description: Sender domain reputation category.
     - type: Number
       contextPath: CiscoESA.AMPDetail.mid
       description: Message ID.
@@ -906,7 +906,7 @@ script:
       description: AMP event summary details last event.
     - type: String
       contextPath: CiscoESA.AMPDetail.smtpAuthId
-      description: SMTP auth ID.
+      description: SMTP authorization ID.
     - type: String
       contextPath: CiscoESA.AMPDetail.midHeader
       description: Message ID header.
@@ -918,19 +918,19 @@ script:
       description: Email message size.
     - type: String
       contextPath: CiscoESA.AMPDetail.sdrThreatLevels
-      description: Sender Domain Reputation threat levels.
+      description: Sender domain reputation threat levels.
     - type: String
       contextPath: CiscoESA.AMPDetail.sdrReputation
-      description: Sender Domain Reputation.
+      description: Sender domain reputation.
     - type: String
       contextPath: CiscoESA.AMPDetail.recipient
-      description: Message recipient Email address.
+      description: Message recipient email address.
     - type: String
       contextPath: CiscoESA.AMPDetail.sender
-      description: Message sender Email address.
+      description: Message sender email address.
     - type: Boolean
       contextPath: CiscoESA.AMPDetail.showAMPDetails
-      description: Is show AMP details.
+      description: Whether to show AMP details.
     - type: Number
       contextPath: CiscoESA.AMPDetail.allIcid
       description: ICIDs list.
@@ -941,7 +941,7 @@ script:
     description: Get message DLP summary details.
     arguments:
     - name: serial_number
-      description: Email Gateway serial number.
+      description: Email gateway serial number.
       required: true
       isArray: false
     - name: message_ids
@@ -954,13 +954,13 @@ script:
       description: Message direction, incoming or outgoing.
     - type: String
       contextPath: CiscoESA.DLPDetail.smtpAuthId
-      description: SMTP auth ID.
+      description: SMTP authorization ID.
     - type: String
       contextPath: CiscoESA.DLPDetail.sdrAge
-      description: Sender Domain Reputation Age.
+      description: Sender domain reputation age.
     - type: String
       contextPath: CiscoESA.DLPDetail.sender
-      description: Message sender Email address.
+      description: Message sender email address.
     - type: String
       contextPath: CiscoESA.DLPDetail.midHeader
       description: Message ID header.
@@ -969,16 +969,16 @@ script:
       description: Email message time.
     - type: String
       contextPath: CiscoESA.DLPDetail.sdrCategory
-      description: Sender Domain Reputation Category.
+      description: Sender domain reputation category.
     - type: String
       contextPath: CiscoESA.DLPDetail.hostName
-      description: Email Gateway Hostname.
+      description: Email gateway hostname.
     - type: Number
       contextPath: CiscoESA.DLPDetail.mid
       description: Message ID.
     - type: String
       contextPath: CiscoESA.DLPDetail.attachments
-      description: Message attachements.
+      description: Message attachments.
     - type: String
       contextPath: CiscoESA.DLPDetail.messageSize
       description: Email message size.
@@ -1005,10 +1005,10 @@ script:
       description: DLP policy.
     - type: String
       contextPath: CiscoESA.DLPDetail.sdrThreatLevels
-      description: Sender Domain Reputation threat levels.
+      description: Sender domain reputation threat levels.
     - type: String
       contextPath: CiscoESA.DLPDetail.sdrReputation
-      description: Sender Domain Reputation.
+      description: Sender domain reputation.
     - type: String
       contextPath: CiscoESA.DLPDetail.messageStatus
       description: Message delivery status.
@@ -1020,7 +1020,7 @@ script:
       description: Matched sender group.
     - type: String
       contextPath: CiscoESA.DLPDetail.recipient
-      description: Message recipient Email address.
+      description: Message recipient email address.
     - type: String
       contextPath: CiscoESA.DLPDetail.subject
       description: Email message subject.
@@ -1031,7 +1031,7 @@ script:
     description: Get message URL summary details.
     arguments:
     - name: serial_number
-      description: Email Gateway serial number.
+      description: Email gateway serial number.
       required: true
       isArray: false
     - name: message_ids
@@ -1041,13 +1041,13 @@ script:
     outputs:
     - type: String
       contextPath: CiscoESA.URLDetail.sdrAge
-      description: Sender Domain Reputation Age.
+      description: Sender domain reputation age.
     - type: String
       contextPath: CiscoESA.URLDetail.attachments
-      description: Message attachements.
+      description: Message attachments.
     - type: Boolean
       contextPath: CiscoESA.URLDetail.showURLDetails
-      description: Is show URL event details.
+      description: Whether to show URL event details.
     - type: String
       contextPath: CiscoESA.URLDetail.urlDetails.timestamp
       description: URL event details timestamp.
@@ -1056,7 +1056,7 @@ script:
       description: URL event details description.
     - type: String
       contextPath: CiscoESA.URLDetail.hostName
-      description: Email Gateway Hostname.
+      description: Email gateway hostname.
     - type: String
       contextPath: CiscoESA.URLDetail.direction
       description: Message direction, incoming or outgoing.
@@ -1071,13 +1071,13 @@ script:
       description: Email message subject.
     - type: String
       contextPath: CiscoESA.URLDetail.sdrCategory
-      description: Sender Domain Reputation Category.
+      description: Sender domain reputation category.
     - type: Number
       contextPath: CiscoESA.URLDetail.mid
       description: Message ID.
     - type: String
       contextPath: CiscoESA.URLDetail.smtpAuthId
-      description: SMTP auth ID.
+      description: SMTP authorization ID.
     - type: String
       contextPath: CiscoESA.URLDetail.midHeader
       description: Message ID header.
@@ -1089,16 +1089,16 @@ script:
       description: Email message size.
     - type: String
       contextPath: CiscoESA.URLDetail.sdrThreatLevels
-      description: Sender Domain Reputation threat levels.
+      description: Sender domain reputation threat levels.
     - type: String
       contextPath: CiscoESA.URLDetail.sdrReputation
-      description: Sender Domain Reputation.
+      description: Sender domain reputation.
     - type: String
       contextPath: CiscoESA.URLDetail.recipient
-      description: Message recipient Email address.
+      description: Message recipient email address.
     - type: String
       contextPath: CiscoESA.URLDetail.sender
-      description: Message sender Email address.
+      description: Message sender email address.
     - type: Number
       contextPath: CiscoESA.URLDetail.allIcid
       description: ICIDs list.
@@ -1108,8 +1108,8 @@ script:
   - name: cisco-esa-report-get
     description: |-
       Get statistics reports.
-      Please note, each report type is compatible with different arguments,
-      please refer to Addendum for Cisco Secure Email Gateway ("Secure Email Reporting" sheet in the file), in order to view the dedicated arguments for each report type.
+      Note that each report type is compatible with different arguments.
+      Refer to Addendum for Cisco Secure Email Gateway ("Secure Email Reporting" sheet in the file), to view the dedicated arguments for each report type.
       https://www.cisco.com/c/dam/en/us/td/docs/security/esa/esa14-0/api/AsyncOS-14-0-API-Addendum.xlsx
     arguments:
     - name: report_type
@@ -1127,27 +1127,27 @@ script:
     - name: custom_report_type
       description: |-
         Custom report type.
-        Specify this argument in order to get a report that does not exist in the report_type argument.
+        Specify this argument to get a report that does not exist in the report_type argument.
       required: false
       isArray: false
     - name: start_date
       description: |-
         Start date in ISO format or <number> <time unit>,
-        e.g. 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+        e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
       required: true
       isArray: false
     - name: end_date
       description: |-
         End date in ISO format or <number> <time unit>,
-        e.g. 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+        e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
       required: true
       isArray: false
     - name: order_by
-      description: Specify the attribute by which to order the data in the response. For example, orderBy=total_clean_recipients
+      description: The attribute by which to order the data in the response. For example, orderBy=total_clean_recipients
       required: false
       isArray: false
     - name: order_dir
-      description: The report order direction. Specify sort direction.
+      description: The report sort order direction. 
       required: false
       isArray: false
       auto: PREDEFINED
@@ -1155,11 +1155,11 @@ script:
       - asc
       - desc
     - name: top
-      description: Specify the number of records with the highest values to return.
+      description: The number of records with the highest values to return.
       required: false
       isArray: false
     - name: filter_value
-      description: The filter value. The value to search for.
+      description: The filter value to search for.
       required: false
       isArray: false
     - name: filter_by
