@@ -2977,14 +2977,17 @@ def run_script_command():
                 error_message = f'Could not run command\n{errors}'
             return_error(error_message)
         full_command = full_command.replace('`', '')
+        stderr = resource.get('stderr')
         output.append({
             'HostID': resource.get('aid'),
             'SessionID': resource.get('session_id'),
             'Stdout': resource.get('stdout'),
-            'Stderr': resource.get('stderr'),
+            'Stderr': stderr,
             'BaseCommand': resource.get('base_command'),
             'Command': full_command
         })
+        if stderr:
+            raise DemistoException(f"Run script command was failed with the error: {stderr}")
 
     human_readable = tableToMarkdown(f'Command {full_command} results', output)
     entry_context = {
