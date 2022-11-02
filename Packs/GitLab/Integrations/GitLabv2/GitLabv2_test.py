@@ -777,7 +777,7 @@ ARGS_FOR_PARTIAL_RESPONSE = [
                 "protected": 'false'
             }], "Branch",  # branch
         [{'name': 'Test', 'commit': {'id': '7d', 'short_id': '7d',
-          'committed_date': '2022-10-11T09:05:11.000+00:00', 'author_name': 'Test Account'}, 'merged': 'false'}]
+          'committed_date': '2022-10-11T09:05:11.000+00:00', 'author_name': 'Test Account'}, 'merged': 'false', 'protected': 'false'}]
     )
 ]
 
