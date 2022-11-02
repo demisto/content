@@ -213,28 +213,60 @@ def alert_to_context(alert):
     """
     Transform a single alert to context struct
     """
-    ec = {
-        'ID': alert.get('id'),
-        'Status': alert.get('status'),
-        'AlertTime': convert_unix_to_date(alert.get('alertTime')),
-        'Policy': {
-            'ID': demisto.get(alert, 'policy.policyId'),
-            'Name': demisto.get(alert, 'policy.name'),
-            'Type': demisto.get(alert, 'policy.policyType'),
-            'Severity': demisto.get(alert, 'policy.severity'),
-            'Remediable': demisto.get(alert, 'policy.remediable')
-        },
-        'RiskDetail': {
-            'Rating': demisto.get(alert, 'riskDetail.rating'),
-            'Score': demisto.get(alert, 'riskDetail.riskScore.score')
-        },
-        'Resource': {
-            'ID': demisto.get(alert, 'resource.id'),
-            'Name': demisto.get(alert, 'resource.name'),
-            'Account': demisto.get(alert, 'resource.account'),
-            'AccountID': demisto.get(alert, 'resource.accountId')
+    args = demisto.args()
+    if 'resource_keys' in args:
+        # if resource_keys argument was given, include those items from resource.data
+        extra_keys = demisto.getArg('resource_keys')
+        resource_data = {}
+        keys = extra_keys.split(',')
+        for key in keys:
+            resource_data[key] = demisto.get(alert, f'resource.data.{key}')
+        ec = {
+            'ID': alert.get('id'),
+            'Status': alert.get('status'),
+            'AlertTime': convert_unix_to_date(alert.get('alertTime')),
+            'Policy': {
+                'ID': demisto.get(alert, 'policy.policyId'),
+                'Name': demisto.get(alert, 'policy.name'),
+                'Type': demisto.get(alert, 'policy.policyType'),
+                'Severity': demisto.get(alert, 'policy.severity'),
+                'Remediable': demisto.get(alert, 'policy.remediable')
+            },
+            'RiskDetail': {
+                'Rating': demisto.get(alert, 'riskDetail.rating'),
+                'Score': demisto.get(alert, 'riskDetail.riskScore.score')
+            },
+            'Resource': {
+                'ID': demisto.get(alert, 'resource.id'),
+                'Name': demisto.get(alert, 'resource.name'),
+                'Account': demisto.get(alert, 'resource.account'),
+                'AccountID': demisto.get(alert, 'resource.accountId'),
+                'Data': resource_data
+            }
         }
-    }
+    else:
+        ec = {
+            'ID': alert.get('id'),
+            'Status': alert.get('status'),
+            'AlertTime': convert_unix_to_date(alert.get('alertTime')),
+            'Policy': {
+                'ID': demisto.get(alert, 'policy.policyId'),
+                'Name': demisto.get(alert, 'policy.name'),
+                'Type': demisto.get(alert, 'policy.policyType'),
+                'Severity': demisto.get(alert, 'policy.severity'),
+                'Remediable': demisto.get(alert, 'policy.remediable')
+            },
+            'RiskDetail': {
+                'Rating': demisto.get(alert, 'riskDetail.rating'),
+                'Score': demisto.get(alert, 'riskDetail.riskScore.score')
+            },
+            'Resource': {
+                'ID': demisto.get(alert, 'resource.id'),
+                'Name': demisto.get(alert, 'resource.name'),
+                'Account': demisto.get(alert, 'resource.account'),
+                'AccountID': demisto.get(alert, 'resource.accountId')
+            }
+        }
     if alert.get('alertRules'):
         ec['AlertRules'] = [alert_rule.get('name') for alert_rule in alert.get('alertRules')]
 
