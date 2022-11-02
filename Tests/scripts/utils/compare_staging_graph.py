@@ -17,6 +17,7 @@ from slack_sdk import WebClient
 
 yaml = YAML()
 
+SKIPPED_FILES = {"signatures.sf"}
 
 def sort_dict(dct: dict):
     for k, v in dct.items():
@@ -77,7 +78,7 @@ def compare_files(
     dir_compare: filecmp.dircmp[str], zip1_files: str, zip2_files: str, output_path: Path, diff_files: list[str]
 ):
     for file in dir_compare.common_files:
-        if file not in dir_compare.same_files and file != "signatures.sf":
+        if file not in dir_compare.same_files and file not in SKIPPED_FILES:
             file_diff(output_path, zip1_files, zip2_files, file, diff_files)
     for subdir in dir_compare.subdirs.values():
         compare_files(subdir, subdir.left, subdir.right, output_path / Path(subdir.left).name, diff_files)
