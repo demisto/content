@@ -61,9 +61,11 @@ class URLCheck(object):
 
         if "//" in self.modified_url[:8]:
             # The URL seems to have a scheme indicated by presence of "//"
+            # todo - check the case of "f//"
             self.scheme_check()
 
         try:
+            # First slash after the scheme (if exists)
             first_slash = self.modified_url[self.base:].index("/")
 
         except ValueError:
@@ -134,6 +136,7 @@ class URLCheck(object):
                     return
 
             else:
+                # base is not incremented as it was incremented by 2 before
                 self.output += char
                 scheme += char
                 index += 1
@@ -189,13 +192,14 @@ class URLCheck(object):
                 raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
 
             elif self.modified_url[index] == ":" and not self.inside_brackets:
+                # ":" are only allowed if host is ipv6 in which case inside_brackets equals True
                 if index == len(self.modified_url) - 1:
                     raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
 
                 elif index <= 4:
                     # This might be an IPv6 with no scheme
                     self.inside_brackets = True
-                    self.output = f"[{self.output}"  # Readding the bracket that was removed by the cleaner
+                    self.output = f"[{self.output}"  # Reading the bracket that was removed by the cleaner
 
                 else:
                     self.port = True
@@ -207,6 +211,7 @@ class URLCheck(object):
 
             elif self.modified_url[index] == "[":
                 if not self.inside_brackets and index == self.base:
+                    # if index==base we're at the first char of the host in which "[" is ok
                     self.output += self.modified_url[index]
                     index += 1
                     self.inside_brackets = True
@@ -256,7 +261,7 @@ class URLCheck(object):
 
     def port_check(self):
         """
-        Parses and validates the port part of the URL, accepts only digits.
+        Parses and validates the port part of the URL, accepts only digits. Index is starting after ":"
         """
 
         index = self.base
@@ -303,7 +308,7 @@ class URLCheck(object):
 
     def query_check(self):
         """
-        Parses and validates the query part of the URL.
+        Parses and validates the query part of the URL. The query strats after a "?".
         """
         index = self.base
         query = ''
@@ -432,6 +437,15 @@ class URLCheck(object):
 
 class URLFormatter(object):
 
+    # URL Security Wrappers
+    ATP_regex = re.compile('https://.*?\.safelinks\.protection\.outlook\.com/\?url=(.*?)&')
+    fireeye_regex = re.compile('.*?fireeye[.]com.*?&u=(.*)')
+    proofpoint_regex = re.compile('(?:v[1-2]/(?:url\?u=)?(.*?)(?:&amp|&d|$)|v3/__(.*?)(?:_|$))')
+    trendmicro_regex = re.compile(r'(https://\w*-\w*|\w*-\w*)\.trendmicro\.com.*url=')
+
+    # Scheme slash fixer
+    scheme_fix = re.compile("https?(:[/|\\\]*)")
+
     def __init__(self, original_url):
         """
         Main class for formatting a URL
@@ -456,29 +470,30 @@ class URLFormatter(object):
     def __str__(self):
         return f"{self.output}"
 
-    def strip_wrappers(self, url: str) -> str:
+    @staticmethod
+    def strip_wrappers(url: str) -> str:
         """
         Allows for stripping of multiple safety wrappers of URLs
         :param url: The original wrapped URL
         :return: The original URL sent without wrappers
         """
 
-        ATP_regex = re.compile('https://.*?\.safelinks\.protection\.outlook\.com/\?url=(.*?)&')
-        fireeye_regex = re.compile('.*?fireeye[.]com.*?&u=(.*)')
-        proofpoint_regex = re.compile('(?:v[1-2]/(?:url\?u=)?(.*?)(?:&amp|&d|$)|v3/__(.*?)(?:_|$))')
         wrapper = True
 
         while wrapper:
-            # Will strip multiple wrapped URLs
+            # Will strip multiple wrapped URLs, wrappers are finite the loop will stop once all wrappers were removed
 
-            if fireeye_regex.match(url):
-                url = urllib.parse.unquote(fireeye_regex.findall(url)[0])
+            if URLFormatter.fireeye_regex.match(url):
+                url = urllib.parse.unquote(URLFormatter.fireeye_regex.findall(url)[0])
 
-            elif ATP_regex.match(url):
-                url = urllib.parse.unquote(ATP_regex.findall(url)[0])
+            elif URLFormatter.trendmicro_regex.match(url):
+                url = urllib.parse.unquote(URLFormatter.trendmicro_regex.findall(url)[0])
 
-            elif proofpoint_regex.findall(url):
-                url = self.extract_url_proofpoint(proofpoint_regex.findall(url)[0])
+            elif URLFormatter.ATP_regex.match(url):
+                url = urllib.parse.unquote(URLFormatter.ATP_regex.findall(url)[0])
+
+            elif URLFormatter.proofpoint_regex.findall(url):
+                url = URLFormatter.extract_url_proofpoint(URLFormatter.proofpoint_regex.findall(url)[0])
 
             else:
                 wrapper = False
@@ -514,16 +529,16 @@ class URLFormatter(object):
         def fix_scheme(match: Match) -> str:
             return re.sub(":(\\\\|/)*", "://", match.group(0))
 
-        scheme_fix = re.compile("https?(:[/|\\\]*)")
-        return scheme_fix.sub(fix_scheme, url)
+        return URLFormatter.scheme_fix.sub(fix_scheme, url)
 
 
 def main():
     raw_urls = argToList(demisto.args().get('input'))
     formatted_urls: List[str] = []
-    formatted_url = ''
 
     for url in raw_urls:
+        formatted_url = ''
+
         try:
             formatted_url = URLFormatter(url).output
 
