@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 
-import requests
 import json
 import base64
 import httplib2
