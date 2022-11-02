@@ -874,7 +874,7 @@ class NightlyTestCollector(TestCollector, ABC):
 
 
 class XSIAMNightlyTestCollector(NightlyTestCollector):
-    def __init__(self, graph: bool):
+    def __init__(self, graph: bool = False):
         super().__init__(MarketplaceVersions.MarketplaceV2, graph=graph)
 
     def _collect_packs_of_content_matching_marketplace_value(self) -> Optional[CollectionResult]:
@@ -939,7 +939,7 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
 
 
 class XSOARNightlyTestCollector(NightlyTestCollector):
-    def __init__(self, graph: bool):
+    def __init__(self, graph: bool = False):
         super().__init__(MarketplaceVersions.XSOAR, graph=graph)
 
     def _collect(self) -> Optional[CollectionResult]:
