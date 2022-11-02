@@ -211,8 +211,6 @@ class PackFolders(enum.Enum):
     CORRELATION_RULES = 'CorrelationRules'
     XSIAM_DASHBOARDS = 'XSIAMDashboards'
     XSIAM_REPORTS = 'XSIAMReports'
-    XPANSE_DASHBOARDS = 'XPANSEDashboards'
-    XPANSE_REPORTS = 'XPANSEReports'
     TRIGGERS = 'Triggers'
     WIZARDS = 'Wizards'
 
