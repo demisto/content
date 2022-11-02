@@ -28,12 +28,8 @@
     "name": "Vectra AI",
     "support": "partner",
     "tags": [
-        "Alerts",
-        "Incident Response",
-        "Security"
     ],
     "url": "https://support.vectra.ai",
     "useCases": [
-        "Network Security"
     ]
 }

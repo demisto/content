@@ -1,0 +1,21 @@
+{
+    "description": "Approved categories for use in pack_metadata.json and integration yml. To modify this file you will need a CODEOWNER to approve.",
+	"approved_list": [
+        "Analytics & SIEM",
+        "Utilities",
+        "Messaging",
+        "Endpoint",
+        "Network Security",
+        "Vulnerability Management",
+        "Case Management",
+        "Forensics & Malware Analysis",
+        "IT Services",
+        "Data Enrichment & Threat Intelligence",
+        "Authentication",
+        "Database",
+        "Deception",
+        "Email Gateway",
+        "Identity and Access Management",
+        "File Integrity Management"
+    ]
+}
