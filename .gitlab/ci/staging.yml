@@ -28,6 +28,7 @@ graph-create-instances:
     - python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "xsoar" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
+    - section_end "Create Content Artifacts and Update Conf"
 
     - section_start "Collect Tests V2" --collapsed
     - |
