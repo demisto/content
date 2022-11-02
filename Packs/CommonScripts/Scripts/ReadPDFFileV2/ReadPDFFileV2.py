@@ -99,10 +99,11 @@ def mark_suspicious(suspicious_reason: str, entry_id: str, path: str, file_name:
     #         "Score": 2,
     #     }
     # }
+
+    # LOG(suspicious_reason)
     human_readable = (
         f'{suspicious_reason}\nFile marked as suspicious for entry id: {entry_id}'
     )
-    LOG(suspicious_reason)
     file = create_file_instance(
         entry_id=entry_id,
         path=path,
