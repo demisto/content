@@ -404,11 +404,11 @@ class Client(BaseClient):
             Dict[str, Any]: Information about the computer.
         """
         return self._http_request(
-           method='PATCH',
-           url_suffix=f'/computers/{connector_guid}',
-           json_data={
-               'group_guid': group_guid,
-           }
+            method='PATCH',
+            url_suffix=f'/computers/{connector_guid}',
+            json_data={
+                'group_guid': group_guid,
+            }
         )
 
     def computer_delete_request(self, connector_guid: str) -> Dict[str, Any]:
@@ -2980,14 +2980,14 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
             dbot_score = get_dbotscore(file_hash, disposition)
 
             file_indicator = Common.File(
-                    md5=dict_safe_get(data_list[0], ['file', 'identity', 'md5']),
-                    sha1=dict_safe_get(data_list[0], ['file', 'identity', 'sha1']),
-                    sha256=file_hash,
-                    path=dict_safe_get(data_list[0], ['file', 'file_path']),
-                    name=dict_safe_get(data_list[0], ['file', 'file_name']),
-                    hostname=dict_safe_get(data_list[0], ['computer', 'hostname']),
-                    dbot_score=dbot_score
-                )
+                md5=dict_safe_get(data_list[0], ['file', 'identity', 'md5']),
+                sha1=dict_safe_get(data_list[0], ['file', 'identity', 'sha1']),
+                sha256=file_hash,
+                path=dict_safe_get(data_list[0], ['file', 'file_path']),
+                name=dict_safe_get(data_list[0], ['file', 'file_name']),
+                hostname=dict_safe_get(data_list[0], ['computer', 'hostname']),
+                dbot_score=dbot_score
+            )
 
             for data in data_list[1:]:
                 disposition = dict_safe_get(data, ['file', 'disposition'])

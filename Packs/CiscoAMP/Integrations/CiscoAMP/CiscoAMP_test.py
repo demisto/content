@@ -5,7 +5,6 @@ import json
 import io
 import os
 from typing import Dict, List, Any
-from unittest import mock
 import pytest
 from CiscoAMP import Client
 
@@ -477,8 +476,8 @@ def test_event_list_command(requests_mock, mock_client):
 @pytest.mark.parametrize(
     'args, expected_number_of_results, expected_value',
     [({}, 100, 'data[0]_id'),
-     ({'limit': '50'},  50, 'data[0]_id'),
-     ({'page': '7', 'page_size': '5'},  5, 'data[30]_id')]
+     ({'limit': '50'}, 50, 'data[0]_id'),
+     ({'page': '7', 'page_size': '5'}, 5, 'data[30]_id')]
 )
 def test_event_types_list_command(requests_mock, mock_client, args, expected_number_of_results, expected_value):
     """
@@ -515,14 +514,12 @@ def test_event_types_list_command(requests_mock, mock_client, args, expected_num
         'file_lists/1',
         {'file_list_guid': '1'},
         'application_blocking'
-     ),
-     (
+    ), (
         'file_list_application_blocking_response.json',
         'file_lists/application_blocking',
         {},
         'application_blocking'
-     ),
-     (
+    ), (
         'file_list_simple_custom_detections_response.json',
         'file_lists/simple_custom_detections',
         {'file_list_type': 'Simple Custom Detection'},
@@ -571,8 +568,7 @@ def test_file_list_list_command(requests_mock, mock_client, file, suffix, args, 
         'file_list_item_list_response.json',
         'file_lists/1/files',
         {'file_list_guid': '1'},
-     ),
-     (
+    ), (
         'file_list_item_get_response.json',
         'file_lists/1/files/1',
         {'file_list_guid': '1', 'sha256': '1'},
@@ -646,8 +642,7 @@ def test_file_list_item_create_command(requests_mock, mock_client):
     [(
         'file_list_item_delete_response.json',
         {'file_list_guid': '1', 'sha256': '1'},
-     ),
-     (
+    ), (
         'file_list_item_delete_fail_response.json',
         {'file_list_guid': '1', 'sha256': '1'},
     )]
@@ -931,8 +926,8 @@ def test_policy_list_command(requests_mock, mock_client, file, args, suffix):
 @pytest.mark.parametrize(
     'args, expected_number_of_results, expected_value',
     [({'ios_bid': 'Gotta'}, 100, 'data[0]_connector_guid'),
-     ({'ios_bid': 'Catch-em', 'limit': '50'},  50, 'data[0]_connector_guid'),
-     ({'ios_bid': 'All', 'page': '7', 'page_size': '5'},  5, 'data[30]_connector_guid')]
+     ({'ios_bid': 'Catch-em', 'limit': '50'}, 50, 'data[0]_connector_guid'),
+     ({'ios_bid': 'All', 'page': '7', 'page_size': '5'}, 5, 'data[30]_connector_guid')]
 )
 def test_app_trajectory_query_list_command(
     requests_mock,
