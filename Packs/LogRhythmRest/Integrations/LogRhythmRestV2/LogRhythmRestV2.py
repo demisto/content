@@ -2,8 +2,12 @@ import re
 import mimetypes
 import dateparser
 from CommonServerPython import *  # noqa: F401
+import urllib3
 
 import demistomock as demisto  # noqa: F401
+
+urllib3.disable_warnings()
+
 
 ''' GLOBAL VARS '''
 ALARM_HEADERS = ['alarmId', 'alarmStatus', 'associatedCases', 'alarmRuleName', 'dateInserted', 'dateUpdated',
