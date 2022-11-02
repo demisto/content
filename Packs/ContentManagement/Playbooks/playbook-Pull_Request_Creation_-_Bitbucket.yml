@@ -1,5 +1,5 @@
 id: 6d0f513e-b88a-4ef1-8ba1-e497461abe33
-version: 36
+version: 62
 vcShouldKeepItemLegacyProdMachine: false
 name: Pull Request Creation - Bitbucket
 description: This playbook creates a pull request using Github integration.
@@ -7,17 +7,17 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5a07aabf-edbd-4570-8365-2588f409b4fa
+    taskid: 133f0838-1191-4454-8b16-d12ca0a39887
     type: start
     task:
-      id: 5a07aabf-edbd-4570-8365-2588f409b4fa
+      id: 133f0838-1191-4454-8b16-d12ca0a39887
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "47"
+      - "56"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 18ce60cd-e932-4f6c-8ade-114c973cc47e
+    taskid: 00eee788-0cda-47c8-8d40-5a812bdaded9
     type: regular
     task:
-      id: 18ce60cd-e932-4f6c-8ade-114c973cc47e
+      id: 00eee788-0cda-47c8-8d40-5a812bdaded9
       version: -1
       name: Get main branch
       description: Returns the information of the requested branch.
@@ -52,7 +52,8 @@ tasks:
       - "38"
     scriptarguments:
       branch_name:
-        simple: ${inputs.MainBranch}
+        complex:
+          root: inputs.MainBranch
       partial_response:
         simple: "false"
     separatecontext: false
@@ -73,10 +74,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: c82bfad8-3d1f-45ed-822e-352fa71631a5
+    taskid: 31ace05d-4fda-4820-8dd8-342baa86d207
     type: regular
     task:
-      id: c82bfad8-3d1f-45ed-822e-352fa71631a5
+      id: 31ace05d-4fda-4820-8dd8-342baa86d207
       version: -1
       name: Create new branch
       description: Creates a new branch in Bitbucket.
@@ -112,12 +113,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: b79e25e5-2e98-4696-8f4f-bdb1fb0b1a51
+    taskid: 5e8e2c9f-9f9c-44ce-85c1-053004d0fd51
     type: regular
     task:
-      id: b79e25e5-2e98-4696-8f4f-bdb1fb0b1a51
+      id: 5e8e2c9f-9f9c-44ce-85c1-053004d0fd51
       version: -1
-      name: Commit files - UPDATE
+      name: Commit files - local
       description: This script gets content files as input from the context, commits
         the files in the correct folder and creates the pull request text.
       scriptName: CommitFilesBitbucket
@@ -138,11 +139,9 @@ tasks:
       email:
         simple: ${inputs.Email}
       files:
-        complex:
-          root: File
+        simple: ${File}
       pack:
-        complex:
-          root: PackName
+        simple: ${inputs.PackName}
       template:
         complex:
           root: inputs.PullRequestTemplate
@@ -169,10 +168,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: bc021fed-3448-4e65-8c12-03c46eaf62fc
+    taskid: d0ee036f-0e8d-4747-8505-af1831ed7959
     type: regular
     task:
-      id: bc021fed-3448-4e65-8c12-03c46eaf62fc
+      id: d0ee036f-0e8d-4747-8505-af1831ed7959
       version: -1
       name: Create pull request
       description: Creates a pull request in Bitbucket.
@@ -214,10 +213,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 606569bb-b0fd-4a7b-8551-cd3fadfda59e
+    taskid: eca9bf26-5267-45dc-86ab-5698bd8d8d5c
     type: regular
     task:
-      id: 606569bb-b0fd-4a7b-8551-cd3fadfda59e
+      id: eca9bf26-5267-45dc-86ab-5698bd8d8d5c
       version: -1
       name: Update pr and add a reviewer
       description: Updates a pull request in Bitbucket.
@@ -254,10 +253,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 4746f35b-3825-47c1-89f8-2f6bb280c20e
+    taskid: 51082ab0-addd-4fd3-8815-0178dd4aaeac
     type: condition
     task:
-      id: 4746f35b-3825-47c1-89f8-2f6bb280c20e
+      id: 51082ab0-addd-4fd3-8815-0178dd4aaeac
       version: -1
       name: Add reviewer?
       type: condition
@@ -295,10 +294,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 31a79489-9316-458d-817c-e7e72b81ff2f
+    taskid: 74e57ad1-7c00-432e-8d76-08001a7d5448
     type: regular
     task:
-      id: 31a79489-9316-458d-817c-e7e72b81ff2f
+      id: 74e57ad1-7c00-432e-8d76-08001a7d5448
       version: -1
       name: Get branch
       description: Returns the information of the requested branch.
@@ -333,10 +332,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 270b23c0-4af7-4dde-8068-96fa32e0b8bd
+    taskid: 09d39a01-a771-4865-8ef3-adf029ca6ef5
     type: condition
     task:
-      id: 270b23c0-4af7-4dde-8068-96fa32e0b8bd
+      id: 09d39a01-a771-4865-8ef3-adf029ca6ef5
       version: -1
       name: Does branch exist?
       type: condition
@@ -376,10 +375,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: bb51424e-c881-49b2-8ced-727d95d63550
+    taskid: e86abb61-412a-4a33-8637-7fe06d404157
     type: regular
     task:
-      id: bb51424e-c881-49b2-8ced-727d95d63550
+      id: e86abb61-412a-4a33-8637-7fe06d404157
       version: -1
       name: Set branch name from CI/CD Branch field
       description: Set a value in context under the key you entered.
@@ -415,10 +414,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 3d3abbb9-59c6-45df-87c5-f5b933c13f59
+    taskid: 2781bab1-7fde-4ae1-8c16-d6a1ae9460d5
     type: condition
     task:
-      id: 3d3abbb9-59c6-45df-87c5-f5b933c13f59
+      id: 2781bab1-7fde-4ae1-8c16-d6a1ae9460d5
       version: -1
       name: Is CI/CD Branch field given
       type: condition
@@ -458,10 +457,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 17f33ea9-35f0-4596-889b-594c51e3dd81
+    taskid: 9a430442-5e3b-4df2-8e0d-73d598a24118
     type: regular
     task:
-      id: 17f33ea9-35f0-4596-889b-594c51e3dd81
+      id: 9a430442-5e3b-4df2-8e0d-73d598a24118
       version: -1
       name: Suggest branch name
       description: |
@@ -479,7 +478,7 @@ tasks:
       command_get_branch:
         simple: bitbucket-branch-get
       pack:
-        simple: something
+        simple: ${inputs.PackName}
     separatecontext: false
     continueonerror: true
     continueonerrortype: errorPath
@@ -499,10 +498,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 448fd39f-1936-4176-814a-cf029e1f12bb
+    taskid: 8bb8cba9-3d4a-4bc6-80ef-4120ba627b22
     type: regular
     task:
-      id: 448fd39f-1936-4176-814a-cf029e1f12bb
+      id: 8bb8cba9-3d4a-4bc6-80ef-4120ba627b22
       version: -1
       name: Set branch name from SuggestBranchName output
       description: Set a value in context under the key you entered.
@@ -537,10 +536,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 9367886a-0e85-4504-8999-bfbb6578e5ee
+    taskid: 7523ff4e-3632-49f4-84c4-eaf5d337dc03
     type: condition
     task:
-      id: 9367886a-0e85-4504-8999-bfbb6578e5ee
+      id: 7523ff4e-3632-49f4-84c4-eaf5d337dc03
       version: -1
       name: Is CI/CD Pull Request Branch field given
       type: condition
@@ -580,10 +579,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: baf426f9-6fd2-4c87-81b1-63973282110d
+    taskid: 3f80cecc-11f7-4481-8e88-bbb8a7e1801f
     type: regular
     task:
-      id: baf426f9-6fd2-4c87-81b1-63973282110d
+      id: 3f80cecc-11f7-4481-8e88-bbb8a7e1801f
       version: -1
       name: Set branch name from CI/CD Pull Request Branch field
       description: Set a value in context under the key you entered.
@@ -619,10 +618,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: fed9776d-9fa9-4bbf-8425-d980a564a605
+    taskid: f0c6ed7d-fd36-48da-816d-85091ba1d2c1
     type: regular
     task:
-      id: fed9776d-9fa9-4bbf-8425-d980a564a605
+      id: f0c6ed7d-fd36-48da-816d-85091ba1d2c1
       version: -1
       name: Get pull request list
       description: Returns a list of the pull requests. If a state is provided than
@@ -653,10 +652,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: d46c8eb9-c768-4953-80a9-8d5c0eea8018
+    taskid: ba4b2b82-2ec3-4f2e-893c-343029a18580
     type: regular
     task:
-      id: d46c8eb9-c768-4953-80a9-8d5c0eea8018
+      id: ba4b2b82-2ec3-4f2e-893c-343029a18580
       version: -1
       name: Set MessageText value for update action
       description: Set a value in context under the key you entered.
@@ -689,10 +688,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 9d91323a-edac-426c-8b4a-8ff4cc8227be
+    taskid: ec3bbbc2-456d-48dd-81e0-ebbf15167da5
     type: regular
     task:
-      id: 9d91323a-edac-426c-8b4a-8ff4cc8227be
+      id: ec3bbbc2-456d-48dd-81e0-ebbf15167da5
       version: -1
       name: Set MessageText for new pull request - update the workspace in the link
       description: Set a value in context under the key you entered.
@@ -726,10 +725,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 7f24c647-e57d-4860-8e34-3daa8b3bf30d
+    taskid: c1b14aae-1409-46b7-8733-8e48565b3474
     type: title
     task:
-      id: 7f24c647-e57d-4860-8e34-3daa8b3bf30d
+      id: c1b14aae-1409-46b7-8733-8e48565b3474
       version: -1
       name: Set the branch name
       type: title
@@ -744,7 +743,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 935
+          "y": 925
         }
       }
     note: false
@@ -756,10 +755,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 3eb7bd34-b070-45f2-8f22-d47c4ed7c131
+    taskid: d908d2b2-5136-42b3-81a0-a7383028ef7b
     type: title
     task:
-      id: 3eb7bd34-b070-45f2-8f22-d47c4ed7c131
+      id: d908d2b2-5136-42b3-81a0-a7383028ef7b
       version: -1
       name: Check if branch exists and create it if not
       type: title
@@ -786,10 +785,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 0881a83d-4a30-4b4b-823f-201d6ca998f0
+    taskid: 7eccd3a4-1338-430a-8fda-b2cf3d6ab18b
     type: title
     task:
-      id: 0881a83d-4a30-4b4b-823f-201d6ca998f0
+      id: 7eccd3a4-1338-430a-8fda-b2cf3d6ab18b
       version: -1
       name: Commit the files
       type: title
@@ -816,10 +815,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: af04b7ef-0436-4a6f-8298-2cf42ecc1049
+    taskid: 9c92024b-733d-4883-870e-3765db40e948
     type: title
     task:
-      id: af04b7ef-0436-4a6f-8298-2cf42ecc1049
+      id: 9c92024b-733d-4883-870e-3765db40e948
       version: -1
       name: Create new pull request
       type: title
@@ -846,10 +845,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 9dc89ba1-650a-4768-8808-2afcb6c22db2
+    taskid: c40593c4-512a-4a93-8098-5557ac8b6a01
     type: title
     task:
-      id: 9dc89ba1-650a-4768-8808-2afcb6c22db2
+      id: c40593c4-512a-4a93-8098-5557ac8b6a01
       version: -1
       name: Update existing pull request
       type: title
@@ -876,10 +875,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 4e992c40-5f2a-45ee-8f25-eb0b3d109cea
+    taskid: d2bf8e45-578f-4555-8667-9fb0d1ecfcc7
     type: regular
     task:
-      id: 4e992c40-5f2a-45ee-8f25-eb0b3d109cea
+      id: d2bf8e45-578f-4555-8667-9fb0d1ecfcc7
       version: -1
       name: Create pull request with pack name as title
       description: Creates a pull request in Bitbucket.
@@ -902,8 +901,7 @@ tasks:
       source_branch:
         simple: ${BranchName}
       title:
-        complex:
-          root: PackName
+        simple: ${inputs.PackName}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -922,10 +920,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 9af19d6b-d990-45f0-8f06-05214380a3ab
+    taskid: 1e9d0db9-9672-4396-8576-3220ccb6ef74
     type: condition
     task:
-      id: 9af19d6b-d990-45f0-8f06-05214380a3ab
+      id: 1e9d0db9-9672-4396-8576-3220ccb6ef74
       version: -1
       name: Is Pull Request title empty?
       type: condition
@@ -963,50 +961,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "47":
-    id: "47"
-    taskid: 9b24054b-22ba-42bd-80fb-be996e12c615
-    type: regular
-    task:
-      id: 9b24054b-22ba-42bd-80fb-be996e12c615
-      version: -1
-      name: Set branch name from SuggestBranchName output
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "37"
-    scriptarguments:
-      key:
-        simple: IntegrationName
-      value:
-        complex:
-          root: inputs.IntegrationName
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 755
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 89da2aa4-120e-4947-8c61-0b54cbac638b
+    taskid: 88d4808e-9ff3-477c-8331-40d8646520ae
     type: condition
     task:
-      id: 89da2aa4-120e-4947-8c61-0b54cbac638b
+      id: 88d4808e-9ff3-477c-8331-40d8646520ae
       version: -1
       name: Does branch exist?
       type: condition
@@ -1047,10 +1007,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 3646777b-093f-4170-8f94-d3e833e99140
+    taskid: 221aed05-b97b-4f8a-824b-57659c8ab1b5
     type: regular
     task:
-      id: 3646777b-093f-4170-8f94-d3e833e99140
+      id: 221aed05-b97b-4f8a-824b-57659c8ab1b5
       version: -1
       name: set branch name
       description: Set a value in context under the key you entered.
@@ -1084,10 +1044,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 1117a231-8047-465d-8ca4-fd273590aa88
+    taskid: dc3b34d7-476b-487f-8769-df55fa61faab
     type: regular
     task:
-      id: 1117a231-8047-465d-8ca4-fd273590aa88
+      id: dc3b34d7-476b-487f-8769-df55fa61faab
       version: -1
       name: Find Relevant pr_id
       description: Set a value in context under the key you entered.
@@ -1132,10 +1092,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 17598967-645f-41e7-8c64-07a8be279569
+    taskid: e4af1201-9bf5-4078-8e15-39343381dba6
     type: regular
     task:
-      id: 17598967-645f-41e7-8c64-07a8be279569
+      id: e4af1201-9bf5-4078-8e15-39343381dba6
       version: -1
       name: Update relevant Pull Request
       description: Updates a pull request in Bitbucket.
@@ -1171,10 +1131,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 96b1cfd8-f95b-4130-8515-316d85d10bad
+    taskid: d5eb43e2-c5a2-4b45-83bd-d802c7eea82b
     type: regular
     task:
-      id: 96b1cfd8-f95b-4130-8515-316d85d10bad
+      id: d5eb43e2-c5a2-4b45-83bd-d802c7eea82b
       version: -1
       name: Set New Branch
       description: Set a value in context under the key you entered.
@@ -1208,10 +1168,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: fbb31f4c-a016-424b-8e8a-bb0a26574e4c
+    taskid: 0b1d246a-6076-4ab6-8668-7aef224ac567
     type: regular
     task:
-      id: fbb31f4c-a016-424b-8e8a-bb0a26574e4c
+      id: 0b1d246a-6076-4ab6-8668-7aef224ac567
       version: -1
       name: Set Existing Branch
       description: Set a value in context under the key you entered.
@@ -1245,10 +1205,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 5acdba6c-01d8-4661-8fd8-282694f21d3b
+    taskid: c13751f8-7102-49c0-89c5-93788804fb51
     type: regular
     task:
-      id: 5acdba6c-01d8-4661-8fd8-282694f21d3b
+      id: c13751f8-7102-49c0-89c5-93788804fb51
       version: -1
       name: Unzip pack
       description: Unzip a file using fileName or entryID to specify a file. Unzipped
@@ -1257,6 +1217,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
     scriptarguments:
       entryID:
         simple: ${File.EntryID}
@@ -1278,10 +1241,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 8bfb4478-55a5-4168-8334-c6e3f9c41ad7
+    taskid: 94314fa3-ae98-4859-87bf-770b43926522
     type: regular
     task:
-      id: 8bfb4478-55a5-4168-8334-c6e3f9c41ad7
+      id: 94314fa3-ae98-4859-87bf-770b43926522
       version: -1
       name: read metadata - temp
       description: Load the contents of a file into context.
@@ -1310,10 +1273,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 8557a822-d10f-461c-8d68-05f0d4310e59
+    taskid: f83a3014-0d73-4709-8821-60b1ac1720ac
     type: regular
     task:
-      id: 8557a822-d10f-461c-8d68-05f0d4310e59
+      id: f83a3014-0d73-4709-8821-60b1ac1720ac
       version: -1
       name: set pack name - temp
       description: Set a value in context under the key you entered.
@@ -1321,6 +1284,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
     scriptarguments:
       key:
         simple: PackName
@@ -1332,7 +1298,59 @@ tasks:
       {
         "position": {
           "x": -2.5,
-          "y": 800
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: b9b80fee-48f7-4f99-8cd6-b32c43388e2c
+    type: regular
+    task:
+      id: b9b80fee-48f7-4f99-8cd6-b32c43388e2c
+      version: -1
+      name: Commit files - generic
+      description: This script gets content files as input from the context, commits
+        the files in the correct folder and creates the pull request text.
+      scriptName: CommitFilesBitbucket
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      branch:
+        complex:
+          root: BranchName
+      comment:
+        complex:
+          root: incident
+          accessor: cicdpullrequestcomment
+      email:
+        simple: ${inputs.Email}
+      files:
+        simple: ${inputs.File}
+      pack:
+        simple: ${inputs.PackName}
+      template:
+        complex:
+          root: inputs.PullRequestTemplate
+      user:
+        complex:
+          root: inputs.UserName
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2.5,
+          "y": 2730
         }
       }
     note: false
@@ -1367,12 +1385,6 @@ inputs:
   description: The name of the branch you want the changes pulled into, which must
     be an existing branch on the current repository.
   playbookInputQuery: null
-- key: IntegrationName
-  value:
-    simple: Bitbucket
-  required: false
-  description: The name of the Git integration that the user want to use
-  playbookInputQuery: null
 - key: UserName
   value: {}
   required: false
@@ -1382,6 +1394,17 @@ inputs:
   value: {}
   required: false
   description: The email in Bitbucket
+  playbookInputQuery: null
+- key: PackName
+  value:
+    simple: hello
+  required: true
+  description: The name of the pack
+  playbookInputQuery: null
+- key: File
+  value: {}
+  required: true
+  description: The File or Files to commit to the new or updated branch or pr
   playbookInputQuery: null
 outputs: []
 sourceplaybookid: Pull Request Creation - Github

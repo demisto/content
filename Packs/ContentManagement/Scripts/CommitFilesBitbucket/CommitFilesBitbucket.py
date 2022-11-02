@@ -29,13 +29,15 @@ def does_file_exist(branch_name, content_file):
 
     if full_path in files_path:
         return True
-
+    print(f'full path: {full_path}')
+    print(f'file_name: {content_file.file_name}')
+    print(f'path_to_file: {content_file.path_to_file}')
     # try to get the file from branch
-    status, list_files_res = execute_command('bitbucket-commit-list', {'included_branches': branch_name,
-                                                                       'file_path': content_file.path_to_file},
-                                             fail_on_error=False)
-
-    if status:
+    status, list_commit_res = execute_command('bitbucket-commit-list', {'included_branches': branch_name,
+                                                                        'file_path': full_path},
+                                              fail_on_error=False)
+    # print(f'list: {list_commit_res}')
+    if list_commit_res and len(list_commit_res) > 0:
         files_path.append(full_path)
         return True
 
@@ -49,6 +51,7 @@ def commit_content_item(branch_name, content_file):
                    "file_content": f"{content_file.file_text}"}
 
     file_status = does_file_exist(branch_name, content_file)
+    print(f'file_status: {file_status}')
     # dont commit pack_metadata.json if already exists in the branch
     if file_status and content_file.file_name == 'pack_metadata.json':
         return
