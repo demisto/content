@@ -10,10 +10,10 @@ EXTRACT_FOLDER=$(mktemp -d)
 ID_SET=$ARTIFACTS_FOLDER/id_set.json
 
 # check if ID_SET exists
-POSTFIX=""
+STAGING_SUFFIX=""
 if [ ! -f "$ID_SET" ]; then
     echo "ID_SET file not found at $ID_SET"
-    POSTFIX="_graph"
+    STAGING_SUFFIX="_staging"
 fi
 
 if [[ ! -f "$GCS_MARKET_KEY" ]]; then
@@ -36,7 +36,7 @@ echo "Auth loaded successfully."
 
 # ====== BUILD CONFIGURATION ======
 GCS_BUILD_BUCKET="marketplace-ci-build"
-BUILD_BUCKET_PATH="content/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID$POSTFIX/$MARKETPLACE_TYPE"
+BUILD_BUCKET_PATH="content/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID$STAGING_SUFFIX/$MARKETPLACE_TYPE"
 BUILD_BUCKET_PACKS_DIR_PATH="$BUILD_BUCKET_PATH/content/packs"
 BUILD_BUCKET_CONTENT_DIR_FULL_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH/content"
 BUILD_BUCKET_FULL_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH"

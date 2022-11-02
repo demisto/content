@@ -1030,11 +1030,13 @@ def main():
     id_set = None
     try:
         id_set = open_id_set_file(option.id_set_path)
-    except Exception as e:
-        with Neo4jContentGraphInterface() as graph:
-            if not graph.is_graph_alive():
-                raise e
-
+    except FileNotFoundError:
+        logging.warning("No ID_SET file, will try to use graph")
+        try:
+            with Neo4jContentGraphInterface():
+                pass
+        except Exception:
+            raise Exception("Database is not ready")
     extract_destination_path = option.extract_path
     storage_bucket_name = option.bucket_name
     service_account = option.service_account
