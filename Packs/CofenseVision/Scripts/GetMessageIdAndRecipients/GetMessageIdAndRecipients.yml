@@ -12,6 +12,10 @@ args:
 - name: key
   required: true
   description: Object Key.
+outputs:
+- contextPath: Cofense.Message
+  description: ID and Recipient's address of emails in specific format.
+  type: Unknown
 scripttarget: 0
 subtype: python3
 runonce: false

@@ -12,6 +12,9 @@ This integration was integrated and tested with version 4 of Cofense Vision and 
     | Server URL | Server URL to connect to Cofense Vision. | True |
     | Client ID |  | True |
     | Client Secret |  | True |
+    | Threat levels to be marked as Good | Mapping of Cofense Vision threat level to XSOAR DbotScore.<br/>For 'Good', DbotScore will be 1 and default threat level value is 'low'.<br/>Comma separated values are supported. | False |
+    | Threat levels to be marked as Suspicious | Mapping of Cofense Vision threat level to XSOAR DbotScore.<br/>For 'Suspicious', DbotScore will be 2 and default threat level values are 'suspicious', 'moderate', 'substantial'.<br/>Comma separated values are supported. | False |
+    | Threat levels to be marked as Bad | Mapping of Cofense Vision threat level to XSOAR DbotScore.<br/>For 'Bad', DbotScore will be 3 and default threat level values are 'malicious', 'severe', 'critical', 'high'.<br/>Comma separated values are supported. | False |
     | Trust any certificate (not secure) | Indicates whether to allow connections without verifying SSL certificate's validity. | False |
     | Use system proxy settings | Indicates whether to use XSOAR's system proxy settings to connect to the API. | False |
 
@@ -1621,6 +1624,23 @@ Lists the IOCs stored in the local IOC Repository.
 | Cofense.IOC.metadata.quarantine.match_count | Number | Number of unique emails that matched the IOC while the IOC was active. | 
 | Cofense.IOC.metadata.quarantine.quarantine_count | Number | Number of recipients who received emails matching the IOC while the IOC was active. | 
 | Cofense.IOC.metadata.quarantine.expired | Boolean | Whether the IOC is expired \(true\) or not expired \(false\). | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. |
+| Domain.Name | String | The domain name. | 
+| Domain.Malicious.Description | String | A description of the malicious domain. | 
+| Domain.Malicious.Vendor | String | The vendor who reported the domain as malicious. | 
+| URL.Data | String | The URL. | 
+| URL.Malicious.Description | String | A description of the malicious URL. | 
+| URL.Malicious.Vendor | String | The vendor who reported the URL as malicious. | 
+| Email.Address | String | The sender of the email. | 
+| Email.Malicious.Description | String | A description of the malicious email. | 
+| Email.Malicious.Vendor | String | The vendor who reported the email as malicious. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.Malicious.Description | String | A description explaining why the file was determined to be malicious. | 
+| File.Malicious.Vendor | String | The vendor who reported the file as malicious. | 
 
 #### Command example
 ```!cofense-iocs-list source="Vision-UI" size=2```
@@ -1692,10 +1712,14 @@ Lists the IOCs stored in the local IOC Repository.
 
 #### Human Readable Output
 
->### IOCs:
+>### IOC:
 >|ID|Threat Type|Threat Value|Threat Level|Updated At|Created At|Match Count|Quarantine Count|
 >|---|---|---|---|---|---|---|---|
 >| 088dc5454129d776b4a1484b71bb71b0 | DOMAIN | qwe | very_high | 29/07/2022, 07:09 AM UTC | 29/07/2022, 07:09 AM UTC | 0 | 0 |
+
+>### IOC:
+>|ID|Threat Type|Threat Value|Threat Level|Updated At|Created At|Match Count|Quarantine Count|
+>|---|---|---|---|---|---|---|---|
 >| 1627363590bae65d9497e0e02bc412b4 | DOMAIN | fgh | High | 02/08/2022, 09:20 AM UTC | 03/08/2022, 09:20 AM UTC | 0 | 0 |
 
 
@@ -1737,6 +1761,23 @@ Updates the IOC identified by its unique MD5 ID.
 | Cofense.IOC.metadata.quarantine.quarantine_count | Number | Number of recipients who received emails matching the IOC while the IOC was active. | 
 | Cofense.IOC.metadata.quarantine.expired | Boolean | Whether the IOC is expired \(true\) or not expired \(false\). | 
 | Cofense.IOC.metadata.quarantine.wildcard | Boolean | Whether the wildcard matching is set \(true\) or not \(false\). | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. |
+| Domain.Name | String | The domain name. | 
+| Domain.Malicious.Description | String | A description of the malicious domain. | 
+| Domain.Malicious.Vendor | String | The vendor who reported the domain as malicious. | 
+| URL.Data | String | The URL. | 
+| URL.Malicious.Description | String | A description of the malicious URL. | 
+| URL.Malicious.Vendor | String | The vendor who reported the URL as malicious. | 
+| Email.Address | String | The sender of the email. | 
+| Email.Malicious.Description | String | A description of the malicious email. | 
+| Email.Malicious.Vendor | String | The vendor who reported the email as malicious. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.Malicious.Description | String | A description explaining why the file was determined to be malicious. | 
+| File.Malicious.Vendor | String | The vendor who reported the file as malicious. | 
 
 #### Command example
 ```!cofense-ioc-update id="bb78c7a2f8c9eea5b9c5a30eb8c9069b" expires_at="1 day"```
@@ -1828,6 +1869,23 @@ are required parameters to update a single IOC.
 | Cofense.IOC.metadata.quarantine.quarantine_count | Number | Number of recipients who received emails matching the IOC while the IOC was active. | 
 | Cofense.IOC.metadata.quarantine.expired | Boolean | Whether the IOC is expired \(true\) or not expired \(false\). | 
 | Cofense.IOC.metadata.quarantine.wildcard | Boolean | Whether the wildcard matching is set \(true\) or not \(false\). | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. |
+| Domain.Name | String | The domain name. | 
+| Domain.Malicious.Description | String | A description of the malicious domain. | 
+| Domain.Malicious.Vendor | String | The vendor who reported the domain as malicious. | 
+| URL.Data | String | The URL. | 
+| URL.Malicious.Description | String | A description of the malicious URL. | 
+| URL.Malicious.Vendor | String | The vendor who reported the URL as malicious. | 
+| Email.Address | String | The sender of the email. | 
+| Email.Malicious.Description | String | A description of the malicious email. | 
+| Email.Malicious.Vendor | String | The vendor who reported the email as malicious. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.Malicious.Description | String | A description explaining why the file was determined to be malicious. | 
+| File.Malicious.Vendor | String | The vendor who reported the file as malicious. | 
 
 #### Command example
 ```!cofense-iocs-update source="Vision-UI" iocs_json="[{\"threat_type\":\"Domain\",\"threat_value\":\"test.com\",\"threat_level\":\"Malicious\",\"source_id\":\"test\",\"created_at\":\"1 day\",\"updated_at\":\"1 day\"}]"```
@@ -1869,7 +1927,7 @@ are required parameters to update a single IOC.
 
 #### Human Readable Output
 
->### IOCs updated successfully.
+>### IOC bb78c7a2f8c9eea5b9c5a30eb8c9069b updated successfully.
 >|ID|Threat Type|Threat Value|Threat Level|Created At|Updated At|Requested Expiration|
 >|---|---|---|---|---|---|---|
 >| bb78c7a2f8c9eea5b9c5a30eb8c9069b | DOMAIN | test.com | Malicious | 09/08/2022, 04:25 AM UTC | 09/08/2022, 04:25 AM UTC | 24/08/2022, 04:25 AM UTC |
@@ -1912,6 +1970,23 @@ Synchronizes the update of data between the IOC source and the IOC repository. R
 | Cofense.IOC.metadata.quarantine.quarantine_count | Number | Number of recipients who received emails matching the IOC while the IOC was active. | 
 | Cofense.IOC.metadata.quarantine.expired | Boolean | Whether the IOC is expired \(true\) or not expired \(false\). | 
 | Cofense.IOC.metadata.quarantine.wildcard | Boolean | Whether the wildcard matching is set \(true\) or not \(false\). | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. |
+| Domain.Name | String | The domain name. | 
+| Domain.Malicious.Description | String | A description of the malicious domain. | 
+| Domain.Malicious.Vendor | String | The vendor who reported the domain as malicious. | 
+| URL.Data | String | The URL. | 
+| URL.Malicious.Description | String | A description of the malicious URL. | 
+| URL.Malicious.Vendor | String | The vendor who reported the URL as malicious. | 
+| Email.Address | String | The sender of the email. | 
+| Email.Malicious.Description | String | A description of the malicious email. | 
+| Email.Malicious.Vendor | String | The vendor who reported the email as malicious. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.Malicious.Description | String | A description explaining why the file was determined to be malicious. | 
+| File.Malicious.Vendor | String | The vendor who reported the file as malicious. | 
 
 #### Command example
 ```!cofense-last-ioc-get source="Vision-UI"```
@@ -1999,6 +2074,23 @@ Deletes a single active or expired IOC from the local IOC Repository.
 | Cofense.IOC.metadata.quarantine.quarantine_count | Number | Number of times the email was quarantined. | 
 | Cofense.IOC.metadata.quarantine.expired | Boolean | Whether the IOC is expired \(true\) or not expired \(false\). | 
 | Cofense.IOC.deleted | Boolean | Indicates whether the IOC is deleted or not. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. |
+| Domain.Name | String | The domain name. | 
+| Domain.Malicious.Description | String | A description of the malicious domain. | 
+| Domain.Malicious.Vendor | String | The vendor who reported the domain as malicious. | 
+| URL.Data | String | The URL. | 
+| URL.Malicious.Description | String | A description of the malicious URL. | 
+| URL.Malicious.Vendor | String | The vendor who reported the URL as malicious. | 
+| Email.Address | String | The sender of the email. | 
+| Email.Malicious.Description | String | A description of the malicious email. | 
+| Email.Malicious.Vendor | String | The vendor who reported the email as malicious. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.Malicious.Description | String | A description explaining why the file was determined to be malicious. | 
+| File.Malicious.Vendor | String | The vendor who reported the file as malicious. | 
 
 #### Command example
 ```!cofense-ioc-delete source="Vision-UI" id=bb931fec9d9672a9e307456133223b2e```
@@ -2086,6 +2178,23 @@ Retrieves the IOC identified by its unique MD5 ID.
 | Cofense.IOC.metadata.quarantine.quarantine_count | Number | Number of recipients who received emails matching the IOC while the IOC was active. | 
 | Cofense.IOC.metadata.quarantine.expired | Boolean | Whether the IOC is expired \(true\) or not expired \(false\). | 
 | Cofense.IOC.metadata.quarantine.wildcard | Boolean | Whether the wildcard matching is set \(true\) or not \(false\). |
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. |
+| Domain.Name | String | The domain name. | 
+| Domain.Malicious.Description | String | A description of the malicious domain. | 
+| Domain.Malicious.Vendor | String | The vendor who reported the domain as malicious. | 
+| URL.Data | String | The URL. | 
+| URL.Malicious.Description | String | A description of the malicious URL. | 
+| URL.Malicious.Vendor | String | The vendor who reported the URL as malicious. | 
+| Email.Address | String | The sender of the email. | 
+| Email.Malicious.Description | String | A description of the malicious email. | 
+| Email.Malicious.Vendor | String | The vendor who reported the email as malicious. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.Malicious.Description | String | A description explaining why the file was determined to be malicious. | 
+| File.Malicious.Vendor | String | The vendor who reported the file as malicious. | 
 
 #### Command example
 ```!cofense-ioc-get source="Vision-UI" id=bb931fec9d9672a9e307456133223b2e```

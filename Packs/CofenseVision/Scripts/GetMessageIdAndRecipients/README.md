@@ -7,6 +7,7 @@ Get the Internet Message Id and Recipient's address of Messages in a format of `
 | --- | --- |
 | Script Type | python3 |
 | Tags | transformer |
+| Cortex XSOAR Version | 6.2.0 |
 
 ## Inputs
 ---
@@ -17,4 +18,7 @@ Get the Internet Message Id and Recipient's address of Messages in a format of `
 
 ## Outputs
 ---
-There are no outputs for this script.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| Cofense.Message | ID and Recipient's address of emails in specific format. | Unknown |

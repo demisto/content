@@ -55,7 +55,8 @@ def mock_client(requests_mock):
     requests_mock.post(mock_auth_endpoint, json=mock_auth_resp)
 
     client = VisionClient(
-        base_url=MOCK_BASE_URL, client_id="test_id", client_secret="test_secret", proxy=False, verify=False
+        base_url=MOCK_BASE_URL, client_id="test_id", client_secret="test_secret", proxy=False, verify=False,
+        threat_levels_good=[], threat_levels_suspicious=[], threat_levels_bad=[]
     )
 
     return client
@@ -1743,10 +1744,10 @@ def test_update_iocs_command_when_valid_args_provided(mock_client, requests_mock
 
     response = cofense_iocs_update_command(mock_client, mock_arguments)
 
-    assert response.outputs_prefix == IOC_OUTPUT_PREFIX
-    assert response.outputs_key_field == "id"
-    assert response.readable_output == expected_hr
-    assert response.outputs == remove_empty_elements(mock_response.get('data'))
+    assert response[0].outputs_prefix == IOC_OUTPUT_PREFIX
+    assert response[0].outputs_key_field == "id"
+    assert response[0].readable_output == expected_hr
+    assert response[0].outputs == remove_empty_elements(mock_response.get('data')[0])
 
 
 @pytest.mark.parametrize("args, err_msg", [({"id": "", "expires_at": "1 day"},
@@ -1887,14 +1888,11 @@ def test_iocs_list_command_when_empty_response_returned(mock_client, requests_mo
     mock_response = {"data": []}
     requests_mock.get(mock_request_url, json=mock_response, status_code=200)
 
-    expected_hr_output = '### IOCs:\n**No entries.**\n'
+    expected_hr_output = '### IOC:\n**No entries.**\n'
 
     response = cofense_iocs_list_command(mock_client, mock_arguments)
 
-    assert response.outputs_prefix == IOC_OUTPUT_PREFIX
-    assert response.outputs_key_field == "id"
     assert response.readable_output == expected_hr_output
-    assert response.outputs == []
 
 
 def test_iocs_list_command_when_valid_response_returned(mock_client, requests_mock):
@@ -1923,10 +1921,10 @@ def test_iocs_list_command_when_valid_response_returned(mock_client, requests_mo
 
     response = cofense_iocs_list_command(mock_client, mock_arguments)
 
-    assert response.outputs_prefix == IOC_OUTPUT_PREFIX
-    assert response.outputs_key_field == "id"
-    assert response.readable_output == expected_hr_output
-    assert response.outputs == mock_response.get("outputs")
+    assert response[0].outputs_prefix == IOC_OUTPUT_PREFIX
+    assert response[0].outputs_key_field == "id"
+    assert response[0].readable_output == expected_hr_output
+    assert [resp.outputs for resp in response] == mock_response.get("outputs")
 
 
 def test_cofense_searchable_headers_list_command_when_authentication_error(mock_client, requests_mock):
