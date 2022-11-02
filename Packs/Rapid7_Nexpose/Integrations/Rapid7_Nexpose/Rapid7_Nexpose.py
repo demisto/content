@@ -145,8 +145,8 @@ class VulnerabilityExceptionReason(Enum, metaclass=FlexibleEnum):
     """An Enum of possible vulnerability exception reason values."""
     FALSE_POSITIVE = "False Positive"
     COMPENSATING_CONTROL = "Compensating Control"
-    ACCEPTED_USE = "Acceptable Use"
-    ACCEPTED_RISK = "Acceptable Risk"
+    ACCEPTABLE_USE = "Acceptable Use"
+    ACCEPTABLE_RISK = "Acceptable Risk"
     OTHER = "Other"
 
 
@@ -266,8 +266,8 @@ class Client(BaseClient):
             kwargs["params"]["page"] = str(page)
 
         kwargs["params"].update(find_valid_params(
+            page=page,
             page_size=page_size,
-            limit=limit,
         ))
 
         # If sort is not None, split it into a list and add to kwargs
@@ -316,9 +316,6 @@ class Client(BaseClient):
         Returns:
             dict: API response with information about the newly generated asset.
         """
-        if hostname_source is not None:
-            hostname_source = hostname_source.value
-
         if ip_address is None and hostname is None:
             raise ValueError("At least one of \"ip\" and \"host_name\" arguments must be passed.")
         post_data = {"date": date}
@@ -549,19 +546,19 @@ class Client(BaseClient):
 
         if service in (S.SSH, S.SSH_KEY):
             if ssh_permission_elevation:
-                account_data["permissionElevation"] = ssh_permission_elevation
+                account_data["permissionElevation"] = ssh_permission_elevation.value
 
             if ssh_permission_elevation not in (SSHElevationType.NONE, SSHElevationType.PBRUN):
                 if None in (ssh_permission_elevation_username, ssh_permission_elevation_password):
                     raise ValueError(f"Elevation username and password are required for \"{service.value}\" "
-                                     "services when permission elevation is not \"none\" or \"pbrun\".")
+                                     "services when \"ssh_permission_elevation\" is not \"none\" or \"pbrun\".")
 
                 account_data["permissionElevationUsername"] = ssh_permission_elevation_username
                 account_data["permissionElevationPassword"] = ssh_permission_elevation_password
 
         if service == S.SSH_KEY:
             if ssh_key_pem is None:
-                raise ValueError(f"SSH private key password is required for {service.value} services.")
+                raise ValueError(f"SSH private key is required for {service.value} services.")
 
             account_data["pemKey"] = ssh_key_pem
 
@@ -655,10 +652,8 @@ class Client(BaseClient):
                 if frequency == RepeatFrequencyType.DATE_OF_MONTH and not date_of_month:
                     raise ValueError("'date_of_month' parameter must be set if frequency is set to 'Date of month'.")
 
-                frequency = frequency.value
-
             repeat = find_valid_params(
-                every=frequency,
+                every=frequency.value if frequency is not None else None,
                 interval=interval,
                 dateOfMonth=date_of_month,
             )
@@ -709,7 +704,6 @@ class Client(BaseClient):
             name=name,
             description=description,
             importance=importance,
-            template_id=template_id,
             scanTemplateId=template_id,
         )
 
@@ -885,7 +879,7 @@ class Client(BaseClient):
 
         if service in (S.SSH, S.SSH_KEY):
             if ssh_permission_elevation:
-                account_data["permissionElevation"] = ssh_permission_elevation
+                account_data["permissionElevation"] = ssh_permission_elevation.value
 
             if ssh_permission_elevation not in (SSHElevationType.NONE, SSHElevationType.PBRUN):
                 if None in (ssh_permission_elevation_username, ssh_permission_elevation_password):
@@ -1678,9 +1672,9 @@ class Client(BaseClient):
             dict: API response with information about the updated shared credential.
         """
         return self._http_request(
-            url_suffix=f"/sites/{site_id}/shared_credentials/{shared_credential_id}",
+            url_suffix=f"/sites/{site_id}/shared_credentials/{shared_credential_id}/enabled",
             method="PUT",
-            data=str(enabled).lower(),  # type: ignore
+            data=json.dumps(enabled),  # type: ignore
             resp_type="json",
         )
 
@@ -1889,7 +1883,7 @@ class Client(BaseClient):
 
         if service in (S.SSH, S.SSH_KEY):
             if ssh_permission_elevation:
-                account_data["permissionElevation"] = ssh_permission_elevation
+                account_data["permissionElevation"] = ssh_permission_elevation.value
 
             if ssh_permission_elevation not in (SSHElevationType.NONE, SSHElevationType.PBRUN):
                 if None in (ssh_permission_elevation_username, ssh_permission_elevation_password):
@@ -1999,31 +1993,31 @@ class Client(BaseClient):
         """
         account_data: dict = {"service": service.value}
 
-        S = CredentialService  # Simplify object name for shorter lines
+        s = CredentialService  # Simplify object name for shorter lines
 
         # Services where "username" field is required
-        if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL, S.ORACLE,
-                       S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SNMPV3, S.SSH, S.SSH_KEY, S.SYBASE, S.TELNET):
+        if service in (s.AS400, s.CIFS, s.CIFSHASH, s.CVS, s.DB2, s.FTP, s.HTTP, s.MS_SQL, s.MYSQL, s.ORACLE,
+                       s.POP, s.POSTGRESQL, s.REMOTE_EXEC, s.SNMPV3, s.SSH, s.SSH_KEY, s.SYBASE, s.TELNET):
             if username is None:
                 raise ValueError(f"Username is required for {service.value} services.")
 
             account_data["username"] = username
 
         # Services where "password" field is required
-        if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL,
-                       S.ORACLE, S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SSH, S.SYBASE, S.TELNET):
+        if service in (s.AS400, s.CIFS, s.CIFSHASH, s.CVS, s.DB2, s.FTP, s.HTTP, s.MS_SQL, s.MYSQL,
+                       s.ORACLE, s.POP, s.POSTGRESQL, s.REMOTE_EXEC, s.SSH, s.SYBASE, s.TELNET):
             if password is None:
                 raise ValueError(f"Password is required for {service.value} services.")
 
             account_data["password"] = password
 
         # Services with optional "useWindowsAuthentication" field.
-        if service in (S.MS_SQL, S.SYBASE) and use_windows_authentication is not None:
+        if service in (s.MS_SQL, s.SYBASE) and use_windows_authentication is not None:
             account_data["useWindowsAuthentication"] = use_windows_authentication
 
         # Services with optional "domain" field.
-        if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.MS_SQL, S.SYBASE) and domain is not None:
-            if service in (S.MS_SQL, S.SYBASE):
+        if service in (s.AS400, s.CIFS, s.CIFSHASH, s.CVS, s.MS_SQL, s.SYBASE) and domain is not None:
+            if service in (s.MS_SQL, s.SYBASE):
                 if use_windows_authentication:
                     account_data["domain"] = domain
 
@@ -2031,22 +2025,22 @@ class Client(BaseClient):
                 account_data["domain"] = domain
 
         # Services with optional "database" field.
-        if service in (S.DB2, S.MS_SQL, S.MYSQL, S.POSTGRESQL, S.SYBASE) and database_name is not None:
+        if service in (s.DB2, s.MS_SQL, s.MYSQL, s.POSTGRESQL, s.SYBASE) and database_name is not None:
             account_data["database"] = database_name
 
-        if service == S.CIFSHASH:
+        if service == s.CIFSHASH:
             if ntlm_hash is None:
                 raise ValueError(f"NTLM hash is required for {service.value} services.")
 
             account_data["ntlmHash"] = ntlm_hash
 
-        if service == S.HTTP and http_realm is not None:
+        if service == s.HTTP and http_realm is not None:
             account_data["realm"] = http_realm
 
-        if service == S.NOTES and notes_id_password is not None:
+        if service == s.NOTES and notes_id_password is not None:
             account_data["notesIDPassword"] = notes_id_password
 
-        if service == S.ORACLE:
+        if service == s.ORACLE:
             if oracle_sid is not None:
                 account_data["sid"] = oracle_sid
 
@@ -2058,13 +2052,13 @@ class Client(BaseClient):
 
                 account_data["oracleListenerPassword"] = oracle_listener_password
 
-        if service == S.SNMP:
+        if service == s.SNMP:
             if snmp_community_name is None:
                 raise ValueError(f"Community name is required for {service.value} services.")
 
             account_data["community"] = snmp_community_name
 
-        if service == S.SNMPV3:
+        if service == s.SNMPV3:
             if snmpv3_authentication_type is None:
                 raise ValueError(f"Authentication type is required for {service.value} services.")
 
@@ -2087,9 +2081,9 @@ class Client(BaseClient):
 
                 account_data["privacyPassword"] = snmpv3_privacy_password
 
-        if service in (S.SSH, S.SSH_KEY):
+        if service in (s.SSH, s.SSH_KEY):
             if ssh_permission_elevation:
-                account_data["permissionElevation"] = ssh_permission_elevation
+                account_data["permissionElevation"] = ssh_permission_elevation.value
 
             if ssh_permission_elevation not in (SSHElevationType.NONE, SSHElevationType.PBRUN):
                 if None in (ssh_permission_elevation_username, ssh_permission_elevation_password):
@@ -2099,7 +2093,7 @@ class Client(BaseClient):
                 account_data["permissionElevationUsername"] = ssh_permission_elevation_username
                 account_data["permissionElevationPassword"] = ssh_permission_elevation_password
 
-        if service == S.SSH_KEY:
+        if service == s.SSH_KEY:
             if ssh_key_pem is None:
                 raise ValueError(f"SSH private key password is required for {service.value} services.")
 
@@ -2250,7 +2244,7 @@ class Client(BaseClient):
         | Update the expiration date for a vulnerability exception.
         |
         | For more information see:
-            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getVulnerabilityExceptionExpiration
+            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/updateVulnerabilityExceptionExpiration
 
         Args:
             vulnerability_exception_id (str): ID of the vulnerability exception to update.
@@ -2259,14 +2253,10 @@ class Client(BaseClient):
         Returns:
             dict: API response with information about the updated vulnerability exception.
         """
-        headers = self._headers.copy()
-        headers.update({"Content-Type": "text/plain"})
-
         return self._http_request(
             url_suffix=f"/vulnerability_exceptions/{vulnerability_exception_id}/expires",
             method="PUT",
-            headers=headers,
-            data=expiration_date.encode("utf-8"),  # type: ignore
+            data=json.dumps(expiration_date),  # type: ignore
             resp_type="json",
         )
 
@@ -2365,7 +2355,7 @@ class Site:
                 raise ValueError("Can't fetch site ID as no Client was provided.")
 
         else:
-            raise ValueError("Either a site ID or a site name must be passed.")
+            raise ValueError("Either a site ID or a site name must be passed as an argument.")
 
         self.name = site_name
 
@@ -3440,7 +3430,7 @@ def delete_vulnerability_exception_command(client: Client, vulnerability_excepti
 
 
 def download_report_command(client: Client, report_id: str, instance_id: str,
-                            report_format: ReportFileFormat, report_name: Optional[str] = None) -> dict:
+                            report_format: Optional[ReportFileFormat], report_name: Optional[str] = None) -> dict:
     """
     Download a report file.
 
@@ -3448,7 +3438,8 @@ def download_report_command(client: Client, report_id: str, instance_id: str,
         client (Client): Client to use for API requests.
         report_id (str): ID of the report to download.
         instance_id (str): ID of the report instance.
-        report_format (ReportFileFormat): File format to use for the generated report.
+        report_format (ReportFileFormat | None, optional): File format to use for the generated report.
+            Defaults to None (results in using PDF).
         report_name (str | None, optional): Name to give the generated report file.
             Defaults to None (results in using a "report <date>" format as a name).
 
@@ -3457,8 +3448,11 @@ def download_report_command(client: Client, report_id: str, instance_id: str,
     """
     # TODO: Check if format can actually be changed from the default PDF received from Nexpose. Delete if not?
 
-    if not report_name:
+    if report_name is None:
         report_name = f"report {str(datetime.now())}"
+
+    if report_format is None:
+        report_format = ReportFileFormat.PDF
 
     report_data = client.download_report(
         report_id=report_id,
@@ -4227,8 +4221,7 @@ def list_shared_credential_command(client: Client, credential_id: Optional[str],
             shared_credentials_data = shared_credentials_data[:limit]
 
     else:
-        shared_credentials_data = client.get_shared_credential(credential_id)
-        shared_credentials_data = [shared_credentials_data]
+        shared_credentials_data = [client.get_shared_credential(credential_id)]
 
     if not shared_credentials_data:
         return CommandResults(
@@ -4304,7 +4297,7 @@ def list_assigned_shared_credential_command(client: Client, site: Site, limit: O
             "id": "Id",
             "name": "Name",
             "service": "Service",
-            "enabled": "Domain",
+            "enabled": "Enabled",
         },
     )
 
@@ -4374,7 +4367,8 @@ def list_site_scan_credential_command(client: Client, site: Site, credential_id:
         outputs_prefix="Nexpose.SiteScanCredential",
         outputs_key_field="id",
         outputs=site_scan_credentials_data,
-        readable_output=tableToMarkdown("Nexpose Site Scan Credentials", site_scan_credentials_hr, headers, removeNull=True),
+        readable_output=tableToMarkdown(
+            "Nexpose Site Scan Credentials", site_scan_credentials_hr, headers, removeNull=True),
         raw_response=site_scan_credentials_data,
     )
 
@@ -4580,15 +4574,11 @@ def search_assets_command(client: Client, filter_query: Optional[str] = None, ip
         filters_data.append("site-id in " + str_site_ids)
 
     if ip_addresses:
-        ips = argToList(ip_addresses)
-
-        for ip in ips:
-            filters_data.append("ip-address is " + ip)  # TODO: Change to `in <list of comma separated ip addresses>` instead of multiple filters?
+        for ip_address in argToList(ip_addresses):
+            filters_data.append("ip-address is " + ip_address)  # TODO: Change to `in <list of comma separated ip addresses>` instead of multiple filters?
 
     if hostnames is not None:
-        hostnames = argToList(hostnames)
-
-        for hostname in hostnames:
+        for hostname in argToList(hostnames):
             filters_data.append("host-name is " + hostname)  # TODO: Change to `in <list of comma separated hostnames>` instead if multiple filters?
 
     assets = []
@@ -5103,6 +5093,7 @@ def update_vulnerability_exception_command(client: Client, vulnerability_excepti
         raise ValueError("Either expiration or status must be set.")
 
     responses = []
+
     if expiration_date:
         responses.append(
             client.update_vulnerability_exception_expiration(
@@ -5213,8 +5204,6 @@ def main():
             duration_minutes = None
             interval = None
             date_of_month = None
-            scan_name = None
-            scan_template_id = None
 
             if args.get("excluded_asset_groups") is not None:
                 excluded_asset_groups = [int(asset_id) for asset_id in argToList(args["excluded_asset_group_ids"])]
@@ -5427,7 +5416,7 @@ def main():
                 scope_type=scope_type,
                 state=state,
                 reason=reason,
-                scope_id=args.get("id"),
+                scope_id=args.get("scope_id"),
                 expires=args.get("expires"),
                 comment=args.get("comment"),
             )
@@ -5732,7 +5721,7 @@ def main():
                 ssh_permission_elevation = SSHElevationType[args["ssh_permission_elevation"]]
 
             if args.get("use_windows_authentication") is not None:
-                use_windows_authentication = argToBoolean(["use_windows_authentication"])
+                use_windows_authentication = argToBoolean(args["use_windows_authentication"])
 
             results = update_shared_credential_command(
                 client=client,

@@ -764,7 +764,7 @@ script:
         required: false
         secret: false
       - default: false
-        description: ID of the vulnerability to create the exception for.
+        description: "ID of the vulnerability to create the exception for. Example: 7-zip-cve-2008-6536"
         isArray: false
         name: vulnerability_id
         required: true
@@ -816,7 +816,7 @@ script:
       - default: false
         description: ID of the chosen `scope_type` (site ID, asset ID, etc.). Required if `scope_type` is anything other than `Global`
         isArray: false
-        name: id
+        name: scope_id
         required: false
         secret: false
     deprecated: false
@@ -1009,7 +1009,7 @@ script:
       description: The date the data was collected on the asset in an ISO 8601 format.
       isArray: false
       name: date
-      required: false
+      required: true
       secret: false
     - default: false
       description: The primary IPv4 or IPv6 address of the asset.
@@ -2421,7 +2421,7 @@ script:
       description: ID of the scan schedule to update.
       isArray: false
       name: credential_id
-      required: false
+      required: true
       secret: false
     name: nexpose-disable-shared-credential
     description: Disable an assigned shared credential.
@@ -2484,7 +2484,7 @@ script:
       description: ID of the scan schedule to update.
       isArray: false
       name: credential_id
-      required: false
+      required: true
       secret: false
     name: nexpose-enable-shared-credential
     description: Enable an assigned shared credential.
