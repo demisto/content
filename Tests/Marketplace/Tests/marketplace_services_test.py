@@ -1180,7 +1180,7 @@ This is visible
 #### Scripts
 ##### Script Name
 - Fixed script''', 'marketplacev2',
-         "#### Integrations\n##### Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### Script Name\n\
+        "#### Integrations\n##### Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### Script Name\n\
 - Fixed script"),
         (  # Case 7
             '''
@@ -1193,7 +1193,7 @@ This is visible
 #### Scripts
 ##### Script Name
 - Fixed script''', 'xsoar',
-         "#### Integrations\n##### Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### Script Name\n\
+        "#### Integrations\n##### Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### Script Name\n\
 - Fixed script"),
         (  # Case 8
             '''
@@ -1206,7 +1206,7 @@ This is visible
 #### Scripts
 ##### New: Script Name
 - Fixed script''', 'marketplacev2',
-         "#### Scripts\n##### New: Script Name\n\
+        "#### Scripts\n##### New: Script Name\n\
 - Fixed script"),
         (  # Case 9
             '''
