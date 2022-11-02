@@ -693,6 +693,42 @@ def test_get_raw_file_command(mocker):
     assert result[0].readable_output == expected_hr
 
 
+ARGS_VERIFY_ID = [
+    ("",
+     'project_id must be an positive integer'),
+    ('-10',
+     'project_id must be an positive integer'),
+    ('10',
+     'Project with project_id 10 does not exist'),
+    ('0',
+     'project_id must be an positive integer')
+]
+
+
+@pytest.mark.parametrize('project_id, expected_results', ARGS_VERIFY_ID)
+def test_verify_project_id(mocker, project_id, expected_results):
+    """
+    Given:
+        - optinal project_id
+    When:
+        - running verify_project_id
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from GitLabv2 import Client, verify_project_id
+    from CommonServerPython import DemistoException
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    response_client = util_load_json('test_data/commands_test_data.json').get('get_project_list')
+    mocker.patch.object(Client, '_http_request', return_value=response_client)
+    with pytest.raises(DemistoException) as e:
+        verify_project_id(client, project_id)
+    assert str(e.value) == expected_results
+
+
 def test_code_search_command(mocker):
     """
     Given:
