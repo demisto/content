@@ -5,10 +5,11 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import copy
+import urllib3
 from base64 import b64decode
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
