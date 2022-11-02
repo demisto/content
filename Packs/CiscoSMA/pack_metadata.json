@@ -14,7 +14,12 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "dependencies": {},
+    "dependencies": {
+        "Phishing": {
+            "mandatory": true,
+            "name": "Phishing"
+        }
+    },
     "marketplaces": [
         "xsoar",
         "marketplacev2"
