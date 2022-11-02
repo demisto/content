@@ -8,8 +8,10 @@ import pytest
 from unittest.mock import patch
 from Tests.Marketplace.upload_packs import get_packs_names, get_updated_private_packs, is_private_packs_updated
 
-from marketplace_services import Pack
+from Tests.Marketplace.marketplace_services import Pack
+
 # disable-secrets-detection-start
+
 
 class TestModifiedPacks:
     @pytest.mark.parametrize("packs_names_input, expected_result", [
@@ -567,7 +569,7 @@ class TestUpdatedPrivatePacks:
         updated_private_packs = get_updated_private_packs(private_packs, index_folder_path)
         assert len(updated_private_packs) == 1
         assert updated_private_packs[0] == "updated_pack" and updated_private_packs[0] != "first_non_updated_pack" and \
-               updated_private_packs[0] != "second_non_updated_pack"
+            updated_private_packs[0] != "second_non_updated_pack"
 
     def test_is_private_packs_updated(self, mocker):
         """
