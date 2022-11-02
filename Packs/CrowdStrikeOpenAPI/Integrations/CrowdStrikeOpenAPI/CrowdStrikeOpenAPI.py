@@ -213,11 +213,14 @@ class Client:
 
         return response
 
-    def apipreemptproxypostgraphql_request(self, ):
+    def apipreemptproxypostgraphql_request(self, query):
 
         headers = self.cs_client._headers
-
-        response = self.cs_client.http_request('post', 'identity-protection/combined/graphql/v1', headers=headers)
+        response = self.cs_client.http_request(
+            'post', 
+            'identity-protection/combined/graphql/v1', 
+            headers=headers,
+            json_data={'query': query})
 
         return response
 
@@ -3967,7 +3970,7 @@ def aggregatesow_events_global_counts_command(client, args):
 
 def apipreemptproxypostgraphql_command(client, args):
 
-    response = client.apipreemptproxypostgraphql_request()
+    response = client.apipreemptproxypostgraphql_request(query=args.get('query', ''))
     command_results = CommandResults(
         outputs_prefix='CrowdStrike',
         outputs_key_field='',
