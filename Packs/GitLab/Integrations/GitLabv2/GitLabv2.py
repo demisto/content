@@ -540,7 +540,7 @@ def issue_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         (CommandResults).
     """
     response_to_hr, human_readable = [], ''
-    headers = ['Issue_iid', 'Title', 'CreatedAt', 'CreatedBy', 'UpdatedAt', 'Milestone', 'State', ' Assignee']
+    headers = ['Issue_iid', 'Title', 'Description', 'CreatedAt', 'CreatedBy', 'UpdatedAt', 'Milestone', 'State', ' Assignee']
     page_number = arg_to_number(args.get('page')) or 1
     limit = arg_to_number(args.get('limit')) or 50
     params = assign_params(assignee_id=args.get('assignee_id'), assignee_username=args.get('assignee_username'),
@@ -556,6 +556,7 @@ def issue_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     for issue in response:
         issue_details = {'Issue_iid': issue.get('iid'),
                          'Title': issue.get('title'),
+                         'Description': issue.get('description'),
                          'CreatedAt': issue.get('created_at'),
                          'UpdateAt': issue.get('update_at'),
                          'State': issue.get('state'),
@@ -590,7 +591,7 @@ def create_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults
     Returns:
         (CommandResults).
     """
-    headers = ['Iid', 'Title', 'CreatedAt', 'CreatedBy', 'UpdatedAt', 'Milestone', 'State', 'Assignee']
+    headers = ['Iid', 'Title', 'Description', 'CreatedAt', 'CreatedBy', 'UpdatedAt', 'Milestone', 'State', 'Assignee']
     labels = args.get('labels', '')
     title = args.get('title', '')
     description = args.get('description', '')
@@ -598,6 +599,7 @@ def create_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults
     human_readable_dict = {
         'Iid': response.get('iid'),
         'Title': response.get('title'),
+        'Description': response.get('description'),
         'CreatedAt': response.get('created_at', ''),
         'CreatedBy': response.get('author', {}).get('name', ''),
         'UpdatedAt': response.get('updated_at', ''),
@@ -750,11 +752,12 @@ def issue_update_command(client: Client, args: Dict[str, Any]) -> CommandResults
     params_optional = ['add_labels', 'assignee_ids', 'confidential', 'description', 'discussion_locked',
                        'due_date', 'epic_id', 'epic_iid', 'issue_type', 'milestone_id', 'remove_labels',
                        'state_event', 'title']
-    headers = ['Iid', 'Title', 'CreatedAt', 'CreatedBy', 'UpdatedAt', 'Milestone', 'State', 'Assignee']
+    headers = ['Iid', 'Title', 'Description', 'CreatedAt', 'CreatedBy', 'UpdatedAt', 'Milestone', 'State', 'Assignee']
     params = check_args_for_update(args, params_optional)
     response = client.issue_update_request(issue_iid, params)
     human_readable_dict = {'Iid': response.get('iid', ''),
                            'Title': response.get('title', ''),
+                           'Description': response.get('description', ''),
                            'CreatedAt': response.get('created_at', ''),
                            'UpdatedAt': response.get('updated_at', ''),
                            'State': response.get('state', ''),

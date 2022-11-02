@@ -224,7 +224,7 @@ script:
       required: false
       isArray: false
     - name: author_id
-      description: The ID of the author of the issue.
+      description: The ID of the author of the issue. The command gitlab-project-user-list gives a list of all relevant users.
       required: false
       isArray: false
     - name: author_username
@@ -748,11 +748,11 @@ script:
       - assigned_to_me
       - all
     - name: author_id
-      description: Returns merge requests created by the given user id. Mutually exclusive with author_username.
+      description: Returns merge requests created by the given user id. Mutually exclusive with author_username. The command gitlab-project-user-list gives a list of all relevant users.
       required: false
       isArray: false
     - name: author_username
-      description: Returns merge requests created by the given username. Mutually exclusive with author_id.
+      description: Returns merge requests created by the given username. Mutually exclusive with author_id. The command gitlab-project-user-list gives a list of all relevant users.
       required: false
       isArray: false
     - name: assignee_id

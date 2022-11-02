@@ -83,9 +83,10 @@ def test_create_issue_command(mocker):
                        'state': 'opened', 'created_at': "'2022-10-06T14:45:38.004Z'",
                        'updated_at': "'2022-10-06T14:45:38.004Z'", 'author': {'name': 'name'}}
     expected_hr = '### Created Issue\n' \
-                  '|Iid|Title|CreatedAt|CreatedBy|UpdatedAt|State|\n' \
-                  '|---|---|---|---|---|---|\n' \
-                  '| 114 | title_test | \'2022-10-06T14:45:38.004Z\' | name | \'2022-10-06T14:45:38.004Z\' | opened |\n'
+                  '|Iid|Title|Description|CreatedAt|CreatedBy|UpdatedAt|State|\n' \
+                  '|---|---|---|---|---|---|---|\n' \
+                  '| 114 | title_test | desc_test | \'2022-10-06T14:45:38.004Z\' | ' \
+                  'name | \'2022-10-06T14:45:38.004Z\' | opened |\n'
 
     ret_value = util_load_json('test_data/commands_test_data.json').get('issue_client')
     mocker.patch.object(Client, '_http_request', return_value=ret_value)
@@ -141,9 +142,10 @@ def test_issue_update_command(mocker):
                        'state': 'opened', 'created_at': "'2022-10-06T14:45:38.004Z'",
                        'updated_at': "'2022-10-06T14:45:38.004Z'", 'author': {'name': 'name'}}
     expected_hr = '### Update Issue\n' \
-                  '|Iid|Title|CreatedAt|CreatedBy|UpdatedAt|State|\n' \
-                  '|---|---|---|---|---|---|\n' \
-                  '| 114 | title_test | \'2022-10-06T14:45:38.004Z\' | name | \'2022-10-06T14:45:38.004Z\' | opened |\n'
+                  '|Iid|Title|Description|CreatedAt|CreatedBy|UpdatedAt|State|\n' \
+                  '|---|---|---|---|---|---|---|\n' \
+                  '| 114 | title_test | desc_test | \'2022-10-06T14:45:38.004Z\' |' \
+                  ' name | \'2022-10-06T14:45:38.004Z\' | opened |\n'
 
     ret_value = util_load_json('test_data/commands_test_data.json').get('issue_client')
     mocker.patch.object(Client, '_http_request', return_value=ret_value)
