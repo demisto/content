@@ -91,9 +91,10 @@
   ],
   "asmtags": [
     {
-      "Name": "{\"Key\":\"Name\",\"Value\":\"fake-ssh-ubuntu18\"}",
+      "Key": "Name",
+      "Value": "fake-ssh-ubuntu18",
       "Source": "AWS"
     },
-    { "Name": "{\"Key\":\"env\",\"Value\":\"sbx\"}", "Source": "AWS" }
+    { "Key": "env", "Value": "sbx", "Source": "AWS" }
   ]
 }
