@@ -96,3 +96,6 @@ ignore=PB121
 
 [file:pack_metadata.json]
 ignore=PA129
+
+[file:playbook-Block_Indicators_-_Generic_v2.yml]
+ignore=PB118
