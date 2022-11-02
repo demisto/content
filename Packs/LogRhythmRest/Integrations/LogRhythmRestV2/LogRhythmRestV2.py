@@ -1318,6 +1318,7 @@ class Client(BaseClient):
         return response
 
     def list_details_and_items_get_request(self, list_id, max_items):
+        self._headers['maxItemsThreshold'] = '30000'  # Need to increase in case of response status 400
         raw_response = self._http_request('GET', f'lr-admin-api/lists/{list_id}')
         response = raw_response.copy()
         if max_items and response.get('items'):
