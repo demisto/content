@@ -7,12 +7,11 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Messaging"
+        "Network Security"
     ],
     "tags": [
-        "Scam",
-        "Spam",
-        "Email"],
+        "Use Case"
+    ],
     "itemPrefix": ["Email"],
     "useCases": ["Phishing"],
     "keywords": [],
