@@ -8,7 +8,7 @@ import pytest
 from unittest.mock import patch
 from Tests.Marketplace.upload_packs import get_packs_names, get_updated_private_packs, is_private_packs_updated
 
-
+from marketplace_services import Pack
 # disable-secrets-detection-start
 
 class TestModifiedPacks:
@@ -505,7 +505,7 @@ class TestCleanPacks:
         skipped_cleanup = clean_non_existing_packs(index_folder_path=index_folder_path, private_packs=private_packs,
                                                    storage_bucket=dummy_storage_bucket,
                                                    storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH,
-                                                   pack_list=["public_pack", "private_pack"])
+                                                   pack_list=[Pack("public_pack", "/dummy_path"), Pack("private_pack", "/dummy_path")])
 
         assert not skipped_cleanup
         shutil.rmtree.assert_called_with(os.path.join(index_folder_path, invalid_pack))
