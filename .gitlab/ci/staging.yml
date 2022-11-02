@@ -18,7 +18,6 @@ graph-create-instances:
   stage: create-instances
   script:
     - !reference [.download-demisto-conf]
-    # - !reference [.create-id-set-xsoar]
     - !reference [.create-release-notes-and-common-docs]
     - section_start "Create content graph" --collapsed
     - neo4j-admin --version
@@ -27,25 +26,8 @@ graph-create-instances:
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
     - python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "xsoar" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json
-    # - demisto-sdk create-content-artifacts-v2 -o $ARTIFACTS_FOLDER --marketplace "xsoar" --dependencies true >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
-    # - successful_feature_branch_build=$(gsutil ls "gs://xsoar-ci-artifacts/content/$FEATURE_BRANCH_NAME/*" | tail -n 1 | grep -o -E "content/$FEATURE_BRANCH_NAME/[0-9]*")
-    # - echo $successful_feature_branch_build
-    # - python3 Utils/merge_content_new_zip.py -f $FEATURE_BRANCH_NAME -b $successful_feature_branch_build
-    # - zip -j $ARTIFACTS_FOLDER/uploadable_packs.zip $ARTIFACTS_FOLDER/uploadable_packs/* >> $ARTIFACTS_FOLDER/logs/zipping_uploadable_packs.log || echo "failed to zip the uploadable packs, ignoring the failure"
-    # - rm -rf $ARTIFACTS_FOLDER/uploadable_packs
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
-    # - section_end "Create Content Artifacts and Update Conf"
-
-    # - section_start "Collect Tests and Content Packs"
-    # - |
-    #   if [ -n "${INSTANCE_TESTS}" ]; then
-    #     echo "Skipping - not running in INSTANCE_TESTS build"
-    #   else
-    #     [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-    #     python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY
-    #   fi
-    # - section_end "Collect Tests and Content Packs"
 
     - section_start "Collect Tests V2" --collapsed
     - |
@@ -57,9 +39,6 @@ graph-create-instances:
       fi
     - cp $ARTIFACTS_FOLDER/content_packs_to_install.txt $ARTIFACTS_FOLDER/content_packs_to_install-graph.txt
     - section_end "Collect Tests V2"
-    # - section_start "Calculate Packs Dependencies" --collapsed
-    # - demisto-sdk find-dependencies-v2 --marketplace "xsoar" --output-path $ARTIFACTS_FOLDER/packs_dependencies.json
-    # - section_end "Calculate Packs Dependencies"
     
     - section_start "Prepare Content Packs for Testing" --collapsed
     - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET" "$STORAGE_BASE_PATH"
@@ -94,7 +73,6 @@ graph-prepare-testing-bucket-mpv2:
   allow_failure: true
   script:
     - !reference [.download-demisto-conf]
-    # - !reference [.create-id-set-mp-v2]
     - !reference [.create-release-notes-and-common-docs]
     
     - section_start "Create content graph" --collapsed
@@ -102,25 +80,14 @@ graph-prepare-testing-bucket-mpv2:
     - section_end "Create content graph"
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
-    # - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "xsoar" -fbi -idp ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
     - python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "marketplacev2" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --no-zip
 
-    # - demisto-sdk create-content-artifacts-v2 -o $ARTIFACTS_FOLDER --marketplace "marketplacev2" --no-zip --dependencies true >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
 
-    # - section_start "Create Content Artifacts and Update Conf" --collapsed
-    # - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "marketplacev2" --no-zip -fbi -idp ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
-    # - zip -j $ARTIFACTS_FOLDER/uploadable_packs_mpv2.zip $ARTIFACTS_FOLDER/uploadable_packs/* >> $ARTIFACTS_FOLDER/logs/zipping_uploadable_packs.log || echo "failed to zip the uploadable packs, ignoring the failure"
-    # - rm -rf $ARTIFACTS_FOLDER/uploadable_packs
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - section_end "Create Content Artifacts and Update Conf"
 
-    # - section_start "Calculate Packs Dependencies" --collapsed
-    # - demisto-sdk find-dependencies-v2 --marketplace "marketplacev2" -o $ARTIFACTS_FOLDER/packs_dependencies.json
-    # - section_end "Calculate Packs Dependencies"
-
     - section_start "Replace Cortex XSOAR" --collapsed
-
     - pushd "$ARTIFACTS_FOLDER"
     - find content_packs -type f -not \( -path "*/ReleaseNotes/*" \) -exec sed -i -e 's/Cortex XSOAR/'"$PRODUCT_NAME"'/gI' {} \;
     - pushd content_packs; zip -r ../content_packs.zip *; popd
@@ -134,7 +101,7 @@ graph-prepare-testing-bucket-mpv2:
         echo "Skipping - not running in INSTANCE_TESTS build"
       else
         [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY --graph true
+        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY --graph true
       fi
     - cp $ARTIFACTS_FOLDER/content_packs_to_install.txt $ARTIFACTS_FOLDER/content_packs_to_install-graph.txt
     - section_end "Collect Tests V2"
@@ -156,7 +123,7 @@ compare_zips:
   allow_failure: true
   script:
     - echo "compare between graph and id_set"
-    - python3 ./Tests/scripts/utils/compare_staging-graph.py --artifacts $ARTIFACTS_FOLDER_XSOAR --marketplace xsoar --output-path $ARTIFACTS_FOLDER_XSOAR/report -s "$SLACK_TOKEN"
-    - python3 ./Tests/scripts/utils/compare_staging-graph.py --artifacts $ARTIFACTS_FOLDER_MPV2 --marketplace marketplacev2 --output-path $ARTIFACTS_FOLDER_MPV2/report -s "$SLACK_TOKEN"
+    - python3 ./Tests/scripts/utils/compare_staging_graph.py --artifacts $ARTIFACTS_FOLDER_XSOAR --marketplace xsoar --output-path $ARTIFACTS_FOLDER_XSOAR/report -s "$SLACK_TOKEN"
+    - python3 ./Tests/scripts/utils/compare_staging_graph.py --artifacts $ARTIFACTS_FOLDER_MPV2 --marketplace marketplacev2 --output-path $ARTIFACTS_FOLDER_MPV2/report -s "$SLACK_TOKEN"
 
 
