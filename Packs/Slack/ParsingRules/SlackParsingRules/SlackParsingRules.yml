@@ -1,5 +1,5 @@
-name: Slack Rule
-id: _parsing_rule_id
+name: Slack Parsing Rule
+id: Slack Parsing Rule
 fromversion: 3.5.0
 tags: []
 rules: ''
