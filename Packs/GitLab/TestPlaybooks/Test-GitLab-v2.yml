@@ -1,21 +1,20 @@
 id: Test-GitLab-v2
 version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: Test-GitLab-v2
 description: A playbook for GitLabv2 integration.
-fromversion: 6.5.0
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 772c4a2c-9b99-43da-830c-e40f6b8f0a56
+    taskid: d5b8274e-2c84-4fa5-834f-67096a4ee6aa
     type: start
     task:
-      id: 772c4a2c-9b99-43da-830c-e40f6b8f0a56
+      id: d5b8274e-2c84-4fa5-834f-67096a4ee6aa
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "86"
@@ -37,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 5155d9eb-bdb8-4d6d-826d-03d8612027cc
+    taskid: 1a968267-9b38-465e-8b94-23aa08e1d504
     type: regular
     task:
-      id: 5155d9eb-bdb8-4d6d-826d-03d8612027cc
+      id: 1a968267-9b38-465e-8b94-23aa08e1d504
       version: -1
       name: gitlab-issue-list
       description: Get a list of a project's issues.
@@ -72,13 +71,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 0c5afd5a-d309-4145-838a-994b9dc05f3b
+    taskid: 744976cd-a38a-4401-87ea-298b2fffcc7d
     type: regular
     task:
-      id: 0c5afd5a-d309-4145-838a-994b9dc05f3b
+      id: 744976cd-a38a-4401-87ea-298b2fffcc7d
       version: -1
       name: issue-update
-      description: Updates an existing project issue. This call is also used to mark an issue as closed. The ID can be taken from gitlab-issue-list.
+      description: Updates an existing project issue. This call is also used to mark
+        an issue as closed. The ID can be taken from gitlab-issue-list.
       script: GitLabv2|||gitlab-issue-update
       type: regular
       iscommand: true
@@ -115,10 +115,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: b3c55133-1e21-4f96-80e0-932f374c70ef
+    taskid: 946242b9-2220-48f9-823b-d267a73057a7
     type: condition
     task:
-      id: b3c55133-1e21-4f96-80e0-932f374c70ef
+      id: 946242b9-2220-48f9-823b-d267a73057a7
       version: -1
       name: VERIFY list
       type: condition
@@ -153,10 +153,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: d2f257d7-bc7d-4939-8239-4c3d1c2ca392
+    taskid: 2455c0f8-a45f-4680-878c-f92af8da6d30
     type: condition
     task:
-      id: d2f257d7-bc7d-4939-8239-4c3d1c2ca392
+      id: 2455c0f8-a45f-4680-878c-f92af8da6d30
       version: -1
       name: VERIFY issue update
       type: condition
@@ -191,16 +191,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 9e421e3c-d5f8-4829-8db9-9569d2d2c0b0
+    taskid: f0ccfd2e-c75e-438f-8969-04f111f206e4
     type: title
     task:
-      id: 9e421e3c-d5f8-4829-8db9-9569d2d2c0b0
+      id: f0ccfd2e-c75e-438f-8969-04f111f206e4
       version: -1
       name: FIN
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -219,10 +218,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: afc4dc46-093b-464c-8805-2f4fcb324a7c
+    taskid: d294e81a-6bd8-4833-8410-bbb8cd43ae2d
     type: regular
     task:
-      id: afc4dc46-093b-464c-8805-2f4fcb324a7c
+      id: d294e81a-6bd8-4833-8410-bbb8cd43ae2d
       version: -1
       name: issue-note-create
       description: Creates a new note for a single project issue.
@@ -256,10 +255,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 15976dcc-e8ce-4502-80d6-086327c71439
+    taskid: 8e8884df-3214-4814-8dc7-80c0d6f6e63a
     type: condition
     task:
-      id: 15976dcc-e8ce-4502-80d6-086327c71439
+      id: 8e8884df-3214-4814-8dc7-80c0d6f6e63a
       version: -1
       name: VERIFY issue note create
       type: condition
@@ -294,10 +293,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 034f7ec6-c693-47c3-8bd9-19e95225b1c1
+    taskid: 0a96ead1-aca7-4232-895b-41e89aedbb22
     type: condition
     task:
-      id: 034f7ec6-c693-47c3-8bd9-19e95225b1c1
+      id: 0a96ead1-aca7-4232-895b-41e89aedbb22
       version: -1
       name: VERIFY note update
       type: condition
@@ -332,10 +331,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: e52b8987-41f0-4614-891c-56692da9931e
+    taskid: 04e1998b-088e-4927-88af-ae4ea2a1cff7
     type: regular
     task:
-      id: e52b8987-41f0-4614-891c-56692da9931e
+      id: 04e1998b-088e-4927-88af-ae4ea2a1cff7
       version: -1
       name: issue-note-list
       description: Gets a list of all notes for a single issue.
@@ -369,10 +368,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 56ec0c41-72c5-4783-8673-a8a921264a5b
+    taskid: 853e3aa0-f4e4-431a-8e49-119e4888adfa
     type: condition
     task:
-      id: 56ec0c41-72c5-4783-8673-a8a921264a5b
+      id: 853e3aa0-f4e4-431a-8e49-119e4888adfa
       version: -1
       name: VERIFY issue note list
       type: condition
@@ -407,10 +406,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 1a6672fb-4130-4162-87c9-6de9854d1a25
+    taskid: 84ce7e36-652b-4d49-8bc4-e9adbb1b22ca
     type: regular
     task:
-      id: 1a6672fb-4130-4162-87c9-6de9854d1a25
+      id: 84ce7e36-652b-4d49-8bc4-e9adbb1b22ca
       version: -1
       name: Get Version
       description: Retrieve version information for this GitLab instance.
@@ -439,10 +438,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: a4089c96-1978-4bc3-87ca-173e084ef4e5
+    taskid: 746d26f9-ae21-44f4-80d2-212c3d3321ae
     type: condition
     task:
-      id: a4089c96-1978-4bc3-87ca-173e084ef4e5
+      id: 746d26f9-ae21-44f4-80d2-212c3d3321ae
       version: -1
       name: VERIFY version
       type: condition
@@ -482,10 +481,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: c5de7d8a-9e45-4ab4-8098-2d1f9347f2e4
+    taskid: f837ba85-dcdb-41f3-8630-0b1cbb495216
     type: regular
     task:
-      id: c5de7d8a-9e45-4ab4-8098-2d1f9347f2e4
+      id: f837ba85-dcdb-41f3-8630-0b1cbb495216
       version: -1
       name: list commit
       description: Get a list of repository commits in a project.
@@ -517,10 +516,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: cfd34c30-1b3e-4a17-822d-c787c721dd30
+    taskid: b1ad58bb-b8a3-4b85-856b-02d556161dda
     type: condition
     task:
-      id: cfd34c30-1b3e-4a17-822d-c787c721dd30
+      id: b1ad58bb-b8a3-4b85-856b-02d556161dda
       version: -1
       name: VERIFY commit list
       type: condition
@@ -555,10 +554,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 93739aeb-fb19-4d0d-8388-1e4ae6b25b85
+    taskid: 13a12556-8fac-4e67-86fb-2a91bbf7fe63
     type: regular
     task:
-      id: 93739aeb-fb19-4d0d-8388-1e4ae6b25b85
+      id: 13a12556-8fac-4e67-86fb-2a91bbf7fe63
       version: -1
       name: 'get commit '
       description: Get a list of repository commits in a project.
@@ -590,10 +589,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: f9514aa1-941c-4f06-8dbb-366f45bc0235
+    taskid: 69424286-1d20-4034-8126-57a560cadcf3
     type: condition
     task:
-      id: f9514aa1-941c-4f06-8dbb-366f45bc0235
+      id: 69424286-1d20-4034-8126-57a560cadcf3
       version: -1
       name: VERIFY get commit
       type: condition
@@ -628,10 +627,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 2c5048b6-780d-4f82-8b33-8f16d53a8ad2
+    taskid: fb7153bb-6471-446a-80eb-fcc4effb691e
     type: regular
     task:
-      id: 2c5048b6-780d-4f82-8b33-8f16d53a8ad2
+      id: fb7153bb-6471-446a-80eb-fcc4effb691e
       version: -1
       name: delete issue-note
       description: Deletes an existing note of an issue.
@@ -665,10 +664,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 11776732-9545-4038-8823-94e76f65708d
+    taskid: d8fd9516-9e76-45d4-85c8-f0a640508731
     type: regular
     task:
-      id: 11776732-9545-4038-8823-94e76f65708d
+      id: d8fd9516-9e76-45d4-85c8-f0a640508731
       version: -1
       name: branch create
       description: Creates a new branch in the repository.
@@ -702,13 +701,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 6bb5a8fa-085e-4ed6-87c4-ef24695b4040
+    taskid: 4345c2cf-4bc0-476b-8a1d-d72fdb376ba4
     type: regular
     task:
-      id: 6bb5a8fa-085e-4ed6-87c4-ef24695b4040
+      id: 4345c2cf-4bc0-476b-8a1d-d72fdb376ba4
       version: -1
       name: ' get branch'
-      description: Get a list of repository branches from a project, alphabetically sorted by name.
+      description: Get a list of repository branches from a project, alphabetically
+        sorted by name.
       script: GitLabv2|||gitlab-branch-list
       type: regular
       iscommand: true
@@ -737,10 +737,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: c1748bb6-e1ee-47b5-8542-3b1db5b25826
+    taskid: 486d073e-5886-4030-894c-7e6fe05e6e93
     type: condition
     task:
-      id: c1748bb6-e1ee-47b5-8542-3b1db5b25826
+      id: 486d073e-5886-4030-894c-7e6fe05e6e93
       version: -1
       name: VERIFY create-branch
       type: condition
@@ -775,10 +775,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 3dd1992a-68cd-4d1c-8930-94229485b739
+    taskid: 3b3b1b1c-d259-4182-8166-f568bf00ebe7
     type: condition
     task:
-      id: 3dd1992a-68cd-4d1c-8930-94229485b739
+      id: 3b3b1b1c-d259-4182-8166-f568bf00ebe7
       version: -1
       name: VERIFY get branch
       type: condition
@@ -813,10 +813,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: b7bd4a6d-c71f-4937-83fb-edf0417631f6
+    taskid: 1d6f05ff-925d-45f0-8a68-e05c60b54123
     type: regular
     task:
-      id: b7bd4a6d-c71f-4937-83fb-edf0417631f6
+      id: 1d6f05ff-925d-45f0-8a68-e05c60b54123
       version: -1
       name: branch delete
       description: Deletes a branch from the repository.
@@ -848,10 +848,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 95a53aa0-e83d-4409-80ee-be5a64b15b82
+    taskid: 25f63449-3268-433c-8e0c-655f000d3688
     type: regular
     task:
-      id: 95a53aa0-e83d-4409-80ee-be5a64b15b82
+      id: 25f63449-3268-433c-8e0c-655f000d3688
       version: -1
       name: merge request create
       description: Creates a new merge request.
@@ -889,10 +889,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 93eb3662-862f-40c2-8d62-6a087eaaaa32
+    taskid: 42a46bf7-31b5-42c3-880c-6d9041228756
     type: condition
     task:
-      id: 93eb3662-862f-40c2-8d62-6a087eaaaa32
+      id: 42a46bf7-31b5-42c3-880c-6d9041228756
       version: -1
       name: Verify Create
       type: condition
@@ -927,13 +927,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 71f9c182-76e6-4914-840c-73a07056db3e
+    taskid: 74540ec9-ac47-4068-809e-85832396b203
     type: regular
     task:
-      id: 71f9c182-76e6-4914-840c-73a07056db3e
+      id: 74540ec9-ac47-4068-809e-85832396b203
       version: -1
       name: merge update
-      description: Updates an existing merge request. You can change the target branch, title, or even close the merge request.
+      description: Updates an existing merge request. You can change the target branch,
+        title, or even close the merge request.
       script: GitLabv2|||gitlab-merge-request-update
       type: regular
       iscommand: true
@@ -970,10 +971,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 0c363781-e6db-4a55-8cd2-28ffdf2db7f7
+    taskid: f861cbaa-0cd6-4aa6-8f48-cf7898be422d
     type: condition
     task:
-      id: 0c363781-e6db-4a55-8cd2-28ffdf2db7f7
+      id: f861cbaa-0cd6-4aa6-8f48-cf7898be422d
       version: -1
       name: VERIFY merge update
       type: condition
@@ -1008,10 +1009,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: d29a13e5-68b6-4c28-812b-2b2501b1e87e
+    taskid: 036425ad-8354-4e50-86c2-b0ace98ffe6b
     type: regular
     task:
-      id: d29a13e5-68b6-4c28-812b-2b2501b1e87e
+      id: 036425ad-8354-4e50-86c2-b0ace98ffe6b
       version: -1
       name: issue-create
       description: Create an issue.
@@ -1047,10 +1048,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 7c66f113-1440-4f70-833c-caba6f7c3ada
+    taskid: 86a99c64-9348-4ead-88ab-43e01a6543bf
     type: condition
     task:
-      id: 7c66f113-1440-4f70-833c-caba6f7c3ada
+      id: 86a99c64-9348-4ead-88ab-43e01a6543bf
       version: -1
       name: verify issue
       type: condition
@@ -1085,13 +1086,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 7db54f5b-fff3-439d-8579-676061c68b65
+    taskid: 2af662fc-ae76-45af-87c7-20e89db3dbfe
     type: regular
     task:
-      id: 7db54f5b-fff3-439d-8579-676061c68b65
+      id: 2af662fc-ae76-45af-87c7-20e89db3dbfe
       version: -1
       name: group list
-      description: Get a list of visible groups for the authenticated user. When accessed without authentication, only public groups are returned. By default, this request returns 20 results at a time because the API results are paginated.
+      description: Get a list of visible groups for the authenticated user. When accessed
+        without authentication, only public groups are returned. By default, this
+        request returns 20 results at a time because the API results are paginated.
       script: GitLabv2|||gitlab-group-list
       type: regular
       iscommand: true
@@ -1120,10 +1123,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 8b5e9562-5ea2-4f39-87a5-7d2165e37529
+    taskid: a9d3a317-19e7-4424-8fe3-23b82d431e67
     type: condition
     task:
-      id: 8b5e9562-5ea2-4f39-87a5-7d2165e37529
+      id: a9d3a317-19e7-4424-8fe3-23b82d431e67
       version: -1
       name: VERIFY group list
       type: condition
@@ -1158,13 +1161,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: bb4cc410-7301-4536-84a3-20cc301d8f6d
+    taskid: 1ed9bac7-c979-46f4-8568-7299b053a7e4
     type: regular
     task:
-      id: bb4cc410-7301-4536-84a3-20cc301d8f6d
+      id: 1ed9bac7-c979-46f4-8568-7299b053a7e4
       version: -1
       name: group member
-      description: Gets a list of group or project members viewable by the authenticated user.
+      description: Gets a list of group or project members viewable by the authenticated
+        user.
       script: GitLabv2|||gitlab-group-member-list
       type: regular
       iscommand: true
@@ -1193,10 +1197,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: f4a60cfa-2983-48c8-8619-95080172d6ee
+    taskid: 1948bf4f-e11f-4d9d-8dfe-b0c54079befc
     type: condition
     task:
-      id: f4a60cfa-2983-48c8-8619-95080172d6ee
+      id: 1948bf4f-e11f-4d9d-8dfe-b0c54079befc
       version: -1
       name: VERIFY group member list
       type: condition
@@ -1231,13 +1235,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 32fca5a7-ad3f-4c07-8e0a-32f4d9a60700
+    taskid: 2fd392cb-3434-4950-8fe4-0f21f9680635
     type: regular
     task:
-      id: 32fca5a7-ad3f-4c07-8e0a-32f4d9a60700
+      id: 2fd392cb-3434-4950-8fe4-0f21f9680635
       version: -1
       name: project list
-      description: Get a list of all visible projects across GitLab for the authenticated user. When accessed without authentication, only public projects with simple fields are returned.
+      description: Get a list of all visible projects across GitLab for the authenticated
+        user. When accessed without authentication, only public projects with simple
+        fields are returned.
       script: GitLabv2|||gitlab-project-list
       type: regular
       iscommand: true
@@ -1266,10 +1272,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 086ae812-9299-4166-8e8c-c336265a0959
+    taskid: c1db00c0-df4a-484e-8287-87c4a78277a1
     type: condition
     task:
-      id: 086ae812-9299-4166-8e8c-c336265a0959
+      id: c1db00c0-df4a-484e-8287-87c4a78277a1
       version: -1
       name: VERIFY project list
       type: condition
@@ -1304,10 +1310,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 70710d47-b6e0-4c00-800e-415d16afeb05
+    taskid: 0cdf9350-36ac-457f-81ce-49ea45c90cbe
     type: regular
     task:
-      id: 70710d47-b6e0-4c00-800e-415d16afeb05
+      id: 0cdf9350-36ac-457f-81ce-49ea45c90cbe
       version: -1
       name: group project list
       description: Get the list of projects of a given group.
@@ -1341,10 +1347,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 800c3420-e2ff-4b5d-862f-41d3bfaf2bf5
+    taskid: c7a68dfa-57a3-493d-8a05-ad6aa41b1664
     type: regular
     task:
-      id: 800c3420-e2ff-4b5d-862f-41d3bfaf2bf5
+      id: c7a68dfa-57a3-493d-8a05-ad6aa41b1664
       version: -1
       name: generate string
       description: Generates random string
@@ -1384,10 +1390,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: 941b1d97-dc9b-4474-8d4d-a305886342c9
+    taskid: 93bc5e0e-41be-45cb-81de-41f16ff09e58
     type: condition
     task:
-      id: 941b1d97-dc9b-4474-8d4d-a305886342c9
+      id: 93bc5e0e-41be-45cb-81de-41f16ff09e58
       version: -1
       name: VERIFY group project
       type: condition
@@ -1422,13 +1428,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: b3419597-d279-4bd6-877b-694678a0e1c8
+    taskid: 891554c8-b61f-4ab2-8a09-fdf4551ab8fc
     type: regular
     task:
-      id: b3419597-d279-4bd6-877b-694678a0e1c8
+      id: 891554c8-b61f-4ab2-8a09-fdf4551ab8fc
       version: -1
       name: File get
-      description: Gets information about a file in the repository, such as name, size, content.
+      description: Gets information about a file in the repository, such as name,
+        size, content.
       script: GitLabv2|||gitlab-file-get
       type: regular
       iscommand: true
@@ -1459,10 +1466,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: 1e868582-dfe1-4700-8a19-5b9551cd128e
+    taskid: f164f54e-6d88-463b-8760-afd88b65e450
     type: regular
     task:
-      id: 1e868582-dfe1-4700-8a19-5b9551cd128e
+      id: f164f54e-6d88-463b-8760-afd88b65e450
       version: -1
       name: Get raw file
       description: Get the file in a raw format.
@@ -1496,10 +1503,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: 17fffa78-f292-455f-8e30-b63b75591f0a
+    taskid: 7d23a4e4-8c77-4bf8-825c-7d9a661b8e52
     type: regular
     task:
-      id: 17fffa78-f292-455f-8e30-b63b75591f0a
+      id: 7d23a4e4-8c77-4bf8-825c-7d9a661b8e52
       version: -1
       name: Delete context
       description: |-
@@ -1536,10 +1543,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: 3f740c98-9e63-42c3-8622-f4e22bc9d30b
+    taskid: 53dbd739-bda8-45a5-8fc3-d00f42db075b
     type: regular
     task:
-      id: 3f740c98-9e63-42c3-8622-f4e22bc9d30b
+      id: 53dbd739-bda8-45a5-8fc3-d00f42db075b
       version: -1
       name: merge request note create
       description: Creates a new note for a single merge request.
@@ -1573,10 +1580,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: 4d53bfa3-0b3a-451d-895c-d520e9a72960
+    taskid: 9bde24e4-66b8-426e-82d2-30e790144ca5
     type: condition
     task:
-      id: 4d53bfa3-0b3a-451d-895c-d520e9a72960
+      id: 9bde24e4-66b8-426e-82d2-30e790144ca5
       version: -1
       name: 'VERIFY merge request note create '
       type: condition
@@ -1613,10 +1620,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: 7e48ec0d-6dde-4048-8240-c22134088504
+    taskid: 42d5f128-0437-4fc2-869d-3ba948452ccf
     type: regular
     task:
-      id: 7e48ec0d-6dde-4048-8240-c22134088504
+      id: 42d5f128-0437-4fc2-869d-3ba948452ccf
       version: -1
       name: 'merge request note update '
       description: Modify existing note of a merge request.
@@ -1652,10 +1659,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: 9224999a-43a4-4cfb-887f-c07ac32acf25
+    taskid: 8976d50f-d1a1-4055-81d4-553e332d2fa3
     type: regular
     task:
-      id: 9224999a-43a4-4cfb-887f-c07ac32acf25
+      id: 8976d50f-d1a1-4055-81d4-553e332d2fa3
       version: -1
       name: 'merge request note delete '
       description: Deletes an existing note of a merge request.
@@ -1689,10 +1696,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: 56ebe5b4-bfa0-4518-8800-83c5ae28e74d
+    taskid: e8c9744e-0dbf-4e34-8589-a3fe5301f3be
     type: regular
     task:
-      id: 56ebe5b4-bfa0-4518-8800-83c5ae28e74d
+      id: e8c9744e-0dbf-4e34-8589-a3fe5301f3be
       version: -1
       name: merge request note list
       description: Get all merge requests for this project.
@@ -1724,10 +1731,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: 78e6a2cf-c9b4-4f60-8c5c-78847523bbd8
+    taskid: c337bd62-b794-4766-8d6a-b464860136f0
     type: condition
     task:
-      id: 78e6a2cf-c9b4-4f60-8c5c-78847523bbd8
+      id: c337bd62-b794-4766-8d6a-b464860136f0
       version: -1
       name: VERIFY merge request note list
       type: condition
@@ -1762,10 +1769,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "73":
     id: "73"
-    taskid: 2cfbec52-9caa-4f6b-829f-58b29e9eec79
+    taskid: 2ab0bb20-c264-4721-8c68-000e4b5d5b8c
     type: condition
     task:
-      id: 2cfbec52-9caa-4f6b-829f-58b29e9eec79
+      id: 2ab0bb20-c264-4721-8c68-000e4b5d5b8c
       version: -1
       name: VERIFY update file
       type: condition
@@ -1800,10 +1807,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "74":
     id: "74"
-    taskid: 517f97b5-0408-46c4-8dbf-37b153fa235f
+    taskid: 74fc0f57-84c3-4a66-87a8-f45e059d8c5b
     type: condition
     task:
-      id: 517f97b5-0408-46c4-8dbf-37b153fa235f
+      id: 74fc0f57-84c3-4a66-87a8-f45e059d8c5b
       version: -1
       name: VERIFY file get
       type: condition
@@ -1838,13 +1845,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: 1a7907d4-6284-4425-8fe1-9fc21e021350
+    taskid: 9b8d611b-e6be-4326-8143-dced385ffda7
     type: regular
     task:
-      id: 1a7907d4-6284-4425-8fe1-9fc21e021350
+      id: 9b8d611b-e6be-4326-8143-dced385ffda7
       version: -1
       name: file-create
-      description: Allows you to create a single file. file-path or entry_id must be specified.
+      description: Allows you to create a single file. file-path or entry_id must
+        be specified.
       script: GitLabv2|||gitlab-file-create
       type: regular
       iscommand: true
@@ -1881,13 +1889,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "76":
     id: "76"
-    taskid: e3b17a82-e88c-4fe8-8f44-4fccbdb43a80
+    taskid: 27baf39a-203a-4fb7-8b42-3bd8bfa79c29
     type: condition
     task:
-      id: e3b17a82-e88c-4fe8-8f44-4fccbdb43a80
+      id: 27baf39a-203a-4fb7-8b42-3bd8bfa79c29
       version: -1
       name: VERIFY  file create
-      description: This allows you to create a single file. File path or entry_id must be specified.
+      description: This allows you to create a single file. File path or entry_id
+        must be specified.
       type: condition
       iscommand: false
       brand: ""
@@ -1927,10 +1936,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: 00e98a09-8611-4dd8-86e5-c66660fedc53
+    taskid: 11c8c80d-f6b3-40e0-8187-18d0d3b95f47
     type: regular
     task:
-      id: 00e98a09-8611-4dd8-86e5-c66660fedc53
+      id: 11c8c80d-f6b3-40e0-8187-18d0d3b95f47
       version: -1
       name: file delete
       description: Delete a file in the repository.
@@ -1966,10 +1975,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: 809c5460-58f9-418e-827f-489f53ef2cae
+    taskid: 5b17d540-816e-49f8-89ae-6af28cf7581c
     type: condition
     task:
-      id: 809c5460-58f9-418e-827f-489f53ef2cae
+      id: 5b17d540-816e-49f8-89ae-6af28cf7581c
       version: -1
       name: VERIFY merge note update
       type: condition
@@ -2004,10 +2013,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "81":
     id: "81"
-    taskid: 9497434d-2ce8-4ea1-84b1-6e8b23d09f89
+    taskid: b1d210f1-685c-44d1-80c2-1558bf97ec33
     type: regular
     task:
-      id: 9497434d-2ce8-4ea1-84b1-6e8b23d09f89
+      id: b1d210f1-685c-44d1-80c2-1558bf97ec33
       version: -1
       name: issue note update
       description: Modify an existing note of an issue.
@@ -2043,13 +2052,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: c180da2a-93f1-42ce-88cb-6119a7a441eb
+    taskid: 161e6bd6-bf9c-4087-8cc3-82ee27d6edd9
     type: regular
     task:
-      id: c180da2a-93f1-42ce-88cb-6119a7a441eb
+      id: 161e6bd6-bf9c-4087-8cc3-82ee27d6edd9
       version: -1
       name: Code search
-      description: Using Scope blobs. Blob searches are performed on both filenames and contents.
+      description: Using Scope blobs. Blob searches are performed on both filenames
+        and contents.
       script: GitLabv2|||gitlab-code-search
       type: regular
       iscommand: true
@@ -2078,10 +2088,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "85":
     id: "85"
-    taskid: 6c55f7b0-c23e-4a0d-8b33-eee8f7d8f65d
+    taskid: 26bf100d-b516-4d20-852f-f16b06d75a18
     type: condition
     task:
-      id: 6c55f7b0-c23e-4a0d-8b33-eee8f7d8f65d
+      id: 26bf100d-b516-4d20-852f-f16b06d75a18
       version: -1
       name: VERIFY code search
       type: condition
@@ -2116,10 +2126,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "86":
     id: "86"
-    taskid: 757c1e7a-fd71-426c-88e2-6bc16c50e401
+    taskid: 2ddb2f55-e497-4d09-80ea-a8a4e39a5a7b
     type: regular
     task:
-      id: 757c1e7a-fd71-426c-88e2-6bc16c50e401
+      id: 2ddb2f55-e497-4d09-80ea-a8a4e39a5a7b
       version: -1
       name: list users
       description: Get the users list of a project.
@@ -2151,10 +2161,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "87":
     id: "87"
-    taskid: 2a59c7a0-d84d-4ad9-8792-72de2822a353
+    taskid: 479f1a99-6aab-463f-85a3-1298edc6fc6f
     type: condition
     task:
-      id: 2a59c7a0-d84d-4ad9-8792-72de2822a353
+      id: 479f1a99-6aab-463f-85a3-1298edc6fc6f
       version: -1
       name: VERIFY project user
       type: condition
@@ -2189,10 +2199,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "88":
     id: "88"
-    taskid: e3174fbd-bfdc-492f-8fad-afb1bdc05d66
+    taskid: b5cd94f8-519b-437e-83a0-f4ffb80928ab
     type: condition
     task:
-      id: e3174fbd-bfdc-492f-8fad-afb1bdc05d66
+      id: b5cd94f8-519b-437e-83a0-f4ffb80928ab
       version: -1
       name: VERIFY raw file get
       type: condition
@@ -2227,10 +2237,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "90":
     id: "90"
-    taskid: 66f1162d-e7c3-4eac-8fc1-6d9e786e96d4
+    taskid: 8b865f78-6183-431c-82fa-ca373c32d4ab
     type: regular
     task:
-      id: 66f1162d-e7c3-4eac-8fc1-6d9e786e96d4
+      id: 8b865f78-6183-431c-82fa-ca373c32d4ab
       version: -1
       name: file  update
       description: Edit an existing file in the repository.
