@@ -1267,6 +1267,7 @@ def merge_request_create_command(client: Client, args: Dict[str, Any]) -> Comman
     human_readable_str = 'Merge request created successfully.'
     return CommandResults(
         outputs_prefix='GitLab.MergeRequest',
+        outputs_key_field='iid',
         readable_output=human_readable_str,
         outputs=outputs,
         raw_response=response
@@ -1311,7 +1312,7 @@ def merge_request_update_command(client: Client, args: Dict[str, Any]) -> Comman
     human_readable_str = 'Merge request was updated successfully.'
     return CommandResults(
         outputs_prefix='GitLab.MergeRequest',
-        outputs_key_field='merge_request_id',
+        outputs_key_field='iid',
         readable_output=human_readable_str,
         outputs=outputs,
         raw_response=response
