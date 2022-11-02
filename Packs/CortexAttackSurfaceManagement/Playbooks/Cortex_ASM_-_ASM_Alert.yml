@@ -131,7 +131,7 @@ tasks:
     task:
       id: aa274a71-3cce-480c-8be8-af5ac907f441
       version: -1
-      name: Verdict Stage
+      name: Decision Stage
       type: title
       iscommand: false
       brand: ""
