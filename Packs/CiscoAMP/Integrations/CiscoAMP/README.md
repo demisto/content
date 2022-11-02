@@ -352,11 +352,11 @@ Fetch computers to shows information about them. Can be filtered by a variety of
 >### Computer Information
 >|Host Name|Connector GUID|Operating System|External IP|Group GUID|Policy GUID|
 >|---|---|---|---|---|---|
->| Demo_AMP | 22d4a486-1732-4f8b-9a6f-18f172fe7af0 | Windows 10 (Build 10.0.19044.1466) | 221.71.163.177 | bb5a9f90-d6fa-4fe7-99c8-e91060b49a98 | 91c7894d-dd69-4a21-8cf6-5ebfc57ef4df |
->| Demo_AMP_Exploit_Prevention | 113c1a8e-8e66-409e-92a8-41b7d586be5d | Windows 10 (Build 10.0.19044.1466) | 24.87.24.127 | 6ed80412-0739-42c1-8f6d-32fb51b3f894 | 1a352c59-793b-44f3-b8f9-0ddd354057bc |
->| Demo_AMP_Exploit_Prevention_Audit | 93f395a2-e31f-4022-b1dd-afb16e093b8d | Windows 10 (Build 10.0.19044.1466) | 60.231.175.245 | 5b1857e3-ba49-46cf-9bf1-0cad6b5ecd18 | a599bf5b-2cb7-4a5b-90bd-d0199e2ccd67 |
->| Demo_AMP_Intel | d6f49c17-9721-4c5b-a04f-32ba30be36a0 | Windows 10 (Build 10.0.19043.1202) | 214.23.214.95 | fedd82f8-c74f-49f4-a463-e576d3beee92 | be84e169-0830-4b95-915b-1e203a82ed58 |
->| Demo_AMP_MAP_FriedEx | 9a2abee8-b988-473b-9e99-a7abe6d068a5 | Windows 10 (Build 10.0.19044.1466) | 40.230.125.128 | 6ed80412-0739-42c1-8f6d-32fb51b3f894 | 1a352c59-793b-44f3-b8f9-0ddd354057bc |
+>| Demo_AMP | 22d4a486-1732-4f8b-9a6f-18f172fe7af0 | Windows 10 (Build 10.0.19044.1466) | IP | bb5a9f90-d6fa-4fe7-99c8-e91060b49a98 | 91c7894d-dd69-4a21-8cf6-5ebfc57ef4df |
+>| Demo_AMP_Exploit_Prevention | 113c1a8e-8e66-409e-92a8-41b7d586be5d | Windows 10 (Build 10.0.19044.1466) | IP | 6ed80412-0739-42c1-8f6d-32fb51b3f894 | 1a352c59-793b-44f3-b8f9-0ddd354057bc |
+>| Demo_AMP_Exploit_Prevention_Audit | 93f395a2-e31f-4022-b1dd-afb16e093b8d | Windows 10 (Build 10.0.19044.1466) | IP | 5b1857e3-ba49-46cf-9bf1-0cad6b5ecd18 | a599bf5b-2cb7-4a5b-90bd-d0199e2ccd67 |
+>| Demo_AMP_Intel | d6f49c17-9721-4c5b-a04f-32ba30be36a0 | Windows 10 (Build 10.0.19043.1202) | IP | fedd82f8-c74f-49f4-a463-e576d3beee92 | be84e169-0830-4b95-915b-1e203a82ed58 |
+>| Demo_AMP_MAP_FriedEx | 9a2abee8-b988-473b-9e99-a7abe6d068a5 | Windows 10 (Build 10.0.19044.1466) | IP | 6ed80412-0739-42c1-8f6d-32fb51b3f894 | 1a352c59-793b-44f3-b8f9-0ddd354057bc |
 
 
 ### cisco-amp-computer-trajectory-list
@@ -495,7 +495,7 @@ Provides a list of all activities associated with a particular computer. This an
 >### Computer Information
 >|Host Name|Connector GUID|Operating System|External IP|Group GUID|Policy GUID|
 >|---|---|---|---|---|---|
->| Demo_AMP | 22d4a486-1732-4f8b-9a6f-18f172fe7af0 | Windows 10 (Build 10.0.19044.1466) | 221.71.163.177 | bb5a9f90-d6fa-4fe7-99c8-e91060b49a98 | 91c7894d-dd69-4a21-8cf6-5ebfc57ef4df |
+>| Demo_AMP | 22d4a486-1732-4f8b-9a6f-18f172fe7af0 | Windows 10 (Build 10.0.19044.1466) | IP | bb5a9f90-d6fa-4fe7-99c8-e91060b49a98 | 91c7894d-dd69-4a21-8cf6-5ebfc57ef4df |
 >### Event Information
 >|ID|Date|Event Type|Group GUIDs|
 >|---|---|---|---|
@@ -1001,7 +1001,7 @@ Moves a computer to a group with given connector_guid and group_guid.
 >### Computer Information
 >|Host Name|Connector GUID|Operating System|External IP|Group GUID|Policy GUID|
 >|---|---|---|---|---|---|
->| Demo_AMP | 22d4a486-1732-4f8b-9a6f-18f172fe7af0 | Windows 10 (Build 10.0.19044.1466) | 221.71.163.177 | bb5a9f90-d6fa-4fe7-99c8-e91060b49a98 | 91c7894d-dd69-4a21-8cf6-5ebfc57ef4df |
+>| Demo_AMP | 22d4a486-1732-4f8b-9a6f-18f172fe7af0 | Windows 10 (Build 10.0.19044.1466) | IP | bb5a9f90-d6fa-4fe7-99c8-e91060b49a98 | 91c7894d-dd69-4a21-8cf6-5ebfc57ef4df |
 
 
 ### cisco-amp-computer-delete
@@ -2251,7 +2251,7 @@ Updates a group to a given policy and returns all the policies in that group.
 >### Group Information
 >|Name|Description|Creator|Created At|Computers Count|Descendant Computers Count|
 >|---|---|---|---|---|---|
->| Lior-Group | Test group | LiorS@qmasters.co | 2022-10-25 13:42:36 | 1 | 0 |
+>| Lior-Group | Test group | Email | 2022-10-25 13:42:36 | 1 | 0 |
 
 
 ### cisco-amp-group-parent-update
@@ -2522,7 +2522,7 @@ Converts an existing group to a child of another group or an existing child grou
 >### Group Information
 >|Name|Description|Creator|Created At|Computers Count|Descendant Computers Count|
 >|---|---|---|---|---|---|
->| Lior-Group | Test group | LiorS@qmasters.co | 2022-10-25 13:42:36 | 1 | 0 |
+>| Lior-Group | Test group | Email | 2022-10-25 13:42:36 | 1 | 0 |
 
 
 ### cisco-amp-group-create
@@ -4873,7 +4873,7 @@ Fetch a list of vulnerabilities. This is analogous to the Vulnerable Software vi
 >| Mozilla Firefox | 41.0 | 2022-10-25T12:20:00+00:00 | firefox.exe | 4312CDB2EAD8FD8D2DD6D8D716F3B6E9717B3D7167A2A0495E4391312102170F |
 >| Adobe Flash Player | 11.5.502.146 | 2022-10-25T12:05:49+00:00 | FlashPlayerApp.exe | c1219f0799e60ff48a9705b63c14168684aed911610fec68548ea08f605cc42b |
 >| Oracle Java(TM) Platform SE | 1.7.0:update_10 | 2022-10-25T12:05:05+00:00 | java.exe | 0b4eefc0d815ac0fdc20f22add8fd2d8113be99578a4e5189122b28b201ccbd9 |
->| Adobe Acrobat Reader | 9.3.3.177 | 2022-10-25T12:02:34+00:00 | AcroRd32.exe | 825b7b20a913f26641c012f1cb61b81d29033f142ba6c6734425de06432e4f82 |
+>| Adobe Acrobat Reader | IP | 2022-10-25T12:02:34+00:00 | AcroRd32.exe | 825b7b20a913f26641c012f1cb61b81d29033f142ba6c6734425de06432e4f82 |
 >| Microsoft Office | 2013 | 2022-10-23T12:37:33+00:00 | WINWORD.EXE | 3D46E95284F93BBB76B3B7E1BF0E1B2D51E8A9411C2B6E649112F22F92DE63C2 |
 >| Microsoft Internet Explorer | 11 | 2022-10-04T07:02:27+00:00 | mshtml.dll | D1BEA74AC9D85B3DCD4ABC1AF42AF6C37B9349DEFC8E6577993611B773F56CA0 |
 >| Microsoft Internet Explorer | 11 | 2022-10-04T07:02:26+00:00 | mshtml.dll | 1DC5D15A26A79BB46519952A60B15AA4ACB36F6CE3247EBF50DF9C157BC4FCF4 |
@@ -4933,7 +4933,7 @@ Returns information about an endpoint.
 >### CiscoAMP - Endpoint Demo_AMP
 >|Hostname|ID|IPAddress|MACAddress|OS|OSVersion|Status|Vendor|
 >|---|---|---|---|---|---|---|---|
->| Demo_AMP | 22d4a486-1732-4f8b-9a6f-18f172fe7af0 | 191.250.254.209 | e6:80:50:1e:e5:20 | Windows 10 | 10.0.19044.1466 | Online | CiscoAMP Response |
+>| Demo_AMP | 22d4a486-1732-4f8b-9a6f-18f172fe7af0 | IP | e6:80:50:1e:e5:20 | Windows 10 | 10.0.19044.1466 | Online | CiscoAMP Response |
 
 
 ### file
