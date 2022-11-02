@@ -8,7 +8,7 @@ filter
     xdm.alert.name = ThreatName,
     xdm.source.host.hostname = NodeName,
     xdm.source.host.device_id = ServerID,
-    xdm.target.host.ipv4_addresses = arraycreate(coalesce(TargetIPV4, "0")),
+    xdm.target.host.ipv4_addresses = arraycreate(coalesce(TargetIPV4, 0)),
     xdm.target.host.ipv6_addresses = arraycreate(coalesce(TargetIPV6, "")),
     xdm.target.host.mac_addresses = arraycreate(coalesce(TargetMAC, "")),
     xdm.target.agent.version = AnalyzerVersion,
