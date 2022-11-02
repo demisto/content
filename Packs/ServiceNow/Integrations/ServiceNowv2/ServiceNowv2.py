@@ -2315,7 +2315,14 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     return [ticket] + entries
 
 
-def converts_state_close_reason(ticket_state):
+def converts_state_close_reason(ticket_state: str):
+    """
+    converts between XSOAR and service now state.
+    Args:
+        ticket_state: Service now state
+    Returns:
+        The XSOAR state
+    """
     if ticket_state in ['6', '7']:
         return 'Resolved'
 

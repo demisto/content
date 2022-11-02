@@ -1645,4 +1645,12 @@ def test_get_closure_case(params, expected):
 @pytest.mark.parametrize('ticket_state, expected_res', [('1', 'Other'),
                                                         ('7', 'Resolved')])
 def test_converts_state_close_reason(ticket_state, expected_res):
+    """
+    Givne:
+        - ticket_state: The state for the closed service now ticket
+    When:
+        - closing a ticket on service now
+    Then:
+        - return the matching XSOAR incident state.
+    """
     assert converts_state_close_reason(ticket_state) == expected_res
