@@ -218,6 +218,23 @@ Gets the antivirus or antispyware or files signature.
 | ThreatVault.Antivirus.create_time | String | The create_time of the signature. | 
 | ThreatVault.Antivirus.related_sha256_hashes | String | The related_sha256_hashes of the threat. | 
 | ThreatVault.Antivirus.release | String | The default action when the signature is triggered. | 
+| ThreatVault.Fileformat.id | String | The unique id of the signature. | 
+| ThreatVault.Fileformat.name | String | The name of the signature. | 
+| ThreatVault.Fileformat.description | String | The description of the signature. | 
+| ThreatVault.Fileformat.category | String | The threat category of the signature. | 
+| ThreatVault.Fileformat.min_version | String | The PAN-OS minimum version. | 
+| ThreatVault.Fileformat.max_version | String | The PAN-OS maximum version. | 
+| ThreatVault.Fileformat.severity | String | The severity of the threat. | 
+| ThreatVault.Fileformat.default_action | String | The default action when the signature is triggered. | 
+| ThreatVault.Fileformat.cve | Array | The CVE \(Common Vulnerabilities and Exposures\) of the threat. | 
+| ThreatVault.Fileformat.vendor | Array | The fileformat identifier issued by vendor on advisories. | 
+| ThreatVault.Fileformat.reference | Array | The public reference of the threat. | 
+| ThreatVault.Fileformat.status | String | The status of the signature. | 
+| ThreatVault.Fileformat.details | Array | Any additional details of the signature. | 
+| ThreatVault.Fileformat.ori_release_version | String | The original release version of the signature. | 
+| ThreatVault.Fileformat.latest_release_version | String | The latest release version of the signature. | 
+| ThreatVault.Fileformat.ori_release_time | String | The original release time of the signature. | 
+| ThreatVault.Fileformat.latest_release_time | String | The latest release time of the signature. | 
 
 #### Command example
 ```!threatvault-threat-signature-get signature_id=93534285```
