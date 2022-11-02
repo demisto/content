@@ -655,7 +655,7 @@ def ip_command(client: Client, args: dict[str, str]) -> list[CommandResults]:
 def reputation_command(
     client: Client, args: dict[str, str], indicator_type
 ) -> list[CommandResults]:
-    """ip command: Returns IP reputation for a list of IPs
+    """reputation command: Returns reputation for a list of indicator
 
     This command is a wrapper around the `get_indicator_context_command`
     """
