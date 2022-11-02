@@ -2009,7 +2009,7 @@ def event_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
     group_guid = argToList(args.get('group_guid'))
     start_date = args.get('start_date')
     event_type = argToList(args.get('event_type'))
-    event_type = [arg_to_number(et) for et in event_type]
+    event_type = [arg_to_number(et) for et in event_type if et is not None]
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit'))
