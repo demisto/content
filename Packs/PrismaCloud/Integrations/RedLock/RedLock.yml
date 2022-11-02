@@ -399,6 +399,9 @@ script:
       - 'false'
       required: false
       secret: false
+    - description: List of additional keys to return from the resource JSON, specified as a comma separated list (e.g. "key1,key2,key3").  To preview all available resource JSON data, run redlock-get-alert-details with the "raw-response=true" option.
+      name: resource_keys
+      type: unknown
     deprecated: false
     description: Gets the details of an alert based on alert ID
     execution: false
@@ -652,9 +655,6 @@ script:
       name: policy-id
       required: false
       secret: false
-    - description: List of additional keys to return from the resource JSON, specified as a comma separated list (e.g. "key1,key2,key3").  To preview all available resource JSON data, run redlock-get-alert-details with the "raw-response=true" option.
-      name: resource_keys
-      type: unknown
     deprecated: false
     description: Dismiss the alerts matching the given filter. Must provide either policy IDs or alert IDs.
     execution: true
