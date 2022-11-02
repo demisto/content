@@ -220,7 +220,8 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
 
 
 @pytest.mark.parametrize(
-    'case_mocker,expected_tests,expected_packs,expected_machines,collector_class_args,mocked_changed_files,mocked_packs_files_were_moved_from',
+    'case_mocker,expected_tests,expected_packs,expected_machines,collector_class_args,mocked_changed_files,'
+    'mocked_packs_files_were_moved_from',
     # (0) change in a sanity-collection-triggering file, expecting xsoar sanity tests to be collected
     ((MockerCases.empty, XSOAR_SANITY_TEST_NAMES, ('Whois', 'HelloWorld'), None, XSOAR_BRANCH_ARGS,
       ('.gitlab/helper_functions.sh',), ()),
