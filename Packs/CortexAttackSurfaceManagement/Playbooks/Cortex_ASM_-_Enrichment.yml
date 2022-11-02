@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 96d760cb-bebb-41a5-843b-59da776a7375
+    taskid: d1449df8-7d76-4d3e-8502-dce3ac8a941b
     type: start
     task:
-      id: 96d760cb-bebb-41a5-843b-59da776a7375
+      id: d1449df8-7d76-4d3e-8502-dce3ac8a941b
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: e16cb1ad-fead-4cd7-811a-ba014d3bd939
+    taskid: 54777f8c-f741-4bdc-8d58-e49667f9e289
     type: condition
     task:
-      id: e16cb1ad-fead-4cd7-811a-ba014d3bd939
+      id: 54777f8c-f741-4bdc-8d58-e49667f9e289
       version: -1
       name: Is there an IP address?
       description: Determines if the IP address has been supplied to proceed with cloud enrichment.
@@ -90,10 +90,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 5697b3fa-dc02-4903-8ac3-67023930d175
+    taskid: c35888ff-0b77-42a0-87fc-33c8188cbb1f
     type: title
     task:
-      id: 5697b3fa-dc02-4903-8ac3-67023930d175
+      id: c35888ff-0b77-42a0-87fc-33c8188cbb1f
       version: -1
       name: ServiceNow CMDB Enrichment
       type: title
@@ -121,10 +121,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: bd4a92e3-3419-4ff7-8d79-6420d9483fd0
+    taskid: 89e760fd-b66c-4fbd-86e2-0e2799edb6db
     type: condition
     task:
-      id: bd4a92e3-3419-4ff7-8d79-6420d9483fd0
+      id: 89e760fd-b66c-4fbd-86e2-0e2799edb6db
       version: -1
       name: Was there a result?
       description: Determines if there was a result from the previous command to continue cloud enrichment.
@@ -164,10 +164,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: acfd8ec2-b2a8-4fb4-8c59-36a9befab9b9
+    taskid: 4917e65e-d407-42d6-8512-24aa3bcac514
     type: condition
     task:
-      id: acfd8ec2-b2a8-4fb4-8c59-36a9befab9b9
+      id: 4917e65e-d407-42d6-8512-24aa3bcac514
       version: -1
       name: What provider is this service?
       description: Determines which cloud provider the service is in order to direct to the correct enrichment.
@@ -210,10 +210,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 1338a79b-aad5-46e1-8a7b-4802796d6b32
+    taskid: 0613c067-8533-4071-8bc3-8826bde21bd2
     type: regular
     task:
-      id: 1338a79b-aad5-46e1-8a7b-4802796d6b32
+      id: 0613c067-8533-4071-8bc3-8826bde21bd2
       version: -1
       name: Get external service information
       description: Get a list of all your external services filtered by business units, externally detected providers, domain, externally inferred CVEs, active classifications, inactive classifications, service name, service type, protocol, IP address, is active, and discovery type. Maximum result limit is 100 assets.
@@ -247,10 +247,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 6895f24f-9b82-4b11-8df3-44975943a2f8
+    taskid: 5a29551f-cd20-4b04-8880-f45814e20e8f
     type: title
     task:
-      id: 6895f24f-9b82-4b11-8df3-44975943a2f8
+      id: 5a29551f-cd20-4b04-8880-f45814e20e8f
       version: -1
       name: Set Field
       description: commands.local.cmd.set.incident
@@ -280,10 +280,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 19822589-950f-4d8e-8ed0-15ee198c493e
+    taskid: a0abd2e5-ec98-4d8d-891a-77411aa9e1da
     type: regular
     task:
-      id: 19822589-950f-4d8e-8ed0-15ee198c493e
+      id: a0abd2e5-ec98-4d8d-891a-77411aa9e1da
       version: -1
       name: Set private IP grid field
       description: |-
@@ -325,10 +325,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 4671e761-303d-4e0f-8a68-0da1f60b70e1
+    taskid: 8d707797-b68f-40a1-84d6-7b4ee6f12c87
     type: condition
     task:
-      id: 4671e761-303d-4e0f-8a68-0da1f60b70e1
+      id: 8d707797-b68f-40a1-84d6-7b4ee6f12c87
       version: -1
       name: Is Cortex ASM enabled?
       description: Determines if the "Cortex Attack Surface Management" integration instance is configured to continue with cloud enrichment.
@@ -386,10 +386,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: a4f0ca7a-e70f-46ca-8bf8-6bdf4413f2f2
+    taskid: 97ddc74e-063b-4ddf-85e4-5eb0916c1873
     type: regular
     task:
-      id: a4f0ca7a-e70f-46ca-8bf8-6bdf4413f2f2
+      id: 97ddc74e-063b-4ddf-85e4-5eb0916c1873
       version: -1
       name: Set service owner grid field
       description: |-
@@ -438,10 +438,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 9d12ce84-09d7-40f0-8c38-045d3445028f
+    taskid: 085ab0b0-e3b5-453d-8c08-ac918e57d3d9
     type: condition
     task:
-      id: 9d12ce84-09d7-40f0-8c38-045d3445028f
+      id: 085ab0b0-e3b5-453d-8c08-ac918e57d3d9
       version: -1
       name: Is there EC2 information?
       description: Determines if there is EC2 information to set the private IP, cloud and tags fields.
@@ -483,10 +483,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: ec546197-124e-450c-88e9-977f370a9072
+    taskid: bb6581a1-db3b-4253-8f99-63d0e271a148
     type: condition
     task:
-      id: ec546197-124e-450c-88e9-977f370a9072
+      id: bb6581a1-db3b-4253-8f99-63d0e271a148
       version: -1
       name: Is there IAM information?
       description: Determines if there is IAM information to set the service owner field.
@@ -526,10 +526,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: b748317c-75ea-439d-8c42-681f62a68959
+    taskid: 0a410ef7-7688-495b-8628-06fdb95cee05
     type: title
     task:
-      id: b748317c-75ea-439d-8c42-681f62a68959
+      id: 0a410ef7-7688-495b-8628-06fdb95cee05
       version: -1
       name: Private IP
       type: title
@@ -557,10 +557,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 0985be51-5288-4b32-8e6a-24013456d079
+    taskid: 76af9bd7-dba5-468c-83e8-da04f223cef8
     type: title
     task:
-      id: 0985be51-5288-4b32-8e6a-24013456d079
+      id: 76af9bd7-dba5-468c-83e8-da04f223cef8
       version: -1
       name: Service Owner
       type: title
@@ -588,10 +588,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 82f9d649-1449-4486-8b6f-cd9f353eaaf3
+    taskid: 4d1d41d5-bfa2-4326-84ea-3791b54b4870
     type: title
     task:
-      id: 82f9d649-1449-4486-8b6f-cd9f353eaaf3
+      id: 4d1d41d5-bfa2-4326-84ea-3791b54b4870
       version: -1
       name: System IDs
       type: title
@@ -619,10 +619,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: f6aab53f-d008-4c82-8a65-1b0fb3cd6f19
+    taskid: 34519907-ecc9-4aea-81e6-82e272f42072
     type: condition
     task:
-      id: f6aab53f-d008-4c82-8a65-1b0fb3cd6f19
+      id: 34519907-ecc9-4aea-81e6-82e272f42072
       version: -1
       name: Is there EC2 and security group information?
       description: Determines if there is ECS and security group information to set the system IDs field.
@@ -669,10 +669,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 8d58dc91-06ab-4d32-8671-a33f65209b05
+    taskid: 93798a60-5a5c-4e81-8e5b-5475f1960b9f
     type: regular
     task:
-      id: 8d58dc91-06ab-4d32-8671-a33f65209b05
+      id: 93798a60-5a5c-4e81-8e5b-5475f1960b9f
       version: -1
       name: Set system IDs grid field (VPC)
       description: |-
@@ -716,10 +716,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: ab453022-6934-4e8b-8b28-1d52b3036896
+    taskid: 18b394a3-b4d7-4947-898f-92ef37ae520c
     type: regular
     task:
-      id: ab453022-6934-4e8b-8b28-1d52b3036896
+      id: 18b394a3-b4d7-4947-898f-92ef37ae520c
       version: -1
       name: Set system IDs grid field (SG)
       description: |-
@@ -763,10 +763,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 02199cf8-12a6-45f4-8462-f1e9687e6ba8
+    taskid: cb8d06e1-5925-417d-8860-fb6a5a83dd9c
     type: regular
     task:
-      id: 02199cf8-12a6-45f4-8462-f1e9687e6ba8
+      id: cb8d06e1-5925-417d-8860-fb6a5a83dd9c
       version: -1
       name: Set system IDs grid field (NET)
       description: |-
@@ -810,10 +810,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: dc81761b-9311-4494-809c-baa3e47bfbc9
+    taskid: 8f373eaf-2f76-4fcf-856e-21221aab0dc9
     type: regular
     task:
-      id: dc81761b-9311-4494-809c-baa3e47bfbc9
+      id: 8f373eaf-2f76-4fcf-856e-21221aab0dc9
       version: -1
       name: Set system IDs grid field (NIC)
       description: |-
@@ -857,10 +857,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 321659b2-c2cf-42e5-8f21-1a413b027c5f
+    taskid: 5fa1b96f-35e2-4b6a-8b7e-fd0c2e920de8
     type: regular
     task:
-      id: 321659b2-c2cf-42e5-8f21-1a413b027c5f
+      id: 5fa1b96f-35e2-4b6a-8b7e-fd0c2e920de8
       version: -1
       name: Set system IDs grid field (EC2)
       description: |-
@@ -904,10 +904,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 7d0dd812-955d-4da8-8f04-321e2cc27664
+    taskid: e6f22bc3-90bb-4ac8-8401-6ebd2142c442
     type: title
     task:
-      id: 7d0dd812-955d-4da8-8f04-321e2cc27664
+      id: e6f22bc3-90bb-4ac8-8401-6ebd2142c442
       version: -1
       name: Cloud
       type: title
@@ -935,10 +935,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 89a3ed1a-b0a8-4133-821c-49eebdfc9b6b
+    taskid: f503bd85-9ead-41ae-8c53-9a8c0c98da93
     type: regular
     task:
-      id: 89a3ed1a-b0a8-4133-821c-49eebdfc9b6b
+      id: f503bd85-9ead-41ae-8c53-9a8c0c98da93
       version: -1
       name: Set cloud grid field
       description: |-
@@ -988,10 +988,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 66bf9062-1a53-46b0-88d9-27ea46d557c4
+    taskid: e5009251-008f-4a9d-8010-41c756092369
     type: title
     task:
-      id: 66bf9062-1a53-46b0-88d9-27ea46d557c4
+      id: e5009251-008f-4a9d-8010-41c756092369
       version: -1
       name: Tags
       type: title
@@ -1019,10 +1019,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: cf6bc6a8-0510-40b2-8752-dc6b0aae04bd
+    taskid: eaca1dc1-1571-48d6-8d79-019e20183feb
     type: regular
     task:
-      id: cf6bc6a8-0510-40b2-8752-dc6b0aae04bd
+      id: eaca1dc1-1571-48d6-8d79-019e20183feb
       version: -1
       name: Set tags grid field
       description: |-
@@ -1039,14 +1039,16 @@ tasks:
       gridfield:
         simple: asmtags
       keys:
-        simple: Name,Source
+        simple: Key,Value,Source
       val1:
         complex:
-          root: AWS.EC2.Instances
-          accessor: Tags
-          transformers:
-          - operator: Stringify
+          root: AWS.EC2.Instances.Tags
+          accessor: Key
       val2:
+        complex:
+          root: AWS.EC2.Instances.Tags
+          accessor: Value
+      val3:
         simple: AWS
     separatecontext: false
     continueonerrortype: ""
@@ -1066,10 +1068,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 7c739e38-1290-487d-8fe2-a08ccec98b45
+    taskid: e653e8d9-c904-4c6d-8f4f-70ebe4e0ffcc
     type: title
     task:
-      id: 7c739e38-1290-487d-8fe2-a08ccec98b45
+      id: e653e8d9-c904-4c6d-8f4f-70ebe4e0ffcc
       version: -1
       name: Cloud Enrichment
       type: title
@@ -1097,10 +1099,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 49574a32-2dba-4c73-8094-bd01dfe2b91a
+    taskid: f175160f-44bd-43b8-8d3d-08e14bc6fb00
     type: title
     task:
-      id: 49574a32-2dba-4c73-8094-bd01dfe2b91a
+      id: f175160f-44bd-43b8-8d3d-08e14bc6fb00
       version: -1
       name: Complete
       type: title
@@ -1125,10 +1127,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: c5949f1f-d793-4473-8fb9-7eb50fa6f46d
+    taskid: e0c3ed6d-3e3f-4c56-8d1b-1715cd280336
     type: title
     task:
-      id: c5949f1f-d793-4473-8fb9-7eb50fa6f46d
+      id: e0c3ed6d-3e3f-4c56-8d1b-1715cd280336
       version: -1
       name: Set Field
       type: title
@@ -1157,10 +1159,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: a08f199a-7529-4724-8295-d7f688ea7b5d
+    taskid: 678ef2e8-fed3-4d2f-8666-eed51fe18480
     type: condition
     task:
-      id: a08f199a-7529-4724-8295-d7f688ea7b5d
+      id: 678ef2e8-fed3-4d2f-8666-eed51fe18480
       version: -1
       name: Is ServiceNow v2 enabled?
       description: Determines if the "ServiceNow v2" integration instance is in order to find email accounts for ServiceNow usernames.
@@ -1218,10 +1220,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 1425c204-4e8e-4090-84c9-d30d37a6fe2a
+    taskid: b088532b-1030-429c-881d-3cdcbf90ea84
     type: regular
     task:
-      id: 1425c204-4e8e-4090-84c9-d30d37a6fe2a
+      id: b088532b-1030-429c-881d-3cdcbf90ea84
       version: -1
       name: Pull ServiceNow user information
       description: Pull information on the user that was "assigned_to" for CMDB object.
@@ -1255,10 +1257,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 948458cd-2c7c-4324-8beb-e3d2323013c5
+    taskid: a7e08571-a1aa-4848-8866-be691dc009aa
     type: title
     task:
-      id: 948458cd-2c7c-4324-8beb-e3d2323013c5
+      id: a7e08571-a1aa-4848-8866-be691dc009aa
       version: -1
       name: Service Owner
       type: title
@@ -1286,10 +1288,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 5fe5644d-bd43-450f-8e3c-c143f544516b
+    taskid: d5d83f77-4542-4627-86b0-c67e43401c92
     type: title
     task:
-      id: 5fe5644d-bd43-450f-8e3c-c143f544516b
+      id: d5d83f77-4542-4627-86b0-c67e43401c92
       version: -1
       name: System IDs
       type: title
@@ -1317,10 +1319,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 7e893c31-0cb1-490e-85bc-485d03d228a7
+    taskid: 5894ca6d-7998-4465-8955-96ef714ccf1b
     type: regular
     task:
-      id: 7e893c31-0cb1-490e-85bc-485d03d228a7
+      id: 5894ca6d-7998-4465-8955-96ef714ccf1b
       version: -1
       name: Get current time
       description: |
@@ -1350,10 +1352,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: e41732f7-f299-4c5a-84df-e033d3234d54
+    taskid: 17a556f3-f295-42d4-873c-a85bd7081195
     type: regular
     task:
-      id: e41732f7-f299-4c5a-84df-e033d3234d54
+      id: 17a556f3-f295-42d4-873c-a85bd7081195
       version: -1
       name: Set service owner grid field (no email)
       description: |-
@@ -1402,10 +1404,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: b8aa67e2-13f7-4958-81a4-71d389c35390
+    taskid: ee6e9f2b-f35d-4cf5-8585-c8d13e62f054
     type: regular
     task:
-      id: b8aa67e2-13f7-4958-81a4-71d389c35390
+      id: ee6e9f2b-f35d-4cf5-8585-c8d13e62f054
       version: -1
       name: Set service owner grid field (email)
       description: |-
@@ -1456,10 +1458,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 6108111b-74f8-44ed-85b3-da542165aa8f
+    taskid: ded18949-09bf-4717-87d9-e554cd2b9333
     type: regular
     task:
-      id: 6108111b-74f8-44ed-85b3-da542165aa8f
+      id: ded18949-09bf-4717-87d9-e554cd2b9333
       version: -1
       name: Set system IDs grid field (NIC)
       description: |-
@@ -1503,10 +1505,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 75956705-31cd-4bfc-832f-0b3d2fd0b7da
+    taskid: 793e96e1-1524-4b64-833d-9f3061cc59d7
     type: regular
     task:
-      id: 75956705-31cd-4bfc-832f-0b3d2fd0b7da
+      id: 793e96e1-1524-4b64-833d-9f3061cc59d7
       version: -1
       name: Set system IDs grid field (Parent)
       description: |-
@@ -1550,10 +1552,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 42db63f0-d732-4793-8936-c2920d265a0b
+    taskid: 85390d43-e7a0-4805-8626-833588f29aec
     type: regular
     task:
-      id: 42db63f0-d732-4793-8936-c2920d265a0b
+      id: 85390d43-e7a0-4805-8626-833588f29aec
       version: -1
       name: Set system IDs grid field (Assigned)
       description: |-
@@ -1599,10 +1601,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 7a36a4d0-4585-4f89-8511-97d1297501c2
+    taskid: 9a116cc5-1cd1-493e-8d2d-01048f9dfcd6
     type: regular
     task:
-      id: 7a36a4d0-4585-4f89-8511-97d1297501c2
+      id: 9a116cc5-1cd1-493e-8d2d-01048f9dfcd6
       version: -1
       name: Set system IDs grid field (Company)
       description: |-
@@ -1648,10 +1650,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 988e042c-3b1a-4311-8a26-b66e850cd896
+    taskid: 982b585a-afe8-4cbe-8caf-956967f44a4b
     type: condition
     task:
-      id: 988e042c-3b1a-4311-8a26-b66e850cd896
+      id: 982b585a-afe8-4cbe-8caf-956967f44a4b
       version: -1
       name: Is there ServiceNow record information?
       description: Determines if there is ServiceNow record information to set the service owner field.
@@ -1693,10 +1695,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 42eecaf2-feab-4747-875c-284d5d3b7db0
+    taskid: c479944e-27dd-4d27-89e4-8baa60d5c6a9
     type: condition
     task:
-      id: 42eecaf2-feab-4747-875c-284d5d3b7db0
+      id: c479944e-27dd-4d27-89e4-8baa60d5c6a9
       version: -1
       name: Is there ServiceNow record and records information?
       description: Determines if there is ServiceNow record and records information to set the service owner field.
@@ -1745,10 +1747,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: ed996a2e-77a5-41fb-85c6-0475472982ba
+    taskid: 8e74798f-ebf8-4cde-82a8-c3f07a8868c4
     type: playbook
     task:
-      id: ed996a2e-77a5-41fb-85c6-0475472982ba
+      id: 8e74798f-ebf8-4cde-82a8-c3f07a8868c4
       version: -1
       name: ServiceNow CMDB Search
       playbookName: ServiceNow CMDB Search
@@ -1792,10 +1794,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 4c9f564b-ce78-498f-86ca-c8509f5bf3b2
+    taskid: c09fc988-629a-41ab-87c8-feb1328e55ba
     type: title
     task:
-      id: 4c9f564b-ce78-498f-86ca-c8509f5bf3b2
+      id: c09fc988-629a-41ab-87c8-feb1328e55ba
       version: -1
       name: continue
       type: title
@@ -1823,10 +1825,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: e0812457-8092-44d9-8863-e7ce8d0d66a5
+    taskid: 6128809c-eae7-4b12-8953-0ef2c7894e24
     type: playbook
     task:
-      id: e0812457-8092-44d9-8863-e7ce8d0d66a5
+      id: 6128809c-eae7-4b12-8953-0ef2c7894e24
       version: -1
       name: AWS - Enrichment
       description: Given the IP address this playbook enriches EC2 and IAM information.
@@ -1890,6 +1892,6 @@ inputs:
   description: IP address of service
   playbookInputQuery:
 outputs: []
+fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.5.0
