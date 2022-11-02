@@ -1,0 +1,16 @@
+{
+    "version": "version",
+    "metadata": {
+        "links": {
+            "self": "metadata_links_self"
+        }
+    },
+    "data": {
+        "sha256": "data_sha256",
+        "description": "data_description",
+        "source": "data_source",
+        "links": {
+            "file_list": "data_links_file_list"
+        }
+    }
+}

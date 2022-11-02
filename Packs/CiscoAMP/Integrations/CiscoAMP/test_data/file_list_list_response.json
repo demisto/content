@@ -1,0 +1,16 @@
+{
+    "version": "version",
+    "metadata": {
+        "links": {
+            "self": "metadata_links_self"
+        }
+    },
+    "data": {
+        "name": "data_name",
+        "guid": "data_guid",
+        "type": "application_blocking",
+        "links": {
+            "details": "data_links_details"
+        }
+    }
+}

@@ -1,0 +1,76 @@
+{
+    "version": "version",
+    "metadata": {
+        "links": {
+            "self": "metadata_links_self"
+        },
+        "results": {
+            "total": "metadata_results_total",
+            "current_item_count": "metadata_results_current_item_count",
+            "index": "metadata_results_index",
+            "items_per_page": "metadata_results_items_per_page"
+        }
+    },
+    "data": [
+        {
+            "name": "data[0]_name",
+            "description": "data[0]_description",
+            "guid": "data[0]_guid",
+            "source": "data[0]_source",
+            "links": {
+                "group": "data[0]_links_group"
+            }
+        },
+        {
+            "name": "data[1]_name",
+            "description": "data[1]_description",
+            "guid": "data[1]_guid",
+            "source": "data[1]_source",
+            "links": {
+                "group": "data[1]_links_group"
+            }
+        },
+        {
+            "name": "data[2]_name",
+            "description": "data[2]_description",
+            "guid": "data[2]_guid",
+            "source": "data[2]_source",
+            "ancestry": [
+                {
+                    "name": "data[2]_ancestry[0]_name",
+                    "guid": "data[2]_ancestry[0]_guid"
+                }
+            ],
+            "links": {
+                "group": "data[2]_links_group"
+            }
+        },
+        {
+            "name": "data[3]_name",
+            "description": "data[3]_description",
+            "guid": "data[3]_guid",
+            "source": "data[3]_source",
+            "links": {
+                "group": "data[3]_links_group"
+            }
+        },
+        {
+            "name": "data[4]_name",
+            "description": "data[4]_description",
+            "guid": "data[4]_guid",
+            "source": "data[4]_source",
+            "links": {
+                "group": "data[4]_links_group"
+            }
+        },
+        {
+            "name": "data[5]_name",
+            "description": "data[5]_description",
+            "guid": "data[5]_guid",
+            "source": "data[5]_source",
+            "links": {
+                "group": "data[5]_links_group"
+            }
+        }
+    ]
+}

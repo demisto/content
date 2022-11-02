@@ -1,0 +1,47 @@
+{
+    "version": "version",
+    "metadata": {
+        "links": {
+            "self": "metadata_links_self"
+        },
+        "results": {
+            "total": "metadata_results_total",
+            "current_item_count": "metadata_results_current_item_count",
+            "index": "metadata_results_index",
+            "items_per_page": "metadata_results_items_per_page"
+        }
+    },
+    "data": {
+        "connector_guid": "data_connector_guid",
+        "hostname": "data_hostname",
+        "windows_processor_id": "data_windows_processor_id",
+        "active": "data_active",
+        "links": {
+            "computer": "data_links_computer",
+            "trajectory": "data_links_trajectory",
+            "group": "data_links_group"
+        },
+        "group_guid": "data_group_guid",
+        "vulnerabilities": [
+            {
+                "application": "data_vulnerabilities[0]_application",
+                "version": "data_vulnerabilities[0]_version",
+                "file": {
+                    "filename": "data_vulnerabilities[0]_file_filename",
+                    "identity": {
+                        "sha256": "data_vulnerabilities[0]_file_identity_sha256"
+                    }
+                },
+                "cves": [
+                    {
+                        "id": "data_vulnerabilities[0]_cves[0]_id",
+                        "link": "data_vulnerabilities[0]_cves[0]_link",
+                        "cvss": "data_vulnerabilities[0]_cves[0]_cvss"
+                    }
+                ],
+                "latest_timestamp": "data_vulnerabilities[0]_latest_timestamp",
+                "latest_date": "data_vulnerabilities[0]_latest_date"
+            }
+        ]
+    }
+}
