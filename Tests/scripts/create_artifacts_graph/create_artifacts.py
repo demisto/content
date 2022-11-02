@@ -14,6 +14,39 @@ logging_setup(3)
 install_logging("create_artifacts.log", logger=logger)
 
 
+def create_zips(content_dto: ContentDTO, output: Path, marketplace: str, zip: bool):
+    content_dto.dump(output, marketplace, zip)
+
+
+def create_dependencies(content_dto: ContentDTO, output: Path):
+    pack_dependencies = {}
+    for pack in content_dto.packs:
+        displayed_images: list[str] = []
+        dependencies = pack.depends_on
+        first_level_dependencies = {}
+        all_level_dependencies = []
+        for dependency in dependencies:
+            all_level_dependencies.append(dependency.content_item.object_id)
+            if dependency.is_direct:
+                first_level_dependencies[dependency.content_item.object_id] = {
+                    "display_name": dependency.content_item.name,
+                    "mandatory": dependency.mandatorily,
+                }
+
+                displayed_images.extend(
+                    (integration.object_id for integration in dependency.content_item.content_items.integration)
+                )
+        pack_dependencies[pack.object_id] = {
+            "path": str(pack.path.relative_to(get_content_path())),
+            "fullPath": str(pack.path),
+            "dependencies": first_level_dependencies,
+            "displayedImages": displayed_images,
+            "allLevelDependencies": all_level_dependencies,
+        }
+    with open(output, "w") as f:
+        json.dump(pack_dependencies, f, indent=4)
+
+
 def main():
     parser = ArgumentParser()
     parser.add_argument("-mp", "--marketplace", type=MarketplaceVersions, help="marketplace version", default="xsoar")
@@ -25,31 +58,8 @@ def main():
 
     with Neo4jContentGraphInterface() as interface:
         content_dto: ContentDTO = interface.marshal_graph(args.marketplace, all_level_dependencies=True)
-        content_dto.dump(Path(args.artifacts_output), args.marketplace, args.zip)
-        pack_dependencies = {}
-        for pack in content_dto.packs:
-            displayed_images: list[str] = []
-            dependencies = pack.depends_on
-            first_level_dependencies = {}
-            all_level_dependencies = []
-            for dependency in dependencies:
-                all_level_dependencies.append(dependency.content_item.object_id)
-                if dependency.is_direct:
-                    first_level_dependencies[dependency.content_item.object_id] = {
-                        "display_name": dependency.content_item.name,
-                        "mandatory": dependency.is_direct,
-                    }
-
-                    displayed_images.extend((integration.object_id for integration in pack.content_items.integration))
-            pack_dependencies[pack.object_id] = {
-                "path": str(pack.path.relative_to(get_content_path())),
-                "fullPath": str(pack.path),
-                "dependencies": first_level_dependencies,
-                "displayedImages": displayed_images,
-                "allLevelDependencies": all_level_dependencies,
-            }
-        with open(args.dependencies_output, "w") as f:
-            json.dump(pack_dependencies, f)
+        # create_zips(content_dto, Path(args.artifacts_output), args.marketplace, args.zip)
+        create_dependencies(content_dto, Path(args.dependencies_output))
 
 
 if __name__ == "__main__":
