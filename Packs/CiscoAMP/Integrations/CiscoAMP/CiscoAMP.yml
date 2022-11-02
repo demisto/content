@@ -13,13 +13,13 @@ configuration:
   required: true
   displaypassword: API Key
   type: 9
-- defaultvalue: false
-  display: Trust any certificate (unsecure)
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-- defaultvalue: false
-  display: Use system proxy
+- defaultvalue: 'false'
+  display: Use system proxy settings
   name: proxy
   required: false
   type: 8
@@ -50,10 +50,15 @@ configuration:
   additionalinfo: Comma separated list of Event Type IDs.
   required: false
   type: 0
-description: "Cisco Advanced malware protection software is designed to prevent,\
-  \ detect, and help remove threats in an efficient manner from computer systems.\
-  \ Threats can take the form of software viruses and other malware such as ransomware,\
-  \ worms, Trojans, spyware, adware, and fileless malware."
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+description: "Cisco Advanced malware protection software is designed to prevent, detect, and help remove threats in an efficient manner from computer systems. Threats can take the form of software viruses and other malware such as ransomware, worms, Trojans, spyware, adware, and fileless malware."
 display: Cisco AMP Secure Endpoint
 name: CiscoAMP
 script:
@@ -205,8 +210,7 @@ script:
       isArray: false
       name: connector_guid
       required: true
-    - description: 'Freeform query string which currently accepts: IP address, SHA-256
-        or URL.'
+    - description: 'Freeform query string which currently accepts: IP address, SHA-256 or URL.'
       isArray: false
       name: query_string
       required: false
@@ -223,8 +227,7 @@ script:
       name: limit
       required: false
     deprecated: false
-    description: Provides a list of all activities associated with a particular computer.
-      This analogous to the Device Trajectory on the FireAMP console.
+    description: Provides a list of all activities associated with a particular computer. This analogous to the Device Trajectory on the FireAMP console.
     execution: false
     name: cisco-amp-computer-trajectory-list
     outputs:
@@ -359,8 +362,7 @@ script:
       name: limit
       required: false
     deprecated: false
-    description: Fetch a specific computer's trajectory with given connector_guid
-      and filter for events with user name activity.
+    description: Fetch a specific computer's trajectory with given connector_guid and filter for events with user name activity.
     execution: false
     name: cisco-amp-computer-user-trajectory-list
     outputs:
@@ -447,14 +449,11 @@ script:
       isArray: false
       name: connector_guid
       required: true
-    - description: Inclusive (The list will include vulnerable programs detected at
-        start_time)
+    - description: Inclusive (The list will include vulnerable programs detected at start_time)
       isArray: false
       name: start_time
       required: false
-    - description: Exclusive - if end_time is a time (The list will only include vulnerable
-        programs detected before end_time); Inclusive - if end_time is a date (The
-        list will include vulnerable programs detected on the date)
+    - description: Exclusive - if end_time is a time (The list will only include vulnerable programs detected before end_time); Inclusive - if end_time is a date (The list will include vulnerable programs detected on the date)
       isArray: false
       name: end_time
       required: false
@@ -471,9 +470,7 @@ script:
       name: limit
       required: false
     deprecated: false
-    description: Provides a list of vulnerabilities observed on a specific computer.
-      The vulnerabilities can be filtered to show only vulnerable applications observed
-      for a specific time range.
+    description: Provides a list of vulnerabilities observed on a specific computer. The vulnerabilities can be filtered to show only vulnerable applications observed for a specific time range.
     execution: false
     name: cisco-amp-computer-vulnerabilities-list
     outputs:
@@ -609,8 +606,7 @@ script:
     execution: false
     name: cisco-amp-computer-delete
   - arguments:
-    - description: 'Freeform query string which currently accepts: IPv4 address (CIDR
-        not supported), SHA-256, File Name and a URL Fragment.'
+    - description: 'Freeform query string which currently accepts: IPv4 address (CIDR not supported), SHA-256, File Name and a URL Fragment.'
       isArray: false
       name: query_string
       required: true
@@ -627,11 +623,7 @@ script:
       name: limit
       required: false
     deprecated: false
-    description: Fetch a list of computers that have observed files with given file
-      name. Provides the ability to search all computers across an organization for
-      any events or activities associated with a file or network operation, and returns
-      computers matching those criteria. There is a hard limit of 5000 historical
-      entries searched.
+    description: Fetch a list of computers that have observed files with given file name. Provides the ability to search all computers across an organization for any events or activities associated with a file or network operation, and returns computers matching those criteria. There is a hard limit of 5000 historical entries searched.
     execution: false
     name: cisco-amp-computer-activity-list
     outputs:
@@ -653,10 +645,7 @@ script:
       name: connector_guid
       required: true
     deprecated: false
-    description: Performs a feature availability request on a computer.
-      Isolation must be enabled within the computer's Policy, this can be done through the instance.
-      Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings ->
-      Endpoint Isolation -> Allow Endpoint Isolation
+    description: Performs a feature availability request on a computer. Isolation must be enabled within the computer's Policy, this can be done through the instance. Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings -> Endpoint Isolation -> Allow Endpoint Isolation
     execution: false
     name: cisco-amp-computer-isolation-feature-availability-get
   - arguments:
@@ -665,12 +654,7 @@ script:
       name: connector_guid
       required: true
     deprecated: false
-    description: Returns a fine-grained isolation status for a computer. The available
-      flag is set to true if isolation can be performed on the computer. Status will
-      be set to one of - not_isolated, pending_start, isolated and pending_stop.
-      Isolation must be enabled within the computer's Policy, this can be done through the instance.
-      Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings ->
-      Endpoint Isolation -> Allow Endpoint Isolation
+    description: Returns a fine-grained isolation status for a computer. The available flag is set to true if isolation can be performed on the computer. Status will be set to one of - not_isolated, pending_start, isolated and pending_stop. Isolation must be enabled within the computer's Policy, this can be done through the instance. Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings -> Endpoint Isolation -> Allow Endpoint Isolation
     execution: false
     name: cisco-amp-computer-isolation-get
     outputs:
@@ -681,8 +665,7 @@ script:
       description: Set to true if isolation can be performed on the computer.
       type: Boolean
     - contextPath: CiscoAMP.ComputerIsolation.status
-      description: "Will be set to one of: not_isolated, pending_start, isolated\
-        \ and pending_stop."
+      description: "Will be set to one of: not_isolated, pending_start, isolated and pending_stop."
       type: String
     - contextPath: CiscoAMP.ComputerIsolation.unlock_code
       description: Isolation unlock code.
@@ -723,12 +706,8 @@ script:
       isArray: false
       name: status
       required: false
-      hidden: true
     deprecated: false
-    description: Request isolation for a computer. Supports Polling.
-      Isolation must be enabled within the computer's Policy, this can be done through the instance.
-      Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings ->
-      Endpoint Isolation -> Allow Endpoint Isolation
+    description: Request isolation for a computer. Supports Polling. Isolation must be enabled within the computer's Policy, this can be done through the instance. Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings -> Endpoint Isolation -> Allow Endpoint Isolation
     execution: false
     name: cisco-amp-computer-isolation-create
     polling: true
@@ -740,8 +719,7 @@ script:
       description: Set to true if isolation can be performed on the computer.
       type: Boolean
     - contextPath: CiscoAMP.ComputerIsolation.status
-      description: "Will be set to one of: not_isolated, pending_start, isolated\
-        \ and pending_stop."
+      description: "Will be set to one of: not_isolated, pending_start, isolated and pending_stop."
       type: String
     - contextPath: CiscoAMP.ComputerIsolation.unlock_code
       description: Isolation unlock code.
@@ -775,12 +753,8 @@ script:
       isArray: false
       name: status
       required: false
-      hidden: true
     deprecated: false
-    description: Request isolation stop for a computer. Supports Polling.
-      Isolation must be enabled within the computer's Policy, this can be done through the instance.
-      Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings ->
-      Endpoint Isolation -> Allow Endpoint Isolation
+    description: Request isolation stop for a computer. Supports Polling. Isolation must be enabled within the computer's Policy, this can be done through the instance. Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings -> Endpoint Isolation -> Allow Endpoint Isolation
     execution: false
     name: cisco-amp-computer-isolation-delete
     polling: true
@@ -789,8 +763,7 @@ script:
       description: Set to true if isolation can be performed on the computer.
       type: Boolean
     - contextPath: CiscoAMP.ComputerIsolation.status
-      description: "Will be set to one of: not_isolated, pending_start, isolated\
-        \ and pending_stop."
+      description: "Will be set to one of: not_isolated, pending_start, isolated and pending_stop."
       type: String
     - contextPath: CiscoAMP.ComputerIsolation.unlock_code
       description: Isolation unlock code.
@@ -839,10 +812,7 @@ script:
       name: limit
       required: false
     deprecated: false
-    description: Fetch a list of events that can be filtered by a variety of criteria.
-      Each criteria type is logically ANDed with the other criteria, each selection
-      of a criteria is logically ORed. This is analogous to the Events view on the
-      FireAMP Console.
+    description: Fetch a list of events that can be filtered by a variety of criteria. Each criteria type is logically ANDed with the other criteria, each selection of a criteria is logically ORed. This is analogous to the Events view on the FireAMP Console.
     execution: false
     name: cisco-amp-event-list
     outputs:
@@ -1007,8 +977,7 @@ script:
       name: limit
       required: false
     deprecated: false
-    description: Fetch a list of event types. Events are identified and filtered by
-      a unique ID.
+    description: Fetch a list of event types. Events are identified and filtered by a unique ID.
     execution: false
     name: cisco-amp-event-type-list
     outputs:
@@ -1052,10 +1021,7 @@ script:
       name: file_list_guid
       required: false
     deprecated: false
-    description: Returns a particular file list for application blocking or simple
-      custom detection. file_list_guid must be provided to retrieve information about
-      a particular file_list. Can fetch an application_blocking or simple_custom_detection
-      file list. Defaults to application_blocking.
+    description: Returns a particular file list for application blocking or simple custom detection. file_list_guid must be provided to retrieve information about a particular file_list. Can fetch an application_blocking or simple_custom_detection file list. Defaults to application_blocking.
     execution: false
     name: cisco-amp-file-list-list
     outputs:
@@ -1090,8 +1056,7 @@ script:
       name: sha256
       required: false
     deprecated: false
-    description: Returns a list of items for a particular file_list. file_list_guid
-      must be provided to retrieve these items. A particular item can be returned by providing a SHA-256.
+    description: Returns a list of items for a particular file_list. file_list_guid must be provided to retrieve these items. A particular item can be returned by providing a SHA-256.
     execution: false
     name: cisco-amp-file-list-item-list
     outputs:
@@ -1127,8 +1092,7 @@ script:
       name: description
       required: false
     deprecated: false
-    description: Create a file list item with a given SHA-256 for a specific file
-      list with a given file_list_guid.
+    description: Create a file list item with a given SHA-256 for a specific file list with a given file_list_guid.
     execution: false
     name: cisco-amp-file-list-item-create
     outputs:
@@ -1151,8 +1115,7 @@ script:
       name: sha256
       required: true
     deprecated: false
-    description: Deletes a file list item with a given SHA-256 and associated to file
-      list with given file_list_guid.
+    description: Deletes a file list item with a given SHA-256 and associated to file list with given file_list_guid.
     execution: false
     name: cisco-amp-file-list-item-delete
   - arguments:
@@ -1296,8 +1259,7 @@ script:
       name: linux_policy_guid
       required: false
     deprecated: false
-    description: Updates a group to a given policy and returns all the policies in
-      that group.
+    description: Updates a group to a given policy and returns all the policies in that group.
     execution: false
     name: cisco-amp-group-policy-update
     outputs:
@@ -1404,8 +1366,7 @@ script:
       name: parent_group_guid
       required: false
     deprecated: false
-    description: Converts an existing group to a child of another group or an existing
-      child group to a root group (that is, one with no parent groups).
+    description: Converts an existing group to a child of another group or an existing child group to a root group (that is, one with no parent groups).
     execution: false
     name: cisco-amp-group-parent-update
     outputs:
@@ -1838,14 +1799,11 @@ script:
       isArray: true
       name: group_guid
       required: false
-    - description: Inclusive (The list will include vulnerable programs detected at
-        start_time)
+    - description: Inclusive (The list will include vulnerable programs detected at start_time)
       isArray: false
       name: start_time
       required: false
-    - description: Exclusive - if end_time is a time (The list will only include vulnerable
-        programs detected before end_time); Inclusive - if end_time is a date (The
-        list will include vulnerable programs detected on the date)
+    - description: Exclusive - if end_time is a time (The list will only include vulnerable programs detected before end_time); Inclusive - if end_time is a date (The list will include vulnerable programs detected on the date)
       isArray: false
       name: end_time
       required: false
@@ -1862,15 +1820,7 @@ script:
       name: limit
       required: false
     deprecated: false
-    description: 'Fetch a list of vulnerabilities. This is analogous to the Vulnerable Software view on the
-      AMP for Endpoints Console. The list can be filtered to show only the vulnerable
-      programs detected for a specific time range. Provide a list of computers on which the vulnerability has been
-      observed with given SHA-256. The list item contains a summary
-      of information on the vulnerability, including: application name and version,
-      SHA-256 value for the executable file, connectors on which the vulnerable application
-      was observed and the most recent CVSS score. IMPORTANT: computers key returns
-      information about the last 1000 Connectors on which the vulnerable application
-      was observed.'
+    description: 'Fetch a list of vulnerabilities. This is analogous to the Vulnerable Software view on the AMP for Endpoints Console. The list can be filtered to show only the vulnerable programs detected for a specific time range. Provide a list of computers on which the vulnerability has been observed with given SHA-256. The list item contains a summary of information on the vulnerability, including: application name and version, SHA-256 value for the executable file, connectors on which the vulnerable application was observed and the most recent CVSS score. IMPORTANT: computers key returns information about the last 1000 Connectors on which the vulnerable application was observed.'
     execution: false
     name: cisco-amp-vulnerability-list
     outputs:
@@ -2048,3 +1998,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
