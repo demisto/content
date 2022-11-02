@@ -11,22 +11,13 @@ def get_remediation_guidance(ASM_rule_ID: str) -> str:
     :param ASM_rule_ID: the Attack Surface Management rule ID
     :return: str of remediation guidance
     """
-    match = False
     guidance = "Get in touch with your Infosec team to define proper remediation access."
     for a in POLICY_INFO:
         if a["issueTypeId"] == ASM_rule_ID:
-            match = True
             if a.get('remediationGuidance'):
                 guidance = "Remediation guidance: " + \
                     a['remediationGuidance'] + "\n\nGet in touch with your Infosec team to define proper remediation access."
-                return guidance
-            else:
-                return guidance
-    if match is False:
-        return guidance
-    # Added to remove Mypy 'Missing return statement' error
-    else:
-        return guidance
+    return guidance
 
 
 def get_remediation_guidance_command(args: Dict[str, Any]) -> CommandResults:
