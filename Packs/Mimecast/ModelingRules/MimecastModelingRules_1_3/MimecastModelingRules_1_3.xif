@@ -16,7 +16,7 @@ filter
     xdm.observer.unique_identifier = acc,
     xdm.event.id = aCode,
     xdm.email.attachment.filename = AttNames,
-    xdm.target.host.ipv4_addresses = json_extract_array(coalesce(IP,SourceIP), "$."),
+    xdm.email.recipients = arraymap(json_extract_array(coalesce(Rcpt,Recipient), "$."), trim("@element", "\"")),
     xdm.email.message_id = MsgId,
     xdm.email.recipients = json_extract_array(coalesce(Rcpt,Recipient), "$."),
     xdm.email.sender = Sender,
