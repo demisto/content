@@ -914,7 +914,7 @@ def sanitize_str_ids_list_to_set(list: Optional[str]) -> Optional[Set[int]]:
                 try:
                     validate_argument('min_id', id)
                 except ValueError:
-                    raise ValueError('One id is invalid')
+                    raise ValueError(f'ID "{id}" is invalid')
                 output.add(int(id))
 
     if len(output) > 0:
