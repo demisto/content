@@ -58,7 +58,7 @@ def main():
 
     with Neo4jContentGraphInterface() as interface:
         content_dto: ContentDTO = interface.marshal_graph(args.marketplace, all_level_dependencies=True)
-        # create_zips(content_dto, Path(args.artifacts_output), args.marketplace, args.zip)
+        create_zips(content_dto, Path(args.artifacts_output), args.marketplace, args.zip)
         create_dependencies(content_dto, Path(args.dependencies_output))
 
 
