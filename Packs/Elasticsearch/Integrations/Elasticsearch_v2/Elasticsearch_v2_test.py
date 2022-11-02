@@ -888,3 +888,30 @@ def test_build_eql_body():
         "event_category_field": "event_category_field",
         "filter": "filter"
     }
+
+
+first_case_all_with_empty_string = ('', {'a': {'mappings': {'properties': {'example': {}}}}},
+                                    {'a': {'_id': 'doc_id', '_index': 'a', '_source': {'example': 'type: '}}}
+                                    )
+second_case_with_prefix_and_wildcard = ('.internal.alerts-*',
+                                        {'.internal.alerts-security': {'mappings': {'properties': {'example': {}}}},
+                                         '.internal': {'mappings': {'properties': {'example': {}}}}},
+                                        {'.internal.alerts-security':
+                                            {'_id': 'doc_id', '_index': '.internal.alerts-security',
+                                                '_source': {'example': 'type: '}}}
+                                        )
+third_regular_case = ('a', {'a': {'mappings': {'properties': {'example': {}}}}},
+                      {'a': {'_id': 'doc_id', '_index': 'a', '_source': {'example': 'type: '}}})
+
+
+@pytest.mark.parametrize('indexes, response, expected_result',
+                         [first_case_all_with_empty_string, second_case_with_prefix_and_wildcard, third_regular_case])
+def test_get_mapping_fields_command(mocker, indexes, response, expected_result):
+    class ResponseMockObject:
+        def json(self):
+            return response
+
+    mocker.patch('Elasticsearch_v2.FETCH_INDEX', indexes)
+    mocker.patch('Elasticsearch_v2.requests.get', return_value=ResponseMockObject())
+    result = Elasticsearch_v2.get_mapping_fields_command()
+    assert result == expected_result

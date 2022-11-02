@@ -7,13 +7,10 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Endpoint",
-        "Data Enrichment & Threat Intelligence"
+        "Endpoint"
     ],
     "tags": [],
-    "useCases": [
-        "Malware"
-    ],
+    "useCases": [],
     "keywords": [],
     "marketplaces": [
         "marketplacev2"
