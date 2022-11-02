@@ -16,7 +16,7 @@ class Client(BaseClient):
         response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202])
         return response
 
-    def get_project_list_request(self, params: dict | None) -> dict:
+    def get_project_list_request(self, params: dict | None) -> list:
         headers = self._headers
         suffix = '/projects'
         response = self._http_request('GET', suffix, headers=headers, params=params, ok_codes=[200, 202])
@@ -430,6 +430,16 @@ def partial_response(response: list, object_type: str):
                 partial_dict[field_key] = temp_dict_vals
         partial_response.append(partial_dict)
     return partial_response
+
+
+def verify_project_id(client: Client, project_id: Any):
+    project_id = arg_to_number(project_id)
+    if not project_id:
+        raise DemistoException('project_id must be an integer')
+    params = {'id_before': (project_id + 1), 'per_page': 1}
+    response = client.get_project_list_request(params)
+    if response[0].get('id') != project_id:
+        raise DemistoException(f'Project with project_id {project_id} does not exist')
 
 
 ''' COMMAND FUNCTIONS '''
@@ -1547,7 +1557,7 @@ def main() -> None:  # pragma: no cover
 
     try:
         client = Client(project_id, urljoin(server_url, ""), verify_certificate, proxy, headers=headers)
-
+        verify_project_id(client, project_id)
         if demisto.command() == 'test-module':
             return_results(test_module(client))
 

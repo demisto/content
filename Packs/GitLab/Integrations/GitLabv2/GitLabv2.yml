@@ -14,7 +14,7 @@ configuration:
   required: true
   type: 9
 - display: Project ID
-  additionalinfo: The project ID, it can be found in Test Account -> project, under the project name.
+  additionalinfo: The project ID, it can be found under the project name.
   name: project_id
   required: true
   type: 0

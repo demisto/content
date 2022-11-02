@@ -7,4 +7,8 @@ To access the requested repository, you need to provide
  - Click **Access Tokens** in the left side menu.
  - Give a descriptive name for your token, select the “api” scope and finally click **Create personal access token**.
 
+Get Project ID:
+- Go to the desired project example gitlab.com/username/project1.
+- Under the project name get the argument project_id.
+
  Click [here](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html) for more information.

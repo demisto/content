@@ -9,7 +9,7 @@ This integration enables you to:
 - Create, close, update and delete a GitLab issue note.
 - Get a list of all the notes related to an issue.
 - Create, delete and search a branch in GitLab.
-- Get a list of all GitLab branchs in your project.
+- Get a list of all GitLab branches in your project.
 - Get a list of the projects' commits.
 - Create, update a GitLab merge requests or get a list of all the merge requests.
 - Create, close, update and delete a merge request's note.
@@ -27,7 +27,12 @@ To generate a new token:
 4. Give your token a descriptive name. 
 5. To give your token an expiration, select the **Expiration drop-down** menu, then click a default or use the calendar picker. 
 6. Select the **scopes**, or **permissions**, you want to grant this token. The minimum is read-only on repo.
-7. Click **Create personal access token** and copy the api key generated.
+7. Click **Create personal access token** and copy the api key generated.-+
+
+#### Get Project ID
+1. Go to the desired project example gitlab.com/username/project1.
+2. Under the project name get the argument project_id
+
 ## Configure GitLab on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
