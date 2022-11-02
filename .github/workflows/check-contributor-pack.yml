@@ -22,7 +22,7 @@ jobs:
         uses: Gr1N/setup-poetry@v7
       - name: Install python dependencies
         run: |
-          poetry install
+          poetry install --with ci
       - name: Check pack and request review
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

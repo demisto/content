@@ -6,7 +6,7 @@ from urllib.parse import urlencode
 from urllib3 import disable_warnings
 from requests.exceptions import HTTPError
 from requests import Response
-from typing import Callable, Iterable, Optional, List, Union, Iterator
+from typing import Callable, Iterable, Optional, List, Union, Iterator, Dict
 
 
 STR_OR_STR_LIST = Union[str, List[str]]
