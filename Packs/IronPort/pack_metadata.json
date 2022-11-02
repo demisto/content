@@ -17,5 +17,11 @@
         "xsoar",
         "marketplacev2"
     ],
+    "dependencies": {
+        "Phishing": {
+            "mandatory": true,
+            "name": "Phishing"
+        }
+    },
     "itemPrefix": "CiscoESA"
 }
