@@ -338,7 +338,8 @@ def partial_response_fields(object_name: str):
         return {
             'name': None,
             'commit': ['id', 'short_id', 'committed_date', 'author_name'],
-            'merged': None
+            'merged': None,
+            'protected': None
         }
     if object_name == 'Issue':
         return{
