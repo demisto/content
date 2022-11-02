@@ -5,9 +5,10 @@ import requests
 import dateparser
 from datetime import timedelta
 from typing import Any, Dict, Tuple, List, Optional, Set
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
