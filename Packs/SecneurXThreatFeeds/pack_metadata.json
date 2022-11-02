@@ -11,11 +11,9 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "TIM"
-    ],
-    "useCases": [
         "Threat Intelligence Management"
     ],
+    "useCases": [],
     "keywords": [
         "Threat Intelligence Feeds",
         "SecneurX",
