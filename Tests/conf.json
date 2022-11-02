@@ -5209,6 +5209,11 @@
             "integrations": "JoeSecurityV2",
             "fromversion": "6.2.0",
             "playbookID": "testplaybook- JoeSecuirtyV2"
+        },
+        {
+            "integrations": "CiscoAMP",
+            "playbookID": "CiscoAMP",
+            "fromversion": "6.2.0"
         }
     ],
     "skipped_tests": {
