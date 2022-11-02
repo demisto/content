@@ -555,7 +555,7 @@ class BranchTestCollector(TestCollector):
             self.__collect_packs_from_which_files_were_moved(collect_from.pack_ids_files_were_removed_from)
         ])
 
-    def __collect_from_changed_files(self, changed_files: tuple[str, ...]) -> CollectionResult:
+    def __collect_from_changed_files(self, changed_files: tuple[str, ...]) -> Optional[CollectionResult]:
         """NOTE: this should only be used from _collect"""
         collected = []
         for raw_path in changed_files:
@@ -575,9 +575,9 @@ class BranchTestCollector(TestCollector):
             except Exception as e:
                 logger.exception(f'Error while collecting tests for {raw_path}', exc_info=True, stack_info=True)
                 raise e
-        return CollectionResult.union(filter(None, collected))
+        return CollectionResult.union(collected)
 
-    def __collect_packs_from_which_files_were_moved(self, pack_ids: tuple[str, ...]) -> CollectionResult:
+    def __collect_packs_from_which_files_were_moved(self, pack_ids: tuple[str, ...]) -> Optional[CollectionResult]:
         """NOTE: this should only be used from _collect"""
         collected: list[CollectionResult] = []
         for pack_id in pack_ids:
@@ -593,7 +593,7 @@ class BranchTestCollector(TestCollector):
             except Exception as e:
                 logger.exception(f'Error while collecting tests for {pack_id=}', exc_info=True, stack_info=True)
                 raise e
-        return CollectionResult.union(filter(None, collected))
+        return CollectionResult.union(collected)
 
     def _collect_yml(self, content_item_path: Path) -> Optional[CollectionResult]:
         """
