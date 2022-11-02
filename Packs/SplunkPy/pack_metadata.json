@@ -11,7 +11,7 @@
         "Analytics & SIEM"
     ],
     "tags": [
-        "Data Source"
+        "xsiam:Data Source"
     ],
     "useCases": [],
     "keywords": [],
