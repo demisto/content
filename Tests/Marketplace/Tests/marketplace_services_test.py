@@ -533,6 +533,21 @@ class TestHelperFunctions:
         assert os.path.isdir('Tests/Marketplace/Tests/test_data/pack_to_test/Integrations')
         shutil.rmtree('Tests/Marketplace/Tests/test_data/pack_to_test')
 
+    def test_collect_content_items(self):
+        """
+        Given: pack with modeling rules.
+
+        When: collecting content item to upload.
+
+        Then: collect only modeling rules file start with external prefix.
+
+        """
+        pack_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data', 'TestPack')
+        pack = Pack('test_pack', pack_path)
+        res = pack.collect_content_items()
+        assert res
+        assert len(pack._content_items.get('modelingrule')) == 1
+
 
 class TestVersionSorting:
     """ Class for sorting of changelog.json versions
@@ -1008,7 +1023,8 @@ This is visible
                                                                   build_number=build_number,
                                                                   id_set=id_set)
 
-        assert version_changelog['releaseNotes'] == "#### Integrations\n##### Integration Display Name\n- Fixed an issue"
+        assert version_changelog[
+            'releaseNotes'] == "#### Integrations\n##### Integration Display Name\n- Fixed an issue"
 
     def test_create_filtered_changelog_entry_modified_same_entities(self, dummy_pack: Pack):
         """
@@ -1164,7 +1180,7 @@ This is visible
 #### Scripts
 ##### Script Name
 - Fixed script''', 'marketplacev2',
-            "#### Integrations\n##### Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### Script Name\n\
+         "#### Integrations\n##### Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### Script Name\n\
 - Fixed script"),
         (  # Case 7
             '''
@@ -1177,7 +1193,7 @@ This is visible
 #### Scripts
 ##### Script Name
 - Fixed script''', 'xsoar',
-            "#### Integrations\n##### Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### Script Name\n\
+         "#### Integrations\n##### Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### Script Name\n\
 - Fixed script"),
         (  # Case 8
             '''
@@ -1190,7 +1206,7 @@ This is visible
 #### Scripts
 ##### New: Script Name
 - Fixed script''', 'marketplacev2',
-            "#### Scripts\n##### New: Script Name\n\
+         "#### Scripts\n##### New: Script Name\n\
 - Fixed script"),
         (  # Case 9
             '''
@@ -1643,6 +1659,27 @@ class TestImagesUpload:
         images_data = {"TestPack": {BucketUploadFlow.INTEGRATIONS: [os.path.basename(blob_name)]}}
         task_status = dummy_pack.copy_integration_images(dummy_prod_bucket, dummy_build_bucket, images_data,
                                                          GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH)
+        assert task_status
+
+    def test_copy_preview_images(self, mocker, dummy_pack):
+        """
+           Given:
+               - preview image.
+           When:
+               - Performing copy and upload of all the pack's preview images
+           Then:
+               - Validate that the image has been copied from build bucket to prod bucket
+       """
+        dummy_build_bucket = mocker.MagicMock()
+        dummy_prod_bucket = mocker.MagicMock()
+        dummy_pack.current_version = '1.0.0'
+        blob_name = "TestPack/XSIAMDashboards/MyDashboard_image.png"
+        dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
+        mocker.patch("Tests.Marketplace.marketplace_services.logging")
+        dummy_build_bucket.copy_blob.return_value = Blob('copied_blob', dummy_prod_bucket)
+        images_data = {"TestPack": {BucketUploadFlow.PREVIEW_IMAGES: [blob_name]}}
+        task_status = dummy_pack.copy_preview_images(dummy_prod_bucket, dummy_build_bucket, images_data,
+                                                     GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH)
         assert task_status
 
     def test_copy_author_image(self, mocker, dummy_pack):

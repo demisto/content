@@ -49,6 +49,7 @@ class BucketUploadFlow(object):
     IMAGES = 'images'
     AUTHOR = 'author'
     INTEGRATIONS = 'integrations'
+    PREVIEW_IMAGES = 'preview_images'
     BUCKET_UPLOAD_BUILD_TITLE = "Upload Packs To Marketplace Storage"
     BUCKET_UPLOAD_TYPE = "bucket_upload_flow"
     # Different upload job names relate to different CI platforms:
