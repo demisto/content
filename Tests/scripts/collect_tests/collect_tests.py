@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 from enum import Enum
 from pathlib import Path
-from typing import Iterable, Optional, Sequence
+from typing import Iterable, Optional, Sequence, Union
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions, CONTENT_ENTITIES_DIRS
 from demisto_sdk.commands.common.tools import find_type, str2bool
@@ -72,7 +72,7 @@ class CollectionResult:
             version_range: Optional[VersionRange],
             reason_description: str,
             conf: Optional[TestConf],
-            id_set: Optional[IdSet],
+            id_set: Optional[Union[IdSet, Graph]],
             is_sanity: bool = False,
             is_nightly: bool = False,
             override_pack_compatibility_check: bool = False,
@@ -148,7 +148,7 @@ class CollectionResult:
             test: Optional[str],
             reason: CollectionReason,
             conf: Optional[TestConf],
-            id_set: Optional[IdSet],
+            id_set: Optional[Union[IdSet, Graph]],
             is_sanity: bool,
             is_nightly: bool,
             skip_pack_compatibility: bool,
@@ -527,7 +527,7 @@ class BranchTestCollector(TestCollector):
             marketplace: MarketplaceVersions,
             service_account: Optional[str],
             private_pack_path: Optional[str] = None,
-            graph: Optional[bool] = False,
+            graph: bool = False,
     ):
         """
 
@@ -874,8 +874,8 @@ class NightlyTestCollector(TestCollector, ABC):
 
 
 class XSIAMNightlyTestCollector(NightlyTestCollector):
-    def __init__(self):
-        super().__init__(MarketplaceVersions.MarketplaceV2)
+    def __init__(self, graph: bool):
+        super().__init__(MarketplaceVersions.MarketplaceV2, graph=graph)
 
     def _collect_packs_of_content_matching_marketplace_value(self) -> Optional[CollectionResult]:
         """
@@ -939,8 +939,8 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
 
 
 class XSOARNightlyTestCollector(NightlyTestCollector):
-    def __init__(self):
-        super().__init__(MarketplaceVersions.XSOAR)
+    def __init__(self, graph: bool):
+        super().__init__(MarketplaceVersions.XSOAR, graph=graph)
 
     def _collect(self) -> Optional[CollectionResult]:
         return CollectionResult.union((

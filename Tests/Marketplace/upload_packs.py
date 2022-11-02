@@ -1098,7 +1098,7 @@ def main():
     packs_with_missing_dependencies = []
 
     # pack relevant for the current marketplace this upload is done for
-    packs_for_current_marketplace_dict = {}
+    packs_for_current_marketplace_dict: dict[str, Pack] = {}
 
     # starting iteration over packs
     # in this loop, we load the user metadata for each pack, and filter out the packs that are not relevant for
@@ -1124,7 +1124,6 @@ def main():
     # 2. even if the pack is not updated, we still keep some fields in it's metadata updated, such as download count,
     # changelog, etc.
     for pack in list(packs_for_current_marketplace_dict.values()):
-        pack: Pack
         task_status = pack.collect_content_items()
         if not task_status:
             pack.status = PackStatus.FAILED_COLLECT_ITEMS.name

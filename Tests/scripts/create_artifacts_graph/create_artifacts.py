@@ -6,7 +6,7 @@ from demisto_sdk.commands.content_graph.objects.repository import ContentDTO
 from Tests.scripts.utils.log_util import install_logging
 import logging as logger
 from demisto_sdk.commands.common.logger import logging_setup
-
+from demisto_sdk.commands.common.tools import get_content_path
 
 import json
 
@@ -28,7 +28,7 @@ def main():
         content_dto.dump(Path(args.artifacts_output), args.marketplace, args.zip)
         pack_dependencies = {}
         for pack in content_dto.packs:
-            displayed_images = []
+            displayed_images: list[str] = []
             dependencies = pack.depends_on
             first_level_dependencies = {}
             all_level_dependencies = []
@@ -42,7 +42,7 @@ def main():
 
                     displayed_images.extend((integration.object_id for integration in pack.content_items.integration))
             pack_dependencies[pack.object_id] = {
-                "path": str(pack.path.relative_to(Path.cwd())),
+                "path": str(pack.path.relative_to(get_content_path())),
                 "fullPath": str(pack.path),
                 "dependencies": first_level_dependencies,
                 "displayedImages": displayed_images,

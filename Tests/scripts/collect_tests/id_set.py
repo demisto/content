@@ -163,6 +163,7 @@ class IdSet(DictFileBased):
 
 class Graph:
     def __init__(self, marketplace: MarketplaceVersions) -> None:
+        self.marketplace = marketplace
         with Neo4jContentGraphInterface() as content_graph_interface:
             integrations = content_graph_interface.search(marketplace=marketplace,
                                                           content_type=ContentType.INTEGRATION)
@@ -182,3 +183,14 @@ class Graph:
                                                    for playbook in playbooks}
             self.implemented_scripts_to_tests = {script.object_id: [IdSetItem.from_model(test) for test in script.tested_by]
                                                  for script in scripts}
+
+            self.test_playbooks = self.id_to_test_playbook.values()
+
+    @property
+    def artifact_iterator(self) -> Iterable[IdSetItem]:
+        """ returns an iterator for all content items EXCLUDING PACKS """
+        with Neo4jContentGraphInterface() as content_graph_interface:
+            content_items = content_graph_interface.search(self.marketplace, content_type=ContentType.BASE_CONTENT)
+            for content_item in content_items:
+                if content_item.content_type not in {ContentType.COMMAND, ContentType.PACK}:
+                    yield IdSetItem.from_model(content_item)

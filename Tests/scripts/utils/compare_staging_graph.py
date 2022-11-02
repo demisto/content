@@ -107,7 +107,7 @@ def file_diff(output_path: Path, zip1_files: str, zip2_files: str, file: str, di
         if file1_path.suffix == ".yml":
             load_func = yaml.load
         elif file1_path.suffix == ".json":
-            load_func = json.load
+            load_func = json.load  # type: ignore[assignment]
         else:
             print(f"not yaml or json: {output_path / file}. continue")
             return
