@@ -2889,59 +2889,69 @@ def endpoint_command(client: Client, args: Dict[str, Any]) -> List[CommandResult
     Returns:
         List[CommandResults]: A list of endpoint indicators.
     """
-    endpoint_id = args.get('id')
-    endpoint_ip = args.get('ip')
-    endpoint_hostname = args.get('hostname')
+    endpoint_ids = argToList(args.get('id'))
+    endpoint_ips = argToList(args.get('ip'))
+    endpoint_hostnames = argToList(args.get('hostname'))
 
-    if not endpoint_id and not endpoint_ip and not endpoint_hostname:
+    if not endpoint_ids and not endpoint_ips and not endpoint_hostnames:
         raise DemistoException('CiscoAMP - In order to run this command, please provide a valid id, ip or hostname')
 
-    if endpoint_id:
-        response = client.computer_get_request(
-            connector_guid=endpoint_id
-        )
+    responses = []
 
-    elif endpoint_ip:
-        response = client.computer_list_request(
-            internal_ip=endpoint_ip
-        )
+    if endpoint_ids:
+        for endpoint_id in endpoint_ids:
+            response = client.computer_get_request(
+                connector_guid=endpoint_id
+            )
+
+            responses.append(response)
+
+    elif endpoint_ips:
+        for endpoint_ip in endpoint_ips:
+            response = client.computer_list_request(
+                internal_ip=endpoint_ip
+            )
+
+        responses.append(response)
 
     else:
-        response = client.computer_list_request(
-            hostnames=endpoint_hostname
-        )
+        responses.append(client.computer_list_request(
+            hostnames=endpoint_hostnames
+        ))
 
     endpoints: List = []
-    data_list = response['data']
 
-    if endpoint_id:
-        data_list = [data_list]
+    for response in responses:
+        data_list = response['data']
 
-    for data in data_list:
-        endpoint = Common.Endpoint(
-            id=data['connector_guid'],
-            ip_address=data['internal_ips'][0],
-            hostname=data['hostname'],
-            mac_address=data['network_addresses'][0]['mac'],
-            os=data['operating_system'],
-            os_version=data['os_version'],
-            status='Online' if data['active'] else 'Offline',
-            vendor='CiscoAMP Response'
-        )
+        if endpoint_ids:
+            data_list = [data_list]
 
-        endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
-        readable_output = tableToMarkdown(
-            f'CiscoAMP - Endpoint {data["hostname"]}',
-            endpoint_context
-        )
+        for data in data_list:
+            endpoint = Common.Endpoint(
+                id=data['connector_guid'],
+                ip_address=data['internal_ips'][0],
+                hostname=data['hostname'],
+                mac_address=data['network_addresses'][0]['mac'],
+                os=data['operating_system'],
+                os_version=data['os_version'],
+                status='Online' if data['active'] else 'Offline',
+                vendor='CiscoAMP Response'
+            )
 
-        endpoints.append(CommandResults(
-            readable_output=readable_output,
-            outputs_prefix='',
-            raw_response=response,
-            outputs_key_field='_id',
-            indicator=endpoint
-        ))
+            endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
+            readable_output = tableToMarkdown(
+                f'CiscoAMP - Endpoint {data["hostname"]}',
+                endpoint_context
+            )
+
+            endpoints.append(CommandResults(
+                readable_output=readable_output,
+                outputs_prefix='',
+                raw_response=response,
+                outputs_key_field='_id',
+                indicator=endpoint
+            ))
 
     return endpoints
 

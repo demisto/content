@@ -47,7 +47,7 @@ configuration:
   type: 0
 - display: Event types
   name: event_types
-  additionalinfo: Comma separated list of Event Type IDs.
+  additionalinfo: Comma separated list of Event Type IDs. The IDs can be received from the command cisco-amp-event-type-list.
   required: false
   type: 0
 - display: Incident type
@@ -1896,19 +1896,19 @@ script:
   - arguments:
     - default: false
       description: The endpoint ID. Takes priority over the IP and hostname arguments.
-      isArray: false
+      isArray: true
       name: id
       required: false
       secret: false
     - default: true
       description: The endpoint IP address. The ip argument has priority over the hostname argument.
-      isArray: false
+      isArray: true
       name: ip
       required: false
       secret: false
     - default: false
       description: The endpoint hostname.
-      isArray: false
+      isArray: true
       name: hostname
       required: false
       secret: false
