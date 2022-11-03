@@ -252,7 +252,7 @@ def test_module_command(client: Client, params: dict) -> str:
     """
     access_token = client.get_access_token()
     params = prepare_query_params(params)
-    client.get_events_request(access_token, {})
+    client.get_events_request(access_token, params)
     return 'ok'
 
 
