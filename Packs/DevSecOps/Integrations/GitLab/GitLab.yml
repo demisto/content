@@ -24,7 +24,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Deprecated. Use GitLab v2 Pack instead.
+description: Deprecated. Use GitLab v2 in GitLab Pack instead.
 display: GitLab (Deprecated) 
 name: GitLab
 script:
