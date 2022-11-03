@@ -21,7 +21,6 @@ def create_zips(content_dto: ContentDTO, output: Path, marketplace: str, zip: bo
 def create_dependencies(content_dto: ContentDTO, output: Path):
     pack_dependencies = {}
     for pack in content_dto.packs:
-        displayed_images: list[str] = []
         dependencies = pack.depends_on
         first_level_dependencies = {}
         all_level_dependencies = []
@@ -32,15 +31,11 @@ def create_dependencies(content_dto: ContentDTO, output: Path):
                     "display_name": dependency.content_item.object_id,
                     "mandatory": dependency.mandatorily,
                 }
-
-                displayed_images.extend(
-                    (integration.object_id for integration in dependency.content_item.content_items.integration)
-                )
         pack_dependencies[pack.object_id] = {
             "path": str(pack.path.relative_to(get_content_path())),
             "fullPath": str(pack.path),
             "dependencies": first_level_dependencies,
-            "displayedImages": displayed_images,
+            "displayedImages": list(first_level_dependencies.keys()),
             "allLevelDependencies": all_level_dependencies,
         }
     with open(output, "w") as f:
@@ -58,7 +53,10 @@ def main():
 
     with Neo4jContentGraphInterface() as interface:
         content_dto: ContentDTO = interface.marshal_graph(args.marketplace, all_level_dependencies=True)
+        logger.info("Creating content artifacts zips")
         create_zips(content_dto, Path(args.artifacts_output), args.marketplace, args.zip)
+
+        logger.info("Creating pack dependencies mapping")
         create_dependencies(content_dto, Path(args.dependencies_output))
 
 
