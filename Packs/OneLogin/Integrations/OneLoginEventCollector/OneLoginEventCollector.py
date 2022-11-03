@@ -107,7 +107,7 @@ class Client(BaseClient):
 
         return last_run.get('event_types')
 
-    def convert_type_id_to_name(self, event: dict, last_run: dict, event_types: dict = {}) -> str:
+    def convert_type_id_to_name(self, event: dict, event_types: dict, last_run: dict) -> str:
         """
         Gets the event type name by the event type id.
 
@@ -120,7 +120,6 @@ class Client(BaseClient):
             (str): The event type name.
         """
 
-        event_type_name = ''
         if event_type_name := event_types.get(str(event['event_type_id'])):
             return event_type_name
 
@@ -208,7 +207,7 @@ class Client(BaseClient):
                         cursor = query_params['after_cursor']
                         break
 
-                    event['event_type_name'] = self.convert_type_id_to_name(event, last_run, event_types)
+                    event['event_type_name'] = self.convert_type_id_to_name(event, event_types, last_run)
                     aggregated_events.append(event)
 
                 else:
@@ -338,7 +337,6 @@ def main() -> None:
             else:  # command == 'fetch-events'
                 last_run = demisto.getLastRun()
                 events, last_run = fetch_events_command(client, params, last_run)
-                print(events)
                 demisto.setLastRun(last_run)
 
             if argToBoolean(args.get('should_push_events', 'true')):
