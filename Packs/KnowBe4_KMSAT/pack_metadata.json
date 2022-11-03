@@ -1,6 +1,6 @@
 {
     "name": "KnowBe4 KMSAT",
-    "description": "KnowBe4’s Event APIs are REST APIs that allow you to push and pull your external data to and from the KnowBe4 console. Data is returned in a JSON structure by default--no additional parameter is needed.",
+    "description": "KnowBe4\u2019s Event APIs are REST APIs that allow you to push and pull your external data to and from the KnowBe4 console. Data is returned in a JSON structure by default--no additional parameter is needed.",
     "support": "xsoar",
     "currentVersion": "1.0.2",
     "author": "Cortex XSOAR",
@@ -9,7 +9,9 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Data Source"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
