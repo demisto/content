@@ -2873,7 +2873,7 @@ script:
       secret: false
     - default: false
       description: An expiration date for the vulnerability exception formatted in ISO 8601 format.
-        Required if `status` is not used.
+        Required if `status` is not used. Must be a date in the future.
       isArray: false
       name: expiration
       required: false

@@ -318,7 +318,7 @@ class Client(BaseClient):
         """
         if ip_address is None and hostname is None:
             raise ValueError("At least one of \"ip\" and \"host_name\" arguments must be passed.")
-        post_data = {"date": date}
+        post_data: dict = {"date": date}
 
         if ip_address is not None:
             post_data["ip"] = ip_address
@@ -658,14 +658,11 @@ class Client(BaseClient):
                 dateOfMonth=date_of_month,
             )
 
-        if repeat_behaviour is not None:
-            repeat_behaviour = repeat_behaviour.value
-
         post_data = find_valid_params(
             assets=assets,
             duration=duration,
             enabled=enabled,
-            onScanRepeat=repeat_behaviour,
+            onScanRepeat=repeat_behaviour.value if repeat_behaviour is not None else None,
             repeat=repeat,
             scanName=scan_name,
             scanTemplateId=scan_template_id,
@@ -2197,14 +2194,11 @@ class Client(BaseClient):
                 dateOfMonth=date_of_month,
             ))
 
-        if repeat_behaviour is not None:
-            repeat_behaviour = repeat_behaviour.value
-
         post_data = find_valid_params(
             assets=assets,
             duration=duration,
             enabled=enabled,
-            onScanRepeat=repeat_behaviour.value,
+            onScanRepeat=repeat_behaviour.value if repeat_behaviour is not None else None,
             repeat=repeat,
             scanName=scan_name,
             scanTemplateId=scan_template_id,
@@ -2697,7 +2691,7 @@ def normalize_scan_data(scan_data: dict) -> dict:
     Returns:
         dict: Scan data in a normalized format that will be displayed in the UI.
     """
-    scan_output: dict = replace_key_names(
+    replace_key_names(
         data=scan_data,
         name_mapping={
             "id": "Id",
@@ -2713,9 +2707,9 @@ def normalize_scan_data(scan_data: dict) -> dict:
         use_reference=True,
     )
 
-    scan_output["TotalTime"] = readable_duration_time(scan_output["TotalTime"])
+    scan_data["TotalTime"] = readable_duration_time(scan_data["TotalTime"])
 
-    return scan_output
+    return scan_data
 
 
 def readable_duration_time(duration: str) -> str:
@@ -2760,19 +2754,19 @@ def readable_duration_time(duration: str) -> str:
 
     for item in p_duration:
         designator = item[-1]
-        number = float(item[:-1])
+        number_float = float(item[:-1])
 
-        if number.is_integer():
-            number = int(number)
+        if number_float.is_integer():
+            number_int = int(number_float)
 
         else:
-            number = round(number)
+            number_int = round(number_float)
 
-        duration_values[duration_mapping_p[designator]] = number
+        duration_values[duration_mapping_p[designator]] = number_int
 
     for item in t_duration:
         designator = item[-1]
-        number = float(item[:-1])
+        number: Union[int, float] = float(item[:-1])
 
         if number.is_integer():
             number = int(number)
@@ -2794,9 +2788,15 @@ def readable_duration_time(duration: str) -> str:
 
 def replace_key_names(data: Union[dict, list, tuple],
                       name_mapping: dict[str, str], use_reference: bool = False,
-                      original_reference: Union[dict, list, tuple, None] = None) -> Union[dict, list, tuple, set]:
+                      original_reference: Union[dict, None] = None) -> Union[dict, list, tuple, set]:
     """
     Replace key names in a dictionary.
+
+    Note:
+        `use-reference` parameter exists because the original code used a reference to the original dictionary
+        instead of creating a copy. This means that when keys were renamed for HR, the changes also affected
+        ContextData keys. This parameter is used in these commands to keep the same behaviour and to not break
+        backwards compatibility.
 
     Args:
         data (dict | list | tuple): An iterable to replace key names for dictionaries within it.
@@ -2805,7 +2805,7 @@ def replace_key_names(data: Union[dict, list, tuple],
                              can represent nested dict items in a "parent.child" format.
         use_reference (bool, optional): If set to true, the function will replace the keys in the original dictionary
                                   and return it, instead of creating, applying changes, and returning a new copy.
-        original_reference (dict | list | tuple | None, optional): Used internally for recursion. Should not be used.
+        original_reference (dict, optional): Used internally for recursion. Should not be used.
 
     Returns:
         Union[dict, list, tuple]: The data-structure (original or copy)
@@ -2815,7 +2815,7 @@ def replace_key_names(data: Union[dict, list, tuple],
         data = deepcopy(data)
 
     if original_reference is None and isinstance(data, dict):
-        original_reference = data
+        original_reference: dict = data
 
     if isinstance(data, (list, tuple)):
         for i in range(len(data)):
@@ -2923,9 +2923,6 @@ def create_scan_report_command(client: Client, scan_id: str, template_id: Option
             Defaults to True.
     """
     scope = {"scan": scan_id}
-
-    if report_format is not None:
-        report_format = report_format.value
 
     return create_report(
         client=client,
@@ -3165,9 +3162,6 @@ def create_sites_report_command(client: Client, sites: list[Site],
     """
     scope = {"sites": sites}
 
-    if report_format is not None:
-        report_format = report_format.value
-
     return create_report(
         client=client,
         scope=scope,
@@ -3300,17 +3294,12 @@ def create_vulnerability_exception_command(client: Client, vulnerability_id: str
     if scope_type != VulnerabilityExceptionScopeType.GLOBAL and scope_id is None:
         raise ValueError("`scope_id` must be set when using scopes different than `Global`.")
 
-    scope_id_int: Optional[int] = None
-
-    if isinstance is not None:
-        scope_id_int = int(scope_id)
-
     response_data = client.create_vulnerability_exception(
         vulnerability_id=vulnerability_id,
         scope_type=scope_type,
         state=state,
         reason=reason,
-        scope_id=scope_id_int,
+        scope_id=int(scope_id) if scope_id is not None else None,
         expires=expires,
         comment=comment,
     )
@@ -3438,6 +3427,12 @@ def download_report_command(client: Client, report_id: str, instance_id: str,
     """
     Download a report file.
 
+    Note:
+        Not sure why there's a report_format parameter, as the format is set when generating the report,
+        and all the parameter seems to do here, is just change the file extension
+        (which is obviously not how file conversion works).
+        Currently leaving it as it is, since removing it might break client's using it for some reason.
+
     Args:
         client (Client): Client to use for API requests.
         report_id (str): ID of the report to download.
@@ -3450,8 +3445,6 @@ def download_report_command(client: Client, report_id: str, instance_id: str,
     Returns:
         dict: A dict generated by `CommonServerPython.fileResult` representing a War Room entry.
     """
-    # TODO: Check if format can actually be changed from the default PDF received from Nexpose. Delete if not?
-
     if report_name is None:
         report_name = f"report {str(datetime.now())}"
 
@@ -3490,7 +3483,10 @@ def get_asset_command(client: Client, asset_id: str) -> Union[CommandResults, Li
     last_scan = find_asset_last_change(asset_data)
     asset_data["LastScanDate"] = last_scan["date"]
     asset_data["LastScanId"] = last_scan["id"]
-    asset_data["Site"] = client.find_asset_site(asset_data["id"]).name
+    found_site = client.find_asset_site(asset_data["id"])
+
+    if found_site is not None:
+        asset_data["Site"] = found_site.name
 
     asset_headers = [
         "AssetId",
@@ -3804,7 +3800,7 @@ def get_asset_vulnerability_command(client: Client, asset_id: str,
         use_reference=True,
     )
 
-    results_output = []
+    results_output: list = []
 
     if vulnerability_data.get("results"):
         results_output = replace_key_names(
@@ -4157,11 +4153,10 @@ def list_scan_schedule_command(client: Client, site: Site, schedule_id: Optional
             scan_schedules_data = scan_schedules_data[:limit]
 
     else:
-        scan_schedules_data = client.get_site_scan_schedule(
+        scan_schedules_data = [client.get_site_scan_schedule(
             site_id=site.id,
             schedule_id=schedule_id,
-        )
-        scan_schedules_data = [scan_schedules_data]
+        )]
 
     if not scan_schedules_data:
         return CommandResults(
@@ -4404,8 +4399,7 @@ def list_vulnerability_command(client: Client, vulnerability_id: Optional[str], 
         )
 
     else:
-        vulnerabilities_data = client.get_vulnerability(vulnerability_id)
-        vulnerabilities_data = [vulnerabilities_data]
+        vulnerabilities_data = [client.get_vulnerability(vulnerability_id)]
 
     if not vulnerabilities_data:
         return CommandResults(
@@ -4477,8 +4471,7 @@ def list_vulnerability_exceptions_command(client: Client, vulnerability_exceptio
         )
 
     else:
-        vulnerability_exceptions_data = client.get_vulnerability_exception(vulnerability_exception_id)
-        vulnerability_exceptions_data = [vulnerability_exceptions_data]
+        vulnerability_exceptions_data = [client.get_vulnerability_exception(vulnerability_exception_id)]
 
     if not vulnerability_exceptions_data:
         return CommandResults(
@@ -4682,37 +4675,31 @@ def set_assigned_shared_credential_status_command(client: Client, site: Site,
     )
 
 
-def start_assets_scan_command(client: Client, ips: Union[str, list, None] = None,
-                              hostnames: Union[str, list, None] = None,
+def start_assets_scan_command(client: Client, ip_addresses: Optional[list] = None,
+                              hostnames: Optional[list] = None,
                               scan_name: Optional[str] = None) -> CommandResults:
     """
     | Start a scan on the provided assets.
     |
 
     Note:
-        Both `ips` and `hostnames` are optional, but at least one of them must be provided.
+        Both `ip_addresses` and `hostnames` are optional, but at least one of them must be provided.
 
     Args:
         client (Client): Client to use for API requests.
-        ips (str | list | None, optional): IP(s) of assets to scan. Defaults to None
-        hostnames (str | list | None, optional): Hostname(s) of assets to scan. Defaults to None
+        ip_addresses (list | None, optional): IP(s) of assets to scan. Defaults to None
+        hostnames (list | None, optional): Hostname(s) of assets to scan. Defaults to None
         scan_name (str | None): Name to set for the new scan.
             Defaults to None (Results in using a "scan <date>" format).
     """
-    if not (ips or hostnames):
-        raise ValueError("At least one of `ips` and `hostnames` must be provided")
+    if ip_addresses is None and hostnames is None:
+        raise ValueError("At least one of `ips` and `hostnames` must be provided.")
 
     if not scan_name:
         scan_name = f"scan {datetime.now()}"
 
-    if isinstance(ips, str):
-        ips = [ips]
-
-    if isinstance(hostnames, str):
-        hostnames = [hostnames]
-
-    if ips:
-        asset_filter = "ip-address is " + ips[0]
+    if ip_addresses:
+        asset_filter = "ip-address is " + ip_addresses[0]
 
     else:  # elif hostnames
         asset_filter = "host-name is " + hostnames[0]
@@ -4721,7 +4708,7 @@ def start_assets_scan_command(client: Client, ips: Union[str, list, None] = None
 
     if not asset_data:
         return CommandResults(
-            readable_output="Could not find assets",
+            readable_output="Could not find assets.",
             raw_response=asset_data,
         )
 
@@ -4729,14 +4716,14 @@ def start_assets_scan_command(client: Client, ips: Union[str, list, None] = None
 
     if site is None:
         return CommandResults(
-            readable_output="Could not find site",
+            readable_output="Could not find site.",
             raw_response=site,
         )
 
     hosts = []
 
-    if ips:
-        hosts.extend(ips)
+    if ip_addresses:
+        hosts.extend(ip_addresses)
 
     if hostnames:
         hosts.extend(hostnames)
@@ -4749,7 +4736,7 @@ def start_assets_scan_command(client: Client, ips: Union[str, list, None] = None
 
     if "id" not in scan_response:
         return CommandResults(
-            readable_output="Could not start scan",
+            readable_output="Could not start scan.",
             raw_response=scan_response,
         )
 
@@ -5114,12 +5101,9 @@ def update_vulnerability_exception_command(client: Client, vulnerability_excepti
             )
         )
 
-    if len(responses) == 1:
-        responses = responses[0]
-
     return CommandResults(
         readable_output=f"Successfully updated vulnerability exception {vulnerability_exception_id}.",
-        raw_response=responses,
+        raw_response=responses[0] if len(responses) == 1 else responses,
     )
 
 
@@ -5889,7 +5873,7 @@ def main():
                 status=status,
             )
         elif command == "nexpose-search-assets":
-            sites = []
+            sites: List[Site] = []
             page_size = None
             page = None
             limit = None
@@ -5935,7 +5919,7 @@ def main():
 
             results = start_assets_scan_command(
                 client=client,
-                ips=ips,
+                ip_addresses=ips,
                 hostnames=hostnames,
                 scan_name=args.get("name"),
             )
@@ -5967,8 +5951,6 @@ def main():
         return_results(results)
 
     except Exception as e:
-        LOG(e)
-        LOG.print_log(False)
         return_error(str(e))
 
 
