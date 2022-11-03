@@ -33,7 +33,7 @@ Playbook that is used as a container folder for all enrichments of ASM alerts.
 
 #### Cortex ASM - Remediation Guidance
 Playbook that pulls remediation guidance off of a list based on ASM RuleID to be used in service owner notifications (email or ticketing system).
-<ADD ABSOLUTE LINK AFTER PUSH>
+![Cortex ASM - Remediation Guidance](https://raw.githubusercontent.com/demisto/content/d474d924dd0e7ef7067b15764623804a24c8e1c8/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Remediation_Guidance.png)
 
 ### Automation Scripts
 This content pack includes the following scripts: 
