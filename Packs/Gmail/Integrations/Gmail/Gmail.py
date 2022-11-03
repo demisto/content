@@ -2051,8 +2051,8 @@ def forwarding_address_add_command_without_disposition(user_id, forwarding_email
             outputs.append(context)
             raw_response_list_success.append(result_add)
     if raw_response_list_failure:
-        result_failure = result_failure = {"message": f"Can't create forwarding to: {', '.join(emails_list_failure)}",
-                                           "outputs": {"errors": raw_response_list_failure}}
+        result_failure = {"message": f"Can't create forwarding to: {', '.join(emails_list_failure)}",
+                          "outputs": {"errors": raw_response_list_failure}}
     if raw_response_list_success:
         result_success = CommandResults(raw_response=raw_response_list_success,
                                         outputs=outputs,
