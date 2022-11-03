@@ -341,7 +341,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
             # Store index.json in CircleCI artifacts
             shutil.copyfile(
                 os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json'),
-                os.path.join(artifacts_dir, f'{GCPConfig.INDEX_NAME}-{"id_set" if id_set else "graph"}.json'),
+                os.path.join(artifacts_dir, f'{GCPConfig.INDEX_NAME}{"" if id_set else "graph"}.json'),
             )
         shutil.rmtree(index_folder_path)
 
