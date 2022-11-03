@@ -21,7 +21,6 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARIABLES'''
 PARAMS: dict = demisto.params()
-
 BOT_ID: str = PARAMS.get('bot_id', '')
 BOT_PASSWORD: str = PARAMS.get('bot_password', '')
 tenant_id: str = PARAMS.get('tenant_id', '')
