@@ -882,6 +882,8 @@ def get_images_data(packs_list: list):
             pack_image_data[pack.name][BucketUploadFlow.AUTHOR] = True
         if pack.uploaded_integration_images:
             pack_image_data[pack.name][BucketUploadFlow.INTEGRATIONS] = pack.uploaded_integration_images
+        if pack.uploaded_preview_images:
+            pack_image_data[pack.name][BucketUploadFlow.PREVIEW_IMAGES] = pack.uploaded_preview_images
         if pack_image_data[pack.name]:
             images_data.update(pack_image_data)
 
@@ -1184,6 +1186,13 @@ def main():
             pack.status = PackStatus.FAILED_UPLOADING_PACK.name
             pack.cleanup()
             continue
+
+        # uploading preview images. The path contains pack version
+        task_status = pack.upload_preview_images(storage_bucket, storage_base_path, diff_files_list)
+        if not task_status:
+            pack._status = PackStatus.FAILED_PREVIEW_IMAGES_UPLOAD.name
+            pack.cleanup()
+            return False
 
         task_status, exists_in_index = pack.check_if_exists_in_index(index_folder_path)
         if not task_status:

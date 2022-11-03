@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-
+from CommonServerUserPython import *
 """ IMPORTS """
 from distutils.util import strtobool
 from typing import List, Tuple, Dict, Any, Union
@@ -10,6 +10,17 @@ import dateparser
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
+
+
+class Filter():
+    def __init__(self, filter: str, value: Any, lookup: str = "exact"):
+        self.filter = filter
+        self.value = value
+        self.lookup = lookup
+
+    def build_filter(self):
+        return f"{self.filter}__{self.lookup}={self.value}"
+
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -67,8 +78,12 @@ WINDOWS_CVE_BASE_URL = "ranger/insight_details/Windows%20CVEs?&format=asset_page
 FULL_MATCH_BASE_URL = "ranger/insight_details/Full%20Match%20CVEs?&format=asset_page&sort=-Score%20(CVSS)" \
                       "&per_page=1000&page=1&id__exact="
 DEFAULT_RESOLVE_ALERT_COMMENT = "Resolved by Demisto"
-MAX_ASSET_LIMIT = 75
-MAX_ALERT_LIMIT = 75
+# MAX_ASSET_LIMIT = 75
+# MAX_ALERT_LIMIT = 75
+MAX_PER_PAGE = 200
+DEFAULT_PER_PAGE = 10
+DEFAULT_ALERTS_FILTERS = [Filter("is_qualified", "true", "exact")]
+DEFAUL_ASSETS_FILTERS = [Filter("valid", "true", "exact"), Filter("approved", "true", "exact"), Filter("ghost", "false", "exact")]
 
 
 class Client(BaseClient):
@@ -109,12 +124,18 @@ class Client(BaseClient):
 
     def list_incidents(self, fields: list, sort_by: dict, fetch_from_date: str, page_number: int,
                        **extra_filters) -> dict:
-        extra_filters_list = [add_filter("timestamp", fetch_from_date, "gte")]
+        extra_filters_list = [Filter("timestamp", fetch_from_date, "gte")]
+        extra_filters_list += DEFAULT_ALERTS_FILTERS
+
         for extra_filter in extra_filters:
             if extra_filter == "severity":
-                extra_filters_list.append(add_filter(extra_filter, extra_filters[extra_filter], "gte"))
+                extra_filters_list.append(Filter(extra_filter, extra_filters[extra_filter], "gte"))
             else:
-                extra_filters_list.append(add_filter(extra_filter, extra_filters[extra_filter]))
+                extra_filters_list.append(Filter(extra_filter, extra_filters[extra_filter]))
+
+        if bool(demisto.params().get("exclude_resolved_alerts", False)):
+            extra_filters_list = _add_exclude_resolved_alerts_filters(extra_filters_list)
+
         return self.get_alerts(fields=fields, sort_by=sort_by, filters=extra_filters_list, page_number=page_number)
 
     def get_assets(self, fields: list, sort_by: dict, filters: list, limit: int = 10):
@@ -150,7 +171,7 @@ class Client(BaseClient):
         )
 
     @staticmethod
-    def _add_extra_params_to_url(url_suffix: str, fields: list, sort_by: dict, filters: list, limit: int = 10,
+    def _add_extra_params_to_url(url_suffix: str, fields: list, sort_by: dict, filters: List[Filter], limit: int = 10,
                                  page_number: int = 1) -> str:
         url_suffix += "?fields=" + ',;$'.join(fields)
         url_suffix += f"&page={page_number}&per_page={limit}"
@@ -159,7 +180,7 @@ class Client(BaseClient):
             url_suffix += f"&sort={sort_by['order']}{sort_by['field']}"
 
         for query_filter in filters:
-            url_suffix += f"&{query_filter['field']}__{query_filter['operator']}={query_filter['value']}"
+            url_suffix += f"&{query_filter.build_filter()}"
         return url_suffix
 
     def enrich_asset_results(self, assets: dict) -> dict:
@@ -188,18 +209,24 @@ def get_assets_command(client: Client, args: dict) -> Tuple:
     relevant_fields, sort_by, limit = _init_request_values("asset", "id", "asset_limit", args)
     filters = []
 
+    filters += DEFAUL_ASSETS_FILTERS
+
     criticality_str = args.get("criticality", None)
     criticality_int = CTD_TO_DEMISTO_SEVERITY.get(criticality_str, None)
     if criticality_int:
-        filters.append(add_filter("criticality", criticality_int - 1))
+        filters.append(Filter("criticality", criticality_int - 1))
 
     insight_name = args.get("insight_name", None)
     if insight_name:
-        filters.extend([add_filter("insight_name", insight_name), add_filter("insight_status", 0)])
+        filters.extend([Filter("insight_name", insight_name), Filter("insight_status", 0)])
 
     assets_last_seen = args.get("assets_last_seen", None)
     if assets_last_seen:
-        filters.append(add_filter("last_seen", assets_last_seen, "gte"))
+        filters.append(Filter("last_seen", assets_last_seen, "gte"))
+
+    site_id = demisto.params().get("site_id", None)
+    if site_id:
+        filters.append(Filter("site_id", site_id, "exact"))
 
     result = client.get_assets(relevant_fields, sort_by, filters, limit)
 
@@ -281,6 +308,7 @@ def query_alerts_command(client: Client, args: dict) -> Tuple:
     relevant_fields, sort_by, limit = _init_request_values("alert", "timestamp", "alert_limit", args, True)
     filters = []
 
+    filters += DEFAULT_ALERTS_FILTERS
     alert_type = args.get("type", "").lower().replace(" ", "")
     alert_type_exists = False
     if alert_type:
@@ -288,16 +316,23 @@ def query_alerts_command(client: Client, args: dict) -> Tuple:
         filters_url_suffix = transform_filters_labels_to_values(alert_filters, "type", alert_type)
         if filters_url_suffix:
             for filter_type in filters_url_suffix:
-                filters.append(add_filter(filter_type[0], filter_type[1]))
+                filters.append(Filter(filter_type[0], filter_type[1]))
                 alert_type_exists = True
 
     alert_time = args.get("date_from", None)
     if alert_time:
-        filters.append(add_filter("timestamp", alert_time, "gte"))
+        filters.append(Filter("timestamp", alert_time, "gte"))
 
     alert_severity = args.get("severity", None)
     if alert_severity:
-        add_filter("severity", get_severity_filter(alert_severity), "gte")
+        Filter("severity", get_severity_filter(alert_severity), "gte")
+
+    if strtobool(args.get("exclude_resolved_alerts", "False")):
+        filters = _add_exclude_resolved_alerts_filters(filters)
+
+    site_id = demisto.params().get("site_id", None)
+    if site_id:
+        filters.append(Filter("site_id", site_id, "exact"))
 
     if bool(alert_type) == alert_type_exists:
         result = client.get_alerts(relevant_fields, sort_by, filters, limit)
@@ -317,6 +352,14 @@ def query_alerts_command(client: Client, args: dict) -> Tuple:
     )
 
 
+def _add_exclude_resolved_alerts_filters(filters: List[Filter]):
+    if not filters:
+        return [Filter("resolved", "false", "exact")]
+
+    filters += [Filter("resolved", "false", "exact")]
+    return filters
+
+
 def _init_request_values(obj_name: str, sort_by_default_value: str, limit_arg: str, args: dict,
                          get_sort_order_arg: bool = False) -> Tuple[List, Dict, int]:
     relevant_fields = get_fields(obj_name, args.get("fields", "").split(","))
@@ -326,18 +369,12 @@ def _init_request_values(obj_name: str, sort_by_default_value: str, limit_arg: s
         sort_order = get_sort_order(args.get("sort_order", "asc"))
 
     sort_by = get_sort(args.get("sort_by", sort_by_default_value), sort_order)
+    limit = demisto.params().get("per_page", str(DEFAULT_PER_PAGE)) or args.get(limit_arg, str(DEFAULT_PER_PAGE))
 
-    limit = args.get(limit_arg, '10')
-    max_limit = 10
-    if obj_name == "asset":
-        max_limit = MAX_ASSET_LIMIT
-    elif obj_name == "alert":
-        max_limit = MAX_ALERT_LIMIT
-
-    if limit.isdigit() and int(limit) <= max_limit:
+    if limit.isdigit() and int(limit) <= MAX_PER_PAGE:
         limit = int(limit)
     else:
-        limit = 10
+        limit = DEFAULT_PER_PAGE
 
     return relevant_fields, sort_by, limit
 
@@ -356,40 +393,41 @@ def _parse_alerts_result(alert_result: dict, fields: list) -> List[dict]:
 
 def _parse_single_alert(alert_obj, fields: list):
     parsed_alert_result = {}
-    for field in fields:
-        if field == "type":
-            parsed_alert_result[ALERT_CTD_FIELD_TO_DEMISTO_FIELD[field]] = alert_obj.get(field)
-            alert_type_value = alert_obj.get("type__", [])
-            parsed_alert_result[ALERT_CTD_FIELD_TO_DEMISTO_FIELD["type__"]] = alert_type_value[1:] \
-                if alert_type_value else None
+    if alert_obj:
+        for field in fields:
+            if field == "type":
+                parsed_alert_result[ALERT_CTD_FIELD_TO_DEMISTO_FIELD[field]] = alert_obj.get(field)
+                alert_type_value = alert_obj.get("type__", [])
+                parsed_alert_result[ALERT_CTD_FIELD_TO_DEMISTO_FIELD["type__"]] = alert_type_value[1:] \
+                    if alert_type_value else None
 
-        elif field == "alert_indicators":
-            indicator_str_result = ""
-            for indicator in alert_obj.get(field, []):
-                indicator_str_result += f"Alert ID - {indicator['alert_id']}\r\n"
-                indicator_str_result += f"Description - {indicator['indicator_info']['description']}\r\n"
-                indicator_str_result += f"Points - {indicator['indicator_info']['points']}\r\n\n"
-            parsed_alert_result[ALERT_CTD_FIELD_TO_DEMISTO_FIELD[field]] = indicator_str_result
+            elif field == "alert_indicators":
+                indicator_str_result = ""
+                for indicator in alert_obj.get(field, []):
+                    indicator_str_result += f"Alert ID - {indicator['alert_id']}\r\n"
+                    indicator_str_result += f"Description - {indicator['indicator_info']['description']}\r\n"
+                    indicator_str_result += f"Points - {indicator['indicator_info']['points']}\r\n\n"
+                parsed_alert_result[ALERT_CTD_FIELD_TO_DEMISTO_FIELD[field]] = indicator_str_result
 
-        elif field == "severity":
-            alert_severity_value = alert_obj.get("severity__")
-            parsed_alert_result[ALERT_CTD_FIELD_TO_DEMISTO_FIELD["severity__"]] = alert_severity_value[1:]\
-                if alert_severity_value else None
+            elif field == "severity":
+                alert_severity_value = alert_obj.get("severity__")
+                parsed_alert_result[ALERT_CTD_FIELD_TO_DEMISTO_FIELD["severity__"]] = alert_severity_value[1:]\
+                    if alert_severity_value else None
 
-        elif field == "category":
-            alert_category_value = alert_obj.get("category__")
-            parsed_alert_result[ALERT_CTD_FIELD_TO_DEMISTO_FIELD["category__"]] = alert_category_value[1:]\
-                if alert_category_value else None
+            elif field == "category":
+                alert_category_value = alert_obj.get("category__")
+                parsed_alert_result[ALERT_CTD_FIELD_TO_DEMISTO_FIELD["category__"]] = alert_category_value[1:]\
+                    if alert_category_value else None
 
-        elif field == "actionable_assets":
-            assets = alert_obj.get(field, [])
-            parsed_assets = []
+            elif field == "actionable_assets":
+                assets = alert_obj.get(field, [])
+                parsed_assets = []
 
-            for asset in assets:
-                parsed_assets.append(_parse_single_asset(asset["asset"], DEFAULT_ASSET_FIELD_LIST))
-            parsed_alert_result[ALERT_CTD_FIELD_TO_DEMISTO_FIELD[field]] = parsed_assets
-        else:
-            parsed_alert_result[ALERT_CTD_FIELD_TO_DEMISTO_FIELD[field]] = alert_obj.get(field)
+                for asset in assets:
+                    parsed_assets.append(_parse_single_asset(asset["asset"], DEFAULT_ASSET_FIELD_LIST))
+                parsed_alert_result[ALERT_CTD_FIELD_TO_DEMISTO_FIELD[field]] = parsed_assets
+            else:
+                parsed_alert_result[ALERT_CTD_FIELD_TO_DEMISTO_FIELD[field]] = alert_obj.get(field)
 
     return parsed_alert_result
 
@@ -411,36 +449,37 @@ def _parse_assets_result(assets_result: dict, fields: list) -> Tuple:
 
 def _parse_single_asset(asset_obj: dict, fields: list) -> dict:
     parsed_asset_result = {}
-    for field in fields:
-        if field == "asset_type":
-            asset_type_value = asset_obj.get("asset_type__")
-            parsed_asset_result[ASSET_CTD_FIELD_TO_DEMISTO_FIELD["asset_type__"]] = asset_type_value[1:] \
-                if asset_type_value else None
+    if asset_obj:
+        for field in fields:
+            if field == "asset_type":
+                asset_type_value = asset_obj.get("asset_type__")
+                parsed_asset_result[ASSET_CTD_FIELD_TO_DEMISTO_FIELD["asset_type__"]] = asset_type_value[1:] \
+                    if asset_type_value else None
 
-        elif field == "criticality":
-            asset_criticality_value = asset_obj.get("criticality__")
-            parsed_asset_result[ASSET_CTD_FIELD_TO_DEMISTO_FIELD["criticality__"]] = asset_criticality_value[1:]\
-                if asset_criticality_value else None
+            elif field == "criticality":
+                asset_criticality_value = asset_obj.get("criticality__")
+                parsed_asset_result[ASSET_CTD_FIELD_TO_DEMISTO_FIELD["criticality__"]] = asset_criticality_value[1:]\
+                    if asset_criticality_value else None
 
-        elif field == "insights":
-            cves = []
-            highest_cve_score = 0.0
-            for insight in asset_obj.get(field, []):
-                cve = {
-                    'ID': insight['CVE-ID'],
-                    'CVSS': insight['Score'],
-                    'Published': insight['Published'],
-                    'Modified': insight['Modified'],
-                    'Description': insight['Description'],
-                }
-                if float(insight['Score']) > highest_cve_score:
-                    highest_cve_score = float(insight['Score'])
-                cves.append(cve)
-            parsed_asset_result['CVE'] = cves
-            parsed_asset_result['HighestCVEScore'] = highest_cve_score
+            elif field == "insights":
+                cves = []
+                highest_cve_score = 0.0
+                for insight in asset_obj.get(field, []):
+                    cve = {
+                        'ID': insight['CVE-ID'],
+                        'CVSS': insight['Score'],
+                        'Published': insight['Published'],
+                        'Modified': insight['Modified'],
+                        'Description': insight['Description'],
+                    }
+                    if float(insight['Score']) > highest_cve_score:
+                        highest_cve_score = float(insight['Score'])
+                    cves.append(cve)
+                parsed_asset_result['CVE'] = cves
+                parsed_asset_result['HighestCVEScore'] = highest_cve_score
 
-        else:
-            parsed_asset_result[ASSET_CTD_FIELD_TO_DEMISTO_FIELD[field]] = asset_obj.get(field)
+            else:
+                parsed_asset_result[ASSET_CTD_FIELD_TO_DEMISTO_FIELD[field]] = asset_obj.get(field)
 
     return parsed_asset_result
 
@@ -544,7 +583,6 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
 
     current_rids = []
     incidents = []
-
     response, field_list = get_list_incidents(client, last_fetch, page_to_query)
     items = _parse_alerts_result(response, field_list)
 
@@ -568,16 +606,16 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
         incident_created_time = parsed_date.replace(tzinfo=None)
 
         # Don't add duplicated incidents
-        if item["ResourceID"] not in last_run_rids:
-            incident = {
-                'name': item.get('Description', None),
-                'occurred': incident_created_time.strftime(DATE_FORMAT),
-                'severity': CTD_TO_DEMISTO_SEVERITY.get(item.get('Severity', None), None),
-                'rawJSON': json.dumps(item)
-            }
+        # if item["ResourceID"] not in last_run_rids:
+        incident = {
+            'name': item.get('Description', None),
+            'occurred': incident_created_time.strftime(DATE_FORMAT),
+            'severity': CTD_TO_DEMISTO_SEVERITY.get(item.get('Severity', None), None),
+            'rawJSON': json.dumps(item)
+        }
 
-            incidents.append(incident)
-            current_rids.append(item["ResourceID"])
+        incidents.append(incident)
+        current_rids.append(item["ResourceID"])
 
     # If there were no items queried, latest_created_time is the same as last run
     if latest_created_time is None:

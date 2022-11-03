@@ -3186,6 +3186,22 @@ def test_search_device_command(requests_mock):
     endpoint_context = {'Hostname': 'FALCON-CROWDSTR', 'ID': 'identifier_number', 'IPAddress': '1.1.1.1',
                         'MACAddress': '42-01-0a-80-00-07', 'OS': 'Windows', 'OSVersion': 'Windows Server 2019',
                         'Status': 'Online', 'Vendor': 'CrowdStrike Falcon'}
+    status_res = {
+        "meta": {
+            "query_time": 0.002455124,
+            "powered_by": "device-api",
+            "trace_id": "c876614b-da71-4942-88db-37b939a78eb3"
+        },
+        "resources": [
+            {
+                "id": "15dbb9d8f06b45fe9f61eb46e829d986",
+                "cid": "20879a8064904ecfbb62c118a6a19411",
+                "last_seen": "2022-09-03T10:48:12Z",
+                "state": "online"
+            }
+        ],
+        "errors": []
+    }
 
     requests_mock.get(
         f'{SERVER_URL}/devices/queries/devices/v1',
@@ -3193,8 +3209,14 @@ def test_search_device_command(requests_mock):
         status_code=200,
     )
     requests_mock.get(
-        f'{SERVER_URL}/devices/entities/devices/v1?ids=meta&ids=resources&ids=errors',
+        f'{SERVER_URL}/devices/entities/devices/v2?ids=meta&ids=resources&ids=errors',
         json=test_data2,
+        status_code=200,
+    )
+
+    requests_mock.get(
+        f'{SERVER_URL}/devices/entities/online-state/v1',
+        json=status_res,
         status_code=200,
     )
 
@@ -3227,13 +3249,36 @@ def test_get_endpint_command(requests_mock, mocker):
                         'MACAddress': '42-01-0a-80-00-07', 'OS': 'Windows', 'OSVersion': 'Windows Server 2019',
                         'Status': 'Online', 'Vendor': 'CrowdStrike Falcon'}
 
+    status_res = {
+        "meta": {
+            "query_time": 0.002455124,
+            "powered_by": "device-api",
+            "trace_id": "c876614b-da71-4942-88db-37b939a78eb3"
+        },
+        "resources": [
+            {
+                "id": "15dbb9d8f06b45fe9f61eb46e829d986",
+                "cid": "20879a8064904ecfbb62c118a6a19411",
+                "last_seen": "2022-09-03T10:48:12Z",
+                "state": "online"
+            }
+        ],
+        "errors": []
+    }
+
+    requests_mock.get(
+        f'{SERVER_URL}/devices/entities/online-state/v1',
+        json=status_res,
+        status_code=200,
+    )
+
     requests_mock.get(
         f'{SERVER_URL}/devices/queries/devices/v1',
         json=response,
         status_code=200,
     )
     requests_mock.get(
-        f'{SERVER_URL}/devices/entities/devices/v1?ids=meta&ids=resources&ids=errors',
+        f'{SERVER_URL}/devices/entities/devices/v2?ids=meta&ids=resources&ids=errors',
         json=test_data2,
         status_code=200,
     )
@@ -3244,7 +3289,7 @@ def test_get_endpint_command(requests_mock, mocker):
     result = outputs[0].to_context()
     context = result.get('EntryContext')
 
-    assert context['Endpoint(val.ID && val.ID == obj.ID)'] == [endpoint_context]
+    assert context['Endpoint(val.ID && val.ID == obj.ID && val.Vendor == obj.Vendor)'] == [endpoint_context]
 
 
 def test_create_hostgroup_invalid(requests_mock, mocker):
@@ -3413,7 +3458,7 @@ def test_upload_batch_custom_ioc_command(requests_mock):
                           ('contained', '', 'Yes'),
                           ('lift_containment_pending', '', 'Pending unisolation'),
                           ])
-def test_generate_status_field(endpoint_status, status, is_isolated):
+def test_get_isolation_status(endpoint_status, status, is_isolated):
     """
     Test valid call for generate status field
     Given
@@ -3423,11 +3468,12 @@ def test_generate_status_field(endpoint_status, status, is_isolated):
     Then
      - Return status and is_isolated
      """
-    from CrowdStrikeFalcon import generate_status_fields
-    assert (status, is_isolated) == generate_status_fields(endpoint_status)
+    from CrowdStrikeFalcon import get_isolation_status
+
+    assert is_isolated == get_isolation_status(endpoint_status)
 
 
-def test_generate_status_field_invalid():
+def test_get_isolation_status_invalid():
     """
     Test invalid call for generate status field
     Given
@@ -3437,9 +3483,9 @@ def test_generate_status_field_invalid():
     Then
      - Raise an exception
      """
-    from CrowdStrikeFalcon import generate_status_fields
+    from CrowdStrikeFalcon import get_isolation_status
     with pytest.raises(DemistoException):
-        generate_status_fields('unknown status')
+        get_isolation_status('unknown status')
 
 
 def test_list_incident_summaries_command_no_given_ids(requests_mock, mocker):
@@ -3610,9 +3656,9 @@ def test_rtr_kill_process_command(mocker):
 
 
 @pytest.mark.parametrize('operating_system, expected_result', [
-    ("Windows", 'rm test.txt --force'),
-    ("Linux", 'rm test.txt -r -d'),
-    ("Mac", 'rm test.txt -r -d'),
+    ("Windows", "rm 'test.txt' --force"),
+    ("Linux", "rm 'test.txt' -r -d"),
+    ("Mac", "rm 'test.txt' -r -d"),
     ("bla", ""),
 ])
 def test_match_remove_command_for_os(operating_system, expected_result):

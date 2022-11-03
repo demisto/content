@@ -97,6 +97,8 @@ def get_tag(vsphere_client, args):
         if cat_details.name == args.get('category'):
             relevant_category = cat_details.id
             break
+    if not relevant_category:
+        raise Exception("The category {} was not found".format(args.get('category')))
     tags = vsphere_client.tagging.Tag.list_tags_for_category(relevant_category)
     for tag in tags:
         tag_details = vsphere_client.tagging.Tag.get(tag)
@@ -559,10 +561,16 @@ def change_nic_state(si, args):  # pragma: no cover
 
 def list_vms_by_tag(vsphere_client, args):
     relevant_tag = get_tag(vsphere_client, args)
+    # Added this condition to avoid 'vsphere_client.tagging.TagAssociation.list_attached_objects' errors
+    if not relevant_tag:
+        raise Exception("The tag {} was not found".format(args.get('tag')))
     vms = vsphere_client.tagging.TagAssociation.list_attached_objects(relevant_tag)
     vms = filter(lambda vm: vm.type == 'VirtualMachine', vms)
-    vms_details = vsphere_client.vcenter.VM.list(
-        vsphere_client.vcenter.VM.FilterSpec(vms=set([str(vm.id) for vm in vms])))
+    vms_details = []
+    # This filter isn't needed if vms are empty, when you send an empty vms list - it returns all vms
+    if vms:
+        vms_details = vsphere_client.vcenter.VM.list(
+            vsphere_client.vcenter.VM.FilterSpec(vms=set([str(vm.id) for vm in vms])))
     data = []
     for vm in vms_details:
         data.append({

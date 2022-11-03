@@ -1,0 +1,34 @@
+{
+    "id": "indicator_xicpes",
+    "version": -1,
+    "modified": "2022-04-29T11:08:49.074455322-04:00",
+    "propagationLabels": [
+        "all"
+    ],
+    "name": "XI CPES",
+    "ownerOnly": false,
+    "cliName": "xicpes",
+    "type": "longText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Exodus Intelligence"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0"
+}

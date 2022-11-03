@@ -2,11 +2,11 @@ commonfields:
   id: VirusTotal
   version: -1
 name: VirusTotal
-display: VirusTotal
+display: VirusTotal (Deprecated)
+deprecated: true
 fromversion: 5.5.0
 category: Data Enrichment & Threat Intelligence
-description: VirusTotal has been updated to VirusTotal (API v3). Please use the updated
-  version instead. Analyze suspicious hashes, URLs, domains and IP addresses.
+description: Deprecated. Use VirusTotalV3 integration instead.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: Server

@@ -26,6 +26,7 @@ Function to use the query command to retrieve an incident by a query.
 
 
 def get_incident(query):
+    using = demisto.args().get('using')
     incident_args = {
         'table_name': 'incident',
         'query': query,
@@ -63,6 +64,7 @@ Function to use the query command to retrieve records from the users table.
 
 
 def get_user(query):
+    using = demisto.args().get('using')
     user_args = {
         'table_name': 'sys_user',
         'query': query,
@@ -101,6 +103,7 @@ Function to use the query command to retrieve records from the groups table.
 
 
 def get_group(query):
+    using = demisto.args().get('using')
     group_args = {
         'table_name': 'sys_user_group',
         'query': query,
@@ -132,96 +135,102 @@ def get_group_id(group_name):
     return group[0]['sys_id']
 
 
-"""
-The table name is required by the API. To acquire the table name, use the servicenow-get-table-name command.
-"""
-command_args = {
-    'table_name': 'incident'
-}
+def main():
 
-"""
-For each field in the arguments, you need to check if it was provided and apply
-any operations required (e.g, get a user id from a user name) to send them to the API.
-"""
+    """
+    The table name is required by the API. To acquire the table name, use the servicenow-get-table-name command.
+    """
+    command_args = {
+        'table_name': 'incident'
+    }
 
-incident_id = demisto.args().get('id')
-incident_number = demisto.args().get('number')
-incident_severity = demisto.args().get('severity')
-description = demisto.args().get('description')
-group_name = demisto.args().get('assigned_group')
-user_name = demisto.args().get('assignee')
-using = demisto.args().get('using')
+    """
+    For each field in the arguments, you need to check if it was provided and apply
+    any operations required (e.g, get a user id from a user name) to send them to the API.
+    """
 
-user_id = None
-group_id = None
+    incident_id = demisto.args().get('id')
+    incident_number = demisto.args().get('number')
+    incident_severity = demisto.args().get('severity')
+    description = demisto.args().get('description')
+    group_name = demisto.args().get('assigned_group')
+    user_name = demisto.args().get('assignee')
+    using = demisto.args().get('using')
 
-if user_name:
-    # Query the user table to get the system ID of the assignee
-    user_id = get_user_id(user_name)
-if group_name:
-    # Query the group table to get the system ID of the assigned group
-    group_id = get_group_id(group_name)
+    user_id = None
+    group_id = None
 
-"""
-Every field that was provided needs to be formatted to the following syntax: 'field1=a;field2=b;...'
-to update the incident according to the arguments and execute the command.
-In order to do that, to each field you need to concatenate the field's corresponding name in the ServiceNow API
-along with an '=' and the value. In the end each of those fields are joined by a ';'.
-To view all the API fields for a record use the servicenow-list-fields-command.
-"""
-fields = []
+    if user_name:
+        # Query the user table to get the system ID of the assignee
+        user_id = get_user_id(user_name)
+    if group_name:
+        # Query the group table to get the system ID of the assigned group
+        group_id = get_group_id(group_name)
 
-if incident_id:
-    command_args['id'] = incident_id
-elif incident_number:
-    # Query the incident table to get the system ID of the incident
-    command_args['id'] = get_incident_id(incident_number)
-else:
-    raise ValueError('Incident ID or number must be ')
-if incident_severity:
-    fields.append('severity' + '=' + TICKET_SEVERITY[incident_severity])
-if user_id:
-    fields.append('assigned_to' + '=' + user_id)
-if group_id:
-    fields.append('assignment_group' + '=' + group_id)
-if description:
-    fields.append('short_description' + '=' + description)
+    """
+    Every field that was provided needs to be formatted to the following syntax: 'field1=a;field2=b;...'
+    to update the incident according to the arguments and execute the command.
+    In order to do that, to each field you need to concatenate the field's corresponding name in the ServiceNow API
+    along with an '=' and the value. In the end each of those fields are joined by a ';'.
+    To view all the API fields for a record use the servicenow-list-fields-command.
+    """
+    fields = []
 
-command_args['fields'] = ';'.join(fields)
-command_args['using'] = using
-
-command_res = demisto.executeCommand("servicenow-update-record", command_args)
-result = {}
-try:
-    entry = command_res[0]
-    if isError(entry):
-        return_error(entry['Contents'])
+    if incident_id:
+        command_args['id'] = incident_id
+    elif incident_number:
+        # Query the incident table to get the system ID of the incident
+        command_args['id'] = get_incident_id(incident_number)
     else:
-        record_data = demisto.get(entry, 'Contents')
-        if not record_data:
-            return_error('Could not get the contents from the command result: ' + json.dumps(entry))
-        if not isinstance(record_data, dict):
-            # In case of string result, e.g "No incidents found"
-            result = record_data
+        raise ValueError('Incident ID or number must be ')
+    if incident_severity:
+        fields.append('severity' + '=' + TICKET_SEVERITY[incident_severity])
+    if user_id:
+        fields.append('assigned_to' + '=' + user_id)
+    if group_id:
+        fields.append('assignment_group' + '=' + group_id)
+    if description:
+        fields.append('short_description' + '=' + description)
+
+    command_args['fields'] = ';'.join(fields)
+    command_args['using'] = using
+
+    command_res = demisto.executeCommand("servicenow-update-record", command_args)
+    result = {}
+    try:
+        entry = command_res[0]
+        if isError(entry):
+            return_error(entry['Contents'])
         else:
-            # Get the actual record
-            record = record_data['result']
-            # Map the ID
-            mapped_record = {'ID': record['sys_id']}
+            record_data = demisto.get(entry, 'Contents')
+            if not record_data:
+                return_error('Could not get the contents from the command result: ' + json.dumps(entry))
+            if not isinstance(record_data, dict):
+                # In case of string result, e.g "No incidents found"
+                result = record_data
+            else:
+                # Get the actual record
+                record = record_data['result']
+                # Map the ID
+                mapped_record = {'ID': record['sys_id']}
 
-            # Output entry
-            result = {
-                'Type': entryTypes['note'],
-                'Contents': record_data,
-                'ContentsFormat': formats['json'],
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': 'Incident with ID ' + mapped_record['ID'] + ' successfully updated',
-                'EntryContext': {
-                    'ServiceNow.Incident(val.ID===obj.ID)': createContext(mapped_record)
+                # Output entry
+                result = {
+                    'Type': entryTypes['note'],
+                    'Contents': record_data,
+                    'ContentsFormat': formats['json'],
+                    'ReadableContentsFormat': formats['markdown'],
+                    'HumanReadable': 'Incident with ID ' + mapped_record['ID'] + ' successfully updated',
+                    'EntryContext': {
+                        'ServiceNow.Incident(val.ID===obj.ID)': createContext(mapped_record)
+                    }
                 }
-            }
 
-except Exception as ex:
-    return_error(ex.message)
+    except Exception as ex:
+        return_error(str(ex))
 
-demisto.results(result)
+    demisto.results(result)
+
+
+if __name__ in ["__builtin__", "builtins", '__main__']:
+    main()

@@ -1,3 +1,5 @@
+import datetime
+
 from freezegun import freeze_time
 import pytest
 from McAfee_ESM_v2 import *
@@ -244,6 +246,89 @@ def test_edit_case(mocker):
     client.edit_case()
     result = client._McAfeeESMClient__request.call_args.kwargs['data']['caseDetail']
     assert len(result['eventList']) > 0
+
+
+MOCK_CURRENT_TIME = '2022-10-18T16:46:25Z'
+
+
+def create_time_difference_string(days=0, hours=0):
+    datetime_freezed = datetime.strptime(MOCK_CURRENT_TIME, McAfeeESMClient.demisto_format)
+    return datetime.strftime(datetime_freezed - timedelta(days=days, hours=hours), McAfeeESMClient.demisto_format)
+
+
+@freeze_time(MOCK_CURRENT_TIME)
+def test_alarm_to_incidents(mocker):
+    """
+    Given:
+    - An integration instance configured to fetch incidents.
+
+    When:
+    - Running two intervals of fetch-incidents command, and:
+       1. No alarms exist in the 3rd-party until the first run
+       2. Two alarms are created in the 3rd-party between the first and the second run.
+
+    Then:
+    - Make sure the `time` field of the lastRun object that is sent as
+       the start time of the alarms query is not updated after the first run.
+    - Make sure two incidents are returned on the second run.
+    - Make sure the `time` field of the lastRun object is updated correctly after
+       the second run.
+
+    """
+
+    params = {
+        "url": "https://example.com",
+        "insecure": True,
+        "credentials": {
+            "identifier": "TEST",
+            "password": "TEST"
+        },
+        "version": "11.3",
+        'fetchTime': create_time_difference_string(days=3, hours=6),
+        'startingFetchID': 0}
+    alarms = [{
+        'id': 1,
+        'triggeredDate': create_time_difference_string(hours=6)
+    },
+        {
+            'id': 2,
+            'triggeredDate': create_time_difference_string(hours=5)
+    }
+    ]
+
+    def mock_fetch_alarams(since: str = None, start_time: str = None, end_time: str = None, raw: bool = False):
+        if type(start_time) == str:
+            start_time = datetime.strptime(start_time, McAfeeESMClient.demisto_format)
+        all_alarms = [alarm for alarm in alarms if
+                      datetime.strptime(alarm.get('triggeredDate'), McAfeeESMClient.demisto_format)
+                      > start_time]
+        return None, None, all_alarms
+
+    def mock_fetch_alarm_without_results(client):
+        mocker.patch.object(McAfeeESMClient, 'fetch_alarms', return_value=(None, None, []))
+        client.fetch_incidents(params=params)
+        return demisto.setLastRun.call_args[0][0]
+
+    mocker.patch('McAfee_ESM_v2.parse_date_range', return_value=['', ''])
+    mocker.patch.object(McAfeeESMClient, '_McAfeeESMClient__login', return_value={})
+    mocker.patch.object(McAfeeESMClient, '_McAfeeESMClient__request', return_value={})
+    mocker.patch.object(demisto, 'getLastRun', return_value={'alarms': {'time': create_time_difference_string(days=3)}})
+    mocker.patch.object(demisto, 'setLastRun')
+
+    client = McAfeeESMClient(params)
+
+    last_run = mock_fetch_alarm_without_results(client)
+    assert last_run.get('alarms').get('time') == create_time_difference_string(days=3)
+
+    mocker.patch.object(demisto, 'getLastRun', return_value=last_run)
+    mocker.patch.object(McAfeeESMClient, 'fetch_alarms', side_effect=mock_fetch_alarams)
+    mocker.patch.object(demisto, 'incidents')
+    client.fetch_incidents(params=params)
+    incidents = demisto.incidents.call_args[0][0]
+    last_run = demisto.setLastRun.call_args[0][0]
+
+    assert len(incidents) == 2
+    assert last_run.get('alarms').get('time') == create_time_difference_string(hours=5)
 
 
 class TestTestModule:

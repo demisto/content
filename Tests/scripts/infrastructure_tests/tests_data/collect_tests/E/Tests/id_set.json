@@ -14,7 +14,7 @@
   "playbooks": [{
     "myPlaybook": {
       "name": "myPlaybook",
-      "file_path": "Packs/myPack/Playbooks/myPlaybook/myPlaybook.yml",
+      "file_path": "Packs/myPack/Playbooks/myPlaybook.yml",
       "pack": "myPack"
     }
   }],

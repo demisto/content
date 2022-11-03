@@ -1,4 +1,4 @@
-Gets the Demisto Log Bundle to the War Room.
+Gets the Cortex XSOAR Log Bundle to the War Room.
 
 ## Script Data
 ---

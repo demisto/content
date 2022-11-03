@@ -1,8 +1,7 @@
 from configparser import ConfigParser, MissingSectionHeaderError
-from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Iterator, Optional, Union
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import json, yaml
@@ -10,13 +9,14 @@ from packaging import version
 from packaging._structures import InfinityType, NegativeInfinityType
 from packaging.version import Version
 
-from Tests.scripts.collect_tests.constants import ALWAYS_INSTALLED_PACKS
+from Tests.scripts.collect_tests.constants import ALWAYS_INSTALLED_PACKS_XSOAR
 from Tests.scripts.collect_tests.exceptions import (
     BlankPackNameException, DeprecatedPackException, NonDictException,
     NonexistentPackException, NonXsoarSupportedPackException,
     NoTestsConfiguredException, NotUnderPackException, SkippedPackException)
 from Tests.scripts.collect_tests.logger import logger
 from Tests.scripts.collect_tests.path_manager import PathManager
+from Tests.scripts.collect_tests.version_range import VersionRange
 
 
 def find_pack_folder(path: Path) -> Path:
@@ -32,39 +32,12 @@ def find_pack_folder(path: Path) -> Path:
     >>> find_pack_folder(Path('Packs/MyPack4')).name
     'MyPack4'
     """
+
     if 'Packs' not in path.parts:
         raise NotUnderPackException(path)
     if path.parent.name == 'Packs':
         return path
     return path.parents[len(path.parts) - (path.parts.index('Packs')) - 3]
-
-
-@dataclass
-class VersionRange:
-    min_version: Version | NegativeInfinityType
-    max_version: Version | InfinityType
-
-    def __contains__(self, item):
-        return self.min_version <= item <= self.max_version
-
-    def __repr__(self):
-        return f'{self.min_version} -> {self.max_version}'
-
-    def __or__(self, other: Optional['VersionRange']) -> 'VersionRange':
-        if other is None or other.is_default or self.is_default:
-            return self
-
-        self.min_version = min(self.min_version, other.min_version)
-        self.max_version = max(self.max_version, other.max_version)
-
-        return self
-
-    @property
-    def is_default(self):
-        """
-        :return: whether the range is (-Infinity -> Infinity)
-        """
-        return self.min_version == version.NegativeInfinity and self.max_version == version.Infinity
 
 
 class Machine(Enum):
@@ -128,6 +101,9 @@ class DictBased:
 
     def __getitem__(self, key):
         return self.content[key]
+
+    def __contains__(self, item):
+        return item in self.content
 
     def _calculate_from_version(self) -> Version | NegativeInfinityType:
         # all three options are equivalent
@@ -193,13 +169,24 @@ class ContentItem(DictFileBased):
         self._tests = self.get('tests', default=(), warn_if_missing=False)
 
     @property
-    def id_(self) -> Optional[str]:  # Optional as pack_metadata (for example) doesn't have this field
-        return self['commonfields']['id'] if 'commonfields' in self.content else self['id']
+    def _has_no_id(self):
+        # some content files may not have an id
+        return self.path.name == 'pack_metadata.json' or self.path.name.endswith('_schema.json')
+
+    @property
+    def id_(self) -> Optional[str]:  # Optional as some content items don't have an id
+        if self._has_no_id:
+            return None
+        # todo use get_id from the SDK once https://github.com/demisto/demisto-sdk/pull/2345 is merged & released
+        if 'commonfields' in self:
+            return self['commonfields']['id']
+        if self.path.parent.name == 'Layouts' and self.path.name.startswith('layout-') and self.path.suffix == '.json':
+            return self['layout']['id']
+        return self['id']
 
     @property
     def name(self) -> str:
-        id_ = self.get('id', '', warn_if_missing=False)
-        return self.get('name', default='', warn_if_missing=False, warning_comment=id_)
+        return self.get('name', default='', warn_if_missing=False, warning_comment=self.id_ or '')
 
     @property
     def tests(self) -> list[str]:
@@ -261,10 +248,10 @@ class PackManager:
 
         self.pack_ids: set[str] = set(self._pack_id_to_pack_metadata.keys())
 
-    def __getitem__(self, pack_id: str) -> ContentItem:
+    def get_pack_metadata(self, pack_id: str) -> ContentItem:
         return self._pack_id_to_pack_metadata[pack_id]
 
-    def __iter__(self):
+    def iter_pack_metadata(self) -> Iterator[ContentItem]:
         yield from self._pack_id_to_pack_metadata.values()
 
     def is_test_skipped_in_pack_ignore(self, test_file_name: str, pack_id: str):
@@ -278,7 +265,7 @@ class PackManager:
 
     def validate_pack(self, pack: str) -> None:
         """raises InvalidPackException if the pack name is not valid."""
-        if pack in ALWAYS_INSTALLED_PACKS:
+        if pack in ALWAYS_INSTALLED_PACKS_XSOAR:
             return
         if not pack:
             raise BlankPackNameException(pack)
@@ -295,15 +282,17 @@ class PackManager:
             raise NonXsoarSupportedPackException(pack, support_level)
 
     def get_support_level(self, pack_id: str) -> Optional[str]:
-        return self[pack_id].get('support', '').lower() or None
+        return self.get_pack_metadata(pack_id).get('support', '').lower() or None
 
 
-def to_tuple(value: Optional[str | list]) -> Optional[tuple]:
+def to_tuple(value: Union[str, int, MarketplaceVersions, list]) -> Optional[tuple]:
     if value is None:
         return value
     if not value:
         return ()
-    if isinstance(value, str):
+    if isinstance(value, tuple):
+        return value
+    if isinstance(value, (str, int, MarketplaceVersions)):
         return value,
     return tuple(value)
 
@@ -315,3 +304,10 @@ def find_yml_content_type(yml_path: Path) -> Optional[FileType]:
     """
     return {'Playbooks': FileType.PLAYBOOK, 'TestPlaybooks': FileType.TEST_PLAYBOOK}.get(yml_path.parent.name) or \
            {'Integrations': FileType.INTEGRATION, 'Scripts': FileType.SCRIPT, }.get(yml_path.parents[1].name)
+
+
+def hotfix_detect_old_script_yml(path: Path):
+    # a hotfix until SDK v1.7.5 is released
+    if path.parent.name == 'Scripts' and path.name.startswith('script-') and path.suffix == '.yml':
+        return FileType.SCRIPT
+    return None

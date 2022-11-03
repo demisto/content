@@ -1,0 +1,1033 @@
+id: Active Directory - manual pagination check
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Active Directory - manual pagination check
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 676e269e-ca76-4fa2-839b-a888c7fa0c48
+    type: start
+    task:
+      id: 676e269e-ca76-4fa2-839b-a888c7fa0c48
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: d6a1d42c-645d-4764-871c-1fcb9724a35a
+    type: condition
+    task:
+      id: d6a1d42c-645d-4764-871c-1fcb9724a35a
+      version: -1
+      name: Is Active Directory enabled?
+      description: Checks if the Active Directory Query v2 integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 779a0d3f-7672-4692-81be-490dcbb694ae
+    type: title
+    task:
+      id: 779a0d3f-7672-4692-81be-490dcbb694ae
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 2845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: a880cc1f-870d-4d37-8eb6-64e8e5576159
+    type: regular
+    task:
+      id: a880cc1f-870d-4d37-8eb6-64e8e5576159
+      version: -1
+      name: Run ad-get-user with page-size=1
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
+      script: '|||ad-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      page-size:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 735,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 1f6630e2-c83f-43eb-8851-dff1945dec44
+    type: condition
+    task:
+      id: 1f6630e2-c83f-43eb-8851-dff1945dec44
+      version: -1
+      name: check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: Account
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 735,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: da70a954-8e99-420c-8ea6-054c6dbe8a8b
+    type: regular
+    task:
+      id: da70a954-8e99-420c-8ea6-054c6dbe8a8b
+      version: -1
+      name: page-size is not set currently
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: '"Default limit is not set currently" '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: c4cac700-c1b9-467a-80a1-ca349e90ca72
+    type: regular
+    task:
+      id: c4cac700-c1b9-467a-80a1-ca349e90ca72
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: b251a209-e871-4105-8f84-cb2a6281f8c0
+    type: regular
+    task:
+      id: b251a209-e871-4105-8f84-cb2a6281f8c0
+      version: -1
+      name: Run ad-get-user with page-cookie
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
+      script: '|||ad-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      page-cookie:
+        simple: ${ActiveDirectory.UsersPageCookie}
+      page-size:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 622.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 0c3e6f18-e433-4ab4-8d5c-687d92405fe8
+    type: regular
+    task:
+      id: 0c3e6f18-e433-4ab4-8d5c-687d92405fe8
+      version: -1
+      name: page-cookie is not set currently
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 21d7bd23-d724-48c0-83d9-a8160b4c737a
+    type: condition
+    task:
+      id: 21d7bd23-d724-48c0-83d9-a8160b4c737a
+      version: -1
+      name: check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: Account
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 622.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: c0f4bb7a-192d-44d4-89d5-70cc08d10500
+    type: regular
+    task:
+      id: c0f4bb7a-192d-44d4-89d5-70cc08d10500
+      version: -1
+      name: Run ad-get-computer with page-size=1
+      description: Retrieves detailed information about a computer account. The computer can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filters are provided, all computers are returned.
+      script: '|||ad-get-computer'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      page-size:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: fdef8a53-39d5-4224-8648-87a078de2dd2
+    type: condition
+    task:
+      id: fdef8a53-39d5-4224-8648-87a078de2dd2
+      version: -1
+      name: check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: ActiveDirectory
+                accessor: Computers
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 81c5834a-b786-413e-8d0b-0db9d416d0f6
+    type: regular
+    task:
+      id: 81c5834a-b786-413e-8d0b-0db9d416d0f6
+      version: -1
+      name: Run ad-get-computer with page-cookie
+      description: Retrieves detailed information about a computer account. The computer can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filters are provided, all computers are returned.
+      script: '|||ad-get-computer'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      page-cookie:
+        simple: ${ActiveDirectory.ComputersPageCookie}
+      page-size:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 397.5,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 9a01f1d1-b835-4103-8931-0d7ddc030ace
+    type: condition
+    task:
+      id: 9a01f1d1-b835-4103-8931-0d7ddc030ace
+      version: -1
+      name: check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: ActiveDirectory
+                accessor: Computers
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 397.5,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 1472c6e9-744a-4b49-8618-cee0ce83f9ea
+    type: regular
+    task:
+      id: 1472c6e9-744a-4b49-8618-cee0ce83f9ea
+      version: -1
+      name: Run ad-search with page-size=1
+      description: Runs Active Directory queries.
+      script: '|||ad-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      filter:
+        simple: (&(objectCategory=person)(objectClass=user)(!(cn=andy)))
+      page-size:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 04382f71-df9e-4636-8e77-5b2fb00d38df
+    type: condition
+    task:
+      id: 04382f71-df9e-4636-8e77-5b2fb00d38df
+      version: -1
+      name: check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: ActiveDirectory
+                accessor: Search
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 3d93188f-401d-450d-8bda-29956708a1de
+    type: regular
+    task:
+      id: 3d93188f-401d-450d-8bda-29956708a1de
+      version: -1
+      name: Run ad-search with page-cookie
+      description: Runs Active Directory queries.
+      script: '|||ad-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      filter:
+        simple: (&(objectCategory=person)(objectClass=user)(!(cn=andy)))
+      page-cookie:
+        simple: ${ActiveDirectory.SearchPageCookie}
+      page-size:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 2320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: c41fa5d0-7b31-4c7f-8371-10fd930ef3cc
+    type: condition
+    task:
+      id: c41fa5d0-7b31-4c7f-8371-10fd930ef3cc
+      version: -1
+      name: check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: ActiveDirectory
+                accessor: Search
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 3530049b-227c-4ead-826a-954ce080e19f
+    type: regular
+    task:
+      id: 3530049b-227c-4ead-826a-954ce080e19f
+      version: -1
+      name: Run ad-get-group-members with page-size=1
+      description: Retrieves the list of users or computers that are members of the specified group.
+      script: '|||ad-get-group-members'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      group-dn:
+        simple: CN=Users,CN=Builtin,DC=demisto,DC=ninja
+      page-size:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 2815
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: f1309d8c-f1aa-4ba8-8f2b-46449d43806a
+    type: condition
+    task:
+      id: f1309d8c-f1aa-4ba8-8f2b-46449d43806a
+      version: -1
+      name: check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: ActiveDirectory
+                accessor: Search
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 46659817-8906-413d-86cf-b804b6fafb55
+    type: regular
+    task:
+      id: 46659817-8906-413d-86cf-b804b6fafb55
+      version: -1
+      name: Run ad-search with page-cookie
+      description: Runs Active Directory queries.
+      script: '|||ad-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      filter:
+        simple: '"(&(objectCategory=person)(objectClass=user)(!(cn=andy)))" '
+      page-cookie:
+        simple: ${ActiveDirectory.SearchPageCookie}
+      page-size:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 952b8fa8-2601-4cc0-8304-c9378b0349b8
+    type: condition
+    task:
+      id: 952b8fa8-2601-4cc0-8304-c9378b0349b8
+      version: -1
+      name: check
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: ActiveDirectory
+                accessor: Search
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: f24d7da0-f320-4a1c-89e7-c975af8924b1
+    type: condition
+    task:
+      id: f24d7da0-f320-4a1c-89e7-c975af8924b1
+      version: -1
+      name: check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: ActiveDirectory
+                accessor: Groups
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 2815
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 7158f587-f369-4efc-8380-7c07e93b11f3
+    type: regular
+    task:
+      id: 7158f587-f369-4efc-8380-7c07e93b11f3
+      version: -1
+      name: Run ad-get-group-members with page-cookie
+      description: Retrieves the list of users or computers that are members of the specified group.
+      script: '|||ad-get-group-members'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      group-dn:
+        simple: CN=Users,CN=Builtin,DC=demisto,DC=ninja
+      page-cookie:
+        simple: ${ActiveDirectory.GroupsPageCookie}
+      page-size:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 3050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 47aa9f00-0e12-4e58-8283-689275122c1a
+    type: condition
+    task:
+      id: 47aa9f00-0e12-4e58-8283-689275122c1a
+      version: -1
+      name: check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: ActiveDirectory
+                accessor: Groups
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": 3080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_12_#default#": 0.69,
+      "25_24_#default#": 0.7
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3125,
+        "width": 1920,
+        "x": -60,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Username
+  value: {}
+  required: false
+  description: Search for user by the sAMAccountName attribute in Active Directory.
+  playbookInputQuery:
+- key: UserEmail
+  value:
+    complex:
+      root: Account
+      accessor: Email
+      transformers:
+      - operator: uniq
+  required: false
+  description: Search for user by the email attribute in Active Directory.
+  playbookInputQuery:
+outputs:
+- contextPath: UserManagerEmail
+  description: The email of the user's manager.
+- contextPath: UserManagerDisplayName
+  description: The display name of the user's manager.
+  type: unknown
+sourceplaybookid: Active Directory - Get User Manager Details
+fromversion: 5.0.0
+description: Checked the Manual Pagination, by using the page-cookie and page-size arguments

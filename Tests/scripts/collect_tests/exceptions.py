@@ -1,6 +1,10 @@
 from pathlib import Path
 from typing import Optional
 
+from demisto_sdk.commands.common.constants import MarketplaceVersions
+
+from Tests.scripts.collect_tests.version_range import VersionRange
+
 
 class UnsupportedPackException(Exception):
     def __init__(self, pack_name: str, reason: str):
@@ -21,8 +25,9 @@ class NonexistentPackException(UnsupportedPackException):
 
 
 class NonXsoarSupportedPackException(UnsupportedPackException):
-    def __init__(self, pack_name: str, support_level: str):
+    def __init__(self, pack_name: str, support_level: str, content_version_range: Optional[VersionRange] = None):
         self.support_level = support_level
+        self.content_version_range = content_version_range
         super().__init__(pack_name, f'pack support level is not XSOAR (it is {support_level})')
 
 
@@ -34,6 +39,15 @@ class DeprecatedPackException(UnsupportedPackException):
 class SkippedPackException(UnsupportedPackException):
     def __init__(self, pack_name: str):
         super().__init__(pack_name, 'Pack is skipped')
+
+
+class NonNightlyPackInNightlyBuildException(Exception):
+    def __init__(self, pack_name: str):
+        self.message = f'Skipping tests for pack {pack_name}: ' \
+                       f'This is a nightly build, and the pack is not in the list of nightly packs'
+
+    def __str__(self):
+        return self.message
 
 
 class NonDictException(Exception):
@@ -75,9 +89,9 @@ class NothingToCollectException(Exception):
         return self.message
 
 
-class NonXSIAMContentException(NothingToCollectException):
-    def __init__(self, content_path: Path):
-        super().__init__(content_path, 'does not have a single marketplace value == marketplacev2')
+class IncompatibleMarketplaceException(NothingToCollectException):
+    def __init__(self, content_path: Path, expected_marketplace: MarketplaceVersions):
+        super().__init__(content_path, f'is not compatible with expected marketplace {expected_marketplace.name}')
 
 
 class InvalidTestException(Exception):
@@ -100,8 +114,8 @@ class SkippedTestException(InvalidTestException):
         :param skip_place: where the test was skipped (conf.json or pack_ignore)
         :param skip_reason: the reason the test was skipped (if available, mostly when skipped in conf.json)
         """
-        skip_reason_str = f': {skip_reason}' if skip_reason else ''
-        super().__init__(test_name, f'test is skipped in {skip_place}{skip_reason_str}')
+        skip_reason_suffix = f': {skip_reason}' if skip_reason else ''
+        super().__init__(test_name, f'test is skipped in {skip_place}{skip_reason_suffix}')
 
 
 class PrivateTestException(InvalidTestException):

@@ -4335,7 +4335,7 @@ script:
     - contextPath: ThreatStream.Intelligence.severity
       description: The severity of the intelligence.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.33390
+  dockerimage: demisto/py3-tools:1.0.0.36998
   feed: false
   isfetch: false
   longRunning: false
