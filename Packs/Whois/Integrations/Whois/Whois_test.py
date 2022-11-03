@@ -267,13 +267,19 @@ def test_parse_raw_whois_empty_nameserver():
     assert result['nameservers'] == ['ns1060.ui-dns.biz']
 
 
-@pytest.mark.parametrize('input, ecpected_result', [(['2024-05-09T00:00:00Z'], datetime.datetime(2024, 5, 9, 0, 0, 0)),
+@pytest.mark.parametrize('input, expected_result', [(['2024-05-09T00:00:00Z'], datetime.datetime(2024, 5, 9, 0, 0, 0)),
                                                     (['0000-00-00T00:00:00Z'], Whois.InvalidDateHandler(year=0, month=0, day=0)),
                                                     (['0000-01-02T11:22:33Z'], datetime.datetime(2000, 1, 2, 11, 22, 33)),
                                                     (['0000-00-02T00:00:00Z'], Whois.InvalidDateHandler(year=0, month=0, day=2))
                                                     ])
-def test_parse_dates_invalid_time(input, ecpected_result):
-    assert type(Whois.parse_dates(input)[0]) == type(ecpected_result)
+def test_parse_dates_invalid_time(input, expected_result):
+    assert type(Whois.parse_dates(input)[0]) == type(expected_result)
+
+
+@pytest.mark.parametrize('input, expected_result', [(['2024-05-09T00:00:00Z'], datetime.datetime(2024, 5, 9, 0, 0, 0)),
+                                                    (['2024-20-09T00:00:00Z'], datetime.datetime(2024, 9, 20, 0, 0, 0))])
+def test_swap_month_day_in_parse_dates(input, expected_result):
+    assert Whois.parse_dates(input)[0] == expected_result
 
 
 @pytest.mark.parametrize('updated_date, expected_res',
