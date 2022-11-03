@@ -173,7 +173,7 @@ def test_get_pdf_text_without_encrypted(tmp_path):
     try:
         get_pdf_text(f'{CWD}/encrypted.pdf', f'{tmp_path}/encrypted.txt')
         raise Exception("Incorrect password exception should've been thrown")
-    except PdfCredentialsException as e:
+    except PdfInvalidCredentialsException as e:
         assert 'Incorrect password' in str(e)
 
     # assert not warnings are raised
