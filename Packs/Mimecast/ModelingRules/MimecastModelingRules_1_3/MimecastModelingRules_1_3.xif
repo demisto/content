@@ -27,4 +27,4 @@ filter
     xdm.email.attachment.sha256 = sha256,
     xdm.event.description = ScanResultInfo,
     xdm.event.type = coalesce(Action, Act)
-    xdm.target.host.ipv4_addresses = json_extract_array(coalesce(IP,SourceIP), "$."),;
+    xdm.target.host.ipv4_addresses = json_extract_array(coalesce(IP,SourceIP), "$.");
