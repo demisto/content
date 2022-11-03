@@ -1834,6 +1834,7 @@ Creates a pull request in Bitbucket.
 | Bitbucket.PullRequest.source.repository.type | String   | The type of the repository of the source branch.                                        | 
 | Bitbucket.PullRequest.source.repository.full_name | String   | The full name of the repository of the source branch.                                   | 
 | Bitbucket.PullRequest.source.repository.links.self.href | String   | Links with information about the repository of the source branch.                       | 
+| Bitbucket.PullRequest.source.repository.links | String   | Links with information about the repository of the source branch.                       | 
 | Bitbucket.PullRequest.source.repository.name | String   | The name of the repository of the source branch.                                        | 
 | Bitbucket.PullRequest.source.repository.uuid | String   | The unique ID of the repository of the source branch.                                   |
 | Bitbucket.PullRequest.reviewers.display_name | String   | The display name of the reviewer.                                                       |

@@ -1324,6 +1324,9 @@ script:
         - contextPath: Bitbucket.PullRequest.source.repository.full_name
           description: The full name of the repository of the source branch.
           type: String
+        - contextPath: Bitbucket.PullRequest.source.repository.links.self.href
+          description: Links with information about the repository of the source branch.
+          type: String
         - contextPath: Bitbucket.PullRequest.source.repository.links
           description: Links with information about the repository of the source branch.
           type: String
@@ -1573,9 +1576,6 @@ script:
           type: String
         - contextPath: Bitbucket.PullRequest.source.repository.full_name
           description: The full name of the repository of the source branch.
-          type: String
-        - contextPath: Bitbucket.PullRequest.source.repository.links.self.href
-          description: Links with information about the repository of the source branch.
           type: String
         - contextPath: Bitbucket.PullRequest.source.repository.links
           description: Links with information about the repository of the source branch.
