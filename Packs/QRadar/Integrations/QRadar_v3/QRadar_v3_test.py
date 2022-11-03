@@ -1186,6 +1186,34 @@ def test_remote_data_with_events(mocker, offense_id):
         assert offense_id in updated_context[MIRRORED_OFFENSES_QUERIED_CTX_KEY]
 
 
+def test_qradar_remote_network_cidr_create_command(mocker):
+    """
+    Given:
+        - A network CIDR to create.
+
+    When:
+        - Calling qradar_remote_network_cidr_create_command.
+
+    Then:
+        - Ensure the correct request was called and the correct response is returned.
+    """
+    expected_response_from_api = {'name': 'test_name',
+                                  'description': 'description',
+                                  'cidrs': ['1.2.3.4/32', '8.8.8.8/24'],
+                                  'id': 12,
+                                  'group': 'test_group'}
+
+    mocker.patch.object(client, 'create_remote_network_cidr', return_value=expected_response_from_api)
+
+    res = qradar_remote_network_cidr_create_command(client, {'name': 'test_name',
+                                                             'description': 'description',
+                                                             'cidrs': '1.2.3.4/32,8.8.8.8/24',
+                                                             'group': 'test_group'})
+
+    assert expected_response_from_api == res.raw_response
+    assert '| description | test_group | 12 | test_name |' in res.readable_output
+
+
 @pytest.mark.parametrize('test_case_data',
                          [(ctx_test_data['ctx_compatible']['empty_ctx_no_mirroring_two_loops_offenses']),
                           (ctx_test_data['ctx_compatible']['empty_ctx_mirror_offense_two_loops_offenses']),

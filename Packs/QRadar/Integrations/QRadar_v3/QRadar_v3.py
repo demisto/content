@@ -10,8 +10,7 @@ import pytz
 import urllib3
 from CommonServerUserPython import *  # noqa
 
-from CommonServerPython import *
-# from Integrations.QRadar_v3.demistomock import params  # noqa # pylint: disable=unused-wildcard-import
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -1474,7 +1473,7 @@ def get_cidrs_indicators(query):
     return indicators
 
 
-def verify_args_for_remote_network_cidr(cidrs_list: list, cidrs_from_query: list, name: str, id: Optional[int], group: str, fields: str):
+def verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, id, group, fields):
     # verify that only one of the arguments is given
     if cidrs_list and cidrs_from_query:
         return 'Cannot specify both cidrs and query arguments.'
@@ -3692,6 +3691,7 @@ def qradar_remote_network_cidr_create_command(client: Client, args) -> CommandRe
     response = client.create_remote_network_cidr(body, fields)
 
     return CommandResults(
+        raw_response=response,
         readable_output=tableToMarkdown('The new staged remote network was successfully created.', response)
     )
 
