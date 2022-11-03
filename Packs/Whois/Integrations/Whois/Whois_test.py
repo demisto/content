@@ -268,7 +268,10 @@ def test_parse_raw_whois_empty_nameserver():
 
 
 @pytest.mark.parametrize('input, ecpected_result', [(['2024-05-09T00:00:00Z'], datetime.datetime(2024, 5, 9, 0, 0, 0)),
-                                                    (['0000-00-00T00:00:00Z'], Whois.InvalidDateHandler(year=0, month=0, day=0))])
+                                                    (['0000-00-00T00:00:00Z'], Whois.InvalidDateHandler(year=0, month=0, day=0)),
+                                                    (['0000-01-02T11:22:33Z'], datetime.datetime(2000, 1, 2, 11, 22, 33)),
+                                                    (['0000-00-02T00:00:00Z'], Whois.InvalidDateHandler(year=0, month=0, day=2))
+                                                    ])
 def test_parse_dates_invalid_time(input, ecpected_result):
     assert type(Whois.parse_dates(input)[0]) == type(ecpected_result)
 
