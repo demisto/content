@@ -21,9 +21,9 @@ ARGS_GET_SAPM_USER_INFO = {
 }
 
 ARGS_SHOW_PASSWORD = {
-            "password_expiration_in_minute": 30,
-            "sapm_db_id": 642365,
-            "comment": "reason for password request"
+    "password_expiration_in_minute": 30,
+    "sapm_db_id": 642365,
+    "comment": "reason for password request"
 }
 
 

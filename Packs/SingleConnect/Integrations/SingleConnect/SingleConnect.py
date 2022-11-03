@@ -144,8 +144,8 @@ def show_password_command(client: Client, password_expiration_in_minute=int, sap
     if isinstance(response, str):
         raise Exception(f"Error in Single Connect API call: {response}")
     return CommandResults(
-            outputs_prefix='SingleConnect.SapmAccount',
-            outputs=response
+        outputs_prefix='SingleConnect.SapmAccount',
+        outputs=response
     )
 
 
