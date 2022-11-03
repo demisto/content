@@ -19,6 +19,7 @@ yaml = YAML()
 
 SKIPPED_FILES = {"signatures.sf"}
 
+
 def sort_dict(dct: dict):
     for k, v in dct.items():
         if isinstance(v, dict):
@@ -99,6 +100,12 @@ def file_diff_text(output_path_file: Path, file1_path: Path, file2_path: Path):
     return False
 
 
+def remove_known_diffs(dct1: dict, dct2: dict, known_diff: list[str]):
+    for diff in known_diff:
+        dct1.pop(diff, None)
+        dct2.pop(diff, None)
+
+
 def file_diff(output_path: Path, zip1_files: str, zip2_files: str, file: str, diff_files: list[str]):
     output_path.mkdir(exist_ok=True, parents=True)
     try:
@@ -118,8 +125,7 @@ def file_diff(output_path: Path, zip1_files: str, zip2_files: str, file: str, di
             with open(file1_path) as f1, open(file2_path) as f2:
                 dct1 = load_func(f1)
                 dct2 = load_func(f2)
-                dct1.pop("updated", None)
-                dct2.pop("updated", None)
+                remove_known_diffs(dct1, dct2, ["updated", "downloads"])
                 if file == "metadata.json":
                     sort_dict(dct1)
                     sort_dict(dct2)
