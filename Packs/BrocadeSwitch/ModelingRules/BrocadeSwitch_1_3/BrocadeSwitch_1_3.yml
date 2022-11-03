@@ -1,6 +1,6 @@
 from_xdr_version: 3.5.0
 fromversion: 6.10.0
-id: brocade_switch_modeling_rule
+id: Brocade_switch_modeling_rule
 name: Brocade Switch Modeling Rule
 rules: ''
 schema: ''
