@@ -153,7 +153,7 @@ script:
       description: Indicator ID.
       type: number
     description: Lookup reputation in the indicators.
-  dockerimage: demisto/taxii2:1.0.0.18446
+  dockerimage: devdemisto/py3-master:8.1.0.37149
   feed: true
   runonce: false
   subtype: python3

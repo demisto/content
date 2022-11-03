@@ -47,7 +47,7 @@ outputs:
   type: string
 scripttarget: 0
 runonce: true
-dockerimage: demisto/nltk:2.0.0.19143
+dockerimage: devdemisto/py3-master:8.1.0.37149
 fromversion: 5.0.0
 tests:
 - No tests

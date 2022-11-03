@@ -11,7 +11,7 @@ comment: |-
 commonfields:
   id: BuildSlackBlocksFromIndex
   version: -1
-dockerimage: demisto/unzip:1.0.0.19258
+dockerimage: devdemisto/py3-master:8.1.0.37149
 enabled: true
 name: BuildSlackBlocksFromIndex
 outputs:

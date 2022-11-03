@@ -97,7 +97,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: gcp-whitelist-get-indicators
-  dockerimage: demisto/dnspython:1.0.0.24037
+  dockerimage: devdemisto/py3-master:8.1.0.37149
   feed: true
   isfetch: false
   longRunning: false

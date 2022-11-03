@@ -13,5 +13,5 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-dockerimage: demisto/taxii2:1.0.0.23423
+dockerimage: devdemisto/py3-master:8.1.0.37149
 fromversion: 5.0.0

@@ -203,6 +203,7 @@ def reset_fetch_command(client):
 
 
 def main():
+    demisto.info(f'just a test...')
     objects_types = ['report', 'indicator', 'malware', 'campaign', 'attack-pattern',
                      'course-of-action', 'intrusion-set', 'tool', 'threat-actor', 'infrastructure']
     params = demisto.params()

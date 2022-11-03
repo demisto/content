@@ -131,7 +131,7 @@ script:
     description: Get a list of incidents
     execution: false
     name: symantec-mss-incidents-list
-  dockerimage: demisto/chromium:1.0.0.31799
+  dockerimage: devdemisto/py3-master:8.1.0.37149
   isfetch: true
   longRunning: false
   longRunningPort: false

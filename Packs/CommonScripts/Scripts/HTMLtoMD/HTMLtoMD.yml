@@ -23,7 +23,7 @@ system: false
 timeout: '0'
 type: python
 tags: []
-dockerimage: demisto/btfl-soup:1.0.1.6233
+dockerimage: devdemisto/py3-master:8.1.0.37149
 runas: DBotWeakRole
 runonce: false
 subtype: python3

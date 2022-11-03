@@ -43,5 +43,5 @@ args:
   required: true
   description: The content of the file to create
 scripttarget: 0
-dockerimage: demisto/docxpy:1.0.0.33689
+dockerimage: devdemisto/py3-master:8.1.0.37149
 fromversion: 5.0.0

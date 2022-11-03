@@ -57,7 +57,7 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/sklearn:1.0.0.17983
+dockerimage: devdemisto/py3-master:8.1.0.37149
 runas: DBotWeakRole
 runonce: false
 tests:

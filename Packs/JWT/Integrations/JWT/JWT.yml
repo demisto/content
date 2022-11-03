@@ -306,7 +306,7 @@ script:
     description: A command to decode JWT tokens
     execution: false
     name: jwt-decode-token
-  dockerimage: demisto/pyjwt3:1.0.0.19327
+  dockerimage: devdemisto/py3-master:8.1.0.37149
   feed: false
   isfetch: false
   longRunning: false
