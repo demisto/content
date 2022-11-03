@@ -619,8 +619,15 @@ def main():
         finally:
             formatted_urls.append(formatted_url)
 
-    demisto.results(formatted_urls)
+    output = [{
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': [urls],
+        'EntryContext': {'URL': urls},
+    } for urls in formatted_urls]
 
+    for url in output:
+        demisto.results(url)
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
