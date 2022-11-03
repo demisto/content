@@ -150,7 +150,7 @@ def main():
     zip_id_set = artifacts / "uploaded_packs-id_set"
     zip_graph = artifacts / "uploaded_packs-graph"
 
-    index_id_set_path = artifacts / "index-id_set.json"
+    index_id_set_path = artifacts / "index.json"
     index_graph_path = artifacts / "index-graph.json"
 
     collected_packs_id_set = artifacts / "content_packs_to_install.txt"
