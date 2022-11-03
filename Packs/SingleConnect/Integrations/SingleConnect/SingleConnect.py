@@ -9,8 +9,6 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-
 ''' CLIENT CLASS '''
 
 
@@ -41,7 +39,7 @@ class Client(BaseClient):
             else:
                 raise e
 
-    def _logout(self):
+    def logout(self):
         self._http_request("POST", "/aioc-rest-web/rest/logout")
 
     def list_all_sapm_accounts(self):
@@ -86,11 +84,14 @@ def test_module(client: Client) -> str:
 
     try:
         response = client.list_all_sapm_accounts()
-        search_results = response.get("searchResults")
+        try:
+            search_results = response.get("searchResults")
+        except Exception as e:
+            raise Exception(f"Error in Single Connect API call: {e}")
         if search_results:
             if len(search_results) > 0:
-                sapmAccount = search_results[0]
-                if not sapmAccount.get("dbId"):
+                sapm_account = search_results[0]
+                if not sapm_account.get("dbId"):
                     raise Exception("SAPM Accounts from Single Connect are missing mandatory fields: dbId")
             else:
                 return "There are no SAPM Accounts but connection is ok"
@@ -98,19 +99,23 @@ def test_module(client: Client) -> str:
         else:
             raise Exception("Unexpected response format")
     except Exception as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
+        if '401' in str(e):
+            raise DemistoException('Authentication Error: Make sure username and password are correctly set')
         else:
             raise e
 
 
 def list_all_sapm_accounts_command(client: Client) -> CommandResults:
     response = client.list_all_sapm_accounts()
-    if response.get("searchResults"):
+    try:
+        result = response.get("searchResults")
+    except Exception as e:
+        raise Exception(f"Error in Single Connect API call: {e}")
+    if result is not None:
         return CommandResults(
             outputs_prefix='SingleConnect.SapmAccount',
             outputs_key_field='dbId',
-            outputs=response.get("searchResults")
+            outputs=result
         )
     else:
         raise Exception("Unexpected response format")
@@ -118,11 +123,16 @@ def list_all_sapm_accounts_command(client: Client) -> CommandResults:
 
 def search_sapm_with_secret_name_command(client: Client, secret_name: str) -> CommandResults:
     response = client.search_sapm_with_secret_name(secret_name)
-    if response.get("searchResults"):
+    try:
+        result = response.get("searchResults")
+    except Exception as e:
+        raise Exception(f"Error in Single Connect API call: {e}")
+
+    if result is not None:
         return CommandResults(
             outputs_prefix='SingleConnect.SapmAccount',
             outputs_key_field='dbId',
-            outputs=response.get("searchResults")
+            outputs=result
         )
     else:
         raise Exception("Unexpected response format")
@@ -131,15 +141,18 @@ def search_sapm_with_secret_name_command(client: Client, secret_name: str) -> Co
 def show_password_command(client: Client, password_expiration_in_minute=int, sapm_db_id=int,
                           comment=str) -> CommandResults:
     response = client.show_password(password_expiration_in_minute, sapm_db_id, comment)
+    if isinstance(response, str):
+        raise Exception(f"Error in Single Connect API call: {response}")
     return CommandResults(
-        outputs_prefix='SingleConnect.SapmAccount',
-        outputs_key_field='dbId',
-        outputs=response
+            outputs_prefix='SingleConnect.SapmAccount',
+            outputs=response
     )
 
 
 def get_sapm_user_info_command(client: Client, device_ip: str) -> CommandResults:
     response = client.get_sapm_user_info(device_ip)
+    if isinstance(response, str):
+        raise Exception(f"Error in Single Connect API call: {response}")
     return CommandResults(
         outputs_prefix='SingleConnect.SapmAccount',
         outputs_key_field='dbId',
@@ -193,7 +206,7 @@ def main() -> None:
         return_error(f'Failed to execute {command} command. Error: {str(e)}')
     finally:
         try:
-            client._logout()
+            client.logout()
         except Exception as err:
             demisto.info(f"Single Connect error: {str(err)}")
 
