@@ -2,12 +2,12 @@
     "name": "Azure Active Directory Identity and Access (Deprecated)",
     "description": "Deprecated. Use Microsoft Graph Identity and Access instead.",
     "support": "xsoar",
-    "currentVersion": "1.2.10",
+    "currentVersion": "1.3.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Identity and Access Management"
+        "Authentication"
     ],
     "tags": [],
     "useCases": [],

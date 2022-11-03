@@ -2,8 +2,8 @@ import os
 import json
 import enum
 from typing import List
-from Tests.scripts.utils.content_packs_util import IGNORED_FILES
 
+IGNORED_FILES = ['__init__.py', 'ApiModules', 'NonSupported']  # files to ignore inside Packs folder
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
 PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
 PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, PACKS_FOLDER)  # full path to Packs folder in content repo
@@ -21,7 +21,7 @@ BASE_PACK_DEPENDENCY_DICT = {
 }
 
 
-SIEM_RULES_OBJECTS = ['ParsingRule', 'ModelingRule', 'CorrelationRule']
+SIEM_RULES_OBJECTS = ['ParsingRule', 'ModelingRule', 'CorrelationRule', 'XDRCTemplate']
 XSIAM_MP = "marketplacev2"
 XSOAR_MP = "xsoar"
 XSIAM_START_TAG = "<~XSIAM>"
@@ -49,6 +49,7 @@ class BucketUploadFlow(object):
     IMAGES = 'images'
     AUTHOR = 'author'
     INTEGRATIONS = 'integrations'
+    PREVIEW_IMAGES = 'preview_images'
     BUCKET_UPLOAD_BUILD_TITLE = "Upload Packs To Marketplace Storage"
     BUCKET_UPLOAD_TYPE = "bucket_upload_flow"
     # Different upload job names relate to different CI platforms:
@@ -152,6 +153,7 @@ class Metadata(object):
     TAGS = 'tags'
     CATEGORIES = 'categories'
     CONTENT_ITEMS = 'contentItems'
+    CONTENT_DISPLAYS = 'contentDisplays'
     SEARCH_RANK = 'searchRank'
     INTEGRATIONS = 'integrations'
     USE_CASES = 'useCases'
@@ -169,6 +171,7 @@ class Metadata(object):
     DISPLAYED_IMAGES = 'displayedImages'
     EMAIL = 'email'
     URL = 'url'
+    MARKETPLACES = 'marketplaces'
     DISABLE_MONTHLY = 'disableMonthly'
 
 
@@ -204,6 +207,7 @@ class PackFolders(enum.Enum):
     XSIAM_REPORTS = 'XSIAMReports'
     TRIGGERS = 'Triggers'
     WIZARDS = 'Wizards'
+    XDRC_TEMPLATES = 'XDRCTemplates'
 
     @classmethod
     def pack_displayed_items(cls):
@@ -216,7 +220,7 @@ class PackFolders(enum.Enum):
             PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value, PackFolders.JOBS.value,
             PackFolders.PARSING_RULES.value, PackFolders.MODELING_RULES.value, PackFolders.CORRELATION_RULES.value,
             PackFolders.XSIAM_DASHBOARDS.value, PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value,
-            PackFolders.WIZARDS.value,
+            PackFolders.WIZARDS.value, PackFolders.XDRC_TEMPLATES.value,
         }
 
     @classmethod
@@ -235,6 +239,7 @@ class PackFolders(enum.Enum):
             PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value,
             PackFolders.PREPROCESS_RULES.value, PackFolders.JOBS.value, PackFolders.XSIAM_DASHBOARDS.value,
             PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value, PackFolders.WIZARDS.value,
+            PackFolders.XDRC_TEMPLATES.value,
         }
 
 
@@ -285,7 +290,8 @@ PACK_FOLDERS_TO_ID_SET_KEYS = {
     PackFolders.XSIAM_DASHBOARDS.value: "XSIAMDashboards",
     PackFolders.XSIAM_REPORTS.value: "XSIAMReports",
     PackFolders.TRIGGERS.value: "Triggers",
-    PackFolders.WIZARDS.value: "Wizards"
+    PackFolders.WIZARDS.value: "Wizards",
+    PackFolders.XDRC_TEMPLATES.value: "XDRCTemplates",
 }
 
 
@@ -297,6 +303,7 @@ class PackStatus(enum.Enum):
     FAILED_LOADING_USER_METADATA = "Failed in loading user defined metadata"
     FAILED_IMAGES_UPLOAD = "Failed to upload pack integration images to gcs"
     FAILED_AUTHOR_IMAGE_UPLOAD = "Failed to upload pack author image to gcs"
+    FAILED_PREVIEW_IMAGES_UPLOAD = "Failed to upload pack preview images to gcs"
     FAILED_METADATA_PARSING = "Failed to parse and create metadata.json"
     FAILED_COLLECT_ITEMS = "Failed to collect pack content items data"
     FAILED_ZIPPING_PACK_ARTIFACTS = "Failed zipping pack artifacts"
@@ -367,4 +374,66 @@ RN_HEADER_BY_PACK_FOLDER = {
     PackFolders.XSIAM_REPORTS.value: 'XSIAM Reports',
     PackFolders.TRIGGERS.value: 'Triggers Recommendations',  # https://github.com/demisto/etc/issues/48153#issuecomment-1111988526
     PackFolders.WIZARDS.value: 'Wizards',
+    PackFolders.XDRC_TEMPLATES.value: "XDRC Templates",
+}
+
+# the format is defined in issue #19786, may change in the future
+CONTENT_ITEM_NAME_MAPPING = {
+    PackFolders.SCRIPTS.value: "automation",
+    PackFolders.PLAYBOOKS.value: "playbook",
+    PackFolders.INTEGRATIONS.value: "integration",
+    PackFolders.INCIDENT_FIELDS.value: "incidentfield",
+    PackFolders.INCIDENT_TYPES.value: "incidenttype",
+    PackFolders.DASHBOARDS.value: "dashboard",
+    PackFolders.INDICATOR_FIELDS.value: "indicatorfield",
+    PackFolders.REPORTS.value: "report",
+    PackFolders.INDICATOR_TYPES.value: "reputation",
+    PackFolders.LAYOUTS.value: "layoutscontainer",
+    PackFolders.CLASSIFIERS.value: "classifier",
+    PackFolders.WIDGETS.value: "widget",
+    PackFolders.GENERIC_DEFINITIONS.value: "genericdefinition",
+    PackFolders.GENERIC_FIELDS.value: "genericfield",
+    PackFolders.GENERIC_MODULES.value: "genericmodule",
+    PackFolders.GENERIC_TYPES.value: "generictype",
+    PackFolders.LISTS.value: "list",
+    PackFolders.PREPROCESS_RULES.value: "preprocessrule",
+    PackFolders.JOBS.value: "job",
+    PackFolders.PARSING_RULES.value: "parsingrule",
+    PackFolders.MODELING_RULES.value: "modelingrule",
+    PackFolders.CORRELATION_RULES.value: "correlationrule",
+    PackFolders.XSIAM_DASHBOARDS.value: "xsiamdashboard",
+    PackFolders.XSIAM_REPORTS.value: "xsiamreport",
+    PackFolders.TRIGGERS.value: "trigger",
+    PackFolders.WIZARDS.value: "wizard",
+    PackFolders.XDRC_TEMPLATES.value: "xdrctemplate",
+}
+
+ITEMS_NAMES_TO_DISPLAY_MAPPING = {
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.SCRIPTS.value]: "Automation",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.PLAYBOOKS.value]: "Playbook",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.INTEGRATIONS.value]: "Integration",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.INCIDENT_FIELDS.value]: "Incident Field",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.INCIDENT_TYPES.value]: "Incident Type",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.DASHBOARDS.value]: "Dashboard",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.INDICATOR_FIELDS.value]: "Indicator Field",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.REPORTS.value]: "Report",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.INDICATOR_TYPES.value]: "Reputation",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.LAYOUTS.value]: "Layouts Container",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.CLASSIFIERS.value]: "Classifier",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.WIDGETS.value]: "Widget",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.GENERIC_DEFINITIONS.value]: "Generic Definition",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.GENERIC_FIELDS.value]: "Generic Field",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.GENERIC_MODULES.value]: "Generic Module",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.GENERIC_TYPES.value]: "Generic Type",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.LISTS.value]: "List",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.PREPROCESS_RULES.value]: "Pre Process Rule",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.JOBS.value]: "Job",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.PARSING_RULES.value]: "Parsing Rule",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.MODELING_RULES.value]: "Modeling Rule",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.CORRELATION_RULES.value]: "Correlation Rule",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.XSIAM_DASHBOARDS.value]: "XSIAM Dashboard",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.XSIAM_REPORTS.value]: "XSIAM Report",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.TRIGGERS.value]: "Trigger",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.WIZARDS.value]: "Wizard",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.XDRC_TEMPLATES.value]: "XDRC Template",
 }

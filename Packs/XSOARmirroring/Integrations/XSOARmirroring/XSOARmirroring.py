@@ -493,9 +493,9 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
     """
     all_mappings = GetMappingFieldsResponse()
     incident_fields: List[dict] = client.get_incident_fields()
-
     types = client.get_incident_types()
     for incident_type_obj in types:
+        custom_fields = {}
         incident_type_name: str = incident_type_obj.get('name')  # type: ignore
         incident_type_scheme = SchemeTypeMapping(type_name=incident_type_name)
         demisto.debug(f'Collecting incident mapping for incident type - "{incident_type_name}"')
@@ -504,18 +504,28 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
             if field.get('group') == 0 and field.get('cliName') is not None and \
                     (field.get('associatedToAll') or incident_type_name in  # type: ignore
                      field.get('associatedTypes')):  # type: ignore
+                if field.get('content') or not field.get('system'):
+                    custom_fields[field.get('cliName')] = f"{field.get('name')} - {field.get('type')}"
+                    continue
                 incident_type_scheme.add_field(name=field.get('cliName'),
                                                description=f"{field.get('name')} - {field.get('type')}")
-
+        if custom_fields:
+            incident_type_scheme.add_field(name='CustomFields', description=custom_fields)
         all_mappings.add_scheme_type(incident_type_scheme)
 
     default_scheme = SchemeTypeMapping(type_name="Default Mapping")
     demisto.debug('Collecting the default incident scheme')
+    custom_fields = {}
     for field in incident_fields:
         if field.get('group') == 0 and field.get('associatedToAll'):
+            if field.get('content') or not field.get('system'):
+                custom_fields[field.get('cliName')] = f"{field.get('name')} - {field.get('type')}"
+                continue
             default_scheme.add_field(name=field.get('cliName'),
                                      description=f"{field.get('name')} - {field.get('type')}")
 
+    if custom_fields:
+        default_scheme.add_field(name='CustomFields', description=custom_fields)
     all_mappings.add_scheme_type(default_scheme)
     return all_mappings
 

@@ -47,6 +47,9 @@ class Boto3Client:
     def put_public_access_block(self):
         pass
 
+    def get_bucket_encryption(self):
+        pass
+
 
 class paginator:
     def paginate(self):
@@ -284,3 +287,26 @@ def test_put_public_access_block_command(mocker, res, excepted):
 
     res = AWS_S3.put_public_access_block(args, client)
     assert res.readable_output == f"{excepted} public access block to the {args.get('bucket')} bucket"
+
+
+def test_get_bucket_encryption(mocker):
+    """
+    Given:
+    - A bucket name.
+    When:
+    - Calling get_bucket_encryption method.
+    Then:
+    - Ensure that the bucket encryption was successfully retrieved.
+    """
+    from CommonServerPython import tableToMarkdown
+    args = {'bucket': 'test_bucket'}
+    args.update(TEST_PARAMS)
+    encryption = {'Rules': [{'ApplyServerSideEncryptionByDefault': {'SSEAlgorithm': 'AES256'}}]}
+    response = {'ServerSideEncryptionConfiguration': encryption}
+    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
+    mocker.patch.object(Boto3Client, "get_bucket_encryption", return_value=response)
+
+    client = AWSClient()
+    data = [{'BucketName': args.get('bucket'), 'ServerSideEncryptionConfiguration': encryption}]
+    res = AWS_S3.get_bucket_encryption(args, client)
+    assert tableToMarkdown('AWS S3 Bucket Encryption', data) == res.readable_output

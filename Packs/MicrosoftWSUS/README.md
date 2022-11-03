@@ -1,17 +1,40 @@
+# Microsoft WSUS
+
 This pack includes XSIAM content.
+## Configuration on the Server Side
+#### Validation that WSUS server role is enabled:
+ - In the Server Manager, click **Manage** > **Add Roles and Features**.
+ - Click **Server Roles** in the left menu.
+ - Scroll down and validate that *Windows Server Update Services* is selected.
+ - Validate that the following are selected and installed:
+    - *WID Connectivity*    
+    - *WSUS Services*
 
+   ![Server Screenshot](https://i.postimg.cc/V6vjDDqH/WSUS.jpg)
 ## Collect Events from Vendor
-
-In order to use the collector, you can use one of the following options to collect events from the vendor:
- - [XDRC (XDR Collector)](#xdrc-xdr-collector) 
-
-In either option, you will need to configure the vendor and product for this specific collector.
-
+In order to use the collector, you need to use the following option to collect events from the vendor:
+- [XDRC (XDR Collector)](#xdrc-xdr-collector)
+You will need to configure the vendor and product for this specific collector.
 ### XDRC (XDR Collector)
-You will need to use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/cortex-xdr-collectors/xdr-collector-datasets#id7f0fcd4d-b019-4959-a43a-40b03db8a8b2).\
-You can configure the vendor and product by replacing [vendor]_[product]_raw with msft_wsus_raw.\
-When configuring the instance, you should use a yml that configures the vendor and product, like this example for the Microsoft NPS product:
 
+You will need to use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/cortex-xdr-collectors/xdr-collector-datasets#id7f0fcd4d-b019-4959-a43a-40b03db8a8b2).
+
+You can configure the vendor and product by replacing [vendor]_[product]raw with msft_wsus_raw. 
+
+When configuring the instance, you should use a YAML file that configures the vendor and product, as seen in the configuration below for the Microsoft WSUS product.
+
+## Filebeat Collection
+In order to use the collector, you need to use the following option to collect events from the vendor:
+- [XDRC (XDR Collector)](#xdrc-xdr-collector)
+You will need to configure the vendor and product for this specific collector.
+### XDRC (XDR Collector)
+You will need to use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/cortex-xdr-collectors/xdr-collector-datasets#id7f0fcd4d-b019-4959-a43a-40b03db8a8b2).
+
+You can configure the vendor and product by replacing [vendor]_[product]_raw with msft_wsus_raw.
+When configuring the instance, you should use a YAML that configures the vendor and product, just as seen in the below configuration for the Microsoft NPS product.
+
+Copy and paste the contents of the following YAML in the *Filebeat Configuration File* section (inside the relevant profile under the *XDR Collectors Profile*s).
+#### Filebeat Configuration file:
 ```
 filebeat.inputs:
 - type: filestream

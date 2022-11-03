@@ -127,7 +127,7 @@ def handle_prevalence_command(client: Client, command: str, args: dict):
     return CommandResults(
         readable_output=tableToMarkdown(string_to_table_header(f'{command_type} Prevalence'),
                                         [{
-                                            key_names_in_response[command_type]: item.get('args', {}).get(
+                                            key_names_in_response[command_type]: item.get(
                                                 key_names_in_response[command_type]),
                                             'Prevalence': item.get('value')
                                         } for item in res],

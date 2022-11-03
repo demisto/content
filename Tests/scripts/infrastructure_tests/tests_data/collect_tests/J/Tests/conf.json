@@ -13,6 +13,9 @@
   "skipped_integrations": {
     "mySkippedIntegration": "Skipped for testing skipped_integrations in case J"
   },
+  "nightly_packs": [
+    "myPack"
+  ],
   "unmockable_integrations": {},
   "nightly_integrations": [],
   "parallel_integrations": [],

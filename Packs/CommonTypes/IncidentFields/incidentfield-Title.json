@@ -30,7 +30,9 @@
   "IAM - Sync User",
   "IAM - Rehire User",
   "Mandiant Automated Defense Incident",
-  "OpsGenie Incident"
+  "OpsGenie Incident",
+  "ThreatConnect",
+  "Vectra Account"
  ],
  "associatedToAll": false,
  "unmapped": false,

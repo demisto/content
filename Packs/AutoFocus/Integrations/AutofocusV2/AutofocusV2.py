@@ -7,10 +7,11 @@ import json
 import requests
 import socket
 import traceback
+import urllib3
 from typing import Callable, Tuple
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 PARAMS = demisto.params()
@@ -321,6 +322,11 @@ def parse_response(resp, err_operation):
             raise Exception("Response status code: 409 \nRequested sample not found")
         res_json = resp.json()
         resp.raise_for_status()
+
+        if 'x-trace-id' in resp.headers:
+            # this debug log was request by autofocus team for debugging on their end purposes
+            demisto.debug(f'x-trace-id: {resp.headers["x-trace-id"]}')
+
         return res_json
     # Errors returned from AutoFocus
     except requests.exceptions.HTTPError:
@@ -1054,7 +1060,9 @@ def calculate_dbot_score(indicator_response, indicator_type):
         return VERDICTS_TO_DBOTSCORE.get(pan_db.lower(), 0)
     else:
         score = next(iter(latest_pan_verdicts.values()))
-        return VERDICTS_TO_DBOTSCORE.get(score.lower(), 0)
+        if score:
+            return VERDICTS_TO_DBOTSCORE.get(score.lower(), 0)
+        return 0
 
 
 def check_for_ip(indicator):
@@ -1489,9 +1497,9 @@ def search_domain_command(domain, reliability, create_relationships):
                 domain=domain_name,
                 dbot_score=dbot_score,
                 # Converting date format from YYYY-MM-DD to DD-MM-YYYY due to a parsing problem on the server later
-                creation_date="-".join(indicator.get("whoisDomainCreationDate").split("-")[::-1]),
-                expiration_date="-".join(indicator.get('whoisDomainExpireDate').split("-")[::-1]),
-                updated_date="-".join(indicator.get('whoisDomainUpdateDate').split("-")[::-1]),
+                creation_date="-".join((indicator.get("whoisDomainCreationDate") or '').split("-")[::-1]),
+                expiration_date="-".join((indicator.get('whoisDomainExpireDate') or '').split("-")[::-1]),
+                updated_date="-".join((indicator.get('whoisDomainUpdateDate') or '').split("-")[::-1]),
                 admin_email=indicator.get('whoisAdminEmail'),
                 admin_name=indicator.get('whoisAdminName'),
                 admin_country=indicator.get('whoisAdminCountry'),

@@ -13,7 +13,7 @@ def is_between_dates(value, begin_date, end_date):
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     args = demisto.args()
-    value, begin_date, end_date = args['value'], args['begin_time'], args['end_time']
+    value, begin_date, end_date = args['value'], args['begin_date'], args['end_date']
 
     result = is_between_dates(value, begin_date, end_date)
 

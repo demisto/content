@@ -1,0 +1,31 @@
+{
+    "id": "indicator_ximodifiedtimestamp",
+    "version": -1,
+    "modified": "2022-08-19T13:54:44.855012716Z",
+    "name": "XI Modified Timestamp",
+    "ownerOnly": false,
+    "cliName": "ximodifiedtimestamp",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Exodus Intelligence"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

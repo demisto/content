@@ -70,7 +70,7 @@ script:
       - 'True'
       - 'False'
       required: true
-  dockerimage: demisto/fastapi:1.0.0.32142
+  dockerimage: demisto/fastapi:1.0.0.34291
   runonce: false
   isfetchevents: true
   subtype: python3

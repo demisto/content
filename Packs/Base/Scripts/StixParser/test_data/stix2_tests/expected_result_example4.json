@@ -1,0 +1,77 @@
+[
+    {
+        "value": "ef537f25c895bfa782526529a9b63d97aa631564d5d789c2b765448c8635fb6c",
+        "indicator_type": "File",
+        "rawJSON": {
+            "type": "File",
+            "spec_version": "2.1",
+            "id": "indicator--a932fcc6-e032-476c-826f-cb970a5a1ade",
+            "created": "2014-02-20T09:16:08.989Z",
+            "modified": "2014-02-20T09:16:08.989Z",
+            "name": "File hash for Poison Ivy variant",
+            "description": "This file hash indicates that a sample of Poison Ivy is present.",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "pattern": "[file:hashes.'SHA-256' = 'ef537f25c895bfa782526529a9b63d97aa631564d5d789c2b765448c8635fb6c']",
+            "pattern_type": "stix",
+            "valid_from": "2014-02-20T09:00:00Z",
+            "value": "ef537f25c895bfa782526529a9b63d97aa631564d5d789c2b765448c8635fb6c"
+        },
+        "customFields": {
+            "description": "This file hash indicates that a sample of Poison Ivy is present.",
+            "tags": []
+        },
+        "relationships": [
+            {
+                "name": "indicated-by",
+                "reverseName": "indicator-of",
+                "type": "IndicatorToIndicator",
+                "entityA": "ef537f25c895bfa782526529a9b63d97aa631564d5d789c2b765448c8635fb6c",
+                "entityAFamily": "Indicator",
+                "entityAType": "File",
+                "entityB": "Poison Ivy",
+                "entityBFamily": "Indicator",
+                "entityBType": "Malware",
+                "fields": {
+                    "lastseenbysource": "2020-02-29T18:09:12.808Z",
+                    "firstseenbysource": "2020-02-29T18:09:12.808Z"
+                }
+            }
+        ]
+    },
+    {
+        "value": "Poison Ivy",
+        "indicator_type": "Malware",
+        "score": 3,
+        "rawJSON": {
+            "type": "malware",
+            "spec_version": "2.1",
+            "id": "malware--fdd60b30-b67c-41e3-b0b9-f01faf20d111",
+            "created": "2014-02-20T09:16:08.989Z",
+            "modified": "2014-02-20T09:16:08.989Z",
+            "name": "Poison Ivy",
+            "malware_types": [
+                "remote-access-trojan"
+            ],
+            "is_family": false
+        },
+        "customFields": {
+            "stixid": "malware--fdd60b30-b67c-41e3-b0b9-f01faf20d111",
+            "firstseenbysource": "2014-02-20T09:16:08.989Z",
+            "modified": "2014-02-20T09:16:08.989Z",
+            "description": "",
+            "malware_types": [
+                "remote-access-trojan"
+            ],
+            "is_family": false,
+            "aliases": [],
+            "kill_chain_phases": [],
+            "os_execution_envs": [],
+            "architecture_execution_envs": [],
+            "capabilities": [],
+            "sample_refs": [],
+            "tags": []
+        }
+    }
+]

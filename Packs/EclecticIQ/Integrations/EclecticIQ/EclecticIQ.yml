@@ -81,7 +81,7 @@ configuration:
 script:
   script: ''
   type: python
-  subtype: python2
+  subtype: python3
   commands:
   - name: ip
     arguments:
@@ -372,7 +372,7 @@ script:
       type: Number
     description: Gets the reputation of a domain observable.
   runonce: false
-  dockerimage: demisto/python:2.7.18.27799
+  dockerimage: demisto/python3:3.10.7.33922
 tests:
 - No test - instance issues
 fromversion: 5.0.0

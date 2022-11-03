@@ -1,0 +1,54 @@
+{
+  "authlogs": [
+    {
+      "access_device": {
+        "epkey": null,
+        "hostname": null,
+        "ip": "1.1.1.1",
+        "location": {
+          "city": null,
+          "country": null,
+          "state": null
+        }
+      },
+      "alias": "",
+      "application": {
+        "key": "1",
+        "name": "Auth API"
+      },
+      "auth_device": {
+        "ip": "1.1.1.1",
+        "key": "1",
+        "location": {
+          "city": "test_city",
+          "country": null,
+          "state": null
+        },
+        "name": "+972 11-111-1111"
+      },
+      "email": "test@demisto.com",
+      "event_type": "authentication",
+      "factor": "duo_push",
+      "isotimestamp": "2022-08-28T13:34:16.080820+00:00",
+      "ood_software": null,
+      "reason": "no_response",
+      "result": "denied",
+      "timestamp": 1661693656,
+      "txid": "12a99a23-ae87-48fa-87ea-b64d7fbf5b7e",
+      "user": {
+        "groups": [],
+        "key": "1",
+        "name": "test@demisto.com"
+      },
+      "eventtype": "authentication",
+      "host": "test_host"
+    }
+  ],
+  "metadata": {
+    "next_offset": [
+      "1",
+      "1-1-1-1-1"
+    ],
+    "total_objects": 1
+  }
+}

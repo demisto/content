@@ -416,22 +416,24 @@ def test_search_group_members(mocker):
 
     class ConnectionMocker:
         entries = [EntryMocker()]
-        result = {'controls': {'1.2.840.113556.1.4.319': {'value': {'cookie': '<cookie>'}}}}
+        result = {'controls': {'1.2.840.113556.1.4.319': {'value': {'cookie': b'<cookie>'}}}}
 
         def search(self, *args, **kwargs):
             time.sleep(1)
             return
+
+    expected_entry = {
+        'ActiveDirectory.Groups(obj.dn ==dn)': {'dn': 'dn', 'members': [{'dn': 'dn', 'category': 'group'}]},
+        'ActiveDirectory.Groups(obj.dn == val.dn)': [{'dn': 'dn', 'memberOf': ['memberOf'], 'name': ['name']}],
+        'Group': [{'Type': 'AD', 'ID': 'dn', 'Name': ['name'], 'Groups': ['memberOf']}],
+        'ActiveDirectory(true)': {"GroupsPageCookie": base64.b64encode(b'<cookie>').decode('utf-8')}}
 
     expected_results = {'ContentsFormat': 'json', 'Type': 1,
                         'Contents': [{'dn': 'dn', 'attributes': {'memberOf': ['memberOf'], 'name': ['name']}}],
                         'ReadableContentsFormat': 'markdown',
                         'HumanReadable': '### Active Directory - Get Group Members\n|'
                                          'dn|memberOf|name|\n|---|---|---|\n| dn | memberOf | name |\n',
-                        'EntryContext': {'ActiveDirectory.Groups(obj.dn ==dn)': {'dn': 'dn', 'members': [
-                                        {'dn': 'dn', 'category': 'group'}]}, 'ActiveDirectory.Groups(obj.dn == val.dn)':
-                                            [{'dn': 'dn', 'memberOf': ['memberOf'], 'name': ['name']}], 'Group':
-                                            [{'Type': 'AD', 'ID': 'dn', 'Name': ['name'], 'Groups': ['memberOf']}]}}
-
+                        'EntryContext': expected_entry}
     expected_results = f'demisto results: {json.dumps(expected_results, indent=4, sort_keys=True)}'
 
     mocker.patch.object(demisto, 'args',
@@ -496,6 +498,54 @@ def test_search__no_control_exist(mocker):
     Active_Directory_Query.search_users('dc=test,dc=test_1', page_size=20)
 
     assert '**No entries.**' in demisto.results.call_args[0][0]['HumanReadable']
+
+
+def test_search_attributes_to_exclude(mocker):
+    """
+    Given:
+        attributes_to_exclude
+    When:
+        Run any search query
+    Then:
+        The given arguments where excluded from human_readable and context_data
+    """
+    import Active_Directory_Query
+
+    class EntryMocker:
+        def entry_to_json(self):
+            return '{"dn": "dn"}'
+
+    class ConnectionMocker:
+        entries = [EntryMocker()]
+        result = {'controls': {'1.2.840.113556.1.4.319': {'value': {'cookie': b'<cookie>'}}}}
+
+        def search(self, *args, **kwargs):
+            time.sleep(1)
+            return
+
+    expected_results = {'ContentsFormat': 'json', 'Type': 1,
+                        'Contents': [{'dn': 'dn'}],
+                        'ReadableContentsFormat': 'markdown',
+                        'HumanReadable': '### Active Directory - Get Users\n|dn|\n|---|\n| dn |\n',
+                        'EntryContext': {'ActiveDirectory.Users(obj.dn == val.dn)': [{'dn': 'dn'}],
+                                         'Account(obj.ID == val.ID)':
+                                             [{'Type': 'AD', 'ID': 'dn', 'Email': None, 'Username': None,
+                                               'DisplayName': None, 'Managr': None, 'Manager': None, 'Groups': None}],
+                                         'ActiveDirectory(true)':
+                                             {"UsersPageCookie": base64.b64encode(b'<cookie>').decode('utf-8')}}}
+
+    expected_results = f'demisto results: {json.dumps(expected_results, indent=4, sort_keys=True)}'
+
+    mocker.patch.object(demisto, 'args',
+                        return_value={'attributes-to-exclude': "memberOf,name,mail,displayName,"
+                                                               "manager,sAMAccountName,userAccountControl",
+                                      'page-size': '1'})
+
+    Active_Directory_Query.conn = ConnectionMocker()
+
+    with patch('logging.Logger.info') as mock:
+        Active_Directory_Query.search_users('dc', 1)
+        mock.assert_called_with(expected_results)
 
 
 def test_user_account_to_boolean_fields():
@@ -572,7 +622,7 @@ def test_search_with_paging_bug(mocker):
 
     class ConnectionMocker:
         entries = []
-        result = {'controls': {'1.2.840.113556.1.4.319': {'value': {'cookie': '<cookie>'}}}}
+        result = {'controls': {'1.2.840.113556.1.4.319': {'value': {'cookie': b'<cookie>'}}}}
 
         def search(self, *args, **kwargs):
             page_size = kwargs.get('paged_size')

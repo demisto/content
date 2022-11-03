@@ -16,6 +16,16 @@ XSOAR_RESOLVED_STATUS = {
     'Resolved': 'resolved_true_positive',
 }
 
+XDR_RESOLVED_STATUS_TO_XSOAR = {
+    'resolved_known_issue': 'Other',
+    'resolved_duplicate': 'Duplicate',
+    'resolved_false_positive': 'False Positive',
+    'resolved_true_positive': 'Resolved',
+    'resolved_security_testing': 'Other',
+    'resolved_other': 'Other',
+    'resolved_auto': 'Resolved'
+}
+
 ALERT_GENERAL_FIELDS = {
     'detection_modules',
     'alert_full_description',
@@ -129,8 +139,6 @@ ALERT_EVENT_AZURE_FIELDS = {
     "tenantId",
 }
 
-MIRROR_IN_CLOSE_REASON = 'Closed during mirroring-in due to the remote incident being closed.'
-
 
 class CoreClient(BaseClient):
 
@@ -192,8 +200,7 @@ class CoreClient(BaseClient):
                       sort_by_first_seen=None,
                       sort_by_last_seen=None,
                       status=None,
-                      username=None,
-                      no_filter=False
+                      username=None
                       ):
 
         search_from = page_number * limit
@@ -204,53 +211,40 @@ class CoreClient(BaseClient):
             'search_to': search_to,
         }
 
-        if no_filter:
-            reply = self._http_request(
-                method='POST',
-                url_suffix='/endpoints/get_endpoints/',
-                json_data={},
-                timeout=self.timeout
-            )
-            endpoints = reply.get('reply')[search_from:search_to]
-            for endpoint in endpoints:
-                if not endpoint.get('endpoint_id'):
-                    endpoint['endpoint_id'] = endpoint.get('agent_id')
+        filters = create_request_filters(
+            status=status, username=username, endpoint_id_list=endpoint_id_list, dist_name=dist_name,
+            ip_list=ip_list, group_name=group_name, platform=platform, alias_name=alias_name, isolate=isolate,
+            hostname=hostname, first_seen_gte=first_seen_gte, first_seen_lte=first_seen_lte,
+            last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte
+        )
 
-        else:
-            filters = create_request_filters(
-                status=status, username=username, endpoint_id_list=endpoint_id_list, dist_name=dist_name,
-                ip_list=ip_list, group_name=group_name, platform=platform, alias_name=alias_name, isolate=isolate,
-                hostname=hostname, first_seen_gte=first_seen_gte, first_seen_lte=first_seen_lte,
-                last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte
-            )
+        if search_from:
+            request_data['search_from'] = search_from
 
-            if search_from:
-                request_data['search_from'] = search_from
+        if search_to:
+            request_data['search_to'] = search_to
 
-            if search_to:
-                request_data['search_to'] = search_to
+        if sort_by_first_seen:
+            request_data['sort'] = {
+                'field': 'first_seen',
+                'keyword': sort_by_first_seen
+            }
+        elif sort_by_last_seen:
+            request_data['sort'] = {
+                'field': 'last_seen',
+                'keyword': sort_by_last_seen
+            }
 
-            if sort_by_first_seen:
-                request_data['sort'] = {
-                    'field': 'first_seen',
-                    'keyword': sort_by_first_seen
-                }
-            elif sort_by_last_seen:
-                request_data['sort'] = {
-                    'field': 'last_seen',
-                    'keyword': sort_by_last_seen
-                }
+        request_data['filters'] = filters
 
-            request_data['filters'] = filters
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/endpoints/get_endpoint/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
 
-            reply = self._http_request(
-                method='POST',
-                url_suffix='/endpoints/get_endpoint/',
-                json_data={'request_data': request_data},
-                timeout=self.timeout
-            )
-
-            endpoints = reply.get('reply').get('endpoints', [])
+        endpoints = reply.get('reply').get('endpoints', [])
         return endpoints
 
     def isolate_endpoint(self, endpoint_id, incident_id=None):
@@ -1725,64 +1719,61 @@ def get_endpoints_command(client, args):
         required=True
     )
 
-    if list(args.keys()) == ['limit', 'page', 'sort_order']:
-        endpoints = client.get_endpoints(page_number=page_number, limit=limit, no_filter=True)
-    else:
-        endpoint_id_list = argToList(args.get('endpoint_id_list'))
-        dist_name = argToList(args.get('dist_name'))
-        ip_list = argToList(args.get('ip_list'))
-        group_name = argToList(args.get('group_name'))
-        platform = argToList(args.get('platform'))
-        alias_name = argToList(args.get('alias_name'))
-        isolate = args.get('isolate')
-        hostname = argToList(args.get('hostname'))
-        status = args.get('status')
+    endpoint_id_list = argToList(args.get('endpoint_id_list'))
+    dist_name = argToList(args.get('dist_name'))
+    ip_list = argToList(args.get('ip_list'))
+    group_name = argToList(args.get('group_name'))
+    platform = argToList(args.get('platform'))
+    alias_name = argToList(args.get('alias_name'))
+    isolate = args.get('isolate')
+    hostname = argToList(args.get('hostname'))
+    status = args.get('status')
 
-        first_seen_gte = arg_to_timestamp(
-            arg=args.get('first_seen_gte'),
-            arg_name='first_seen_gte'
-        )
+    first_seen_gte = arg_to_timestamp(
+        arg=args.get('first_seen_gte'),
+        arg_name='first_seen_gte'
+    )
 
-        first_seen_lte = arg_to_timestamp(
-            arg=args.get('first_seen_lte'),
-            arg_name='first_seen_lte'
-        )
+    first_seen_lte = arg_to_timestamp(
+        arg=args.get('first_seen_lte'),
+        arg_name='first_seen_lte'
+    )
 
-        last_seen_gte = arg_to_timestamp(
-            arg=args.get('last_seen_gte'),
-            arg_name='last_seen_gte'
-        )
+    last_seen_gte = arg_to_timestamp(
+        arg=args.get('last_seen_gte'),
+        arg_name='last_seen_gte'
+    )
 
-        last_seen_lte = arg_to_timestamp(
-            arg=args.get('last_seen_lte'),
-            arg_name='last_seen_lte'
-        )
+    last_seen_lte = arg_to_timestamp(
+        arg=args.get('last_seen_lte'),
+        arg_name='last_seen_lte'
+    )
 
-        sort_by_first_seen = args.get('sort_by_first_seen')
-        sort_by_last_seen = args.get('sort_by_last_seen')
+    sort_by_first_seen = args.get('sort_by_first_seen')
+    sort_by_last_seen = args.get('sort_by_last_seen')
 
-        username = argToList(args.get('username'))
+    username = argToList(args.get('username'))
 
-        endpoints = client.get_endpoints(
-            endpoint_id_list=endpoint_id_list,
-            dist_name=dist_name,
-            ip_list=ip_list,
-            group_name=group_name,
-            platform=platform,
-            alias_name=alias_name,
-            isolate=isolate,
-            hostname=hostname,
-            page_number=page_number,
-            limit=limit,
-            first_seen_gte=first_seen_gte,
-            first_seen_lte=first_seen_lte,
-            last_seen_gte=last_seen_gte,
-            last_seen_lte=last_seen_lte,
-            sort_by_first_seen=sort_by_first_seen,
-            sort_by_last_seen=sort_by_last_seen,
-            status=status,
-            username=username
-        )
+    endpoints = client.get_endpoints(
+        endpoint_id_list=endpoint_id_list,
+        dist_name=dist_name,
+        ip_list=ip_list,
+        group_name=group_name,
+        platform=platform,
+        alias_name=alias_name,
+        isolate=isolate,
+        hostname=hostname,
+        page_number=page_number,
+        limit=limit,
+        first_seen_gte=first_seen_gte,
+        first_seen_lte=first_seen_lte,
+        last_seen_gte=last_seen_gte,
+        last_seen_lte=last_seen_lte,
+        sort_by_first_seen=sort_by_first_seen,
+        sort_by_last_seen=sort_by_last_seen,
+        status=status,
+        username=username
+    )
 
     standard_endpoints = generate_endpoint_by_contex_standard(endpoints, False, integration_name)
     endpoint_context_list = []
@@ -2588,24 +2579,29 @@ def handle_user_unassignment(update_args):
         update_args['assigned_user_pretty_name'] = None
 
 
-def handle_outgoing_issue_closure(update_args, inc_status):
-    if inc_status == 2:
-        if MIRROR_IN_CLOSE_REASON not in update_args.get('closeNotes', ''):
-            update_args['resolve_comment'] = update_args.get('closeNotes', '')
-            update_args['status'] = XSOAR_RESOLVED_STATUS.get(update_args.get('closeReason', 'Other'))
-            demisto.debug(f"Closing Remote incident with status {update_args['status']}")
-        else:
-            demisto.debug('Ignore closing Remote incident because incident closed during mirroring in')
+def handle_outgoing_issue_closure(remote_args):
+    update_args = remote_args.delta
+    current_remote_status = remote_args.data.get('status') if remote_args.data else None
+    # force closing remote incident only if:
+    #   The XSOAR incident is closed
+    #   and the closingUserId was changed
+    #   and the remote incident isn't already closed
+    if remote_args.inc_status == 2 and \
+       update_args.get('closingUserId') and \
+       current_remote_status not in XDR_RESOLVED_STATUS_TO_XSOAR:
+
+        update_args['resolve_comment'] = update_args.get('closeNotes', '')
+        update_args['status'] = XSOAR_RESOLVED_STATUS.get(update_args.get('closeReason', 'Other'))
+        demisto.debug(f"Closing Remote incident with status {update_args['status']}")
 
 
-def get_update_args(delta, inc_status):
+def get_update_args(remote_args):
     """Change the updated field names to fit the update command"""
-    update_args = delta
-    handle_outgoing_incident_owner_sync(update_args)
-    handle_user_unassignment(update_args)
-    if update_args.get('closingUserId'):
-        handle_outgoing_issue_closure(update_args, inc_status)
-    return update_args
+
+    handle_outgoing_issue_closure(remote_args)
+    handle_outgoing_incident_owner_sync(remote_args.delta)
+    handle_user_unassignment(remote_args.delta)
+    return remote_args.delta
 
 
 def update_remote_system_command(client, args):
@@ -2616,7 +2612,7 @@ def update_remote_system_command(client, args):
                       f'incident {remote_args.remote_incident_id}')
     try:
         if remote_args.incident_changed:
-            update_args = get_update_args(remote_args.delta, remote_args.inc_status)
+            update_args = get_update_args(remote_args)
 
             update_args['incident_id'] = remote_args.remote_incident_id
             demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')

@@ -34,27 +34,37 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+- display: Max per page
+  name: max_fetch
+  required: false
+  type: 0
+  defaultvalue: '10'
 - display: Minimal severity to fetch by
   hidden: false
   name: severity
+  required: false
+  type: 15
   options:
   - Low
   - Medium
   - High
   - Critical
-  required: false
-  type: 15
-- additionalinfo: All sites if none selected
-  display: Site ID to fetch by
+- display: Site ID to fetch by
   hidden: false
   name: site_id
   required: false
   type: 0
+  additionalinfo: All sites if none selected
 - display: Fetch by alert type
   hidden: false
   name: alert_type
   required: false
   type: 0
+- display: Exclude resolved alerts
+  hidden: false
+  name: exclude_resolved_alerts
+  required: false
+  type: 8
 description: Use the Claroty CTD integration to manage assets and alerts.
 display: Claroty
 name: Claroty
@@ -89,8 +99,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Returns assets with this criticality. Can be "Low", "Medium", or
-        "High".
+      description: Returns assets with this criticality. Can be "Low", "Medium", or "High".
       isArray: false
       name: criticality
       predefined:
@@ -126,8 +135,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Get all assets seen last from the given date. Format - YYYY-MM-DDThh:mm:ssZ.
-        Example - 2020-02-02T01:02:03Z
+      description: Get all assets seen last from the given date. Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
       isArray: false
       name: assets_last_seen
       required: false
@@ -269,8 +277,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The start date from which to get alerts. Format - YYYY-MM-DDThh:mm:ssZ.
-        Example - 2020-02-02T01:02:03Z
+      description: The start date from which to get alerts. Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
       isArray: false
       name: date_from
       required: false
@@ -302,6 +309,12 @@ script:
       - Medium
       - High
       - Critical
+      required: false
+      secret: false
+    - default: false
+      description: Returns only unresloved alerts.
+      isArray: false
+      name: exclude_resolved_alerts
       required: false
       secret: false
     deprecated: false
@@ -392,8 +405,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The ResourceId of the Alerts to resolve (in <alert_id>-<site_id>
-        format)
+      description: The ResourceId of the Alerts to resolve (in <alert_id>-<site_id> format)
       isArray: false
       name: selected_alerts
       required: true
@@ -401,8 +413,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: resolve
-      description: How to resolve the alert. Can be "archive" or "resolve". The default
-        value is "resolve".
+      description: How to resolve the alert. Can be "archive" or "resolve". The default value is "resolve".
       isArray: false
       name: resolve_as
       predefined:
@@ -482,7 +493,7 @@ script:
     - contextPath: Claroty.Alert.Severity
       description: The alert severity.
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.7.33922
   feed: false
   isfetch: true
   longRunning: false
@@ -491,6 +502,8 @@ script:
   script: '-'
   subtype: python3
   type: python
+autoUpdateDockerImage: true
 defaultclassifier: Claroty
 defaultmapperin: Claroty-mapper
-
+tests:
+- No tests (auto formatted)
