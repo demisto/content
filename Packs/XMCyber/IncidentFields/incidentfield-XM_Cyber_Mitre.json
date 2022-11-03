@@ -1,0 +1,59 @@
+{
+    "id": "incident_xmcybermitre",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "modified": "2020-10-26T16:28:47.957122695Z",
+    "name": "XM Cyber MITRE",
+    "ownerOnly": false,
+    "cliName": "xmcybermitre",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "XM Cyber Technique"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "name",
+            "displayName": "MITRE",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 258,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "link",
+            "displayName": "Link",
+            "type": "url",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72
+}

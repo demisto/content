@@ -3209,7 +3209,7 @@ def test_search_device_command(requests_mock):
         status_code=200,
     )
     requests_mock.get(
-        f'{SERVER_URL}/devices/entities/devices/v1?ids=meta&ids=resources&ids=errors',
+        f'{SERVER_URL}/devices/entities/devices/v2?ids=meta&ids=resources&ids=errors',
         json=test_data2,
         status_code=200,
     )
@@ -3278,7 +3278,7 @@ def test_get_endpint_command(requests_mock, mocker):
         status_code=200,
     )
     requests_mock.get(
-        f'{SERVER_URL}/devices/entities/devices/v1?ids=meta&ids=resources&ids=errors',
+        f'{SERVER_URL}/devices/entities/devices/v2?ids=meta&ids=resources&ids=errors',
         json=test_data2,
         status_code=200,
     )
