@@ -91,6 +91,11 @@
             "fromversion": "6.1.0"
         },
         {
+            "integrations": "Bitbucket",
+            "playbookID": "Test_Bitbucket",
+            "fromversion": "6.5.0"
+        },
+        {
             "playbookID": "Generic Polling Test",
             "timeout": 250
         },
@@ -1404,7 +1409,8 @@
             "playbookID": "EWS search-mailbox test",
             "instance_names": [
                 "ewv2_regular",
-                "ews_mail_sender_labdemisto"
+                "ews_mail_sender_labdemisto",
+                "ewso365_dev_team"
             ],
             "timeout": 300
         },
@@ -5190,7 +5196,20 @@
             ]
         },
         {
+            "playbookID": "GridFieldSetup_test"
+        },
+        {
+            "integrations": "Aha",
+            "playbookID": "AHA_TestPlaybook",
+            "fromversion": "6.5.0"
+        },
+        {
             "playbookID": "VerifyCIDR-Test"
+        },
+        {
+            "integrations": "JoeSecurityV2",
+            "fromversion": "6.2.0",
+            "playbookID": "testplaybook- JoeSecuirtyV2"
         }
     ],
     "skipped_tests": {
@@ -5342,7 +5361,8 @@
         "TruSTAR v2-Test": "No credentials",
         "Process Email - Generic - Test - Incident Starter": "Issue CIAC-4161",
         "AD v2 - debug-mode": "No credentials",
-        "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449"
+        "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
+        "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407"
     },
     "skipped_integrations": {
         "AbuseIPDB": "License expired",
