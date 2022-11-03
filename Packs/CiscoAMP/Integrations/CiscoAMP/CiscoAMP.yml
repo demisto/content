@@ -8,7 +8,7 @@ configuration:
   name: server_url
   required: true
   type: 0
-- display: 3rd Party API Client ID
+- display: Third Party API Client ID
   name: credentials
   required: true
   displaypassword: API Key
