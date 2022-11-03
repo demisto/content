@@ -3689,10 +3689,11 @@ def qradar_remote_network_cidr_create_command(client: Client, args) -> CommandRe
     }
 
     response = client.create_remote_network_cidr(body, fields)
+    success_message = 'The new staged remote network was successfully created.'
 
     return CommandResults(
         raw_response=response,
-        readable_output=tableToMarkdown('The new staged remote network was successfully created.', response)
+        readable_output=tableToMarkdown(success_message, response)
     )
 
 

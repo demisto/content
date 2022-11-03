@@ -2771,11 +2771,11 @@ script:
     arguments:
     - name: cidrs
       auto: PREDEFINED
-      description: An input list of CIDRs to add to Qradar (can be obtained from automatically from EDL integrations and playbook). Multiple values in the same object are separated by commas.
+      description: An input list of CIDRs to add to Qradar (can be obtained from automatically from EDL integrations and playbook). Multiple values in the same object are separated by commas. One of the cidr or query is required.
       isArray: true
       type: unknown
     - name: query
-      description: The query for getting indicators from Cortex XSOAR.
+      description: The query for getting indicators from Cortex XSOAR. One of the cidr or query is required.
     - name: name
       required: true
       description: A CIDRs (remote networks) name that will be displayed for all uploaded values in Qradar.
@@ -2786,7 +2786,7 @@ script:
       description: Description that will be displayed and associated with all the newly uploaded CIDRs on Qradar.
     - name: group
       required: true
-      description: 'the exact name of the remote network group that CIDRs should be associated with as it appears in Qradar.  A single group can be assigned to each create command. A new remote network group can be created in Qradar by giving a new unique remote network group name (that does not already exist in Qradar remote networks). '
+      description: 'The exact name of the remote network group that CIDRs should be associated with as it appears in Qradar. A single group can be assigned to each create command. A new remote network group can be created in Qradar by giving a new unique remote network group name (that does not already exist in Qradar remote networks).'
     - name: fields
       description: 'Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded from the output. Specify subfields in brackets, and multiple fields in the same object are separated by commas.  The possible fields are id, group, name, CIDR, and description. '
     description: Create remote network cidrs

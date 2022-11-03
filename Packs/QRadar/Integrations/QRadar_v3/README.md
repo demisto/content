@@ -2603,3 +2603,59 @@ This uses the instance parameters to create the AQL search query for the events.
 | Potential Windows Exploit | Potential Exploit | 10 | other | 1.1.1.1 | 0 | 0:0:0:0:0:0:0:0 | 2022-06-23T10:00:22.536000+00:00 | R2R | 1 | Custom Rule Engine-8 :: ip-172-31-41-4 | Custom Rule Engine | 8 | 0.0.0.0 | 0 | 0.0.0.0 | 0 | 0 | 0.0.0.0 | 0 | Reserved | Blacklisted hash detected in use | Blacklisted hash detected in use | Detected process with blacklist file hash,<br>BB:NetworkDefinition: Honeypot like Addresses,<br>BB:CategoryDefinition: Suspicious Event Categories,<br>BB:CategoryDefinition: Suspicious Events,<br>ECBB:CategoryDefinition: Destination IP is a Third Country/Region,<br>BB:CategoryDefinition: Medium Magnitude Events,<br>BB:CategoryDefinition: High Magnitude Events,<br>Source Asset Weight is Low,<br>Exploits Events with High Magnitude Become Offenses,<br>Source Address is a Bogon IP,<br>Destination Asset Weight is Low,<br>BB:NetworkDefinition: Darknet Addresses,<br>BB:BehaviorDefinition: Compromise Activities,<br>Load Basic Building Blocks | 10 | 00:00:00:00:00:00 | other | 1.1.1.1 | 0 | 0:0:0:0:0:0:0:0 | 2022-06-23T10:00:22.536000+00:00 | Administrator | <13>Jun 23 10:00:10 1.1.1.1 AgentDevice=WindowsLog	AgentLogFile=Microsoft-Windows-Sysmon/Operational	PluginVersion=1.1.1.1	Source=Microsoft-Windows-Sysmon	Computer=EC2AMAZ-ETKN6IA	OriginatingComputer=EC2AMAZ-ETKN6IA	User=SYSTEM	Domain=NT AUTHORITY	EventID=1	EventIDCode=1	EventType=4	EventCategory=1	RecordNumber=950763	TimeGenerated=1655978409	TimeWritten=1655978409	Level=Informational	Keywords=0x8000000000000000	Task=SysmonTask-SYSMON_CREATE_PROCESS	Opcode=Info	Message=Process Create: RuleName:  UtcTime: 2022-06-23 10:00:09.018 ProcessGuid: {E3E61DAB-39A9-62B4-0100-00105655970A} ProcessId: 6028 Image: C:\Program Files\Internet Explorer\iexplore.exe FileVersion: 11.00.14393.2007 (rs1_release.171231-1800) Description: Internet Explorer Product: Internet Explorer Company: Microsoft Corporation OriginalFileName: IEXPLORE.EXE CommandLine: "C:\Program Files\Internet Explorer\iexplore.exe"  CurrentDirectory: C:\Windows\system32\ User: EC2AMAZ-ETKN6IA\Administrator LogonGuid: {E3E61DAB-9C68-5F54-0000-0020EB970200} LogonId: 0x297EB TerminalSessionId: 2 IntegrityLevel: High Hashes: SHA1=D4ABAC114DBE28BAD8855C10D37F2B727177C9CA ParentProcessGuid: {E3E61DAB-39A1-62B4-0100-00107230970A} ParentProcessId: 4024 ParentImage: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe ParentCommandLine: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.EXE -F "C:\Users\Administrator\Desktop\playbook.ps1"<br> |
 | Potential Windows Exploit | Potential Exploit | 10 | other | 1.1.1.1 | 0 | 0:0:0:0:0:0:0:0 | 2022-06-22T10:00:24.232000+00:00 | R2R | 1 | Custom Rule Engine-8 :: ip-172-31-41-4 | Custom Rule Engine | 8 | 0.0.0.0 | 0 | 0.0.0.0 | 0 | 0 | 0.0.0.0 | 0 | Reserved | Blacklisted hash detected in use | Blacklisted hash detected in use | Detected process with blacklist file hash,<br>BB:NetworkDefinition: Honeypot like Addresses,<br>BB:CategoryDefinition: Suspicious Event Categories,<br>BB:CategoryDefinition: Suspicious Events,<br>ECBB:CategoryDefinition: Destination IP is a Third Country/Region,<br>BB:CategoryDefinition: Medium Magnitude Events,<br>BB:CategoryDefinition: High Magnitude Events,<br>Source Asset Weight is Low,<br>Exploits Events with High Magnitude Become Offenses,<br>Source Address is a Bogon IP,<br>Destination Asset Weight is Low,<br>BB:NetworkDefinition: Darknet Addresses,<br>BB:BehaviorDefinition: Compromise Activities,<br>Load Basic Building Blocks | 10 | 00:00:00:00:00:00 | other | 1.1.1.1 | 0 | 0:0:0:0:0:0:0:0 | 2022-06-22T10:00:24.232000+00:00 | Administrator | <13>Jun 22 10:00:13 1.1.1.1 AgentDevice=WindowsLog	AgentLogFile=Microsoft-Windows-Sysmon/Operational	PluginVersion=1.1.1.1	Source=Microsoft-Windows-Sysmon	Computer=EC2AMAZ-ETKN6IA	OriginatingComputer=EC2AMAZ-ETKN6IA	User=SYSTEM	Domain=NT AUTHORITY	EventID=1	EventIDCode=1	EventType=4	EventCategory=1	RecordNumber=944558	TimeGenerated=1655892009	TimeWritten=1655892009	Level=Informational	Keywords=0x8000000000000000	Task=SysmonTask-SYSMON_CREATE_PROCESS	Opcode=Info	Message=Process Create: RuleName:  UtcTime: 2022-06-22 10:00:09.689 ProcessGuid: {E3E61DAB-E829-62B2-0100-0010B36C200A} ProcessId: 2016 Image: C:\Program Files\Internet Explorer\iexplore.exe FileVersion: 11.00.14393.2007 (rs1_release.171231-1800) Description: Internet Explorer Product: Internet Explorer Company: Microsoft Corporation OriginalFileName: IEXPLORE.EXE CommandLine: "C:\Program Files\Internet Explorer\iexplore.exe"  CurrentDirectory: C:\Windows\system32\ User: EC2AMAZ-ETKN6IA\Administrator LogonGuid: {E3E61DAB-9C68-5F54-0000-0020EB970200} LogonId: 0x297EB TerminalSessionId: 2 IntegrityLevel: High Hashes: SHA1=D4ABAC114DBE28BAD8855C10D37F2B727177C9CA ParentProcessGuid: {E3E61DAB-E821-62B2-0100-0010CC47200A} ParentProcessId: 2340 ParentImage: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe ParentCommandLine: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.EXE -F "C:\Users\Administrator\Desktop\playbook.ps1"<br> |
 | Potential Windows Exploit | Potential Exploit | 10 | other | 1.1.1.1 | 0 | 0:0:0:0:0:0:0:0 | 2022-06-21T10:00:26.080000+00:00 | R2R | 1 | Custom Rule Engine-8 :: ip-172-31-41-4 | Custom Rule Engine | 8 | 0.0.0.0 | 0 | 0.0.0.0 | 0 | 0 | 0.0.0.0 | 0 | Reserved | Blacklisted hash detected in use | Blacklisted hash detected in use | Detected process with blacklist file hash,<br>BB:NetworkDefinition: Honeypot like Addresses,<br>BB:CategoryDefinition: Suspicious Event Categories,<br>BB:CategoryDefinition: Suspicious Events,<br>ECBB:CategoryDefinition: Destination IP is a Third Country/Region,<br>BB:CategoryDefinition: Medium Magnitude Events,<br>BB:CategoryDefinition: High Magnitude Events,<br>Source Asset Weight is Low,<br>Exploits Events with High Magnitude Become Offenses,<br>Source Address is a Bogon IP,<br>Destination Asset Weight is Low,<br>BB:NetworkDefinition: Darknet Addresses,<br>BB:BehaviorDefinition: Compromise Activities,<br>Load Basic Building Blocks | 10 | 00:00:00:00:00:00 | other | 1.1.1.1 | 0 | 0:0:0:0:0:0:0:0 | 2022-06-21T10:00:26.080000+00:00 | Administrator | <13>Jun 21 10:00:10 1.1.1.1 AgentDevice=WindowsLog	AgentLogFile=Microsoft-Windows-Sysmon/Operational	PluginVersion=1.1.1.1	Source=Microsoft-Windows-Sysmon	Computer=EC2AMAZ-ETKN6IA	OriginatingComputer=EC2AMAZ-ETKN6IA	User=SYSTEM	Domain=NT AUTHORITY	EventID=1	EventIDCode=1	EventType=4	EventCategory=1	RecordNumber=938367	TimeGenerated=1655805608	TimeWritten=1655805608	Level=Informational	Keywords=0x8000000000000000	Task=SysmonTask-SYSMON_CREATE_PROCESS	Opcode=Info	Message=Process Create: RuleName:  UtcTime: 2022-06-21 10:00:08.128 ProcessGuid: {E3E61DAB-96A8-62B1-0100-00108357A909} ProcessId: 5824 Image: C:\Program Files\Internet Explorer\iexplore.exe FileVersion: 11.00.14393.2007 (rs1_release.171231-1800) Description: Internet Explorer Product: Internet Explorer Company: Microsoft Corporation OriginalFileName: IEXPLORE.EXE CommandLine: "C:\Program Files\Internet Explorer\iexplore.exe"  CurrentDirectory: C:\Windows\system32\ User: EC2AMAZ-ETKN6IA\Administrator LogonGuid: {E3E61DAB-9C68-5F54-0000-0020EB970200} LogonId: 0x297EB TerminalSessionId: 2 IntegrityLevel: High Hashes: SHA1=D4ABAC114DBE28BAD8855C10D37F2B727177C9CA ParentProcessGuid: {E3E61DAB-96A1-62B1-0100-00103D33A909} ParentProcessId: 4092 ParentImage: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe ParentCommandLine: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.EXE -F "C:\Users\Administrator\Desktop\playbook.ps1"<br> |
+
+
+### qradar-remote-network-cidr-create
+***
+Create remote network cidrs
+
+
+#### Base Command
+
+`qradar-remote-network-cidr-create`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| cidrs | An input list of CIDRs to add to Qradar (can be obtained from automatically from EDL integrations and playbook).</br>Multiple values in the same object are separated by commas.</br>One of the cidr or query is required. | Optional | 
+| query | The query for getting indicators from Cortex XSOAR.</br>One of the cidr or query is required. | Optional | 
+| name | A CIDRs (remote networks) name that will be displayed for all uploaded values in Qradar. | Required | 
+| id | The associated CIDR id.</br>Only possible when a single CIDR is created. | Optional | 
+| description | Description that will be displayed and associated with all the newly uploaded CIDRs on Qradar. | Required | 
+| group | The exact name of the remote network group that CIDRs should be associated with as it appears in Qradar. A single group can be assigned to each create command.</br>A new remote network group can be created in Qradar by giving a new unique remote network group name (that does not already exist in Qradar remote networks). | Required | 
+| fields | Use this parameter to specify which fields you would like to get back in the response.</br>Fields that are not named are excluded from the output. Specify subfields in brackets, and multiple fields in the same object are separated by commas.</br>The possible fields are id, group, name, cidr, and description. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+
+#### Command example
+```!qradar-remote-network-cidr-create cidrs=1.2.3.4/32,8.8.8.8/2 name=example_name description=example_description group=example_group```
+#### Human Readable Output
+
+### The new staged remote network was successfully created.
+
+<table>
+  <tr>
+    <th>cidrs</th>
+    <td>1.2.3.4/32,</br>8.8.8.8/2</td>
+  </tr>
+  <tr>
+    <th>description</th>
+    <td>example_description</td>
+  </tr>
+  <tr>
+    <th>group</th>
+    <td>example_group</td>
+  </tr>
+  <tr>
+    <th>id</th>
+    <td>12</td>
+  </tr>
+  <tr>
+    <th>name</th>
+    <td>example_name</td>
+  </tr>
+</table>
