@@ -146,7 +146,6 @@ def test_get_metadata_without_encrypted(mocker, raw_result, expected_result):
     assert metadata == expected_result
 
 
-# TODO Ask what to do in this case?
 def test_get_pdf_text_with_encrypted(tmp_path):
     from ReadPDFFileV2 import get_pdf_text, handling_pdf_credentials
     file_path = f'{CWD}/encrypted.pdf'
@@ -168,7 +167,6 @@ def test_get_pdf_text_with_encrypted(tmp_path):
     assert text.startswith(expected)
 
 
-# TODO Ask what to do with the hebrew text?
 def test_get_pdf_text_without_encrypted(tmp_path):
     from ReadPDFFileV2 import get_pdf_text
     # assert error raised

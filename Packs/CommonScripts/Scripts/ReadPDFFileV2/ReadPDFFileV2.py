@@ -16,21 +16,32 @@ URL_EXTRACTION_REGEX = (
     r"(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+"
     r"[-\w\d]+(?::\d+)?(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?"
 )
-INTEGRATION_NAME = 'PDFx'
+INTEGRATION_NAME = 'ReadPDFFileV2'
 DEFAULT_NUM_IMAGES = 20
-
-# TODO Add description for each Exception class
 
 
 class PdfPermissionsException(Exception):
+    """
+    Every exception class that is in charge of catching errors that occur when trying to
+    extract data from the PDF must inherit this class
+    """
     pass
 
 
 class PdfCopyingProtectedException(PdfPermissionsException):
+    """
+    This class is in charge of catching errors that occur when we try to extract data from
+    a `copy-protected` file (Copy-protected files are files that prevent us from copy its content)
+    This is relevant since we run a command that copies the content of the pdf file into a text file.
+    """
     pass
 
 
 class PdfInvalidCredentialsException(PdfPermissionsException):
+    """
+    This class is in charge of catching errors that occur when we try to decrypt an encrypted
+    pdf file with the wrong password.
+    """
     pass
 
 
@@ -72,12 +83,10 @@ def handle_error_read_only(fun, path, exp) -> None:
 
 
 def create_file_instance(entry_id: str, path: str, file_name: str, score: int | None) -> Common.File:
-    # TODO Should I add file_type?
-    # TODO What to put in indicator?
     dbot_score = Common.DBotScore(
         indicator=entry_id,
         indicator_type=DBotScoreType.FILE,
-        integration_name=INTEGRATION_NAME,
+        integration_name='PDFx',
         score=score,
     )
     file = Common.File(
@@ -93,42 +102,16 @@ def create_file_instance(entry_id: str, path: str, file_name: str, score: int | 
 def mark_suspicious(suspicious_reason: str, entry_id: str, path: str, file_name: str) -> None:
     """Missing EOF, file may be corrupted or suspicious file"""
 
-    # dbot = {
-    #     "DBotScore": {
-    #         "Indicator": entry_id,
-    #         "Type": "file",
-    #         "Vendor": "PDFx",
-    #         "Score": 2,
-    #     }
-    # }
-
-    # LOG(suspicious_reason)
     human_readable = (
         f'{suspicious_reason}\nFile marked as suspicious for entry id: {entry_id}'
     )
-    file = create_file_instance(
+    file_instance = create_file_instance(
         entry_id=entry_id,
         path=path,
         file_name=file_name,
         score=Common.DBotScore.SUSPICIOUS,
     )
-    # TODO No use for command results?
-    # command_results = CommandResults(readable_output=human_readable, indicator=file)
-    return_warning(message=human_readable, outputs=file.to_context())
-    # return_warning(message=human_readable, outputs=command_results)
-
-
-# def return_error_without_exit(message):
-#     """Same as return_error, without the sys.exit"""
-#     LOG(message)
-#     LOG.print_log()
-#     demisto.results(
-#         {
-#             "Type": entryTypes["error"],
-#             "ContentsFormat": formats["text"],
-#             "Contents": str(message),
-#         }
-#     )
+    return_warning(message=human_readable, outputs=file_instance.to_context())
 
 
 def run_shell_command(command: str, *args) -> bytes:
@@ -141,10 +124,10 @@ def run_shell_command(command: str, *args) -> bytes:
     if exit_codes != 0:
         error_string = completed_process.stderr.decode('utf-8')
         if "Incorrect password" in error_string:
-            raise PdfCredentialsException(
+            raise PdfInvalidCredentialsException(
                 'Incorrect password. Please provide the correct password.')
         if 'Copying of text from this document is not allowed' in error_string:
-            raise PdfCopyingException(
+            raise PdfCopyingProtectedException(
                 'Copying is not permitted')
         raise ShellException(
             f'Failed with the following error code: {exit_codes}.\n'
@@ -213,8 +196,10 @@ def get_pdf_metadata(file_path: str, user_password: str | None = None) -> dict:
 
 
 def bypass_copy_protected_limitations(pdf_file: str) -> None:
-    """ This function is in charge of bypassing the limitations of `copy-protected` files
-    Add more description and add in Confluence"""  # TODO
+    """
+    This function is in charge of handling the situation when a pdf is `copy-protected`.
+    Copy protected files prevent us from extracting content from the file, therefore we need a way to bypass this limitation.
+    """
     with Pdf.open(pdf_file, allow_overwriting_input=True) as pdf:
         pdf.save(pdf_file)
 
@@ -223,7 +208,7 @@ def get_pdf_text(file_path: str, pdf_text_output_path: str) -> str:
     """Creates a txt file from the pdf in the pdf_text_output_path and returns the content of the txt file"""
     try:
         run_shell_command("pdftotext", file_path, pdf_text_output_path)
-    except PdfCopyingException:  # TODO Change to PdfCopyingProtectedException
+    except PdfCopyingProtectedException:
         bypass_copy_protected_limitations(pdf_file=file_path)
         run_shell_command("pdftotext", file_path, pdf_text_output_path)
     text = ""
@@ -238,7 +223,7 @@ def get_pdf_htmls_content(pdf_path: str, output_folder: str) -> str:
     pdf_html_output_path = f'{output_folder}/PDF_html'
     try:
         run_shell_command("pdftohtml", pdf_path, pdf_html_output_path)
-    except PdfCopyingException:
+    except PdfCopyingProtectedException:
         bypass_copy_protected_limitations(pdf_file=pdf_path)
         run_shell_command("pdftohtml", pdf_path, pdf_html_output_path)
     html_file_names = get_files_names_in_path(output_folder, "*.html")
@@ -319,7 +304,6 @@ def build_readpdf_entry_object(entry_id: str, metadata: dict, text: str, urls: l
             "EntryContext": ec,
         }
     )
-    # TODO Do experiment return [CommandResults(md, Common.File), CommandResults(only Common.URL)]
     return results
 
 
@@ -329,7 +313,7 @@ def build_readpdf_entry_context(indicators_map: Any) -> dict:
         if "URL" in indicators_map:
             ec_url = []
             for url in indicators_map["URL"]:
-                ec_url.append({"Data": url})  # TODO To wrap it with in CommandResults (all indicators)
+                ec_url.append({"Data": url})
             ec["URL"] = ec_url
         if "Email" in indicators_map:
             ec_email = []
@@ -552,7 +536,7 @@ def handling_pdf_credentials(cpy_file_path: str, dec_file_path: str, user_passwo
                 pdf.save(dec_file_path)
                 return dec_file_path
     except PasswordError:
-        raise PdfCredentialsException('Incorrect password. Please provide the correct password.')
+        raise PdfInvalidCredentialsException('Incorrect password. Please provide the correct password.')
     return cpy_file_path
 
 
@@ -597,8 +581,6 @@ def main():  # pragma: no cover
             """ Check if the working directory does not exist and create it """
             os.makedirs(working_dir)
         entry_id = args.get('entryID')
-        file_name = demisto.getFilePath(entry_id).get('name')
-        # TODO  Check what returns access file_type?
         user_password = str(args.get('userPassword', ''))
         max_images = arg_to_number(args.get('maxImages', None))
         path = demisto.getFilePath(entry_id).get('path')
@@ -608,8 +590,9 @@ def main():  # pragma: no cover
     except PdfPermissionsException as e:
         return_warning(str(e))
     except ShellException as e:
+        file_name = demisto.getFilePath(entry_id).get('name')
         mark_suspicious(
-            suspicious_reason=f'The script {INTEGRATION_NAME} failed due to an error: {str(e)}',
+            suspicious_reason=f'The script {INTEGRATION_NAME} failed due to an error:\n{str(e)}',
             entry_id=entry_id,
             path=path,
             file_name=file_name,
