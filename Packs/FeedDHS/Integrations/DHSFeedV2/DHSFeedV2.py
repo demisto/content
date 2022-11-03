@@ -141,7 +141,6 @@ def main():  # pragma: no cover
     objects_types = ['indicator']
     objects_to_fetch = argToList(params.get('objects_to_fetch') or objects_types)
     default_api_root = params.get('default_api_root', 'public')
-    seconds_to_sleep = arg_to_number(params.get('seconds_to_sleep')) or 1
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
@@ -159,8 +158,7 @@ def main():  # pragma: no cover
             tlp_color=tlp_color,
             certificate=certificate,
             key=key,
-            default_api_root=default_api_root,
-            seconds_to_sleep=seconds_to_sleep
+            default_api_root=default_api_root
         )
         client.initialise()
 

@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from requests import HTTPError
 from typing import Union, Optional, List, Dict, Tuple
 from requests.sessions import merge_setting, CaseInsensitiveDict
 import re
@@ -10,7 +9,7 @@ import copy
 import types
 import urllib3
 from taxii2client import v20, v21
-from taxii2client.common import TokenAuth, _HTTPConnection, _to_json, _filter_kwargs_to_query_params
+from taxii2client.common import TokenAuth, _HTTPConnection
 import tempfile
 
 # disable insecure warnings
@@ -134,7 +133,6 @@ class Taxii2FeedClient:
             certificate: str = None,
             key: str = None,
             default_api_root: str = None,
-            seconds_to_sleep: int = 1,
     ):
         """
         TAXII 2 Client used to poll and parse indicators in XSOAR formar
@@ -205,7 +203,6 @@ class Taxii2FeedClient:
         self.id_to_object: Dict[str, Any] = {}
         self.objects_to_fetch = objects_to_fetch
         self.default_api_root = default_api_root
-        self.seconds_to_sleep = seconds_to_sleep
 
     def init_server(self, version=TAXII_VER_2_0):
         """
@@ -882,12 +879,10 @@ class Taxii2FeedClient:
         }
         return [dummy_indicator] if dummy_indicator else []
 
-    def build_iterator(self, limit: int = -1, recover_http_errors: bool = False, **kwargs) -> List[Dict[str, str]]:
+    def build_iterator(self, limit: int = -1, **kwargs) -> List[Dict[str, str]]:
         """
         Polls the taxii server and builds a list of cortex indicators objects from the result
         :param limit: max amount of indicators to fetch
-        :param recover_http_errors: A boolean that determines whether we recover and try to send the same request again when
-            encountering http errors.
         :return: Cortex indicators list
         """
         if not isinstance(self.collection_to_fetch, (v20.Collection, v21.Collection)):
@@ -902,10 +897,11 @@ class Taxii2FeedClient:
         if page_size <= 0:
             return []
         envelopes = self.poll_collection(page_size, **kwargs)  # got data from server
-        indicators = self.load_stix_objects_from_envelope(envelopes, limit, recover_http_errors)
+        indicators = self.load_stix_objects_from_envelope(envelopes, limit)
+
         return indicators
 
-    def load_stix_objects_from_envelope(self, envelopes: Dict[str, Any], limit: int = -1, recover_http_errors: bool = False):
+    def load_stix_objects_from_envelope(self, envelopes: types.GeneratorType, limit: int = -1):
 
         parse_stix_2_objects = {
             "indicator": self.parse_indicator,
@@ -929,67 +925,32 @@ class Taxii2FeedClient:
             "user-account": self.parse_sco_account_indicator,
             "windows-registry-key": self.parse_sco_windows_registry_key_indicator
         }
-        indicators = []
 
-        # TAXII 2.0
-        if isinstance(list(envelopes.values())[0], types.GeneratorType):
-            indicators.extend(self.parse_generator_type_envelope(envelopes, parse_stix_2_objects))
-        # TAXII 2.1
-        else:
-            indicators.extend(self.parse_dict_envelope(envelopes, parse_stix_2_objects, limit, recover_http_errors))
+        indicators, relationships_lst = self.parse_generator_type_envelope(envelopes, parse_stix_2_objects, limit)
+        if relationships_lst:
+            indicators.extend(self.parse_relationships(relationships_lst))
         demisto.debug(
             f"TAXII 2 Feed has extracted {len(indicators)} indicators"
         )
-        if limit > -1:
-            return indicators[:limit]
+
         return indicators
 
-    def parse_generator_type_envelope(self, envelopes: Dict[str, Any],
-                                      parse_objects_func):
+    def parse_generator_type_envelope(self, envelopes: types.GeneratorType, parse_objects_func, limit: int = -1):
         indicators = []
         relationships_lst = []
-        for obj_type, envelope in envelopes.items():
-            for sub_envelope in envelope:
-                stix_objects = sub_envelope.get("objects")
-                if not stix_objects:
-                    # no fetched objects
-                    break
-                # now we have a list of objects, go over each obj, save id with obj, parse the obj
-                if obj_type != "relationship":
-                    for obj in stix_objects:
-                        # we currently don't support extension object
-                        if obj.get('type') == 'extension-definition':
-                            continue
-                        self.id_to_object[obj.get('id')] = obj
-                        result = parse_objects_func[obj_type](obj)
-                        if not result:
-                            continue
-                        indicators.extend(result)
-                        self.update_last_modified_indicator_date(obj.get("modified"))
-                else:
-                    relationships_lst.extend(stix_objects)
-        if relationships_lst:
-            indicators.extend(self.parse_relationships(relationships_lst))
-
-        return indicators
-
-    def parse_dict_envelope(self, envelopes: Dict[str, Any],
-                            parse_objects_func, limit: int = -1, recover_http_errors: bool = False):
-        indicators: list = []
-        relationships_list: List[Dict[str, Any]] = []
-        for obj_type, envelope in envelopes.items():
-            if exceeded_limit(limit, len(indicators) + len(relationships_list)):
-                break
-            stix_objects = envelope.get("objects", [])
+        for envelope in envelopes:
+            stix_objects = envelope.get("objects")
+            # now we have a list of objects, go over each obj, save id with obj, parse the obj
             for obj in stix_objects:
-                obj_type_got_from_remote = obj.get('type')
-                if obj_type_got_from_remote == 'relationship':
-                    relationships_list.extend([obj])
-                    continue
+                obj_type = obj.get('type')
 
                 # we currently don't support extension object
-                if obj_type_got_from_remote == 'extension-definition':
+                if obj_type == 'extension-definition':
                     continue
+                elif obj_type == 'relationship':
+                    relationships_lst.extend([obj])
+                    continue
+
                 self.id_to_object[obj.get('id')] = obj
                 result = parse_objects_func[obj_type](obj)
                 if not result:
@@ -997,49 +958,14 @@ class Taxii2FeedClient:
                 indicators.extend(result)
                 self.update_last_modified_indicator_date(obj.get("modified"))
 
-            i = 0
-            while envelope.get("more", False) and not exceeded_limit(limit, len(indicators) + len(relationships_list)):
-                try:
-                    i += 1
-                    page_size = self.get_page_size(limit, limit)
-                    envelope = self.collection_to_fetch.get_objects(
-                        limit=page_size, next=envelope.get("next", ""), type=obj_type
-                    )
-                    if isinstance(envelope, Dict):
-                        stix_objects = envelope.get("objects")
-                        if obj_type != "relationship":
-                            for obj in stix_objects:
-                                self.id_to_object[obj.get('id')] = obj
-                                result = parse_objects_func[obj_type](obj)
-                                if not result:
-                                    continue
-                                indicators.extend(result)
-                                self.update_last_modified_indicator_date(obj.get("modified"))
-                        else:
-                            relationships_list.extend(stix_objects)
-                    else:
-                        raise DemistoException(
-                            "Error: TAXII 2 client received the following response while requesting "
-                            f"indicators: {str(envelope)}\n\nExpected output is json"
-                        )
-                except HTTPError as e:
-                    if not recover_http_errors:
-                        raise e
-                    if i <= 3:
-                        demisto.debug(f'Got HTTPError in while loop number {i} for {obj_type=}, '
-                                      f'waiting for {self.seconds_to_sleep} seconds and trying again.')
-                        time.sleep(self.seconds_to_sleep)
-                    else:
-                        demisto.debug(f'Got HTTPError in while loop number {i}, getting out of while loop for {obj_type=}.')
-                        break
+                if exceeded_limit(limit, len(indicators) + len(relationships_lst)) or not stix_objects:
+                    return indicators, relationships_lst
 
-        if relationships_list:
-            indicators.extend(self.parse_relationships(relationships_list))
-        return indicators
+        return indicators, relationships_lst
 
     def poll_collection(
             self, page_size: int, **kwargs
-    ) -> Dict[str, Union[types.GeneratorType, Dict[str, str]]]:
+    ) -> types.GeneratorType:
         """
         Polls a taxii collection
         :param page_size: size of the request page
@@ -1048,19 +974,12 @@ class Taxii2FeedClient:
         get_objects = self.collection_to_fetch.get_objects
         if len(self.objects_to_fetch) > 1:  # when fetching one type no need to fetch relationship
             self.objects_to_fetch.append('relationship')
-        demisto.debug(f'before loop on objects_to_fetch {time.time()=}, {time.ctime()=}')
-        for obj_type in self.objects_to_fetch:
-            kwargs['type'] = obj_type
-            if isinstance(self.collection_to_fetch, v20.Collection):
-                demisto.debug('In v2.0, calling collection default get_objects')
-                envelope = v20.as_pages(get_objects, per_request=page_size, **kwargs)
-            else:
-                demisto.debug('In v2.1, calling collection default get_objects')
-                envelope = get_objects(limit=page_size, **kwargs)
-            if envelope:
-                types_envelopes[obj_type] = envelope
-        demisto.debug(f'after loop on objects_to_fetch {time.time()=}, {time.ctime()=}')
-        return types_envelopes
+        kwargs['type'] = self.objects_to_fetch
+        if isinstance(self.collection_to_fetch, v20.Collection):
+            envelope = v20.as_pages(get_objects, per_request=page_size, **kwargs)
+        else:
+            envelope = v21.as_pages(get_objects, per_request=page_size, **kwargs)
+        return envelope
 
     def get_page_size(self, max_limit: int, cur_limit: int) -> int:
         """
