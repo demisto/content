@@ -640,7 +640,10 @@ def malop_processes_command(client: Client, args: dict):
 
     filter_input = []
     if date_time != 'None':
-        date_time_parser = dateparser.parse(date_time).timestamp()
+        date_time_parser = dateparser.parse(date_time)
+        if not date_time_parser:
+            raise DemistoException("dateTime could not be parsed. Please enter a valid time parameter.")
+        date_time_parser = date_time_parser.timestamp()
         milliseconds = int(date_time_parser * 1000)
         filter_input = [{"facetName": "creationTime", "filterType": "GreaterThan", "values": [milliseconds], "isResult":True}]
 
