@@ -2987,7 +2987,7 @@ def run_script_command():
             'Command': full_command
         })
         if stderr:
-            raise DemistoException(f"Run script command was failed with the error: {stderr}")
+            raise DemistoException(f"cs-falcon-run-script command failed with the following error: {stderr}")
 
     human_readable = tableToMarkdown(f'Command {full_command} results', output)
     entry_context = {
