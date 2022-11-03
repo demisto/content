@@ -15,8 +15,6 @@ import requests
 from flask import Flask, Response, request
 from gevent.pywsgi import WSGIServer
 from jwt.algorithms import RSAAlgorithm
-from requests import packages
-from requests.packages import urllib3
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
