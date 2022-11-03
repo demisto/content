@@ -10,21 +10,8 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "Breach",
-        "Dark Web",
-        "Incident Handling",
-        "Incident Response",
-        "Malware",
-        "Threat Intelligence"
-    ],
-    "useCases": [
-        "Breach Notification",
-        "Incident Response",
-        "Hunting",
-        "Malware",
-        "Threat Intelligence Management"
-    ],
+    "tags": ["Threat Intelligence Management"],
+    "useCases": [],
     "keywords": [
         "rstcloud",
         "threat feed",

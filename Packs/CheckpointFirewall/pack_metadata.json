@@ -12,10 +12,7 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [
-        "checkpoint",
-        "firewall"
-    ],
+    "keywords": [],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

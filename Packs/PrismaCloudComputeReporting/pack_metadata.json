@@ -8,9 +8,9 @@
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",
     "categories": [
-        "Utilities"
+        "Cloud Services"
     ],
-    "tags": [],
+    "tags": ["Palo Alto Networks Products"],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
