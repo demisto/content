@@ -509,7 +509,6 @@ script:
     - contextPath: IntSights.Iocs.tags
       description: The tags of the IOC.
       type: Array
-      type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
