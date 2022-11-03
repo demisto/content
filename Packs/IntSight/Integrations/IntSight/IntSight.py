@@ -836,8 +836,7 @@ def request_for_ioc_enrichment():
     response = http_request('GET', request_url, json_response=True)
     status = response.get('Status')
     if status == 'Done':
-        ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = ioc_enrichment_to_readable(
-            response)
+        ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = ioc_enrichment_to_readable(response)
 
         demisto.results(
             {
