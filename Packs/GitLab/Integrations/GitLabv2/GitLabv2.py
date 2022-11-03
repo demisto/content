@@ -397,7 +397,7 @@ def partial_response_fields(object_name: str):
             'created_at': None,
             'updated_at': None,
             'body': None,
-            'merge_request_id': None,
+            'noteable_iid': None,
             'author': ['name', 'id']
         }
 

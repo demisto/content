@@ -72,10 +72,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 744976cd-a38a-4401-87ea-298b2fffcc7d
+    taskid: 5c8a119b-4cbe-487c-8eac-5a5f22658b02
     type: regular
     task:
-      id: 744976cd-a38a-4401-87ea-298b2fffcc7d
+      id: 5c8a119b-4cbe-487c-8eac-5a5f22658b02
       version: -1
       name: issue-update
       description: Updates an existing project issue. This call is also used to mark an issue as closed. The ID can be taken from gitlab-issue-list.
@@ -90,7 +90,7 @@ tasks:
       add_labels:
         simple: GitlabLabel5
       description:
-        simple: desc after change by playbook
+        simple: description changed by playbook
       issue_iid:
         simple: ${GitLab.Issue.iid}
       partial_response:
@@ -180,34 +180,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 4045
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
-    taskid: f0ccfd2e-c75e-438f-8969-04f111f206e4
-    type: title
-    task:
-      id: f0ccfd2e-c75e-438f-8969-04f111f206e4
-      version: -1
-      name: FIN
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 10520
         }
       }
     note: false
@@ -877,7 +849,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6670
+          "y": 8945
         }
       }
     note: false
@@ -915,7 +887,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6845
+          "y": 9120
         }
       }
     note: false
@@ -958,7 +930,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7020
+          "y": 9295
         }
       }
     note: false
@@ -996,7 +968,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7195
+          "y": 9470
         }
       }
     note: false
@@ -1372,7 +1344,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6495
+          "y": 8770
         }
       }
     note: false
@@ -1447,7 +1419,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8945
+          "y": 6845
         }
       }
     note: false
@@ -1484,7 +1456,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8595
+          "y": 6495
         }
       }
     note: false
@@ -1514,7 +1486,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "53"
+      - "64"
     scriptarguments:
       all:
         simple: "yes"
@@ -1561,7 +1533,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7370
+          "y": 9645
         }
       }
     note: false
@@ -1584,7 +1556,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "68"
+      - "94"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1601,83 +1573,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "68":
-    id: "68"
-    taskid: 42d5f128-0437-4fc2-869d-3ba948452ccf
-    type: regular
-    task:
-      id: 42d5f128-0437-4fc2-869d-3ba948452ccf
-      version: -1
-      name: 'merge request note update '
-      description: Modify existing note of a merge request.
-      script: GitLabv2|||gitlab-merge-request-note-update
-      type: regular
-      iscommand: true
-      brand: GitLabv2
-    nexttasks:
-      '#none#':
-      - "78"
-    scriptarguments:
-      body:
-        simple: update from playbook
-      merge_request_iid:
-        simple: ${GitLab.MergeRequest.iid}
-      note_id:
-        simple: ${GitLab.MergeRequestNote.id}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 7720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "69":
-    id: "69"
-    taskid: 8976d50f-d1a1-4055-81d4-553e332d2fa3
-    type: regular
-    task:
-      id: 8976d50f-d1a1-4055-81d4-553e332d2fa3
-      version: -1
-      name: 'merge request note delete '
-      description: Deletes an existing note of a merge request.
-      script: GitLabv2|||gitlab-merge-request-note-delete
-      type: regular
-      iscommand: true
-      brand: GitLabv2
-    nexttasks:
-      '#none#':
-      - "64"
-    scriptarguments:
-      merge_request_iid:
-        simple: ${GitLab.MergeRequest.iid}
-      note_id:
-        simple: ${GitLab.MergeRequestNote.id}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 8420
+          "y": 9820
         }
       }
     note: false
@@ -1689,14 +1585,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: e8c9744e-0dbf-4e34-8589-a3fe5301f3be
+    taskid: 1da2d523-a9dd-444a-8592-5cc5114a3741
     type: regular
     task:
-      id: e8c9744e-0dbf-4e34-8589-a3fe5301f3be
+      id: 1da2d523-a9dd-444a-8592-5cc5114a3741
       version: -1
       name: merge request note list
-      description: Get all merge requests for this project.
-      script: GitLabv2|||gitlab-merge-request-list
+      description: Gets a list of all notes for a single merge request.
+      script: GitLabv2|||gitlab-merge-request-note-list
       type: regular
       iscommand: true
       brand: GitLabv2
@@ -1705,14 +1601,16 @@ tasks:
       - "71"
     scriptarguments:
       limit:
-        simple: "1"
+        simple: "2"
+      merge_request_iid:
+        simple: ${GitLab.MergeRequest.iid}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 8070
+          "y": 10520
         }
       }
     note: false
@@ -1724,10 +1622,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: c337bd62-b794-4766-8d6a-b464860136f0
+    taskid: 1ff68755-54f9-423f-8a48-c8c70302736f
     type: condition
     task:
-      id: c337bd62-b794-4766-8d6a-b464860136f0
+      id: 1ff68755-54f9-423f-8a48-c8c70302736f
       version: -1
       name: VERIFY merge request note list
       type: condition
@@ -1735,7 +1633,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "69"
+      - "93"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1745,12 +1643,14 @@ tasks:
             value:
               simple: GitLab.MergeRequestNote.id
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 8245
+          "y": 10695
         }
       }
     note: false
@@ -1788,7 +1688,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9820
+          "y": 7895
         }
       }
     note: false
@@ -1811,7 +1711,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "75"
+      - "95"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1826,7 +1726,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9120
+          "y": 7020
         }
       }
     note: false
@@ -1869,7 +1769,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9295
+          "y": 7370
         }
       }
     note: false
@@ -1915,7 +1815,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9470
+          "y": 7545
         }
       }
     note: false
@@ -1954,45 +1854,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9995
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "78":
-    id: "78"
-    taskid: 5b17d540-816e-49f8-89ae-6af28cf7581c
-    type: condition
-    task:
-      id: 5b17d540-816e-49f8-89ae-6af28cf7581c
-      version: -1
-      name: VERIFY merge note update
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "70"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: GitLab.MergeRequestNote.id
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 7895
+          "y": 8070
         }
       }
     note: false
@@ -2066,7 +1928,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 10170
+          "y": 8245
         }
       }
     note: false
@@ -2089,7 +1951,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "10"
+      - "92"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2104,7 +1966,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 10345
+          "y": 8420
         }
       }
     note: false
@@ -2215,7 +2077,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8770
+          "y": 6670
         }
       }
     note: false
@@ -2256,7 +2118,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9645
+          "y": 7720
         }
       }
     note: false
@@ -2306,6 +2168,231 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: b22417af-eca5-4a02-8e16-d76dbf4ed7ef
+    type: regular
+    task:
+      id: b22417af-eca5-4a02-8e16-d76dbf4ed7ef
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: b25b2481-f493-4d7f-8579-e20b61856e0b
+    type: title
+    task:
+      id: b25b2481-f493-4d7f-8579-e20b61856e0b
+      version: -1
+      name: FIN
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: f46b709c-5760-40f7-8be5-9c6fdffa82bf
+    type: regular
+    task:
+      id: f46b709c-5760-40f7-8be5-9c6fdffa82bf
+      version: -1
+      name: 'Merge Request note update '
+      description: Modify existing note of a merge request.
+      script: GitLabv2|||gitlab-merge-request-note-update
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "96"
+    scriptarguments:
+      body:
+        simple: body updated
+      merge_request_iid:
+        simple: ${GitLab.MergeRequest.iid}
+      note_id:
+        simple: ${GitLab.MergeRequestNote.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: affddf1a-e18a-48b5-856a-6735695be9d4
+    type: regular
+    task:
+      id: affddf1a-e18a-48b5-856a-6735695be9d4
+      version: -1
+      name: generate string
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "75"
+    scriptarguments:
+      Digits:
+        simple: "False"
+      Length:
+        simple: "5"
+      Lowercase:
+        simple: "True"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "False"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: fdc87a62-ee80-4054-8fb8-46cd420febd8
+    type: condition
+    task:
+      id: fdc87a62-ee80-4054-8fb8-46cd420febd8
+      version: -1
+      name: VERIFY merge request note update
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "97"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GitLab.MergeRequestNote.body
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "97":
+    id: "97"
+    taskid: 5bd0d705-0d75-40b1-84e1-b8f7e7c46a63
+    type: regular
+    task:
+      id: 5bd0d705-0d75-40b1-84e1-b8f7e7c46a63
+      version: -1
+      name: merge request note delete
+      description: Deletes an existing note of a merge request.
+      script: GitLabv2|||gitlab-merge-request-note-delete
+      type: regular
+      iscommand: true
+      brand: GitLabv2
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      merge_request_iid:
+        simple: ${GitLab.MergeRequest.iid}
+      note_id:
+        simple: ${GitLab.MergeRequestNote.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -2313,12 +2400,14 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 10535,
+        "height": 10885,
         "width": 380,
         "x": 50,
         "y": 50
       }
     }
   }
+inputs: []
+outputs: []
 marketplaces:
 - xsoar
