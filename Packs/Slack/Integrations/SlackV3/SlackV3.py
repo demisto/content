@@ -789,6 +789,10 @@ def long_running_loop():
             if MIRRORING_ENABLED:
                 check_for_mirrors()
             check_for_unanswered_questions()
+            if is_debug_mode():
+                demisto.debug(f'Number of threads currently - {threading.active_count()}')
+                stats, _ = slack_get_integration_context_statistics()
+                demisto.debug(f'Integration Context Stats\n_____________\n{stats}')
             time.sleep(15)
         except requests.exceptions.ConnectionError as e:
             error = f'Could not connect to the Slack endpoint: {str(e)}'
@@ -1018,7 +1022,8 @@ async def slack_loop():
                 app_token=APP_TOKEN,
                 web_client=ASYNC_CLIENT,
                 logger=slack_logger,  # type: ignore
-                auto_reconnect_enabled=True
+                auto_reconnect_enabled=True,
+                trace_enabled=True if is_debug_mode() else False
             )
             if not VERIFY_CERT:
                 # SocketModeClient does not respect environment variables for ssl verification.
@@ -2667,6 +2672,18 @@ def loop_info():
 
 
 def slack_get_integration_context():
+    context_statistics, integration_context = slack_get_integration_context_statistics()
+    readable_stats = tableToMarkdown(name='Long Running Context Statistics', t=context_statistics)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'HumanReadable': readable_stats,
+        'ContentsFormat': EntryFormat.MARKDOWN,
+        'Contents': readable_stats,
+    })
+    return_results(fileResult('slack_integration_context.json', json.dumps(integration_context), EntryType.ENTRY_INFO_FILE))
+
+
+def slack_get_integration_context_statistics():
     context_statistics = {}
     integration_context = get_integration_context()
     # Mirrors Data
@@ -2689,14 +2706,7 @@ def slack_get_integration_context():
         questions = json.loads(integration_context.get('questions'))
         context_statistics['Questions Count'] = len(questions)
         context_statistics['Questions Size In Bytes'] = sys.getsizeof(integration_context.get('questions', []))
-    readable_stats = tableToMarkdown(name='Long Running Context Statistics', t=context_statistics)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'HumanReadable': readable_stats,
-        'ContentsFormat': EntryFormat.MARKDOWN,
-        'Contents': readable_stats,
-    })
-    return_results(fileResult('slack_integration_context.json', json.dumps(integration_context), EntryType.ENTRY_INFO_FILE))
+    return context_statistics, integration_context
 
 
 def main() -> None:
