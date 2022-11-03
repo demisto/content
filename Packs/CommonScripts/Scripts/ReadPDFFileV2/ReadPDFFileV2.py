@@ -26,11 +26,11 @@ class PdfPermissionsException(Exception):
     pass
 
 
-class PdfCopyingException(PdfPermissionsException):
+class PdfCopyingProtectedException(PdfPermissionsException):
     pass
 
 
-class PdfCredentialsException(PdfPermissionsException):  # TODO Change to a more meaningful name
+class PdfInvalidCredentialsException(PdfPermissionsException):
     pass
 
 
