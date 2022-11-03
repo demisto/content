@@ -749,7 +749,7 @@ def validate_sort(sort_list: list, command: str):
         property_name, sort_order = sort_by.split(':')
 
         # Checking whether the property name and sort order values are correct or not.
-        if property_name[0].lower() + property_name[1:] not in SUPPORTED_SORT[command]:
+        if (property_name[0].lower() + property_name[1:]) not in SUPPORTED_SORT[command]:
             message = ERROR_MESSAGE["UNSUPPORTED_FIELD_FOR_IOCS_LIST"] if command == "iocs_list" else ERROR_MESSAGE[
                 "UNSUPPORTED_FIELD"]
 
