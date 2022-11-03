@@ -2,7 +2,7 @@ import demistomock as demisto
 import os
 
 import pytest
-from ReadPDFFileV2 import PdfCredentialsException, PdfPermissionsException
+from ReadPDFFileV2 import PdfInvalidCredentialsException, PdfPermissionsException
 
 CWD = os.getcwd() if os.getcwd().endswith('test_data') else f'{os.getcwd()}/test_data'
 
@@ -70,11 +70,11 @@ def test_incorrect_authentication():
     file_path = f'{CWD}/encrypted.pdf'
     dec_file_path = f'{CWD}/decrypted.pdf'
 
-    with pytest.raises(PdfCredentialsException) as e:
+    with pytest.raises(PdfInvalidCredentialsException) as e:
         get_pdf_metadata(file_path=file_path, user_password='12')
     assert 'Incorrect password' in str(e)
 
-    with pytest.raises(PdfCredentialsException) as e:
+    with pytest.raises(PdfInvalidCredentialsException) as e:
         handling_pdf_credentials(cpy_file_path=file_path, dec_file_path=dec_file_path, user_password='12')
     assert 'Incorrect password' in str(e)
 
