@@ -16,9 +16,10 @@ from flask import Flask, Response, request
 from gevent.pywsgi import WSGIServer
 from jwt.algorithms import RSAAlgorithm
 from requests import packages
+from requests.packages import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARIABLES'''
 PARAMS: dict = demisto.params()
