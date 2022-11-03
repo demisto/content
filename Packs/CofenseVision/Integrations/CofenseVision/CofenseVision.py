@@ -52,6 +52,8 @@ ERROR_MESSAGE = {
     "INVALID_QUARANTINE_JOB_ID": "Quarantine Job ID must be a non-zero positive integer number.",
     'INVALID_SEARCH_LENGTH': "Maximum 3 values are allowed to create a search for {} parameter."
 }
+IOC_TYPES = {'domain': DBotScoreType.DOMAIN, 'md5': DBotScoreType.FILE, 'sender': DBotScoreType.EMAIL,
+             'sha256': DBotScoreType.FILE, 'subject': DBotScoreType.CUSTOM, 'url': DBotScoreType.URL}
 SUPPORTED_HASH = ['MD5', 'SHA256']
 SUPPORTED_CRITERIA = ['ANY', 'ALL']
 SUPPORTED_HASH_VALUE_FORMAT = 'hashtype1:hashvalue1,hashtype2:hashvalue2'
@@ -115,7 +117,8 @@ APPLICATION_JSON = "application/json"
 class VisionClient(BaseClient):
     """Client class to interact with the service API."""
 
-    def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool, proxy: bool) -> None:
+    def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool, proxy: bool,
+                 threat_levels_good: list, threat_levels_suspicious: list, threat_levels_bad: list) -> None:
         """
         Prepare constructor for Client class.
 
@@ -128,6 +131,9 @@ class VisionClient(BaseClient):
             client_secret (str): The Client Secret to use for authentication.
             verify (bool): True if verify SSL certificate is checked in integration configuration, False otherwise.
             proxy (bool): True if proxy is checked in integration configuration, False otherwise.
+            threat_levels_good (list): List of threat levels provided by user to map DbotScore as Good.
+            threat_levels_suspicious (list): List of threat levels provided by user to map DbotScore as Suspicious.
+            threat_levels_bad(list): List of threat levels provided by user to map DbotScore as Bad.
         """
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
 
@@ -135,6 +141,12 @@ class VisionClient(BaseClient):
         self._headers: Dict[str, Any] = {
             "Authorization": f"Bearer {self.get_access_token(client_id=client_id, client_secret=client_secret)}"
         }
+        self.threat_levels_good = [level.lower() for level in threat_levels_good] + ['low']
+        self.threat_levels_suspicious = [level.lower() for level in threat_levels_suspicious] + ['suspicious',
+                                                                                                 'moderate',
+                                                                                                 'substantial']
+        self.threat_levels_bad = [level.lower() for level in threat_levels_bad] + ['malicious', 'severe', 'critical',
+                                                                                   'high']
 
     def authenticate(self, client_id: str, client_secret: str) -> tuple[str, int]:
         """
@@ -737,7 +749,7 @@ def validate_sort(sort_list: list, command: str):
         property_name, sort_order = sort_by.split(':')
 
         # Checking whether the property name and sort order values are correct or not.
-        if (property_name[0].lower() + property_name[1:]) not in SUPPORTED_SORT[command]:
+        if property_name[0].lower() + property_name[1:] not in SUPPORTED_SORT[command]:
             message = ERROR_MESSAGE["UNSUPPORTED_FIELD_FOR_IOCS_LIST"] if command == "iocs_list" else ERROR_MESSAGE[
                 "UNSUPPORTED_FIELD"]
 
@@ -1496,41 +1508,40 @@ def prepare_body_for_ioc_update(expires_at: str) -> Dict[str, Any]:
     return {"data": updated_iocs}
 
 
-def prepare_hr_for_update_iocs(responses: list) -> str:
+def prepare_hr_for_update_iocs(response: Dict) -> str:
     """Prepare Human Readable for cofense-iocs-update command.
 
     Args:
-        responses: Message response from API.
+        response: Message response from API.
 
     Returns:
         str: Human readable output.
     """
-    hr_outputs = []
-    for response in responses:
-        threat_value = response.get('attributes', {}).get('threat_value')
-        threat_level = response.get('metadata', {}).get('source', {}).get('threat_level')
-        hr_outputs.append(escape_special_characters({
-            "ID": response.get('id'),
-            THREAT_TYPE: response.get('attributes', {}).get('threat_type'),
-            THREAT_VALUE: threat_value,
-            THREAT_LEVEL: threat_level,
+    threat_value = response.get('attributes', {}).get('threat_value')
+    threat_level = response.get('metadata', {}).get('source', {}).get('threat_level')
+    hr_outputs = escape_special_characters({
+        "ID": response.get('id'),
+        THREAT_TYPE: response.get('attributes', {}).get('threat_type'),
+        THREAT_VALUE: threat_value,
+        THREAT_LEVEL: threat_level,
 
-            CREATED_AT: None if not response.get('metadata', {}).get('source', {}).get(
-                'created_at') else arg_to_datetime(response.get('metadata', {}).get(
-                    'source', {}).get('created_at')).strftime(HR_DATE_FORMAT),  # type: ignore
+        CREATED_AT: None if not response.get('metadata', {}).get('source', {}).get(
+            'created_at') else arg_to_datetime(response.get('metadata', {}).get(
+                'source', {}).get('created_at')).strftime(HR_DATE_FORMAT),  # type: ignore
 
-            UPDATED_AT: None if not response.get('metadata', {}).get('source', {}).get(
-                'updated_at') else arg_to_datetime(response.get('metadata', {}).get(
-                    'source', {}).get('updated_at')).strftime(HR_DATE_FORMAT),  # type: ignore
+        UPDATED_AT: None if not response.get('metadata', {}).get('source', {}).get(
+            'updated_at') else arg_to_datetime(response.get('metadata', {}).get(
+                'source', {}).get('updated_at')).strftime(HR_DATE_FORMAT),  # type: ignore
 
-            "Requested Expiration": arg_to_datetime(
-                response.get('metadata', {}).get('source', {}).get(
-                    'requested_expiration')).strftime(HR_DATE_FORMAT)  # type: ignore
-        }))
+        "Requested Expiration": arg_to_datetime(
+            response.get('metadata', {}).get('source', {}).get(
+                'requested_expiration')).strftime(HR_DATE_FORMAT)  # type: ignore
+    })
 
     headers = ["ID", THREAT_TYPE, THREAT_VALUE, THREAT_LEVEL, CREATED_AT, UPDATED_AT, "Requested Expiration"]
 
-    return tableToMarkdown("IOCs updated successfully.", hr_outputs, headers=headers, removeNull=True)
+    return tableToMarkdown("IOC {} updated successfully.".format(response.get('id')), hr_outputs, headers=headers,
+                           removeNull=True)
 
 
 def prepare_hr_for_update_ioc(response: Dict[str, Any]) -> str:
@@ -1617,49 +1628,109 @@ def prepare_hr_for_iocs_list(response: dict[str, Any]) -> str:
     Returns:
         str: Human-readable markdown string for cofense-iocs-list command.
     """
-    iocs = response.get("data", [])
-    hr_outputs = []
+    created_at = response.get("metadata", {}).get("source", {}).get("created_at")
+    expires_at = response.get("metadata", {}).get("source", {}).get("expires_at")
+    updated_at = response.get("metadata", {}).get("source", {}).get("updated_at")
+    first_quarantined_at = response.get("metadata", {}).get("quarantine", {}).get("first_quarantined_at")
+    last_quarantined_at = response.get("metadata", {}).get("quarantine", {}).get("last_quarantined_at")
 
-    for ioc in iocs:
-        created_at = ioc.get("metadata", {}).get("source", {}).get("created_at")
-        expires_at = ioc.get("metadata", {}).get("source", {}).get("expires_at")
-        updated_at = ioc.get("metadata", {}).get("source", {}).get("updated_at")
-        first_quarantined_at = ioc.get("metadata", {}).get("quarantine", {}).get("first_quarantined_at")
-        last_quarantined_at = ioc.get("metadata", {}).get("quarantine", {}).get("last_quarantined_at")
+    if created_at:
+        created_at = arg_to_datetime(created_at).strftime(HR_DATE_FORMAT)  # type: ignore
 
-        if created_at:
-            created_at = arg_to_datetime(created_at).strftime(HR_DATE_FORMAT)  # type: ignore
+    if expires_at:
+        expires_at = arg_to_datetime(expires_at).strftime(HR_DATE_FORMAT)  # type: ignore
 
-        if expires_at:
-            expires_at = arg_to_datetime(expires_at).strftime(HR_DATE_FORMAT)  # type: ignore
+    if updated_at:
+        updated_at = arg_to_datetime(updated_at).strftime(HR_DATE_FORMAT)  # type: ignore
 
-        if updated_at:
-            updated_at = arg_to_datetime(updated_at).strftime(HR_DATE_FORMAT)  # type: ignore
+    if first_quarantined_at:
+        first_quarantined_at = arg_to_datetime(first_quarantined_at).strftime(HR_DATE_FORMAT)  # type: ignore
 
-        if first_quarantined_at:
-            first_quarantined_at = arg_to_datetime(first_quarantined_at).strftime(HR_DATE_FORMAT)  # type: ignore
+    if last_quarantined_at:
+        last_quarantined_at = arg_to_datetime(last_quarantined_at).strftime(HR_DATE_FORMAT)  # type: ignore
 
-        if last_quarantined_at:
-            last_quarantined_at = arg_to_datetime(last_quarantined_at).strftime(HR_DATE_FORMAT)  # type: ignore
-
-        hr_outputs.append(escape_special_characters({
-            "ID": ioc.get("id"),
-            THREAT_TYPE: ioc.get("attributes", {}).get("threat_type"),
-            THREAT_VALUE: ioc.get('attributes', {}).get('threat_value'),
-            THREAT_LEVEL: ioc.get("metadata", {}).get("source", {}).get("threat_level"),
-            UPDATED_AT: updated_at,
-            CREATED_AT: created_at,
-            EXPIRES_AT: expires_at,
-            MATCH_COUNT: ioc.get("metadata", {}).get("quarantine", {}).get("match_count"),
-            QUARANTINE_COUNT: ioc.get("metadata", {}).get("quarantine", {}).get("quarantine_count"),
-            FIRST_QUARANTINED_AT: first_quarantined_at,
-            LAST_QUARANTINE_AT: last_quarantined_at
-        }))
+    hr_outputs = escape_special_characters({
+        "ID": response.get("id"),
+        THREAT_TYPE: response.get("attributes", {}).get("threat_type"),
+        THREAT_VALUE: response.get('attributes', {}).get('threat_value'),
+        THREAT_LEVEL: response.get("metadata", {}).get("source", {}).get("threat_level"),
+        UPDATED_AT: updated_at,
+        CREATED_AT: created_at,
+        EXPIRES_AT: expires_at,
+        MATCH_COUNT: response.get("metadata", {}).get("quarantine", {}).get("match_count"),
+        QUARANTINE_COUNT: response.get("metadata", {}).get("quarantine", {}).get("quarantine_count"),
+        FIRST_QUARANTINED_AT: first_quarantined_at,
+        LAST_QUARANTINE_AT: last_quarantined_at
+    })
 
     headers = ["ID", THREAT_TYPE, THREAT_VALUE, THREAT_LEVEL, UPDATED_AT, CREATED_AT, EXPIRES_AT,
                MATCH_COUNT, QUARANTINE_COUNT, FIRST_QUARANTINED_AT, LAST_QUARANTINE_AT]
 
-    return tableToMarkdown("IOCs:", hr_outputs, headers, removeNull=True)
+    return tableToMarkdown("IOC:", hr_outputs, headers, removeNull=True)
+
+
+def get_standard_context(client: VisionClient, ioc: Dict) -> Common.Indicator:
+    """Get the standard context for IOC.
+
+    Args:
+        client(VisionClient): VisionClient to be used.
+        ioc(Dict): ioc details returned from API.
+
+    Returns:
+        Common.Indicator: Standard context.
+    """
+    if not ioc:
+        return None  # type: ignore
+
+    ioc = remove_empty_elements(ioc)
+
+    threat_type = ioc.get('attributes', {}).get('threat_type', '').lower()
+    threat_value = ioc.get('attributes', {}).get('threat_value', '')
+
+    threat_level = ioc.get("metadata", {}).get("source", {}).get("threat_level")
+    score = 0
+    if threat_level:
+        if threat_level.lower() in client.threat_levels_bad:
+            score = 3
+        elif threat_level.lower() in client.threat_levels_suspicious:
+            score = 2
+        elif threat_level.lower() in client.threat_levels_good:
+            score = 1
+
+    dbot_score = Common.DBotScore(
+        indicator=ioc.get('id', ''),
+        indicator_type=IOC_TYPES[threat_type],
+        integration_name='Cofense Vision',
+        score=score
+    )
+    if threat_type == "url":
+        standard_context = Common.URL(
+            url=threat_value,
+            dbot_score=dbot_score
+        )
+    elif threat_type == "domain":
+        standard_context = Common.Domain(  # type: ignore
+            domain=threat_value,
+            dbot_score=dbot_score
+        )
+    elif threat_type == "sender":
+        standard_context = Common.EMAIL(  # type: ignore
+            address=threat_value,
+            dbot_score=dbot_score
+        )
+    elif threat_type == "md5":
+        standard_context = Common.File(  # type: ignore
+            md5=threat_value,
+            dbot_score=dbot_score
+        )
+    elif threat_type == "sha256":
+        standard_context = Common.File(  # type: ignore
+            sha256=threat_value,
+            dbot_score=dbot_score
+        )
+    else:
+        standard_context = dbot_score  # type: ignore
+    return standard_context
 
 
 """ COMMAND FUNCTIONS """
@@ -2096,7 +2167,8 @@ def cofense_ioc_delete_command(client: VisionClient, args: Dict[str, Any]) -> Co
         outputs=remove_empty_elements(response),
         readable_output=hr_output,
         raw_response=response,
-        outputs_key_field="id"
+        outputs_key_field="id",
+        indicator=get_standard_context(client, response)
     )
 
 
@@ -2222,10 +2294,11 @@ def cofense_last_ioc_get_command(client: VisionClient, args: Dict[str, Any]) -> 
         outputs=remove_empty_elements(response.get('data')),
         readable_output=hr_output,
         raw_response=response,
+        indicator=get_standard_context(client, response.get('data', {}))
     )
 
 
-def cofense_iocs_update_command(client: VisionClient, args: dict[str, Any]) -> CommandResults:
+def cofense_iocs_update_command(client: VisionClient, args: dict[str, Any]) -> List[CommandResults]:
     """Update the IOCs stored in the local IOC repository.
 
     Args:
@@ -2233,7 +2306,7 @@ def cofense_iocs_update_command(client: VisionClient, args: dict[str, Any]) -> C
        args (dict[str, str]): Arguments provided by the user.
 
     Returns:
-       CommandResults: Standard command results object
+       List[CommandResults]: Standard command results object
     """
     source = args.get('source')
     iocs_json = args.get('iocs_json')
@@ -2260,16 +2333,19 @@ def cofense_iocs_update_command(client: VisionClient, args: dict[str, Any]) -> C
 
     response = client.update_iocs(source, body)
 
-    response = response.get('data', [])
+    command_results = []
+    for ioc in response.get('data', []):
+        command_results.append(CommandResults(
+            outputs_prefix=IOC_OUTPUT_PREFIX,
+            outputs_key_field="id",
+            outputs=remove_empty_elements(ioc),
+            readable_output=prepare_hr_for_update_iocs(ioc),
+            raw_response=ioc,
+            indicator=get_standard_context(client, ioc)
+        ))
 
-    hr_output = prepare_hr_for_update_iocs(response)  # type: ignore
-
-    return CommandResults(
-        outputs_prefix=IOC_OUTPUT_PREFIX,
-        outputs_key_field="id",
-        outputs=remove_empty_elements(response),
-        readable_output=hr_output,
-        raw_response=response
+    return command_results if command_results else CommandResults(  # type: ignore
+        readable_output=tableToMarkdown("IOC:", [])
     )
 
 
@@ -2304,11 +2380,12 @@ def cofense_ioc_update_command(client: VisionClient, args: dict[str, Any]) -> Co
         outputs_key_field="id",
         outputs=remove_empty_elements(response),
         readable_output=hr_output,
-        raw_response=response
+        raw_response=response,
+        indicator=get_standard_context(client, response)
     )
 
 
-def cofense_iocs_list_command(client: VisionClient, args: dict[str, Any]) -> CommandResults:
+def cofense_iocs_list_command(client: VisionClient, args: dict[str, Any]) -> List[CommandResults]:
     """List the IOCs.
 
     Args:
@@ -2316,7 +2393,7 @@ def cofense_iocs_list_command(client: VisionClient, args: dict[str, Any]) -> Com
         args (dict[str, Any]): arguments provided by the user.
 
     Returns:
-        CommandResults: Standard command results.
+        List[CommandResults]: Standard command results.
     """
     source = args.get("source", "")
     page = arg_to_number(args.get("page", 0), arg_name="page")
@@ -2334,14 +2411,18 @@ def cofense_iocs_list_command(client: VisionClient, args: dict[str, Any]) -> Com
     response = client.list_iocs(source=source, page=page, size=size, since=since,  # type: ignore
                                 include_expired=include_expired, sort_string=sort)
 
-    hr_output = prepare_hr_for_iocs_list(response)
+    command_results = []
+    for ioc in response.get('data', []):
+        command_results.append(CommandResults(
+            outputs_prefix=IOC_OUTPUT_PREFIX,
+            outputs_key_field="id",
+            outputs=remove_empty_elements(ioc),
+            readable_output=prepare_hr_for_iocs_list(ioc),
+            raw_response=ioc,
+            indicator=get_standard_context(client, ioc)))
 
-    return CommandResults(
-        outputs_prefix=IOC_OUTPUT_PREFIX,
-        outputs_key_field="id",
-        outputs=remove_empty_elements(response.get('data')),
-        readable_output=hr_output,
-        raw_response=response,
+    return command_results if command_results else CommandResults(  # type: ignore
+        readable_output=tableToMarkdown("IOC:", [])
     )
 
 
@@ -2371,7 +2452,8 @@ def cofense_ioc_get_command(client: VisionClient, args: dict[str, Any]) -> Comma
         outputs_key_field="id",
         outputs=remove_empty_elements(response),
         readable_output=hr_output,
-        raw_response=response
+        raw_response=response,
+        indicator=get_standard_context(client, response)
     )
 
 
@@ -2412,6 +2494,9 @@ def main():
     client_secret = params.get("credentials", {}).get("password")
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
+    threat_levels_good = argToList(params.get('threat_levels_good', []))
+    threat_levels_suspicious = argToList(params.get('threat_levels_suspicious', []))
+    threat_levels_bad = argToList(params.get('threat_levels_bad', []))
 
     COFENSE_COMMANDS: Dict[str, Callable] = {
         'cofense-message-metadata-get': cofense_message_metadata_get_command,
@@ -2447,6 +2532,9 @@ def main():
             client_secret=client_secret,
             verify=verify_certificate,
             proxy=proxy,
+            threat_levels_good=threat_levels_good,
+            threat_levels_suspicious=threat_levels_suspicious,
+            threat_levels_bad=threat_levels_bad,
         )
 
         if command == "test-module":
