@@ -89,6 +89,7 @@ LONG_RUNNING_ENABLED: bool
 DEMISTO_API_KEY: str
 DEMISTO_URL: str
 IGNORE_RETRIES: bool
+EXTENSIVE_LOGGING: bool
 
 
 ''' HELPER FUNCTIONS '''
@@ -789,7 +790,7 @@ def long_running_loop():
             if MIRRORING_ENABLED:
                 check_for_mirrors()
             check_for_unanswered_questions()
-            if is_debug_mode():
+            if EXTENSIVE_LOGGING:
                 demisto.debug(f'Number of threads currently - {threading.active_count()}')
                 stats, _ = slack_get_integration_context_statistics()
                 demisto.debug(f'Integration Context Stats\n_____________\n{stats}')
@@ -1023,7 +1024,7 @@ async def slack_loop():
                 web_client=ASYNC_CLIENT,
                 logger=slack_logger,  # type: ignore
                 auto_reconnect_enabled=True,
-                trace_enabled=True if is_debug_mode() else False
+                trace_enabled=EXTENSIVE_LOGGING
             )
             if not VERIFY_CERT:
                 # SocketModeClient does not respect environment variables for ssl verification.
@@ -2574,7 +2575,7 @@ def init_globals(command_name: str = ''):
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
     global DEFAULT_PERMITTED_NOTIFICATION_TYPES, CUSTOM_PERMITTED_NOTIFICATION_TYPES, PERMITTED_NOTIFICATION_TYPES
     global COMMON_CHANNELS, DISABLE_CACHING, CHANNEL_NOT_FOUND_ERROR_MSG, LONG_RUNNING_ENABLED, DEMISTO_API_KEY, DEMISTO_URL
-    global IGNORE_RETRIES
+    global IGNORE_RETRIES, EXTENSIVE_LOGGING
 
     VERIFY_CERT = not demisto.params().get('unsecure', False)
     if not VERIFY_CERT:
@@ -2609,6 +2610,7 @@ def init_globals(command_name: str = ''):
     demisto_urls = demisto.demistoUrls()
     DEMISTO_URL = demisto_urls.get('server')
     IGNORE_RETRIES = demisto.params().get('ignore_event_retries', True)
+    EXTENSIVE_LOGGING = demisto.params().get('extensive_logging', False)
     common_channels = demisto.params().get('common_channels', None)
     if common_channels:
         COMMON_CHANNELS = dict(item.split(':') for item in common_channels.split(','))
@@ -2714,7 +2716,7 @@ def main() -> None:
     Main
     """
     global CLIENT
-    if is_debug_mode():
+    if EXTENSIVE_LOGGING:
         os.environ['PYTHONASYNCIODEBUG'] = "1"
 
     commands = {
@@ -2748,7 +2750,7 @@ def main() -> None:
         return_error(str(e))
     finally:
         demisto.info(f'{command_name} completed. loop: {loop_info()}')  # type: ignore
-        if is_debug_mode():
+        if EXTENSIVE_LOGGING:
             print_thread_dump()
 
 
