@@ -1,4 +1,3 @@
-from_xdr_version: 3.5.0
 fromversion: 6.10.0
 id: microsoft_system_center_configuration_manager_modeling_rule
 name: Microsoft System Center Configuration Manager
