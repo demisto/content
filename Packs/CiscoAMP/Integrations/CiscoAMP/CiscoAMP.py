@@ -3482,7 +3482,7 @@ def main() -> None:
 
         elif command == 'fetch-incidents':
             incident_severities = argToList(params.get('incident_severities'))
-            max_incidents_to_fetch = arg_to_number(params.get('max_incidents_to_fetch', FETCH_LIMIT))
+            max_incidents_to_fetch = arg_to_number(params.get('max_fetch', FETCH_LIMIT))
             event_types = argToList(params.get('event_types'))
             first_fetch_time = arg_to_datetime(
                 arg=params['first_fetch'],

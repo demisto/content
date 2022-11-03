@@ -1,5 +1,5 @@
 Cisco Advanced malware protection software is designed to prevent, detect, and help remove threats in an efficient manner from computer systems. Threats can take the form of software viruses and other malware such as ransomware, worms, Trojans, spyware, adware, and fileless malware.
-This integration was integrated and tested with version xx of CiscoAMP
+This integration was integrated and tested with version 1 of CiscoAMP
 
 ## Configure Cisco AMP Secure Endpoint on Cortex XSOAR
 
