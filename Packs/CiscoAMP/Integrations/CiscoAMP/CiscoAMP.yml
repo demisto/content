@@ -3,7 +3,7 @@ commonfields:
   id: CiscoAMP
   version: -1
 configuration:
-- defaultvalue: api.amp.cisco.com
+- defaultvalue: https://api.amp.cisco.com
   display: Server URL
   name: server_url
   required: true
