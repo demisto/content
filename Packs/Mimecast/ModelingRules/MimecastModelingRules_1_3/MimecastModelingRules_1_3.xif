@@ -18,7 +18,6 @@ filter
     xdm.email.attachment.filename = AttNames,
     xdm.email.recipients = arraymap(json_extract_array(coalesce(Rcpt,Recipient), "$."), trim("@element", "\"")),
     xdm.email.message_id = MsgId,
-    xdm.email.recipients = json_extract_array(coalesce(Rcpt,Recipient), "$."),
     xdm.email.sender = Sender,
     xdm.email.subject = Subject,
     xdm.alert.name = Virus,
