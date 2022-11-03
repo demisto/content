@@ -8080,6 +8080,7 @@ def parse_dates(dates):
         try:
             if year > 0:
                 if month > 12:
+                    # We might have gotten the day and month the wrong way around, let's try it the other way around.
                     month, day = day, month
                 if 0 in [year, month, day]:
                     parsed_dates.append(InvalidDateHandler(year=year, month=month, day=day))
