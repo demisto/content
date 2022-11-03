@@ -24,7 +24,7 @@ class PdfPermissionsException(Exception):
     pass
 
 
-class PdfCopyingException(PdfPermissionsException):
+class PdfCopyingProtectedException(PdfPermissionsException):
     pass
 
 
