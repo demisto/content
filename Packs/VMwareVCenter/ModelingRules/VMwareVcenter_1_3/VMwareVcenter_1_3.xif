@@ -15,7 +15,7 @@ filter _raw_log contains "| vlsi |" or _raw_log contains "| vim" or _raw_log con
 | alter
     xdm.event.type = event_type,
     xdm.target.resource.id = opID,
-    xdm.event.description = message ;
+    xdm.event.description = message;
 
 filter _raw_log contains "vpxd" or _raw_log contains "[vmafdd]" or _raw_log contains " vmdird "
 | alter message = arrayindex(regextract(_raw_log ,"\]([^\]]+)$"),0)
