@@ -3296,17 +3296,21 @@ def create_vulnerability_exception_command(client: Client, vulnerability_id: str
         expires (str | None, optional): The date and time the vulnerability exception is set to expire.
         comment (str | None, optional): A comment from the submitter as to why the exception was submitted.
     """
-    final_item_id: Optional[int] = None
 
-    if isinstance(scope_id, str):
-        final_item_id = int(scope_id)
+    if scope_type != VulnerabilityExceptionScopeType.GLOBAL and scope_id is None:
+        raise ValueError("`scope_id` must be set when using scopes different than `Global`.")
+
+    scope_id_int: Optional[int] = None
+
+    if isinstance is not None:
+        scope_id_int = int(scope_id)
 
     response_data = client.create_vulnerability_exception(
         vulnerability_id=vulnerability_id,
         scope_type=scope_type,
         state=state,
         reason=reason,
-        scope_id=final_item_id,
+        scope_id=scope_id_int,
         expires=expires,
         comment=comment,
     )

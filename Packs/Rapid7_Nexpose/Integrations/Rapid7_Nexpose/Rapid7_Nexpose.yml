@@ -771,7 +771,7 @@ script:
         secret: false
       - auto: PREDEFINED
         default: false
-        description: The type of the exception scope.
+        description: The type of the exception scope. If set to anything other than `Global`, `scope_id` parameter is required.
         isArray: false
         name: scope_type
         predefined:
