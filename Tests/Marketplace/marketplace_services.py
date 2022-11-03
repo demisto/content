@@ -2173,7 +2173,7 @@ class Pack(object):
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
-                    elif current_directory == PackFolders.PARSING_RULES.value and pack_file_name.startswith("external-"):
+                    elif current_directory == PackFolders.PARSING_RULES.value and pack_file_name.startswith("parsingrule-"):
                         self.add_pack_type_tags(content_item, 'ParsingRule')
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
@@ -2181,7 +2181,7 @@ class Pack(object):
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
                         })
 
-                    elif current_directory == PackFolders.MODELING_RULES.value and pack_file_name.startswith("external-"):
+                    elif current_directory == PackFolders.MODELING_RULES.value and pack_file_name.startswith("modelingrule-"):
                         self.add_pack_type_tags(content_item, 'ModelingRule')
                         schema: Dict[str, Any] = json.loads(content_item.get('schema') or '{}')
                         folder_collected_items.append({
