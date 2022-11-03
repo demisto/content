@@ -18,7 +18,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "86"
+      - "91"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -60,7 +60,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 3170
         }
       }
     note: false
@@ -103,7 +103,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3695
+          "y": 3870
         }
       }
     note: false
@@ -141,7 +141,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3170
+          "y": 3345
         }
       }
     note: false
@@ -179,7 +179,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3870
+          "y": 4045
         }
       }
     note: false
@@ -207,7 +207,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 10345
+          "y": 10520
         }
       }
     note: false
@@ -244,7 +244,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4045
+          "y": 4220
         }
       }
     note: false
@@ -282,7 +282,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4220
+          "y": 4395
         }
       }
     note: false
@@ -320,7 +320,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4920
+          "y": 5095
         }
       }
     note: false
@@ -357,7 +357,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4395
+          "y": 4570
         }
       }
     note: false
@@ -395,7 +395,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4570
+          "y": 4745
         }
       }
     note: false
@@ -427,7 +427,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 2820
         }
       }
     note: false
@@ -470,7 +470,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 2995
         }
       }
     note: false
@@ -505,7 +505,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2120
         }
       }
     note: false
@@ -543,7 +543,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2295
         }
       }
     note: false
@@ -578,7 +578,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2470
         }
       }
     note: false
@@ -616,7 +616,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 2645
         }
       }
     note: false
@@ -653,7 +653,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5095
+          "y": 5270
         }
       }
     note: false
@@ -690,7 +690,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5270
+          "y": 5445
         }
       }
     note: false
@@ -725,7 +725,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5620
+          "y": 5795
         }
       }
     note: false
@@ -763,7 +763,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5445
+          "y": 5620
         }
       }
     note: false
@@ -801,7 +801,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5795
+          "y": 5970
         }
       }
     note: false
@@ -836,7 +836,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5970
+          "y": 6145
         }
       }
     note: false
@@ -877,7 +877,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6495
+          "y": 6670
         }
       }
     note: false
@@ -915,7 +915,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6670
+          "y": 6845
         }
       }
     note: false
@@ -958,7 +958,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6845
+          "y": 7020
         }
       }
     note: false
@@ -996,7 +996,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7020
+          "y": 7195
         }
       }
     note: false
@@ -1035,7 +1035,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3345
+          "y": 3520
         }
       }
     note: false
@@ -1073,7 +1073,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3520
+          "y": 3695
         }
       }
     note: false
@@ -1108,7 +1108,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -1146,7 +1146,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
@@ -1181,7 +1181,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1420
         }
       }
     note: false
@@ -1219,7 +1219,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1595
         }
       }
     note: false
@@ -1254,7 +1254,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1770
         }
       }
     note: false
@@ -1292,7 +1292,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1945
         }
       }
     note: false
@@ -1329,7 +1329,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 720
         }
       }
     note: false
@@ -1372,7 +1372,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6320
+          "y": 6495
         }
       }
     note: false
@@ -1410,7 +1410,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -1447,7 +1447,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8770
+          "y": 8945
         }
       }
     note: false
@@ -1484,7 +1484,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8420
+          "y": 8595
         }
       }
     note: false
@@ -1524,7 +1524,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6145
+          "y": 6320
         }
       }
     note: false
@@ -1561,7 +1561,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7195
+          "y": 7370
         }
       }
     note: false
@@ -1601,7 +1601,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7370
+          "y": 7545
         }
       }
     note: false
@@ -1640,7 +1640,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7545
+          "y": 7720
         }
       }
     note: false
@@ -1677,7 +1677,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8245
+          "y": 8420
         }
       }
     note: false
@@ -1712,7 +1712,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7895
+          "y": 8070
         }
       }
     note: false
@@ -1750,7 +1750,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8070
+          "y": 8245
         }
       }
     note: false
@@ -1788,7 +1788,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9645
+          "y": 9820
         }
       }
     note: false
@@ -1826,7 +1826,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8945
+          "y": 9120
         }
       }
     note: false
@@ -1869,7 +1869,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9120
+          "y": 9295
         }
       }
     note: false
@@ -1915,7 +1915,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9295
+          "y": 9470
         }
       }
     note: false
@@ -1954,7 +1954,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9820
+          "y": 9995
         }
       }
     note: false
@@ -1992,7 +1992,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7720
+          "y": 7895
         }
       }
     note: false
@@ -2031,7 +2031,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4745
+          "y": 4920
         }
       }
     note: false
@@ -2066,7 +2066,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9995
+          "y": 10170
         }
       }
     note: false
@@ -2104,7 +2104,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 10170
+          "y": 10345
         }
       }
     note: false
@@ -2139,7 +2139,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 370
         }
       }
     note: false
@@ -2177,7 +2177,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 545
         }
       }
     note: false
@@ -2215,7 +2215,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8595
+          "y": 8770
         }
       }
     note: false
@@ -2256,7 +2256,47 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9470
+          "y": 9645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "91":
+    id: "91"
+    taskid: 794aa0a8-baeb-42e8-860f-b1c90020b336
+    type: regular
+    task:
+      id: 794aa0a8-baeb-42e8-860f-b1c90020b336
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "86"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -2273,14 +2313,12 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 10360,
+        "height": 10535,
         "width": 380,
         "x": 50,
         "y": 50
       }
     }
   }
-inputs: []
-outputs: []
 marketplaces:
 - xsoar

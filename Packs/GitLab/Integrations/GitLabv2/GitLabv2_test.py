@@ -564,7 +564,7 @@ def test_file_get_command(mocker):
 
 CASE_FILE_CREATE = [
     ({},  # args
-     'You must specify either the "file_content" or the "entry_id" of the file.'),
+     'You must specify either the "file_content" and "file_path" or the "entry_id" of the file.'),
     ({'file_content': 'example', 'branch': 'main', 'commit_msg': 'unit'},  # args
      'File created successfully.'  # results
      )
@@ -602,7 +602,7 @@ def test_file_create_command(mocker, args, expected_results):
 
 CASE_FILE_UPDATE = [
     ({},  # args
-     'You must specify either the "file_content" or the "entry_id" of the file.'),
+     'You must specify either the "file_content" and "file_path" or the "entry_id" of the file.'),
     ({'file_path': 'example', 'branch': 'main', 'commit_msg': 'unit', 'file_content': 'update'},  # args
      'File updated successfully.'  # results
      )

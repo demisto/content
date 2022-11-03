@@ -3,6 +3,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from typing import Dict, Any, List
+
 '''--------------------- CLIENT CLASS --------------------'''
 
 
@@ -435,6 +436,11 @@ def partial_response(response: list, object_type: str):
 
 
 def verify_project_id(client: Client, project_id: Any) -> Boolean:
+    '''
+    This function verify that the user can access the project.
+    input: project_id
+    output: True is the project_id is valid, otherwise an error will occur.
+    '''
     project_id = arg_to_number(project_id)
     if not project_id or project_id < 0:
         raise DemistoException('project_id must be an positive integer')
@@ -443,6 +449,16 @@ def verify_project_id(client: Client, project_id: Any) -> Boolean:
     if response[0].get('id') != project_id:
         raise DemistoException(f'Project with project_id {project_id} does not exist')
     return True
+
+
+def return_date_arg_as_iso(arg: str | None) -> str | None:
+    '''
+    This function convert timestamp format (<number> <time unit>, e.g., 12 hours, 7 days) to isu format
+    input: project_id
+    output: True is the project_id is valid, otherwise an error will occur.
+    '''
+    arg_to_iso = arg_to_datetime(arg)
+    return arg_to_iso.isoformat() if arg_to_iso else None
 
 
 ''' COMMAND FUNCTIONS '''
@@ -486,9 +502,9 @@ def group_project_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     response = response_according_pagination(client.group_projects_list_request, limit, page_number, params, group_id)
     for project in response:
         response_to_hr.append({'Id': project.get('id'),
-                               'Name': project.get('name'),
-                               'Description': project.get('description'),
-                               'Path': project.get('path')})
+                               'Name': project.get('name', ''),
+                               'Description': project.get('description', ''),
+                               'Path': project.get('path', '')})
     human_readable = tableToMarkdown('List Group Projects', response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
         outputs_prefix='GitLab.GroupProject',
@@ -518,9 +534,9 @@ def get_project_list_command(client: Client, args: Dict[str, Any]) -> CommandRes
     response = response_according_pagination(client.get_project_list_request, limit, page_number, params, None)
     for project in response:
         response_to_hr.append({'Id': project.get('id'),
-                               'Name': project.get('name'),
-                               'Description': project.get('description'),
-                               'Path': project.get('path')})
+                               'Name': project.get('name', ''),
+                               'Description': project.get('description', ''),
+                               'Path': project.get('path', '')})
     return_partial = args.get('partial_response') == 'true'
     outputs = partial_response(response, 'Project') if return_partial else response
     human_readable = tableToMarkdown('List Projects', response_to_hr, removeNull=True, headers=headers)
@@ -548,26 +564,26 @@ def issue_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     limit = arg_to_number(args.get('limit')) or 50
     params = assign_params(assignee_id=args.get('assignee_id'), assignee_username=args.get('assignee_username'),
                            author_id=args.get('author_id'), author_username=args.get('author_username'),
-                           confidential=args.get('confidential'), created_after=args.get('created_after'),
-                           created_before=args.get('created_before'), due_date=args.get('due_date'),
+                           confidential=args.get('confidential'), created_after=return_date_arg_as_iso(args.get('created_after')),
+                           created_before=return_date_arg_as_iso(args.get('created_before')), due_date=args.get('due_date'),
                            epic_id=args.get('epic_id'), issue_type=args.get('issue_type'), content=args.get('content'),
                            labels=args.get('labels'), milestone=args.get('milestone'), order_by=args.get('order_by'),
                            scope=args.get('scope'), search=args.get('search'), sort=args.get('sort'),
-                           state=args.get('state'), updated_after=args.get('updated_after'),
-                           updated_before=args.get('updated_before'))
+                           state=args.get('state'), updated_after=return_date_arg_as_iso(args.get('updated_after')),
+                           updated_before=return_date_arg_as_iso(args.get('updated_before')))
     response = response_according_pagination(client.issue_list_request, limit, page_number, params, None)
     for issue in response:
         issue_details = {'Issue_iid': issue.get('iid'),
-                         'Title': issue.get('title'),
-                         'Description': issue.get('description'),
+                         'Title': issue.get('title', ''),
+                         'Description': issue.get('description', ''),
                          'CreatedAt': issue.get('created_at'),
-                         'UpdateAt': issue.get('update_at'),
-                         'State': issue.get('state'),
-                         'CreatedBy': issue.get('author', {}).get('created_by')}
+                         'UpdateAt': issue.get('update_at', ''),
+                         'State': issue.get('state', ''),
+                         'CreatedBy': issue.get('author', {}).get('created_by', '')}
         if issue.get('assignee'):
-            issue_details['Assignee'] = issue.get('assignee', {}).get('name')
+            issue_details['Assignee'] = issue.get('assignee', {}).get('name', '')
         if issue.get('milestone'):
-            issue_details['Milestone'] = issue.get('milestone', {}).get('title')
+            issue_details['Milestone'] = issue.get('milestone', {}).get('title', '')
         response_to_hr.append(issue_details)
     return_partial = args.get('partial_response') == 'true'
     outputs = partial_response(response, 'Issue') if return_partial else response
@@ -602,7 +618,7 @@ def create_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults
     human_readable_dict = {
         'Iid': response.get('iid'),
         'Title': response.get('title'),
-        'Description': response.get('description'),
+        'Description': response.get('description', ''),
         'CreatedAt': response.get('created_at', ''),
         'CreatedBy': response.get('author', {}).get('name', ''),
         'UpdatedAt': response.get('updated_at', ''),
@@ -825,7 +841,7 @@ def file_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     response = client.file_get_request(file_path, branch)
     human_readable_dict = {'FileName': response.get('file_name', ''),
                            'FilePath': response.get('file_path', ''),
-                           'Ref': response.get('ref'),
+                           'Ref': response.get('ref', ''),
                            'ContentSha': response.get('content_sha256', ''),
                            'CommitId': response.get('commit_id', ''),
                            'LastCommitId': response.get('last_commit_id', ''),
@@ -859,8 +875,8 @@ def file_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     author_name = args.get('author_name', '')
     file_content = args.get('file_content', '')
     execute_filemode = args.get('execute_filemode', '')
-    if not entry_id and not file_content:
-        raise DemistoException('You must specify either the "file_content" or the "entry_id" of the file.')
+    if not entry_id and not file_content and not file_path:
+        raise DemistoException('You must specify either the "file_content" and "file_path" or the "entry_id" of the file.')
     elif entry_id:
         file_path_entry_id = demisto.getFilePath(entry_id).get('path')
         with open(file_path_entry_id, 'rb') as f:
@@ -902,8 +918,8 @@ def file_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     commit_message = args.get('commit_message')
     last_commit_id = args.get('last_commit_id')
     execute_filemode = args.get('execute_filemode')
-    if not entry_id and not file_content:
-        raise DemistoException('You must specify either the "file_content" or the "entry_id" of the file.')
+    if not entry_id and not file_content and not file_path:
+        raise DemistoException('You must specify either the "file_content" and "file_path" or the "entry_id" of the file.')
     elif entry_id:
         file_path_entry_id = demisto.getFilePath(entry_id).get('path')
         with open(file_path_entry_id, 'rb') as f:
@@ -964,8 +980,8 @@ def commit_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         response_title = 'List Commits'
         page_number = arg_to_number(args.get('page')) or 1
         limit = arg_to_number(args.get('limit')) or 50
-        params = assign_params(ref_name=args.get('ref_name'), created_before=args.get('created_before'),
-                               created_after=args.get('created_after'), path=args.get('path'),
+        params = assign_params(ref_name=args.get('ref_name'), created_before=return_date_arg_as_iso(args.get('created_before')),
+                               created_after=return_date_arg_as_iso(args.get('created_after')), path=args.get('path'),
                                with_stats=args.get('with_stats'), first_parent=args.get('first_parent'),
                                order=args.get('order'), all_=args.get('all'))
         response = response_according_pagination(client.commit_list_request, limit, page_number, params, None)
@@ -1051,8 +1067,8 @@ def group_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     for group in response:
         response_to_hr.append({'Id': group.get('id'),
-                               'Name': group.get('name'),
-                               'Path': group.get('path'),
+                               'Name': group.get('name', ''),
+                               'Path': group.get('path', ''),
                                'Description': group.get('description', ''),
                                'CreatedAt': group.get('created_at', ''),
                                'Visibility': group.get('visibility', '')})
@@ -1195,12 +1211,20 @@ def merge_request_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     headers = ['Iid', 'Title', 'CreatedAt', 'CreatedBy', 'UpdatedAt', 'Status', 'MergeBy', 'MergedAt', 'Reviewers']
     page_number = arg_to_number(args.get('page')) or 1
     limit = arg_to_number(args.get('limit')) or 50
-    params = assign_params(state=args.get('state'), order_by=args.get('order_by'), sort=args.get('sort'),
-                           milestone=args.get('milestone'), labels=args.get('labels'), created_after=args.get('created_after'),
-                           created_before=args.get('created_before)'), updated_after=args.get('updated_after'),
-                           updated_before=args.get('updated_before)'), scope=args.get('scope'),
-                           author_id=args.get('author_id'), author_username=args.get('author_username'),
-                           assignee_id=args.get('assignee_id'), reviewer_id=args.get('reviewer_id'),
+    params = assign_params(state=args.get('state'),
+                           order_by=args.get('order_by'),
+                           sort=args.get('sort'),
+                           milestone=args.get('milestone'),
+                           labels=args.get('labels'),
+                           created_after=return_date_arg_as_iso(args.get('created_after')),
+                           created_before=return_date_arg_as_iso(args.get('created_before')),
+                           updated_after=return_date_arg_as_iso(args.get('updated_after')),
+                           updated_before=return_date_arg_as_iso(args.get('updated_before')),
+                           scope=args.get('scope'),
+                           author_id=args.get('author_id'),
+                           author_username=args.get('author_username'),
+                           assignee_id=args.get('assignee_id'),
+                           reviewer_id=args.get('reviewer_id'),
                            reviewer_username=args.get('reviewer_username'), source_branch=args.get('source_branch'),
                            target_branch=args.get('target_branch'), search=args.get('search'))
 
@@ -1255,8 +1279,6 @@ def merge_request_create_command(client: Client, args: Dict[str, Any]) -> Comman
     allow_collaboration = args.get('allow_collaboration')
     allow_maintainer_to_push = args.get('allow_maintainer_to_push')
     approvals_before_merge = args.get('approvals_before_merge')
-    # l = arg_to_datetime(arg='now', arg_name='before', required=True).strftime("%Y-%m-%dT%H:%M:%SZ")
-    # arg_to_datetime(pr.get('creationDate')).isoformat()
     squash = args.get('squash')
     response = client.merge_request_create_request(source_branch, target_branch, title, assignee_ids,
                                                    reviewer_ids, description, target_project_id, labels,

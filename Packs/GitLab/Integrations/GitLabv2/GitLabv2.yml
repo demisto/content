@@ -237,11 +237,11 @@ script:
       required: false
       isArray: false
     - name: created_after
-      description: Return issues created on or after the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z).
+      description: Return issues created on or after the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
       required: false
       isArray: false
     - name: created_before
-      description: Return issues created on or before the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z).
+      description: Return issues created on or before the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
       required: false
       isArray: false
     - auto: PREDEFINED
@@ -336,11 +336,11 @@ script:
       - opened
       - closed
     - name: updated_after
-      description: Return issues updated on or after the given time.
+      description: Return issues updated on or after the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
       required: false
       isArray: false
     - name: updated_before
-      description: Return issues updated on or before the given time.
+      description: Return issues updated on or before the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
       required: false
       isArray: false
     - defaultValue: 50
@@ -591,11 +591,11 @@ script:
       required: false
       isArray: false
     - name: created_before
-      description: Only commits before or on this date are returned (until). Expected in ISO 8601 format (2019-03-15T08:00:00Z).
+      description: Only commits before or on this date are returned (until) in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days).
       required: false
       isArray: false
     - name: created_after
-      description: Only commits after or on this date are returned(since). Expected in ISO 8601 format (2019-03-15T08:00:00Z).
+      description: Only commits after or on this date are returned(since) in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days).
       required: false
       isArray: false
     - name: path
@@ -723,19 +723,19 @@ script:
       required: false
       isArray: false
     - name: created_after
-      description: Return merge requests created on or after the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z).
+      description: Return merge requests created on or after the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
       required: false
       isArray: false
     - name: created_before
-      description: Return merge requests created on or before the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z).
+      description: Return merge requests created on or before the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
       required: false
       isArray: false
     - name: updated_after
-      description: Return merge requests updated on or after the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z).
+      description: Return merge requests updated on or after the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
       required: false
       isArray: false
     - name: updated_before
-      description: Return merge requests updated on or before the given time. Expected in ISO 8601 format (2019-03-15T08:00:00Z).
+      description: Return merge requests updated on or before the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
       required: false
       isArray: false
     - auto: PREDEFINED
