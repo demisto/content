@@ -211,7 +211,7 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
         private_packs (list): priced packs from private bucket.
         storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
         storage_base_path (str): the source path of the packs in the target bucket.
-        id_set (dict): current id_set
+        pack_list: List[Pack]: The pack list that is created from `create-content-artifacts` step.
         marketplace (str): name of current markeplace, xsoar or marketplacev2
 
     Returns:
