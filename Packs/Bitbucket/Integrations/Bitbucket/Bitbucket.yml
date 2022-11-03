@@ -1324,7 +1324,7 @@ script:
         - contextPath: Bitbucket.PullRequest.source.repository.full_name
           description: The full name of the repository of the source branch.
           type: String
-        - contextPath: Bitbucket.PullRequest.source.repository.links.self.href
+        - contextPath: Bitbucket.PullRequest.source.repository.links
           description: Links with information about the repository of the source branch.
           type: String
         - contextPath: Bitbucket.PullRequest.source.repository.name
@@ -1332,6 +1332,57 @@ script:
           type: String
         - contextPath: Bitbucket.PullRequest.source.repository.uuid
           description: The unique ID of the repository of the source branch.
+          type: String
+        - contextPath: Bitbucket.PullRequest.reviewers.display_name
+          description: The display name of the reviewer.
+          type: String
+        - contextPath: Bitbucket.PullRequest.reviewers.links
+          description: Links with information about the reviewer.
+          type: String
+        - contextPath: Bitbucket.PullRequest.reviewers.type
+          description: The type of the reviewer
+          type: String
+        - contextPath: Bitbucket.PullRequest.reviewers.uuid
+          description: The unique id of the reviewer.
+          type: String
+        - contextPath: Bitbucket.PullRequest.reviewers.account_id
+          description: The account_id of the reviewer.
+          type: String
+        - contextPath: Bitbucket.PullRequest.reviewers.nickname
+          description: The nickname of the reviewer.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.type
+          description: The type of the participant.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.user.display_name
+          description: The display name of the participant.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.user.links
+          description: Links with information about the user.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.user.type
+          description: The type of the participant.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.user.uuid
+          description: The unique id of the participant.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.user.account_id
+          description: The account id of the participant.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.user.nickname
+          description: The nickname of the participant.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.role
+          description: The role of the participant.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.approved
+          description: The approval status of the pull request.
+          type: Boolean
+        - contextPath: Bitbucket.PullRequest.participants.state
+          description: The state of the participant.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.participated_on
+          description: The date of participation.
           type: String
         - contextPath: Bitbucket.PullRequest.links
           description: Links to information about the pull request.
@@ -1532,6 +1583,57 @@ script:
         - contextPath: Bitbucket.PullRequest.source.repository.uuid
           description: The unique ID of the repository of the source branch.
           type: String
+        - contextPath: Bitbucket.PullRequest.reviewers.display_name
+          description: The display name of the reviewer.
+          type: String
+        - contextPath: Bitbucket.PullRequest.reviewers.links
+          description: Links with information about the reviewer.
+          type: String
+        - contextPath: Bitbucket.PullRequest.reviewers.type
+          description: The type of the reviewer
+          type: String
+        - contextPath: Bitbucket.PullRequest.reviewers.uuid
+          description: The unique id of the reviewer.
+          type: String
+        - contextPath: Bitbucket.PullRequest.reviewers.account_id
+          description: The account_id of the reviewer.
+          type: String
+        - contextPath: Bitbucket.PullRequest.reviewers.nickname
+          description: The nickname of the reviewer.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.type
+          description: The type of the participant.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.user.display_name
+          description: The display name of the participant.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.user.links
+          description: Links with information about the user.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.user.type
+          description: The type of the participant.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.user.uuid
+          description: The unique id of the participant.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.user.account_id
+          description: The account id of the participant.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.user.nickname
+          description: The nickname of the participant.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.role
+          description: The role of the participant.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.approved
+          description: The approval status of the pull request.
+          type: Boolean
+        - contextPath: Bitbucket.PullRequest.participants.state
+          description: The state of the participant.
+          type: Unknown
+        - contextPath: Bitbucket.PullRequest.participants.participated_on
+          description: The date of participation.
+          type: String
         - contextPath: Bitbucket.PullRequest.links
           description: Links to information about the pull request.
           type: String
@@ -1718,6 +1820,57 @@ script:
           type: String
         - contextPath: Bitbucket.PullRequest.source.repository.uuid
           description: The unique ID of the repository of the source branch.
+          type: String
+        - contextPath: Bitbucket.PullRequest.reviewers.display_name
+          description: The display name of the reviewer.
+          type: String
+        - contextPath: Bitbucket.PullRequest.reviewers.links
+          description: Links with information about the reviewer.
+          type: String
+        - contextPath: Bitbucket.PullRequest.reviewers.type
+          description: The type of the reviewer.
+          type: String
+        - contextPath: Bitbucket.PullRequest.reviewers.uuid
+          description: The unique id of the reviewer.
+          type: String
+        - contextPath: Bitbucket.PullRequest.reviewers.account_id
+          description: The account id of the reviewer.
+          type: String
+        - contextPath: Bitbucket.PullRequest.reviewers.nickname
+          description: The nickname of the reviewer.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.type
+          description: The type of the participant.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.user.display_name
+          description: The display name of the participant.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.user.links
+          description: Links with information about the user.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.user.type
+          description: The type of the participant.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.user.uuid
+          description: The unique id of the participant.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.user.account_id
+          description: The account id of the participant.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.user.nickname
+          description: The nickname of the participant.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.role
+          description: The role of the participant.
+          type: String
+        - contextPath: Bitbucket.PullRequest.participants.approved
+          description: The approval status of the pull request.
+          type: Boolean
+        - contextPath: Bitbucket.PullRequest.participants.state
+          description: The state of the participant.
+          type: Unknown
+        - contextPath: Bitbucket.PullRequest.participants.participated_on
+          description: The date of participation.
           type: String
         - contextPath: Bitbucket.PullRequest.links
           description: Links to information about the pull request.

@@ -1789,58 +1789,75 @@ Creates a pull request in Bitbucket.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Bitbucket.PullRequest.comment_count | Number | The number of comments there are in the pull request. | 
-| Bitbucket.PullRequest.task_count | Number | The number of tasks there are in the pull request. | 
-| Bitbucket.PullRequest.type | String | The type of the request. | 
-| Bitbucket.PullRequest.id | Number | The pull request ID. | 
-| Bitbucket.PullRequest.title | String | The title of the pull request. | 
-| Bitbucket.PullRequest.description | String | The description of the pull request. | 
-| Bitbucket.PullRequest.rendered.title.type | String | The type of the title of the request. | 
-| Bitbucket.PullRequest.rendered.title.raw | String | The content of the rendered title. | 
-| Bitbucket.PullRequest.rendered.title.markup | String | The text styling type, such as markdown. | 
-| Bitbucket.PullRequest.rendered.title.html | String | The HTML format of the pull request title. | 
-| Bitbucket.PullRequest.rendered.description.type | String | The type of the pull request description | 
-| Bitbucket.PullRequest.rendered.description.raw | String | The content of the description of the pull request. | 
-| Bitbucket.PullRequest.rendered.description.markup | String | The text styling type, such as markdown. | 
-| Bitbucket.PullRequest.rendered.description.html | String | HTML format of the description content. | 
-| Bitbucket.PullRequest.state | String | The status of the pull request. | 
-| Bitbucket.PullRequest.merge_commit | Unknown | Whether it is a merge commit. | 
-| Bitbucket.PullRequest.close_source_branch | Boolean | Whether the branch should be closed after the merge. | 
-| Bitbucket.PullRequest.closed_by | Unknown | The user who closed the pull request. | 
-| Bitbucket.PullRequest.author.display_name | String | The display name of the author of the pull request. | 
-| Bitbucket.PullRequest.author.links | String | Links with information about the author of the pull request. | 
-| Bitbucket.PullRequest.author.type | String | The type of the author | 
-| Bitbucket.PullRequest.author.uuid | String | The unique universal ID of the author. | 
-| Bitbucket.PullRequest.author.account_id | String | The account ID of the author of the pull request. | 
-| Bitbucket.PullRequest.author.nickname | String | The nickname of the author. | 
-| Bitbucket.PullRequest.reason | String | The reason to create the request. | 
-| Bitbucket.PullRequest.created_on | String | The creation date of the request. | 
-| Bitbucket.PullRequest.updated_on | String | The date of the last update of the pull request. | 
-| Bitbucket.PullRequest.destination.branch.name | String | The name of the destination branch. This is the branch to merge to. | 
-| Bitbucket.PullRequest.destination.commit.type | String | The type of the commit. | 
-| Bitbucket.PullRequest.destination.commit.hash | String | The hash of the commit. | 
-| Bitbucket.PullRequest.destination.commit.links | String | Links with information about the commit. | 
-| Bitbucket.PullRequest.destination.repository.type | String | The type of the repository. | 
-| Bitbucket.PullRequest.destination.repository.full_name | String | The full name of the repository of the destination branch. | 
-| Bitbucket.PullRequest.destination.repository.links | String | Links with information about the repository of the destination branch. | 
-| Bitbucket.PullRequest.destination.repository.name | String | The name of the repository. | 
-| Bitbucket.PullRequest.destination.repository.uuid | String | The unique ID of the repository. | 
-| Bitbucket.PullRequest.source.branch.name | String | The name of the source branch. This is the branch with the changes that will be merged. | 
-| Bitbucket.PullRequest.source.commit.type | String | The type of the commit in the source branch. | 
-| Bitbucket.PullRequest.source.commit.hash | String | The hash of the commit in the source branch | 
-| Bitbucket.PullRequest.source.commit.links | String | Links with information about the commit in the source branch. | 
-| Bitbucket.PullRequest.source.repository.type | String | The type of the repository of the source branch. | 
-| Bitbucket.PullRequest.source.repository.full_name | String | The full name of the repository of the source branch. | 
-| Bitbucket.PullRequest.source.repository.links.self.href | String | Links with information about the repository of the source branch. | 
-| Bitbucket.PullRequest.source.repository.name | String | The name of the repository of the source branch. | 
-| Bitbucket.PullRequest.source.repository.uuid | String | The unique ID of the repository of the source branch. | 
-| Bitbucket.PullRequest.links | String | Links to information about the pull request. | 
-| Bitbucket.PullRequest.summary.type | String | The type of the pull request. | 
-| Bitbucket.PullRequest.summary.raw | String | The description of the pull request. | 
-| Bitbucket.PullRequest.summary.markup | String | The text styling type, such as markdown. | 
-| Bitbucket.PullRequest.summary.html | String | The description of the pull request in HTML format. | 
+| **Path** | **Type** | **Description**                                                                         |
+| --- |----------|-----------------------------------------------------------------------------------------|
+| Bitbucket.PullRequest.comment_count | Number   | The number of comments there are in the pull request.                                   | 
+| Bitbucket.PullRequest.task_count | Number   | The number of tasks there are in the pull request.                                      | 
+| Bitbucket.PullRequest.type | String   | The type of the request.                                                                | 
+| Bitbucket.PullRequest.id | Number   | The pull request ID.                                                                    | 
+| Bitbucket.PullRequest.title | String   | The title of the pull request.                                                          | 
+| Bitbucket.PullRequest.description | String   | The description of the pull request.                                                    | 
+| Bitbucket.PullRequest.rendered.title.type | String   | The type of the title of the request.                                                   | 
+| Bitbucket.PullRequest.rendered.title.raw | String   | The content of the rendered title.                                                      | 
+| Bitbucket.PullRequest.rendered.title.markup | String   | The text styling type, such as markdown.                                                | 
+| Bitbucket.PullRequest.rendered.title.html | String   | The HTML format of the pull request title.                                              | 
+| Bitbucket.PullRequest.rendered.description.type | String   | The type of the pull request description                                                | 
+| Bitbucket.PullRequest.rendered.description.raw | String   | The content of the description of the pull request.                                     | 
+| Bitbucket.PullRequest.rendered.description.markup | String   | The text styling type, such as markdown.                                                | 
+| Bitbucket.PullRequest.rendered.description.html | String   | HTML format of the description content.                                                 | 
+| Bitbucket.PullRequest.state | String   | The status of the pull request.                                                         | 
+| Bitbucket.PullRequest.merge_commit | Unknown  | Whether it is a merge commit.                                                           | 
+| Bitbucket.PullRequest.close_source_branch | Boolean  | Whether the branch should be closed after the merge.                                    | 
+| Bitbucket.PullRequest.closed_by | Unknown  | The user who closed the pull request.                                                   | 
+| Bitbucket.PullRequest.author.display_name | String   | The display name of the author of the pull request.                                     | 
+| Bitbucket.PullRequest.author.links | String   | Links with information about the author of the pull request.                            | 
+| Bitbucket.PullRequest.author.type | String   | The type of the author                                                                  | 
+| Bitbucket.PullRequest.author.uuid | String   | The unique universal ID of the author.                                                  | 
+| Bitbucket.PullRequest.author.account_id | String   | The account ID of the author of the pull request.                                       | 
+| Bitbucket.PullRequest.author.nickname | String   | The nickname of the author.                                                             | 
+| Bitbucket.PullRequest.reason | String   | The reason to create the request.                                                       | 
+| Bitbucket.PullRequest.created_on | String   | The creation date of the request.                                                       | 
+| Bitbucket.PullRequest.updated_on | String   | The date of the last update of the pull request.                                        | 
+| Bitbucket.PullRequest.destination.branch.name | String   | The name of the destination branch. This is the branch to merge to.                     | 
+| Bitbucket.PullRequest.destination.commit.type | String   | The type of the commit.                                                                 | 
+| Bitbucket.PullRequest.destination.commit.hash | String   | The hash of the commit.                                                                 | 
+| Bitbucket.PullRequest.destination.commit.links | String   | Links with information about the commit.                                                | 
+| Bitbucket.PullRequest.destination.repository.type | String   | The type of the repository.                                                             | 
+| Bitbucket.PullRequest.destination.repository.full_name | String   | The full name of the repository of the destination branch.                              | 
+| Bitbucket.PullRequest.destination.repository.links | String   | Links with information about the repository of the destination branch.                  | 
+| Bitbucket.PullRequest.destination.repository.name | String   | The name of the repository.                                                             | 
+| Bitbucket.PullRequest.destination.repository.uuid | String   | The unique ID of the repository.                                                        | 
+| Bitbucket.PullRequest.source.branch.name | String   | The name of the source branch. This is the branch with the changes that will be merged. | 
+| Bitbucket.PullRequest.source.commit.type | String   | The type of the commit in the source branch.                                            | 
+| Bitbucket.PullRequest.source.commit.hash | String   | The hash of the commit in the source branch                                             | 
+| Bitbucket.PullRequest.source.commit.links | String   | Links with information about the commit in the source branch.                           | 
+| Bitbucket.PullRequest.source.repository.type | String   | The type of the repository of the source branch.                                        | 
+| Bitbucket.PullRequest.source.repository.full_name | String   | The full name of the repository of the source branch.                                   | 
+| Bitbucket.PullRequest.source.repository.links.self.href | String   | Links with information about the repository of the source branch.                       | 
+| Bitbucket.PullRequest.source.repository.name | String   | The name of the repository of the source branch.                                        | 
+| Bitbucket.PullRequest.source.repository.uuid | String   | The unique ID of the repository of the source branch.                                   |
+| Bitbucket.PullRequest.reviewers.display_name | String   | The display name of the reviewer.                                                       |
+| Bitbucket.PullRequest.reviewers.links | String   | Links with information about the reviewer.                                              |
+| Bitbucket.PullRequest.reviewers.type | String   | The type of the reviewer.                                                               |
+| Bitbucket.PullRequest.reviewers.uuid | String   | The unique id of the reviewer.                                                          |
+| Bitbucket.PullRequest.reviewers.account_id | String   | The account id of the reviewer.                                                         |
+| Bitbucket.PullRequest.reviewers.nickname | String   | The nickname of the reviewer.                                                           |
+| Bitbucket.PullRequest.participants.type | String   | The type of the participant.                                                            |
+| Bitbucket.PullRequest.participants.user.display_name | String   | The display name of the participant.                                                    |
+| Bitbucket.PullRequest.participants.user.links | String   | Links with information about the user.                                                    |
+| Bitbucket.PullRequest.participants.user.type | String   | The type of the participant.                                                    |
+| Bitbucket.PullRequest.participants.user.uuid | String   | The unique id of the participant.                                                    |
+| Bitbucket.PullRequest.participants.user.account_id | String   | The account id of the participant.                                                    |
+| Bitbucket.PullRequest.participants.user.nickname | String   | The nickname of the participant.                                                    |
+| Bitbucket.PullRequest.participants.role | String   | The role of the participant.                                                    |
+| Bitbucket.PullRequest.participants.approved | String   | The approval status of the pull request.                                                    |
+| Bitbucket.PullRequest.participants.state | String   | The state of the participant.                                                    |
+| Bitbucket.PullRequest.participants.participated_on | Unknown  | The date of participation.                                                    |
+| Bitbucket.PullRequest.links | String   | Links to information about the pull request.                                            | 
+| Bitbucket.PullRequest.summary.type | String   | The type of the pull request.                                                           | 
+| Bitbucket.PullRequest.summary.raw | String   | The description of the pull request.                                                    | 
+| Bitbucket.PullRequest.summary.markup | String   | The text styling type, such as markdown.                                                | 
+| Bitbucket.PullRequest.summary.html | String   | The description of the pull request in HTML format.                                     | 
 
 #### Command example
 ```!bitbucket-pull-request-create source_branch=test title="pull_request"```
@@ -1973,6 +1990,26 @@ Creates a pull request in Bitbucket.
                     }
                 }
             ],
+          "reviewers": [
+              {
+                "display_name": "Some User",
+                "links": {
+                    "self": {
+                        "href": "https://api.bitbucket.org/2.0/users/"
+                    },
+                    "avatar": {
+                        "href": "https://secure.gravatar.com/avatar/?d=httpsavatar-management--avatars.us-west-2.prod.public.atl-paas.net.png"
+                    },
+                    "html": {
+                        "href": "https://bitbucket.org/"
+                    }
+                },
+                "type": "user",
+                "uuid": "{11111111-1111-1111-1111-111111111111}",
+                "account_id": "111111111111111111111111",
+                "nickname": "Some User"
+              }
+            ],
             "reason": "",
             "rendered": {
                 "description": {
@@ -1988,7 +2025,6 @@ Creates a pull request in Bitbucket.
                     "type": "rendered"
                 }
             },
-            "reviewers": [],
             "source": {
                 "branch": {
                     "name": "test"
@@ -2068,57 +2104,290 @@ Updates a pull request in Bitbucket.
 #### Context Output
 
 | **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Bitbucket.PullRequest.comment_count | Number | The number of comments in the pull request. | 
-| Bitbucket.PullRequest.task_count | Number | The number of tasks in the pull request. | 
-| Bitbucket.PullRequest.type | String | The type of the request. | 
-| Bitbucket.PullRequest.id | Number | The pull request ID. | 
-| Bitbucket.PullRequest.title | String | The title of the pull request. | 
-| Bitbucket.PullRequest.description | String | The description of the pull request. | 
-| Bitbucket.PullRequest.rendered.title.type | String | The type of the title of the request. | 
-| Bitbucket.PullRequest.rendered.title.raw | String | The content of the rendered title. | 
-| Bitbucket.PullRequest.rendered.title.markup | String | The text styling type, such as markdown. | 
-| Bitbucket.PullRequest.rendered.title.html | String | The HTML format of the pull request title. | 
-| Bitbucket.PullRequest.rendered.description.type | String | The type of the pull request description. | 
-| Bitbucket.PullRequest.rendered.description.raw | String | The content of the description of the pull request. | 
-| Bitbucket.PullRequest.rendered.description.markup | String | The text styling type, such as markdown. | 
-| Bitbucket.PullRequest.rendered.description.html | String | HTML format of the description content. | 
-| Bitbucket.PullRequest.state | String | The status of the pull request. | 
-| Bitbucket.PullRequest.merge_commit | Unknown | Whether it is a merge commit. | 
-| Bitbucket.PullRequest.close_source_branch | Boolean | Whether the branch should be closed after the merge. | 
-| Bitbucket.PullRequest.closed_by | Unknown | The user who closed the pull request. | 
-| Bitbucket.PullRequest.author.display_name | String | The display name of the author of the pull request. | 
-| Bitbucket.PullRequest.author.links | String | Links with information about the author of the pull request. | 
-| Bitbucket.PullRequest.author.type | String | The type of the author. | 
-| Bitbucket.PullRequest.author.uuid | String | The unique universal ID of the author. | 
-| Bitbucket.PullRequest.author.account_id | String | The account ID of the author of the pull request. | 
-| Bitbucket.PullRequest.author.nickname | String | The nickname of the author. | 
-| Bitbucket.PullRequest.reason | String | The reason to create the request. | 
-| Bitbucket.PullRequest.created_on | String | The creation date of the request. | 
-| Bitbucket.PullRequest.updated_on | String | The date of the last update of the pull request. | 
-| Bitbucket.PullRequest.destination.branch.name | String | The name of the destination branch. This is the branch to merge to. | 
-| Bitbucket.PullRequest.destination.commit.type | String | The type of the commit. | 
-| Bitbucket.PullRequest.destination.commit.hash | String | The hash of the commit. | 
-| Bitbucket.PullRequest.destination.commit.links | String | Links with information about the commit. | 
-| Bitbucket.PullRequest.destination.repository.type | String | The type of the repository of the destination branch. | 
-| Bitbucket.PullRequest.destination.repository.full_name | String | The full name of the repository of the destination branch. | 
-| Bitbucket.PullRequest.destination.repository.links | String | Links with information about the repository of the destination branch. | 
-| Bitbucket.PullRequest.destination.repository.name | String | The name of the repository of the destination branch. | 
-| Bitbucket.PullRequest.destination.repository.uuid | String | The unique ID of the repository of the destination branch. | 
-| Bitbucket.PullRequest.source.branch.name | String | The name of the source branch. That is the branch with the changes that will be merged. | 
-| Bitbucket.PullRequest.source.commit.type | String | The type of the commit in the source branch. | 
-| Bitbucket.PullRequest.source.commit.hash | String | The hash of the commit in the source branch. | 
-| Bitbucket.PullRequest.source.commit.links | String | Links with information about the commit in the source branch. | 
-| Bitbucket.PullRequest.source.repository.type | String | The type of the repository of the source branch. | 
-| Bitbucket.PullRequest.source.repository.full_name | String | The full name of the repository of the source branch. | 
-| Bitbucket.PullRequest.source.repository.links | String | Links with information about the repository of the source branch. | 
-| Bitbucket.PullRequest.source.repository.name | String | The name of the repository of the source branch. | 
-| Bitbucket.PullRequest.source.repository.uuid | String | The unique ID of the repository of the source branch. | 
-| Bitbucket.PullRequest.links | String | Links to information about the pull request. | 
-| Bitbucket.PullRequest.summary.type | String | The type of the pull request. | 
-| Bitbucket.PullRequest.summary.raw | String | The description of the pull request. | 
-| Bitbucket.PullRequest.summary.markup | String | The text styling type, such as markdown. | 
-| Bitbucket.PullRequest.summary.html | String | The description of the pull request in HTML format. | 
+| --- |----------| --- |
+| Bitbucket.PullRequest.comment_count | Number   | The number of comments in the pull request. | 
+| Bitbucket.PullRequest.task_count | Number   | The number of tasks in the pull request. | 
+| Bitbucket.PullRequest.type | String   | The type of the request. | 
+| Bitbucket.PullRequest.id | Number   | The pull request ID. | 
+| Bitbucket.PullRequest.title | String   | The title of the pull request. | 
+| Bitbucket.PullRequest.description | String   | The description of the pull request. | 
+| Bitbucket.PullRequest.rendered.title.type | String   | The type of the title of the request. | 
+| Bitbucket.PullRequest.rendered.title.raw | String   | The content of the rendered title. | 
+| Bitbucket.PullRequest.rendered.title.markup | String   | The text styling type, such as markdown. | 
+| Bitbucket.PullRequest.rendered.title.html | String   | The HTML format of the pull request title. | 
+| Bitbucket.PullRequest.rendered.description.type | String   | The type of the pull request description. | 
+| Bitbucket.PullRequest.rendered.description.raw | String   | The content of the description of the pull request. | 
+| Bitbucket.PullRequest.rendered.description.markup | String   | The text styling type, such as markdown. | 
+| Bitbucket.PullRequest.rendered.description.html | String   | HTML format of the description content. | 
+| Bitbucket.PullRequest.state | String   | The status of the pull request. | 
+| Bitbucket.PullRequest.merge_commit | Unknown  | Whether it is a merge commit. | 
+| Bitbucket.PullRequest.close_source_branch | Boolean  | Whether the branch should be closed after the merge. | 
+| Bitbucket.PullRequest.closed_by | Unknown  | The user who closed the pull request. | 
+| Bitbucket.PullRequest.author.display_name | String   | The display name of the author of the pull request. | 
+| Bitbucket.PullRequest.author.links | String   | Links with information about the author of the pull request. | 
+| Bitbucket.PullRequest.author.type | String   | The type of the author. | 
+| Bitbucket.PullRequest.author.uuid | String   | The unique universal ID of the author. | 
+| Bitbucket.PullRequest.author.account_id | String   | The account ID of the author of the pull request. | 
+| Bitbucket.PullRequest.author.nickname | String   | The nickname of the author. | 
+| Bitbucket.PullRequest.reason | String   | The reason to create the request. | 
+| Bitbucket.PullRequest.created_on | String   | The creation date of the request. | 
+| Bitbucket.PullRequest.updated_on | String   | The date of the last update of the pull request. | 
+| Bitbucket.PullRequest.destination.branch.name | String   | The name of the destination branch. This is the branch to merge to. | 
+| Bitbucket.PullRequest.destination.commit.type | String   | The type of the commit. | 
+| Bitbucket.PullRequest.destination.commit.hash | String   | The hash of the commit. | 
+| Bitbucket.PullRequest.destination.commit.links | String   | Links with information about the commit. | 
+| Bitbucket.PullRequest.destination.repository.type | String   | The type of the repository of the destination branch. | 
+| Bitbucket.PullRequest.destination.repository.full_name | String   | The full name of the repository of the destination branch. | 
+| Bitbucket.PullRequest.destination.repository.links | String   | Links with information about the repository of the destination branch. | 
+| Bitbucket.PullRequest.destination.repository.name | String   | The name of the repository of the destination branch. | 
+| Bitbucket.PullRequest.destination.repository.uuid | String   | The unique ID of the repository of the destination branch. | 
+| Bitbucket.PullRequest.source.branch.name | String   | The name of the source branch. That is the branch with the changes that will be merged. | 
+| Bitbucket.PullRequest.source.commit.type | String   | The type of the commit in the source branch. | 
+| Bitbucket.PullRequest.source.commit.hash | String   | The hash of the commit in the source branch. | 
+| Bitbucket.PullRequest.source.commit.links | String   | Links with information about the commit in the source branch. | 
+| Bitbucket.PullRequest.source.repository.type | String   | The type of the repository of the source branch. | 
+| Bitbucket.PullRequest.source.repository.full_name | String   | The full name of the repository of the source branch. | 
+| Bitbucket.PullRequest.source.repository.links | String   | Links with information about the repository of the source branch. | 
+| Bitbucket.PullRequest.source.repository.name | String   | The name of the repository of the source branch. | 
+| Bitbucket.PullRequest.source.repository.uuid | String   | The unique ID of the repository of the source branch. |
+| Bitbucket.PullRequest.reviewers.display_name | String   | The display name of the reviewer.                                                       |
+| Bitbucket.PullRequest.reviewers.links | String   | Links with information about the reviewer.                                              |
+| Bitbucket.PullRequest.reviewers.type | String   | The type of the reviewer.                                                               |
+| Bitbucket.PullRequest.reviewers.uuid | String   | The unique id of the reviewer.                                                          |
+| Bitbucket.PullRequest.reviewers.account_id | String   | The account id of the reviewer.                                                         |
+| Bitbucket.PullRequest.reviewers.nickname | String   | The nickname of the reviewer.                                                           |
+| Bitbucket.PullRequest.participants.type | String   | The type of the participant.                                                            |
+| Bitbucket.PullRequest.participants.user.display_name | String   | The display name of the participant.                                                    |
+| Bitbucket.PullRequest.participants.user.links | String   | Links with information about the user.                                                    |
+| Bitbucket.PullRequest.participants.user.type | String   | The type of the participant.                                                    |
+| Bitbucket.PullRequest.participants.user.uuid | String   | The unique id of the participant.                                                    |
+| Bitbucket.PullRequest.participants.user.account_id | String   | The account id of the participant.                                                    |
+| Bitbucket.PullRequest.participants.user.nickname | String   | The nickname of the participant.                                                    |
+| Bitbucket.PullRequest.participants.role | String   | The role of the participant.                                                    |
+| Bitbucket.PullRequest.participants.approved | String   | The approval status of the pull request.                                                    |
+| Bitbucket.PullRequest.participants.state | String   | The state of the participant.                                                    |
+| Bitbucket.PullRequest.participants.participated_on | String   | The date of participation.                                                    |
+| Bitbucket.PullRequest.links | String   | Links to information about the pull request. | 
+| Bitbucket.PullRequest.summary.type | String   | The type of the pull request. | 
+| Bitbucket.PullRequest.summary.raw | String   | The description of the pull request. | 
+| Bitbucket.PullRequest.summary.markup | String   | The text styling type, such as markdown. | 
+| Bitbucket.PullRequest.summary.html | String   | The description of the pull request in HTML format. | 
+
+#### Command example
+```!bitbucket-pull-request-update pull_request_id=8 description="updating description"```
+#### Context Example
+```json
+{
+    "Bitbucket": {
+        "PullRequest": {
+            "author": {
+                "account_id": "111111111111111111111111",
+                "display_name": "Some User",
+                "links": {
+                    "avatar": {
+                        "href": "https://secure.gravatar.com/avatar/?d=httpsavatar-management--avatars.us-west-2.prod.public.atl-paas.net%Finitials%1111-1.png"
+                    },
+                    "html": {
+                        "href": "https://bitbucket.org/%7B11111111-1111-1111-1111-111111111111%7D/"
+                    },
+                    "self": {
+                        "href": "https://api.bitbucket.org/2.0/users/%7B11111111-1111-1111-1111-111111111111%7D"
+                    }
+                },
+                "nickname": "Some User",
+                "type": "user",
+                "uuid": "{11111111-1111-1111-1111-111111111111}"
+            },
+            "close_source_branch": false,
+            "closed_by": null,
+            "comment_count": 12,
+            "created_on": "2022-09-12T09:00:00.000000+00:00",
+            "description": "updating description",
+            "destination": {
+                "branch": {
+                    "name": "master"
+                },
+                "commit": {
+                    "hash": "111111111111",
+                    "links": {
+                        "html": {
+                            "href": "https://bitbucket.org/workspace/start_repo/commits/111111111111"
+                        },
+                        "self": {
+                            "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/commit/111111111111"
+                        }
+                    },
+                    "type": "commit"
+                },
+                "repository": {
+                    "full_name": "workspace/start_repo",
+                    "links": {
+                        "avatar": {
+                            "href": "https://bytebucket.org/ravatar/%1111111111-1111-1111-1111-111111111111%11?ts=default"
+                        },
+                        "html": {
+                            "href": "https://bitbucket.org/workspace/start_repo"
+                        },
+                        "self": {
+                            "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo"
+                        }
+                    },
+                    "name": "start_repo",
+                    "type": "repository",
+                    "uuid": "{11111111-1111-1111-1111-111111111111}"
+                }
+            },
+            "id": 8,
+            "links": {
+                "activity": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/pullrequests/8/activity"
+                },
+                "approve": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/pullrequests/8/approve"
+                },
+                "comments": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/pullrequests/8/comments"
+                },
+                "commits": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/pullrequests/8/commits"
+                },
+                "decline": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/pullrequests/8/decline"
+                },
+                "diff": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/diff/workspace/start_repo:0111111111111111111111111?from_pullrequest_id=8&topic=true"
+                },
+                "diffstat": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/diffstat/workspace/start_repo:01111111111%0D111111111111?from_pullrequest_id=8&topic=true"
+                },
+                "html": {
+                    "href": "https://bitbucket.org/workspace/start_repo/pull-requests/8"
+                },
+                "merge": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/pullrequests/8/merge"
+                },
+                "request-changes": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/pullrequests/8/request-changes"
+                },
+                "self": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/pullrequests/8"
+                },
+                "statuses": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/pullrequests/8/statuses"
+                }
+            },
+            "merge_commit": null,
+            "participants": [
+                {
+                    "approved": false,
+                    "participated_on": "2022-09-15T12:00:00.000000+00:00",
+                    "role": "PARTICIPANT",
+                    "state": null,
+                    "type": "participant",
+                    "user": {
+                        "account_id": "111111111111111111111111",
+                        "display_name": "Some User",
+                        "links": {
+                            "avatar": {
+                                "href": "https://secure.gravatar.com/avatar/?d=httpsavatar-management--avatars.us-west-2.prod.public.atl-paas.net%initials.png"
+                            },
+                            "html": {
+                                "href": "https://bitbucket.org/%7B11111111-1111-1111-1111-111111111111%7D/"
+                            },
+                            "self": {
+                                "href": "https://api.bitbucket.org/2.0/users/%7B11111111-1111-1111-1111-111111111111%7D"
+                            }
+                        },
+                        "nickname": "Some User",
+                        "type": "user",
+                        "uuid": "{11111111-1111-1111-1111-111111111111}"
+                    }
+                }
+            ],
+          "reviewers": [
+              {
+                "display_name": "Some User",
+                "links": {
+                    "self": {
+                        "href": "https://api.bitbucket.org/2.0/users/"
+                    },
+                    "avatar": {
+                        "href": "https://secure.gravatar.com/avatar/?d=httpsavatar-management--avatars.us-west-2.prod.public.atl-paas.net.png"
+                    },
+                    "html": {
+                        "href": "https://bitbucket.org/"
+                    }
+                },
+                "type": "user",
+                "uuid": "{11111111-1111-1111-1111-111111111111}",
+                "account_id": "111111111111111111111111",
+                "nickname": "Some User"
+              }
+            ],
+            "reason": "",
+            "rendered": {
+                "description": {
+                    "html": "<p>updating description</p>",
+                    "markup": "markdown",
+                    "raw": "updating description",
+                    "type": "rendered"
+                },
+                "title": {
+                    "html": "<p>pull_request</p>",
+                    "markup": "markdown",
+                    "raw": "pull_request",
+                    "type": "rendered"
+                }
+            },
+            "source": {
+                "branch": {
+                    "name": "test"
+                },
+                "commit": {
+                    "hash": "111111111111",
+                    "links": {
+                        "html": {
+                            "href": "https://bitbucket.org/workspace/start_repo/commits/111111111111"
+                        },
+                        "self": {
+                            "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo/commit/111111111111"
+                        }
+                    },
+                    "type": "commit"
+                },
+                "repository": {
+                    "full_name": "workspace/start_repo",
+                    "links": {
+                        "avatar": {
+                            "href": "https://bytebucket.org/ravatar/%1111111111-1111-1111-1111-111111111111%11?ts=default"
+                        },
+                        "html": {
+                            "href": "https://bitbucket.org/workspace/start_repo"
+                        },
+                        "self": {
+                            "href": "https://api.bitbucket.org/2.0/repositories/workspace/start_repo"
+                        }
+                    },
+                    "name": "start_repo",
+                    "type": "repository",
+                    "uuid": "{11111111-1111-1111-1111-111111111111}"
+                }
+            },
+            "state": "OPEN",
+            "summary": {
+                "html": "",
+                "markup": "markdown",
+                "raw": "",
+                "type": "rendered"
+            },
+            "task_count": 0,
+            "title": "pull_request",
+            "type": "pullrequest",
+            "updated_on": "2022-09-18T08:00:00.000000+00:00"
+        }
+    }
+}
+```
 
 ### bitbucket-pull-request-list
 ***
@@ -2143,56 +2412,73 @@ Returns a list of the pull requests. If a state is provided than the list will c
 #### Context Output
 
 | **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Bitbucket.PullRequest.comment_count | Number | The number of comments in the pull request. | 
-| Bitbucket.PullRequest.task_count | Number | The number of tasks in the pull request. | 
-| Bitbucket.PullRequest.type | String | The type of the request. | 
-| Bitbucket.PullRequest.id | Number | The pull request ID. | 
-| Bitbucket.PullRequest.title | String | The title of the pull request. | 
-| Bitbucket.PullRequest.description | String | The description of the pull request. | 
-| Bitbucket.PullRequest.state | String | The status of the pull request. | 
-| Bitbucket.PullRequest.merge_commit.type | String | The type of the merge commit. | 
-| Bitbucket.PullRequest.merge_commit.hash | String | The hash of the merged commit. | 
-| Bitbucket.PullRequest.merge_commit.links | String | Links with information about the merged commit. | 
-| Bitbucket.PullRequest.close_source_branch | Boolean | Whether the branch should be closed after the merge. | 
-| Bitbucket.PullRequest.closed_by.display_name | String | The display name of the user who closed the pull request. | 
-| Bitbucket.PullRequest.closed_by.links | String | Links with information about the user who closed the pull request. | 
-| Bitbucket.PullRequest.closed_by.type | String | The type of user who closed the pull request. | 
-| Bitbucket.PullRequest.closed_by.uuid | String | The unique ID of the user who closed the pull request. | 
-| Bitbucket.PullRequest.closed_by.account_id | String | The account ID of the user who closed the pull request. | 
-| Bitbucket.PullRequest.closed_by.nickname | String | The nickname of the user who closed the pull request. | 
-| Bitbucket.PullRequest.author.display_name | String | The display name of the author of the pull request. | 
-| Bitbucket.PullRequest.author.links.self.href | String | Links with information about the author of the pull request. | 
-| Bitbucket.PullRequest.author.type | String | The type of the author. | 
-| Bitbucket.PullRequest.author.uuid | String | The unique universal ID of the author. | 
-| Bitbucket.PullRequest.author.account_id | String | The account ID of the author of the pull request. | 
-| Bitbucket.PullRequest.author.nickname | String | The nickname of the author. | 
-| Bitbucket.PullRequest.reason | String | The reason to create the request. | 
-| Bitbucket.PullRequest.created_on | String | The creation date of the request. | 
-| Bitbucket.PullRequest.updated_on | String | The date of the last update of the pull request. | 
-| Bitbucket.PullRequest.destination.branch.name | String | The name of the destination branch. That is the branch to merge to. | 
-| Bitbucket.PullRequest.destination.commit.type | String | The type of the commit. | 
-| Bitbucket.PullRequest.destination.commit.hash | String | The hash of the commit. | 
-| Bitbucket.PullRequest.destination.commit.links | String | Links with information about the commit. | 
-| Bitbucket.PullRequest.destination.repository.type | String | The type of the repository of the destination branch. | 
-| Bitbucket.PullRequest.destination.repository.full_name | String | The full name of the repository of the destination branch. | 
-| Bitbucket.PullRequest.destination.repository.links | String | Links with information about the repository of the destination branch. | 
-| Bitbucket.PullRequest.destination.repository.name | String | The name of the repository of the destination branch. | 
-| Bitbucket.PullRequest.destination.repository.uuid | String | The unique ID of the repository of the destination branch. | 
-| Bitbucket.PullRequest.source.branch.name | String | The name of the source branch. The branch with the changes that will be merged. | 
-| Bitbucket.PullRequest.source.commit.type | String | The type of the commit in the source branch. | 
-| Bitbucket.PullRequest.source.commit.hash | String | The hash of the commit in the source branch. | 
-| Bitbucket.PullRequest.source.commit.links | String | Links with information about the commit in the source branch. | 
-| Bitbucket.PullRequest.source.repository.type | String | The type of the repository of the source branch. | 
-| Bitbucket.PullRequest.source.repository.full_name | String | The full name of the repository of the source branch. | 
-| Bitbucket.PullRequest.source.repository.links | String | Links with information about the repository of the source branch. | 
-| Bitbucket.PullRequest.source.repository.name | String | The name of the repository of the source branch. | 
-| Bitbucket.PullRequest.source.repository.uuid | String | The unique ID of the repository of the source branch. | 
-| Bitbucket.PullRequest.links | String | Links to information about the pull request. | 
-| Bitbucket.PullRequest.summary.type | String | The type of the pull request. | 
-| Bitbucket.PullRequest.summary.raw | String | The description of the pull request. | 
-| Bitbucket.PullRequest.summary.markup | String | The text styling type, such as markdown. | 
-| Bitbucket.PullRequest.summary.html | String | The description of the pull request in HTML format. | 
+| --- |----------| --- |
+| Bitbucket.PullRequest.comment_count | Number   | The number of comments in the pull request. | 
+| Bitbucket.PullRequest.task_count | Number   | The number of tasks in the pull request. | 
+| Bitbucket.PullRequest.type | String   | The type of the request. | 
+| Bitbucket.PullRequest.id | Number   | The pull request ID. | 
+| Bitbucket.PullRequest.title | String   | The title of the pull request. | 
+| Bitbucket.PullRequest.description | String   | The description of the pull request. | 
+| Bitbucket.PullRequest.state | String   | The status of the pull request. | 
+| Bitbucket.PullRequest.merge_commit.type | String   | The type of the merge commit. | 
+| Bitbucket.PullRequest.merge_commit.hash | String   | The hash of the merged commit. | 
+| Bitbucket.PullRequest.merge_commit.links | String   | Links with information about the merged commit. | 
+| Bitbucket.PullRequest.close_source_branch | Boolean  | Whether the branch should be closed after the merge. | 
+| Bitbucket.PullRequest.closed_by.display_name | String   | The display name of the user who closed the pull request. | 
+| Bitbucket.PullRequest.closed_by.links | String   | Links with information about the user who closed the pull request. | 
+| Bitbucket.PullRequest.closed_by.type | String   | The type of user who closed the pull request. | 
+| Bitbucket.PullRequest.closed_by.uuid | String   | The unique ID of the user who closed the pull request. | 
+| Bitbucket.PullRequest.closed_by.account_id | String   | The account ID of the user who closed the pull request. | 
+| Bitbucket.PullRequest.closed_by.nickname | String   | The nickname of the user who closed the pull request. | 
+| Bitbucket.PullRequest.author.display_name | String   | The display name of the author of the pull request. | 
+| Bitbucket.PullRequest.author.links.self.href | String   | Links with information about the author of the pull request. | 
+| Bitbucket.PullRequest.author.type | String   | The type of the author. | 
+| Bitbucket.PullRequest.author.uuid | String   | The unique universal ID of the author. | 
+| Bitbucket.PullRequest.author.account_id | String   | The account ID of the author of the pull request. | 
+| Bitbucket.PullRequest.author.nickname | String   | The nickname of the author. | 
+| Bitbucket.PullRequest.reason | String   | The reason to create the request. | 
+| Bitbucket.PullRequest.created_on | String   | The creation date of the request. | 
+| Bitbucket.PullRequest.updated_on | String   | The date of the last update of the pull request. | 
+| Bitbucket.PullRequest.destination.branch.name | String   | The name of the destination branch. That is the branch to merge to. | 
+| Bitbucket.PullRequest.destination.commit.type | String   | The type of the commit. | 
+| Bitbucket.PullRequest.destination.commit.hash | String   | The hash of the commit. | 
+| Bitbucket.PullRequest.destination.commit.links | String   | Links with information about the commit. | 
+| Bitbucket.PullRequest.destination.repository.type | String   | The type of the repository of the destination branch. | 
+| Bitbucket.PullRequest.destination.repository.full_name | String   | The full name of the repository of the destination branch. | 
+| Bitbucket.PullRequest.destination.repository.links | String   | Links with information about the repository of the destination branch. | 
+| Bitbucket.PullRequest.destination.repository.name | String   | The name of the repository of the destination branch. | 
+| Bitbucket.PullRequest.destination.repository.uuid | String   | The unique ID of the repository of the destination branch. | 
+| Bitbucket.PullRequest.source.branch.name | String   | The name of the source branch. The branch with the changes that will be merged. | 
+| Bitbucket.PullRequest.source.commit.type | String   | The type of the commit in the source branch. | 
+| Bitbucket.PullRequest.source.commit.hash | String   | The hash of the commit in the source branch. | 
+| Bitbucket.PullRequest.source.commit.links | String   | Links with information about the commit in the source branch. | 
+| Bitbucket.PullRequest.source.repository.type | String   | The type of the repository of the source branch. | 
+| Bitbucket.PullRequest.source.repository.full_name | String   | The full name of the repository of the source branch. | 
+| Bitbucket.PullRequest.source.repository.links | String   | Links with information about the repository of the source branch. | 
+| Bitbucket.PullRequest.source.repository.name | String   | The name of the repository of the source branch. | 
+| Bitbucket.PullRequest.source.repository.uuid | String   | The unique ID of the repository of the source branch. |
+| Bitbucket.PullRequest.reviewers.display_name | String   | The display name of the reviewer.                                                       |
+| Bitbucket.PullRequest.reviewers.links | String   | Links with information about the reviewer.                                              |
+| Bitbucket.PullRequest.reviewers.type | String   | The type of the reviewer.                                                               |
+| Bitbucket.PullRequest.reviewers.uuid | String   | The unique id of the reviewer.                                                          |
+| Bitbucket.PullRequest.reviewers.account_id | String   | The account id of the reviewer.                                                         |
+| Bitbucket.PullRequest.reviewers.nickname | String   | The nickname of the reviewer.                                                           |
+| Bitbucket.PullRequest.participants.type | String   | The type of the participant.                                                            |
+| Bitbucket.PullRequest.participants.user.display_name | String   | The display name of the participant.                                                    |
+| Bitbucket.PullRequest.participants.user.links | String   | Links with information about the user.                                                    |
+| Bitbucket.PullRequest.participants.user.type | String   | The type of the participant.                                                    |
+| Bitbucket.PullRequest.participants.user.uuid | String   | The unique id of the participant.                                                    |
+| Bitbucket.PullRequest.participants.user.account_id | String   | The account id of the participant.                                                    |
+| Bitbucket.PullRequest.participants.user.nickname | String   | The nickname of the participant.                                                    |
+| Bitbucket.PullRequest.participants.role | String   | The role of the participant.                                                    |
+| Bitbucket.PullRequest.participants.approved | String   | The approval status of the pull request.                                                    |
+| Bitbucket.PullRequest.participants.state | String   | The state of the participant.                                                    |
+| Bitbucket.PullRequest.participants.participated_on | Unknown  | The date of participation.                                                    |
+| Bitbucket.PullRequest.links | String   | Links to information about the pull request. | 
+| Bitbucket.PullRequest.summary.type | String   | The type of the pull request. | 
+| Bitbucket.PullRequest.summary.raw | String   | The description of the pull request. | 
+| Bitbucket.PullRequest.summary.markup | String   | The text styling type, such as markdown. | 
+| Bitbucket.PullRequest.summary.html | String   | The description of the pull request in HTML format. | 
 
 #### Command example
 ```!bitbucket-pull-request-list```
@@ -2259,6 +2545,53 @@ Returns a list of the pull requests. If a state is provided than the list will c
                         "uuid": "{11111111-1111-1111-1111-111111111111}"
                     }
                 },
+                "participants": [
+                {
+                    "approved": false,
+                    "participated_on": "2022-09-15T12:00:00.000000+00:00",
+                    "role": "PARTICIPANT",
+                    "state": null,
+                    "type": "participant",
+                    "user": {
+                        "account_id": "111111111111111111111111",
+                        "display_name": "Some User",
+                        "links": {
+                            "avatar": {
+                                "href": "https://secure.gravatar.com/avatar/?d=httpsavatar-management--avatars.us-west-2.prod.public.atl-paas.net%initials.png"
+                            },
+                            "html": {
+                                "href": "https://bitbucket.org/%7B11111111-1111-1111-1111-111111111111%7D/"
+                            },
+                            "self": {
+                                "href": "https://api.bitbucket.org/2.0/users/%7B11111111-1111-1111-1111-111111111111%7D"
+                            }
+                        },
+                        "nickname": "Some User",
+                        "type": "user",
+                        "uuid": "{11111111-1111-1111-1111-111111111111}"
+                    }
+                }
+            ],
+              "reviewers": [
+                  {
+                    "display_name": "Some User",
+                    "links": {
+                        "self": {
+                            "href": "https://api.bitbucket.org/2.0/users/"
+                        },
+                        "avatar": {
+                            "href": "https://secure.gravatar.com/avatar/?d=httpsavatar-management--avatars.us-west-2.prod.public.atl-paas.net.png"
+                        },
+                        "html": {
+                            "href": "https://bitbucket.org/"
+                        }
+                    },
+                    "type": "user",
+                    "uuid": "{11111111-1111-1111-1111-111111111111}",
+                    "account_id": "111111111111111111111111",
+                    "nickname": "Some User"
+                  }
+                ],
                 "id": 8,
                 "links": {
                     "activity": {
