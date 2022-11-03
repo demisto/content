@@ -503,12 +503,15 @@ def set_tql_query(from_date, params, endpoint):
     owners = f'AND ({create_or_query("ownerName", params.get("owners"))}) '
     tags = f'AND ({create_or_query("tags", params.get("tags"))}) '
     status = f'AND ({create_or_query("status", params.get("status"))}) '
-    confidence = f'AND confidence GT {params.get("confidence")} ' if int(params.get("confidence")) != 0 else ''
-    threat_score = f'AND threatAssessScore GT {params.get("threat_assess_score")} ' \
-                   if int(params.get("threat_assess_score")) != 0 else ''
+
+    confidence = ''
     active_only = ''
+    threat_score = ''
     if endpoint == 'indicators':
         active_only = 'AND indicatorActive EQ True ' if argToBoolean(params.get("indicator_active")) else ''
+        confidence = f'AND confidence GT {params.get("confidence")} ' if int(params.get("confidence")) != 0 else ''
+        threat_score = f'AND threatAssessScore GT {params.get("threat_assess_score")} ' \
+                       if int(params.get("threat_assess_score")) != 0 else ''
 
     type_name_query = create_types_query(params, endpoint)
     type_names = f'AND {type_name_query}' if type_name_query else ''
