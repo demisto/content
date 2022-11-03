@@ -1024,7 +1024,7 @@ async def slack_loop():
                 web_client=ASYNC_CLIENT,
                 logger=slack_logger,  # type: ignore
                 auto_reconnect_enabled=True,
-                trace_enabled=EXTENSIVE_LOGGING
+                trace_enabled=EXTENSIVE_LOGGING,
             )
             if not VERIFY_CERT:
                 # SocketModeClient does not respect environment variables for ssl verification.
