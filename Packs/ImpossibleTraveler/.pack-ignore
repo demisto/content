@@ -3,3 +3,6 @@ ignore=PA116
 
 [file:layoutscontainer-Impossible_Traveler.json]
 ignore=BA101
+
+[file:Impossible_Traveler_6_0.yml]
+ignore=RM109
