@@ -1045,38 +1045,22 @@ class Taxii2FeedClient:
         :param page_size: size of the request page
         """
         types_envelopes = {}
+        get_objects = self.collection_to_fetch.get_objects
         if len(self.objects_to_fetch) > 1:  # when fetching one type no need to fetch relationship
             self.objects_to_fetch.append('relationship')
         demisto.debug(f'before loop on objects_to_fetch {time.time()=}, {time.ctime()=}')
         for obj_type in self.objects_to_fetch:
-            # kwargs['type'] = obj_type
+            kwargs['type'] = obj_type
             if isinstance(self.collection_to_fetch, v20.Collection):
                 demisto.debug('In v2.0, calling collection default get_objects')
-                envelope = v20.as_pages(self.collection_to_fetch.get_objects, per_request=page_size, **kwargs)
+                envelope = v20.as_pages(get_objects, per_request=page_size, **kwargs)
             else:
-                demisto.debug('In v2.1, calling v21_get_objects')
-                envelope = self.v21_get_objects(limit=page_size, **kwargs)
+                demisto.debug('In v2.1, calling collection default get_objects')
+                envelope = get_objects(limit=page_size, **kwargs)
             if envelope:
                 types_envelopes[obj_type] = envelope
+        demisto.debug(f'after loop on objects_to_fetch {time.time()=}, {time.ctime()=}')
         return types_envelopes
-
-    def v21_get_objects(self, accept="application/taxii+json;version=2.1", **filter_kwargs):
-        """
-        This function overrides the v2.1 collection default get_objects, because the original function doesn't handle properly
-        responses that are not in a json format.
-        """
-        demisto.debug(f'in v21_get_objects start {time.time()=}, {time.ctime()=}')
-        collection = self.collection_to_fetch
-        collection._verify_can_read()
-        query_params = _filter_kwargs_to_query_params(filter_kwargs)
-        merged_headers = collection._conn._merge_headers({"Accept": accept, "Content-Type": "application/taxii+json"})
-
-        resp = collection._conn.session.get(collection.objects_url, headers=merged_headers, params=query_params)
-        demisto.debug(f'after get request {time.time()=}, {time.ctime()=}')
-        if len(resp.text) <= len('{}'):  # in case it is not a json that has to have {}
-            return {}
-
-        return _to_json(resp)
 
     def get_page_size(self, max_limit: int, cur_limit: int) -> int:
         """
