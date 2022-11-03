@@ -1953,9 +1953,19 @@ script:
       description: The name of the privilege.
       type: String
   - arguments:
+    - description: The state that a message should be left in after it has been forwarded.
+      isArray: false
+      name: disposition
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'archive'
+      - 'leaveInInbox'
+      - 'markRead'
+      - 'trash'
     - default: false
       description: An email address to which messages can be forwarded.
-      isArray: false
+      isArray: true
       name: forwarding_email
       required: true
       secret: false
@@ -1978,6 +1988,12 @@ script:
     - contextPath: Gmail.ForwardingAddress.verificationStatus
       description: Indicates whether this address has been verified and is usable for forwarding.
       type: String
+    - contextPath: Gmail.ForwardingAddress.Disposition
+      description: The state that a message should be left in after it has been forwarded.
+      type: String
+    - contextPath: Gmail.ForwardingAddress.Enabled
+      description: Indicates whether all incoming mail is automatically forwarded to another address.
+      type: Boolean
     execution: false
   - arguments:
     - default: false
@@ -2118,6 +2134,76 @@ script:
       type: String
     - contextPath: Gmail.SendAs.replyToAddress
       description: A name that appears in the "From:" header for email sent using this alias.
+      type: String
+  - arguments:
+    - default: false
+      description: User's email address.
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    - default: false
+      description: The forwarding address to be retrieved.
+      isArray: false
+      name: forwarding_email
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets the specified forwarding address or a list of the forwarding addresses for the specified account.
+    execution: false
+    name: gmail-forwarding-address-get
+    outputs:
+    - contextPath: Gmail.ForwardingAddress.userId
+      description: The user's email address.
+      type: String
+    - contextPath: Gmail.ForwardingAddress.forwardingEmail
+      description: An email address to which messages can be forwarded.
+      type: String
+    - contextPath: Gmail.ForwardingAddress.Disposition
+      description: The state that a message should be left in after it has been forwarded.
+      type: String
+    - contextPath: Gmail.ForwardingAddress.Enabled
+      description: Whether all incoming mail is automatically forwarded to another address.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: User's email address.
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    - default: false
+      description: The forwarding address to be retrieved.
+      isArray: false
+      name: forwarding_email
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes the specified forwarding address and revokes any verification that may have been required This method is only available to service account clients that have been delegated domain-wide authority.
+    execution: false
+    name: gmail-forwarding-address-remove
+  - arguments:
+    - default: false
+      description: User's email address.
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    - default: false
+      description: The maximum number of address to return. The default value is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    execution: false
+    description: Lists the forwarding addresses for the specified account.
+    name: gmail-forwarding-address-list
+    outputs:
+    - contextPath: Gmail.ForwardingAddress.forwardingEmail
+      description: An email address to which messages can be forwarded.
+      type: String
+    - contextPath: Gmail.ForwardingAddress.verificationStatus
+      description: Indicates whether this address has been verified and is usable for forwarding.
       type: String
   dockerimage: demisto/google-api-py3:1.0.0.36366
   isfetch: true

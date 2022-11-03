@@ -147,7 +147,10 @@ After you successfully execute a command, a DBot message appears in the War Room
 - Reply an email using Gmail: **reply-mail**
 - Removers a delegate from a mailbox: **gmail-remove-delegated-mailbox**
 - Get details of a specific role: **gmail-get-role**
-- Creates a forwarding address.: **gmail-forwarding-address-add**
+- Creates a forwarding address: **gmail-forwarding-address-add**
+- Get the specified forwarding address or a list of forwarding addresses for the specified account: **gmail-forwarding-address-get**
+- List the forwarding addresses for the specified account: **gmail-forwarding-address-list**
+- Remove the specified forwarding address: **gmail-forwarding-address-remove**
 - Create a custom "from" send-as alias: **gmail-send-as-add**
 
 
@@ -4954,7 +4957,8 @@ Creates a forwarding address. If ownership verification is required, a message w
 | Gmail.ForwardingAddress.forwardingEmail | String | An email address to which messages can be forwarded. | 
 | Gmail.ForwardingAddress.userId | String | The user's email address. | 
 | Gmail.ForwardingAddress.verificationStatus | String | Indicates whether this address has been verified and is usable for forwarding. | 
-
+| Gmail.ForwardingAddress.Disposition | String | The state that a message should be left in after it has been forwarded. | 
+| Gmail.ForwardingAddress.Enabled | Boolean | Indicates whether all incoming mail is automatically forwarded to another address. |
 
 #### Command Example
 ```!gmail-forwarding-address-add forwarding_email="user2@domain.io" user_id="user1@domain.io"```
@@ -4972,6 +4976,74 @@ Creates a forwarding address. If ownership verification is required, a message w
 
 #### Human Readable Output
 >Added forwarding address user2@domain.io for user1@domain.io with status accepted.
+
+
+### gmail-forwarding-address-get
+***
+Gets the specified forwarding address or a list of the forwarding addresses for the specified account.
+
+
+#### Base Command
+
+`gmail-forwarding-address-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | User's email address. | Required | 
+| forwarding_email | The forwarding address to be retrieved. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gmail.ForwardingAddress.userId | String | The user's email address. | 
+| Gmail.ForwardingAddress.forwardingEmail | String | An email address to which messages can be forwarded. | 
+| Gmail.ForwardingAddress.Disposition | String | The state that a message should be left in after it has been forwarded. | 
+| Gmail.ForwardingAddress.Enabled | Boolean | Whether all incoming mail is automatically forwarded to another address. | 
+
+### gmail-forwarding-address-remove
+***
+Deletes the specified forwarding address and revokes any verification that may have been required This method is only available to service account clients that have been delegated domain-wide authority.
+
+
+#### Base Command
+
+`gmail-forwarding-address-remove`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | User's email address. | Required | 
+| forwarding_email | The forwarding address to be retrieved. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### gmail-forwarding-address-list
+***
+Lists the forwarding addresses for the specified account.
+
+
+#### Base Command
+
+`gmail-forwarding-address-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | User's email address. | Required | 
+| limit | The maximum number of address to return. The default value is 50. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gmail.ForwardingAddress.forwardingEmail | String | An email address to which messages can be forwarded. | 
+| Gmail.ForwardingAddress.verificationStatus | String | Indicates whether this address has been verified and is usable for forwarding. | 
 
 
 ### gmail-send-as-add

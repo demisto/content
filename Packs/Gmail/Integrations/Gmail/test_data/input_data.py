@@ -270,3 +270,80 @@ except_contents_test_emails_to_entry = [{'id': '183c702bfdbb3fc2',
                                          'internalDate': '1665491175000'}]
 expected_result_test_emails_to_entry = {"expected_human_readable": expected_human_readable_test_emails_to_entry,
                                         "except_contents": except_contents_test_emails_to_entry}
+
+# test_forwarding_address_get_command #
+expected_result_forwarding_address_get_command_1 = {"raw_response": {'forwardingEmail': 'test@gmail.com', 'verificationStatus': 'accepted'},
+                                                    "outputs": {'forwardingEmail': 'test@gmail.com', 'verificationStatus': 'accepted', 'userId': '111111111111111111111'},
+                                                    "readable_output": '### get forwarding address for: 111111111111111111111\n|forwardingEmail|verificationStatus|\n|---|---|\n| test@gmail.com | accepted |\n'}
+
+expected_result_forwarding_address_get_command_2 = {"raw_response": {'forwardingAddresses': [{'forwardingEmail': 'test1@gmail.com', 'verificationStatus': 'accepted'}, {'forwardingEmail': 'test2@gmail.com', 'verificationStatus': 'accepted'}, {'forwardingEmail': 'test3@gmail.com', 'verificationStatus': 'accepted'}]},
+                                                    "outputs": [{'forwardingEmail': 'test1@gmail.com', 'verificationStatus': 'accepted'}, {'forwardingEmail': 'test2@gmail.com', 'verificationStatus': 'accepted'}, {'forwardingEmail': 'test3@gmail.com', 'verificationStatus': 'accepted'}],
+                                                    "readable_output": '### get forwarding addresses for: 111111111111111111111\n|forwardingEmail|verificationStatus|\n|---|---|\n| test1@gmail.com | accepted |\n| test2@gmail.com | accepted |\n| test3@gmail.com | accepted |\n'}
+
+# test_forwarding_address_add_command #
+
+expected_result_failure_forwarding_address_add_command_1 = {'message': "Can't create forwarding to: test1@gmail.com, test2@gmail.com",
+                                                            'outputs': {'errors': [{'forwardingEmail': 'test1@gmail.com',
+                                                                                    'message': 'test1@gmail.com: requested entity already exists'},
+                                                                                   {'forwardingEmail': 'test2@gmail.com',
+                                                                                    'message': 'test2@gmail.com: requested entity already exists'}]}}
+
+expected_result_success_forwarding_address_add_command_1 = None
+
+expected_result_failure_forwarding_address_add_command_2 = {'message': "Can't create forwarding to: test1@gmail.com",
+                                                            'outputs': {'errors': [{'forwardingEmail': 'test1@gmail.com',
+                                                                                    'message': 'test1@gmail.com: requested entity already exists'}]}}
+
+expected_result_success_forwarding_address_add_command_2 = {"raw_response": [{'forwardingEmail': 'test2@gmail.com',
+                                                                              'verificationStatus': 'accepted'}],
+                                                            "outputs": [{'forwardingEmail': 'test2@gmail.com',
+                                                                         'verificationStatus': 'accepted',
+                                                                         'userId': '222222222222222222222'}],
+                                                            "readable_output": '### forwarding addresses results\n|forwardingEmail|userId|verificationStatus|\n|---|---|---|\n| test2@gmail.com | 222222222222222222222 | accepted |\n'}
+
+expected_result_failure_forwarding_address_add_command_3 = None
+
+expected_result_success_forwarding_address_add_command_3 = {"raw_response": [{'forwardingEmail': 'test1@gmail.com',
+                                                                              'verificationStatus': 'accepted'},
+                                                                             {'forwardingEmail': 'test2@gmail.com',
+                                                                              'verificationStatus': 'accepted'}],
+                                                            "outputs": [{'forwardingEmail': 'test1@gmail.com', 'verificationStatus': 'accepted', 'userId': '333333333333333333333'},
+                                                                        {'forwardingEmail': 'test2@gmail.com', 'verificationStatus': 'accepted', 'userId': '333333333333333333333'}],
+                                                            "readable_output": '### forwarding addresses results\n|forwardingEmail|userId|verificationStatus|\n|---|---|---|\n| test1@gmail.com | 333333333333333333333 | accepted |\n| test2@gmail.com | 333333333333333333333 | accepted |\n'}
+
+
+expected_result_failure_forwarding_address_add_command_1_d = None
+
+expected_result_success_forwarding_address_add_command_1_d = {"raw_response": [{'enabled': True,
+                                                                                'forwardingEmail': 'test1@gmail.com',
+                                                                                'disposition': 'archive'},
+                                                                               {'enabled': True,
+                                                                                'forwardingEmail': 'test2@gmail.com',
+                                                                                'disposition': 'archive'}],
+                                                              "outputs": [{'enabled': True,
+                                                                           'forwardingEmail': 'test1@gmail.com',
+                                                                           'disposition': 'archive',
+                                                                           'userId': '111111111111111111111'},
+                                                                          {'enabled': True,
+                                                                          'forwardingEmail': 'test2@gmail.com',
+                                                                          'disposition': 'archive',
+                                                                          'userId': '111111111111111111111'}],
+                                                              "readable_output": '### forwarding addresses results\n|forwardingEmail|userId|disposition|enabled|\n|---|---|---|---|\n| test1@gmail.com | 111111111111111111111 | archive | true |\n| test2@gmail.com | 111111111111111111111 | archive | true |\n'}
+
+expected_result_failure_forwarding_address_add_command_2_d = None
+
+expected_result_success_forwarding_address_add_command_2_d = {"raw_response": [{'enabled': True, 'forwardingEmail': 'test1@gmail.com', 'disposition': 'leaveInInbox'}, {'enabled': True, 'forwardingEmail': 'test2@gmail.com', 'disposition': 'leaveInInbox'}],
+                                                              "outputs": [{'enabled': True, 'forwardingEmail': 'test1@gmail.com', 'disposition': 'leaveInInbox', 'userId': '222222222222222222222'}, {'enabled': True, 'forwardingEmail': 'test2@gmail.com', 'disposition': 'leaveInInbox', 'userId': '222222222222222222222'}],
+                                                              "readable_output": '### forwarding addresses results\n|forwardingEmail|userId|disposition|enabled|\n|---|---|---|---|\n| test1@gmail.com | 222222222222222222222 | leaveInInbox | true |\n| test2@gmail.com | 222222222222222222222 | leaveInInbox | true |\n'}
+
+expected_result_failure_forwarding_address_add_command_3_d = None
+
+expected_result_success_forwarding_address_add_command_3_d = {"raw_response": [{'enabled': True,
+                                                                                'forwardingEmail': 'test1@gmail.com',
+                                                                                'disposition': 'markRead'},
+                                                                               {'enabled': True,
+                                                                                'forwardingEmail': 'test2@gmail.com',
+                                                                                'disposition': 'markRead'}],
+                                                              "outputs": [{'enabled': True, 'forwardingEmail': 'test1@gmail.com', 'disposition': 'markRead', 'userId': '333333333333333333333'},
+                                                                          {'enabled': True, 'forwardingEmail': 'test2@gmail.com', 'disposition': 'markRead', 'userId': '333333333333333333333'}],
+                                                              "readable_output": '### forwarding addresses results\n|forwardingEmail|userId|disposition|enabled|\n|---|---|---|---|\n| test1@gmail.com | 333333333333333333333 | markRead | true |\n| test2@gmail.com | 333333333333333333333 | markRead | true |\n'}
