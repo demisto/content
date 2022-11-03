@@ -2716,8 +2716,6 @@ def main() -> None:
     Main
     """
     global CLIENT
-    if EXTENSIVE_LOGGING:
-        os.environ['PYTHONASYNCIODEBUG'] = "1"
 
     commands = {
         'test-module': test_module,
@@ -2743,6 +2741,8 @@ def main() -> None:
         demisto.info(f'{command_name} started.')
         command_func = commands[command_name]
         init_globals(command_name)
+        if EXTENSIVE_LOGGING:
+            os.environ['PYTHONASYNCIODEBUG'] = "1"
         support_multithreading()
         command_func()
     except Exception as e:
