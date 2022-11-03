@@ -338,7 +338,7 @@ def partial_response_fields(object_name: str):
     if object_name == 'Branch':
         return {
             'name': None,
-            'commit': ['id', 'short_id', 'committed_date', 'author_name'],
+            'commit': ['id', 'title', 'short_id', 'committed_date', 'author_name'],
             'merged': None,
             'protected': None
         }

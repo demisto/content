@@ -798,7 +798,7 @@ ARGS_FOR_PARTIAL_RESPONSE = [
                     "parent_ids": [
                         "01"
                     ],
-                    "title": "title",
+                    "title": "titleCommit",
                     "message": "delete file via playbook",
                     "author_name": "Test Account",
                     "author_email": "test@dem.com",
@@ -812,7 +812,7 @@ ARGS_FOR_PARTIAL_RESPONSE = [
                 "merged": 'false',
                 "protected": 'false'
             }], "Branch",  # branch
-        [{'name': 'Test', 'commit': {'id': '7d', 'short_id': '7d',
+        [{'name': 'Test', 'commit': {'id': '7d', 'short_id': '7d', "title": "titleCommit",
           'committed_date': '2022-10-11T09:05:11.000+00:00', 'author_name': 'Test Account'},
           'merged': 'false', 'protected': 'false'}]
     )
