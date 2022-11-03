@@ -273,8 +273,9 @@ def test_parse_dates_invalid_time(input, ecpected_result):
     assert type(Whois.parse_dates(input)[0]) == type(ecpected_result)
 
 
-@pytest.mark.parametrize('updated_date, expected_res', [({'updated_date': [Whois.InvalidDateHandler(0, 0, 0)]}, '0-0-0'),
-                                                        ({'updated_date': [datetime.datetime(2025, 6, 8, 0, 0, 0)]}, '08-06-2025')])
+@pytest.mark.parametrize('updated_date, expected_res',
+                         [({'updated_date': [Whois.InvalidDateHandler(0, 0, 0)]}, '0-0-0'),
+                          ({'updated_date': [datetime.datetime(2025, 6, 8, 0, 0, 0)]}, '08-06-2025')])
 def test_create_outputs_invalid_time(updated_date, expected_res):
 
     res = Whois.create_outputs(updated_date, 'test_domain', DBotScoreReliability.A)
