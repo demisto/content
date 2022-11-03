@@ -1726,7 +1726,7 @@ class Pack(object):
             return changelog_entry, False
 
         filtered_release_notes_from_tags = self.filter_headers_without_entries(release_notes_dict)  # type: ignore[arg-type]
-        filtered_release_notes = self.filter_entries_by_display_name(filtered_release_notes_from_tags, id_set)
+        filtered_release_notes = self.filter_entries_by_display_name(filtered_release_notes_from_tags, id_set, marketplace)
 
         # if not filtered_release_notes and self.are_all_changes_relevant_to_more_than_one_marketplace(modified_files_data):
         #     # In case all release notes were filtered out, verify that it also makes sense - by checking that the
@@ -1769,7 +1769,7 @@ class Pack(object):
         return True
 
     @staticmethod
-    def filter_entries_by_display_name(release_notes: dict, id_set: dict):
+    def filter_entries_by_display_name(release_notes: dict, id_set: dict, marketplace="xsoar"):
         """
         Filters the entries by display names and also handles special entities that their display name is not an header.
 
@@ -1790,14 +1790,14 @@ class Pack(object):
                 logging.debug(f"Searching display name '{content_item_display_name}' with rn header "
                               f"'{content_type}' in in id set.")
                 if content_item_display_name != '[special_msg]' and not is_content_item_in_id_set(
-                        content_item_display_name.replace("New: ", ""), content_type, id_set):
+                        content_item_display_name.replace("New: ", ""), content_type, id_set, marketplace):
                     continue
 
                 if content_item_display_name == '[special_msg]':
                     extracted_names_from_rn = SPECIAL_DISPLAY_NAMES_PATTERN.findall(content_item_rn_notes)
 
                     for name in extracted_names_from_rn:
-                        if not is_content_item_in_id_set(name.replace("New: ", ""), content_type, id_set):
+                        if not is_content_item_in_id_set(name.replace("New: ", ""), content_type, id_set, marketplace):
                             content_item_rn_notes = content_item_rn_notes.replace(f'- **{name}**', '').strip()
 
                     if not content_item_rn_notes:
@@ -3923,7 +3923,7 @@ def get_last_commit_from_index(service_account):
 
 def get_graph_entity_by_path(entity_path: Path, marketplace):
     with Neo4jContentGraphInterface() as content_graph_interface:
-        return content_graph_interface.search(marketplace, path=entity_path)[0].to_id_set_entity()
+        return content_graph_interface.search(marketplace, path=entity_path)[0]
 
 
 def get_id_set_entity_by_path(entity_path: Path, pack_folder: str, id_set: dict):
@@ -3959,7 +3959,13 @@ def get_id_set_entity_by_path(entity_path: Path, pack_folder: str, id_set: dict)
     return {}
 
 
-def is_content_item_in_id_set(display_name: str, rn_header: str, id_set: dict):
+def is_content_item_in_graph(display_name: str, content_type, marketplace) -> bool:
+    with Neo4jContentGraphInterface() as interface:
+        res = interface.search(content_type=content_type, marketplace=marketplace, object_id=display_name)
+        return bool(res)
+
+
+def is_content_item_in_id_set(display_name: str, rn_header: str, id_set: dict, marketplace="xsoar"):
     """
     Get the full entity dict from the id set of the entity given it's display name, if it does not exist in the id set
     return None.
@@ -3975,7 +3981,10 @@ def is_content_item_in_id_set(display_name: str, rn_header: str, id_set: dict):
     logging.debug(f"Checking if the entity with the display name {display_name} is present in the id set")
 
     if not id_set:
-        return False
+        content_type = RN_HEADER_TO_ID_SET_KEYS[rn_header].capitalize()[:-1]
+        return is_content_item_in_graph(display_name=display_name,
+                                        content_type=content_type,
+                                        marketplace=marketplace)
 
     for id_set_entity in id_set[RN_HEADER_TO_ID_SET_KEYS[rn_header]]:
 
