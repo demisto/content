@@ -617,7 +617,7 @@ script:
       required: true
       isArray: true
     outputs: []
-  dockerimage: demisto/vmware:1.0.0.25599
+  dockerimage: demisto/vmware:2.0.0.37077
   runonce: false
   script: ""
   subtype: python2
