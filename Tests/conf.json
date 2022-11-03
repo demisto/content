@@ -1409,7 +1409,8 @@
             "playbookID": "EWS search-mailbox test",
             "instance_names": [
                 "ewv2_regular",
-                "ews_mail_sender_labdemisto"
+                "ews_mail_sender_labdemisto",
+                "ewso365_dev_team"
             ],
             "timeout": 300
         },
@@ -4107,11 +4108,6 @@
             ]
         },
         {
-            "integrations": "Cofense Vision",
-            "playbookID": "CofenseVision-Test",
-            "fromversion": "6.2.0"
-        },
-        {
             "playbookID": "opsgenie-test-playbook",
             "fromversion": "6.0.0",
             "integrations": [
@@ -5365,7 +5361,8 @@
         "TruSTAR v2-Test": "No credentials",
         "Process Email - Generic - Test - Incident Starter": "Issue CIAC-4161",
         "AD v2 - debug-mode": "No credentials",
-        "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449"
+        "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
+        "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407"
     },
     "skipped_integrations": {
         "AbuseIPDB": "License expired",
