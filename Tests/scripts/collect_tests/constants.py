@@ -23,12 +23,12 @@ DEFAULT_REPUTATION_TESTS: tuple[str, ...] = (
     'Indicators reputation-.json Test',
 )
 
-ALWAYS_INSTALLED_PACKS = (
+ALWAYS_INSTALLED_PACKS_XSOAR = (
     'Base',
     'DeveloperTools',
 )
 
-ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2 = ALWAYS_INSTALLED_PACKS + ('CoreAlertFields',)
+ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2 = ALWAYS_INSTALLED_PACKS_XSOAR + ('CoreAlertFields',)
 
 DEFAULT_MARKETPLACE_WHEN_MISSING: MarketplaceVersions = MarketplaceVersions.XSOAR
 
