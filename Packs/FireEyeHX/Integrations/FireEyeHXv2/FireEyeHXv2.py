@@ -707,7 +707,6 @@ class Client(BaseClient):
         """
         perform logout for the active session
         """
-        
         if self._headers['X-FeApi-Token']:
             try:
                 self._http_request(
@@ -715,8 +714,8 @@ class Client(BaseClient):
                     url_suffix='token',
                     resp_type='response'
                 )
-            except Exception as e:
-                demisto.debug(f'Encountered an error when tring to logout')
+            except Exception:
+                demisto.debug('Encountered an error when tring to logout')
 
             # successful request
             self._headers['X-FeApi-Token'] = None

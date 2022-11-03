@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 from CommonServerPython import DemistoException
 
+
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
@@ -1919,9 +1920,8 @@ def test_informative_error_in_get_token(mocker):
 
     from FireEyeHXv2 import Client
     mocker.patch.object(Client, '_http_request', side_effect=DemistoException('Incorrect user id or password'))
-    
+
     with pytest.raises(Exception) as err:
         Client('test_client')
-    
-    assert str(err.value) == 'Unauthorized - Incorrect user id or password'
 
+    assert str(err.value) == 'Unauthorized - Incorrect user id or password'
