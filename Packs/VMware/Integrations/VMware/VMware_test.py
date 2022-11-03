@@ -765,7 +765,7 @@ def test_power_on(monkeypatch):
 
     res = VMware.power_on(si, {'uuid': '12345'})
 
-    assert res.get('EntryContext').values()[0].get('State') == 'poweredOn'
+    assert list(res.get('EntryContext').values())[0].get('State') == 'poweredOn'
     assert res.get('HumanReadable') == 'Virtual Machine was powered on successfully.'
 
 
@@ -786,7 +786,7 @@ def test_power_off(monkeypatch):
 
     res = VMware.power_off(si, {'uuid': '12345'})
 
-    assert res.get('EntryContext').values()[0].get('State') == 'poweredOff'
+    assert list(res.get('EntryContext').values())[0].get('State') == 'poweredOff'
     assert res.get('HumanReadable') == 'Virtual Machine was powered off successfully.'
 
 
@@ -807,7 +807,7 @@ def test_suspend(monkeypatch):
 
     res = VMware.suspend(si, {'uuid': '12345'})
 
-    assert res.get('EntryContext').values()[0].get('State') == 'suspended'
+    assert list(res.get('EntryContext').values())[0].get('State') == 'suspended'
     assert res.get('HumanReadable') == 'Virtual Machine was suspended successfully.'
 
 
@@ -829,7 +829,7 @@ def test_hard_reboot(monkeypatch):
 
     res = VMware.hard_reboot(si, {'uuid': '12345'})
 
-    assert res.get('EntryContext').values()[0].get('State') == 'HardRebooted'
+    assert list(res.get('EntryContext').values())[0].get('State') == 'HardRebooted'
     assert res.get('HumanReadable') == 'Virtual Machine was rebooted successfully.'
 
 
@@ -938,6 +938,6 @@ def test_change_nic_state(monkeypatch):
 
     res = VMware.change_nic_state(si, {'vm-uuid': '1234', 'nic-state': 'connect', 'nic-number': '123'})
 
-    assert res.get('Contents').values()[0].get('UUID') == '1234'
-    assert res.get('Contents').values()[0].get('NICState') == 'connected'
+    assert list(res.get('Contents').values())[0].get('UUID') == '1234'
+    assert list(res.get('Contents').values())[0].get('NICState') == 'connected'
     assert 'Virtual Machine\'s NIC was connected successfully' in res.get('HumanReadable')
