@@ -345,6 +345,7 @@ def create_new_incident_too_short():
 
 
 def main():
+    demisto.info('fdskfdkf')
     global EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, FROM_FIELD, MIN_TEXT_LENGTH, FROM_POLICY
     input_args = demisto.args()
     EMAIL_BODY_FIELD = input_args.get('emailBody', EMAIL_BODY_FIELD)

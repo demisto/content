@@ -128,6 +128,8 @@ def test_unzip_long_filename(file_name, mocker):
     assert files_list[0].endswith('_shortened_.rtf') is True
 
 
+# seems to fail even when p7zip-full is installed, need to check for alternatives
+# was installed from here - https://www.linuxcapable.com/install-7-zip-on-debian-11-bullseye/
 def test_unrar_no_password():
     """
     Given

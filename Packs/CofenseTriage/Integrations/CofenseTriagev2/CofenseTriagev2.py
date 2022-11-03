@@ -779,6 +779,7 @@ def build_triage_instance():
 
 
 def main():
+    demisto.info('sdfdkfkdf')
     try:
         handle_proxy()
 

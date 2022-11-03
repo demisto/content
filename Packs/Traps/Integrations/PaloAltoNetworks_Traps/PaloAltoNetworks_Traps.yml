@@ -369,7 +369,7 @@ script:
     - contextPath: Traps.ScanResult.Status
       description: The status of the scan.
       type: String
-  dockerimage: devdemisto/py3-master:8.1.0.37150
+  dockerimage: demisto/pyjwt3:1.0.0.13142
   feed: false
   isfetch: false
   longRunning: false

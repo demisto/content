@@ -33,4 +33,6 @@ def test_fail_ping(mocker):
     assert return_error_mock.call_count == 1
     # call_args last call with a tuple of args list and kwargs
     err_msg = return_error_mock.call_args[0][0]
+    # failing because in debian string is a bit different - E  AssertionError: assert 'Name does not resolve' in 'ping: nonExistingDomain45343.com: Name or service not known\n'
     assert 'Name does not resolve' in err_msg
+

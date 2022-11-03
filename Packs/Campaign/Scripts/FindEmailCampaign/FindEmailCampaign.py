@@ -534,6 +534,7 @@ def analyze_incidents_campaign(incidents, fields_to_display):
 
 
 def main():
+    demisto.info('dsfkjdkf')
     global EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, FROM_FIELD, SELF_IN_CONTEXT
     input_args = demisto.args()
     EMAIL_BODY_FIELD = input_args.get('emailBody', EMAIL_BODY_FIELD)
