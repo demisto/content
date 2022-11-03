@@ -16,8 +16,10 @@ URL_EXTRACTION_REGEX = (
     r"(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+"
     r"[-\w\d]+(?::\d+)?(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?"
 )
-INTEGRATION_NAME = "ReadPDFFileV2"
+INTEGRATION_NAME = 'PDFx'
 DEFAULT_NUM_IMAGES = 20
+
+# TODO Add description for each Exception class
 
 
 class PdfPermissionsException(Exception):
@@ -28,7 +30,7 @@ class PdfCopyingException(PdfPermissionsException):
     pass
 
 
-class PdfCredentialsException(PdfPermissionsException):
+class PdfCredentialsException(PdfPermissionsException):  # TODO Change to a more meaningful name
     pass
 
 
@@ -211,23 +213,19 @@ def get_pdf_metadata(file_path: str, user_password: str | None = None) -> dict:
 
 
 def bypass_copy_protected_limitations(pdf_file: str) -> None:
-    """ This function is in charge of bypassing the limitations of `copy-protected` files """
+    """ This function is in charge of bypassing the limitations of `copy-protected` files
+    Add more description and add in Confluence"""  # TODO
     with Pdf.open(pdf_file, allow_overwriting_input=True) as pdf:
         pdf.save(pdf_file)
 
 
 def get_pdf_text(file_path: str, pdf_text_output_path: str) -> str:
     """Creates a txt file from the pdf in the pdf_text_output_path and returns the content of the txt file"""
-    # pdf = Pdf.open(file_path)
-    # pdf.save(pdf_text_output_path)
     try:
         run_shell_command("pdftotext", file_path, pdf_text_output_path)
-    except PdfCopyingException:
+    except PdfCopyingException:  # TODO Change to PdfCopyingProtectedException
         bypass_copy_protected_limitations(pdf_file=file_path)
-        # pdf = Pdf.open(file_path, allow_overwriting_input=True)
-        # pdf.save(file_path)
         run_shell_command("pdftotext", file_path, pdf_text_output_path)
-    # run_shell_command("pdftotext", file_path, pdf_text_output_path)
     text = ""
     with open(pdf_text_output_path, "rb") as f:
         for line in f:
@@ -238,13 +236,10 @@ def get_pdf_text(file_path: str, pdf_text_output_path: str) -> str:
 def get_pdf_htmls_content(pdf_path: str, output_folder: str) -> str:
     """Creates an html file and images from the pdf in output_folder and returns the text content of the html files"""
     pdf_html_output_path = f'{output_folder}/PDF_html'
-    # run_shell_command("pdftohtml", pdf_path, output_folder)
     try:
         run_shell_command("pdftohtml", pdf_path, pdf_html_output_path)
     except PdfCopyingException:
         bypass_copy_protected_limitations(pdf_file=pdf_path)
-        # pdf = Pdf.open(pdf_path, allow_overwriting_input=True)
-        # pdf.save(pdf_path)
         run_shell_command("pdftohtml", pdf_path, pdf_html_output_path)
     html_file_names = get_files_names_in_path(output_folder, "*.html")
     html_content = ""
@@ -324,7 +319,7 @@ def build_readpdf_entry_object(entry_id: str, metadata: dict, text: str, urls: l
             "EntryContext": ec,
         }
     )
-    # TODO Should I add file indicator?
+    # TODO Do experiment return [CommandResults(md, Common.File), CommandResults(only Common.URL)]
     return results
 
 
@@ -334,7 +329,7 @@ def build_readpdf_entry_context(indicators_map: Any) -> dict:
         if "URL" in indicators_map:
             ec_url = []
             for url in indicators_map["URL"]:
-                ec_url.append({"Data": url})
+                ec_url.append({"Data": url})  # TODO To wrap it with in CommandResults (all indicators)
             ec["URL"] = ec_url
         if "Email" in indicators_map:
             ec_email = []
@@ -512,7 +507,7 @@ def get_urls_and_emails_from_pdf_annots(file_path: str) -> Tuple[set, set]:
     return all_urls, all_emails
 
 
-def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str) -> Tuple[set, set]:
+def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str) -> Tuple[list, list]:
     """
     Extract URLs and Emails from the PDF file.
     Args:
@@ -530,20 +525,26 @@ def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str) ->
     annots_urls, annots_emails = get_urls_and_emails_from_pdf_annots(file_path)
     html_urls, html_emails = get_urls_and_emails_from_pdf_html_content(file_path, output_folder)
 
-    # This url is always generated with the pdf html file, and that's why we remove it
+    # This url might be generated with the pdf html file, if so, we remove it
     html_urls.discard('http://www.w3.org/1999/xhtml')
 
     # Unify urls:
     urls_set = annots_urls.union(html_urls, binary_file_urls)
     emails_set = annots_emails.union(html_emails)
 
-    return urls_set, emails_set
+    urls_ec = []
+    emails_ec = []
+    for url in urls_set:
+        urls_ec.append({"Data": url})
+    for email in emails_set:
+        emails_ec.append(email)
+
+    return urls_ec, emails_ec
 
 
 def handling_pdf_credentials(cpy_file_path: str, dec_file_path: str, user_password: str = '') -> str:
     """
-    This function is in charge of decrypting the pdf if needed,
-    and handling the case where the pdf is `copy-protected` (remove this limitation)
+    This function decrypts the pdf if needed.
     """
     try:
         if user_password:
@@ -557,9 +558,6 @@ def handling_pdf_credentials(cpy_file_path: str, dec_file_path: str, user_passwo
 
 def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_images: int | None, working_dir: str) -> None:
     max_images = max_images if max_images else DEFAULT_NUM_IMAGES
-    # URLS
-    urls_ec = []
-    emails_ec = []
     if path:
         cpy_file_path = f'{working_dir}/WorkingReadPDF.pdf'
         shutil.copy(path, cpy_file_path)
@@ -574,12 +572,7 @@ def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_imag
         text = get_pdf_text(cpy_file_path, pdf_text_output_path)
 
         # Get URLS + emails:
-        urls_set, emails_set = extract_urls_and_emails_from_pdf_file(cpy_file_path, working_dir)
-        # urls_set, emails_set, images = extract_urls_emails_images(cpy_file_path, working_dir)
-        for url in urls_set:
-            urls_ec.append({"Data": url})
-        for email in emails_set:
-            emails_ec.append(email)
+        urls_ec, emails_ec = extract_urls_and_emails_from_pdf_file(cpy_file_path, working_dir)
 
         # Get images:
         images = get_images_paths_in_path(working_dir)
@@ -591,7 +584,7 @@ def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_imag
                                                           images,
                                                           max_images=max_images)
 
-        demisto.results(readpdf_entry_object)
+        return_results(readpdf_entry_object)
     else:
         raise Exception(f"EntryID {entry_id} path could not be found")
 
@@ -605,6 +598,7 @@ def main():  # pragma: no cover
             os.makedirs(working_dir)
         entry_id = args.get('entryID')
         file_name = demisto.getFilePath(entry_id).get('name')
+        # TODO  Check what returns access file_type?
         user_password = str(args.get('userPassword', ''))
         max_images = arg_to_number(args.get('maxImages', None))
         path = demisto.getFilePath(entry_id).get('path')
@@ -623,10 +617,6 @@ def main():  # pragma: no cover
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(str(e))
-        # return_error(f'The script failed read PDF file due to an error: {str(e)}')
-        # return_error_without_exit(
-        #     f"The script failed read PDF file due to an error: {str(e)}"
-        # )
     finally:
         os.chdir(ROOT_PATH)
         shutil.rmtree(working_dir, onerror=handle_error_read_only)
