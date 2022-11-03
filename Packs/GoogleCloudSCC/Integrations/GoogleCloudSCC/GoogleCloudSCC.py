@@ -272,7 +272,7 @@ class BaseGoogleClient:
                     proxy_pass=parsed_proxy.password,
                 )
         return httplib2.Http(proxy_info=proxy_info, timeout=TIMEOUT_TIME, disable_ssl_certificate_validation=insecure,
-                             ca_certs=os.getenv('REQUESTS_CA_BUNDLE') or os.getenv('SSL_CERT_FILE') )
+                             ca_certs=os.getenv('REQUESTS_CA_BUNDLE') or os.getenv('SSL_CERT_FILE'))
 
     @staticmethod
     def execute_request(request) -> Dict[str, Any]:
