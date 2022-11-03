@@ -9579,7 +9579,7 @@ def main():
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
+        requests.packages.urllib3.disable_warnings()  # type: ignore
         client = Client(params)
 
         commands = {
