@@ -10,7 +10,7 @@ from Tests.scripts.collect_tests import collect_tests
 from Tests.scripts.collect_tests.collect_tests import (
     BranchTestCollector, FileType, Machine, XSIAMNightlyTestCollector,
     XSOARNightlyTestCollector)
-from Tests.scripts.collect_tests.constants import XSOAR_SANITY_TEST_NAMES
+from Tests.scripts.collect_tests.constants import XSOAR_SANITY_TEST_NAMES, ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2
 from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.collect_tests.utils import PackManager
 
@@ -161,8 +161,10 @@ NIGHTLY_EXPECTED_TESTS_XSIAM = NIGHTLY_EXPECTED_TESTS | {'Sanity Test - Playbook
 NIGHTLY_TESTS: tuple = (
     (MockerCases.A_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None),
     (MockerCases.B_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None),
-    (MockerCases.A_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS_XSIAM, ('myXSIAMOnlyPack', 'Whois'), None),
-    (MockerCases.B_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS_XSIAM, ('myXSIAMOnlyPack', 'Whois'), None),
+    (MockerCases.A_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS_XSIAM,
+     ('myXSIAMOnlyPack', 'Whois', 'CoreAlertFields'), None),
+    (MockerCases.B_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS_XSIAM,
+     ('myXSIAMOnlyPack', 'Whois', 'CoreAlertFields'), None),
 
     (MockerCases.C, XSOARNightlyTestCollector,
      {'myXSOAROnlyTestPlaybook', 'myTestPlaybook', 'Sanity Test - Playbook with Unmockable Whois Integration'},
@@ -170,7 +172,7 @@ NIGHTLY_TESTS: tuple = (
 
     (MockerCases.C, XSIAMNightlyTestCollector,
      {'myXSIAMOnlyTestPlaybook', 'Sanity Test - Playbook with Unmockable Whois Integration'},
-     {'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'Whois'}, None),
+     {'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'Whois', 'CoreAlertFields'}, None),
 
     (MockerCases.D, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'},
      (Machine.V6_5, Machine.MASTER)),
@@ -181,7 +183,7 @@ NIGHTLY_TESTS: tuple = (
 
     (MockerCases.E, XSIAMNightlyTestCollector,
      {'Sanity Test - Playbook with Unmockable Whois Integration'},
-     ALWAYS_INSTALLED_PACKS + ('Whois',),
+     ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2 + ('Whois',),
      None),
 
     (MockerCases.F, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack'},
@@ -237,11 +239,11 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
       ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.py',)),
 
      # (4) Case A: yml file changes, expect the test playbook testing the integration to be collected
-     (MockerCases.A_xsiam, ('myOtherTestPlaybook',), ('myXSIAMOnlyPack',), None, XSIAM_BRANCH_ARGS,
+     (MockerCases.A_xsiam, ('myOtherTestPlaybook',), ('myXSIAMOnlyPack', 'CoreAlertFields'), None, XSIAM_BRANCH_ARGS,
       ('Packs/myXSIAMOnlyPack/Integrations/myIntegration/myIntegration.yml',)),
 
      # (5) Case A: py file changes, expect the test playbook testing the integration to be collected
-     (MockerCases.A_xsiam, ('myOtherTestPlaybook',), ('myXSIAMOnlyPack',), None, XSIAM_BRANCH_ARGS,
+     (MockerCases.A_xsiam, ('myOtherTestPlaybook',), ('myXSIAMOnlyPack', 'CoreAlertFields'), None, XSIAM_BRANCH_ARGS,
       ('Packs/myXSIAMOnlyPack/Integrations/myIntegration/myIntegration.py',)),
 
      # (6) Case B: test playbook changes, expect it to be collected
@@ -290,7 +292,7 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
       ('Packs/myPack/Integrations/mySkippedIntegration/mySkippedIntegration.yml',)),
 
      # (17) Testing version ranges
-     (MockerCases.L, None, ('myXSIAMOnlyPack',), (Machine.MASTER, Machine.V6_9), XSIAM_BRANCH_ARGS,
+     (MockerCases.L, None, ('myXSIAMOnlyPack', 'CoreAlertFields'), (Machine.MASTER, Machine.V6_9), XSIAM_BRANCH_ARGS,
       ('Packs/myXSIAMOnlyPack/Wizards/harry.json',)),
 
      # (18) see M2 definition at the top of this file
