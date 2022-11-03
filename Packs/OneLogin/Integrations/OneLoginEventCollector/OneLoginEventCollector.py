@@ -27,7 +27,7 @@ def increase_time_with_second(timestamp):
     date_time_timestamp = parse(timestamp)
     if not date_time_timestamp:
         return timestamp
-    return datetime.strftime(date_time_timestamp + timedelta(seconds=1), DATE_FORMAT)
+    return datetime.strftime(date_time_timestamp + timedelta(milliseconds=1), DATE_FORMAT)
 
 
 def prepare_query_params(params: dict, last_run: dict = {}) -> dict:
@@ -43,16 +43,6 @@ def prepare_query_params(params: dict, last_run: dict = {}) -> dict:
     }
 
     return query_params
-
-
-def get_event_type_name(event_type_id, event_types):
-    """
-    Returns the event type name by the given event type ID.
-    """
-    if event_type_id in event_types:
-        return event_types[event_type_id]
-
-    return None
 
 
 def check_response(raw_response):
@@ -117,7 +107,7 @@ class Client(BaseClient):
 
         return last_run.get('event_types')
 
-    def convert_type_id_to_name(self, event: dict, event_types: dict, last_run: dict) -> str:
+    def convert_type_id_to_name(self, event: dict, last_run: dict, event_types: dict = {}) -> str:
         """
         Gets the event type name by the event type id.
 
@@ -131,7 +121,7 @@ class Client(BaseClient):
         """
 
         event_type_name = ''
-        if event_type_name := get_event_type_name(str(event['event_type_id']), event_types):
+        if event_type_name := event_types.get(str(event['event_type_id'])):
             return event_type_name
 
         demisto.debug(f"Could not find the event type id {str(event['event_type_id'])}. "
@@ -139,7 +129,7 @@ class Client(BaseClient):
         event_types_res = self.get_event_types_request()
         event_types = {str(event_type['id']): event_type['name'] for event_type in event_types_res}
 
-        if event_type_name := get_event_type_name(str(event['event_type_id']), event_types):
+        if event_type_name := event_types.get(str(event['event_type_id'])):
             last_run['event_types'] = event_types
             return event_type_name
 
@@ -155,7 +145,7 @@ class Client(BaseClient):
         int_context = get_integration_context()
         if 'access_token' in int_context:
             expired_token_date_time = parse(int_context['expired_token_time'], settings={'TIMEZONE': 'UTC'})
-            if expired_token_date_time and datetime.now(timezone.utc) - expired_token_date_time < timedelta(minutes=590):
+            if expired_token_date_time and datetime.now(timezone.utc) < expired_token_date_time:
                 demisto.debug("Found access token in integration context.")
                 return int_context.get('access_token')
 
@@ -163,7 +153,7 @@ class Client(BaseClient):
         access_token = self.get_access_token_request()
         set_integration_context({
             'access_token': access_token,
-            'expired_token_time': datetime.utcnow().strftime(DATE_FORMAT)
+            'expired_token_time': (datetime.utcnow() + timedelta(minutes=590)).strftime(DATE_FORMAT)
         })
 
         return access_token
@@ -218,7 +208,7 @@ class Client(BaseClient):
                         cursor = query_params['after_cursor']
                         break
 
-                    event['event_type_name'] = self.convert_type_id_to_name(event, event_types, last_run)
+                    event['event_type_name'] = self.convert_type_id_to_name(event, last_run, event_types)
                     aggregated_events.append(event)
 
                 else:
@@ -348,6 +338,7 @@ def main() -> None:
             else:  # command == 'fetch-events'
                 last_run = demisto.getLastRun()
                 events, last_run = fetch_events_command(client, params, last_run)
+                print(events)
                 demisto.setLastRun(last_run)
 
             if argToBoolean(args.get('should_push_events', 'true')):
