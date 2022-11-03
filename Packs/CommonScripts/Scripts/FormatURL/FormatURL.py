@@ -10,10 +10,10 @@ class URLError(Exception):
 
 class URLType(object):
     """
-    A class to represent a url and its parts
+    A class to represent an url and its parts
     """
 
-    def __init__(self, raw_url):
+    def __init__(self, raw_url: str):
         self.raw = raw_url
         self.scheme = ''
         self.user_info = ''
@@ -38,7 +38,24 @@ class URLCheck(object):
     url_code_points = ("!", "$", "&", "\"", "(", ")", "*", "+", ",", "-", ".", "/", ":", ";", "=", "?", "@",
                             "_", "~")
 
-    def __init__(self, original_url):
+    def __init__(self, original_url: str):
+        """
+        Args:
+            original_url: The original URL input
+
+        Attributes:
+            self.modified_url: The URL while being parsed by the formatter char by char
+            self.original_url: The original URL as it was inputted
+            self.url - The parsed URL and its parts (as a URLType object - see above)
+            self.base: A pointer to the first char of the section being checked and validated
+            self.output: The final URL output by the formatter
+            self.inside_brackets = A flag to indicate the parser index is within brackets
+            self.port = A flag to state that a port is found in the URL
+            self.query = A flag to state that a query is found in the URL
+            self.fragment = A flag to state that a fragment is found in the URL
+            self.done = A flag to state that the parser is done and no more parsing is needed
+        """
+
         self.modified_url = original_url
         self.original_url = original_url
         self.url = URLType(original_url)
@@ -347,6 +364,17 @@ class URLCheck(object):
         self.url.fragment = fragmet
 
     def check_valid_character(self, index: int) -> tuple[int, str]:
+        """
+        Checks the validity of a character passed by the main formatter
+
+        Args:
+            index: the index of the character within the URL
+
+        Returns:
+            returns the new index after incrementation and the part of the URL that was checked
+
+        """
+
         part = ""
         char = self.modified_url[index]
 
@@ -376,7 +404,15 @@ class URLCheck(object):
     def check_domain(host: str) -> bool:
         """
         Checks if the domain is a valid domain (has at least 1 dot and a tld >= 2)
-        :return: boolean
+
+        Args:
+            host: The host string as extracted by the formatter
+
+        Returns:
+            True if the domain is valid
+
+        Raises:
+            URLError if the domain is invalid
         """
 
         if host.endswith("."):
@@ -394,8 +430,15 @@ class URLCheck(object):
     def hex_check(self, index: int) -> bool:
         """
         Checks the next two chars in the url are hex digits
-        :param index: the index pointer
-        :return: boolean
+
+        Args:
+            index: points to the position of the % character, used as a pointer to chars.
+
+        Returns:
+            True if %xx is a valid hexadecimal code.
+
+        Raises:
+            ValueError if the chars after % are invalid
         """
 
         try:
@@ -408,8 +451,12 @@ class URLCheck(object):
     def check_done(self, index: int) -> bool:
         """
         Checks if the validator already went over the URL and nothing is left to check.
-        :param index: The current index of the pointer
-        :return: True if the entire URL has been verified
+
+        Args:
+            index: The current index of the pointer
+
+        Returns:
+            True if the entire URL has been verified False if not.
         """
 
         if index == len(self.modified_url):
@@ -445,7 +492,7 @@ class URLFormatter(object):
     ATP_regex = re.compile('https://.*?\.safelinks\.protection\.outlook\.com/\?url=(.*?)&')
     fireeye_regex = re.compile('.*?fireeye[.]com.*?&u=(.*)')
     proofpoint_regex = re.compile('(?:v[1-2]/(?:url\?u=)?(.*?)(?:&amp|&d|$)|v3/__(.*?)(?:_|$))')
-    trendmicro_regex = re.compile(r'(https://\w*-\w*|\w*-\w*)\.trendmicro\.com.*url=')
+    trendmicro_regex = re.compile('https://.*?trendmicro\.com(?::443)?/wis/clicktime/.*?/?url==3d(.*?)&')
 
     # Scheme slash fixer
     scheme_fix = re.compile("https?(:[/|\\\]*)")
@@ -453,7 +500,12 @@ class URLFormatter(object):
     def __init__(self, original_url):
         """
         Main class for formatting a URL
-        :param original_url: The original URL in lower case
+
+        Args:
+            original_url: The original URL in lower case
+
+        Raises:
+            URLError if an exception occurs
         """
 
         self.original_url = original_url.lower()
@@ -478,8 +530,12 @@ class URLFormatter(object):
     def strip_wrappers(url: str) -> str:
         """
         Allows for stripping of multiple safety wrappers of URLs
-        :param url: The original wrapped URL
-        :return: The original URL sent without wrappers
+
+        Args:
+            url: The original wrapped URL
+
+        Returns:
+            The URL without wrappers
         """
 
         wrapper = True
@@ -508,8 +564,12 @@ class URLFormatter(object):
     def extract_url_proofpoint(url: str) -> str:
         """
         Extracts the domain from the Proofpoint wrappers using a regex
-        :param url: The wrapped URL
-        :return: Unquoted extracted URL as a string
+
+        Args:
+            url: The proofpoint wrapped URL
+
+        Returns:
+            Unquoted extracted URL as a string
         """
 
         if url[0]:
@@ -524,8 +584,12 @@ class URLFormatter(object):
     def correct_and_refang_url(url: str) -> str:
         """
         Refangs URL and corrects its scheme
-        :param url: The original URL
-        :return: Refnaged corrected URL
+
+        Args:
+            url: The original URL
+
+        Returns:
+            Refnaged corrected URL
         """
 
         url = url.lower().replace("meow", "http").replace("hxxp", "http").replace("[.]", ".")

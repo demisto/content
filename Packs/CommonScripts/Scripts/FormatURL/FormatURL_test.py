@@ -95,6 +95,15 @@ FIREEYE_REDIRECT = [
      'https://www.facebook.com/namshiofficial'),
 ]
 
+TRENDMICRO_REDIRECT = [
+    ('https://imsva91-ctp.trendmicro.com:443/wis/clicktime/v1/query?url==3Dhttp%3a%2f%2fclick.sanantonioshoemakers.com'
+     '%2f%3fqs%3dba654fa7d9346fec1b=3fa6c55906d045be350d0ee6e3edc4ff33ef33eacb79b79602f5aaf719ee16c3d24e8489293=4d3&'
+     'umid=3DB8AB568B-E738-A205-9C9E-ECD7B0A0383F&auth==3D00e18db2b3f9ca3ba6337946518e0b003516e16e-'
+     '5a8d41640e706acd29c760ae7a8cd40=f664d6489',
+     'http://click.sanantonioshoemakers.com/?qs=ba654fa7d9346fec1b=3fa6c55906d045be350d0ee6e3edc4ff33ef33eacb'
+     '79b79602f5aaf719ee16c3d24e8489293=4d3'),
+]
+
 FORMAT_USERINFO = [
     ('https://user@domain.com', 'https://user@domain.com')
 ]
@@ -200,7 +209,7 @@ FAILS = [
      pytest.raises(URLError)),  # invalid input
 ]
 
-REDIRECT_TEST_DATA = ATP_REDIRECTS + PROOF_POINT_REDIRECTS + FIREEYE_REDIRECT
+REDIRECT_TEST_DATA = ATP_REDIRECTS + PROOF_POINT_REDIRECTS + FIREEYE_REDIRECT + TRENDMICRO_REDIRECT
 
 FORMAT_TESTS = (FORMAT_USERINFO + FORMAT_PORT + FORMAT_IPv4 + FORMAT_IPv6 + FORMAT_PATH + FORMAT_QUERY
                 + FORMAT_FRAGMENT + FORMAT_NON_ASCII + FORMAT_PUNYCODE + FORMAT_HEX)
