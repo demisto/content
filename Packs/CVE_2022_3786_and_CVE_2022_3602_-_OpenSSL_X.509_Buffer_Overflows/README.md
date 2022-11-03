@@ -21,3 +21,5 @@ Both vulnerabilities are “triggered through X.509 certificate verification, sp
 More information:
 
 [Unit42 Threat Brief: CVE-2022-3786 and CVE-2022-3602: OpenSSL X.509 Buffer Overflows](https://unit42.paloaltonetworks.com/openssl-vulnerabilities/)
+
+[NCSC-NL - OpenSSL overview Scanning software](https://github.com/NCSC-NL/OpenSSL-2022/tree/main/scanning)
