@@ -1,4 +1,8 @@
 This pack includes XSIAM content.
+#### Modeling Rules
+##### OracleDBEventCollector
+- Aligned modeling rules to new XDM schema.
+- Queries and modeling rules in this content pack version support XDR 3.5 / XSIAM 1.3 or later.
 
 ## Collect Events from Vendor
 
