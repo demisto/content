@@ -4107,11 +4107,6 @@
             ]
         },
         {
-            "integrations": "Cofense Vision",
-            "playbookID": "CofenseVision-Test",
-            "fromversion": "6.2.0"
-        },
-        {
             "playbookID": "opsgenie-test-playbook",
             "fromversion": "6.0.0",
             "integrations": [
