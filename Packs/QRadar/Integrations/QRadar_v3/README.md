@@ -2617,13 +2617,13 @@ Create remote network cidrs
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cidrs | An input list of CIDRs to add to Qradar (can be obtained from automatically from EDL integrations and playbook).</br>Multiple values in the same object are separated by commas.</br>One of the cidr or query is required. | Optional | 
-| query | The query for getting indicators from Cortex XSOAR.</br>One of the cidr or query is required. | Optional | 
+| cidrs | An input list of CIDRs to add to Qradar (can be obtained from automatically from EDL integrations and playbook).<br>Multiple values in the same object are separated by commas.<br>One of the cidr or query is required. | Optional | 
+| query | The query for getting indicators from Cortex XSOAR.<br>One of the cidr or query is required. | Optional | 
 | name | A CIDRs (remote networks) name that will be displayed for all uploaded values in Qradar. | Required | 
-| id | The associated CIDR id.</br>Only possible when a single CIDR is created. | Optional | 
+| id | The associated CIDR id.<br>Only possible when a single CIDR is created. | Optional | 
 | description | Description that will be displayed and associated with all the newly uploaded CIDRs on Qradar. | Required | 
-| group | The exact name of the remote network group that CIDRs should be associated with as it appears in Qradar. A single group can be assigned to each create command.</br>A new remote network group can be created in Qradar by giving a new unique remote network group name (that does not already exist in Qradar remote networks). | Required | 
-| fields | Use this parameter to specify which fields you would like to get back in the response.</br>Fields that are not named are excluded from the output. Specify subfields in brackets, and multiple fields in the same object are separated by commas.</br>The possible fields are id, group, name, cidr, and description. | Optional | 
+| group | The exact name of the remote network group that CIDRs should be associated with as it appears in Qradar. A single group can be assigned to each create command.<br>A new remote network group can be created in Qradar by giving a new unique remote network group name (that does not already exist in Qradar remote networks). | Required | 
+| fields | Use this parameter to specify which fields you would like to get back in the response.<br>Fields that are not named are excluded from the output. Specify subfields in brackets, and multiple fields in the same object are separated by commas.<br>The possible fields are id, group, name, cidr, and description. | Optional | 
 
 
 #### Context Output
@@ -2640,7 +2640,7 @@ There is no context output for this command.
 <table>
   <tr>
     <th>cidrs</th>
-    <td>1.2.3.4/32,</br>8.8.8.8/2</td>
+    <td>1.2.3.4/32,<br>8.8.8.8/2</td>
   </tr>
   <tr>
     <th>description</th>
