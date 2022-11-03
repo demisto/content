@@ -1669,7 +1669,7 @@ def prepare_hr_for_iocs_list(response: dict[str, Any]) -> str:
     return tableToMarkdown("IOC:", hr_outputs, headers, removeNull=True)
 
 
-def get_standard_context(client: VisionClient, ioc: Dict) -> Common.Indicator:
+def get_standard_context(client: VisionClient, ioc: Dict) -> Optional[Common.Indicator]:
     """Get the standard context for IOC.
 
     Args:
@@ -1679,8 +1679,8 @@ def get_standard_context(client: VisionClient, ioc: Dict) -> Common.Indicator:
     Returns:
         Common.Indicator: Standard context.
     """
-    if not ioc:
-        return None  # type: ignore
+    if not ioc or not ioc.get('id'):
+        return None
 
     ioc = remove_empty_elements(ioc)
 
@@ -1698,7 +1698,7 @@ def get_standard_context(client: VisionClient, ioc: Dict) -> Common.Indicator:
             score = 1
 
     dbot_score = Common.DBotScore(
-        indicator=ioc.get('id', ''),
+        indicator=ioc['id'],
         indicator_type=IOC_TYPES[threat_type],
         integration_name='Cofense Vision',
         score=score
@@ -1709,27 +1709,27 @@ def get_standard_context(client: VisionClient, ioc: Dict) -> Common.Indicator:
             dbot_score=dbot_score
         )
     elif threat_type == "domain":
-        standard_context = Common.Domain(  # type: ignore
+        standard_context = Common.Domain(
             domain=threat_value,
             dbot_score=dbot_score
         )
     elif threat_type == "sender":
-        standard_context = Common.EMAIL(  # type: ignore
+        standard_context = Common.EMAIL(
             address=threat_value,
             dbot_score=dbot_score
         )
     elif threat_type == "md5":
-        standard_context = Common.File(  # type: ignore
+        standard_context = Common.File(
             md5=threat_value,
             dbot_score=dbot_score
         )
     elif threat_type == "sha256":
-        standard_context = Common.File(  # type: ignore
+        standard_context = Common.File(
             sha256=threat_value,
             dbot_score=dbot_score
         )
     else:
-        standard_context = dbot_score  # type: ignore
+        standard_context = dbot_score
     return standard_context
 
 
