@@ -11,12 +11,12 @@ alter
 | alter message = arrayindex(regextract(_raw_log,"\s\w+\[\d+\]\:\s[^\d]+:\s([^\\]+) "),0)
 | alter tag_name = arrayindex(regextract(_raw_log,"\:\s(\w+\_\w+)"),0)
 | alter
-    xdm.event.operation = hostname,
-    xdm.target.user.username = process,
-    xdm.target.user.identifier = processID,
+    xdm.observer.name = hostname,
+    xdm.event.operation = process,
+    xdm.source.process.pid = to_number(processID),
     xdm.source.user.username = username,
     xdm.alert.description = message,
-    xdm.event.operation_sub_type = tag_name;
+    xdm.event.type = tag_name;
 
 alter start_raw_log = arrayindex(regextract(_raw_log , "^(\<\d+\>)"),0)
 | filter len(start_raw_log) >0
