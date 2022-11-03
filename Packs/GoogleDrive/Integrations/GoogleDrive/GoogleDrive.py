@@ -1097,15 +1097,14 @@ def prepare_single_file_human_readable(outputs_context: Dict[str, Any], args: Di
 
 
 def prepare_file_command_request(client: 'GSuiteClient', args: Dict[str, str], scopes: List[str]) -> Dict[str, Any]:
-    # user_id can be overridden in the args
-    user_id = args.get('user_id') or client.user_id
-    client.set_authorized_http(scopes=scopes, subject=user_id)
-
     # Prepare generic HTTP request params
     http_request_params: Dict[str, str] = assign_params(
         supportsAllDrives=args.get('supports_all_drives'),
-        fields='*',
     )
+
+    # user_id can be overridden in the args
+    user_id = args.get('user_id') or client.user_id
+    client.set_authorized_http(scopes=scopes, subject=user_id)
 
     return {
         'http_request_params': http_request_params,
