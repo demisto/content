@@ -100,7 +100,7 @@ Create a new security rule
             "from": [
                 "trust"
             ],
-            "id": "232f5389-468d-4c12-8617-6cbb267ba880",
+            "id": "c680####-7d34-4c##-8b##-375baade####",
             "name": "new-test-ruleB",
             "position": "pre",
             "profile_setting": {
@@ -130,7 +130,7 @@ Create a new security rule
 >### Security Rule Created
 >|action|application|category|description|destination|folder|from|id|name|position|profile_setting|service|source|source_user|to|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| deny | any | any | Test Rule Created by XSOAR | XSOAR Test Object B | Shared | trust | 232f5389-468d-4c12-8617-6cbb267ba880 | new-test-ruleB | pre | group: best-practice | application-default | XSOAR Test Object B | any | any |
+>| deny | any | any | Test Rule Created by XSOAR | XSOAR Test Object B | Shared | trust | c680####-7d34-4c##-8b##-375baade#### | new-test-ruleB | pre | group: best-practice | application-default | XSOAR Test Object B | any | any |
 
 
 ### prisma-access-list-security-rules
@@ -199,7 +199,7 @@ List security rules
                 "from": [
                     "any"
                 ],
-                "id": "5a5b3aff-8aec-4a90-9d77-a7a85d1681e8",
+                "id": "c680####-7d34-4c##-8b##-375baade####",
                 "log_setting": "Cortex Data Lake",
                 "name": "Drop Traffic to Known Malicious IP Addresses",
                 "position": "pre",
@@ -235,7 +235,7 @@ List security rules
                 "from": [
                     "any"
                 ],
-                "id": "22b18d2f-a6cc-45de-a15a-978df14dc2a5",
+                "id": "c680####-7d34-4c##-8b##-375baade####",
                 "log_setting": "Cortex Data Lake",
                 "name": "Drop Traffic to Potential High Risk IP Addresses",
                 "negate_destination": false,
@@ -272,7 +272,7 @@ List security rules
                 "from": [
                     "any"
                 ],
-                "id": "94487223-d185-424f-8a3d-31a9f8bc92af",
+                "id": "c680####-7d34-4c##-8b##-375baade####",
                 "log_setting": "Cortex Data Lake",
                 "name": "Drop Traffic to Bulletproof hosting providers",
                 "negate_destination": false,
@@ -309,7 +309,7 @@ List security rules
                 "from": [
                     "any"
                 ],
-                "id": "55eefe85-ccca-4341-a77d-d5083dd88987",
+                "id": "c680####-7d34-4c##-8b##-375baade####",
                 "log_setting": "Cortex Data Lake",
                 "name": "Drop Traffic from Known Malicious IP Addresses",
                 "negate_destination": false,
@@ -346,7 +346,7 @@ List security rules
                 "from": [
                     "any"
                 ],
-                "id": "9aa5d7be-4823-40bc-9b3f-0e857f3c0261",
+                "id": "c680####-7d34-4c##-8b##-375baade####",
                 "log_setting": "Cortex Data Lake",
                 "name": "Drop Traffic from Potential High Risk IP Addresses",
                 "negate_destination": false,
@@ -489,7 +489,7 @@ Edit or edit existing security rule
 | PrismaAccess.UpdatedSecurityRule.to | String |  | 
 
 #### Command example
-```!prisma-access-edit-security-rule id="c6801a57-7d34-4c79-8b19-375baade456c" name="new-test-rule" action="deny" description="Rule Edited by XSOAR" application="any" category="any" destination="XSOAR Test Object B" profile_setting="best-practice" service="application-default" source="XSOAR Test Object B" source_user="any" from="trust" to="any"```
+```!prisma-access-edit-security-rule id="c680####-7d34-4c##-8b##-375baade####" name="new-test-rule" action="deny" description="Rule Edited by XSOAR" application="any" category="any" destination="XSOAR Test Object B" profile_setting="best-practice" service="application-default" source="XSOAR Test Object B" source_user="any" from="trust" to="any"```
 #### Context Example
 ```json
 {
@@ -510,7 +510,7 @@ Edit or edit existing security rule
             "from": [
                 "trust"
             ],
-            "id": "c6801a57-7d34-4c79-8b19-375baade456c",
+            "id": "c680####-7d34-4c##-8b##-375baade####",
             "name": "new-test-rule",
             "profile_setting": {
                 "group": [
@@ -539,7 +539,7 @@ Edit or edit existing security rule
 >### Security Rule Updated
 >|action|application|category|description|destination|folder|from|id|name|profile_setting|service|source|source_user|to|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| deny | any | any | Rule Edited by XSOAR | XSOAR Test Object B | Shared | trust | c6801a57-7d34-4c79-8b19-375baade456c | new-test-rule | group: best-practice | application-default | XSOAR Test Object B | any | any |
+>| deny | any | any | Rule Edited by XSOAR | XSOAR Test Object B | Shared | trust | c680####-7d34-4c##-8b##-375baade#### | new-test-rule | group: best-practice | application-default | XSOAR Test Object B | any | any |
 
 
 ### prisma-sase-query-agg-monitor-api
@@ -627,7 +627,7 @@ Get a security rule using the name
             "from": [
                 "trust"
             ],
-            "id": "232f5389-468d-4c12-8617-6cbb267ba880",
+            "id": "c680####-7d34-4c##-8b##-375baade####",
             "name": "new-test-ruleB",
             "position": "pre",
             "profile_setting": {
@@ -657,7 +657,7 @@ Get a security rule using the name
 >### Security Rules
 >|action|application|category|description|destination|folder|from|id|name|position|profile_setting|service|source|source_user|to|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| deny | any | any | Test Rule Created by XSOAR | XSOAR Test Object B | Shared | trust | 232f5389-468d-4c12-8617-6cbb267ba880 | new-test-ruleB | pre | group: best-practice | application-default | XSOAR Test Object B | any | any |
+>| deny | any | any | Test Rule Created by XSOAR | XSOAR Test Object B | Shared | trust | c680####-7d34-4c##-8b##-375baade#### | new-test-ruleB | pre | group: best-practice | application-default | XSOAR Test Object B | any | any |
 
 
 ### prisma-access-get-config-jobs-by-id
@@ -734,7 +734,7 @@ Get specific config job by the jobid
             "summary": "",
             "type_i": "53",
             "type_str": "CommitAndPush",
-            "uname": "APIGateway@ProdInternal.com"
+            "uname": "user@example.com"
         }
     }
 }
@@ -806,7 +806,7 @@ List config jobs
                 "status_str": "FIN",
                 "summary": "Configuration push failed",
                 "type_str": "CommitAll",
-                "uname": "APIGateway@ProdInternal.com"
+                "uname": "user@example.com"
             },
             {
                 "description": "",
@@ -822,7 +822,7 @@ List config jobs
                 "status_str": "FIN",
                 "summary": "",
                 "type_str": "CommitAndPush",
-                "uname": "APIGateway@ProdInternal.com"
+                "uname": "user@example.com"
             },
             {
                 "description": "Mobile Users Global Protect configuration pushed to cloud",
@@ -838,7 +838,7 @@ List config jobs
                 "status_str": "FIN",
                 "summary": "Configuration push failed",
                 "type_str": "CommitAll",
-                "uname": "APIGateway@ProdInternal.com"
+                "uname": "user@example.com"
             },
             {
                 "description": "",
@@ -854,7 +854,7 @@ List config jobs
                 "status_str": "FIN",
                 "summary": "",
                 "type_str": "CommitAndPush",
-                "uname": "APIGateway@ProdInternal.com"
+                "uname": "user@example.com"
             },
             {
                 "description": "Mobile Users Global Protect configuration pushed to cloud",
@@ -870,7 +870,7 @@ List config jobs
                 "status_str": "FIN",
                 "summary": "Configuration push finished",
                 "type_str": "CommitAll",
-                "uname": "APIGateway@ProdInternal.com"
+                "uname": "user@example.com"
             }
         ]
     }
@@ -926,7 +926,7 @@ Delete security rule
 | PrismaAccess.DeletedSecurityRule.to | String |  | 
 
 #### Command example
-```!prisma-access-delete-security-rule rule_id="c6801a57-7d34-4c79-8b19-375baade456c"```
+```!prisma-access-delete-security-rule rule_id="c680####-7d34-4c##-8b##-375baade####"```
 #### Context Example
 ```json
 {
@@ -947,7 +947,7 @@ Delete security rule
             "from": [
                 "trust"
             ],
-            "id": "c6801a57-7d34-4c79-8b19-375baade456c",
+            "id": "c680####-7d34-4c##-8b##-375baade####",
             "name": "new-test-rule",
             "profile_setting": {
                 "group": [
@@ -976,7 +976,7 @@ Delete security rule
 >### Security Rule Deleted
 >|action|application|category|description|destination|folder|from|id|name|profile_setting|service|source|source_user|to|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| deny | any | any | Rule Edited by XSOAR | XSOAR Test Object B | Shared | trust | c6801a57-7d34-4c79-8b19-375baade456c | new-test-rule | group: best-practice | application-default | XSOAR Test Object B | any | any |
+>| deny | any | any | Rule Edited by XSOAR | XSOAR Test Object B | Shared | trust | c680####-7d34-4c##-8b##-375baade#### | new-test-rule | group: best-practice | application-default | XSOAR Test Object B | any | any |
 
 
 ### prisma-access-create-address-object
@@ -1019,7 +1019,7 @@ Create a new address object
         "CreatedAddress": {
             "description": "Test Object Creation from XSOAR",
             "folder": "Shared",
-            "id": "c6d795c5-776f-4732-a634-23d3d3a0cb90",
+            "id": "c680####-7d34-4c##-8b##-375baade####",
             "ip_netmask": "10.10.10.10/32",
             "name": "XSOAR Test Object B"
         }
@@ -1032,7 +1032,7 @@ Create a new address object
 >### Address Object Created
 >|description|folder|id|ip_netmask|name|
 >|---|---|---|---|---|
->| Test Object Creation from XSOAR | Shared | c6d795c5-776f-4732-a634-23d3d3a0cb90 | 10.10.10.10/32 | XSOAR Test Object B |
+>| Test Object Creation from XSOAR | Shared | c680####-7d34-4c##-8b##-375baade#### | 10.10.10.10/32 | XSOAR Test Object B |
 
 
 ### prisma-access-edit-address-object
@@ -1067,7 +1067,7 @@ Edit address object
 | PrismaAccess.EditedAddress.name | String |  | 
 
 #### Command example
-```!prisma-access-edit-address-object id="9ea49e14-eb8a-42c3-90fc-56484c181d99" ip_netmask="10.10.10.11/32" name="XSOAR Test Object" description="XSOAR edited object"```
+```!prisma-access-edit-address-object id="c680####-7d34-4c##-8b##-375baade####" ip_netmask="10.10.10.11/32" name="XSOAR Test Object" description="XSOAR edited object"```
 #### Context Example
 ```json
 {
@@ -1075,7 +1075,7 @@ Edit address object
         "EditedAddress": {
             "description": "XSOAR edited object",
             "folder": "Shared",
-            "id": "9ea49e14-eb8a-42c3-90fc-56484c181d99",
+            "id": "c680####-7d34-4c##-8b##-375baade####",
             "ip_netmask": "10.10.10.11/32",
             "name": "XSOAR Test Object"
         }
@@ -1088,7 +1088,7 @@ Edit address object
 >### Address Object Edited
 >|description|folder|id|ip_netmask|name|
 >|---|---|---|---|---|
->| XSOAR edited object | Shared | 9ea49e14-eb8a-42c3-90fc-56484c181d99 | 10.10.10.11/32 | XSOAR Test Object |
+>| XSOAR edited object | Shared | c680####-7d34-4c##-8b##-375baade#### | 10.10.10.11/32 | XSOAR Test Object |
 
 
 ### prisma-access-delete-address-object
@@ -1119,7 +1119,7 @@ Delete address object
 | PrismaAccess.DeletedAddress.name | String |  | 
 
 #### Command example
-```!prisma-access-delete-address-object id="9ea49e14-eb8a-42c3-90fc-56484c181d99"```
+```!prisma-access-delete-address-object id="c680####-7d34-4c##-8b##-375baade####"```
 #### Context Example
 ```json
 {
@@ -1127,7 +1127,7 @@ Delete address object
         "DeletedAddress": {
             "description": "XSOAR edited object",
             "folder": "Shared",
-            "id": "9ea49e14-eb8a-42c3-90fc-56484c181d99",
+            "id": "c680####-7d34-4c##-8b##-375baade####",
             "ip_netmask": "10.10.10.11/32",
             "name": "XSOAR Test Object"
         }
@@ -1140,7 +1140,7 @@ Delete address object
 >### Address Object Deleted
 >|description|folder|id|ip_netmask|name|
 >|---|---|---|---|---|
->| XSOAR edited object | Shared | 9ea49e14-eb8a-42c3-90fc-56484c181d99 | 10.10.10.11/32 | XSOAR Test Object |
+>| XSOAR edited object | Shared | c680####-7d34-4c##-8b##-375baade#### | 10.10.10.11/32 | XSOAR Test Object |
 
 
 ### prisma-access-list-address-objects
@@ -1185,19 +1185,19 @@ List Address Objects
                 "description": "Palo Alto Networks sinkhole",
                 "folder": "Shared",
                 "fqdn": "sinkhole.paloaltonetworks.com",
-                "id": "094400ae-fbc1-4f10-a07b-9c0e760ba8e8",
+                "id": "c680####-7d34-4c##-8b##-375baade####",
                 "name": "Palo Alto Networks Sinkhole"
             },
             {
                 "folder": "Shared",
-                "id": "4e3ae146-20fe-4e9c-9778-cfb6b478382b",
-                "ip_netmask": "100.127.0.0/16",
+                "id": "c680####-7d34-4c##-8b##-375baade####",
+                "ip_netmask": "10.0.0.0/16",
                 "name": "GP-Users"
             },
             {
                 "description": "Test Object Creation from XSOAR",
                 "folder": "Shared",
-                "id": "9ea49e14-eb8a-42c3-90fc-56484c181d99",
+                "id": "c680####-7d34-4c##-8b##-375baade####",
                 "ip_netmask": "10.10.10.10/32",
                 "name": "XSOAR Test Object"
             }
@@ -1212,6 +1212,6 @@ List Address Objects
 >|name|description|ip_netmask|fqdn|
 >|---|---|---|---|
 >| Palo Alto Networks Sinkhole | Palo Alto Networks sinkhole |  | sinkhole.paloaltonetworks.com |
->| GP-Users |  | 100.127.0.0/16 |  |
+>| GP-Users |  | 10.0.0.0/16 |  |
 >| XSOAR Test Object | Test Object Creation from XSOAR | 10.10.10.10/32 |  |
 
