@@ -1868,7 +1868,7 @@ script:
     - description: ''
       isArray: false
       name: domain_batchinitsessionrequest_existing_batch_id
-      required: true
+      required: false
     - description: ''
       isArray: true
       name: domain_batchinitsessionrequest_host_ids

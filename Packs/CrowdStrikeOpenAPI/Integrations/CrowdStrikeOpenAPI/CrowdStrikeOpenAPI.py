@@ -301,8 +301,12 @@ class Client:
 
     def batch_init_sessions_request(self, timeout, timeout_duration, domain_batchinitsessionrequest_existing_batch_id, domain_batchinitsessionrequest_host_ids, domain_batchinitsessionrequest_queue_offline):
         params = assign_params(timeout=timeout, timeout_duration=timeout_duration)
-        data = assign_params(existing_batch_id=domain_batchinitsessionrequest_existing_batch_id,
-                             host_ids=domain_batchinitsessionrequest_host_ids, queue_offline=domain_batchinitsessionrequest_queue_offline)
+
+        data = assign_params(host_ids=domain_batchinitsessionrequest_host_ids,
+                             queue_offline=domain_batchinitsessionrequest_queue_offline)
+
+        if domain_batchinitsessionrequest_existing_batch_id:
+            data['existing_batch_id'] = domain_batchinitsessionrequest_existing_batch_id
 
         headers = self.cs_client._headers
 
