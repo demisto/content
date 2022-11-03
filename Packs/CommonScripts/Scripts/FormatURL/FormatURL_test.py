@@ -196,6 +196,8 @@ FAILS = [
      pytest.raises(URLError)),  # invalid domain in host section (no tld)
     ('https://www.t/',  # disable-secrets-detection
      pytest.raises(URLError)),  # invalid domain in host section (single letter tld)
+    ('foo//',  # disable-secrets-detection
+     pytest.raises(URLError)),  # invalid input
 ]
 
 REDIRECT_TEST_DATA = ATP_REDIRECTS + PROOF_POINT_REDIRECTS + FIREEYE_REDIRECT
@@ -319,11 +321,11 @@ def test_formatter(mocker):
 
 
 def test_failed_formatter(mocker):
-    mocker.patch.object(demisto, 'args', return_value={'input': 'https://@www.test.com'})
-    mocker.patch.object(demisto, 'results')
+        mocker.patch.object(demisto, 'args', return_value={'input': 'https://@www.test.com'})
+        mocker.patch.object(demisto, 'results')
 
-    main()
+        main()
 
-    results = demisto.results.call_args[0]
+        results = demisto.results.call_args[0]
 
-    assert results[0] == ['']
+        assert results[0] == ['']

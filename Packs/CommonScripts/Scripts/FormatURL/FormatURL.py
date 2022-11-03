@@ -61,7 +61,6 @@ class URLCheck(object):
 
         if "//" in self.modified_url[:8]:
             # The URL seems to have a scheme indicated by presence of "//"
-            # todo - check the case of "f//"
             self.scheme_check()
 
         try:
@@ -134,6 +133,11 @@ class URLCheck(object):
                         raise URLError("Only scheme provided")
 
                     return
+
+            elif index == len(self.modified_url) - 1:
+                # Reached end of url and no ":" found (like "foo//")
+
+                raise URLError('Invalid scheme')
 
             else:
                 # base is not incremented as it was incremented by 2 before
@@ -543,10 +547,10 @@ def main():
             formatted_url = URLFormatter(url).output
 
         except URLError as e:
-            demisto.error(e.__str__())
+            demisto.debug(e.__str__())
 
         except Exception as e:
-            demisto.error(traceback.format_exc() + str(e))  # print the traceback
+            demisto.debug(traceback.format_exc() + str(e))  # print the traceback
 
         finally:
             formatted_urls.append(formatted_url)
