@@ -916,16 +916,19 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
 
     @property
     def sanity_tests(self) -> Optional[CollectionResult]:
-        return CollectionResult(
-            test='Sanity Test - Playbook with Unmockable Whois Integration',
-            pack='Whois',
-            reason=CollectionReason.SANITY_TESTS,
-            reason_description='XSIAM Nightly sanity',
-            version_range=None,
-            conf=self.conf,
-            id_set=self.id_set,
-            is_sanity=True,
-        )
+        return CollectionResult.union(tuple(
+            CollectionResult(
+                test=test,
+                pack=SANITY_TEST_TO_PACK.get(test),  # None in most cases
+                reason=CollectionReason.SANITY_TESTS,
+                version_range=None,
+                reason_description='XSIAM Nightly sanity',
+                conf=self.conf,
+                id_set=self.id_set,
+                is_sanity=True
+            )
+            for test in self.conf['test_marketplacev2']
+        ))
 
     def _collect(self) -> Optional[CollectionResult]:
         return CollectionResult.union((
