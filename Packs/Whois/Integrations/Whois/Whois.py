@@ -8079,15 +8079,12 @@ def parse_dates(dates):
                     demisto.debug(e)
         try:
             if year > 0:
+                if month > 12:
+                    month, day = day, month
                 if 0 in [year, month, day]:
                     parsed_dates.append(InvalidDateHandler(year=year, month=month, day=day))
                 else:
-                    try:
-                        parsed_dates.append(datetime(year, month, day, hour, minute, second))
-                    except ValueError as e:
-                        # We might have gotten the day and month the wrong way around, let's try it the other way around
-                        # If you're not using an ISO-standard date format, you're an evil registrar!
-                        parsed_dates.append(datetime(year, day, month, hour, minute, second))
+                    parsed_dates.append(datetime(year, month, day, hour, minute, second))
         except UnboundLocalError as e:
             pass
 
