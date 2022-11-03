@@ -379,8 +379,8 @@ def test_get_urls_and_emails_from_pdf_file_with_encrypt(tmp_path):
     if os.path.exists(dec_file_path):
         os.remove(dec_file_path)
 
-    assert urls == expected_urls
-    assert emails == expected_emails
+    assert set(urls) == expected_urls
+    assert set(emails) == expected_emails
 
 
 def test_get_urls_and_emails_from_pdf_file_without_encrypt(tmp_path):
@@ -409,8 +409,8 @@ def test_get_urls_and_emails_from_pdf_file_without_encrypt(tmp_path):
     # Extract URLs and Emails:
     urls, emails = extract_urls_and_emails_from_pdf_file(file_path, tmp_path)
 
-    assert urls == expected_urls
-    assert emails == expected_emails
+    assert set(urls) == expected_urls
+    assert set(emails) == expected_emails
 
 
 def test_handle_error_read_only(mocker):
