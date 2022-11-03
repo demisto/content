@@ -208,3 +208,4 @@ TheHive
 NPS
 SRX
 vCenter
+ESXi
