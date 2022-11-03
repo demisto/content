@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 54777f8c-f741-4bdc-8d58-e49667f9e289
+    taskid: 88da618e-e478-47b5-8298-7390513d0299
     type: condition
     task:
-      id: 54777f8c-f741-4bdc-8d58-e49667f9e289
+      id: 88da618e-e478-47b5-8298-7390513d0299
       version: -1
       name: Is there an IP address?
       description: Determines if the IP address has been supplied to proceed with cloud enrichment.
@@ -64,15 +64,6 @@ tasks:
             iscontext: true
           right:
             value: {}
-      - - operator: isNotEqualString
-          left:
-            value:
-              complex:
-                root: inputs.RemoteIP
-            iscontext: true
-          right:
-            value:
-              simple: None
     continueonerrortype: ""
     view: |-
       {
@@ -1888,7 +1879,7 @@ inputs:
     complex:
       root: alert
       accessor: remoteip
-  required: true
+  required: false
   description: IP address of service
   playbookInputQuery:
 outputs: []

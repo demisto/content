@@ -1,4 +1,3 @@
-# Playbook to Enrich asset information and providing remediation
 This playbook aims to handle ASM alerts by enriching asset information and providing means of remediating the issue directly or through contacting service owners.
 
 ## Dependencies
@@ -6,22 +5,22 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 * Cortex ASM - Detect Service
-* AWS - Security Group Remediation
 * Cortex ASM - Enrichment
+* AWS - Security Group Remediation
+* Cortex ASM - Remediation Guidance
 
 ### Integrations
 * ServiceNow v2
 
 ### Scripts
-* GetRemediationGuidance
-* GetTime
 * GridFieldSetup
+* GetTime
 * GenerateASMReport
 
 ### Commands
-* send-mail
 * servicenow-create-ticket
 * closeInvestigation
+* send-mail
 
 ## Playbook Inputs
 ---

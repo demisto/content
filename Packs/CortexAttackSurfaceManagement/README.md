@@ -17,6 +17,7 @@ This pack contains all of the integrations, automations, and playbooks necessary
 1. Cortex ASM - ASM Alert
 2. Cortex ASM - Detect Service
 3. Cortex ASM - Enrichment
+4. Cortex ASM - Remediation Guidance
 
 ### Cortex ASM - ASM Alert
 Playbook that enriches asset information for ASM alerts and provides means of remediation.
@@ -30,14 +31,13 @@ Playbook that looks at what ASM sub-type the alert is and direct to different pr
 Playbook that is used as a container folder for all enrichments of ASM alerts.
 ![Cortex ASM - Enrichment](https://raw.githubusercontent.com/demisto/content/d6d88d2066ef1f0868e8e61c5f20a71766f3cae1/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Enrichment.png)
 
+#### Cortex ASM - Remediation Guidance
+Playbook that pulls remediation guidance off of a list based on ASM RuleID to be used in service owner notifications (email or ticketing system).
+<ADD ABSOLUTE LINK AFTER PUSH>
+
 ### Automation Scripts
 This content pack includes the following scripts: 
-1. GetRemediationGuidance
-2. GenerateASMReport
-
-#### GetRemediationGuidance
-This automation helps determine remediation guidance based on a list of Xpanse issueTypeId to remediationGuidance pairings.
-![GetRemediationGuidance](https://raw.githubusercontent.com/demisto/content/d6d88d2066ef1f0868e8e61c5f20a71766f3cae1/Packs/CortexAttackSurfaceManagement/doc_files/GetRemediationGuidance.png)
+1. GenerateASMReport
 
 #### GenerateASMReport
 This automation helps generate an ASM alert summary report with important information found via the playbook run.

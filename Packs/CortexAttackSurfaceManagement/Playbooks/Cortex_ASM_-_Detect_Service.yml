@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2152de4c-a87b-42a0-8e09-806bad3a33a5
+    taskid: d56b908b-b826-4f48-8c55-f729b3c2d368
     type: start
     task:
-      id: 2152de4c-a87b-42a0-8e09-806bad3a33a5
+      id: d56b908b-b826-4f48-8c55-f729b3c2d368
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 0e76bba2-d333-4943-81b3-5d1f2994a04c
+    taskid: 46326462-8ebf-4c24-843b-96edfd7479d0
     type: condition
     task:
-      id: 0e76bba2-d333-4943-81b3-5d1f2994a04c
+      id: 46326462-8ebf-4c24-843b-96edfd7479d0
       version: -1
       name: What is the sub-alert type?
       description: Determines if ASM sub-alert type for different scans.
@@ -96,10 +96,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: ef33a923-7356-4464-87b9-7db50dc0c694
+    taskid: 2f7e73f6-9ae2-4a21-833b-6cccf955d643
     type: title
     task:
-      id: ef33a923-7356-4464-87b9-7db50dc0c694
+      id: 2f7e73f6-9ae2-4a21-833b-6cccf955d643
       version: -1
       name: Complete
       type: title
@@ -124,13 +124,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: e1e5a32b-c495-4aa2-8d35-5a0a6471e5c9
+    taskid: c45f25ed-6a1b-4833-8262-e698f70ba637
     type: condition
     task:
-      id: e1e5a32b-c495-4aa2-8d35-5a0a6471e5c9
+      id: c45f25ed-6a1b-4833-8262-e698f70ba637
       version: -1
-      name: Is RemoteIP or RemotePort defined?
-      description: Determines if RemoteIp or RemotePort inputs are defined for error checking.
+      name: Is RemoteIP and RemotePort defined?
+      description: Determines if RemoteIp and RemotePort inputs are defined for error checking.
       type: condition
       iscommand: false
       brand: ""
@@ -149,6 +149,8 @@ tasks:
               complex:
                 root: inputs.RemoteIP
             iscontext: true
+          right:
+            value: {}
       - - operator: isExists
           left:
             value:
@@ -172,10 +174,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 40a30750-60ad-4261-8c7c-36382b37e1a4
+    taskid: 2bcf28c6-6931-4d63-8fbd-89d0e8a91372
     type: playbook
     task:
-      id: 40a30750-60ad-4261-8c7c-36382b37e1a4
+      id: 2bcf28c6-6931-4d63-8fbd-89d0e8a91372
       version: -1
       name: NMAP - Banner Check
       description: Sub-playbook that performs an Nmap scan and compares the results against a regular expression to determine a match. This could be used to look for OpenSSH versions or other OS information found in the banner.
@@ -220,10 +222,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 87b1df9b-cc78-4134-8f5c-c8408e664c63
+    taskid: d535630c-4d38-441b-8c7d-05b861ccb89b
     type: playbook
     task:
-      id: 87b1df9b-cc78-4134-8f5c-c8408e664c63
+      id: d535630c-4d38-441b-8c7d-05b861ccb89b
       version: -1
       name: NMAP - Single Port Scan
       description: Sub-playbook that conducts a single port Nmap scan and returns the results to the parent playbook.
@@ -266,10 +268,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 5b019184-5ee6-453f-8bc7-4e2fe46fb4eb
+    taskid: 2e9b25fa-da59-4bb9-812d-77643234e07c
     type: title
     task:
-      id: 5b019184-5ee6-453f-8bc7-4e2fe46fb4eb
+      id: 2e9b25fa-da59-4bb9-812d-77643234e07c
       version: -1
       name: continue
       type: title
@@ -297,10 +299,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: ecef2591-55ae-46ff-8e9e-6e413074045d
+    taskid: f46cbbf3-85af-497a-8c39-f8599e049d24
     type: title
     task:
-      id: ecef2591-55ae-46ff-8e9e-6e413074045d
+      id: f46cbbf3-85af-497a-8c39-f8599e049d24
       version: -1
       name: Set Field
       description: commands.local.cmd.set.incident
@@ -328,10 +330,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 9c6f8cc5-e1b2-48bb-88d6-ae8248e037a2
+    taskid: b0284b87-a338-4d7d-86aa-c40ccce0b279
     type: regular
     task:
-      id: 9c6f8cc5-e1b2-48bb-88d6-ae8248e037a2
+      id: b0284b87-a338-4d7d-86aa-c40ccce0b279
       version: -1
       name: Set service detection grid field
       description: |-
@@ -470,6 +472,6 @@ inputs:
   description: scan number in case there are multiple in the parent playbook
   playbookInputQuery:
 outputs: []
+fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.5.0
