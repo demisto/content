@@ -638,20 +638,28 @@ def fetch_incidents(client: Client, args: dict) -> List:
     Retrieving release notes that contain all the information about vulnerabilities, antivirus, spyware, and more.
     '''
 
-    # Bringing the daily date for the first api call
-    today = datetime.now(timezone.utc).date()
-    fetch_first: str = args.get('first_fetch', '')
-    if fetch_first is not None:
-        first = int(fetch_first.split('d')[0])
+    last_run = demisto.getLastRun()
+    first_fetch = args.get('first_fetch', '3 Days')
+    if not last_run.get('scound_fetch'):
+        if first_fetch.strip().split(' ')[1] not in ['days', 'month', 'months', 'year', 'years']:
+            raise ValueError('The unit of date_range is invalid. Must be days, months or years.')
+        start_time, now = parse_date_range(first_fetch)
+    else:
+        _, now = parse_date_range(first_fetch)
+        start_time = now
 
+    start_time = start_time.date()
+    now = now.date()
     incidents: List[dict] = []
-    for i in range(first, -1, -1):
+    while start_time <= now:
         try:
-            demisto.debug(f'Time for request fetch-incidents -> {today}')
-            release_date = (today - timedelta(days=i)).strftime('%Y-%m-%d')
+            # Bringing the daily date for the first api call
+            demisto.debug(f'Time for request fetch-incidents -> {start_time}')
+            release_date = start_time.strftime('%Y-%m-%d')
             response = client.threat_search_request({'releaseDate': release_date})
         except Exception as err:
             if 'Error in API call [404] - Not Found' in str(err):
+                start_time += timedelta(days=1)
                 continue
             else:
                 raise ValueError(err)
@@ -669,6 +677,9 @@ def fetch_incidents(client: Client, args: dict) -> List:
                 'occurred': release['data'][0]['release_time'],
                 'rawJSON': json.dumps(parse_incident(release))
             })
+        start_time += timedelta(days=1)
+
+    demisto.setLastRun({'scound_fetch': 'true'})
     return incidents
 
 
@@ -681,6 +692,11 @@ def test_module(client: Client, *_) -> str:
     Returns:
         string.
     """
+
+    try:
+        client.threat_search_request({'type': 'ips'})
+    except Exception as err:
+        raise ValueError(err)
     return 'ok'
 
 

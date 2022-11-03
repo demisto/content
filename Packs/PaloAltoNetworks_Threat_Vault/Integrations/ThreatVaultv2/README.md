@@ -235,6 +235,17 @@ Gets the antivirus or antispyware or files signature.
 | ThreatVault.Fileformat.latest_release_version | String | The latest release version of the signature. | 
 | ThreatVault.Fileformat.ori_release_time | String | The original release time of the signature. | 
 | ThreatVault.Fileformat.latest_release_time | String | The latest release time of the signature. | 
+| ThreatVault.FileInfo.filetype | String | The file type of the file. | 
+| ThreatVault.FileInfo.sha256 | String | The sha256 of the file. | 
+| ThreatVault.FileInfo.sha1 | String | The md5 of the file. | 
+| ThreatVault.FileInfo.md5 | String | The md5 of the file. | 
+| ThreatVault.FileInfo.size | String | The size of the file. | 
+| ThreatVault.FileInfo.type | String | The type of the file. | 
+| ThreatVault.FileInfo.family | String | The family of the file. | 
+| ThreatVault.FileInfo.platform | String | The platform of the file. | 
+| ThreatVault.FileInfo.wildfire_verdict | String | The wildfire verdict. | 
+| ThreatVault.FileInfo.create_time | String | The threat signature creation time. | 
+| ThreatVault.FileInfo.signatures | String | The signatures. | 
 
 #### Command example
 ```!threatvault-threat-signature-get signature_id=93534285```

@@ -38,7 +38,8 @@ configuration:
   required: false
   type: 13
 - defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 3 days)
+  additionalinfo: The time unit must be days, months, or years.
+  display: First fetch timestamp (<number> <time unit>, e.g., 3 days)
   name: first_fetch
   required: false
   type: 0
