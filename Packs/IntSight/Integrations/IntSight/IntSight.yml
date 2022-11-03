@@ -330,108 +330,105 @@ script:
       default: true
       description: The IOC value for which to search.
     outputs:
-    - contextPath: IntSights.Iocs.ID
-      description: The ID of the IOC.
-      type: string
-    - contextPath: IntSights.Iocs.Value
-      description: The value of the IOC.
-      type: string
-    - contextPath: IntSights.Iocs.Type
-      description: The type of the IOC.
-      type: string
-    - contextPath: IntSights.Iocs.FirstSeen
-      description: The date the IOC was first seen.
-      type: date
-    - contextPath: IntSights.Iocs.LastSeen
-      description: The date the IOC was last seen.
-      type: date
-    - contextPath: IntSights.Iocs.SourceID
-      description: The ID source of the IOC.
-      type: string
-    - contextPath: IntSights.Iocs.SourceName
-      description: The source name of the IOC.
-      type: string
-    - contextPath: IntSights.Iocs.SourceConfidenceLevel
-      description: The source confidence level of the IOC.
-      type: string
-    - contextPath: IntSights.Iocs.Severity
-      description: The severity of the IOC.
-      type: string
-    - contextPath: IntSights.Iocs.AccountID
-      description: The account ID of the IOC.
-      type: string
-    - contextPath: IntSights.Iocs.Domain
-      description: The domain of the IOC.
-      type: string
-    - contextPath: IntSights.Iocs.Status
-      description: The status of the IOC.
-      type: string
-    - contextPath: IntSights.Iocs.Flags.IsInAlexa
-      description: Whether or not the IOC is in Alexa.
-      type: boolean
-    - contextPath: IntSights.Iocs.Enrichment.Status
-      description: The enrichment status of the IOC.
-      type: string
-    - contextPath: IntSights.Iocs.Enrichment.Data
-      description: The enrichment data of the IOC.
-      type: string
-    - contextPath: DBotScore.Indicator
-      description: The indicator that was tested.
-      type: String
-    - contextPath: DBotScore.Type
-      description: The type of the indicator.
-      type: String
-    - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score.
-      type: String
-    - contextPath: DBotScore.Score
-      description: The actual score.
-      type: String
-    - contextPath: File.Name
-      description: The full file name (including file extension).
-      type: String
-    - contextPath: File.Malicious.Vendor
-      description: The vendor that reported the file as malicious.
-      type: String
-    - contextPath: File.Malicious.Description
-      description: A description explaining why the file was determined to be malicious.
-      type: String
-    - contextPath: File.MD5
-      description: The MD5 hash of the file.
-      type: String
-    - contextPath: File.SHA1
-      description: The SHA1 hash of the file.
-      type: String
-    - contextPath: File.SHA256
-      description: The SHA256 hash of the file.
-      type: String
-    - contextPath: URL.Data
-      description: The URL.
-      type: String
-    - contextPath: URL.Malicious.Vendor
-      description: The vendor reporting the URL as malicious.
-      type: String
-    - contextPath: URL.Malicious.Description
-      description: A description of the malicious URL.
-      type: String
-    - contextPath: IP.Malicious.Vendor
-      description: The vendor reporting the IP address as malicious.
-      type: String
-    - contextPath: IP.Malicious.Description
-      description: A description explaining why the IP address was reported as malicious.
-      type: String
-    - contextPath: IP.Address
-      description: The IP address.
-      type: String
-    - contextPath: Domain.Name
-      description: The domain name. For example, "google.com".
-      type: String
-    - contextPath: Domain.Malicious.Vendor
-      description: The vendor reporting the domain as malicious.
-      type: String
-    - contextPath: Domain.Malicious.Description
-      description: A description explaining why the domain was reported as malicious.
-      type: String
+      - contextPath: IntSights.Iocs.Value
+        description: The value of the IOC.
+        type: string
+      - contextPath: IntSights.Iocs.Type
+        description: The type of the IOC.
+        type: string
+      - contextPath: IntSights.Iocs.FirstSeen
+        description: The date the IOC was first seen.
+        type: date
+      - contextPath: IntSights.Iocs.LastSeen
+        description: The date the IOC was last seen.
+        type: date
+      - contextPath: IntSights.Iocs.LastUpdatedDate
+        description: The date the IOC was last updated.
+        type: date
+      - contextPath: IntSights.Iocs.SourceID
+        description: The source ID of the IOC.
+        type: string
+      - contextPath: IntSights.Iocs.SourceName
+        description: The source name of the IOC.
+        type: string
+      - contextPath: IntSights.Iocs.SourceConfidenceLevel
+        description: The confidence level of the IOC source.
+        type: string
+      - contextPath: IntSights.Iocs.Severity
+        description: The severity of the IOC.
+        type: string
+      - contextPath: IntSights.Iocs.Status
+        description: The status of the IOC.
+        type: string
+      - contextPath: IntSights.Iocs.Sources.name
+        description: The source name of the IOC.
+        type: string
+      - contextPath: IntSights.Iocs.Sources.confidenceLevel
+        description: The confidence level of the IOC source.
+        type: string
+      - contextPath: IntSights.Iocs.Sources.id
+        description: The source id of the IOC.
+        type: string
+      - contextPath: IntSights.Iocs.tags
+        description: The tags of the IOC.
+        type: Array
+      - contextPath: DBotScore.Indicator
+        description: The indicator that was tested.
+        type: String
+      - contextPath: DBotScore.Type
+        description: The type of the indicator.
+        type: String
+      - contextPath: DBotScore.Vendor
+        description: The vendor used to calculate the score.
+        type: String
+      - contextPath: DBotScore.Score
+        description: The actual score.
+        type: Number
+      - contextPath: File.Name
+        description: The full file name (including file extension).
+        type: String
+      - contextPath: File.Malicious.Vendor
+        description: The vendor that reported the file as malicious.
+        type: String
+      - contextPath: File.Malicious.Description
+        description: A description explaining why the file was determined to be malicious.
+        type: String
+      - contextPath: File.MD5
+        description: The MD5 hash of the file.
+        type: String
+      - contextPath: File.SHA1
+        description: The SHA1 hash of the file.
+        type: String
+      - contextPath: File.SHA256
+        description: The SHA256 hash of the file.
+        type: String
+      - contextPath: URL.Data
+        description: The URL.
+        type: String
+      - contextPath: URL.Malicious.Vendor
+        description: The vendor reporting the URL as malicious.
+        type: String
+      - contextPath: URL.Malicious.Description
+        description: A description of the malicious URL.
+        type: String
+      - contextPath: IP.Malicious.Vendor
+        description: The vendor reporting the IP address as malicious.
+        type: String
+      - contextPath: IP.Malicious.Description
+        description: A description explaining why the IP address was reported as malicious.
+        type: String
+      - contextPath: IP.Address
+        description: IP address.
+        type: String
+      - contextPath: Domain.Name
+        description: The domain name. For example, "google.com".
+        type: String
+      - contextPath: Domain.Malicious.Vendor
+        description: The vendor reporting the domain as malicious.
+        type: String
+      - contextPath: Domain.Malicious.Description
+        description: A description explaining why the domain was reported as malicious.
+        type: String
     description: Searches for an exact IOC value.
   - name: intsights-get-iocs
     arguments:
@@ -464,13 +461,12 @@ script:
     - name: last-seen-from
       description: Beginning of the date range when the IOC was last seen (MM/DD/YYYY).
         Default is 0.
+    - name: last-updated-from
+      description: Beginning of the date range when the IOC was last updated (YYYY-MM-DD).
     - name: last-seen-to
       description: End of the date range when the IOC was last seen (MM/DD/YYYY).
         Default is 0.
     outputs:
-    - contextPath: IntSights.Iocs.ID
-      description: The ID of the IOC.
-      type: string
     - contextPath: IntSights.Iocs.Value
       description: The value of the IOC.
       type: string
@@ -482,6 +478,9 @@ script:
       type: date
     - contextPath: IntSights.Iocs.LastSeen
       description: The date the IOC was last seen.
+      type: date
+    - contextPath: IntSights.Iocs.LastUpdatedDate
+      description: The date the IOC was last updated.
       type: date
     - contextPath: IntSights.Iocs.SourceID
       description: The source ID of the IOC.
@@ -495,23 +494,21 @@ script:
     - contextPath: IntSights.Iocs.Severity
       description: The severity of the IOC.
       type: string
-    - contextPath: IntSights.Iocs.AccountID
-      description: The account ID of the IOC.
-      type: string
-    - contextPath: IntSights.Iocs.Domain
-      description: The domain of the IOC.
-      type: string
     - contextPath: IntSights.Iocs.Status
       description: The status of the IOC.
       type: string
-    - contextPath: IntSights.Iocs.Flags.IsInAlexa
-      description: Whether or not the IOC is in Alexa.
-      type: boolean
-    - contextPath: IntSights.Iocs.Enrichment.Status
-      description: The enrichment status of the IOC.
+    - contextPath: IntSights.Iocs.Sources.name
+      description: The source name of the IOC.
       type: string
-    - contextPath: IntSights.Iocs.Enrichment.Data
-      description: The enrichment data of the IOC.
+    - contextPath: IntSights.Iocs.Sources.confidenceLevel
+      description: The confidence level of the IOC source.
+      type: string
+    - contextPath: IntSights.Iocs.Sources.id
+      description: The source id of the IOC.
+      type: string
+    - contextPath: IntSights.Iocs.tags
+      description: The tags of the IOC.
+      type: Array
       type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.

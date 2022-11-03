@@ -1,5 +1,3 @@
-from CommonServerPython import *
-
 import os
 
 URL = demisto.getParam('server')
@@ -148,6 +146,7 @@ def handle_filters(found_date_from=None):
         'first-seen-from': 'firstSeenFrom',
         'first-seen-to': 'firstSeenTo',
         'last-seen-from': 'lastSeenFrom',
+        'last-updated-from': 'lastUpdatedFrom',
         'last-seen-to': 'lastSeenTo',
         'value': 'iocValue',
     }
@@ -594,42 +593,41 @@ def ioc_to_readable(ioc_data):
     """
     Convert IOC to readable format
     """
+    reported_feeds = demisto.get(ioc_data, 'reportedFeeds', demisto.get(ioc_data, 'sources', [{}]))
+    single_reported_feed = reported_feeds[0] if isinstance(reported_feeds, list) else reported_feeds
     ioc_context = {
         'ID': demisto.get(ioc_data, '_id'),
-        'SourceID': demisto.get(ioc_data, 'SourceID'),
-        'AccountID': demisto.get(ioc_data, 'AccountID'),
-        'Type': demisto.get(ioc_data, 'Type'),
-        'Value': demisto.get(ioc_data, 'Value'),
-        'FirstSeen': demisto.get(ioc_data, 'FirstSeen'),
-        'LastSeen': demisto.get(ioc_data, 'LastSeen'),
-        'Domain': demisto.get(ioc_data, 'Domain'),
-        'Status': demisto.get(ioc_data, 'Status'),
-        'Severity': demisto.get(ioc_data, 'Severity'),
-        'SourceName': demisto.get(ioc_data, 'Source.Name'),
-        'SourceConfidence': demisto.get(ioc_data, 'Source.Confidence'),
-        'Flags': {'IsInAlexa': demisto.get(ioc_data, 'Flags.IsInAlexa')},
-        'Enrichment': {
-            'Status': demisto.get(ioc_data, 'Enrichment.Status'),
-            'Data': demisto.get(ioc_data, 'Enrichment.Data'),
-            'Date': demisto.get(ioc_data, 'Enrichment.Data')  # Backwards compatibility issue
-        }
+        'Type': demisto.get(ioc_data, 'type'),
+        'Value': demisto.get(ioc_data, 'value'),
+        'FirstSeen': demisto.get(ioc_data, 'firstSeen'),
+        'LastSeen': demisto.get(ioc_data, 'lastSeen'),
+        'LastUpdateDate': demisto.get(ioc_data, 'lastUpdateDate'),
+        'Status': demisto.get(ioc_data, 'status'),
+        'Severity': demisto.get(ioc_data, 'severity'),
+        'RelatedMalware': demisto.get(ioc_data, 'relatedMalware'),
+        'RelatedCampaigns': demisto.get(ioc_data, 'relatedCampaigns'),
+        'Geolocation': demisto.get(ioc_data, 'geolocation', demisto.get(ioc_data, 'Geolocation')),
+        'RelatedThreatActors': demisto.get(ioc_data, 'relatedThreatActors'),
+        'Sources': reported_feeds,
+        'SourceName': single_reported_feed.get('name'),  # bw compatibility
+        'SourceConfidence': single_reported_feed.get('confidenceLevel'),
+        'SourceID': single_reported_feed.get('id'),
+        'Tags': demisto.get(ioc_data, 'tags'),
+        'Whitelisted': demisto.get(ioc_data, 'Whitelisted', demisto.get(ioc_data, 'whitelisted')),
     }
     ioc_readable = {
         'ID': demisto.get(ioc_data, '_id'),
-        'SourceID': demisto.get(ioc_data, 'SourceID'),
-        'AccountID': demisto.get(ioc_data, 'AccountID'),
-        'Type': demisto.get(ioc_data, 'Type'),
-        'Value': demisto.get(ioc_data, 'Value'),
-        'FirstSeen': demisto.get(ioc_data, 'FirstSeen'),
-        'LastSeen': demisto.get(ioc_data, 'LastSeen'),
-        'Domain': demisto.get(ioc_data, 'Domain'),
-        'Status': demisto.get(ioc_data, 'Status'),
-        'Severity': demisto.get(ioc_data, 'Severity').get('Value'),
-        'SourceName': demisto.get(ioc_data, 'Source.Name'),
-        'SourceConfidence': demisto.get(ioc_data, 'Source.Confidence'),
-        'IsInAlexa': demisto.get(ioc_data, 'Flags.IsInAlexa'),
-        'Enrichment Status': demisto.get(ioc_data, 'Enrichment.Status'),
-        'Enrichment Data': demisto.get(ioc_data, 'Enrichment.Data')
+        'AccountID': demisto.get(ioc_context, 'AccountID'),
+        'Type': demisto.get(ioc_context, 'Type'),
+        'Value': demisto.get(ioc_context, 'Value'),
+        'FirstSeen': demisto.get(ioc_context, 'FirstSeen'),
+        'LastSeen': demisto.get(ioc_context, 'LastSeen'),
+        'Status': demisto.get(ioc_context, 'Status'),
+        'Severity': demisto.get(ioc_context, 'Severity'),
+        'Geolocation': demisto.get(ioc_context, 'Geolocation'),
+        'SourceName': demisto.get(ioc_context, 'SourceName'),
+        'SourceID': demisto.get(ioc_context, 'SourceID'),
+        'SourceConfidence': demisto.get(ioc_context, 'SourceConfidence')
     }
     dbot_score = {
         'Indicator': ioc_context['Value'],
@@ -642,8 +640,9 @@ def ioc_to_readable(ioc_data):
         'Description': 'IntSights severity level is High'
     }
     domain = {}
-    if ioc_context['Domain']:
-        domain['Name'] = ioc_context['Domain']
+    if ioc_context['Type'] == 'Domains':
+        domain['Name'] = ioc_context['Value']
+        ioc_context['Domain'] = ioc_context['Value']
         if translate_severity(ioc_readable['Severity']) == 3:
             domain['Malicious'] = malicious_dict
 
@@ -673,7 +672,7 @@ def search_for_ioc():
     """
     Search for IOC by value
     """
-    response = http_request('GET', 'public/v1/iocs/ioc-by-value', params=handle_filters(), json_response=True)
+    response = http_request('GET', 'public/v3/iocs/ioc-by-value', params=handle_filters(), json_response=True)
 
     if response:
         ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = ioc_to_readable(response)
@@ -682,7 +681,7 @@ def search_for_ioc():
             {
                 'Type': entryTypes['note'],
                 'EntryContext': {
-                    'IntSights.Iocs(val.ID === obj.ID)': ioc_context,
+                    'IntSights.Iocs(val.Value === obj.Value)': ioc_context,
                     'DBotScore': dbot_score,
                     'Domain': domain,
                     'IP': ip_info,
@@ -691,10 +690,9 @@ def search_for_ioc():
                 },
                 'Contents': response,
                 'HumanReadable': tableToMarkdown('IOC Information', [ioc_readable],
-                                                 ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen',
-                                                  'LastSeen', 'Domain', 'Status', 'Severity', 'SourceName',
-                                                  'SourceConfidence', 'IsInAlexa', 'Enrichment Status',
-                                                  'Enrichment Data']),
+                                                 ['Type', 'Value', 'FirstSeen',
+                                                  'LastSeen', 'Status', 'Severity', 'SourceID', 'SourceName',
+                                                  'SourceConfidence', 'GeoLocation']),
                 'ContentsFormat': formats['json']
             }
         )
@@ -838,7 +836,8 @@ def request_for_ioc_enrichment():
     response = http_request('GET', request_url, json_response=True)
     status = response.get('Status')
     if status == 'Done':
-        ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = ioc_enrichment_to_readable(response)
+        ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = ioc_enrichment_to_readable(
+            response)
 
         demisto.results(
             {
@@ -929,7 +928,8 @@ def get_iocs():
     """
     Gets all IOCs with the given filters
     """
-    response = http_request('GET', 'public/v1/iocs/complete-iocs-list', params=handle_filters(), json_response=True)
+    response = http_request('GET', 'public/v3/iocs', params=handle_filters(), json_response=True)
+    content = response.get('content')
     domains = []
     ip_infos = []
     url_infos = []
@@ -938,7 +938,7 @@ def get_iocs():
     iocs_context = []
     iocs_readable = []
 
-    for indicator in response:
+    for indicator in content:
         ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = ioc_to_readable(indicator)
         iocs_context.append(ioc_context)
         iocs_readable.append(ioc_readable)
@@ -948,14 +948,13 @@ def get_iocs():
         url_infos.append(url_info)
         hash_infos.append(hash_info)
 
-    headers = ['ID', 'SourceID', 'AccountID', 'Type', 'Value', 'FirstSeen', 'LastSeen',
-               'Domain', 'Status', 'Severity', 'SourceName', 'SourceConfidence',
-               'IsInAlexa', 'Enrichment Status', 'Enrichment Data']
+    headers = ['Type', 'Value', 'FirstSeen', 'LastSeen', 'Status', 'Severity', 'SourceID', 'SourceName',
+               'SourceConfidence', 'Geolocation']
     demisto.results(
         {
             'Type': entryTypes['note'],
             'EntryContext': {
-                'IntSights.Iocs': iocs_context,
+                'IntSights.Iocs(val.Value && val.Value === obj.Value)': iocs_context,
                 'DBotScore': dbot_scores,
                 'Domain': domains,
                 'IP': ip_infos,
@@ -1100,7 +1099,7 @@ def test_module():
     demisto.results('ok')
 
 
-def main():     # pragma: no cover
+def main():  # pragma: no cover
     try:
         if demisto.command() == 'test-module':
             test_module()
