@@ -3,11 +3,11 @@ filter _raw_log contains "| vlsi |" or _raw_log contains "| vim" or _raw_log con
 | alter Date = arrayindex(regextract(_raw_log,"(\d+\-\d+\-\d+).\d+\:\d+\:\d+"),0)
     ,Hour = arrayindex(regextract(_raw_log,"\d+\-\d+\-\d+.(\d+\:\d+\:\d+)"),0)
 | alter TimeStamp = concat(Date," ",Hour)
-//| alter log_level1 = arrayindex(regextract(_raw_log ,"-\s\d{4}-\d{2}-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z\s([A-Za-z]+)"),0)
-//    ,log_level2 = arrayindex(regextract(_raw_log ,"-\s\d{4}-\d{2}-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z\s\|\s+([A-Za-z]+)\s"),0)
-//    ,log_level3 = arrayindex(regextract(_raw_log ,"-\s\d{4}-\d{2}-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z\s\[[a-zA-Z0-9\-\]]+\s+([a-zA-Z]+)\s"),0)
-//    ,log_level4 = arrayindex(regextract(_raw_log ,"\d{4}-\d{2}-\d{2} \d{2}\:\d{2}\:\d{2}\.\d{3}Z\s[a-zA-Z]+\s([a-zA-Z]+)\s"),0)
-//| alter LogLevel = coalesce(log_level1 , log_level2 , log_level3 , log_level4 )
+| alter log_level1 = arrayindex(regextract(_raw_log ,"-\s\d{4}-\d{2}-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z\s([A-Za-z]+)"),0)
+    ,log_level2 = arrayindex(regextract(_raw_log ,"-\s\d{4}-\d{2}-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z\s\|\s+([A-Za-z]+)\s"),0)
+    ,log_level3 = arrayindex(regextract(_raw_log ,"-\s\d{4}-\d{2}-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z\s\[[a-zA-Z0-9\-\]]+\s+([a-zA-Z]+)\s"),0)
+    ,log_level4 = arrayindex(regextract(_raw_log ,"\d{4}-\d{2}-\d{2} \d{2}\:\d{2}\:\d{2}\.\d{3}Z\s[a-zA-Z]+\s([a-zA-Z]+)\s"),0)
+| alter LogLevel = coalesce(log_level1 , log_level2 , log_level3 , log_level4 )
 | alter event_type = arrayindex(regextract(_raw_log ,"\d{4}-\d{2}-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z\s\[([a-z0-9\-]+)"),0)
     ,originator = arrayindex(regextract(_raw_log,"Originator\@(\d+)"),0)
 	,opID = arrayindex(regextract(_raw_log,"opID\=([a-zA-Z0-9ֿ\-]+)"),0)
@@ -15,7 +15,8 @@ filter _raw_log contains "| vlsi |" or _raw_log contains "| vim" or _raw_log con
 | alter
     xdm.event.type = event_type,
     xdm.target.resource.id = opID,
-    xdm.event.description = message;
+    xdm.event.description = message,
+    xdm.alert.severity = LogLevel;
 
 filter _raw_log contains "vpxd" or _raw_log contains "[vmafdd]" or _raw_log contains " vmdird "
 | alter message = arrayindex(regextract(_raw_log ,"\]([^\]]+)$"),0)
