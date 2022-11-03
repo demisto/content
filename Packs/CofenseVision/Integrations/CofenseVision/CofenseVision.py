@@ -1677,7 +1677,7 @@ def get_standard_context(client: VisionClient, ioc: Dict) -> Optional[Common.Ind
         ioc(Dict): ioc details returned from API.
 
     Returns:
-        Common.Indicator: Standard context.
+        Optional[Common.Indicator]: Standard context.
     """
     if not ioc or not ioc.get('id'):
         return None
@@ -1704,33 +1704,31 @@ def get_standard_context(client: VisionClient, ioc: Dict) -> Optional[Common.Ind
         score=score
     )
     if threat_type == "url":
-        standard_context = Common.URL(
+        return Common.URL(
             url=threat_value,
             dbot_score=dbot_score
         )
     elif threat_type == "domain":
-        standard_context = Common.Domain(
+        return Common.Domain(
             domain=threat_value,
             dbot_score=dbot_score
         )
     elif threat_type == "sender":
-        standard_context = Common.EMAIL(
+        return Common.EMAIL(
             address=threat_value,
             dbot_score=dbot_score
         )
     elif threat_type == "md5":
-        standard_context = Common.File(
+        return Common.File(
             md5=threat_value,
             dbot_score=dbot_score
         )
     elif threat_type == "sha256":
-        standard_context = Common.File(
+        return Common.File(
             sha256=threat_value,
             dbot_score=dbot_score
         )
-    else:
-        standard_context = dbot_score
-    return standard_context
+    return None
 
 
 """ COMMAND FUNCTIONS """
