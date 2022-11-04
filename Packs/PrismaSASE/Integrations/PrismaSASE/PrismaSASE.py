@@ -73,18 +73,12 @@ class Client(BaseClient):
                 field_value = args.get(key)
                 if field_value != "" and field_value != "None":
                     if key == 'profile_setting':
-                        if isinstance(field_value, list):
-                            val = field_value
-                        else:
-                            val = [x.strip() for x in field_value.split(',')]   # type: ignore
+                        val = argToList(field_value)
                         rule[key] = {'group': val}
                     elif isinstance(SECURITYRULE_FIELDS.get(key), str):
                         rule[key] = field_value   # type: ignore
                     elif isinstance(SECURITYRULE_FIELDS.get(key), list):
-                        if isinstance(field_value, list):
-                            val = field_value
-                        else:
-                            val = [x.strip() for x in field_value.split(';')]   # type: ignore
+                        val = argToList(field_value)
                         rule[key] = val   # type: ignore
         return rule
 
@@ -128,7 +122,7 @@ class Client(BaseClient):
         Returns:
             Outputs.
         """
-        uri = f'/sse/config/v1/security-rules/{ruleid}'
+        uri = f'{CONFIG_URI_PREFIX}security-rules/{ruleid}'
         access_token = self.get_access_token(tsg_id)
 
         headers = self._headers
@@ -389,12 +383,6 @@ class Client(BaseClient):
         tsg_expiry_time = f'{tsg_id}.expiry_time'
         previous_token = integration_context.get(tsg_access_token)
         previous_token_expiry_time = integration_context.get(tsg_expiry_time)
-
-        '''
-        If there is an existing access token, and it has not expired, set it as the access token for this request
-        Else request a new access token for the provided TSG and store it in the integration context and add the TSG ID
-        as a prefix
-        '''
 
         if previous_token and previous_token_expiry_time > date_to_timestamp(datetime.now()):
             return previous_token
@@ -712,7 +700,7 @@ def push_candidate_config_command(client: Client, args: Dict[str, Any], default_
     Returns:
         Outputs.
     """
-    folders = [x.strip() for x in args.get('folders').split(',')]  # type: ignore
+    folders = argToList(args.get('folders')) # type: ignore
 
     tsg_id = args.get('tsg_id') or default_tsg_id
 
@@ -750,7 +738,7 @@ def list_security_rules_command(client: Client, args: Dict[str, Any], default_ts
     if limit := arg_to_number(args.get('limit', 10)):
         query_params["limit"] = limit
     if offset := arg_to_number(args.get('offset', 0)):
-        query_params["offset"] = encode_string_results(offset)
+        query_params["offset"] = offset
 
     raw_response = client.list_security_rules(query_params, tsg_id)  # type: ignore
 
@@ -808,8 +796,7 @@ def get_config_jobs_by_id_command(client: Client, args: Dict[str, Any], default_
     Returns:
         Outputs.
     """
-    job_ids = args.get('id')
-    job_ids = job_ids.split(',')  # type: ignore
+    job_ids = argToList(args.get('id'))
 
     tsg_id = args.get('tsg_id') or default_tsg_id
 
@@ -848,8 +835,8 @@ def list_config_jobs_command(client: Client, args: Dict[str, Any], default_tsg_i
     if limit := arg_to_number(args.get('limit', 200)):
         query_params["limit"] = limit
 
-    if args.get('offset'):
-        query_params["offset"] = encode_string_results(args.get('offset'))
+    if offset := arg_to_number(args.get('offset', 0)):
+        query_params["offset"] = offset
 
     raw_response = client.list_config_jobs(tsg_id, query_params)  # type: ignore
 
