@@ -409,8 +409,8 @@ def test_get_urls_and_emails_from_pdf_file_without_encrypt(tmp_path):
     # Extract URLs and Emails:
     urls, emails = extract_urls_and_emails_from_pdf_file(file_path, tmp_path)
 
-    assert set(urls) == expected_urls
     assert set(emails) == expected_emails
+    assert set(url_data['Data'] for url_data in urls) == expected_urls
 
 
 def test_handle_error_read_only(mocker):
