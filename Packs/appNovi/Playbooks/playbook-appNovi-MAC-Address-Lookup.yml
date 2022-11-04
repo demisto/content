@@ -83,7 +83,8 @@ tasks:
       id: 16dc732b-5992-4312-8458-381acf2e6220
       version: -1
       name: appNovi integration enabled?
-      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -200,7 +201,7 @@ inputs:
     simple: ${incident.macaddress}
   required: true
   description: mac address
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: appNovi.attached
   description: list of Servers and IPs associated with MAC address
