@@ -700,7 +700,7 @@ def push_candidate_config_command(client: Client, args: Dict[str, Any], default_
     Returns:
         Outputs.
     """
-    folders = argToList(args.get('folders')) # type: ignore
+    folders = argToList(args.get('folders'))  # type: ignore
 
     tsg_id = args.get('tsg_id') or default_tsg_id
 

@@ -1,94 +1,117 @@
-id: PrismaSASE
-name: PrismaSASE
+id: PrismaSASE_TestPlaybook
 version: -1
-fromversion: 4.5.0
-starttaskid: '0'
+name: PrismaSASE_TestPlaybook
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
-    taskid: '0'
+  "0":
+    id: "0"
+    taskid: 8e77d4a5-6041-401c-82c8-69af25903b94
     type: start
     task:
-      id: '0'
+      id: 8e77d4a5-6041-401c-82c8-69af25903b94
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     separatecontext: false
-    view: '{"position":{"x":50,"y":50}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
-  '1':
-    id: 1
-    taskid: '1'
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 4cea0228-cf4d-4960-820d-a5151cd8a4b9
     type: regular
     task:
-      id: '1'
+      id: 4cea0228-cf4d-4960-820d-a5151cd8a4b9
       version: -1
       name: DeleteContext
-      description: ''
       script: DeleteContext
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '2'
+      - "2"
     scriptarguments:
       all:
-        simple: yes
+        simple: "yes"
     separatecontext: false
-    view: '{"position":{"x":50,"y":200}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '2':
-    id: 2
-    taskid: '2'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 14e8eb40-df8c-4f54-8b29-136d33a2f6a0
     type: regular
     task:
-      id: '2'
+      id: 14e8eb40-df8c-4f54-8b29-136d33a2f6a0
       version: -1
       name: prisma-access-create-security-rule
-      description: ''
       script: Prisma SASE|||prisma-access-create-security-rule
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
-    scriptarguments: {}
+      - "3"
     separatecontext: false
-    view: '{"position":{"x":50,"y":400}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '3':
-    id: '3'
-    taskid: '3'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 284f4dda-6249-44e3-87c9-153fa64c84dc
     type: condition
     task:
-      id: '3'
+      id: 284f4dda-6249-44e3-87c9-153fa64c84dc
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '4'
+      "yes":
+      - "4"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -170,52 +193,67 @@ tasks:
             value:
               simple: PrismaAccess.CreatedSecurityRule.to
             iscontext: true
-    view: '{"position":{"x":50,"y":600}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '4':
-    id: 4
-    taskid: '4'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 118f2da8-5214-4de4-8764-faa04d815b88
     type: regular
     task:
-      id: '4'
+      id: 118f2da8-5214-4de4-8764-faa04d815b88
       version: -1
       name: prisma-access-list-security-rules
-      description: ''
       script: Prisma SASE|||prisma-access-list-security-rules
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '5'
-    scriptarguments: {}
+      - "5"
     separatecontext: false
-    view: '{"position":{"x":50,"y":800}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '5':
-    id: '5'
-    taskid: '5'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: bc96899c-ebac-479c-86f0-31302d1bd98a
     type: condition
     task:
-      id: '5'
+      id: bc96899c-ebac-479c-86f0-31302d1bd98a
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '6'
+      "yes":
+      - "6"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -307,52 +345,67 @@ tasks:
             value:
               simple: PrismaAccess.FoundSecurityRule.negate_destination
             iscontext: true
-    view: '{"position":{"x":50,"y":1000}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '6':
-    id: 6
-    taskid: '6'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: ecd3d5e2-aa0a-4393-8d66-5101b7e5cc1c
     type: regular
     task:
-      id: '6'
+      id: ecd3d5e2-aa0a-4393-8d66-5101b7e5cc1c
       version: -1
       name: prisma-access-push-candidate-config
-      description: ''
       script: Prisma SASE|||prisma-access-push-candidate-config
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '7'
-    scriptarguments: {}
+      - "7"
     separatecontext: false
-    view: '{"position":{"x":50,"y":1200}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '7':
-    id: '7'
-    taskid: '7'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 7f9dc383-8e0a-4053-8f3a-a3db75ba2d31
     type: condition
     task:
-      id: '7'
+      id: 7f9dc383-8e0a-4053-8f3a-a3db75ba2d31
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '8'
+      "yes":
+      - "8"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -374,52 +427,67 @@ tasks:
             value:
               simple: PrismaAccess.ConfigPush.success
             iscontext: true
-    view: '{"position":{"x":50,"y":1400}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '8':
-    id: 8
-    taskid: '8'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 325af647-ae87-4cf3-890b-2c8dc1f4d976
     type: regular
     task:
-      id: '8'
+      id: 325af647-ae87-4cf3-890b-2c8dc1f4d976
       version: -1
       name: prisma-access-edit-security-rule
-      description: ''
       script: Prisma SASE|||prisma-access-edit-security-rule
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
-    scriptarguments: {}
+      - "9"
     separatecontext: false
-    view: '{"position":{"x":50,"y":1600}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '9':
-    id: '9'
-    taskid: '9'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: d91e671c-0cd6-49b2-8b37-375e907184e4
     type: condition
     task:
-      id: '9'
+      id: d91e671c-0cd6-49b2-8b37-375e907184e4
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '10'
+      "yes":
+      - "10"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -496,52 +564,67 @@ tasks:
             value:
               simple: PrismaAccess.UpdatedSecurityRule.to
             iscontext: true
-    view: '{"position":{"x":50,"y":1800}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '10':
-    id: 10
-    taskid: '10'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: fbb78028-355f-4725-81dc-a45b41770fe6
     type: regular
     task:
-      id: '10'
+      id: fbb78028-355f-4725-81dc-a45b41770fe6
       version: -1
       name: prisma-sase-query-agg-monitor-api
-      description: ''
       script: Prisma SASE|||prisma-sase-query-agg-monitor-api
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '11'
-    scriptarguments: {}
+      - "11"
     separatecontext: false
-    view: '{"position":{"x":50,"y":2000}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '11':
-    id: '11'
-    taskid: '11'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 5395b9c1-83bb-411a-832f-6683012e8c78
     type: condition
     task:
-      id: '11'
+      id: 5395b9c1-83bb-411a-832f-6683012e8c78
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '12'
+      "yes":
+      - "12"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -553,52 +636,67 @@ tasks:
             value:
               simple: PrismaSASE.AggregateQueryResponse.header.dataCount
             iscontext: true
-    view: '{"position":{"x":50,"y":2200}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '12':
-    id: 12
-    taskid: '12'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 19643d10-38dd-4a14-8303-4060db52d0a1
     type: regular
     task:
-      id: '12'
+      id: 19643d10-38dd-4a14-8303-4060db52d0a1
       version: -1
       name: prisma-access-get-security-rule-by-name
-      description: ''
       script: Prisma SASE|||prisma-access-get-security-rule-by-name
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '13'
-    scriptarguments: {}
+      - "13"
     separatecontext: false
-    view: '{"position":{"x":50,"y":2400}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '13':
-    id: '13'
-    taskid: '13'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: d61f45fc-3909-448a-8bcc-e686e41d6077
     type: condition
     task:
-      id: '13'
+      id: d61f45fc-3909-448a-8bcc-e686e41d6077
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '14'
+      "yes":
+      - "14"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -680,52 +778,67 @@ tasks:
             value:
               simple: PrismaAccess.FoundSecurityRule.to
             iscontext: true
-    view: '{"position":{"x":50,"y":2600}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2600
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '14':
-    id: 14
-    taskid: '14'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 078834f8-5eea-4aa4-8f1d-0408fa325ded
     type: regular
     task:
-      id: '14'
+      id: 078834f8-5eea-4aa4-8f1d-0408fa325ded
       version: -1
       name: prisma-access-get-config-jobs-by-id
-      description: ''
       script: Prisma SASE|||prisma-access-get-config-jobs-by-id
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '15'
-    scriptarguments: {}
+      - "15"
     separatecontext: false
-    view: '{"position":{"x":50,"y":2800}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2800
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '15':
-    id: '15'
-    taskid: '15'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: d1fafeda-cee2-493d-8499-8e574d685205
     type: condition
     task:
-      id: '15'
+      id: d1fafeda-cee2-493d-8499-8e574d685205
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '16'
+      "yes":
+      - "16"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -847,52 +960,67 @@ tasks:
             value:
               simple: PrismaAccess.ConfigJob.uname
             iscontext: true
-    view: '{"position":{"x":50,"y":3000}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3000
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '16':
-    id: 16
-    taskid: '16'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: d2958ab3-e5c7-48fa-865e-047b47b18597
     type: regular
     task:
-      id: '16'
+      id: d2958ab3-e5c7-48fa-865e-047b47b18597
       version: -1
       name: prisma-access-list-config-jobs
-      description: ''
       script: Prisma SASE|||prisma-access-list-config-jobs
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '17'
-    scriptarguments: {}
+      - "17"
     separatecontext: false
-    view: '{"position":{"x":50,"y":3200}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3200
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '17':
-    id: '17'
-    taskid: '17'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 878eb58e-28b8-42f9-8089-02a29800bfd4
     type: condition
     task:
-      id: '17'
+      id: 878eb58e-28b8-42f9-8089-02a29800bfd4
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '18'
+      "yes":
+      - "18"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -969,52 +1097,67 @@ tasks:
             value:
               simple: PrismaAccess.ConfigJob.uname
             iscontext: true
-    view: '{"position":{"x":50,"y":3400}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3400
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '18':
-    id: 18
-    taskid: '18'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: a8c86c6a-2ce1-474e-8ccc-5526edc5d28e
     type: regular
     task:
-      id: '18'
+      id: a8c86c6a-2ce1-474e-8ccc-5526edc5d28e
       version: -1
       name: prisma-access-delete-security-rule
-      description: ''
       script: Prisma SASE|||prisma-access-delete-security-rule
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '19'
-    scriptarguments: {}
+      - "19"
     separatecontext: false
-    view: '{"position":{"x":50,"y":3600}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3600
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '19':
-    id: '19'
-    taskid: '19'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 31791784-8b10-4ebb-8c80-79f3b90470a3
     type: condition
     task:
-      id: '19'
+      id: 31791784-8b10-4ebb-8c80-79f3b90470a3
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '20'
+      "yes":
+      - "20"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1091,52 +1234,67 @@ tasks:
             value:
               simple: PrismaAccess.DeletedSecurityRule.to
             iscontext: true
-    view: '{"position":{"x":50,"y":3800}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3800
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '20':
-    id: 20
-    taskid: '20'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: b391f1b5-a98c-41a7-80d7-eab15137b052
     type: regular
     task:
-      id: '20'
+      id: b391f1b5-a98c-41a7-80d7-eab15137b052
       version: -1
       name: prisma-access-create-address-object
-      description: ''
       script: Prisma SASE|||prisma-access-create-address-object
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '21'
-    scriptarguments: {}
+      - "21"
     separatecontext: false
-    view: '{"position":{"x":50,"y":4000}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4000
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '21':
-    id: '21'
-    taskid: '21'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 143d0337-623b-447b-8ae9-f88d49cae673
     type: condition
     task:
-      id: '21'
+      id: 143d0337-623b-447b-8ae9-f88d49cae673
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '22'
+      "yes":
+      - "22"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1168,52 +1326,67 @@ tasks:
             value:
               simple: PrismaAccess.CreatedAddress.name
             iscontext: true
-    view: '{"position":{"x":50,"y":4200}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4200
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '22':
-    id: 22
-    taskid: '22'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 8a8ed7ef-c679-4828-8986-1e206ad55847
     type: regular
     task:
-      id: '22'
+      id: 8a8ed7ef-c679-4828-8986-1e206ad55847
       version: -1
       name: prisma-access-edit-address-object
-      description: ''
       script: Prisma SASE|||prisma-access-edit-address-object
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '23'
-    scriptarguments: {}
+      - "23"
     separatecontext: false
-    view: '{"position":{"x":50,"y":4400}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4400
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '23':
-    id: '23'
-    taskid: '23'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 34e3a329-11a4-4c13-80e9-eb863d675c76
     type: condition
     task:
-      id: '23'
+      id: 34e3a329-11a4-4c13-80e9-eb863d675c76
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '24'
+      "yes":
+      - "24"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1245,52 +1418,67 @@ tasks:
             value:
               simple: PrismaAccess.EditedAddress.name
             iscontext: true
-    view: '{"position":{"x":50,"y":4600}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4600
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '24':
-    id: 24
-    taskid: '24'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: be872a14-7d5f-4342-8ec9-52f8b33bf228
     type: regular
     task:
-      id: '24'
+      id: be872a14-7d5f-4342-8ec9-52f8b33bf228
       version: -1
       name: prisma-access-delete-address-object
-      description: ''
       script: Prisma SASE|||prisma-access-delete-address-object
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '25'
-    scriptarguments: {}
+      - "25"
     separatecontext: false
-    view: '{"position":{"x":50,"y":4800}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4800
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '25':
-    id: '25'
-    taskid: '25'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 916d48ec-567c-48f8-81c4-2a146fe90859
     type: condition
     task:
-      id: '25'
+      id: 916d48ec-567c-48f8-81c4-2a146fe90859
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '26'
+      "yes":
+      - "26"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1322,52 +1510,67 @@ tasks:
             value:
               simple: PrismaAccess.DeletedAddress.name
             iscontext: true
-    view: '{"position":{"x":50,"y":5000}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5000
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '26':
-    id: 26
-    taskid: '26'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 0f458fa6-d0e6-482d-8efe-052efbd97b2f
     type: regular
     task:
-      id: '26'
+      id: 0f458fa6-d0e6-482d-8efe-052efbd97b2f
       version: -1
       name: prisma-access-list-address-objects
-      description: ''
       script: Prisma SASE|||prisma-access-list-address-objects
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '27'
-    scriptarguments: {}
+      - "27"
     separatecontext: false
-    view: '{"position":{"x":50,"y":5200}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5200
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '27':
-    id: '27'
-    taskid: '27'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 20ac13f9-54fe-4757-828c-4eb003f1cb21
     type: condition
     task:
-      id: '27'
+      id: 20ac13f9-54fe-4757-828c-4eb003f1cb21
       version: -1
       name: Verify Outputs
       type: condition
       iscommand: false
-      description: ''
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '28'
+      "yes":
+      - "28"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1404,29 +1607,60 @@ tasks:
             value:
               simple: PrismaAccess.FoundAddressObjects.ip_netmask
             iscontext: true
-    view: '{"position":{"x":50,"y":5400}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5400
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-  '28':
-    id: '28'
-    taskid: '28'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 432210d1-ebe3-4806-893b-5621c16ae493
     type: title
     task:
-      id: '28'
+      id: 432210d1-ebe3-4806-893b-5621c16ae493
       version: -1
       name: Test Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
-    view: '{"position":{"x":50,"y":5600}}'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5600
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-view: '{"linkLabelsPosition":{},"paper":{"dimensions":{"height":200,"width":380,"x":50,"y":50}}}'
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5615,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
 inputs: []
 outputs: []
+fromversion: 6.5.0
+description: Test playbook for PrismaSASE Integration
