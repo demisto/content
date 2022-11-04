@@ -431,12 +431,12 @@ def get_asm_args(args: Dict[str, Any]) -> Dict[str, Any]:
 
     # Set up default object for any empty arguments
     asm_args: Dict[str, Any] = {
-        "asmserviceowner": args.get("asmserviceowner")
-        if args.get("asmserviceowner")
+        "asmserviceowner": args.get("asm_service_owner")
+        if args.get("asm_service_owner")
         else {"Email": "n/a", "Name": "n/a", "Source": "n/a", "Timestamp": "n/a"},
         "asmcloud": (
-            args.get("asmcloud")
-            if args.get("asmcloud")
+            args.get("asm_cloud")
+            if args.get("asm_cloud")
             else {
                 "Organization": "n/a",
                 "Other": "n/a",
@@ -445,35 +445,35 @@ def get_asm_args(args: Dict[str, Any]) -> Dict[str, Any]:
                 "Region": "n/a",
             }
         ),
-        "asmdatacollection": args.get("asmdatacollection")
-        if args.get("asmdatacollection")
+        "asmdatacollection": args.get("asm_data_collection")
+        if args.get("asm_data_collection")
         else {
             "Answerer": "n/a",
             "Options": "n/a",
             "Selected": "n/a",
             "Timestamp": "n/a",
         },
-        "asmnotification": args.get("asmnotification")
-        if args.get("asmnotification")
+        "asmnotification": args.get("asm_notification")
+        if args.get("asm_notification")
         else {
             "Timestamp": "n/a",
             "Type": "n/a",
             "Url": "n/a",
             "Value": "n/a",
         },
-        "asmprivateip": args.get("asmprivateip")
-        if args.get("asmprivateip")
+        "asmprivateip": args.get("asm_private_ip")
+        if args.get("asm_private_ip")
         else {"IP": "n/a", "Source": "n/a"},
-        "asmremediation": args.get("asmremediation")
-        if args.get("asmremediation")
+        "asmremediation": args.get("asm_remediation")
+        if args.get("asm_remediation")
         else {
             "Action": "n/a",
             "ActionTimestamp": "n/a",
             "Outcome": "n/a",
             "OutcomeTimestamp": "n/a",
         },
-        "asmservicedetection": args.get("asmservicedetection")
-        if args.get("asmservicedetection")
+        "asmservicedetection": args.get("asm_service_detection")
+        if args.get("asm_service_detection")
         else {
             "ScanDone": "n/a",
             "ScanNum": "n/a",
@@ -481,15 +481,15 @@ def get_asm_args(args: Dict[str, Any]) -> Dict[str, Any]:
             "ScanState": "n/a",
             "Timestamp": "n/a",
         },
-        "asmsystemids": args.get("asmsystemids")
-        if args.get("asmsystemids")
+        "asmsystemids": args.get("asm_system_ids")
+        if args.get("asm_system_ids")
         else {
             "ID": "n/a",
             "Link": "n/a",
             "Type": "n/a",
         },
-        "asmtags": args.get("asmtags")
-        if args.get("asmtags")
+        "asmtags": args.get("asm_tags")
+        if args.get("asm_tags")
         else {"Key": "n/a", "Value": "n/a", "Source": "n/a"},
         "asmrelated": args.get("asmrelated")
         if args.get("asmrelated")

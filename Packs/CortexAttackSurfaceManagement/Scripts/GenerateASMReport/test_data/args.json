@@ -4,7 +4,7 @@
   "asmalertsummary": [
     { "EntryID": "dumm123", "Link": "https://xsiam.com/link" }
   ],
-  "asmcloud": [
+  "asm_cloud": [
     {
       "organization": "n/a",
       "other": "us-east-1a",
@@ -13,7 +13,7 @@
       "region": "us-east-1"
     }
   ],
-  "asmdatacollection": [
+  "asm_data_collection": [
     {
       "Answerer": "fake_user@domain.com",
       "Options": "NoAutomatedRemediation",
@@ -21,7 +21,7 @@
       "Timestamp": "1666033665586"
     }
   ],
-  "asmnotification": [
+  "asm_notification": [
     {
       "timestamp": "2022-10-17 19:08:03",
       "type": "ServiceNow",
@@ -30,7 +30,7 @@
     }
   ],
   "asmprivateip": [{ "ip": "10.0.0.2", "source": "AWS" }],
-  "asmremediation": [
+  "asm_remediation": [
     {
       "action": "Notified service owner via ServiceNow",
       "actiontimestamp": "2022-10-17 19:08:03",
@@ -38,7 +38,7 @@
       "outcometimestamp": "1666033708494"
     }
   ],
-  "asmservicedetection": [
+  "asm_service_detection": [
     {
       "ScanDone": "True",
       "ScanNum": "1",
@@ -54,7 +54,7 @@
       "Timestamp": "1666033738"
     }
   ],
-  "asmserviceowner": [
+  "asm_service_owner": [
     {
       "email": "fake_user@domain.com",
       "name": "Fake User",
@@ -62,7 +62,7 @@
       "timestamp": "1666033478911"
     }
   ],
-  "asmsystemids": [
+  "asm_system_ids": [
     {
       "id": "asdfasdfasdfasdfe",
       "link": "n/a",
@@ -89,7 +89,7 @@
     { "id": "eni-0asdfasdfadf", "link": "n/a", "type": "AWS-NIC" },
     { "id": "i-0dasdfasdfasdfaf", "link": "n/a", "type": "AWS-EC2" }
   ],
-  "asmtags": [
+  "asm_tags": [
     {
       "Key": "Name",
       "Value": "fake-ssh-ubuntu18",

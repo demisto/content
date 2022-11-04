@@ -262,7 +262,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "82"
+      - "93"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1165,10 +1165,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: c15c8337-f3f2-406a-8d76-d8ba5c063ec4
+    taskid: c1834ebd-d900-4233-8b88-751b67bfda55
     type: regular
     task:
-      id: c15c8337-f3f2-406a-8d76-d8ba5c063ec4
+      id: c1834ebd-d900-4233-8b88-751b67bfda55
       version: -1
       name: Set data collection grid field
       description: |-
@@ -1187,7 +1187,7 @@ tasks:
       keys:
         simple: Options,Selected,Answerer,Timestamp
       val1:
-        simple: WHAT REMEDIATION ACTION WOULD YOU LIKE TO TAKE?
+        simple: What remediation action would you like to take?
       val2:
         complex:
           root: Select a remediation option.Answers
@@ -1219,10 +1219,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 2db25970-bf7e-4265-85df-aba5954ffdfe
+    taskid: 8a96b984-d76f-4954-84b9-254bce41323e
     type: regular
     task:
-      id: 2db25970-bf7e-4265-85df-aba5954ffdfe
+      id: 8a96b984-d76f-4954-84b9-254bce41323e
       version: -1
       name: Set data collection grid field
       description: |-
@@ -1241,7 +1241,7 @@ tasks:
       keys:
         simple: Options,Selected,Answerer,Timestamp
       val1:
-        simple: WHAT REMEDIATION ACTION WOULD YOU LIKE TO TAKE?
+        simple: What remediation action would you like to take?
       val2:
         complex:
           root: Select a remediation option.Answers
@@ -1273,10 +1273,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 139f05b3-9055-4122-8b45-9d93ae65c680
+    taskid: 6fc7f093-e77b-45ec-8fcc-50b716fcc513
     type: regular
     task:
-      id: 139f05b3-9055-4122-8b45-9d93ae65c680
+      id: 6fc7f093-e77b-45ec-8fcc-50b716fcc513
       version: -1
       name: Set data collection grid field
       description: |-
@@ -1295,7 +1295,7 @@ tasks:
       keys:
         simple: Options,Selected,Answerer,Timestamp
       val1:
-        simple: WHAT REMEDIATION ACTION WOULD YOU LIKE TO TAKE?
+        simple: What remediation action would you like to take?
       val2:
         complex:
           root: Select a remediation option.Answers
@@ -1327,10 +1327,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 9a424122-acc8-45bb-80c4-8000d1c9e920
+    taskid: da41c0a0-dfc4-4bda-8a04-f8c368e0643d
     type: regular
     task:
-      id: 9a424122-acc8-45bb-80c4-8000d1c9e920
+      id: da41c0a0-dfc4-4bda-8a04-f8c368e0643d
       version: -1
       name: Set data collection grid field
       description: |-
@@ -1349,7 +1349,7 @@ tasks:
       keys:
         simple: Options,Selected,Answerer,Timestamp
       val1:
-        simple: WHAT REMEDIATION ACTION WOULD YOU LIKE TO TAKE?
+        simple: What remediation action would you like to take?
       val2:
         complex:
           root: Select a remediation option.Answers
@@ -2525,95 +2525,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "82":
-    id: "82"
-    taskid: 0a1ac9ac-e6f5-4845-8c26-7b90d078682b
-    type: regular
-    task:
-      id: 0a1ac9ac-e6f5-4845-8c26-7b90d078682b
-      version: -1
-      name: GenerateSummaryReport
-      description: Generate an ASM Alert Summary report.
-      scriptName: GenerateASMReport
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "81"
-    scriptarguments:
-      alert_details:
-        complex:
-          root: alert
-          accessor: details
-      alert_id:
-        complex:
-          root: alert
-          accessor: id
-      alert_name:
-        complex:
-          root: alert
-          accessor: name
-      alert_severityStr:
-        complex:
-          root: alert
-          accessor: severityStr
-      asmcloud:
-        complex:
-          root: alert
-          accessor: asmcloud
-      asmdatacollection:
-        complex:
-          root: alert
-          accessor: asmdatacollection
-      asmnotification:
-        complex:
-          root: alert
-          accessor: asmnotification
-      asmprivateip:
-        complex:
-          root: alert
-          accessor: asmprivateip
-      asmrelated:
-        complex:
-          root: alert
-          accessor: asmrelated
-      asmremediation:
-        complex:
-          root: alert
-          accessor: asmremediation
-      asmservicedetection:
-        complex:
-          root: alert
-          accessor: asmservicedetection
-      asmserviceowner:
-        complex:
-          root: alert
-          accessor: asmserviceowner
-      asmsystemids:
-        complex:
-          root: alert
-          accessor: asmsystemids
-      asmtags:
-        complex:
-          root: alert
-          accessor: asmtags
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 90,
-          "y": 4580
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "83":
     id: "83"
     taskid: acc8782b-1183-41be-8663-cf630e2728bf
@@ -2920,6 +2831,135 @@ tasks:
         "position": {
           "x": 1340,
           "y": 2550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: 01190646-70fe-4a2c-840d-f08df336a0fd
+    type: regular
+    task:
+      id: 01190646-70fe-4a2c-840d-f08df336a0fd
+      version: -1
+      name: GenerateSummaryReport
+      description: Generate an ASM Alert Summary report.
+      scriptName: GenerateASMReport
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "81"
+    scriptarguments:
+      alert_details:
+        complex:
+          root: alert
+          accessor: details
+      alert_id:
+        complex:
+          root: alert
+          accessor: id
+      alert_name:
+        complex:
+          root: alert
+          accessor: name
+      alert_severityStr:
+        complex:
+          root: alert
+          accessor: severityStr
+      asm_cloud:
+        complex:
+          root: alert
+          accessor: asmcloud
+      asm_data_collection:
+        complex:
+          root: alert
+          accessor: asmdatacollection
+      asm_notification:
+        complex:
+          root: alert
+          accessor: asmnotification
+      asm_private_ip:
+        complex:
+          root: alert
+          accessor: asmprivateip
+      asm_related:
+        complex:
+          root: alert
+          accessor: asmrelated
+      asm_remediation:
+        complex:
+          root: alert
+          accessor: asmremediation
+      asm_service_detection:
+        complex:
+          root: alert
+          accessor: asmservicedetection
+      asm_service_owner:
+        complex:
+          root: alert
+          accessor: asmserviceowner
+      asm_system_ids:
+        complex:
+          root: alert
+          accessor: asmsystemids
+      asm_tags:
+        complex:
+          root: alert
+          accessor: asmtags
+      asmcloud:
+        complex:
+          root: alert
+          accessor: asmcloud
+      asmdatacollection:
+        complex:
+          root: alert
+          accessor: asmdatacollection
+      asmnotification:
+        complex:
+          root: alert
+          accessor: asmnotification
+      asmprivateip:
+        complex:
+          root: alert
+          accessor: asmprivateip
+      asmrelated:
+        complex:
+          root: alert
+          accessor: asmrelated
+      asmremediation:
+        complex:
+          root: alert
+          accessor: asmremediation
+      asmservicedetection:
+        complex:
+          root: alert
+          accessor: asmservicedetection
+      asmserviceowner:
+        complex:
+          root: alert
+          accessor: asmserviceowner
+      asmsystemids:
+        complex:
+          root: alert
+          accessor: asmsystemids
+      asmtags:
+        complex:
+          root: alert
+          accessor: asmtags
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 4580
         }
       }
     note: false

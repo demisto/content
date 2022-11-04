@@ -9,6 +9,15 @@ def util_load_json(path):
 
 
 def test_get_asm_args(mocker):
+    """Tests get_asm_args helper function.
+
+        Given:
+            - Mock JSON that mimics Demisto.args() object.
+        When:
+            - Sending JSON to get_asm_args helper function.
+        Then:
+            - Checks the output of the helper function with the expected output.
+    """
     from GenerateASMReport import get_asm_args
 
     args = util_load_json("test_data/args.json")
@@ -25,6 +34,15 @@ def test_get_asm_args(mocker):
 
 
 def test_color_for_severity(mocker):
+    """Tests color_for_severity helper function.
+
+        Given:
+            - Mock severity (string).
+        When:
+            - Sending severity (string) to color_for_severity helper function.
+        Then:
+            - Checks the output of the helper function with the expected output.
+    """
     from GenerateASMReport import color_for_severity
 
     result = color_for_severity("High")
@@ -32,6 +50,15 @@ def test_color_for_severity(mocker):
 
 
 def test_build_template(mocker):
+    """Tests build_template command function.
+
+        Given:
+            - Mock current date and output from get_asm_args helper function.
+        When:
+            - Running the 'build_template' function.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
     from GenerateASMReport import build_template
 
     date_result = [
@@ -62,6 +89,15 @@ def test_build_template(mocker):
 
 
 def test_build_report(mocker):
+    """Tests build_report command function.
+
+        Given:
+            - Mock template list from build_template function and alert ID.
+        When:
+            - Running the 'build_report' function.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
     from GenerateASMReport import build_report
 
     template = util_load_json("test_data/template.json")

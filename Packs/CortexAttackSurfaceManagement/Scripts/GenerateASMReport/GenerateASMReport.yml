@@ -9,34 +9,34 @@ args:
   name: alert_severityStr
 - description: Potential service owners gathered through playbook.
   isArray: true
-  name: asmserviceowner
+  name: asm_service_owner
 - description: Collect information on remediation action(s).
   isArray: true
-  name: asmremediation
+  name: asm_remediation
 - description: Pre/Post remediation scan to check if service is still detectable.
   isArray: true
-  name: asmservicedetection
+  name: asm_service_detection
 - description: Related system identifiers.
   isArray: true
-  name: asmsystemids
+  name: asm_system_ids
 - description: Information on cloud assets.
   isArray: true
-  name: asmcloud
+  name: asm_cloud
 - description: Information on notification(s) sent via the ASM playbook.
   isArray: true
-  name: asmnotification
+  name: asm_notification
 - description: Collect information on data collection tasks.
   isArray: true
-  name: asmdatacollection
+  name: asm_data_collection
 - description: Tags from objects that can be used to determine other information (if server is Dev for example).
   isArray: true
-  name: asmtags
+  name: asm_tags
 - description: Private IP addresses found.
   isArray: true
-  name: asmprivateip
+  name: asm_private_ip
 - description: Related or duplicate objects (more of a nice to have because not sure how to track this)
   isArray: true
-  name: asmrelated
+  name: asm_related
 comment: Generate an ASM Alert Summary report.
 commonfields:
   id: GenerateASMReport
