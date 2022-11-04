@@ -379,7 +379,7 @@ def test_get_urls_and_emails_from_pdf_file_with_encrypt(tmp_path):
     if os.path.exists(dec_file_path):
         os.remove(dec_file_path)
 
-    assert set(urls) == expected_urls
+    assert set(url_data['Data'] for url_data in urls) == expected_urls
     assert set(emails) == expected_emails
 
 
