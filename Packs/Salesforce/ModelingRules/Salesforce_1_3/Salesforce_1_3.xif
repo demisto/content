@@ -1,4 +1,4 @@
-[MODEL: dataset=salesforce_test_raw]
+[MODEL: dataset=salesforce_salesforce_raw]
 filter
     event_type in("RestApi","Api","Sites","VisualForce","Uri")
 | alter
