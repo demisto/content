@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Pull Request Creation"
+    ],
+    "caseInsensitive": true,
+    "cliName": "cicdpullrequestcomment",
+    "closeForm": false,
+    "content": true,
+    "description": "A short description for the pull request.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_cicdpullrequestcomment",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "CI/CD Pull Request Comment",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "longText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,36 @@
+{
+    "atlassian_jira_raw": {
+      "summary": {
+        "type": "string",
+        "is_array": false
+      },
+      "remoteAddress": {
+        "type": "string",
+        "is_array": false
+      },
+      "authorKey": {
+        "type": "string",
+        "is_array": false
+      },
+      "authorAccountId": {
+        "type": "string",
+        "is_array": false
+      },
+      "created": {
+        "type": "datetime",
+        "is_array": false
+      },
+      "category": {
+        "type": "string",
+        "is_array": false
+      },
+      "objectItem": {
+        "type": "string",
+        "is_array": false
+      },
+      "changedValues": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

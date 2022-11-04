@@ -1,33 +1,28 @@
-import json
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+import json
+
 
 def main():
+    asset_results = []
     incident = demisto.incident()
     if not incident:
         raise ValueError("Error - demisto.incident() expected to return current incident "
                          "from context but returned None")
-    custom_fields = incident.get('CustomFields', {})
-    asset_results_str = custom_fields.get('assettable', {})
-    is_successful = custom_fields.get('successfulassetenrichment', '')
-    if is_successful == 'false':
-        return CommandResults(readable_output='Asset enrichment failed.')
+    labels = incident.get('labels', [])
 
-    asset_results = json.loads(asset_results_str)
+    for label in labels:
+        if label.get('type') == 'successful_asset_enrichment':
+            is_successful = label.get('value')
+            if is_successful == 'false':
+                return CommandResults(readable_output='Asset enrichment failed.')
+        if label.get('type') == 'Asset':
+            asset_results = json.loads(label.get('value', []))
 
     if not asset_results:
         return CommandResults(readable_output='No assets were found in the notable')
-
-    if isinstance(asset_results, list):
-        events_arr = []
-        for event in asset_results:
-            events_arr.append(event)
-        markdown = tableToMarkdown("", events_arr, headers=events_arr[0].keys())
-
-    else:
-        markdown = tableToMarkdown("", asset_results)
+    markdown = tableToMarkdown("", asset_results, headers=asset_results[0].keys())
 
     return {'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': markdown}
 

@@ -7,13 +7,14 @@ This integration was integrated and tested with version 9.8.38.245 of iboss Zero
 2. Search for iboss.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Username | True |
-    | Password | True |
-    | Account Settings ID | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Username |  | True |
+    | Password |  | True |
+    | Account Settings ID |  | True |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | Source Reliability | Reliability of the source providing the intelligence data |  |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -134,10 +135,10 @@ Lookup reputation for domain names.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | String | The indicator. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor. | 
-| DBotScore.Score | Number | The DBot score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
 | Domain.Malicious.Description | String | The indicator context description | 
 | Domain.Malicious.Vendor | String | The vendor that indicator context originated from. | 
 | Domain.Name | String | The domain. | 
@@ -235,9 +236,9 @@ Lookup reputation for domain names.
             "webRequestHeuristicLevelLowScore": "10",
             "webRequestHeuristicLevelMediumScore": "60",
             "webRequestHeuristicLevelNoneScore": "0",
-            "webRequestHeuristicProtectionActionHigh": "0",
+            "webRequestHeuristicProtectionActionHigh": "3",
             "webRequestHeuristicProtectionActionLow": "0",
-            "webRequestHeuristicProtectionActionMedium": "0",
+            "webRequestHeuristicProtectionActionMedium": "3",
             "webRequestHeuristicProtectionLevel": "1",
             "webRequestHeuristicSuccess": 1,
             "webRequestHeuristicSupport": 1
@@ -273,10 +274,10 @@ Lookup reputation data for IP addresses.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | String | The indicator. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor. | 
-| DBotScore.Score | Number | The DBot score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
 | IP.Malicious.Description | String | The indicator context description | 
 | IP.Malicious.Vendor | String | The vendor that indicator context originated from. | 
 | IP.Address | String | The IP address. | 
@@ -373,9 +374,9 @@ Lookup reputation data for IP addresses.
             "webRequestHeuristicLevelLowScore": "10",
             "webRequestHeuristicLevelMediumScore": "60",
             "webRequestHeuristicLevelNoneScore": "0",
-            "webRequestHeuristicProtectionActionHigh": "0",
+            "webRequestHeuristicProtectionActionHigh": "3",
             "webRequestHeuristicProtectionActionLow": "0",
-            "webRequestHeuristicProtectionActionMedium": "0",
+            "webRequestHeuristicProtectionActionMedium": "3",
             "webRequestHeuristicProtectionLevel": "1",
             "webRequestHeuristicSuccess": 1,
             "webRequestHeuristicSupport": 1
@@ -495,10 +496,10 @@ Lookup reputation data for URLs.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | String | The indicator. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor. | 
-| DBotScore.Score | Number | The DBot score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
 | URL.Malicious.Description | String | The indicator context description | 
 | URL.Malicious.Vendor | String | The vendor that indicator context originated from. | 
 | URL.Data | String | The URL. | 
@@ -596,9 +597,9 @@ Lookup reputation data for URLs.
             "webRequestHeuristicLevelLowScore": "10",
             "webRequestHeuristicLevelMediumScore": "60",
             "webRequestHeuristicLevelNoneScore": "0",
-            "webRequestHeuristicProtectionActionHigh": "0",
+            "webRequestHeuristicProtectionActionHigh": "3",
             "webRequestHeuristicProtectionActionLow": "0",
-            "webRequestHeuristicProtectionActionMedium": "0",
+            "webRequestHeuristicProtectionActionMedium": "3",
             "webRequestHeuristicProtectionLevel": "1",
             "webRequestHeuristicSuccess": 1,
             "webRequestHeuristicSupport": 1
@@ -613,3 +614,101 @@ Lookup reputation data for URLs.
 >|message|categories|isSafeUrl|malwareEngineAnalysisSuccess|malwareEngineAnalysisDescription|reputationDatabaseLookupSuccess|reputationDatabaseMalwareDetection|reputationDatabaseBotnetDetection|webRequestHeuristicSuccess|webRequestHeuristicProtectionLevel|webRequestHeuristicDescription|googleSafeBrowsingSuccess|googleSafeBrowsingIsSafeUrl|googleSafeBrowsingDescription|realtimeCloudLookupSuccess|realtimeCloudLookupDomainIsGrey|realtimeCloudLookupRiskDescription|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Status: Url Known. Please see categories below. | Business,<br/>Technology | 1 | 1 |  | 1 | 0 | 0 | 1 | 1 |  | 1 | 1 |  | 1 | 0 |  |
+
+
+### iboss-add-entity-to-policy-layer-list
+***
+Add entity to policy layer list.
+
+
+#### Base Command
+
+`iboss-add-entity-to-policy-layer-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_layer_name | Policy layer name to lookup. | Required | 
+| entity | Entity to add to policy layer list. | Required | 
+| start_port | Which start port(s) to match; 0 indicates all ports. Default is 0. | Optional | 
+| end_port | Which end port(s) to match; 0 indicates all ports. Default is 0. | Optional | 
+| direction | Which direction(s) to match. Possible values are: 0, 1, 2. Default is 2. | Optional | 
+| do_dlp_scan | Whether to perform DLP scanning. Possible values are: 0, 1. Default is 1. | Optional | 
+| do_malware_scan | Whether to perform malware scanning. Possible values are: 0, 1. Default is 1. | Optional | 
+| priority | Priority of entry (higher number takes precedence) when conflicting entry in the block list. Default is 0. | Optional | 
+| time_url_expires_in_seconds | The expiration time in seconds for the entry (0 indicates an entry that does not expire). Default is 0. | Optional | 
+| note | Note added to the entry. | Optional | 
+| is_regex | Whether entity consists of a regex pattern. Possible values are: 0, 1. Default is 0. | Optional | 
+| upsert | Update entity if it already exists. Possible values are: 0, 1. Default is 0. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| iboss.AddEntityToPolicyLayerList.message | String | Operation result. | 
+
+#### Command example
+```!iboss-add-entity-to-policy-layer-list entity=iboss.com policy_layer_name="Test Policy Layer - Allow List"```
+#### Context Example
+```json
+{
+    "iboss": {
+        "AddEntityToPolicyLayerList": {
+            "message": "Successfully added URL to list."
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Successfully added URL to list.
+
+### iboss-remove-entity-from-policy-layer-list
+***
+Remove entity from policy layer list.
+
+
+#### Base Command
+
+`iboss-remove-entity-from-policy-layer-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_layer_name | Policy layer name to lookup. | Required | 
+| entity | Entity to add to policy layer list. | Required | 
+| start_port | Which start port(s) to match; 0 indicates all ports. Default is 0. | Optional | 
+| end_port | Which end port(s) to match; 0 indicates all ports. Default is 0. | Optional | 
+| direction | Which direction(s) to match. Possible values are: 0, 1, 2. Default is 2. | Optional | 
+| do_dlp_scan | Whether to perform DLP scanning. Possible values are: 0, 1. Default is 1. | Optional | 
+| do_malware_scan | Whether to perform malware scanning. Possible values are: 0, 1. Default is 1. | Optional | 
+| priority | Priority of entry (higher number takes precedence) when conflicting entry in the block list. Default is 0. | Optional | 
+| time_url_expires_in_seconds | The expiration time in seconds for the entry (0 indicates an entry that does not expire). Default is 0. | Optional | 
+| note | Note added to the entry. | Optional | 
+| is_regex | Whether entity consists of a regex pattern. Possible values are: 0, 1. Default is 0. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| iboss.RemoveEntityFromPolicyLayerList.message | String | Operation result. | 
+
+#### Command example
+```!iboss-remove-entity-from-policy-layer-list entity=iboss.com policy_layer_name="Test Policy Layer - Allow List"```
+#### Context Example
+```json
+{
+    "iboss": {
+        "RemoveEntityFromPolicyLayerList": {
+            "message": "iboss.com removed from policy layer `Test Policy Layer - Allow List`."
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>iboss.com removed from policy layer `Test Policy Layer - Allow List`.

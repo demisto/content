@@ -46,11 +46,17 @@ TAXII_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 TAXII_TIME_FORMAT_NO_MS = "%Y-%m-%dT%H:%M:%SZ"
 
 STIX_2_TYPES_TO_CORTEX_TYPES = {
+    "mutex": FeedIndicatorType.MUTEX,
+    "windows-registry-key": FeedIndicatorType.Registry,
+    "user-account": FeedIndicatorType.Account,
+    "email-addr": FeedIndicatorType.Email,
+    "autonomous-system": FeedIndicatorType.AS,
     "ipv4-addr": FeedIndicatorType.IP,
     "ipv6-addr": FeedIndicatorType.IPv6,
     "domain": FeedIndicatorType.Domain,
     "domain-name": FeedIndicatorType.Domain,
     "url": FeedIndicatorType.URL,
+    "file": FeedIndicatorType.File,
     "md5": FeedIndicatorType.File,
     "sha-1": FeedIndicatorType.File,
     "sha-256": FeedIndicatorType.File,
@@ -235,7 +241,7 @@ class Taxii2FeedClient:
             self.set_api_root()
         # (TAXIIServiceException, HTTPError) should suffice, but sometimes it raises another type of HTTPError
         except Exception as e:
-            if "406 Client Error" not in str(e):
+            if "406 Client Error" not in str(e) and "version=2.1" not in str(e):
                 raise e
             # switch to TAXII 2.1
             self.init_server(version=TAXII_VER_2_1)
@@ -382,6 +388,9 @@ class Taxii2FeedClient:
 
     """ PARSING FUNCTIONS"""
 
+    def update_tlp(self, fields):
+        return self.tlp_color and not fields.get('trafficlightprotocol')
+
     def parse_indicator(self, indicator_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
         """
         Parses a single indicator object
@@ -450,7 +459,7 @@ class Taxii2FeedClient:
             "publications": publications,
             "tags": list(self.tags),
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         attack_pattern["fields"] = fields
 
@@ -483,7 +492,7 @@ class Taxii2FeedClient:
             "report_types": report_obj.get('report_types', []),
             "tags": list((set(report_obj.get('labels', []))).union(set(self.tags))),
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         report["fields"] = fields
 
@@ -517,7 +526,7 @@ class Taxii2FeedClient:
             "secondary_motivations": threat_actor_obj.get('secondary_motivations', []),
             "tags": list((set(threat_actor_obj.get('labels', []))).union(set(self.tags))),
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         threat_actor["fields"] = fields
 
@@ -549,7 +558,7 @@ class Taxii2FeedClient:
             "modified": infrastructure_obj.get('modified'),
             "tags": list(set(self.tags))
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         infrastructure["fields"] = fields
         return [infrastructure]
@@ -585,7 +594,7 @@ class Taxii2FeedClient:
             "sample_refs": malware_obj.get('sample_refs', []),
             "tags": list((set(malware_obj.get('labels', []))).union(set(self.tags)))
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         malware["fields"] = fields
         return [malware]
@@ -616,7 +625,7 @@ class Taxii2FeedClient:
             "tool_version": tool_obj.get('tool_version', ''),
             "tags": list(set(self.tags))
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         tool["fields"] = fields
         return [tool]
@@ -644,7 +653,7 @@ class Taxii2FeedClient:
             "publications": publications,
             "tags": [tag for tag in self.tags]
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         course_of_action["fields"] = fields
         return [course_of_action]
@@ -670,7 +679,7 @@ class Taxii2FeedClient:
             "objective": campaign_obj.get('objective', ''),
             "tags": [tag for tag in self.tags],
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         campaign["fields"] = fields
         return [campaign]
@@ -702,10 +711,118 @@ class Taxii2FeedClient:
             "publications": publications,
             "tags": list(self.tags),
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         intrusion_set["fields"] = fields
         return [intrusion_set]
+
+    def parse_general_sco_indicator(
+        self, sco_object: Dict[str, Any], value_mapping: str = 'value'
+    ) -> List[Dict[str, Any]]:
+        """
+        Parses a single SCO indicator.
+
+        Args:
+            sco_object (dict): indicator as an observable object.
+            value_mapping (str): the key that extracts the value from the indicator response.
+        """
+        sco_indicator = {
+            'value': sco_object.get(value_mapping),
+            'score': Common.DBotScore.NONE,
+            'rawJSON': sco_object,
+            'type': STIX_2_TYPES_TO_CORTEX_TYPES.get(sco_object.get('type'))  # type: ignore[arg-type]
+        }
+
+        fields = {
+            'stixid': sco_object.get('id'),
+            'tags': list(set(self.tags))
+        }
+        if self.update_tlp(fields):
+            fields['trafficlightprotocol'] = self.tlp_color
+        sco_indicator['fields'] = fields
+        return [sco_indicator]
+
+    def parse_sco_autonomous_system_indicator(self, autonomous_system_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """
+        Parses autonomous_system indicator type to cortex format.
+
+        Args:
+            autonomous_system_obj (dict): indicator as an observable object of type autonomous-system.
+        """
+        autonomous_system_indicator = self.parse_general_sco_indicator(autonomous_system_obj, value_mapping='number')
+        autonomous_system_indicator[0]['fields']['name'] = autonomous_system_obj.get('name')
+
+        return autonomous_system_indicator
+
+    def parse_sco_file_indicator(self, file_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """
+        Parses file indicator type to cortex format.
+
+        Args:
+            file_obj (dict): indicator as an observable object of file type.
+        """
+        file_hashes = file_obj.get('hashes', {})
+        value = file_hashes.get('SHA-256') or file_hashes.get('SHA-1') or file_hashes.get('MD5')
+        if not value:
+            return []
+
+        file_obj['value'] = value
+
+        file_indicator = self.parse_general_sco_indicator(file_obj)
+        file_indicator[0]['fields'].update(
+            {
+                'associatedfilenames': file_obj.get('name'),
+                'size': file_obj.get('size'),
+                'path': file_obj.get('parent_directory_ref'),
+                'md5': file_hashes.get('MD5'),
+                'sha1': file_hashes.get('SHA-1'),
+                'sha256': file_hashes.get('SHA-256')
+            }
+        )
+
+        return file_indicator
+
+    def parse_sco_mutex_indicator(self, mutex_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """
+        Parses mutex indicator type to cortex format.
+
+        Args:
+            mutex_obj (dict): indicator as an observable object of mutex type.
+        """
+        return self.parse_general_sco_indicator(sco_object=mutex_obj, value_mapping='name')
+
+    def parse_sco_account_indicator(self, account_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """
+        Parses account indicator type to cortex format.
+
+        Args:
+            account_obj (dict): indicator as an observable object of account type.
+        """
+        account_indicator = self.parse_general_sco_indicator(account_obj, value_mapping='user_id')
+        account_indicator[0]['fields'].update(
+            {
+                'displayname': account_obj.get('user_id'),
+                'accounttype': account_obj.get('account_type')
+            }
+        )
+        return account_indicator
+
+    def parse_sco_windows_registry_key_indicator(self, registry_key_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """
+        Parses registry_key indicator type to cortex format.
+
+        Args:
+            registry_key_obj (dict): indicator as an observable object of registry_key type.
+        """
+        registry_key_indicator = self.parse_general_sco_indicator(registry_key_obj, value_mapping='key')
+        registry_key_indicator[0]['fields'].update(
+            {
+                'registryvalue': registry_key_obj.get('values'),
+                'modified_time': registry_key_obj.get('modified_time'),
+                'number_of_subkeys': registry_key_obj.get('number_of_subkeys')
+            }
+        )
+        return registry_key_indicator
 
     def parse_relationships(self, relationships_lst: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """Parse the Relationships objects retrieved from the feed.
@@ -794,7 +911,17 @@ class Taxii2FeedClient:
             "intrusion-set": self.parse_intrusion_set,
             "tool": self.parse_tool,
             "threat-actor": self.parse_threat_actor,
-            "infrastructure": self.parse_infrastructure
+            "infrastructure": self.parse_infrastructure,
+            "domain-name": self.parse_general_sco_indicator,
+            "ipv4-addr": self.parse_general_sco_indicator,
+            "ipv6-addr": self.parse_general_sco_indicator,
+            "email-addr": self.parse_general_sco_indicator,
+            "url": self.parse_general_sco_indicator,
+            "autonomous-system": self.parse_sco_autonomous_system_indicator,
+            "file": self.parse_sco_file_indicator,
+            "mutex": self.parse_sco_mutex_indicator,
+            "user-account": self.parse_sco_account_indicator,
+            "windows-registry-key": self.parse_sco_windows_registry_key_indicator
         }
         indicators = []
 
@@ -842,7 +969,7 @@ class Taxii2FeedClient:
 
     def parse_dict_envelope(self, envelopes: Dict[str, Any],
                             parse_objects_func, limit: int = -1):
-        indicators = []
+        indicators: list = []
         relationships_list: List[Dict[str, Any]] = []
         for obj_type, envelope in envelopes.items():
             cur_limit = limit
@@ -883,6 +1010,7 @@ class Taxii2FeedClient:
                         "Error: TAXII 2 client received the following response while requesting "
                         f"indicators: {str(envelope)}\n\nExpected output is json"
                     )
+
         if relationships_list:
             indicators.extend(self.parse_relationships(relationships_list))
         return indicators
@@ -1011,7 +1139,7 @@ class Taxii2FeedClient:
 
         fields["tags"] = tags
 
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields["trafficlightprotocol"] = self.tlp_color
 
         indicator["fields"] = fields

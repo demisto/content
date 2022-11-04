@@ -34,6 +34,7 @@ TAXII_VER_2_1 = '2.1'
 PAWN_UUID = uuid.uuid5(uuid.NAMESPACE_URL, 'https://www.paloaltonetworks.com')
 SCO_DET_ID_NAMESPACE = uuid.UUID('00abedb4-aa42-466c-9c01-fed23315a9b7')
 STIX_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+UTC_DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 TAXII_V20_CONTENT_LEN = 9765625
 TAXII_V21_CONTENT_LEN = 104857600
 TAXII_REQUIRED_FILTER_FIELDS = {'name', 'type', 'modified', 'createdTime', 'description',
@@ -67,7 +68,7 @@ XSOAR_TYPES_TO_STIX_SDO = {
     FeedIndicatorType.CVE: 'vulnerability',
 }
 
-STIX2_TYPES_TO_XSOAR = {
+STIX2_TYPES_TO_XSOAR: dict[str, Union[str, tuple[str, ...]]] = {
     'campaign': ThreatIntel.ObjectsNames.CAMPAIGN,
     'attack-pattern': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     'report': ThreatIntel.ObjectsNames.REPORT,
@@ -80,7 +81,7 @@ STIX2_TYPES_TO_XSOAR = {
     'vulnerability': FeedIndicatorType.CVE,
     'ipv4-addr': FeedIndicatorType.IP,
     'ipv6-addr': FeedIndicatorType.IPv6,
-    'domain-name': [FeedIndicatorType.DomainGlob, FeedIndicatorType.Domain],
+    'domain-name': (FeedIndicatorType.DomainGlob, FeedIndicatorType.Domain),
     'user-account': FeedIndicatorType.Account,
     'email-addr': FeedIndicatorType.Email,
     'url': FeedIndicatorType.URL,
@@ -130,7 +131,7 @@ class TAXII2Server:
         self.collections_by_id: dict = dict()
         self.namespace_uuid = uuid.uuid5(PAWN_UUID, demisto.getLicenseID())
         self.create_collections(collections)
-        self.types_for_indicator_sdo = types_for_indicator_sdo if types_for_indicator_sdo else []
+        self.types_for_indicator_sdo = types_for_indicator_sdo or []
 
     @property
     def taxii_collections_media_type(self):
@@ -492,7 +493,7 @@ def handle_response(status_code: int, content: dict, date_added_first: str = Non
     return make_response(jsonify(content), status_code, headers)
 
 
-def create_query(query: str, types: list) -> str:
+def create_query(query: str, types: list[str]) -> str:
     """
     Args:
         query: collections query
@@ -503,23 +504,19 @@ def create_query(query: str, types: list) -> str:
     """
     new_query = ''
     if types:
+        demisto.debug(f'raw query: {query}')
         xsoar_types: list = []
-        if 'domain-name' in types:
-            xsoar_types.extend(STIX2_TYPES_TO_XSOAR['domain-name'])
         for t in types:
-            if t != 'domain-name':
-                try:
-                    xsoar_type = STIX2_TYPES_TO_XSOAR[t]
-                except KeyError:
-                    xsoar_type = t
-                xsoar_types.append(xsoar_type)
+            xsoar_type = STIX2_TYPES_TO_XSOAR.get(t, t)
+            xsoar_types.extend(xsoar_type if isinstance(xsoar_type, tuple) else (xsoar_type,))
 
         if query.strip():
-            new_query = f'({query}) '
+            new_query = f'({query})'
 
-        new_query += ' or '.join([f'type:"{x}"' for x in xsoar_types])
+        if or_part := (' or '.join(f'type:"{x}"' for x in xsoar_types)):
+            new_query += f' and ({or_part})'
 
-        demisto.debug(f'new query: {new_query}')
+        demisto.debug(f'modified query, after adding types: {new_query}')
         return new_query
     else:
         return query
@@ -695,7 +692,7 @@ def convert_sco_to_indicator_sdo(stix_object: dict, xsoar_indicator: dict) -> di
         description=xsoar_indicator.get('CustomFields', {}).get('description', '')
     )
     return dict({k: v for k, v in stix_object.items()
-                if k in ('spec_version', 'created', 'modified')}, **stix_domain_object)
+                 if k in ('spec_version', 'created', 'modified')}, **stix_domain_object)
 
 
 def create_stix_object(xsoar_indicator: dict, xsoar_type: str) -> tuple:
@@ -807,10 +804,11 @@ def parse_content_range(content_range: str) -> tuple:
     return offset, limit
 
 
-def get_collections(params: dict = demisto.params()) -> dict:
+def get_collections(params: Optional[dict] = None) -> dict:
     """
     Gets the indicator query collections from the integration parameters.
     """
+    params = params or demisto.params()
     collections_json: str = params.get('collections', '')
 
     try:
@@ -841,9 +839,12 @@ def parse_manifest_and_object_args() -> tuple:
 
     try:
         if added_after:
+            datetime.strptime(added_after, UTC_DATE_FORMAT)
+    except ValueError:
+        try:
             datetime.strptime(added_after, STIX_DATE_FORMAT)
-    except Exception as e:
-        raise Exception(f'Added after time format should be YYYY-MM-DDTHH:mm:ss.[s+]Z. {e}')
+        except Exception as e:
+            raise Exception(f'Added after time format should be YYYY-MM-DDTHH:mm:ss.[s+]Z. {e}')
 
     if SERVER.version == TAXII_VER_2_0:
         if content_range := request.headers.get('Content-Range'):

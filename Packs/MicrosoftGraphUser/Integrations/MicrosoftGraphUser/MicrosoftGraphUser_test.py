@@ -1,3 +1,5 @@
+import pytest
+
 
 users_list_mock = [
     {
@@ -161,3 +163,50 @@ def test_suppress_errors(mocker):
         mocker.patch.object(client, test['mock_fun'], side_effect=test['mock_value'])
         results, _, _ = test['fun'](client, test['args'])
         assert results == test['expected_result']
+
+
+USERS_LIST_MOCK = [
+    {
+        'ID': '08779ba7-f3ed-4344-b9d7-98b9911ea8a8',
+        'DisplayName': 'Test User',
+        'UserPrincipalName': None,
+        'JobTitle': "Magician",
+        'MobilePhone': None,
+        'Mail': None
+    },
+    {
+        'ID': '670edadc-0197-45b0-90e6-ee061e25ab73',
+        'DisplayName': 'Test1',
+        'UserPrincipalName': 'PrincipalTest',
+        'JobTitle': 'TESTER',
+        'MobilePhone': '050505050',
+        'Mail': 'test@test.com',
+    }
+]
+USERS_JSON_MOCK = {
+    'ID': '6705dadc-0197-45b4-9fe6-ee061e25abf7',
+    'DisplayName': 'Test2',
+    'UserPrincipalName': 'PrincipalTest2',
+    'JobTitle': 'TESTER2',
+    'MobilePhone': '02020202',
+    'Mail': 'test2@test2.com',
+}
+
+
+@pytest.mark.parametrize('users_mock',
+                         [
+                             (USERS_LIST_MOCK),
+                             (USERS_JSON_MOCK)
+                         ])
+def test_create_account_outputs(users_mock):
+
+    from MicrosoftGraphUser import create_account_outputs
+    results = create_account_outputs(users_mock)
+
+    if not isinstance(users_mock, list):
+        users_mock = [users_mock]
+
+    for i in range(len(results)):
+        assert results[i]['DisplayName'] == users_mock[i]['DisplayName']
+        assert results[i]['Email']['Address'] == users_mock[i]['Mail']
+        assert results[i]['Username'] == users_mock[i]['UserPrincipalName']

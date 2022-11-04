@@ -400,6 +400,7 @@ def main():
         context = args.get('context')
         fields_comp_mode = argToBoolean(args.get('compare_fields') or 'false')
         wildcards = argToList(args.get('wildcards'))
+        default_value = args.get('default_value')
         regex_flags = re.IGNORECASE if argToBoolean(args.get('caseless') or 'true') else 0
         for flag in argToList(args.get('flags', '')):
             if flag in ('dotall', 's'):
@@ -424,22 +425,27 @@ def main():
                         fields_comp_mode=fields_comp_mode,
                         wildcards=wildcards,
                         regex_flags=regex_flags)
+
+        matched = False
         if fields_comp_mode:
             if isinstance(value, dict):
-                value, _ = tr.translate_fields(
+                value, matched = tr.translate_fields(
                     obj_value=value,
                     field_mapping=mappings,
                     priority=priority,
                     algorithm=algorithm)
         else:
             if not isinstance(value, (dict, list)):
-                value, _ = tr.translate(
+                value, matched = tr.translate(
                     source=value,
                     pattern_mapping=mappings,
                     priority=priority,
                     algorithm=algorithm)
+        if default_value and not matched:
+            value = default_value
     except Exception as err:
-        return_error(err)
+        # Don't return an error by return_error() as this is transformer.
+        raise DemistoException(str(err))
 
     return_results(value)
 

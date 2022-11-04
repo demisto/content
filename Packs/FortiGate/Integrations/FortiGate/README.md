@@ -41,6 +41,9 @@
 <li><a href="#h_97579068-1993-4df6-9b15-e0d83d9dc003" target="_self">Add an address to a banned list: fortigate-ban-ip</a></li>
 <li><a href="#h_dcbeef7c-2cfa-45b2-b677-cf1f4ea09895" target="_self">Clear a list of banned addresses: fortigate-unban-ip</a></li>
 <li><a href="#h_09f6b36f-9215-42e9-9e86-e075c485f534" target="_self">Get a list of banned addresses: fortigate-get-banned-ips</a></li>
+<li><a href="#h_09f6b36f-9215-42e9-9e86-e075c485f535" target="_self">Creates a new address object: fortigate-create-address</a></li>
+<li><a href="#h_09f6b36f-9215-42e9-9e86-e075c485f536" target="_self">Delete an address object: fortigate-delete-address</a></li>
+
 </ol>
 <h3 id="h_90934042941543315010414">1. Get all address objects from the firewall</h3>
 <hr>
@@ -1186,3 +1189,157 @@
 <p> </p>
 <h5>Command Example</h5>
 <pre>  !fortigate-get-banned-ips </pre>
+<h3 id="h_09f6b36f-9215-42e9-9e86-e075c485f535">19. Create an address object</h3>
+<hr>
+<p>Creates a new address object.</p>
+<h5>Base Command</h5>
+<p><code>fortigate-create-address</code></p>
+<h5>Input</h5>
+<table style="width: 748px;" border="2" cellpadding="6">
+<thead>
+<tr>
+<th style="width: 193px;"><strong>Argument Name</strong></th>
+<th style="width: 402px;"><strong>Description</strong></th>
+<th style="width: 113px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 193px;">name</td>
+<td style="width: 402px;">The address name</td>
+<td style="width: 113px;">Required</td>
+</tr>
+<tr>
+<td style="width: 193px;">address</td>
+<td style="width: 402px;">The IP Address, example: 1.1.1.1</td>
+<td style="width: 113px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 193px;">mask</td>
+<td style="width: 402px;">The address mask, example: 255.255.255.0 , Default is 255.255.255.255</td>
+<td style="width: 113px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 193px;">fqdn</td>
+<td style="width: 402px;">The domain name, example: example.com</td>
+<td style="width: 113px;">Optional</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<h5>Context Output</h5>
+<table style="width: 748px;" border="2" cellpadding="6">
+<thead>
+<tr>
+<th style="width: 317px;"><strong>Path</strong></th>
+<th style="width: 69px;"><strong>Type</strong></th>
+<th style="width: 322px;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 317px;">Fortigate.Address.Name</td>
+<td style="width: 69px;">string</td>
+<td style="width: 322px;">The address name</td>
+</tr>
+<tr>
+<td style="width: 317px;">Fortigate.Address.IPAddress</td>
+<td style="width: 69px;">string</td>
+<td style="width: 322px;">The IP address.</td>
+</tr>
+<tr>
+<td style="width: 317px;">Fortigate.Address.FQDN</td>
+<td style="width: 69px;">string</td>
+<td style="width: 322px;">The domain name.</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<h5>Command Example</h5>
+<pre>!fortigate-create-address name=test address="1.1.1.1"</pre>
+<h5>Context Example</h5>
+<pre>Fortigate:{} 1 item<br>Address:[] 1 item<br>0:{} 2 items<br>1:{} 2 items<br>IPAddress:1.1.1.1/255.255.255.255<br>Name:test</pre>
+<h5>Human Readable Output</h5>
+<h3>FortiGate address test created successfully</h3>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table>
+<tbody>
+<tr>
+<td>IPAddress</td>
+<td>1.1.1.1</td>
+</tr>
+<tr>
+<td>Name</td>
+<td>test</td>
+</tr>
+</tbody>
+</table>
+<h3  id="h_09f6b36f-9215-42e9-9e86-e075c485f536">20. Delete an address object</h3>
+<hr>
+<p>Deletes an existing address object.</p>
+<h5>Base Command</h5>
+<p><code>fortigate-delete-address</code></p>
+<h5>Input</h5>
+<table style="width: 748px;" border="2" cellpadding="6">
+<thead>
+<tr>
+<th style="width: 193px;"><strong>Argument Name</strong></th>
+<th style="width: 402px;"><strong>Description</strong></th>
+<th style="width: 113px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 193px;">name</td>
+<td style="width: 402px;">The address name</td>
+<td style="width: 113px;">Required</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<h5>Context Output</h5>
+<table style="width: 748px;" border="2" cellpadding="6">
+<thead>
+<tr>
+<th style="width: 317px;"><strong>Path</strong></th>
+<th style="width: 69px;"><strong>Type</strong></th>
+<th style="width: 322px;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 317px;">Fortigate.Address.Name</td>
+<td style="width: 69px;">string</td>
+<td style="width: 322px;">The address name</td>
+</tr>
+<tr>
+<td style="width: 317px;">Fortigate.Address.Deleted</td>
+<td style="width: 69px;">string</td>
+<td style="width: 322px;">The address deletion status.</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<h5>Command Example</h5>
+<pre>!fortigate-delete-address name=test</pre>
+<h5>Context Example</h5>
+<pre>Fortigate:{} 1 item<br>Address:[] 1 item<br>0:{} 2 items<br>1:{} 2 items<br>Deleted:True<br>Name:test</pre>
+<h5>Human Readable Output</h5>
+<h3>FortiGate address test-address deleted successfully</h3>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table>
+<tbody>
+<tr>
+<td>Deleted</td>
+<td>true</td>
+</tr>
+<tr>
+<td>Name</td>
+<td>test</td>
+</tr>
+</tbody>
+</table>

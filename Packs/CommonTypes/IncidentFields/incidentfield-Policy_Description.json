@@ -6,8 +6,10 @@
 		"AWS CloudTrail Misconfiguration",
 		"AWS IAM Policy Misconfiguration",
 		"AWS EC2 Instance Misconfiguration",
-        "Microsoft CAS Alert",
-		"Tripwire File Change"
+		"Microsoft CAS Alert",
+		"Tripwire File Change",
+		"Skyhigh Security Alert",
+		"Skyhigh Security Threat"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

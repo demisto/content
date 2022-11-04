@@ -507,6 +507,9 @@ class FeedIndicatorType(object):
     Registry = "Registry Key"
     SSDeep = "ssdeep"
     URL = "URL"
+    AS = "ASN"
+    MUTEX = "Mutex"
+    Malware = "Malware"
 
     @staticmethod
     def is_valid_type(_type):
@@ -524,7 +527,10 @@ class FeedIndicatorType(object):
             FeedIndicatorType.IPv6CIDR,
             FeedIndicatorType.Registry,
             FeedIndicatorType.SSDeep,
-            FeedIndicatorType.URL
+            FeedIndicatorType.URL,
+            FeedIndicatorType.AS,
+            FeedIndicatorType.MUTEX,
+            FeedIndicatorType.Malware
         )
 
     @staticmethod
@@ -4566,7 +4572,8 @@ class Common(object):
         """ ignore docstring
         Endpoint indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#endpoint
         """
-        CONTEXT_PATH = 'Endpoint(val.ID && val.ID == obj.ID)'
+        # Compare by both ID and Vendor if both exist, otherwise just by ID.
+        CONTEXT_PATH = 'Endpoint(val.ID && val.ID == obj.ID && val.Vendor == obj.Vendor)'
 
         def __init__(self, id, hostname=None, ip_address=None, domain=None, mac_address=None,
                      os=None, os_version=None, dhcp_server=None, bios_version=None, model=None,
@@ -7160,6 +7167,9 @@ class ExecutionMetrics(object):
         self._timeout_error = value
         self.update_metrics(ErrorTypes.TIMEOUT_ERROR, self._timeout_error)
 
+    def get_metric_list(self):
+        return self._metrics
+
     def update_metrics(self, metric_type, metric_value):
         if metric_value > 0:
             if len(self._metrics) == 0:
@@ -7329,7 +7339,16 @@ class CommandRunner:
             full_errors.extend(errors)
 
         summary_md = CommandRunner.get_results_summary(full_results, full_errors)
-        command_results = [res.result for res in full_results]
+
+        command_results = []
+        for res in full_results:
+            if isinstance(res.result, dict) and res.result.get('HumanReadable'):
+                res.result['HumanReadable'] = "***{brand} ({instance})***\n{human_readable}".format(
+                    brand=res.brand,
+                    instance=res.instance,
+                    human_readable=res.result.get('HumanReadable'))
+            command_results.append(res.result)
+
         if not command_results:
             if full_errors:  # no results were given but there are errors
                 errors = ["{instance}: {msg}".format(instance=err.instance, msg=err.result) for err in full_errors]
@@ -7358,11 +7377,12 @@ class CommandRunner:
             res.args.pop('using-brand', None)
             command = {'command': res.command,
                        'args': res.args}
+            comment = res.result.get('Contents', 'No contents found, see entry.') if isinstance(res.result, dict) else None
             results_summary_table.append({'Instance': '***{brand}***: {instance}'.format(brand=res.brand,
                                                                                          instance=res.instance),
                                           'Command': command,
                                           'Result': 'Success',
-                                          'Comment': None})
+                                          'Comment': comment})
 
         for err in errors:
             # don't care about using arg in command
@@ -7863,12 +7883,29 @@ def is_demisto_version_ge(version, build_number=''):
     :return: True if running within a Server version greater or equal than the passed version
     :rtype: ``bool``
     """
+
+    def versionzfill(v):
+        """ Split version on . and zfill. So we can compare 6.10 to 6.5 properly.
+
+        :type v: ``srt``
+        :param v: Version str to fill
+
+        :return: Version with zfill
+        :rtype: ``str``
+        """
+        vzfill = []
+        for ver in v.split("."):
+            vzfill.append(ver.zfill(8))
+        return tuple(vzfill)
+
     server_version = {}
     try:
         server_version = get_demisto_version()
-        if server_version.get('version') > version:
+        server_zfill = versionzfill(server_version.get('version'))
+        ver_zfill = versionzfill(version)
+        if server_zfill > ver_zfill:
             return True
-        elif server_version.get('version') == version:
+        elif server_zfill == ver_zfill:
             if build_number:
                 return int(server_version.get('buildNumber')) >= int(build_number)  # type: ignore[arg-type]
             return True  # No build number
@@ -8443,9 +8480,6 @@ if 'requests' in sys.modules:
                 The request codes to accept as OK, for example: (200, 201, 204). If you specify
                 "None", will use self._ok_codes.
 
-            :return: Depends on the resp_type parameter
-            :rtype: ``dict`` or ``str`` or ``requests.Response``
-
             :type retries: ``int``
             :param retries: How many retries should be made in case of a failure. when set to '0'- will fail on the first time
 
@@ -8480,13 +8514,15 @@ if 'requests' in sys.modules:
                 been exhausted.
 
             :type error_handler ``callable``
-            :param error_handler: Given an error entery, the error handler outputs the
+            :param error_handler: Given an error entry, the error handler outputs the
                 new formatted error message.
 
             :type empty_valid_codes: ``list``
             :param empty_valid_codes: A list of all valid status codes of empty responses (usually only 204, but
                 can vary)
 
+            :return: Depends on the resp_type parameter
+            :rtype: ``dict`` or ``str`` or ``bytes`` or ``xml.etree.ElementTree.Element`` or ``requests.Response``
             """
             try:
                 # Replace params if supplied
@@ -10689,7 +10725,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
         'content-encoding': 'gzip'
     }
 
-    header_msg = 'Error sending new events into XSIAM. \n'
+    header_msg = 'Error sending new events into XSIAM.\n'
 
     def events_error_handler(res):
         """
@@ -10703,14 +10739,18 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
                 error += ": " + xsiam_server_err_msg
 
         except ValueError:
-            error = '\n{}'.format(res.text)
+            if res.text:
+                error = '\n{}'.format(res.text)
+            else:
+                error = "Received empty response from the server"
 
         api_call_info = (
             'Parameters used:\n'
             '\tURL: {xsiam_url}\n'
             '\tHeaders: {headers}\n\n'
+            'Response status code: {status_code}\n'
             'Error received:\n\t{error}'
-        ).format(xsiam_url=xsiam_url, headers=json.dumps(headers, indent=4), error=error)
+        ).format(xsiam_url=xsiam_url, headers=json.dumps(headers, indent=8), status_code=res.status_code, error=error)
 
         demisto.error(header_msg + api_call_info)
         raise DemistoException(header_msg + error, DemistoException)

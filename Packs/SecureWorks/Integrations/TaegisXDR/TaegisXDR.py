@@ -17,12 +17,15 @@ ENV_URLS = {
 
 INVESTIGATION_STATUSES = set((
     "Open",
-    "Active",
     "Suspended",
+    "Active",
+    "Awaiting Action",
     "Closed: Authorized Activity",
     "Closed: False Positive Alert",
+    "Closed: Inconclusive",
     "Closed: Informational",
     "Closed: Not Vulnerable",
+    "Closed: Threat Mitigated",
 ))
 INVESTIGATION_UPDATE_FIELDS = set(("key_findings", "priority", "status", "service_desk_id", "service_desk_type"))
 
@@ -133,7 +136,7 @@ def create_investigation_command(client: Client, env: str, args=None):
     outputs = result["data"]["createInvestigation"]
 
     results = CommandResults(
-        outputs_prefix="TaegisXDR.Result",
+        outputs_prefix="TaegisXDR.Investigation",
         outputs_key_field="id",
         outputs=outputs,
         readable_output=readable_output,
@@ -182,7 +185,7 @@ def execute_playbook_command(client: Client, env: str, args=None):
     outputs = result["data"]["executePlaybookInstance"]
 
     results = CommandResults(
-        outputs_prefix="TaegisXDR.Result",
+        outputs_prefix="TaegisXDR.Execution",
         outputs_key_field="id",
         outputs=outputs,
         readable_output=readable_output,
@@ -194,67 +197,111 @@ def execute_playbook_command(client: Client, env: str, args=None):
 
 def fetch_alerts_command(client: Client, env: str, args=None):
     """
-    The results from listing alerts is not always the most recent. It's recommended
-        that specific alert IDs are utilized rather than fetching all alerts.
-
-    Max number of results: 10
+    Fetch a specific alert or a list of alerts based on a CQL Taegis query
     """
-    if not args.get("ids"):
-        args["ids"] = []
+    variables: dict = {
+        "cql_query": args.get("cql_query", "from alert severity >= 0.6 and status='OPEN'"),
+        "limit": args.get("limit", 10),
+        "offset": args.get("offset", 0),
+    }
+    fields: str = """
+            status
+            reason
+            alerts {
+                total_results
+                list {
+                    id
+                    tenant_id
+                    status
+                    suppressed
+                    suppression_rules {
+                      id
+                      version
+                    }
+                    resolution_reason
+                    attack_technique_ids
+                    entities{
+                      entities
+                      relationships{
+                        from_entity
+                        relationship
+                        to_entity
+                      }
+                    }
+                    metadata {
+                      engine {
+                        name
+                      }
+                      creator {
+                        detector {
+                          version
+                          detector_id
+                        }
+                        rule {
+                          rule_id
+                          version
+                        }
+                      }
+                      title
+                      description
+                      confidence
+                      severity
+                      created_at {
+                        seconds
+                      }
+                    }
+                    investigation_ids {
+                      id
+                    }
+                    sensor_types
+                }
+            }
+        """
 
-    query = """
-    query alerts {
-        alerts(alertIDs: %s) {
-            id
-            alert_type
-            data {
-                username
-                message
-                source_ip
-                destination_ip
-                raw_event
-            }
-            group_key
-            confidence
-            severity
-            creator
-            creator_version
-            tenant_id
-            message
-            description
-            timestamp {
-                seconds
-            }
-            investigations
-            source {
-                uuid
-                origin
-                source_event
-                event_snippet
-            }
-            related_entities
-            references {
-                description
-                url
+    if args.get("ids"):
+        field = "alertsServiceRetrieveAlertsById"
+        query = """
+        query alertsServiceRetrieveAlertsById {
+            alertsServiceRetrieveAlertsById(
+                in: {
+                    iDs: %s
+                }
+            ) {
+                %s
             }
         }
-    }
-    """ % (str(args["ids"]))
+        """ % (str(args["ids"]), fields)
+    else:
+        field = "alertsServiceSearch"
+        query = """
+        query alertsServiceSearch($cql_query: String, $limit: Int, $offset: Int) {
+            alertsServiceSearch(
+                in: {
+                    cql_query:$cql_query,
+                    offset:$offset,
+                    limit:$limit
+                }
+            ) {
+                %s
+            }
+        }
+        """ % (fields)
 
-    result = client.graphql_run(query)
-    readable_output = f'## Results\nFound {len(result["data"]["alerts"])} alerts'
+    result = client.graphql_run(query=query, variables=variables)
+    alerts = result["data"][field]["alerts"]["list"]
 
-    if result["data"]["alerts"]:
+    readable_output = f'## Results\nFound {len(alerts)} alerts'
+
+    if alerts:
         readable_output += "\n\n### Alerts\n"
-        for alert in result["data"]["alerts"]:
-            readable_output += f"* [{alert['message']}]({ENV_URLS[env]['xdr']}/alerts/{alert['id']})\n"
-
-    outputs = result["data"]["alerts"]
+        for alert in alerts:
+            alert_id: str = alert['id'].replace('/', '%2F')
+            readable_output += f"* [{alert['metadata']['title']}]({ENV_URLS[env]['xdr']}/alerts/{alert_id})\n"
 
     results = CommandResults(
-        outputs_prefix="TaegisXDR.Result",
+        outputs_prefix="TaegisXDR.Alerts",
         outputs_key_field="id",
-        outputs=outputs,
+        outputs=alerts,
         readable_output=readable_output,
         raw_response=result,
     )
@@ -290,11 +337,27 @@ def fetch_incidents(client: Client, max_fetch: int = 15):
             tenant_id
             description
             key_findings
-            alerts {
+            assignee {
+                name
                 id
-                alert_type
-                severity
-                message
+                email
+            }
+            alerts2 {
+                id
+                suppressed
+                status
+                priority {
+                    value
+                }
+                metadata {
+                    title
+                    description
+                    created_at {
+                        seconds
+                    }
+                    severity
+                    confidence
+                }
             }
             archived_at
             created_at
@@ -323,7 +386,7 @@ def fetch_incidents(client: Client, max_fetch: int = 15):
         "orderDirection": "asc",
         "page": 0,
         "perPage": max_fetch,
-        "status": ["Open", "Active"]
+        "status": ["Open", "Active", "Awaiting Action"]
     }
 
     last_run = demisto.getLastRun()
@@ -403,7 +466,7 @@ def fetch_investigation_alerts_command(client: Client, env: str, args=None):
             readable_output += f"* [{alert['id']}]({ENV_URLS[env]['xdr']}/alerts/{alert['id']})\n"
 
     results = CommandResults(
-        outputs_prefix="TaegisXDR.Result",
+        outputs_prefix="TaegisXDR.InvestigationAlerts",
         outputs_key_field="id",
         outputs=alerts,
         readable_output=readable_output,
@@ -424,11 +487,27 @@ def fetch_investigation_command(client: Client, env: str, args=None):
         tenant_id
         description
         key_findings
-        alerts {
+        alerts2 {
             id
-            alert_type
-            severity
-            message
+            suppressed
+            status
+            priority {
+                value
+            }
+            metadata {
+                title
+                description
+                created_at {
+                    seconds
+                }
+                severity
+                confidence
+            }
+        }
+        assignee {
+            name
+            id
+            email
         }
         archived_at
         created_at
@@ -487,7 +566,7 @@ def fetch_investigation_command(client: Client, env: str, args=None):
 """
 
     results = CommandResults(
-        outputs_prefix="TaegisXDR.Result",
+        outputs_prefix="TaegisXDR.Investigations",
         outputs_key_field="id",
         outputs=outputs,
         readable_output=readable_output,
@@ -551,7 +630,7 @@ def fetch_playbook_execution_command(client: Client, env: str, args=None):
         outputs = result["data"]["playbookExecution"]
 
     results = CommandResults(
-        outputs_prefix="TaegisXDR.Result",
+        outputs_prefix="TaegisXDR.PlaybookExecution",
         outputs_key_field="id",
         outputs=outputs,
         readable_output=readable_output,
@@ -596,7 +675,7 @@ def update_investigation_command(client: Client, env: str, args=None):
     outputs = result["data"]["updateInvestigation"]
 
     results = CommandResults(
-        outputs_prefix="TaegisXDR.Result",
+        outputs_prefix="TaegisXDR.InvestigationUpdate",
         outputs_key_field="id",
         outputs=outputs,
         readable_output=readable_output,

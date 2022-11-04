@@ -1,6 +1,5 @@
 from CommonServerPython import *
 import json
-import io
 import demistomock as demisto
 
 """ API RAW RESULTS """
@@ -243,7 +242,7 @@ FILE_OUTPUTS = {
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -258,7 +257,7 @@ def test_login_failed(requests_mock, mocker):
     Then:
         - Ensure an indicative error is returned that authorization failed
     """
-    login_failed_html = """<!doctype html>
+    login_failed_html = b"""<!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -272,7 +271,7 @@ def test_login_failed(requests_mock, mocker):
     <app-login></app-login>
 <script type="text/javascript" src="public/vendors_c29907a62751511cc002.js"></script><script type="text/javascript" src="public/login_62faa8ec0f21f2d2949f.js"></script></body>  # noqa: E501
 </html>
-""".encode('utf-8')
+"""
     mocker.patch.object(demisto, 'params', return_value={
         'server': 'http://server',
         'credentials': {
@@ -332,3 +331,31 @@ def test_malop_processes_command(mocker):
     assert dict_safe_get(result[0], ['EntryContext', 'Process'], [])[0].get('Name', '') == 'bdata.bin'
     assert dict_safe_get(result[0], ['EntryContext', 'Process'], [])[0].get('SHA1', '') ==\
            'f56238da9fbfa3864d443a85bb80743bd2415682'
+
+
+def test_fetch_incidents(mocker):
+    """
+    Given:
+        - LastRun is set.
+    When:
+        - Fetch incidents runs.
+    Then:
+        - The comparison is done as expected, LastRun is set with the right time.
+    """
+    from Cybereason import fetch_incidents
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'getLastRun', return_value={'creation_time': '1664438469281'})
+    set_last_run = mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'incidents')
+
+    malop_process_type = {'data': {
+        'resultIdToElementDataMap':
+            {'same': {'simpleValues': {'malopLastUpdateTime': {'values': ['1664438469281']}}, 'guidString': 'same'},
+             'bigger': {'simpleValues': {'malopLastUpdateTime': {'values': ['1665154307940']}}, 'guidString': 'bigger'},
+             'biggest': {'simpleValues': {'malopLastUpdateTime': {'values': ['1665154307942']}}, 'guidString': 'biggest'},
+             'smaller': {'simpleValues': {'malopLastUpdateTime': {'values': ['1659094660967']}}, 'guidString': 'smaller'}}}}
+    malop_loggon_session_type = {'data': {'resultIdToElementDataMap': {}}}
+    mocker.patch('Cybereason.query_malops', return_value=(malop_process_type, malop_loggon_session_type))
+
+    fetch_incidents()
+    set_last_run.assert_called_with({'creation_time': '1665154307942'})

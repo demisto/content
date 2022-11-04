@@ -1,0 +1,147 @@
+[
+    {
+      "Type": 15,
+      "ContentsFormat": "json",
+      "Contents": {
+        "lat": 37.4056,
+        "lng": -122.0775
+
+      },
+      "HumanReadable": null,
+      "EntryContext": {
+        "IP(val.Address && val.Address == obj.Address)": [
+          {
+            "Address": "8.8.8.8",
+            "ASN": "AS15169",
+            "Hostname": "dns.google",
+            "Geo": {
+              "Location": "37.4056,-122.0775",
+              "Country": "US",
+              "Description": "Mountain View, California, 94043, US"
+            },
+            "FeedRelatedIndicators": [
+              {
+                "value": "dns.google",
+                "type": "URL",
+                "description": "Hostname"
+              }
+            ],
+            "Relationships": [
+              {
+                "Relationship": "resolves-to",
+                "EntityA": "8.8.8.8",
+                "EntityAType": "IP",
+                "EntityB": "dns.google",
+                "EntityBType": "Domain"
+              }
+            ]
+          }
+        ],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+          {
+            "Indicator": "8.8.8.8",
+            "Type": "ip",
+            "Vendor": "IPinfo",
+            "Score": 0,
+            "Reliability": "C - Fairly reliable"
+          }
+        ]
+      },
+      "IndicatorTimeline": [],
+      "IgnoreAutoExtract": false,
+      "Note": false,
+      "Relationships": []
+    },
+    {
+      "Type": 1,
+      "ContentsFormat": "json",
+      "Contents": {
+        "ip": "8.8.8.8",
+        "hostname": "dns.google",
+        "anycast": true,
+        "city": "Mountain View",
+        "region": "California",
+        "country": "US",
+        "loc": "37.4056,-122.0775",
+        "org": "AS15169 Google LLC",
+        "postal": "94043",
+        "timezone": "America/Los_Angeles",
+        "readme": "https://ipinfo.io/missingauth",
+        "lat": 37.4056,
+        "lng": -122.0775
+      },
+      "HumanReadable": "### IPinfo results for 8.8.8.8\n|anycast|city|country|hostname|ip|lat|lng|loc|org|postal|readme|region|timezone|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| true | Mountain View | US | dns.google | 8.8.8.8 | 37.4056 | -122.0775 | 37.4056,-122.0775 | AS15169 Google LLC | 94043 | https://ipinfo.io/missingauth | California | America/Los_Angeles |\n",
+      "EntryContext": {
+        "IP(val.Address && val.Address == obj.Address)": [
+          {
+            "Address": "8.8.8.8",
+            "ASN": "AS15169",
+            "Hostname": "dns.google",
+            "Geo": {
+              "Location": "37.4056,-122.0775",
+              "Country": "US",
+              "Description": "Mountain View, California, 94043, US"
+            },
+            "FeedRelatedIndicators": [
+              {
+                "value": "dns.google",
+                "type": "URL",
+                "description": "Hostname"
+              }
+            ],
+            "Relationships": [
+              {
+                "Relationship": "resolves-to",
+                "EntityA": "8.8.8.8",
+                "EntityAType": "IP",
+                "EntityB": "dns.google",
+                "EntityBType": "Domain"
+              }
+            ]
+          }
+        ],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+          {
+            "Indicator": "8.8.8.8",
+            "Type": "ip",
+            "Vendor": "IPinfo",
+            "Score": 0,
+            "Reliability": "C - Fairly reliable"
+          }
+        ],
+        "IPinfo.IP(val.Address && val.Address == obj.Address)": {
+          "Address": "8.8.8.8",
+          "Hostname": "dns.google",
+          "ASN": "AS15169",
+          "ASOwner": "Google LLC",
+          "Tags": [],
+          "Organization": null,
+          "Geo": {
+            "Location": "37.4056,-122.0775",
+            "Country": "US",
+            "Description": "Mountain View, California, 94043, US"
+          },
+          "Registrar": null
+        }
+      },
+      "IndicatorTimeline": [],
+      "IgnoreAutoExtract": false,
+      "Note": false,
+      "Relationships": [
+        {
+          "name": "resolves-to",
+          "reverseName": "resolved-from",
+          "type": "IndicatorToIndicator",
+          "entityA": "8.8.8.8",
+          "entityAFamily": "Indicator",
+          "entityAType": "IP",
+          "entityB": "dns.google",
+          "entityBFamily": "Indicator",
+          "entityBType": "Domain",
+          "fields": {},
+          "reliability": "C - Fairly reliable",
+          "brand": "IPinfo"
+        }
+      ]
+    }
+  ]

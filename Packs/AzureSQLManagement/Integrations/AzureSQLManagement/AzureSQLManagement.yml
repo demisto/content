@@ -640,7 +640,7 @@ script:
     - contextPath: AzureSQL.DBThreatPolicy.serverName
       description: The name of server that the threat policy is related to.
       type: String
-  dockerimage: demisto/crypto:1.0.0.31715
+  dockerimage: demisto/crypto:1.0.0.34720
   feed: false
   isfetch: false
   longRunning: false

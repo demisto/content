@@ -34,3 +34,7 @@ ignore=RM106
 
 [file:playbook-Configuration_Setup.yml]
 ignore=PB106
+
+[known_words]
+cliname
+CICD

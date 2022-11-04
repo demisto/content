@@ -1,3 +1,4 @@
+import uuid
 from dataclasses import dataclass
 from typing import Callable, Tuple
 
@@ -170,7 +171,24 @@ class Client:
                 return res
 
             try:
-                return res.json()
+                if 'image' in res.headers.get('Content-Type', '') or 'text' in res.headers.get('Content-Type', ''):
+                    filename_from_headers = res.headers.get('Content-Disposition')
+                    if 'filename=' in filename_from_headers:
+                        filename = filename_from_headers.split('filename=')[-1]
+                    else:
+                        filename = str(uuid.uuid4())
+                    stored_file = fileResult(filename, res.content)
+                    file_type = 'image' if 'image' in res.headers.get('Content-Type', '') else 'file'
+                    file_entry = {
+                        'Type': entryTypes[file_type],
+                        'ContentsFormat': formats['text'],
+                        'File': stored_file['File'],
+                        'FileID': stored_file['FileID'],
+                        'Contents': ''
+                    }
+                    return file_entry
+                else:  # handle the response as json
+                    return res.json()
             except ValueError as exception:
                 raise DemistoException("Failed to parse json object from response:" + str(res.content), exception)
         except requests.exceptions.ConnectTimeout as exception:
@@ -1060,7 +1078,7 @@ def download_ioc_command(
         id: str,
         name: str = "",
         accept_encoding: str = ""
-) -> CommandResults:
+) -> Union[CommandResults, dict]:
     """Download IOC packs, PCAP files, and other analysis artifacts.
     :param client: the client object with an access token
     :param id: id of an artifact, such as an IOC pack, PCAP file, or actor image
@@ -1071,13 +1089,16 @@ def download_ioc_command(
     response: Optional[dict] = None
     try:
         response = client.download_ioc(id, name, accept_encoding)
-        return CommandResults(
-            outputs_prefix=OUTPUTS_PREFIX,
-            outputs_key_field='ioc',
-            outputs=response,
-            readable_output=tableToMarkdown("CrowdStrike Falcon X response:", response),
-            raw_response=response
-        )
+        if response.get('File'):  # In case the returned response is a file, output the file to the war room.
+            return response
+        else:
+            return CommandResults(
+                outputs_prefix=OUTPUTS_PREFIX,
+                outputs_key_field='ioc',
+                outputs=response,
+                readable_output=tableToMarkdown("CrowdStrike Falcon X response:", response),
+                raw_response=response
+            )
     except Exception as e:
         demisto.debug(f'Download ioc exception {e}')
         raise DemistoException(f'Download ioc encountered an exception: {e}', exception=e, res=response)
