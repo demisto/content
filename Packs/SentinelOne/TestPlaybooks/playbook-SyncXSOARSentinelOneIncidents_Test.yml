@@ -55,9 +55,9 @@ tasks:
     task:
       id: '96b99e2c-44d9-499f-8a07-0616b085a49d'
       version: -1
-      name: SyncXSOARSentinelOneIncidents
+      name: SyncIncidents
       description: ''
-      script: SyncXSOARSentinelOneIncidents
+      script: SyncIncidents
       type: regular
       iscommand: true
       brand: ''

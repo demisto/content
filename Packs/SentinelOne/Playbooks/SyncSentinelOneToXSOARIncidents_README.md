@@ -11,7 +11,7 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-* SyncXSOARSentinelOneIncidents
+* SyncIncidents
 
 ### Commands
 This playbook does not use any commands.
@@ -26,4 +26,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Playbook-SyncXSOAR-SentinelOneIncidents](../doc_files/SyncXSOARSentinelOneIncidents.png)
+![Playbook-SyncXSOAR-SentinelOneIncidents](../doc_files/SyncIncidents.png)

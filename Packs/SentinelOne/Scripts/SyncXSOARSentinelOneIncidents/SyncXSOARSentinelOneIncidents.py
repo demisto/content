@@ -268,7 +268,7 @@ def write_s1_threat_note(threatId):
 
 def update_xsoar_incident(xsoar_incident_update_fields):
     update_response = demisto.executeCommand("setIncident", xsoar_incident_update_fields)
-    return update_response.get("Contents")
+    return update_response
 
 
 def update_s1_threat_verdict(threatId, verdict):

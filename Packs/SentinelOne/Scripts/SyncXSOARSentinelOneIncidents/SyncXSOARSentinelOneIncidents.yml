@@ -1,7 +1,7 @@
 commonfields:
-  id: SyncXSOARSentinelOneIncidents
+  id: SyncIncidents
   version: -1
-name: SyncXSOARSentinelOneIncidents
+name: SyncIncidents
 comment: |-
   This script is used to sync incidents from XSOAR to SentinelOne and SentinelOne to XSOAR
 script: ''

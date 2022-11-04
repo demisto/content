@@ -11,7 +11,7 @@ This script is used to sync incidents from XSOAR to SentinelOne and SentinelOne 
 ## Used In
 ---
 This script is used in the following playbooks and scripts.
-* SyncXSOARSentinelOneIncidents
+* SyncIncidents
 
 ## Inputs
 ---

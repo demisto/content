@@ -43,8 +43,8 @@ tasks:
     task:
       id: df8588f7-bb6c-4cb4-855a-07ee41193458
       version: -1
-      name: SyncXSOARSentinelOneIncidents
-      scriptName: SyncXSOARSentinelOneIncidents
+      name: SyncIncidents
+      scriptName: SyncIncidents
       type: regular
       iscommand: false
       brand: ""
