@@ -205,8 +205,8 @@ def get_platform_permission_ids(permissions_data: Any) -> List[Any]:
     ]
     ids_required_for_user = []
     for value in permissions_data:
-        if value["name"] in wanted_permissions:
-            ids_required_for_user.append(value["id"])
+        if value.get("name") in wanted_permissions:
+            ids_required_for_user.append(value.get("id"))
 
     return ids_required_for_user
 
@@ -240,8 +240,8 @@ def get_permission_name_from_id(permission_data: dict, permission_ids: list) -> 
     permissions_name = []
     for data in permission_data:
         for permission_id in permission_ids:
-            if data["id"] == permission_id:
-                permissions_name.append(data["name"])
+            if data.get("id") == permission_id:
+                permissions_name.append(data.get("name"))
     return permissions_name
 
 
@@ -268,17 +268,16 @@ def test_module(client: Client) -> Any:
     try:
         permissions_of_user = client.get_user_granted_permissions()
     except Exception:
-        permissions_of_user = []
         return "Please provide valid API Key."
 
     permission_ids = []
     missing_permissions = ""
-    for permission in permissions_of_user:
-        permission_ids.append(int(permission.split("/")[-1]))
+    if isinstance(permissions_of_user, list):
+        for permission in permissions_of_user:
+            permission_ids.append(int(permission.split("/")[-1]))
     try:
         permissions_data = client.get_platform_permissions()
     except Exception:
-        permissions_data = []
         return "API Key does not have access to view permissions."
     if permissions_data:
         ids_required_for_user = get_platform_permission_ids(
@@ -335,7 +334,7 @@ def prepare_observable_data(data: Any) -> dict:
     new_data = {}
     new_data["type"] = data.get("type")
     new_data["value"] = data.get("value")
-    new_data["classification"] = data.get("meta").get("maliciousness")
+    new_data["classification"] = data.get("meta", {}).get("maliciousness")
     return new_data
 
 
@@ -383,34 +382,34 @@ def prepare_entity_data(data: Any, obs_data: Any) -> dict[Any, Any]:
     new_data = {}
     if data.get("data"):
         new_data["title"] = (
-            data.get("data").get("title") if data.get(
-                "data").get("title") else ""
+            data.get("data", {}).get("title") if data.get(
+                "data", {}).get("title") else ""
         )
 
         new_data["description"] = (
-            data.get("data").get("description")
-            if data.get("data").get("description")
+            data.get("data", {}).get("description")
+            if data.get("data", {}).get("description")
             else ""
         )
         new_data["confidence"] = (
-            data.get("data").get("confidence")
-            if data.get("data").get("confidence")
+            data.get("data", {}).get("confidence")
+            if data.get("data", {}).get("confidence")
             else ""
         )
         new_data["tags"] = (
-            data.get("data").get("tags") if data.get(
-                "data").get("tags") else ""
+            data.get("data", {}).get("tags") if data.get(
+                "data", {}).get("tags") else ""
         )
     if data.get("meta"):
         new_data["threat_start_time"] = (
-            data.get("meta").get("estimated_threat_start_time")
-            if data.get("meta").get("estimated_threat_start_time")
+            data.get("meta", {}).get("estimated_threat_start_time")
+            if data.get("meta", {}).get("estimated_threat_start_time")
             else ""
         )
-        if data.get("data").get("producer"):
+        if data.get("data", {}).get("producer"):
             new_data["source_name"] = (
-                data.get("data").get("producer").get("identity")
-                if data.get("data").get("producer").get("identity")
+                data.get("data", {}).get("producer", {}).get("identity")
+                if data.get("data", {}).get("producer", {}).get("identity")
                 else ""
             )
         else:
@@ -499,7 +498,7 @@ def lookup_observables(client: Client, args: Any) -> CommandResults:
     standard_observable_outputs = []
     final_data = []
     for observable in data:
-        maliciousness = observable["meta"]["maliciousness"]
+        maliciousness = observable.get("meta", {}).get("maliciousness")
         score = maliciousness_to_dbotscore(maliciousness)
         standard_observable_output = {
             'data': observable

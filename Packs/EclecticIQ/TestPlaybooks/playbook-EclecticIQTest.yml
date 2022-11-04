@@ -42,7 +42,7 @@ tasks:
       version: -1
       name: lookup_observables
       description: Lookup observables from EclecticIQ Intelligence Center Platform
-      script: EclecticIQ|||lookup_observables
+      script: EclecticIQ Platform|||lookup_observables
       type: regular
       iscommand: true
       brand: EclecticIQ
@@ -79,7 +79,7 @@ tasks:
       version: -1
       name: create sighting
       description: 'create sighting in the EclecticIQ Intelligence Center Platform '
-      script: EclecticIQ|||create_sighting
+      script: EclecticIQ Platform|||create_sighting
       type: regular
       iscommand: true
       brand: EclecticIQ
