@@ -48,8 +48,8 @@ class Client(BaseClient):
     def get_connected_results(
         self,
         search_identity: Union[str, Dict],
-        connect_type: List = None,
-        connect_category: List = None,
+        connect_type: Optional[List] = None,
+        connect_category: Optional[List] = None,
         max_results: int = 25,
     ) -> List[Dict[str, Any]]:
         # Can't use json= since it's already in use by xsoar
@@ -168,8 +168,8 @@ def search_appnovi_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="appnovi",
-        outputs_key_field="",
+        outputs_prefix="appnovi.search",
+        outputs_key_field=table_layout["appnoviid"],
         outputs=results,
     )
 
@@ -212,8 +212,8 @@ def search_appnovi_prop_command(client: Client, args: Dict[str, Any]) -> Command
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="appnovi",
-        outputs_key_field="",
+        outputs_prefix="appnovi.searchProp",
+        outputs_key_field=table_layout["appnoviid"],
         outputs=results,
     )
 
@@ -232,14 +232,8 @@ def search_appnovi_connected_command(
         identity = appnovi_id
 
     # Check for arguments
-    cats = args.get("category", None)
-    types = args.get("type", None)
-
-    # We want pass a list if given, not CSV
-    if cats is not None:
-        cats = cats.split(",")
-    if types is not None:
-        types = types.split(",")
+    cats = argToList(args.get("category", "")) or None
+    types = argToList(args.get("type", "")) or None
 
     # Process identity
     results = client.get_connected_results(identity, types, cats)
@@ -263,8 +257,8 @@ def search_appnovi_connected_command(
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="appnovi",
-        outputs_key_field="",
+        outputs_prefix="appnovi.connected",
+        outputs_key_field=table_layout["appnoviid"],
         outputs=results,
     )
 
@@ -302,8 +296,8 @@ def search_appnovi_cve_servers_command(
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="appnovi",
-        outputs_key_field="",
+        outputs_prefix="appnovi.cveServers",
+        outputs_key_field=table_layout["appnoviid"],
         outputs=results,
     )
 
@@ -372,7 +366,7 @@ def find_server_by_ip_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="appnovi",
+        outputs_prefix="appnovi.server",
         outputs_key_field="",
         outputs=[v for k, v in servers.items()],
     )
@@ -381,63 +375,50 @@ def find_server_by_ip_command(client: Client, args: Dict[str, Any]) -> CommandRe
 """ MAIN FUNCTION """
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions
 
     :return:
     :rtype:
     """
 
-    api_key = demisto.params().get("appnovi_token")
+    params = demisto.params()
+    command = demisto.command()
 
-    # get the service API url
-    # base_url = urljoin(demisto.params()['appnovi_url'], API_PREFIX)
-    base_url = demisto.params()["appnovi_url"]
-    base_url = urljoin(base_url, API_PREFIX)
+    api_key = params.get("appnovi_token")
+    base_url = urljoin(params["appnovi_url"], API_PREFIX)
 
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    verify_certificate = not demisto.params().get("insecure", False)
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
 
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get("proxy", False)
-
-    # INTEGRATION DEVELOPER TIP
-    # You can use functions such as ``demisto.debug()``, ``demisto.info()``,
-    # etc. to print information in the XSOAR server log. You can set the log
-    # level on the server configuration
-    # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
-
-    demisto.debug(f"Command being called is {demisto.command()}")
+    demisto.debug(f"Command being called is {command}")
     try:
         headers = {"Authorization": f"Bearer {api_key}"}
         client = Client(
             base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
         )
 
-        if demisto.command() == "test-module":
-            # This is the call made when pressing the integration Test button.
-            return_results(test_module(client))
+        command = demisto.command()
 
-        elif demisto.command() == "search-appnovi-components":
-            return_results(search_appnovi_command(client, demisto.args()))
-        elif demisto.command() == "search-appnovi-component-property":
-            return_results(search_appnovi_prop_command(client, demisto.args()))
-        elif demisto.command() == "search-appnovi-connected":
-            return_results(search_appnovi_connected_command(client, demisto.args()))
-        elif demisto.command() == "search-appnovi-cve":
-            return_results(search_appnovi_cve_servers_command(client, demisto.args()))
-        elif demisto.command() == "search-appnovi-server-by-ip":
-            return_results(find_server_by_ip_command(client, demisto.args()))
+        if command == "test-module":
+            return_results(test_module(client))
+            return
+
+        commands = {
+            "search-appnovi-components": search_appnovi_command,
+            "search-appnovi-component-property": search_appnovi_prop_command,
+            "search-appnovi-connected": search_appnovi_connected_command,
+            "search-appnovi-cve": search_appnovi_cve_servers_command,
+            "search-appnovi-server-by-ip": find_server_by_ip_command,
+        }
+
+        fn = commands.get(command, None)
+        if fn:
+            return_results(fn(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(
-            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
-        )
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
 """ ENTRY POINT """
