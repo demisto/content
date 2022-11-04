@@ -48,8 +48,8 @@ script:
       description: Value to search the related observables from EclecticIQ Intelligence Center Platform
       type: textArea
     outputs:
-    - contextPath: EclecticIQ.Entity.ID
-      description: EclecticIQ  Entity ID
+    - contextPath: EclecticIQ.Observables.type
+      description: EclecticIQ  Observables type
       type: string
     - contextPath: EclecticIQ.Entity.confidence
       description: EclecticIQ Entity confidence
@@ -108,6 +108,22 @@ script:
       - unknown
       description: severity level of the sighting
       type: textArea
+    outputs:
+    - contextPath: Sighting.Data.Type
+      description: Sighting Type
+      type: string
+    - contextPath: Sighting.Data.tags
+      description: Sighting Tags
+      type: string
+    - contextPath: Sighting.Data.title
+      description: Sighting Title
+      type: string
+    - contextPath: Sighting.Data.description
+      description: Sighting Description
+      type: string
+    - contextPath: Sighting.Data.value
+      description: Sighting Value
+      type: string
     description: 'create sighting in the EclecticIQ Intelligence Center Platform '
   - name: create_observable
     arguments:
@@ -140,6 +156,16 @@ script:
       - medium
       - high
       description: severity level of the type
+    outputs:
+    - contextPath: Observables.Data.type
+      description: Observable Type
+      type: string
+    - contextPath: Observables.Data.value
+      description: Observable Value
+      type: string
+    - contextPath: Observables.Data.maliciousness
+      description: Observable maliciousness
+      type: string
     description: 'create observable in the EclecticIQ Intelligence Center Platform '
   runonce: true
   dockerimage: demisto/python3:3.10.6.33415
