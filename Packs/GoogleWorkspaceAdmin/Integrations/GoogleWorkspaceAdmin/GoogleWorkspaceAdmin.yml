@@ -1,0 +1,234 @@
+commonfields:
+  id: GoogleWorkspaceAdmin
+  version: -1
+name: GoogleWorkspaceAdmin
+display: GoogleWorkspaceAdmin
+category: Utilities
+description: Generated description - REPLACE THIS
+configuration:
+  - name: url
+    display: Server URL
+    defaultvalue: https://www.example.com
+    type: 0
+    required: true
+  - name: proxy
+    display: Use system proxy
+    defaultvalue: "false"
+    type: 8
+    required: false
+  - name: insecure
+    display: Trust any certificate
+    defaultvalue: "false"
+    type: 8
+    required: false
+script:
+  commands:
+    - name: googleworkspaceadmin-google-mobiledevice-action
+      description: ""
+      arguments:
+        - name: customerid
+          description: ""
+          required: false
+          isArray: false
+        - name: resourceid
+          description: ""
+          required: false
+          isArray: false
+        - name: action
+          description: ""
+          required: false
+          isArray: false
+    - name: googleworkspaceadmin-google-mobiledevice-list
+      description: ""
+      arguments:
+        - name: customerid
+          description: ""
+          required: false
+          isArray: false
+        - name: projection
+          description: ""
+          required: false
+          isArray: false
+        - name: query
+          description: ""
+          required: false
+          isArray: false
+        - name: orderby
+          description: ""
+          required: false
+          isArray: false
+        - name: sortorder
+          description: ""
+          required: false
+          isArray: false
+        - name: pagetoken
+          description: ""
+          required: false
+          isArray: false
+        - name: maxresults
+          description: ""
+          required: false
+          isArray: false
+      outputs:
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.kind
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.etag
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.kind
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.etag
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.resourceId
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.deviceId
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.name
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.email
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.model
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.os
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.type
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.status
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.hardwareId
+          description: ""
+        - type: Date
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.firstSync
+          description: ""
+        - type: Date
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.lastSync
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.userAgent
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.serialNumber
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.imei
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.meid
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.wifiMacAddress
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.networkOperator
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.defaultLanguage
+          description: ""
+        - type: Boolean
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.managedAccountIsOnOwnerProfile
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.deviceCompromisedStatus
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.buildNumber
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.kernelVersion
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.basebandVersion
+          description: ""
+        - type: Boolean
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.unknownSourcesStatus
+          description: ""
+        - type: Boolean
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.adbStatus
+          description: ""
+        - type: Boolean
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.developerOptionsStatus
+          description: ""
+        - type: Boolean
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.supportsWorkProfile
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.manufacturer
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.releaseVersion
+          description: ""
+        - type: Date
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.securityPatchLevel
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.brand
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.bootloaderVersion
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.hardware
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.encryptionStatus
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.devicePasswordStatus
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.privilege
+          description: ""
+    - name: googleworkspaceadmin-google-chromeosdevice-action
+      description: ""
+      arguments:
+        - name: customerid
+          description: ""
+          required: false
+          isArray: false
+        - name: resourceid
+          description: ""
+          required: false
+          isArray: false
+      outputs:
+        - type: Number
+          contextPath: GoogleWorkspaceAdmin.GoogleChromeosdeviceAction.error.code
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleChromeosdeviceAction.error.message
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleChromeosdeviceAction.error.errors.message
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleChromeosdeviceAction.error.errors.domain
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleChromeosdeviceAction.error.errors.reason
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleChromeosdeviceAction.error.errors.location
+          description: ""
+        - type: String
+          contextPath: GoogleWorkspaceAdmin.GoogleChromeosdeviceAction.error.errors.locationType
+          description: ""
+  type: python
+  subtype: python3
+  dockerimage: demisto/googleapi-python3:1.0.0.36486
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
