@@ -1,5 +1,6 @@
 from XSOARmirroring import get_mapping_fields_command, Client, fetch_incidents, XSOAR_DATE_FORMAT
 from datetime import datetime, timedelta
+from CommonServerPython import *
 import dateparser
 
 
@@ -107,8 +108,14 @@ INCIDENTS = [
     }
 ]
 
-INCIDENT = {
+REMOTE_INCIDENT = {
         "id": 1,
+        "created": (datetime.now() - timedelta(minutes=10)).strftime(XSOAR_DATE_FORMAT),
+        "CustomFields": {"custom_field": "some_custom_field"}
+    }
+
+UPDATED_INCIDENT = {
+        "id": 3,
         "created": (datetime.now() - timedelta(minutes=10)).strftime(XSOAR_DATE_FORMAT),
         "CustomFields": {"custom_field": "some_custom_field"}
     }
@@ -139,7 +146,10 @@ def test_fetch_incidents(mocker):
 
 def test_update_remote_system(mocker):
     parsed_args = generate_dummy_UpdateRemoteSystemArgs()
-    mocker.patch.object(Client, 'get_incident', return_value=INCIDENT)
-    mocker.patch.object(Client, 'update_incident')
+    client = generate_dummy_client()
+    mocker.patch.object(Client, 'get_incident', return_value=REMOTE_INCIDENT)
+    mocker.patch.object(Client, 'update_incident', return_value=UPDATED_INCIDENT)
+    update_remote_system_command(client, {}, ())
+    assert REMOTE_INCIDENT['CustomFields']['custom_field'] == parsed_args.delta['custom_field']
 
 
