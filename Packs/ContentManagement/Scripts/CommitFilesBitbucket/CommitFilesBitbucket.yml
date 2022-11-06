@@ -9,12 +9,9 @@ args:
 - description: The name of the pack.
   name: pack
   required: true
-- description: The UserName in Bitbucket.
+- description: The current user details from the command "getUsers".
   name: user
-  required: false
-- description: The email in Bitbucket.
-  name: email
-  required: false
+  required: true
 - description: Short description to add to the pull request text.
   name: comment
 - description: Pull request description template.

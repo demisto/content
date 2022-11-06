@@ -1,5 +1,5 @@
 id: 132de7e8-3c58-4017-86cd-5bc820449a6c
-version: 4
+version: 9
 contentitemexportablefields:
   contentitemfields:
     packID: ""
@@ -9,16 +9,16 @@ contentitemexportablefields:
     toServerVersion: ""
     definitionid: ""
 vcShouldKeepItemLegacyProdMachine: false
-name: Pull Request Creation - Generic with Bitbucket
+name: Pull Request Creation - Generic
 description: This playbook creates a pull request from the content zip file.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 052d162a-2b5f-480a-8d81-68ef461c8e34
+    taskid: 312af2ee-8c97-4019-8530-0730b4f1c57c
     type: start
     task:
-      id: 052d162a-2b5f-480a-8d81-68ef461c8e34
+      id: 312af2ee-8c97-4019-8530-0730b4f1c57c
       version: -1
       name: ""
       iscommand: false
@@ -44,10 +44,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 6469ba9e-a37c-4ba1-8106-29afbde3109c
+    taskid: 01a392bd-9c8d-4335-8805-52b503eda373
     type: regular
     task:
-      id: 6469ba9e-a37c-4ba1-8106-29afbde3109c
+      id: 01a392bd-9c8d-4335-8805-52b503eda373
       version: -1
       name: Unzip pack
       description: Unzip a file using fileName or entryID to specify a file. Unzipped
@@ -82,10 +82,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: ce598483-6b7a-4691-8cb7-5cf9911a5442
+    taskid: c9a2ae21-c014-47f7-8499-924a665baa42
     type: regular
     task:
-      id: ce598483-6b7a-4691-8cb7-5cf9911a5442
+      id: c9a2ae21-c014-47f7-8499-924a665baa42
       version: -1
       name: Read metadata.json file
       description: Load the contents of a file into context.
@@ -128,10 +128,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 5c80e452-f476-4e84-821a-f11921aa5528
+    taskid: 1a4d0604-bba6-4776-83cd-81fd3da1654c
     type: regular
     task:
-      id: 5c80e452-f476-4e84-821a-f11921aa5528
+      id: 1a4d0604-bba6-4776-83cd-81fd3da1654c
       version: -1
       name: Set pack name
       description: Set a pack name in context under the key PackName.
@@ -180,10 +180,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 3531798c-0d34-4360-82ba-efb9b6341d1c
+    taskid: 9f55462a-275c-42c6-8b59-0addba140215
     type: regular
     task:
-      id: 3531798c-0d34-4360-82ba-efb9b6341d1c
+      id: 9f55462a-275c-42c6-8b59-0addba140215
       version: -1
       name: Send notification
       description: Sends a message to a user, group, or channel.
@@ -209,7 +209,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2235
+          "y": 2240
         }
       }
     note: false
@@ -221,10 +221,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: f259f3db-8b68-44d3-8582-0657b6826bf3
+    taskid: da64f313-52b7-4b37-84e2-c6753a61af28
     type: regular
     task:
-      id: f259f3db-8b68-44d3-8582-0657b6826bf3
+      id: da64f313-52b7-4b37-84e2-c6753a61af28
       version: -1
       name: Get username
       description: commands.local.cmd.get.users
@@ -258,10 +258,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: b73f60f2-9bd7-45ae-8f82-e7c76522136b
+    taskid: 8a94a790-2d13-4435-83a2-e38a80531524
     type: regular
     task:
-      id: b73f60f2-9bd7-45ae-8f82-e7c76522136b
+      id: 8a94a790-2d13-4435-83a2-e38a80531524
       version: -1
       name: Set incident fields values
       description: |-
@@ -308,10 +308,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 3c3b2c56-3a8d-4103-897f-c07af0108245
+    taskid: 7e1e4378-1787-4ba0-8eab-f4b1c1197aad
     type: condition
     task:
-      id: 3c3b2c56-3a8d-4103-897f-c07af0108245
+      id: 7e1e4378-1787-4ba0-8eab-f4b1c1197aad
       version: -1
       name: Is Slack v2 enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -348,10 +348,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 40c1ab5c-6bc1-451e-8e86-16a8ce4685aa
+    taskid: 97dbb179-3232-41c7-87ed-cb867511f99e
     type: condition
     task:
-      id: 40c1ab5c-6bc1-451e-8e86-16a8ce4685aa
+      id: 97dbb179-3232-41c7-87ed-cb867511f99e
       version: -1
       name: Is Microsoft Teams enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -388,10 +388,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 54f5d985-3566-46d3-8cd4-f6469af618a2
+    taskid: 5bbe7d23-0eb1-4c98-8fc3-878795659306
     type: title
     task:
-      id: 54f5d985-3566-46d3-8cd4-f6469af618a2
+      id: 5bbe7d23-0eb1-4c98-8fc3-878795659306
       version: -1
       name: Send notification
       type: title
@@ -418,10 +418,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: bef93691-f187-4550-8f9d-344e227e6ff3
+    taskid: c49038f4-783b-48c0-8c00-564dc0fa175c
     type: title
     task:
-      id: bef93691-f187-4550-8f9d-344e227e6ff3
+      id: c49038f4-783b-48c0-8c00-564dc0fa175c
       version: -1
       name: Done
       type: title
@@ -445,10 +445,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: d4b8b9cd-9c60-429f-8784-5d243f20abe4
+    taskid: d6008218-0ec6-4f9d-8f3e-6571908daba6
     type: condition
     task:
-      id: d4b8b9cd-9c60-429f-8784-5d243f20abe4
+      id: d6008218-0ec6-4f9d-8f3e-6571908daba6
       version: -1
       name: Is channel given?
       type: condition
@@ -488,10 +488,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 8520818d-67f9-418a-80e3-a95bcf762a25
+    taskid: 975720cc-752a-498d-8e50-f2eb502d64d7
     type: playbook
     task:
-      id: 8520818d-67f9-418a-80e3-a95bcf762a25
+      id: 975720cc-752a-498d-8e50-f2eb502d64d7
       version: -1
       name: Pull Request Creation - Github
       description: This playbook creates a pull request using Github integration.
@@ -538,10 +538,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: ae937518-d08f-47f7-8a46-f15d425db2ca
+    taskid: 6d84ae01-f0a9-49eb-8768-e377ad7c3c0e
     type: title
     task:
-      id: ae937518-d08f-47f7-8a46-f15d425db2ca
+      id: 6d84ae01-f0a9-49eb-8768-e377ad7c3c0e
       version: -1
       name: Create the pull request
       type: title
@@ -568,10 +568,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 23ec4972-0366-4c43-8d4d-e7627d5e1f94
+    taskid: 2c69f3fc-f800-4455-8011-4d401e5953f9
     type: condition
     task:
-      id: 23ec4972-0366-4c43-8d4d-e7627d5e1f94
+      id: 2c69f3fc-f800-4455-8011-4d401e5953f9
       version: -1
       name: What integration to use for create the pull request
       description: Check the GitIntegration input to know which git integration we
@@ -628,10 +628,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 1f89bdd9-5cfc-4f8e-80ed-0b7032d68fb0
+    taskid: cce483a1-79fa-4d6d-8002-8d2df94bf8da
     type: regular
     task:
-      id: 1f89bdd9-5cfc-4f8e-80ed-0b7032d68fb0
+      id: cce483a1-79fa-4d6d-8002-8d2df94bf8da
       version: -1
       name: Print error
       description: Prints an error entry with a given message
@@ -668,10 +668,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 6f1d2098-7a55-4cc4-8992-665ee8bb31ab
+    taskid: 606b5f74-58e6-4690-8a7c-c65d97b674cd
     type: playbook
     task:
-      id: 6f1d2098-7a55-4cc4-8992-665ee8bb31ab
+      id: 606b5f74-58e6-4690-8a7c-c65d97b674cd
       version: -1
       name: Pull Request Creation - Bitbucket
       description: This playbook creates a pull request using Github integration.
@@ -692,7 +692,7 @@ tasks:
           root: PackName
       PullRequestTemplate:
         simple: ${inputs.PullRequestTemplate}
-    separatecontext: true
+    separatecontext: false
     continueonerrortype: ""
     loop:
       iscommand: false
@@ -715,10 +715,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 39931616-0d46-4d11-8234-bf5fcd44e188
+    taskid: 2318e242-fbe3-4f3a-88eb-4367bdb190f5
     type: regular
     task:
-      id: 39931616-0d46-4d11-8234-bf5fcd44e188
+      id: 2318e242-fbe3-4f3a-88eb-4367bdb190f5
       version: -1
       name: Get PR information
       description: Returns a list of the pull requests. If a state is provided than
@@ -735,7 +735,7 @@ tasks:
       partial_response:
         simple: "false"
       pull_request_id:
-        simple: ${subplaybook-49.pr_id}
+        simple: ${pr_id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -754,10 +754,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 20e5c01b-229e-4027-85f5-244df299ac75
+    taskid: c198bb3b-f98e-4577-82a4-ad5176790401
     type: regular
     task:
-      id: 20e5c01b-229e-4027-85f5-244df299ac75
+      id: c198bb3b-f98e-4577-82a4-ad5176790401
       version: -1
       name: Set incident fields values - UPDATE reviewer
       description: |-
@@ -786,7 +786,7 @@ tasks:
       cicdreviewer:
         complex:
           root: Bitbucket.PullRequest.reviewers
-          accessor: display_name
+          accessor: account_id
     separatecontext: false
     continueonerrortype: ""
     view: |-

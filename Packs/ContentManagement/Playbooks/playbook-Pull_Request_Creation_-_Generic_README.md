@@ -5,21 +5,23 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 * Pull Request Creation - Github
+* Pull Request Creation - Bitbucket
 
 ### Integrations
-This playbook does not use any integrations.
+* Bitbucket
 
 ### Scripts
-* ReadFile
 * Set
 * UnzipFile
+* ReadFile
 * IsIntegrationAvailable
 * PrintErrorEntry
 
 ### Commands
 * send-notification
-* getUsers
 * setIncident
+* bitbucket-pull-request-list
+* getUsers
 
 ## Playbook Inputs
 ---
@@ -29,8 +31,12 @@ This playbook does not use any integrations.
 | ChannelName | The channel to which to send notifications. |  | Optional |
 | PullRequestTemplate | Pull request description template. | ### Pull Request created in Cortex XSOAR<br/>**Created by:** {}<br/>**Pack:** {}<br/>**Branch:** {}<br/>**Link to incident in Cortex XSOAR:** {}<br/>{} <br/>--- | Required |
 | MainBranch | The name of the branch you want the changes pulled into, which must be an existing branch on the current repository. | master | Required |
-| GitIntegration | Which version control integration to use. | GitHub | Required |
+| GitIntegration | Which version control integration to use. | bitbucket | Required |
 
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
+
+## Playbook Image
+---
+![Pull Request Creation - Generic](../doc_files/Pull_Request_Creation_-_Generic.png)

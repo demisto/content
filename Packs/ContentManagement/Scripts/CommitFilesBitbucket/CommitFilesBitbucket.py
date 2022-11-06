@@ -51,7 +51,6 @@ def commit_content_item(branch_name, content_file):
                    "file_content": f"{content_file.file_text}"}
 
     file_status = does_file_exist(branch_name, content_file)
-    print(f'file_status: {file_status}')
     # dont commit pack_metadata.json if already exists in the branch
     if file_status and content_file.file_name == 'pack_metadata.json':
         return
@@ -187,7 +186,6 @@ def main():
         branch_name = demisto.getArg('branch')
         pack_name = demisto.getArg('pack')
         user = demisto.getArg('user')
-        email = demisto.getArg('email')
         comment = demisto.getArg('comment')
         template = demisto.getArg('template')
 
@@ -197,10 +195,9 @@ def main():
         if not comment:
             comment = ''
 
-        if user and email:
-            username = f'{user} <{email}>'
-        else:
-            username = ''
+        username = user.get('username')
+        if user.get('email'):
+            username = f'{username} ({user.get("email")})'
 
         # commit the files from the input
         for file in files:
@@ -222,7 +219,7 @@ def main():
         incident_url = demisto.demistoUrls().get('investigation')
 
         # create the PR text
-        pr_body = template.format(username, pack_name, branch_name, incident_url, comment)
+        pr_body = template.format(f'{username}\n', f'{pack_name}\n', f'{branch_name}\n', f'{incident_url}\n', f'{comment}\n')
         if new_files:
             pr_body = f'{pr_body}\n\n### New files\n- '
             pr_body = pr_body + '\n- '.join(new_files)

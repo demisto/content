@@ -1,8 +1,8 @@
 id: 6d0f513e-b88a-4ef1-8ba1-e497461abe33
-version: 5
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Pull Request Creation - Bitbucket
-description: This playbook creates a pull request using Github integration.
+description: This playbook creates a pull request using Bitbucket integration.
 starttaskid: "0"
 tasks:
   "0":
@@ -102,61 +102,6 @@ tasks:
         "position": {
           "x": -2.5,
           "y": 2330
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: 32565e48-413b-468d-8a6d-b0c5237ecb79
-    type: regular
-    task:
-      id: 32565e48-413b-468d-8a6d-b0c5237ecb79
-      version: -1
-      name: Commit files - local
-      description: This script gets content files as input from the context, commits
-        the files in the correct folder and creates the pull request text.
-      scriptName: CommitFilesBitbucket
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "48"
-    scriptarguments:
-      branch:
-        complex:
-          root: BranchName
-      comment:
-        complex:
-          root: incident
-          accessor: cicdpullrequestcomment
-      email:
-        simple: ${inputs.Email}
-      files:
-        simple: ${File}
-      pack:
-        simple: ${inputs.PackName}
-      template:
-        complex:
-          root: inputs.PullRequestTemplate
-      user:
-        complex:
-          root: inputs.UserName
-          transformers:
-          - operator: FirstArrayElement
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1000,
-          "y": 2710
         }
       }
     note: false
@@ -457,10 +402,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 03127c8f-a574-4db8-8f1b-9cd1f61bb02f
+    taskid: c16851b9-8647-48d9-83a0-3b4ccdcc6ebe
     type: regular
     task:
-      id: 03127c8f-a574-4db8-8f1b-9cd1f61bb02f
+      id: c16851b9-8647-48d9-83a0-3b4ccdcc6ebe
       version: -1
       name: Suggest branch name
       description: |
@@ -1005,43 +950,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "50":
-    id: "50"
-    taskid: 5b6506d1-bacb-4cae-898d-a6eb5dada612
-    type: regular
-    task:
-      id: 5b6506d1-bacb-4cae-898d-a6eb5dada612
-      version: -1
-      name: set branch name
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      key:
-        simple: BranchName
-      value:
-        simple: h1
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1260,
-          "y": 1390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "51":
     id: "51"
     taskid: 93f483bc-40c9-4c2a-819b-bbf61ab4ce72
@@ -1203,119 +1111,14 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "56":
-    id: "56"
-    taskid: 36d98a23-d019-4f31-865b-d6cf9e61a5b0
-    type: regular
-    task:
-      id: 36d98a23-d019-4f31-865b-d6cf9e61a5b0
-      version: -1
-      name: Unzip pack
-      description: Unzip a file using fileName or entryID to specify a file. Unzipped
-        files will be loaded to the War Room and names will be put into the context.
-      scriptName: UnzipFile
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "58"
-    scriptarguments:
-      entryID:
-        simple: ${File.EntryID}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -2.5,
-          "y": 440
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "57":
-    id: "57"
-    taskid: beac01de-3f12-4e41-8207-4f4f91637278
-    type: regular
-    task:
-      id: beac01de-3f12-4e41-8207-4f4f91637278
-      version: -1
-      name: read metadata - temp
-      description: Load the contents of a file into context.
-      scriptName: ReadFile
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      entryID:
-        simple: ${File.EntryID}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -2.5,
-          "y": 620
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "58":
-    id: "58"
-    taskid: 3d3d9041-3f8d-46a7-8a10-9873df3c0162
-    type: regular
-    task:
-      id: 3d3d9041-3f8d-46a7-8a10-9873df3c0162
-      version: -1
-      name: set pack name - temp
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "37"
-    scriptarguments:
-      key:
-        simple: PackName
-      value:
-        simple: hi
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -2.5,
-          "y": 780
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 15f89354-1890-478a-8407-e043d5a14e9e
+    taskid: f6520169-84f1-427f-81ef-d9101d87e573
     type: regular
     task:
-      id: 15f89354-1890-478a-8407-e043d5a14e9e
+      id: f6520169-84f1-427f-81ef-d9101d87e573
       version: -1
-      name: Commit files - generic
+      name: Commit files
       description: This script gets content files as input from the context, commits
         the files in the correct folder and creates the pull request text.
       scriptName: CommitFilesBitbucket
@@ -1344,7 +1147,7 @@ tasks:
           root: inputs.PullRequestTemplate
       user:
         complex:
-          root: inputs.UserName
+          root: DemistoUsers
           transformers:
           - operator: FirstArrayElement
     separatecontext: false
@@ -1365,12 +1168,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: b23bf303-ff0c-4464-883a-3b2087f94741
+    taskid: 98677ce5-36a2-4a29-8830-ea49f9142859
     type: regular
     task:
-      id: b23bf303-ff0c-4464-883a-3b2087f94741
+      id: 98677ce5-36a2-4a29-8830-ea49f9142859
       version: -1
-      name: set pr_id
+      name: Set pr_id
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -1402,12 +1205,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: 7665873c-7a3f-4cbe-859e-da7cbbc9e727
+    taskid: 1e9a51bf-64f6-416d-88da-ebba324d7206
     type: regular
     task:
-      id: 7665873c-7a3f-4cbe-859e-da7cbbc9e727
+      id: 1e9a51bf-64f6-416d-88da-ebba324d7206
       version: -1
-      name: set pr_id
+      name: Set pr_id
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -1443,7 +1246,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 4020,
-        "width": 1642.5,
+        "width": 1292.5,
         "x": -2.5,
         "y": 340
       }
