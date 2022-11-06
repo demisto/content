@@ -964,7 +964,7 @@ class Taxii2FeedClient:
                     indicators.extend(result)
                     self.update_last_modified_indicator_date(obj.get("modified"))
 
-                if exceeded_limit(limit, len(indicators) + len(relationships_lst)):
+                if exceeded_limit(limit, len(indicators)):
                     return indicators, relationships_lst
 
         return indicators, relationships_lst
