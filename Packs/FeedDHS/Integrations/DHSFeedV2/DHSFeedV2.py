@@ -138,8 +138,6 @@ def main():  # pragma: no cover
     initial_interval = params.get('initial_interval', '24 hours')
     limit = arg_to_number(params.get('limit')) or -1
     limit_per_request = arg_to_number(params.get('limit_per_request')) or DFLT_LIMIT_PER_REQUEST
-    objects_types = ['indicator']
-    objects_to_fetch = argToList(params.get('objects_to_fetch') or objects_types)
     default_api_root = params.get('default_api_root', 'public')
 
     command = demisto.command()
@@ -151,7 +149,7 @@ def main():  # pragma: no cover
             collection_to_fetch=collection_to_fetch,
             proxies=proxies,
             verify=verify_certificate,
-            objects_to_fetch=objects_to_fetch,
+            objects_to_fetch=['indicator'],
             skip_complex_mode=skip_complex_mode,
             tags=feed_tags,
             limit_per_request=limit_per_request,

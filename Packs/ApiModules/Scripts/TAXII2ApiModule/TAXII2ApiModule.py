@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from typing import Union, Optional, List, Dict, Tuple
+from typing import Optional, List, Dict, Tuple
 from requests.sessions import merge_setting, CaseInsensitiveDict
 import re
 import copy
@@ -940,6 +940,10 @@ class Taxii2FeedClient:
         relationships_lst = []
         for envelope in envelopes:
             stix_objects = envelope.get("objects")
+            if not stix_objects:
+                # no fetched objects
+                break
+
             # now we have a list of objects, go over each obj, save id with obj, parse the obj
             for obj in stix_objects:
                 obj_type = obj.get('type')
@@ -948,17 +952,21 @@ class Taxii2FeedClient:
                 if obj_type == 'extension-definition':
                     continue
                 elif obj_type == 'relationship':
-                    relationships_lst.extend([obj])
+                    relationships_lst.append(obj)
                     continue
 
                 self.id_to_object[obj.get('id')] = obj
+                if not parse_objects_func.get(obj_type):
+                    demisto.debug(f'There is no parsing function for object type {obj_type}, '
+                                  f'relevant parsing functions are for types: {",".join(parse_objects_func.keys())}.')
+                    continue
                 result = parse_objects_func[obj_type](obj)
                 if not result:
                     continue
                 indicators.extend(result)
                 self.update_last_modified_indicator_date(obj.get("modified"))
 
-                if exceeded_limit(limit, len(indicators) + len(relationships_lst)) or not stix_objects:
+                if exceeded_limit(limit, len(indicators) + len(relationships_lst)):
                     return indicators, relationships_lst
 
         return indicators, relationships_lst
@@ -970,7 +978,6 @@ class Taxii2FeedClient:
         Polls a taxii collection
         :param page_size: size of the request page
         """
-        types_envelopes = {}
         get_objects = self.collection_to_fetch.get_objects
         if len(self.objects_to_fetch) > 1:  # when fetching one type no need to fetch relationship
             self.objects_to_fetch.append('relationship')
