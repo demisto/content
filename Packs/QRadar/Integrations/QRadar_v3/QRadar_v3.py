@@ -3425,7 +3425,6 @@ def create_events_search(client: Client,
                          ) -> str:
     additional_where = ''' AND LOGSOURCETYPENAME(devicetype) = 'Custom Rule Engine' ''' \
         if fetch_mode == FetchMode.correlations_events_only.value else ''
-
     try:
         # Get all the events starting from one hour after epoch
         if not offense_start_time:
