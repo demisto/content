@@ -3961,7 +3961,7 @@ def get_id_set_entity_by_path(entity_path: Path, pack_folder: str, id_set: dict)
 
 def is_content_item_in_graph(display_name: str, content_type, marketplace) -> bool:
     with Neo4jContentGraphInterface() as interface:
-        res = interface.search(content_type=content_type, marketplace=marketplace, object_id=display_name)
+        res = interface.search(content_type=content_type, marketplace=marketplace, name=display_name)
         return bool(res)
 
 
