@@ -17,16 +17,6 @@ def generate_dummy_client():
     return Client
 
 
-def generate_dummy_UpdateRemoteSystemArgs():
-    class UpdateRemoteSystemArgs:
-        def __init__(self):
-            self.data = {'createInvestigation': True}  # type: ignore
-            self.remote_incident_id = 1
-            self.delta = {'custom_field': ''}
-
-    return UpdateRemoteSystemArgs
-
-
 INCIDENT_FIELDS = [
     {
         'group': 0,
@@ -152,9 +142,12 @@ def test_update_remote_system(mocker):
     Then:
         - Ensure the incident was updated.
     """
-    parsed_args = generate_dummy_UpdateRemoteSystemArgs()
+    args = {'data': {'createInvestigation': True},  # type: ignore
+            'remote_incident_id': 1,
+            'delta': {'custom_field': ''}
+    }
     client = generate_dummy_client()
     mocker.patch.object(Client, 'get_incident', return_value=REMOTE_INCIDENT)
     mocker.patch.object(Client, 'update_incident', return_value=UPDATED_INCIDENT)
-    update_remote_system_command(client, {}, ())
+    update_remote_system_command(client, args, ())
     assert REMOTE_INCIDENT['CustomFields']['custom_field'] == parsed_args.delta['custom_field']
