@@ -2190,7 +2190,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The maximum number of address to return. The default value is 50.
+      description: The maximum number of addresses to return. The default value is 50.
       isArray: false
       name: limit
       required: false
