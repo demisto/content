@@ -1024,7 +1024,7 @@ async def slack_loop():
                 web_client=ASYNC_CLIENT,
                 logger=slack_logger,  # type: ignore
                 auto_reconnect_enabled=True,
-                trace_enabled=EXTENSIVE_LOGGING
+                trace_enabled=EXTENSIVE_LOGGING,
             )
             if not VERIFY_CERT:
                 # SocketModeClient does not respect environment variables for ssl verification.
@@ -2575,7 +2575,7 @@ def init_globals(command_name: str = ''):
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
     global DEFAULT_PERMITTED_NOTIFICATION_TYPES, CUSTOM_PERMITTED_NOTIFICATION_TYPES, PERMITTED_NOTIFICATION_TYPES
     global COMMON_CHANNELS, DISABLE_CACHING, CHANNEL_NOT_FOUND_ERROR_MSG, LONG_RUNNING_ENABLED, DEMISTO_API_KEY, DEMISTO_URL
-    global IGNORE_RETRIES, EXTENSIVE_LOGGING
+    global IGNORE_RETRIES, EXTENSIVE_LOGGING,
 
     VERIFY_CERT = not demisto.params().get('unsecure', False)
     if not VERIFY_CERT:
