@@ -1,4 +1,4 @@
-[MODEL: dataset="f5_logs"]
+[MODEL: dataset="F5_ASM_raw]
 alter
     event_type = arrayindex(regextract(_raw_log,"CEF\:\d\|\w+\|\w+\|\d+\.\d+[^A-Z]+([^\|]+) "), 0),
     dvchost = arrayindex(regextract(_raw_log,"dvchost\=([^\s]+)"), 0),
