@@ -2136,6 +2136,12 @@ script:
         required: false
         secret: false
       - default: false
+        description: 'Multiple criteria of <string> The criteria to sort the records by, in the format: property[,ASC|DESC]. The default sort order is ascending. Multiple sort criteria can be specified using multiple sort query parameters separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
+        isArray: false
+        name: sort
+        required: false
+        secret: false
+      - default: false
         description: The number of records retrieve.
         isArray: false
         name: limit

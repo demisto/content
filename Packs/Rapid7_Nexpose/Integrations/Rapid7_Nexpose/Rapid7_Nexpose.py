@@ -5652,6 +5652,7 @@ def main():
                 vulnerability_exception_id=args.get("id"),
                 page_size=page_size,
                 page=page,
+                sort=args.get("sort"),
                 limit=limit,
             )
         elif command == "nexpose-list-scan-schedule":
