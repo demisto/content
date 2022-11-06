@@ -103,7 +103,7 @@ def get_bot_id() -> str:
         The app bot ID
     """
     response = CLIENT.auth_test()
-    return response.get('user_id')
+    return response.get('user_id')  # type: ignore
 
 
 def test_module():
@@ -199,7 +199,7 @@ def get_user_by_email(user_to_search: str) -> dict:
         'email': user_to_search
     }
     response = send_slack_request_sync(CLIENT, 'users.lookupByEmail', http_verb='GET', body=_body)
-    user = response.get('user', {})
+    user = response.get('user', {})  # type: ignore
 
     if not user:
         err_str = format_user_not_found_error(user_to_search)
@@ -250,7 +250,7 @@ def paginated_search_for_user(user_to_search: str):
         workspace_users = response['members'] if response and response.get('members',
                                                                            []) else []
         cursor = response.get('response_metadata', {}).get('next_cursor')
-        user = return_user_filter(user_to_search.lower(), workspace_users)
+        user = return_user_filter(user_to_search.lower(), workspace_users)  # type: ignore
         if user:
             break
         if not cursor:
@@ -672,7 +672,7 @@ def mirror_investigation():
             if mirror_to != 'channel':
                 body['is_private'] = True
 
-            conversation = send_slack_request_sync(CLIENT, 'conversations.create',
+            conversation = send_slack_request_sync(CLIENT, 'conversations.create',  # type: ignore
                                                    body=body).get('channel', {})
             conversation_name = conversation.get('name')
             conversation_id = conversation.get('id')
@@ -684,7 +684,7 @@ def mirror_investigation():
                 bot_id = get_bot_id()
                 set_to_integration_context_with_retries({'bot_id': bot_id}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
-            invite_users_to_conversation(conversation_id, [bot_id])
+            invite_users_to_conversation(conversation_id, [bot_id])  # type: ignore
 
             send_first_message = True
         else:
@@ -1119,7 +1119,7 @@ async def handle_dm(user: dict, text: str, client: AsyncWebClient):
         'users': user.get('id')
     }
     im = await send_slack_request_async(client, 'conversations.open', body=body)
-    channel = im.get('channel', {}).get('id')
+    channel = im.get('channel', {}).get('id')  # type: ignore
     body = {
         'text': data,
         'channel': channel
@@ -1256,7 +1256,7 @@ async def get_user_details(user_id: str) -> AsyncSlackResponse:
     :return: AsyncSlackResponse: An AsyncSlackResponse object which is a dictionary of the user object.
     """
     user = await ASYNC_CLIENT.users_info(user=user_id)
-    return user.get('user', {})
+    return user.get('user', {})  # type: ignore
 
 
 def search_text_for_entitlement(text: str, user: AsyncSlackResponse) -> str:
@@ -1271,7 +1271,7 @@ def search_text_for_entitlement(text: str, user: AsyncSlackResponse) -> str:
     if entitlement_match:
         demisto.debug('Slack - handling entitlement in message.')
         content, guid, incident_id, task_id = extract_entitlement(entitlement_match.group(), text)
-        demisto.handleEntitlementForUser(incident_id, guid, user.get('profile', {}).get('email'), content, task_id)
+        demisto.handleEntitlementForUser(incident_id, guid, user.get('profile', {}).get('email'), content, task_id)  # type: ignore
 
         return 'Thank you for your response.'
     else:
@@ -1504,7 +1504,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             entitlement_string = json.loads(entitlement_json)
             entitlement_reply = json.loads(entitlement_json).get("reply", "Thank you for your reply.")
             action_text = actions[0].get('text').get('text')
-            incident_id = answer_question(action_text, entitlement_string, user.get('profile', {}).get('email'))
+            incident_id = answer_question(action_text, entitlement_string, user.get('profile', {}).get('email'))  # type: ignore
             if state and DEMISTO_API_KEY:
                 string_safe_state = json.dumps(state)
                 body = {
@@ -1694,7 +1694,7 @@ def get_conversation_from_api_paginated(conversation_to_search):
 
     while True:
         conversations = response['channels'] if response and response.get('channels') else []
-        cursor = response.get('response_metadata', {}).get('next_cursor')
+        cursor = response.get('response_metadata', {}).get('next_cursor')  # type: ignore
         conversation_filter = list(filter(lambda c: c.get('name').lower() == conversation_to_search, conversations))
         if conversation_filter:
             break
@@ -2156,7 +2156,7 @@ def slack_send_request(to: str = None, channel: str = None, group: str = None, e
                 'users': user.get('id')
             }
             im = send_slack_request_sync(CLIENT, 'conversations.open', body=body)
-            destinations.append(im.get('channel', {}).get('id'))
+            destinations.append(im.get('channel', {}).get('id'))  # type: ignore[]
     if channel or group or channel_id:
         if channel_id:
             destinations.append(channel_id)
@@ -2327,12 +2327,12 @@ def create_channel():
     if channel_type == 'private':
         body['is_private'] = True
 
-    conversation = send_slack_request_sync(CLIENT, 'conversations.create', body=body).get(
+    conversation = send_slack_request_sync(CLIENT, 'conversations.create', body=body).get(  # type: ignore
         'channel', {})
 
     if users:
         slack_users = search_slack_users(users)
-        invite_users_to_conversation(conversation.get('id'),
+        invite_users_to_conversation(conversation.get('id'),  # type: ignore
                                      list(map(lambda u: u.get('id'), slack_users)))
     if topic:
         body = {
