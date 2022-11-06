@@ -951,11 +951,12 @@ class Taxii2FeedClient:
                 # we currently don't support extension object
                 if obj_type == 'extension-definition':
                     continue
-                elif obj_type == 'relationship':
+
+                self.id_to_object[obj.get('id')] = obj
+                if obj_type == 'relationship':
                     relationships_lst.append(obj)
                     continue
 
-                self.id_to_object[obj.get('id')] = obj
                 if not parse_objects_func.get(obj_type):
                     demisto.debug(f'There is no parsing function for object type {obj_type}, '
                                   f'relevant parsing functions are for types: {",".join(parse_objects_func.keys())}.')

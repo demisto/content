@@ -8,7 +8,6 @@ from TAXII2ApiModule import *  # noqa: E402
 
 COMPLEX_OBSERVATION_MODE_SKIP = 'Skip indicators with more than a single observation'
 
-
 ''' COMMAND FUNCTIONS '''
 
 
