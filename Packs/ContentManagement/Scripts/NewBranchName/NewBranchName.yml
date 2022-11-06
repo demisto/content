@@ -2,9 +2,14 @@ args:
 - description: The name of the pack.
   name: pack
   required: true
-- description: The command for getting the relevant branch.
+- auto: PREDEFINED
+  description: The name of the pack.
   name: command_get_branch
   required: true
+  predefined:
+  - gitlab-branch-list
+  - GitHub-get-branch
+  - bitbucket-branch-get
 comment: |
   The script gets the pack name as input and suggests an available branch name, for example:
   pack name is "MyPack" the branch name will be "MyPack".
