@@ -22,8 +22,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 20
+          "x": 807.5,
+          "y": 50
         }
       }
     note: false
@@ -33,6 +33,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "7":
     id: "7"
     taskid: e873e121-9778-4d99-8160-c557b7131452
@@ -85,8 +86,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 320
+          "x": 297.5,
+          "y": 370
         }
       }
     note: false
@@ -96,6 +97,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "8":
     id: "8"
     taskid: db51876c-7ed5-4164-83bd-a0727018311b
@@ -151,8 +153,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -20,
-          "y": 650
+          "x": 470,
+          "y": 720
         }
       }
     note: false
@@ -162,6 +164,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "9":
     id: "9"
     taskid: 4c46d46a-e049-43d3-841b-0af3fc15ffb0
@@ -188,8 +191,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 1130
+          "x": 695,
+          "y": 1070
         }
       }
     note: false
@@ -199,6 +202,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "10":
     id: "10"
     taskid: dfec07cc-9f73-4202-86bb-988170e78c51
@@ -246,8 +250,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": 320
+          "x": 797.5,
+          "y": 370
         }
       }
     note: false
@@ -257,6 +261,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "11":
     id: "11"
     taskid: a7976f80-f38c-4889-8aa7-09afd19458e9
@@ -284,8 +289,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 790,
-          "y": 510
+          "x": 950,
+          "y": 545
         }
       }
     note: false
@@ -295,6 +300,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "12":
     id: "12"
     taskid: bd0e1f26-dd7b-4ebc-8307-c7db4d0b3472
@@ -311,7 +317,7 @@ tasks:
       '#default#':
       - "38"
       "yes":
-      - "33"
+      - "60"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -328,8 +334,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -50,
-          "y": 1310
+          "x": 265,
+          "y": 1245
         }
       }
     note: false
@@ -339,75 +345,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
-    taskid: dde17aa8-8356-4d45-8bf5-f971751536f5
-    type: playbook
-    task:
-      id: dde17aa8-8356-4d45-8bf5-f971751536f5
-      version: -1
-      name: Block IP - Generic v2
-      description: |-
-        This playbook blocks malicious IPs using all integrations that are enabled.
-
-        Supported integrations for this playbook:
-        * Check Point Firewall
-        * Palo Alto Networks Minemeld
-        * Palo Alto Networks PAN-OS
-        * Zscaler
-      playbookName: Block IP - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "58"
-    scriptarguments:
-      IP:
-        complex:
-          root: IP
-          filters:
-          - - operator: in
-              left:
-                value:
-                  simple: IP.Address
-                iscontext: true
-              right:
-                value:
-                  simple: AttackerIPs
-                iscontext: true
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: IP.InRange
-                iscontext: true
-              right:
-                value:
-                  simple: "no"
-              ignorecase: true
-          accessor: Address
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 170,
-          "y": 1500
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "38":
     id: "38"
     taskid: 08deeee7-bb9d-41bf-80dd-ffec3086610a
@@ -427,8 +365,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -270,
-          "y": 1500
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
@@ -438,6 +376,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "41":
     id: "41"
     taskid: 92fbbea3-4d48-48c0-899b-16d1baa8c98e
@@ -454,8 +393,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 1870
+          "x": 695,
+          "y": 1770
         }
       }
     note: false
@@ -465,6 +404,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "48":
     id: "48"
     taskid: da99b6da-01fb-463b-8a04-1e13a04b26af
@@ -502,8 +442,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1380,
-          "y": 510
+          "x": 1370,
+          "y": 545
         }
       }
     note: false
@@ -513,6 +453,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "49":
     id: "49"
     taskid: 297e92e6-08e2-4345-8b3e-5d3b665069d4
@@ -551,8 +492,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 790,
-          "y": 700
+          "x": 950,
+          "y": 720
         }
       }
     note: false
@@ -562,6 +503,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "50":
     id: "50"
     taskid: 96b1c231-e1f4-4e74-8c41-17f285a36280
@@ -620,8 +562,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1000,
-          "y": 1310
+          "x": 1125,
+          "y": 1245
         }
       }
     note: false
@@ -631,6 +573,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "51":
     id: "51"
     taskid: 1c6c9b96-d952-4e62-843e-f462f8213999
@@ -690,8 +633,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 1500
+          "x": 1340,
+          "y": 1420
         }
       }
     note: false
@@ -701,6 +644,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "52":
     id: "52"
     taskid: 82f7571d-ccdd-4bec-871b-f2a2a948bc50
@@ -720,8 +664,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1250,
-          "y": 1500
+          "x": 910,
+          "y": 1595
         }
       }
     note: false
@@ -731,6 +675,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "54":
     id: "54"
     taskid: 7e666585-4779-44d7-8563-cddc521b3a1d
@@ -755,8 +700,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 150
+          "x": 807.5,
+          "y": 195
         }
       }
     note: false
@@ -770,6 +715,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "55":
     id: "55"
     taskid: fb50b7cc-087f-4ad0-8d9a-a49060325bb2
@@ -798,8 +744,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -20,
-          "y": 490
+          "x": 250,
+          "y": 545
         }
       }
     note: false
@@ -809,6 +755,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "56":
     id: "56"
     taskid: 59110f15-f1ec-49cb-8c15-0c19bfe7a098
@@ -855,8 +802,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 920
+          "x": 695,
+          "y": 895
         }
       }
     note: false
@@ -866,6 +813,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "57":
     id: "57"
     taskid: f57c255a-834b-43cd-8374-16a4e9920a22
@@ -919,8 +867,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 1660
+          "x": 1340,
+          "y": 1595
         }
       }
     note: false
@@ -930,6 +878,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "58":
     id: "58"
     taskid: a4123a06-c6d9-4fa9-8b92-1f4d11018a40
@@ -954,8 +903,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 170,
-          "y": 1660
+          "x": 480,
+          "y": 1595
         }
       }
     note: false
@@ -965,6 +914,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "59":
     id: "59"
     taskid: 1c99695c-7353-4485-873e-5f6bde306fdb
@@ -1012,8 +962,83 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1200,
-          "y": 320
+          "x": 1257.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "60":
+    id: "60"
+    taskid: 3a4eeb86-d9dc-4f83-82c4-fa98b5e398e9
+    type: playbook
+    task:
+      id: 3a4eeb86-d9dc-4f83-82c4-fa98b5e398e9
+      version: -1
+      name: Block IP - Generic v3
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
+      playbookName: Block IP - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      IP:
+        complex:
+          root: IP
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: IP.Address
+                iscontext: true
+              right:
+                value:
+                  simple: AttackerIPs
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: "no"
+          accessor: Address
+          transformers:
+          - operator: uniq
+      InputEnrichment:
+        simple: "False"
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block IP playbook - ${incident.id}
+      UserVerification:
+        simple: "False"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
         }
       }
     note: false
@@ -1027,16 +1052,15 @@ view: |-
   {
     "linkLabelsPosition": {
       "10_56_#default#": 0.21,
-      "12_33_yes": 0.39,
       "59_56_#default#": 0.1,
       "7_56_#default#": 0.22
     },
     "paper": {
       "dimensions": {
-        "height": 1915,
-        "width": 2030,
-        "x": -270,
-        "y": 20
+        "height": 1785,
+        "width": 1700,
+        "x": 50,
+        "y": 50
       }
     }
   }
@@ -1066,8 +1090,7 @@ inputs:
   description: All the DBotScores that were calculated, either automatically by auto-reputation or using specific tasks, when the incident was ingested. This is used to calculate the incident severity at a later stage.
   playbookInputQuery:
 outputs: []
-fromversion: 5.0.0
-toversion: 5.9.9
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
 contentitemexportablefields:

@@ -4,15 +4,15 @@ Remediates port scans originating within the network.
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Splunk Indicator Hunting
+* PANW - Hunting and threat detection by indicator type V2
 * Block File - Generic v2
+* Isolate Endpoint - Generic
 * Active Directory - Get User Manager Details
+* Splunk Indicator Hunting
+* Calculate Severity - Generic v2
+* Block IP - Generic v3
 * Account Enrichment - Generic v2.1
 * QRadar Indicator Hunting V2
-* Block IP - Generic v3
-* Calculate Severity - Generic v2
-* PANW - Hunting and threat detection by indicator type V2
-* Isolate Endpoint - Generic
 
 ### Integrations
 This playbook does not use any integrations.
@@ -40,7 +40,7 @@ This playbook does not use any integrations.
 | InvolvedFileMD5 | MD5 hashes of files that were involved in the port scan incident. |  | Optional |
 | InvolvedFileSHA1 | SHA1 hashes of files that were involved in the port scan incident. |  | Optional |
 | InvolvedFileSHA256 | SHA256 hashes of files that were involved in the port scan incident. |  | Optional |
-| DBotScore | All the DBotScores that were calculated either automatically by auto-reputation, or using specific tasks, when the incident was ingested. This is used to calculate the incident severity at a later stage. | DBotScore | Optional |
+| DBotScore | All the DBotScores that were calculated either automatically by auto-reputation, or using specific tasks, when the incident was ingested. This is used to calculate the incident severity at a later stage. | DBotScore.None | Optional |
 
 ## Playbook Outputs
 ---
