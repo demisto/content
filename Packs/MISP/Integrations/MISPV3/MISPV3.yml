@@ -1997,7 +1997,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Entry ID of the email.
+      description: Entry ID of the email (only supports .eml files).
       isArray: false
       name: entry_id
       required: true
