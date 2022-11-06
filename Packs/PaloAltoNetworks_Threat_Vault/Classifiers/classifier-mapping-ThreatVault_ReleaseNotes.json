@@ -6,19 +6,19 @@
         "ThreatVault Release notes": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Threat Vault by Palo Alto Networks Spyware new": {
-                    "complex": {
-                        "accessor": "new",
-                        "filters": [],
-                        "root": "data.release_notes.spyware",
-                        "transformers": []
-                    }
-                },
                 "Threat Vault by Palo Alto Networks Applications": {
                     "complex": {
                         "accessor": "applications",
                         "filters": [],
                         "root": "data.release_notes",
+                        "transformers": []
+                    }
+                },
+                "Threat Vault by Palo Alto Networks Applications (new)": {
+                    "complex": {
+                        "accessor": "new",
+                        "filters": [],
+                        "root": "data.release_notes.applications",
                         "transformers": []
                     }
                 },
@@ -28,19 +28,27 @@
                 "Threat Vault by Palo Alto Networks Release Version": {
                     "simple": "data.[0].release_version"
                 },
-                "Threat Vault by Palo Alto Networks data correlation": {
+                "Threat Vault by Palo Alto Networks Spyware (new)": {
                     "complex": {
-                        "accessor": "data_correlation",
+                        "accessor": "new",
                         "filters": [],
-                        "root": "data.release_notes",
+                        "root": "data.release_notes.spyware",
                         "transformers": []
                     }
                 },
-                "Threat Vault by Palo Alto Networks decoders": {
+                "Threat Vault by Palo Alto Networks Spyware new": {
                     "complex": {
-                        "accessor": "decoders",
+                        "accessor": "new",
                         "filters": [],
-                        "root": "data.release_notes",
+                        "root": "data.release_notes.spyware",
+                        "transformers": []
+                    }
+                },
+                "Threat Vault by Palo Alto Networks Vulnerability (new)": {
+                    "complex": {
+                        "accessor": "new",
+                        "filters": [],
+                        "root": "data.release_notes.vulnerability",
                         "transformers": []
                     }
                 },
@@ -52,11 +60,51 @@
                         "transformers": []
                     }
                 },
+                "Threat Vault by Palo Alto Networks data correlation": {
+                    "complex": {
+                        "accessor": "data_correlation",
+                        "filters": [],
+                        "root": "data.release_notes",
+                        "transformers": []
+                    }
+                },
+                "Threat Vault by Palo Alto Networks data correlation (new)": {
+                    "complex": {
+                        "accessor": "new",
+                        "filters": [],
+                        "root": "data.release_notes.data_correlation",
+                        "transformers": []
+                    }
+                },
+                "Threat Vault by Palo Alto Networks decoders": {
+                    "complex": {
+                        "accessor": "decoders",
+                        "filters": [],
+                        "root": "data.release_notes",
+                        "transformers": []
+                    }
+                },
+                "Threat Vault by Palo Alto Networks decoders (new)": {
+                    "complex": {
+                        "accessor": "new",
+                        "filters": [],
+                        "root": "data.release_notes.decoders",
+                        "transformers": []
+                    }
+                },
                 "Threat Vault by Palo Alto Networks file type": {
                     "complex": {
                         "accessor": "file_type",
                         "filters": [],
                         "root": "data.release_notes",
+                        "transformers": []
+                    }
+                },
+                "Threat Vault by Palo Alto Networks file type (new)": {
+                    "complex": {
+                        "accessor": "new",
+                        "filters": [],
+                        "root": "data.release_notes.file_type",
                         "transformers": []
                     }
                 },

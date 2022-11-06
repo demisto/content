@@ -71,7 +71,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -84,7 +83,6 @@
                     {
                         "h": 2,
                         "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -99,7 +97,6 @@
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -115,7 +112,6 @@
                         "h": 2,
                         "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -130,7 +126,6 @@
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -146,7 +141,6 @@
                         "h": 2,
                         "hideName": false,
                         "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -161,7 +155,6 @@
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -225,7 +218,6 @@
                                 "startCol": 1
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -269,7 +261,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -282,20 +273,23 @@
                     {
                         "displayType": "CARD",
                         "h": 4,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": true,
                         "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
                         "isVisible": true,
                         "items": [
                             {
+                                "dropEffect": "move",
                                 "endCol": 6,
                                 "fieldId": "threatvaultbypaloaltonetworksreleasenotesmd",
                                 "height": 106,
                                 "id": "f9abfd70-55c5-11ed-99c8-3fb08ac8a5ae",
                                 "index": 0,
+                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -306,6 +300,7 @@
                         "y": 2
                     }
                 ],
+                "showEmptyFields": false,
                 "type": "custom"
             },
             {
@@ -335,63 +330,67 @@
             },
             {
                 "hidden": false,
-                "id": "ktvcf2lozd",
-                "name": "New tab",
-                "sections": [],
-                "type": "custom"
-            },
-            {
-                "id": "gvmloetonh",
+                "id": "epgeuem8cy",
                 "name": "More information",
                 "sections": [
                     {
                         "displayType": "CARD",
-                        "h": 4,
+                        "h": 5,
+                        "hideName": true,
                         "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
                         "isVisible": true,
                         "items": [
                             {
                                 "endCol": 6,
                                 "fieldId": "threatvaultbypaloaltonetworksapplications",
-                                "height": 106,
+                                "filters": [
+                                    [
+                                        {
+                                            "ignoreCase": false,
+                                            "left": {
+                                                "isContext": true,
+                                                "value": {
+                                                    "simple": "threatvaultbypaloaltonetworksapplications"
+                                                }
+                                            },
+                                            "operator": "isNotEmpty",
+                                            "right": null,
+                                            "type": "longText"
+                                        }
+                                    ]
+                                ],
+                                "height": 53,
                                 "id": "f30e7550-55c6-11ed-99c8-3fb08ac8a5ae",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 6,
                                 "fieldId": "threatvaultbypaloaltonetworksdatacorrelation",
-                                "height": 106,
-                                "id": "f901be40-55c6-11ed-99c8-3fb08ac8a5ae",
-                                "index": 1,
+                                "height": 53,
+                                "id": "5a380b41-5dcb-11ed-bdb8-c1558b4587d3",
+                                "index": 0,
+                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 6,
                                 "fieldId": "threatvaultbypaloaltonetworksdecoders",
-                                "height": 106,
-                                "id": "fd8dd610-55c6-11ed-99c8-3fb08ac8a5ae",
-                                "index": 2,
+                                "height": 53,
+                                "id": "79b6f0d1-5dcb-11ed-bdb8-c1558b4587d3",
+                                "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 6,
                                 "fieldId": "threatvaultbypaloaltonetworksfiletype",
-                                "height": 106,
-                                "id": "0242f9b0-55c7-11ed-99c8-3fb08ac8a5ae",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 6,
-                                "fieldId": "threatvaultbypaloaltonetworksspywarenew",
-                                "height": 106,
-                                "id": "08ced920-55c7-11ed-99c8-3fb08ac8a5ae",
-                                "index": 4,
+                                "height": 53,
+                                "id": "800a5b21-5dcb-11ed-bdb8-c1558b4587d3",
+                                "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -399,16 +398,59 @@
                                 "endCol": 6,
                                 "fieldId": "threatvaultbypaloaltonetworksvulnerabilitynew",
                                 "height": 106,
-                                "id": "111adf20-55c7-11ed-99c8-3fb08ac8a5ae",
+                                "id": "8e4a9471-5dcb-11ed-bdb8-c1558b4587d3",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "threatvaultbypaloaltonetworksspywarenew",
+                                "height": 106,
+                                "id": "84b2d491-5dcb-11ed-bdb8-c1558b4587d3",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "threatvaultbypaloaltonetworksapplicationsnew",
+                                "height": 106,
+                                "id": "b2448ac0-5ddf-11ed-bdb8-c1558b4587d3",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "threatvaultbypaloaltonetworksdatacorrelationnew",
+                                "height": 106,
+                                "id": "ba343ff0-5ddf-11ed-bdb8-c1558b4587d3",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "threatvaultbypaloaltonetworksfiletypenew",
+                                "height": 106,
+                                "id": "bfaaded0-5ddf-11ed-bdb8-c1558b4587d3",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "threatvaultbypaloaltonetworksdecodersnew",
+                                "height": 106,
+                                "id": "d2f560a0-5ddf-11ed-bdb8-c1558b4587d3",
                                 "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 3,
                         "moved": false,
                         "name": "Investigation data",
                         "static": false,
@@ -417,6 +459,7 @@
                         "y": 0
                     }
                 ],
+                "showEmptyFields": false,
                 "type": "custom"
             }
         ]

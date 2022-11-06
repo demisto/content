@@ -1,10 +1,10 @@
 {
-    "id": "incident_threatvaultbypaloaltonetworksfiletype",
+    "id": "incident_threatvaultbypaloaltonetworksfiletypenew",
     "version": -1,
-    "modified": "2022-10-25T10:49:07.521813797Z",
-    "name": "Threat Vault by Palo Alto Networks file type",
+    "modified": "2022-11-06T14:18:16.616881958Z",
+    "name": "Threat Vault by Palo Alto Networks file type (new)",
     "ownerOnly": false,
-    "cliName": "threatvaultbypaloaltonetworksfiletype",
+    "cliName": "threatvaultbypaloaltonetworksfiletypenew",
     "type": "longText",
     "closeForm": false,
     "editForm": true,
@@ -18,7 +18,10 @@
     "group": 0,
     "hidden": false,
     "openEnded": false,
-    "associatedToAll": true,
+    "associatedTypes": [
+        "ThreatVault Release notes"
+    ],
+    "associatedToAll": false,
     "unmapped": false,
     "unsearchable": true,
     "caseInsensitive": true,

@@ -1,10 +1,10 @@
 {
-    "id": "incident_threatvaultbypaloaltonetworksdatacorrelation",
+    "id": "incident_threatvaultbypaloaltonetworksdatacorrelationnew",
     "version": -1,
-    "modified": "2022-10-25T10:48:49.251604265Z",
-    "name": "Threat Vault by Palo Alto Networks data correlation",
+    "modified": "2022-11-06T14:19:37.506891415Z",
+    "name": "Threat Vault by Palo Alto Networks data correlation (new)",
     "ownerOnly": false,
-    "cliName": "threatvaultbypaloaltonetworksdatacorrelation",
+    "cliName": "threatvaultbypaloaltonetworksdatacorrelationnew",
     "type": "longText",
     "closeForm": false,
     "editForm": true,
@@ -18,7 +18,10 @@
     "group": 0,
     "hidden": false,
     "openEnded": false,
-    "associatedToAll": true,
+    "associatedTypes": [
+        "ThreatVault Release notes"
+    ],
+    "associatedToAll": false,
     "unmapped": false,
     "unsearchable": true,
     "caseInsensitive": true,
