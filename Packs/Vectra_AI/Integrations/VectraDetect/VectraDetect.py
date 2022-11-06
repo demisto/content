@@ -1214,8 +1214,8 @@ def detection_to_incident(detection: Dict):
     }
 
     incident_last_run = {
-        'last_timestamp': dateparser.parse(extracted_data.get('LastTimestamp'),
-                                           settings={'TO_TIMEZONE': 'UTC'}).isoformat(),  # type: ignore[arg-type, union-attr]
+        'last_timestamp': dateparser.parse(extracted_data.get('LastTimestamp'),  # type: ignore[arg-type]
+                                           settings={'TO_TIMEZONE': 'UTC'}).isoformat(),  # type: ignore[union-attr]
         'id': extracted_data.get('ID')
     }
 
@@ -1254,8 +1254,8 @@ def host_to_incident(host: Dict):
     }
 
     incident_last_run = {
-        'last_timestamp': dateparser.parse(extracted_data.get('LastDetectionTimestamp'),
-                                           settings={'TO_TIMEZONE': 'UTC'}).isoformat(),  # type: ignore[arg-type, union-attr]
+        'last_timestamp': dateparser.parse(extracted_data.get('LastDetectionTimestamp'),  # type: ignore[arg-type]
+                                           settings={'TO_TIMEZONE': 'UTC'}).isoformat(),  # type: ignore[union-attr]
         'id': extracted_data.get('ID')
     }
 
@@ -1294,8 +1294,8 @@ def account_to_incident(account: Dict):
     }
 
     incident_last_run = {
-        'last_timestamp': dateparser.parse(extracted_data.get('LastDetectionTimestamp'),
-                                           settings={'TO_TIMEZONE': 'UTC'}).isoformat(),  # type: ignore[arg-type, union-attr]
+        'last_timestamp': dateparser.parse(extracted_data.get('LastDetectionTimestamp'),  # type: ignore[arg-type]
+                                           settings={'TO_TIMEZONE': 'UTC'}).isoformat(),  # type: ignore[union-attr]
         'id': extracted_data.get('ID')
     }
 
