@@ -1412,6 +1412,14 @@ def test_direct_message_handler(mocker, requests_mock):
         'type': 'message'
     }
 
+    # verify create incident fails on un allowed arguments manner
+    message: str = 'create incident name:GoFish, type:Phishing'
+    mocker.patch.object(demisto, 'findUser', return_value={'id': 'nice-demisto-id'})
+    direct_message_handler(integration_context, request_body, conversation, message)
+    assert requests_mock.request_history[0].json() == {
+        'text': 'Please specify arguments in the following manner: name=<name> type=[type] or json=<json>.'
+    }
+
     # verify get my incidents
     my_incidents: str = "```ID         | Name                 | Status      | Type        | Owner       | Created" \
                         "             | Link\n ===========|======================|=============|=============|====" \
@@ -1468,7 +1476,7 @@ def test_direct_message_handler(mocker, requests_mock):
         'type': 'message'
     }
 
-    # verify error message raised by Demisto server is sent as message as expectec
+    # verify error message raised by Demisto server is sent as message as expected
     mocker.patch.object(
         demisto,
         'directMessage',
