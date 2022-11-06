@@ -141,7 +141,7 @@ tasks:
       id: fcdbfcbe-3e7b-42bd-841c-d39cdb54c044
       version: -1
       name: Set default guidance
-      description: Set default value for remediation guidance to be passed back to parent playbook.
+      description: Set default value for remediation guidance to be passed back to the parent playbook.
       scriptName: Set
       type: regular
       iscommand: false
@@ -178,7 +178,7 @@ tasks:
       id: d4ad7c4d-c0e9-4dfd-8d2f-8d5f050dfcd2
       version: -1
       name: Update guidance
-      description: Append information to remediation guidance to be passed back to parent playbook.
+      description: Append information to remediation guidance to be passed back to the parent playbook.
       scriptName: Set
       type: regular
       iscommand: false
@@ -256,7 +256,7 @@ tasks:
       id: 97271bf4-765c-463a-89ba-285d01c62408
       version: -1
       name: Does remediation guidance list exist?
-      description: Checks if remediation guidance list exists.
+      description: Checks if a remediation guidance list exists.
       type: condition
       iscommand: false
       brand: ""
@@ -310,11 +310,11 @@ inputs:
       root: alert
       accessor: asmattacksurfaceruleid
   required: true
-  description: Attack surface management issue rule ID
+  description: Attack surface management issue rule ID.
   playbookInputQuery:
 outputs:
 - contextPath: RemediationGuidance
-  description: Remediation guidance to be sent to service owner via notification (email or ticketing system)
+  description: Remediation guidance to be sent to the service owner via notification (email or ticketing system).
   type: unknown
 tests:
 - No tests (auto formatted)
