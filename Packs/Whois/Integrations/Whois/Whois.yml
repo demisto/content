@@ -47,6 +47,14 @@ script:
     - name: recursive
       description: Whether to get the raw response from the whois servers recursively. Default value is True.
       defaultValue: true
+    - name: verbose
+      description: Whether to add the raw response as a dictionary to the context
+      required: False
+      defaultValue: false 
+      auto: PREDEFINED
+      predefined:
+      - true
+      - false
     deprecated: false
     description: Provides data enrichment for domains.
     execution: false
