@@ -18,14 +18,14 @@ args:
   name: template
 comment: This script gets content files as input from the context, commits the files in the correct folder and creates the pull request text.
 commonfields:
-  id: CommitFiles
+  id: CommitFilesGitLab
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
 dockerimage: demisto/xsoar-tools:1.0.0.36076
 enabled: true
-name: CommitFiles
+name: CommitFilesGitLab
 outputs:
 - contextPath: PR_text
   description: The pull request text.

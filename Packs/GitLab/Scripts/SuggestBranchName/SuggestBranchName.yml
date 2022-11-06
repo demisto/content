@@ -2,22 +2,26 @@ args:
 - description: The name of the pack.
   name: pack
   required: true
-- description: The name of the pack.
+- auto: PREDEFINED
+  description: The name of the pack.
   name: command_get_branch
   required: true
+  predefined:
+  - gitlab-branch-list
+  - 
 comment: |
   The script gets the pack name as input and suggests an available branch name, for example:
   pack name is "MyPack" the branch name will be "MyPack".
   If a branch with the name "MyPack" exists, the script return "MyPack_1".
 commonfields:
-  id: SuggestBranchNameGeneric
+  id: SuggestBranchNameGenericGitlab
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
 dockerimage: demisto/python3:3.10.5.31928
 enabled: true
-name: SuggestBranchName
+name: SuggestBranchNameGitlab
 outputs:
 - contextPath: AvailableBranch
   description: Available branch name based on the pack name.
