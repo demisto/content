@@ -27,7 +27,6 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Use system proxy settings |  | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
     | Max Indicators Per Fetch | The maximum number of indicators that can be fetched per fetch. If this field is left empty, there will be no limit on the number of indicators fetched. | False |
-    | STIX Objects To Fetch |  | False |
     | Max STIX Objects Per Poll | Set the number of STIX objects that will be requested with each TAXII poll \(http request\). A single fetch is made of several TAXII polls. Changing this setting can help speed up fetches, or fix issues on slower networks. Please note server restrictions may apply, overriding and limiting the requested limit. | False |
     | Complex Observation Mode | Choose how to handle complex observations. Two or more Observation Expressions MAY be combined using a complex observation operator such as "AND", "OR". e.g. \`\[ IP = 'b' \] AND \[ URL = 'd' \]\` | False |
     | Tags | Supports CSV values. | False |

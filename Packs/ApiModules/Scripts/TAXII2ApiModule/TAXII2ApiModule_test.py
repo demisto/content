@@ -550,7 +550,6 @@ class TestFetchingStixObjects:
         """
         mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, objects_to_fetch=[])
         objects_envelopes = envelopes_v21
-        mock_client.id_to_object = id_to_object
 
         result = mock_client.load_stix_objects_from_envelope(objects_envelopes, -1)
         assert mock_client.id_to_object == id_to_object
