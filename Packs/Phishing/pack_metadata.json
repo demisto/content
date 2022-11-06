@@ -12,22 +12,17 @@
     "email": "",
     "created": "2020-05-12T10:55:43Z",
     "categories": [
-        "Messaging"
+        "Network Security"
     ],
     "tags": [
-        "Scam",
-        "Spam",
-        "Email",
-        "Use Case",
-        "Incident Response"
+        "Use Case"
     ],
     "itemPrefix": [
         "Email",
         "Reported"
     ],
     "useCases": [
-        "Phishing",
-        "Incident Response"
+        "Phishing"
     ],
     "keywords": [],
     "dependencies": {
