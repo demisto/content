@@ -441,7 +441,7 @@ inputs:
             value:
               simple: None
   required: true
-  description: Remote IP address in alert.
+  description: Remote IP address in the alert.
   playbookInputQuery:
 - key: RemotePort
   value:
@@ -456,7 +456,7 @@ inputs:
             value:
               simple: None
   required: true
-  description: Remote port number in alert.
+  description: Remote port number in the alert.
   playbookInputQuery:
 - key: ASMRuleID
   value:
@@ -464,12 +464,12 @@ inputs:
       root: alert
       accessor: asmattacksurfaceruleid
   required: true
-  description: Attack Surface Management Rule ID
+  description: Attack Surface Management Rule ID.
   playbookInputQuery:
 - key: ScanNumber
   value: {}
   required: true
-  description: Scan number in case there are multiple numbers in the parent playbook.
+  description: Scan number in case there are multiple IDs in the parent playbook.
   playbookInputQuery:
 outputs: []
 fromversion: 6.5.0
