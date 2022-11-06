@@ -12,7 +12,8 @@ import urllib3
 urllib3.disable_warnings()  # pylint: disable=no-member
 
 
-# CORTEX XSOAR COMMAND CONSTANTS
+''' CONSTANTS '''
+
 COUNT = 0
 DEFAULT_PAGE_SIZE = 50
 FROM_DATE = "-7days"
@@ -59,6 +60,7 @@ SUMMARY_TYPE_DICT = {
                        "page_size"]
 }
 
+''' CLIENT CLASS '''
 
 class Client(BaseClient):
     """
@@ -191,6 +193,9 @@ class Client(BaseClient):
                     "Client ID and Client Secret.")
             raise DemistoException(error_message)
         return 'ok'
+
+
+''' HELPER FUNCTIONS '''
 
 
 def check_valid_indicator_value(indicator_type: str,
@@ -858,6 +863,9 @@ def get_param(limit: Optional[int], offset: Optional[int], args: Dict) -> Dict:
     args["intrusionaction"] = args.pop("intrusion_action", None)
 
     return args
+
+
+''' COMMAND FUNCTIONS '''
 
 
 def get_destinations_list_command(client: Client, args: Dict[str, Any]):
