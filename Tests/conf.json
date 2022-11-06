@@ -3071,11 +3071,6 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": "AutoFocus Daily Feed",
-            "playbookID": "playbook-FeedAutofocus_daily_test",
-            "fromversion": "5.5.0"
-        },
-        {
             "integrations": "PaloAltoNetworks_PrismaCloudCompute",
             "playbookID": "PaloAltoNetworks_PrismaCloudCompute-Test",
             "instance_names": "prisma_cloud_compute_21_04"
@@ -3876,16 +3871,6 @@
             "integrations": [
                 "Cylance Protect v2"
             ]
-        },
-        {
-            "playbookID": "EDL Indicator Performance Test",
-            "fromversion": "6.0.0",
-            "has_api": false
-        },
-        {
-            "playbookID": "EDL Performance Test - Concurrency",
-            "fromversion": "6.0.0",
-            "has_api": false
         },
         {
             "playbookID": "Venafi - Test",
