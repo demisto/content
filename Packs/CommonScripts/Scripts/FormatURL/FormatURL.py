@@ -68,8 +68,6 @@ class URLCheck(object):
         self.fragment = False
         self.done = False
 
-
-
         if self.original_url:
             self.remove_leading_chars()
 
@@ -628,6 +626,7 @@ def main():
 
     for url in output:
         demisto.results(url)
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
