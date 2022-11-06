@@ -38,7 +38,7 @@ filter
     xdm.target.file.filename = file_name;
 
 filter
-    _raw_log contains "urls src = " or (_raw_log contains "flows" and _raw_log contains "src=") or _raw_log contains "vpn_connectivity_change" or _raw_log contains "events dhcp" or _raw_log contains "Site-to-site VPN" or _raw_log contains "events"
+    _raw_log contains "urls src=" or (_raw_log contains "flows" and _raw_log contains "src=") or _raw_log contains "vpn_connectivity_change" or _raw_log contains "events dhcp" or _raw_log contains "Site-to-site VPN" or _raw_log contains "events"
 | alter appliance_name1 = arrayindex(regextract(_raw_log,"\.\d+\s(\w+)\s[events]"),0),
     appliance_name2 = arrayindex(regextract(_raw_log,"\.\d+\s(\w+)\s[flows|\s?urls]"),0)
 | alter appliance_name = coalesce(appliance_name1,appliance_name2),
