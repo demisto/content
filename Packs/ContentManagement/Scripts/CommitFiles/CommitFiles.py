@@ -62,7 +62,7 @@ def commit_content_item(branch_name, content_file):
         # new file added
         new_files.append(content_file.file_name)
 
-    status, commit_res = execute_command('Github-commit-file', commit_args)
+    status, commit_res = execute_command('Github-commit-file', commit_args, fail_on_error=False)
     if not status:
         raise DemistoException(commit_res)
 
