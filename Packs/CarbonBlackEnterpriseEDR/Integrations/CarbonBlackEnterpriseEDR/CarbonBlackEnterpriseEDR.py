@@ -1165,6 +1165,8 @@ def get_file_path_command(client: Client, args: Dict) -> CommandResults:
 
 
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: Dict, look_back: int) -> Tuple[List, Dict]:
+
+    demisto.debug(f'LAST RUN -> {last_run}')
     if last_fetched_alert_create_time := last_run.get('last_fetched_alert_create_time'):
         last_run.update({'time': last_fetched_alert_create_time})
         del last_run['last_fetched_alert_create_time']
@@ -1174,7 +1176,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
     if last_run.get('time') and last_run['time'][-1] == 'Z':
         last_run['time'] = last_run['time'][:-1]
     fetch_start_time, fetch_end_time = get_fetch_run_time_range(last_run=last_run, first_fetch=fetch_time,
-                                                                look_back=look_back, date_format=DATE_FORMAT) 
+                                                                look_back=look_back, date_format=DATE_FORMAT)
     demisto.debug(f'{fetch_start_time=}, {fetch_end_time=}')
 
     incidents = []
@@ -1191,7 +1193,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
     alerts = response.get('results', [])
 
     alerts_to_incident = filter_incidents_by_duplicates_and_limit(
-        incidents_res=alerts, last_run=last_run, fetch_limit=fetch_limit, id_field='id'
+        incidents_res=alerts, last_run=last_run, fetch_limit=arg_to_number(fetch_limit), id_field='id'
     )
 
     for alert in alerts_to_incident:
@@ -1212,7 +1214,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
     last_run = update_last_run_object(
         last_run=last_run,
         incidents=alerts_to_incident,
-        fetch_limit=fetch_limit,
+        fetch_limit=arg_to_number(fetch_limit),
         start_fetch_time=fetch_start_time,
         end_fetch_time=fetch_end_time,
         look_back=look_back,

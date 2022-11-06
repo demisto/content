@@ -246,7 +246,7 @@ def test_fetch_incident(mocker, incidents, expected_result1, expected_result2,
     mocker.patch.object(client, 'search_alerts_request', side_effect=incidents)
     results, last_run = cbe.fetch_incidents(client,
                                             fetch_time='3 days',
-                                            fetch_limit=10,
+                                            fetch_limit='10',
                                             last_run=last_run,
                                             look_back=look_back)
 
@@ -256,7 +256,7 @@ def test_fetch_incident(mocker, incidents, expected_result1, expected_result2,
         last_run['found_incident_ids'][101] = last_run['found_incident_ids'][101] - 10000
     results, last_run = cbe.fetch_incidents(client,
                                             fetch_time='3 days',
-                                            fetch_limit=10,
+                                            fetch_limit='10',
                                             last_run=last_run,
                                             look_back=look_back)
     assert found_incident_ids == len(last_run.get('found_incident_ids', []))
