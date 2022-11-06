@@ -33,5 +33,5 @@
     xdm.target.file.path = path,
     xdm.network.dns.dns_resource_record.name = dns_name,
     xdm.observer.name = site_server,
-    xdm.event.duration = duration,
+    xdm.event.duration = to_number(duration),
     xdm.event.type = event_type;
