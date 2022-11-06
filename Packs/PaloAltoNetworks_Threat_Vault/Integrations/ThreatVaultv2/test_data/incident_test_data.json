@@ -1,0 +1,42 @@
+{
+    "success": "True",
+    "link": {
+        "next": "None",
+        "previous": "None"
+    },
+    "count": 1,
+    "data": [
+        {
+            "release_version": 8639,
+            "content_version": "8639-7693",
+            "type": "content",
+            "release_notes": {
+                "notes": [
+                    ""
+                ],
+            "applications": {
+                "new": [],
+                "modified": [],
+                "obsoleted": []
+            },
+            "decoders": {
+                "new": [],
+                "modified": []
+            },
+            "data_correlation": {
+                "new": [],
+                "modified": [],
+                "deleted": []
+            },
+            "file_type": {
+                "new": [],
+                "modified": [],
+                "disabled": []
+            },
+            "spyware": {
+                "new": [
+                    {
+                        "severity": "critical",
+                        "pan_id": 86682,
+                        "attack_name": "Possible Brute Ratel C4 Command and Control Traffic Detection", "category": "command-and-control", "action": "reset-both", "change_data": "new coverage", "min_version": "8.1.0", "max_version": ""}, {"severity": "critical", "pan_id": 86683, "attack_name": "LilithBot Command and Control Traffic Detection", "category": "command-and-control", "action": "reset-both", "change_data": "improved detection logic to cover a new exploit", "min_version": "8.1.0", "max_version": ""}, {"severity": "critical", "pan_id": 86684, "attack_name": "FlowCloud Command and Control Traffic Detection", "category": "command-and-control", "action": "reset-both", "change_data": "improved detection logic for decoder updates", "min_version": "8.1.0", "max_version": ""}, {"severity": "critical", "pan_id": 86685, "attack_name": "LookBack Command and Control Traffic Detection", "category": "command-and-control", "action": "reset-both", "change_data": "improved detection logic for decoder updates", "min_version": "8.1.0", "max_version": ""}, {"severity": "critical", "pan_id": 86687, "attack_name": "Brute Ratel C4 Tool Payload Detections", "category": "command-and-control", "action": "reset-both", "change_data": "improved detection logic to cover a new c2 variant", "min_version": "8.1.0", "max_version": ""}], "modified": [{"severity": "critical", "pan_id": 86663, "attack_name": "Manjusaka v0.3 Default Command and Control Traffic Detection", "category": "hacktool", "action": "reset-both", "change_data": "updated associated metadata information", "min_version": "8.1.0", "max_version": ""}, {"severity": "critical", "pan_id": 86665, "attack_name": "Manjusaka v0.3 Command and Control Traffic Detection", "category": "spyware", "action": "reset-both", "change_data": "updated associated metadata information", "min_version": "8.1.0", "max_version": ""}, {"severity": "critical", "pan_id": 86672, "attack_name": "NewPOSThing Command and Control Traffic Detection", "category": "command-and-control", "action": "reset-both", "change_data": "improved detection logic to address a possible fp issue", "min_version": "8.1.0", "max_version": ""}], "disabled": []}, "vulnerability": {"new": [{"severity": "medium", "pan_id": 93169, "attack_name": "WWBN AVideo unzipDirectory ZIP Directory Traversal Vulnerability", "cve": "CVE-2022-30547", "vendor": "", "category": "code-execution", "action": "alert", "change_data": "new coverage", "min_version": "8.1.0", "max_version": ""}, {"severity": "medium", "pan_id": 93178, "attack_name": "Jitsi Meet Cross-Site Scripting Vulnerability", "cve": "CVE-2021-26812", "vendor": "", "category": "code-execution", "action": "alert", "change_data": "improved detection logic to cover a new exploit", "min_version": "8.1.0", "max_version": ""}, {"severity": "critical", "pan_id": 93180, "attack_name": "JXPath Remote Code Execution Vulnerability", "cve": "CVE-2022-41852", "vendor": "", "category": "code-execution", "action": "reset-server", "change_data": "improved detection logic to cover a new exploit", "min_version": "8.1.0", "max_version": ""}, {"severity": "medium", "pan_id": 93181, "attack_name": "PHP Cookie Integrity Vulnerability", "cve": "CVE-2022-31629", "vendor": "", "category": "info-leak", "action": "alert", "change_data": "new coverage", "min_version": "8.1.0", "max_version": ""}, {"severity": "high", "pan_id": 93189, "attack_name": "PHP Local File Inclusion vulnerability", "cve": "", "vendor": "", "category": "code-execution", "action": "reset-both", "change_data": "new coverage", "min_version": "8.1.0", "max_version": ""}, {"severity": "critical", "pan_id": 93195, "attack_name": "Node VM2 Remote Code Execution Vulnerability", "cve": "CVE-2022-36067", "vendor": "", "category": "code-execution", "action": "reset-both", "change_data": "new coverage", "min_version": "8.1.0", "max_version": ""}], "modified": [{"severity": "critical", "pan_id": 34875, "attack_name": "Microsoft Internet Explorer Memory Corruption Vulnerability", "cve": "CVE-2012-1524", "vendor": "MS12-044", "category": "code-execution", "action": "reset-both", "change_data": "improved detection logic to cover a new exploit", "min_version": "8.1.0", "max_version": ""}, {"severity": "high", "pan_id": 36122, "attack_name": "Microsoft Office Outlook Message Certificate Nested Level Double Free Vulnerability", "cve": "CVE-2013-3870", "vendor": "MS13-068", "category": "code-execution", "action": "reset-both", "change_data": "improved detection logic to cover a new exploit", "min_version": "8.1.0", "max_version": ""}, {"severity": "high", "pan_id": 37890, "attack_name": "RealNetworks RealPlayer RMP File Handling Buffer Overflow Vulnerability", "cve": "CVE-2013-7260", "vendor": "", "category": "overflow", "action": "alert", "change_data": "improved detection logic to address a possible fp issue", "min_version": "8.1.0", "max_version": ""}, {"severity": "high", "pan_id": 40855, "attack_name": "Squid Range Header Denial-of-Service Vulnerability", "cve": "CVE-2014-3609", "vendor": "", "category": "dos", "action": "reset-server", "change_data": "improved detection logic to cover a new exploit", "min_version": "8.1.0", "max_version": ""}, {"severity": "high", "pan_id": 54315, "attack_name": "GnuTLS DANE Mutliple TLSA Record Heap Buffer Overflow Vulnerability", "cve": "CVE-2013-4466", "vendor": "", "category": "overflow", "action": "reset-client", "change_data": "improved detection logic to cover a new exploit", "min_version": "8.1.0", "max_version": ""}, {"severity": "critical", "pan_id": 92880, "attack_name": "Microsoft Windows Network File System Remote Code Execution Vulnerability", "cve": "CVE-2022-30136", "vendor": "", "category": "code-execution", "action": "reset-server", "change_data": "improved detection logic to address a possible fp issue", "min_version": "8.1.0", "max_version": ""}, {"severity": "critical", "pan_id": 93038, "attack_name": "pfSense pfBlockerNG Command Execution Vulnerability", "cve": "CVE-2022-31814", "vendor": "", "category": "code-execution", "action": "reset-server", "change_data": "new coverage", "min_version": "8.1.0", "max_version": ""}, {"severity": "medium", "pan_id": 93159, "attack_name": "Mojarra JSF ViewState Deserialization Vulnerability", "cve": "", "vendor": "", "category": "code-execution", "action": "alert", "change_data": "improved detection logic to address a possible fp issue", "min_version": "8.1.0", "max_version": ""}], "disabled": []}}, "release_time": "2022-11-03T18:40:04Z"}],
+            "message": "Successful"}

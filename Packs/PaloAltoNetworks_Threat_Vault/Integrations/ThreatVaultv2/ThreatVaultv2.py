@@ -641,7 +641,7 @@ def fetch_incidents(client: Client, args: dict) -> List:
     last_run = demisto.getLastRun()
     first_fetch = args.get('first_fetch', '3 Days')
     if not last_run.get('scound_fetch'):
-        if first_fetch.strip().split(' ')[1] not in ['days', 'month', 'months', 'year', 'years']:
+        if first_fetch.strip().split(' ')[1].lower() not in ['days', 'month', 'months', 'year', 'years']:
             raise ValueError('The unit of date_range is invalid. Must be days, months or years.')
         start_time, now = parse_date_range(first_fetch)
     else:

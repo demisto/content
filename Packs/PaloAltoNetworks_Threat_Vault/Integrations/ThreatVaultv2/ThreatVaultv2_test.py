@@ -1,9 +1,10 @@
 from CommonServerPython import *
 import pytest
-
+import json
 
 from ThreatVaultv2 import Client, threat_batch_search_command, release_note_get_command, threat_signature_get_command, \
-    threat_search_command, file_command, cve_command, pagination, parse_resp_by_type, resp_to_hr, extract_rn_from_html_to_json
+    threat_search_command, file_command, cve_command, pagination, parse_resp_by_type, resp_to_hr, extract_rn_from_html_to_json, \
+    parse_incident
 
 
 @pytest.mark.parametrize(
@@ -867,3 +868,22 @@ def test_extract_rn_from_html_to_json(html_input, expected_results):
 
     assert json_rns
     assert expected_results in json_rns[0]['Release Note']
+
+
+@pytest.mark.parametrize(
+    'incident_input',
+    [
+        (
+            'test_data/incident_test_data.json'
+        )
+    ]
+)
+def test_parse_incident(mocker, incident_input):
+
+    with open(incident_input, 'r', encoding="utf-8") as f:
+        inciden = json.load(f)
+
+    results = parse_incident(inciden)
+
+    assert 'file_type' not in results['data'][0]['release_notes']
+    assert results['data'][0]['Source name'] == 'THREAT VAULT - RELEASE NOTES'
