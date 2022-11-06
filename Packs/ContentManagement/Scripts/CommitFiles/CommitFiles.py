@@ -83,7 +83,7 @@ def split_yml_file(content_file):
 
     # split the yml file
     yml_splitter = YmlSplitter(content_file.file_name, base_name=base_name, output=base_name, file_type=content_file.content_type,
-                               no_pipenv=True, no_basic_fmt=True, no_logging=True, no_readme=True)
+                               no_pipenv=True, no_basic_fmt=True, no_logging=True, no_readme=True)  # pylint: disable=E1123
 
     script_type = yml_splitter.yml_data.get('type')
     if not script_type:
