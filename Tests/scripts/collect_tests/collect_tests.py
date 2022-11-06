@@ -7,15 +7,15 @@ from enum import Enum
 from pathlib import Path
 from typing import Iterable, Optional, Sequence
 
-from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
+from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions, CONTENT_ENTITIES_DIRS
 from demisto_sdk.commands.common.tools import find_type, str2bool
 
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.constants import (
-    ALWAYS_INSTALLED_PACKS, DEFAULT_MARKETPLACE_WHEN_MISSING,
+    ALWAYS_INSTALLED_PACKS_XSOAR, DEFAULT_MARKETPLACE_WHEN_MISSING,
     DEFAULT_REPUTATION_TESTS, IGNORED_FILE_TYPES, NON_CONTENT_FOLDERS,
     ONLY_INSTALL_PACK_FILE_TYPES, SANITY_TEST_TO_PACK,
-    SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, XSOAR_SANITY_TEST_NAMES)
+    SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, XSOAR_SANITY_TEST_NAMES, ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2)
 from Tests.scripts.collect_tests.exceptions import (
     DeprecatedPackException, IncompatibleMarketplaceException,
     InvalidTestException, NonDictException, NonXsoarSupportedPackException,
@@ -57,7 +57,7 @@ class CollectionReason(str, Enum):
 
 
 REASONS_ALLOWING_NO_ID_SET_OR_CONF = {
-    # these may be used without an id_set or conf.json object, see _validate_args.
+    # these may be used without an id_set or conf.json object, see _validate_collection.
     CollectionReason.DUMMY_OBJECT_FOR_COMBINING,
     CollectionReason.ALWAYS_INSTALLED_PACKS
 }
@@ -75,11 +75,12 @@ class CollectionResult:
             id_set: Optional[IdSet],
             is_sanity: bool = False,
             is_nightly: bool = False,
+            override_pack_compatibility_check: bool = False,
     ):
         """
-        Collected test playbook, and/or pack to install.
+        Collected test playbook, and/or a pack to install.
 
-        NOTE:   the constructor only accepts a single Optional[str] for test and pack, but they're kept as set[str].
+        NOTE:   The constructor only accepts a single Optional[str] for test and pack, but they're kept as set[str].
                 This is done to require a reason for every collection, which is logged.
                 Use the + operator or CollectedTests.union() to join two or more objects and hold multiple tests.
 
@@ -92,6 +93,9 @@ class CollectionResult:
         :param id_set: an IdSet object. It may be None only when reason in VALIDATION_BYPASSING_REASONS.
         :param is_sanity: whether the test is a sanity test. Sanity tests do not have to be in the id_set.
         :param is_nightly: whether the run is a nightly run. When running on nightly, only specific packs need to run.
+        :param override_pack_compatibility_check:
+                whether to install a pack, even if it is not directly compatible.
+                This is used when collecting a pack containing a content item, when their marketplace values differ.
         """
         self.tests: set[str] = set()
         self.packs: set[str] = set()
@@ -99,7 +103,17 @@ class CollectionResult:
         self.machines: Optional[tuple[Machine, ...]] = None
 
         try:
-            self._validate_args(pack, test, reason, conf, id_set, is_sanity, is_nightly)  # raises if invalid
+            # raises if invalid
+            self._validate_collection(
+                pack=pack,
+                test=test,
+                reason=reason,
+                conf=conf,
+                id_set=id_set,
+                is_sanity=is_sanity,
+                is_nightly=is_nightly,
+                skip_pack_compatibility=override_pack_compatibility_check,
+            )
 
         except NonXsoarSupportedPackException:
             if test:
@@ -129,10 +143,20 @@ class CollectionResult:
             logger.info(f'collected {pack=}, {reason} ({reason_description}, {version_range=})')
 
     @staticmethod
-    def _validate_args(pack: Optional[str], test: Optional[str], reason: CollectionReason, conf: Optional[TestConf],
-                       id_set: Optional[IdSet], is_sanity: bool, is_nightly: bool = False):
+    def _validate_collection(
+            pack: Optional[str],
+            test: Optional[str],
+            reason: CollectionReason,
+            conf: Optional[TestConf],
+            id_set: Optional[IdSet],
+            is_sanity: bool,
+            is_nightly: bool,
+            skip_pack_compatibility: bool,
+    ):
         """
         Validates the arguments of the constructor.
+        NOTE: Here, we only validate information regarding the test and pack directly.
+                For validations regarding contentItem or IdSetItem objects, see __validate_compatibility.
         """
         if reason not in REASONS_ALLOWING_NO_ID_SET_OR_CONF:
             for (arg, arg_name) in ((conf, 'conf.json'), (id_set, 'id_set')):
@@ -156,9 +180,16 @@ class CollectionResult:
                     raise ValueError(f'{test} has no path')
                 if PACK_MANAGER.is_test_skipped_in_pack_ignore(playbook_path.name, pack_id):
                     raise SkippedTestException(test, skip_place='.pack_ignore')
+                for integration in test_playbook.implementing_integrations:
+                    if reason := conf.skipped_integrations.get(integration):  # type:ignore[union-attr]
+                        raise SkippedTestException(
+                            test_name=test,
+                            skip_place='conf.json (integrations)',
+                            skip_reason=f'{test=} uses {integration=}, which is skipped ({reason=})'
+                        )
 
             if skip_reason := conf.skipped_tests.get(test):  # type:ignore[union-attr]
-                raise SkippedTestException(test, skip_place='conf.json', skip_reason=skip_reason)
+                raise SkippedTestException(test, skip_place='conf.json (skipped_tests)', skip_reason=skip_reason)
 
             if test in conf.private_tests:  # type:ignore[union-attr]
                 raise PrivateTestException(test)
@@ -168,9 +199,12 @@ class CollectionResult:
                 PACK_MANAGER.validate_pack(pack)
 
             except NonXsoarSupportedPackException:
-                if is_sanity and pack == 'HelloWorld':  # Sanity tests are saved under HelloWorld, so we allow it.
-                    return
-                raise
+                if skip_pack_compatibility:
+                    logger.info(f'overriding pack compatibility check for {pack} - not compliant, but IS collected')
+                elif is_sanity and pack == 'HelloWorld':  # Sanity tests are saved under HelloWorld, so we allow it.
+                    pass
+                else:
+                    raise
 
         if is_nightly:
             if test and test in conf.non_api_tests:  # type:ignore[union-attr]
@@ -234,10 +268,12 @@ class TestCollector(ABC):
 
     @property
     def _always_installed_packs(self) -> Optional[CollectionResult]:
+        always_installed_packs_list = ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2 if \
+            self.marketplace == MarketplaceVersions.MarketplaceV2 else ALWAYS_INSTALLED_PACKS_XSOAR
         return CollectionResult.union(tuple(
             CollectionResult(test=None, pack=pack, reason=CollectionReason.ALWAYS_INSTALLED_PACKS,
                              version_range=None, reason_description=pack, conf=None, id_set=None, is_sanity=True)
-            for pack in ALWAYS_INSTALLED_PACKS)
+            for pack in always_installed_packs_list)
         )
 
     @property
@@ -347,7 +383,16 @@ class TestCollector(ABC):
             version_range: Optional[VersionRange],
             is_integration: bool,
     ):
-        # exception order matters: important tests come first
+        # exception order matters: important tests come first.
+        """
+        NOTE:
+            Here, we validate information that indirectly affects the collection
+            (information regarding IdSet or ContentItem objects, based on which we collect tests or packs)
+            e.g. skipped integrations, marketplace compatibility, support level.
+
+            For validating the pack/test directly, see _validate_collection.
+        """
+
         self._validate_path(path)
         if is_integration:
             self.__validate_skipped_integration(id_, path)
@@ -543,6 +588,7 @@ class BranchTestCollector(TestCollector):
 
         relative_yml_path = PACK_MANAGER.relative_to_packs(yml_path)
         tests: tuple[str, ...]
+        override_pack_compatibility_check = False
 
         match actual_content_type:
             case None:
@@ -569,6 +615,7 @@ class BranchTestCollector(TestCollector):
                         suffix = f'. NOTE: NOT COLLECTING tests from conf.json={tests_str}'
 
                     logger.warning(f'{yml.id_} explicitly states `no tests`: only collecting pack {suffix}')
+                    override_pack_compatibility_check = True
                     tests = ()
 
                 elif yml.id_ not in self.conf.integrations_to_tests:
@@ -602,6 +649,7 @@ class BranchTestCollector(TestCollector):
                     if not tests:  # no tests were found in yml nor in id_set
                         logger.warning(f'{actual_content_type.value} {relative_yml_path} '
                                        f'has `No Tests` configured, and no tests in id_set')
+                        override_pack_compatibility_check = True
             case _:
                 raise RuntimeError(f'Unexpected content type {actual_content_type.value} for {content_item_path}'
                                    f'(expected `Integrations`, `Scripts` or `Playbooks`)')
@@ -616,9 +664,16 @@ class BranchTestCollector(TestCollector):
                     conf=self.conf,
                     id_set=self.id_set,
                     is_nightly=False,
+                    override_pack_compatibility_check=override_pack_compatibility_check,
                 ) for test in tests))
         else:
-            return self._collect_pack(yml.pack_id, reason, 'collecting pack only', yml.version_range)
+            return self._collect_pack(
+                pack_id=yml.pack_id,
+                reason=reason,
+                reason_description='collecting pack only',
+                content_item_range=yml.version_range,
+                allow_incompatible_marketplace=override_pack_compatibility_check,
+            )
 
     def _collect_single(self, path: Path) -> Optional[CollectionResult]:
         self._validate_path(path)
@@ -627,6 +682,11 @@ class BranchTestCollector(TestCollector):
 
         if file_type in IGNORED_FILE_TYPES:
             raise NothingToCollectException(path, f'ignored type {file_type}')
+
+        if file_type is None and path.parent.name not in CONTENT_ENTITIES_DIRS:
+            raise NothingToCollectException(
+                path,
+                f'file of unknown type, and not directly under a content directory ({path.parent.name})')
 
         try:
             content_item = ContentItem(path)
@@ -856,16 +916,19 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
 
     @property
     def sanity_tests(self) -> Optional[CollectionResult]:
-        return CollectionResult(
-            test='Sanity Test - Playbook with Unmockable Whois Integration',
-            pack='Whois',
-            reason=CollectionReason.SANITY_TESTS,
-            reason_description='XSIAM Nightly sanity',
-            version_range=None,
-            conf=self.conf,
-            id_set=self.id_set,
-            is_sanity=True,
-        )
+        return CollectionResult.union(tuple(
+            CollectionResult(
+                test=test,
+                pack=SANITY_TEST_TO_PACK.get(test),  # None in most cases
+                reason=CollectionReason.SANITY_TESTS,
+                version_range=None,
+                reason_description='XSIAM Nightly sanity',
+                conf=self.conf,
+                id_set=self.id_set,
+                is_sanity=True
+            )
+            for test in self.conf['test_marketplacev2']
+        ))
 
     def _collect(self) -> Optional[CollectionResult]:
         return CollectionResult.union((

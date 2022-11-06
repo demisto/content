@@ -991,7 +991,7 @@ script:
       isArray: true
       name: sites
     - auto: PREDEFINED
-      description: Adds or removes sites or categories. Can be "add",or "remove".
+      description: Adds or removes sites or categories. 
       isArray: true
       name: action
       predefined:
@@ -1119,7 +1119,7 @@ script:
       name: url_category
       required: true
     - auto: PREDEFINED
-      description: The action for the URL categories. Can be "allow", "block", "alert", "continue", or "override".
+      description: The action for the URL categories. 
       name: action
       predefined:
       - allow
@@ -1420,7 +1420,7 @@ script:
     - description: The description of the rule to create.
       name: description
     - auto: PREDEFINED
-      description: The action for the rule. Can be "allow", "deny", or "drop".
+      description: The action for the rule. 
       name: action
       predefined:
       - allow
@@ -1440,13 +1440,13 @@ script:
       isArray: true
       name: destination_zone
     - auto: PREDEFINED
-      description: Whether to negate the source (address, address group). Can be "Yes" or "No".
+      description: Whether to negate the source (address, address group). 
       name: negate_source
       predefined:
       - Yes
       - No
     - auto: PREDEFINED
-      description: Whether to negate the destination (address, address group). Can be "Yes" or "No".
+      description: Whether to negate the destination (address, address group). 
       name: negate_destination
       predefined:
       - Yes
@@ -1456,7 +1456,7 @@ script:
       name: service
     - auto: PREDEFINED
       defaultValue: No
-      description: Whether to disable the rule. Can be "Yes" or "No".
+      description: Whether to disable the rule. 
       name: disable
       predefined:
       - Yes
@@ -1469,7 +1469,7 @@ script:
       description: The source user for the rule to create.
       name: source_user
     - auto: PREDEFINED
-      description: The pre rule or post rule (Panorama instances).
+      description: The pre-rule or post-rule (Panorama instances).
       name: pre_post
       predefined:
       - pre-rulebase
@@ -1489,7 +1489,7 @@ script:
       name: profile_setting
     - auto: PREDEFINED
       defaultValue: bottom
-      description: Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument.
+      description: Where to move the rule. If you specify "before" or "after", you need to supply the "dst" argument.
       name: where
       predefined:
       - before
@@ -1552,7 +1552,7 @@ script:
     - description: The name of the custom block policy rule to create.
       name: rulename
     - auto: PREDEFINED
-      description: The object type to block in the policy rule. Can be "ip", "address-group", "edl", or "custom-url-category".
+      description: The object type to block in the policy rule. 
       name: object_type
       predefined:
       - ip
@@ -1567,14 +1567,14 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: both
-      description: The direction to block. Can be "to", "from", or "both". This argument is not applicable to the "custom-url-category" object_type.
+      description: The direction to block. This argument is not applicable to the "custom-url-category" object_type.
       name: direction
       predefined:
       - to
       - from
       - both
     - auto: PREDEFINED
-      description: The pre rule or post rule (Panorama instances).
+      description: The pre-rule or post-rule (Panorama instances).
       name: pre_post
       predefined:
       - pre-rulebase
@@ -1590,7 +1590,7 @@ script:
       name: tags
     - auto: PREDEFINED
       defaultValue: bottom
-      description: Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument.
+      description: Where to move the rule. If you specify "before" or "after", you need to supply the "dst" argument.
       name: where
       predefined:
       - before
@@ -1633,7 +1633,7 @@ script:
       name: rulename
       required: true
     - auto: PREDEFINED
-      description: Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument.
+      description: Where to move the rule. If you specify "before" or "after", you need to supply the "dst" argument.
       name: where
       predefined:
       - before
@@ -1667,7 +1667,7 @@ script:
       name: rulename
       required: true
     - auto: PREDEFINED
-      description: The parameter in the security rule to change. Can be 'source', 'destination', 'application', 'action', 'category', 'description', 'disabled', 'target', 'log-forwarding', 'tag', 'source-user', 'service' or 'profile-setting'.
+      description: The parameter in the security rule to change. 
       name: element_to_change
       predefined:
       - source
@@ -1688,7 +1688,7 @@ script:
       name: element_value
       required: true
     - auto: PREDEFINED
-      description: The pre rule or post rule (Panorama instances).
+      description: The pre-rule or post-rule (Panorama instances).
       name: pre_post
       predefined:
       - pre-rulebase
@@ -1750,7 +1750,7 @@ script:
       name: rulename
       required: true
     - auto: PREDEFINED
-      description: The pre rule or post rule (Panorama instances).
+      description: The pre-rule or post-rule (Panorama instances).
       name: pre_post
       predefined:
       - pre-rulebase
@@ -2116,7 +2116,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: The rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances.
+      description: The rules location. Mandatory for Panorama instances.
       name: pre_post
       predefined:
       - pre-rulebase
@@ -2167,7 +2167,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: The log type. Can be "threat", "traffic", "wildfire", "url", or "data".
+      description: The log type. 
       name: log-type
       predefined:
       - threat
@@ -2582,7 +2582,7 @@ script:
       name: destination
       required: true
     - auto: PREDEFINED
-      description: 'The type for the next hop. Can be: "ip-address", "next-vr", "fqdn", or "discard".'
+      description: The type for the next hop. 
       name: nexthop_type
       predefined:
       - ip-address
@@ -2883,7 +2883,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: The security profile for which to get information. Can be "data-filtering", "file-blocking", "spyware", "url-filtering", "virus", "vulnerability", or "wildfire-analysis".
+      description: The security profile for which to get information. 
       name: security_profile
       predefined:
       - data-filtering
@@ -3028,7 +3028,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: Security profile type. Can be 'data-filtering', 'file-blocking', 'spyware', 'url-filtering', 'virus, 'vulnerability', or wildfire-analysis.'
+      description: Security profile type. 
       name: profile_type
       predefined:
       - data-filtering
@@ -3046,7 +3046,7 @@ script:
       name: profile_name
       required: true
     - auto: PREDEFINED
-      description: The location of the rules. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances.
+      description: The location of the rules. Mandatory for Panorama instances.
       name: pre_post
       predefined:
       - pre-rulebase
@@ -3056,7 +3056,7 @@ script:
     name: panorama-apply-security-profile
   - arguments:
     - auto: PREDEFINED
-      description: The location of the rules. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances.
+      description: The location of the rules. Mandatory for Panorama instances.
       name: pre_post
       predefined:
       - pre-rulebase
@@ -3774,6 +3774,8 @@ script:
       name: ip_netmask
     - description: The IP range of the new address IP. For example, 10.10.10.0-10.10.10.255
       name: ip_range
+    - description: The IP wildcard of the new address. For example, 10.20.1.0/0.0.248.255
+      name: ip_wildcard
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
     - description: The tag for the new address.
@@ -3803,6 +3805,31 @@ script:
     - contextPath: Panorama.Addresses.Tag
       description: The address tag.
       type: String
+  - arguments:
+    - description: The name of the address to edit.
+      isArray: false
+      name: name
+      required: true
+    - description: The device-group in which the address is in.
+      isArray: false
+      name: device-group
+    - auto: PREDEFINED
+      description: The element to change.
+      name: element_to_change
+      required: true
+      predefined:
+      - fqdn
+      - ip_netmask
+      - ip_range
+      - ip_wildcard
+      - description
+      - tag
+    - description: The value of the element that needs to be changed. Can be a list when element_to_change == 'tag' only.
+      isArray: true
+      name: element_value
+      required: true
+    description: Edits an address object.
+    name: pan-os-edit-address
   - arguments:
     - description: The name of the address to delete.
       name: name
@@ -4341,7 +4368,7 @@ script:
       isArray: true
       name: sites
     - auto: PREDEFINED
-      description: Adds or removes sites or categories. Can be "add" or "remove".
+      description: Adds or removes sites or categories. 
       isArray: true
       name: action
       predefined:
@@ -4505,7 +4532,7 @@ script:
       name: url_category
       required: true
     - auto: PREDEFINED
-      description: The action for the URL category. Can be "allow", "block", "alert", "continue", or "override".
+      description: The action for the URL category. 
       name: action
       predefined:
       - allow
@@ -4812,7 +4839,7 @@ script:
       name: rulename
     - description: The description of the rule to create.
       name: description
-    - description: The action for the rule. Can be "allow", "deny", or "drop".
+    - description: The action for the rule. 
       name: action
       auto: PREDEFINED
       predefined:
@@ -4833,13 +4860,13 @@ script:
       isArray: true
       name: destination_zone
     - auto: PREDEFINED
-      description: Whether to negate the source (address, address group). Can be "Yes" or "No".
+      description: Whether to negate the source (address, address group). 
       name: negate_source
       predefined:
       - Yes
       - No
     - auto: PREDEFINED
-      description: Whether to negate the destination (address, address group). Can be "Yes" or "No".
+      description: Whether to negate the destination (address, address group). 
       name: negate_destination
       predefined:
       - Yes
@@ -4849,7 +4876,7 @@ script:
       name: service
     - auto: PREDEFINED
       defaultValue: No
-      description: Whether to disable the rule. Can be "Yes" or "No".
+      description: Whether to disable the rule. 
       name: disable
       predefined:
       - Yes
@@ -4862,7 +4889,7 @@ script:
       description: The source user for the rule to create.
       name: source_user
     - auto: PREDEFINED
-      description: The pre rule or post rule (Panorama instances).
+      description: The pre-rule or post-rule (Panorama instances).
       name: pre_post
       predefined:
       - pre-rulebase
@@ -4882,7 +4909,7 @@ script:
       name: profile_setting
     - auto: PREDEFINED
       defaultValue: bottom
-      description: Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument.
+      description: Where to move the rule. If you specify "before" or "after", you need to supply the "dst" argument.
       name: where
       predefined:
       - before
@@ -4944,7 +4971,7 @@ script:
     - description: The name of the custom block policy rule to create.
       name: rulename
     - auto: PREDEFINED
-      description: The object type to block in the policy rule. Can be "ip", "address-group", "edl", or "custom-url-category".
+      description: The object type to block in the policy rule. 
       name: object_type
       predefined:
       - ip
@@ -4958,7 +4985,7 @@ script:
       required: true
       isArray: true
     - auto: PREDEFINED
-      description: The direction to block. Can be "to", "from", or "both". This argument is not applicable for the "custom-url-category" object_type.
+      description: The direction to block. This argument is not applicable for the "custom-url-category" object_type.
       name: direction
       predefined:
       - to
@@ -4966,7 +4993,7 @@ script:
       - both
       defaultValue: both
     - auto: PREDEFINED
-      description: The pre rule or post rule (Panorama instances).
+      description: The pre-rule or post-rule (Panorama instances).
       name: pre_post
       predefined:
       - pre-rulebase
@@ -4982,7 +5009,7 @@ script:
       name: tags
     - auto: PREDEFINED
       defaultValue: bottom
-      description: Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument.
+      description: Where to move the rule. If you specify "before" or "after", you need to supply the "dst" argument.
       name: where
       predefined:
       - before
@@ -5024,7 +5051,7 @@ script:
       name: rulename
       required: true
     - auto: PREDEFINED
-      description: Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument.
+      description: Where to move the rule. If you specify "before" or "after", you need to supply the "dst" argument.
       name: where
       predefined:
       - before
@@ -5057,7 +5084,7 @@ script:
       name: rulename
       required: true
     - auto: PREDEFINED
-      description: The parameter in the security rule to change. Can be 'source', 'destination', 'application', 'action', 'category', 'description', 'disabled', 'target', 'log-forwarding', 'tag', 'source-user', 'service', or 'profile-setting'.
+      description: The parameter in the security rule to change. 
       name: element_to_change
       predefined:
       - source
@@ -5078,7 +5105,7 @@ script:
       name: element_value
       required: true
     - auto: PREDEFINED
-      description: The pre rule or post rule (Panorama instances).
+      description: The pre-rule or post-rule (Panorama instances).
       name: pre_post
       predefined:
       - pre-rulebase
@@ -5142,7 +5169,7 @@ script:
       name: rulename
       required: true
     - auto: PREDEFINED
-      description: The pre rule or post rule (Panorama instances).
+      description: The pre-rule or post-rule (Panorama instances).
       name: pre_post
       predefined:
       - pre-rulebase
@@ -5504,7 +5531,7 @@ script:
       type: String
     deprecated: true
   - arguments:
-    - description: The rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances.
+    - description: The rules location. Mandatory for Panorama instances.
       name: pre_post
       auto: PREDEFINED
       predefined:
@@ -5557,7 +5584,7 @@ script:
       description: The rule tags.
       type: String
   - arguments:
-    - description: The log type. Can be "threat", "traffic", "wildfire", "url", or "data".
+    - description: The log type. 
       name: log-type
       required: true
       auto: PREDEFINED
@@ -5968,7 +5995,7 @@ script:
       name: destination
       required: true
     - auto: PREDEFINED
-      description: 'The type for the next hop. Can be: "ip-address", "next-vr", "fqdn", or "discard".'
+      description: The type for the next hop. 
       name: nexthop_type
       predefined:
       - ip-address
@@ -6259,7 +6286,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: The security profile for which to get information. Can be "data-filtering", "file-blocking", "spyware", "url-filtering", "virus", "vulnerability", or "wildfire-analysis".
+      description: The security profile for which to get information. 
       name: security_profile
       predefined:
       - data-filtering
@@ -6405,7 +6432,7 @@ script:
       description: The rule name.
       type: String
   - arguments:
-    - description: The security profile type. Can be 'data-filtering', 'file-blocking', 'spyware', 'url-filtering', 'virus, 'vulnerability', or wildfire-analysis.'
+    - description: The security profile type. 
       name: profile_type
       required: true
       auto: PREDEFINED
@@ -6424,7 +6451,7 @@ script:
       name: profile_name
       required: true
     - auto: PREDEFINED
-      description: The location of the rules. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances.
+      description: The location of the rules. Mandatory for Panorama instances.
       name: pre_post
       predefined:
       - pre-rulebase
@@ -6435,7 +6462,7 @@ script:
     description: Applies a security profile to specific rules or rules with a specific tag.
     name: pan-os-apply-security-profile
   - arguments:
-    - description: The location of the rules. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances.
+    - description: The location of the rules. Mandatory for Panorama instances.
       name: pre_post
       auto: PREDEFINED
       predefined:
@@ -7953,7 +7980,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The Dictionary of Hygiene issue, from a hygiene check command. Can be list.
+      description: The Dictionary of Hygiene issue, from a hygiene check command. Can be a list.
       isArray: true
       name: issue
       required: true
@@ -7985,7 +8012,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The Dictionary of Hygiene issue, from a hygiene check command. Can be list.
+      description: The Dictionary of Hygiene issue, from a hygiene check command. Can be a list.
       isArray: true
       name: issue
       required: true
@@ -8100,7 +8127,964 @@ script:
     - contextPath: InfoFile.Info
       description: Basic information of the file.
       type: String
-  dockerimage: demisto/pan-os-python:1.0.0.31643
+  - arguments:
+    - description: The name of the template to retrieve. If not provided then all available templates will be returned.
+      isArray: false
+      name: template_name
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of templates to retrieve. This value is used by default if page argument is not provided.
+      isArray: false
+      name: limit
+      required: false
+    - defaultValue: '50'
+      description: The page size of the templates to return.
+      isArray: false
+      name: page_size
+      required: false
+    - description: The page at which to start listing templates. This must be a positive number.
+      isArray: false
+      name: page
+      required: false
+    description: Returns a list of available templates. (To be used only in Panorama instances).
+    name: pan-os-list-templates
+    outputs:
+    - contextPath: Panorama.Template.Name
+      description: The name of the template.
+      type: String
+    - contextPath: Panorama.Template.Description
+      description: The description of the template.
+      type: String
+    - contextPath: Panorama.Template.Variable.Name
+      description: The variable name of the template.
+      type: String
+    - contextPath: Panorama.Template.Variable.Type
+      description: The type of template.
+      type: String
+    - contextPath: Panorama.Template.Variable.Value
+      description: The value of the variable of the template.
+      type: String
+    - contextPath: Panorama.Template.Variable.Description
+      description: The description of the variable of the template.
+      type: String
+  - arguments:
+    - description: The name of the NAT rule to retrieve. If not mentioned, will bring all the NAT rules.
+      isArray: false
+      name: name
+      required: false
+    - description: The device group in which the NAT rules are part of.
+      isArray: false
+      name: device-group
+      required: false
+    - auto: PREDEFINED
+      description: The pre-rule or post-rule (Panorama instances only).
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    - default: false
+      defaultValue: 'false'
+      description: Whether to show the un-committed rules or not. 
+      isArray: false
+      name: show_uncommitted
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '50'
+      description: The maximum number of rules to retrieve. Will be used by default if page argument was not provided.
+      isArray: false
+      name: limit
+      required: false
+    - defaultValue: '50'
+      description: The page size of the NAT rules to return.
+      isArray: false
+      name: page_size
+      required: false
+    - description: The page at which to start listing NAT rules. Must be a positive number.
+      isArray: false
+      name: page
+      required: false
+    description: Returns a list of NAT rules of either a Panorama/firewall instance.
+    name: pan-os-list-nat-rules
+    outputs:
+    - contextPath: Panorama.NAT.Name
+      description: The name of the rule.
+      type: String
+    - contextPath: Panorama.NAT.Location
+      description: The device group that the rule is part of.
+      type: String
+    - contextPath: Panorama.NAT.Tags
+      description: The tags in which the rule is part of.
+      type: String
+    - contextPath: Panorama.NAT.SourceZone
+      description: The source zone of the rule.
+      type: String
+    - contextPath: Panorama.NAT.DestinationZone
+      description: The destination zone of the rule.
+      type: String
+    - contextPath: Panorama.NAT.SourceAddress
+      description: The source address of the rule.
+      type: String
+    - contextPath: Panorama.NAT.DestinationAddress
+      description: The destination address of the rule.
+      type: String
+    - contextPath: Panorama.NAT.DestinationInterface
+      description: The destination interface of the rule.
+      type: String
+    - contextPath: Panorama.NAT.Service
+      description: The service in which the rule has.
+      type: String
+    - contextPath: Panorama.NAT.Description
+      description: The description of the rule.
+      type: String
+    - contextPath: Panorama.NAT.SourceTranslation
+      description: The source translation of the rule.
+      type: Unknown
+    - contextPath: Panorama.NAT.DestinationTranslation
+      description: The destination translation of the rule.
+      type: Unknown
+    - contextPath: Panorama.NAT.DynamicDestinationTranslation
+      description: The dynamic destination translation of the rule.
+      type: Unknown
+  - arguments:
+    - description: The name of the NAT rule to create.
+      isArray: false
+      name: rulename
+      required: true
+    - description: The description that the new NAT rule should have.
+      isArray: false
+      name: description
+      required: false
+    - description: The device-group in which the new rule should be created (Panorama instances only).
+      isArray: false
+      name: device-group
+      required: false
+    - auto: PREDEFINED
+      description: The pre-rule or post-rule (Panorama instances only).
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    - default: false
+      defaultValue: 'ipv4'
+      auto: PREDEFINED
+      predefined:
+      - ipv4
+      - nat64
+      - nptv6
+      description: The NAT type in which the rule will be created.
+      isArray: false
+      name: nat_type
+      required: false
+    - description: A comma-separated list of source zones.
+      isArray: true
+      name: source_zone
+      required: false
+      defaultValue: 'any'
+    - description: The destination zone.
+      isArray: false
+      name: destination_zone
+      required: false
+    - description: The destination interface for the rule.
+      isArray: false
+      name: destination_interface
+      required: false
+      defaultValue: 'any'
+    - description: The service in which the rule will be created with.
+      isArray: false
+      name: service
+      required: false
+      defaultValue: 'any'
+    - description: A comma-separated list of address object names, address group object names, or EDL object names.
+      isArray: true
+      name: source_address
+      required: false
+      defaultValue: 'any'
+    - description: A comma-separated list of address object names, address group object names, or EDL object names.
+      isArray: true
+      name: destination_address
+      required: false
+      defaultValue: 'any'
+    - default: false
+      defaultValue: 'none'
+      auto: PREDEFINED
+      predefined:
+      - static-ip
+      - dynamic-ip
+      - dynamic-ip-and-port
+      - none
+      description: The source translation type in which the rule will be created.
+      isArray: false
+      name: source_translation_type
+      required: false
+    - default: false
+      defaultValue: 'translated-address'
+      auto: PREDEFINED
+      predefined:
+      - translated-address
+      - interface-address
+      description: The source translation address type in which the rule will be created.
+      isArray: false
+      name: source_translated_address_type
+      required: false
+    - description: A comma-separated list of source translation addresses. If source_translation_type == static_ip, must be a single value.
+      isArray: true
+      name: source_translated_address
+      required: false
+    - description: The source translation interface.
+      isArray: false
+      name: source_translated_interface
+      required: false
+    - default: false
+      auto: PREDEFINED
+      defaultValue: 'none'
+      predefined:
+      - static_ip
+      - dynamic_ip
+      - none
+      description: The destination translation type.
+      isArray: false
+      name: destination_translation_type
+      required: false
+    - description: A comma-separated list of destination translated addresses.
+      isArray: true
+      name: destination_translated_address
+      required: false
+    - description: The destination translated port.
+      isArray: false
+      name: destination_translated_port
+      required: false
+    - description: The destination translation distribution method.
+      isArray: false
+      name: destination_translation_distribution_method
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - round-robin
+      - source-ip-hash
+      - ip-modulo
+      - ip-hash
+      - least-sessions
+    - description: Whether to use negate destination.
+      isArray: false
+      name: negate_destination
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+    - description: The DNS rewrite direction.
+      isArray: false
+      name: destination_dns_rewrite_direction
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - forward
+      - reverse
+    description: Creates a new NAT rule in a Panorama/firewall instance.
+    name: pan-os-create-nat-rule
+    outputs: []
+  - arguments:
+    - description: The name of the NAT rule to delete. Can be retrieved from the pan-os-list-nat-rules command.
+      isArray: false
+      name: rulename
+      required: true
+    - description: The device-group from which the NAT rule should be deleted. Only for a Panorama instance.
+      isArray: false
+      name: device-group
+      required: false
+    - auto: PREDEFINED
+      description: The pre-rule or post-rule (Panorama instances only).
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    description: Deletes a NAT rule.
+    name: pan-os-delete-nat-rule
+    outputs: []
+  - arguments:
+    - description: The name of the NAT rule to edit. Can be retrieved from the pan-os-list-nat-rules command.
+      isArray: false
+      name: rulename
+      required: true
+    - description: The device-group that the NAT rule is part of. Only for a Panorama instance.
+      isArray: false
+      name: device-group
+      required: false
+    - auto: PREDEFINED
+      description: The pre-rule or post-rule (Panorama instances only).
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    - auto: PREDEFINED
+      description: The operation to perform on the rule.
+      isArray: false
+      name: behavior
+      required: false
+      predefined:
+      - replace
+      - add
+      - remove
+      defaultValue: 'replace'
+    - auto: PREDEFINED
+      description: The element to change.
+      name: element_to_change
+      required: true
+      predefined:
+      - tags
+      - service
+      - nat_type
+      - description
+      - source_zone
+      - destination_zone
+      - source_address
+      - destination_address
+      - destination_interface
+      - negate_destination
+      - source_translation_dynamic_ip_and_port
+      - source_translation_interface
+      - source_translation_dynamic_ip
+      - source_translation_static_ip
+      - destination_translation_port
+      - destination_translation_ip
+      - destination_translation_dynamic_port
+      - destination_translation_dynamic_ip
+      - destination_translation_dynamic_distribution_method
+      - disabled
+    - description: The value of the element to change. Can be a list for certain elements.
+      isArray: true
+      name: element_value
+      required: true
+    description: Edits a NAT rule.
+    name: pan-os-edit-nat-rule
+    outputs: []
+  - arguments:
+    - description: The name of the virtual router to retrieve. If not mentioned, will bring all the virtual routers.
+      isArray: false
+      name: virtual_router
+      required: false
+    - description: The template that the virtual router is part of. Use only for Panorama instances.
+      isArray: false
+      name: template
+      required: false
+    - default: false
+      defaultValue: 'false'
+      description: Whether to show the un-committed virtual routers or not. 
+      isArray: false
+      name: show_uncommitted
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '50'
+      description: The maximum number of virtual routers to retrieve. Will be used by default if the page argument was not provided.
+      isArray: false
+      name: limit
+      required: false
+    - defaultValue: '50'
+      description: The size of virtual-routers to return.
+      isArray: false
+      name: page_size
+      required: false
+    - description: The page at which to start listing virtual-routers. Must be a positive number.
+      isArray: false
+      name: page
+      required: false
+    description: Returns a list of virtual routers of either a Panorama/firewall instance.
+    name: pan-os-list-virtual-routers
+    outputs:
+    - contextPath: Panorama.VirtualRouter.Name
+      description: The name of the virtual router.
+      type: String
+    - contextPath: Panorama.VirtualRouter.Interface
+      description: The interface(s) that the virtual router uses.
+      type: Unknown
+    - contextPath: Panorama.VirtualRouter.RIP
+      description: Information about the RIP of the virtual router.
+      type: Unknown
+    - contextPath: Panorama.VirtualRouter.OSPF
+      description: Information about the OSPF of the virtual router.
+      type: Unknown
+    - contextPath: Panorama.VirtualRouter.OSPFv3
+      description: Information about the OSPFv3 of the virtual router.
+      type: Unknown
+    - contextPath: Panorama.VirtualRouter.BGP
+      description: Information about the BGP of the virtual router.
+      type: Unknown
+    - contextPath: Panorama.VirtualRouter.RedistributionProfile
+      description: The redistribution profile(s) that the virtual router uses.
+      type: Unknown
+    - contextPath: Panorama.VirtualRouter.Multicast
+      description: Information about the multicast of the virtual router.
+      type: Unknown
+    - contextPath: Panorama.VirtualRouter.StaticRoute
+      description: The static routes(s) that the virtual router uses.
+      type: Unknown
+    - contextPath: Panorama.VirtualRouter.ECMP
+      description: The ECMP defined for the virtual router.
+      type: Unknown
+  - arguments:
+    - description: Redistribution profile name.
+      isArray: false
+      name: name
+      required: false
+    - description: The name of the virtual router that has the redistribution profiles retrieve. Can be retrieved from pan-os-list-virtual-routers.
+      isArray: false
+      name: virtual_router
+      required: true
+    - description: The template that the redistribution profiles and virtual-router are part of. Use only for Panorama instances.
+      isArray: false
+      name: template
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of redistribution-profiles to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    description: Returns a list of redistribution-profiles of a specific virtual-router of either a Panorama/firewall instance.
+    name: pan-os-list-redistribution-profiles
+    outputs:
+    - contextPath: Panorama.RedistributionProfile.Name
+      description: The name of the profile.
+      type: String
+    - contextPath: Panorama.RedistributionProfile.Priority
+      description: The priority of the profile.
+      type: String
+    - contextPath: Panorama.RedistributionProfile.Action
+      description: The action of the profile.
+      type: String
+    - contextPath: Panorama.RedistributionProfile.FilterInterface
+      description: The filter interface(s).
+      type: Unknown
+    - contextPath: Panorama.RedistributionProfile.FilterType
+      description: The filter type(s)
+      type: Unknown
+    - contextPath: Panorama.RedistributionProfile.FilterDestination
+      description: The filter destination(s).
+      type: Unknown
+    - contextPath: Panorama.RedistributionProfile.FilterNextHop
+      description: The filter next hop.
+      type: Unknown
+    - contextPath: Panorama.RedistributionProfile.BGP
+      description: The BGP of the profile.
+      type: Unknown
+    - contextPath: Panorama.RedistributionProfile.OSPF
+      description: The OSPF of the profile.
+      type: Unknown
+  - arguments:
+    - description: The name of the redistribution profile to create.
+      isArray: false
+      name: name
+      required: true
+    - description: The virtual router that the redistribution profile will be created on.
+      isArray: false
+      name: virtual_router
+      required: true
+    - description: The template that the virtual-router is in. Use only for Panorama instances.
+      isArray: false
+      name: template
+      required: false
+    - auto: PREDEFINED
+      description: Comma-separated list of the filter source types.
+      isArray: true
+      name: filter_source_type
+      predefined:
+      - bgp
+      - ospf
+      - rip
+      - static
+    - description: A comma-separated list of destination to filter by.
+      isArray: true
+      name: destination
+      required: false
+    - description: A comma-separated list of next-hops to filter by.
+      isArray: true
+      name: nexthop
+      required: false
+    - description: A comma-separated list of interfaces to filter by.
+      isArray: true
+      name: interface
+      required: false
+    - description: The priority of the profile. (1-255).
+      isArray: false
+      name: priority
+      required: true
+    - description: The action of the profile.
+      isArray: false
+      name: action
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - redist
+      - no-redist
+    - description: A comma-separated list of areas for the OSPF.
+      isArray: true
+      name: filter_ospf_area
+      required: false
+    - description: A comma-separated list of tags for the OSPF.
+      isArray: true
+      name: filter_ospf_tag
+      required: false
+    - auto: PREDEFINED
+      predefined:
+      - ext-1
+      - ext-2
+      - inter-area
+      - intra-area
+      description: A comma-separated list of path types for the OSPF.
+      isArray: true
+      name: filter_ospf_path_type
+      required: false
+    - description: A comma-separated list of community filters for the BGP. 32-bit value in decimal or hex or in AS:VAL format where AS and VAL are each in 0 - 65535 range. (Max 10 values).
+      isArray: true
+      name: filter_bgp_community
+      required: false
+    - description: A comma-separated list of community filters for the BGP. 64-bit value in hex, or in TYPE:AS:VAL, TYPE:IP:VAL format. TYPE is 16-bit, the other two are 16-bit and 32-bit each. (Max 5 values).
+      isArray: true
+      name: filter_bgp_extended_community
+      required: false
+    description: Creates a new redistribution-profile under a virtual-router for a Panorama/firewall instance.
+    name: pan-os-create-redistribution-profile
+    outputs: []
+  - arguments:
+    - description: The name of the redistribution-profile to edit.
+      isArray: false
+      name: name
+      required: true
+    - description: The name of the virtual-router that the redistribution-profile is part of.
+      isArray: false
+      name: virtual_router
+      required: true
+    - description: The template that the virtual-router is in. Only for Panorama instances.
+      isArray: false
+      name: template
+      required: false
+    - auto: PREDEFINED
+      description: The element to change.
+      name: element_to_change
+      required: true
+      predefined:
+      - filter_type
+      - filter_destination
+      - filter_nexthop
+      - filter_interface
+      - priority
+      - action
+      - filter_ospf_area
+      - filter_ospf_tag
+      - filter_ospf_path_type
+      - filter_bgp_community
+      - filter_bgp_extended_community
+    - description: The value of the element to change. Can be a list for all the elements except priority and action.
+      isArray: true
+      name: element_value
+      required: true
+    - auto: PREDEFINED
+      description: The operation to perform on the profile.
+      isArray: false
+      name: behavior
+      required: false
+      predefined:
+      - replace
+      - add
+      - remove
+      defaultValue: 'replace'
+    description: Edits a redistribution-profile in a virtual-router.
+    name: pan-os-edit-redistribution-profile
+    outputs: []
+  - arguments:
+    - description: The name of the redistribution-profile to delete.
+      isArray: false
+      name: name
+      required: true
+    - description: The name of the virtual-router that the redistribution-profile is part of.
+      isArray: false
+      name: virtual_router
+      required: true
+    - description: The template that the virtual-router is in. Only for panorama instances.
+      isArray: false
+      name: template
+      required: false
+    description: Deletes a redistribution-profile from a virtual-router.
+    name: pan-os-delete-redistribution-profile
+    outputs: []
+  - arguments:
+    - description: The name of the pbf-rule to retrieve. If not mentioned, will bring all the pbf rules.
+      isArray: false
+      name: rulename
+      required: false
+    - description: The device-group that the pbf-rules are part of.
+      isArray: false
+      name: device-group
+      required: false
+    - auto: PREDEFINED
+      description: The pre-rule or post-rule (Panorama instances only).
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    - default: false
+      defaultValue: 'false'
+      description: Whether to show the un-committed rules or not. 
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      name: show_uncommitted
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of rules to retrieve. Will be used by default if page argument was not provided.
+      isArray: false
+      name: limit
+      required: false
+    - defaultValue: '50'
+      description: The size of pbf-rules to return.
+      isArray: false
+      name: page_size
+      required: false
+    - description: The page at which to start listing pbf-rules. Must be a positive number.
+      isArray: false
+      name: page
+      required: false
+    description: Returns a list of pbf-rules of either a Panorama/firewall instance.
+    name: pan-os-list-pbf-rules
+    outputs:
+    - contextPath: Panorama.PBF.Name
+      description: The name of the PBF rule.
+      type: String
+    - contextPath: Panorama.PBF.Description
+      description: The description of the PBF rule.
+      type: String
+    - contextPath: Panorama.PBF.Tags
+      description: The tags of the PBF rule.
+      type: Unknown
+    - contextPath: Panorama.PBF.SourceZone
+      description: The source-zones of the PBF rule.
+      type: Unknown
+    - contextPath: Panorama.PBF.SourceInterface
+      description: The source-interfaces of the PBF rule.
+      type: Unknown
+    - contextPath: Panorama.PBF.SourceAddress
+      description: The source-addresses of the PBF rule.
+      type: Unknown
+    - contextPath: Panorama.PBF.SourceUser
+      description: The source-users of the PBF rule.
+      type: Unknown
+    - contextPath: Panorama.PBF.DestinationAddress
+      description: The destination-addresses of the PBF rule.
+      type: Unknown
+    - contextPath: Panorama.PBF.EnforceSymmetricReturn
+      description: The enforce-symmetric-return of the PBF rule.
+      type: Unknown
+    - contextPath: Panorama.PBF.Target
+      description: The target of the PBF rule.
+      type: Unknown
+    - contextPath: Panorama.PBF.Application
+      description: The applications of the PBF rule.
+      type: Unknown
+    - contextPath: Panorama.PBF.Service
+      description: The services of the PBF rule.
+      type: Unknown
+  - arguments:
+    - description: The name of the PBF-rule to create.
+      isArray: false
+      name: rulename
+      required: true
+    - description: The description that the new PBF-rule should have.
+      isArray: false
+      name: description
+      required: false
+    - description: The device-group in which the new rule should be created. Only for a Panorama instance.
+      isArray: false
+      name: device-group
+      required: false
+    - auto: PREDEFINED
+      description: The pre-rule or post-rule (Panorama instances only).
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    - description: A comma-separated list of tags.
+      isArray: true
+      name: tags
+      required: false
+    - description: A comma-separated list of source zones.
+      isArray: true
+      name: source_zone
+      required: false
+    - description: A comma-separated list of source addresses.
+      isArray: true
+      name: source_address
+      required: false
+      defaultValue: 'any'
+    - description: A comma-separated list of source users.
+      isArray: false
+      name: source_user
+      required: false
+      defaultValue: 'any'
+    - description: A comma-separated list of services.
+      isArray: true
+      name: service
+      required: false
+      defaultValue: 'any'
+    - description: A comma-separated list of destination addresses.
+      isArray: true
+      name: destination_address
+      required: false
+      defaultValue: 'any'
+    - description: A comma-separated list of applications.
+      isArray: true
+      name: application
+      required: false
+      defaultValue: 'any'
+    - auto: PREDEFINED
+      predefined:
+      - forward
+      - discard
+      - no-pbf
+      description: The action that the rule will be created with.
+      isArray: false
+      name: action
+      required: true
+    - description: The egress interface the rule will be created with. Must be provided if action == forward.
+      isArray: false
+      name: egress_interface
+      required: false
+    - defaultValue: 'none'
+      auto: PREDEFINED
+      predefined:
+      - ip-address
+      - fqdn
+      - none
+      description: The next-hop. Relevant only when action = forward.
+      isArray: false
+      name: nexthop
+      required: false
+    - description: The next-hop value when action = forward. Could be an IP address or FQDN. Required when nexthop is not none.
+      isArray: false
+      name: nexthop_value
+      required: false
+    - description: Whether to enforce symmetric return.
+      isArray: false
+      defaultValue: 'no'
+      name: enforce_symmetric_return
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+      required: false
+    - defaultValue: 'no'
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+      description: Whether to negate the source.
+      isArray: false
+      name: negate_source
+      required: false
+    - description: Whether to negate the destination.
+      isArray: false
+      name: negate_destination
+      required: false
+      defaultValue: 'no'
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+    - description: The nexthop addresses list for the symmetric return.
+      isArray: true
+      name: nexthop_address_list
+      required: false
+    description: Creates a new policy-based-forwarding (PBF) rule in a Panorama/firewall instance.
+    name: pan-os-create-pbf-rule
+    outputs: []
+  - arguments:
+    - description: The name of the PBF rule to edit. Can be retrieved from the pan-os-list-pbf-rules command.
+      isArray: false
+      name: rulename
+      required: true
+    - description: The device-group that the PBF rule is in.
+      isArray: false
+      name: device-group
+      required: false
+    - auto: PREDEFINED
+      description: The pre-rule or post-rule (Panorama instances only).
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    - auto: PREDEFINED
+      description: The element to change.
+      name: element_to_change
+      required: true
+      predefined:
+      - source_zone
+      - source_address
+      - source_user
+      - service
+      - destination_address
+      - application
+      - negate_source
+      - negate_destination
+      - nexthop_address_list
+      - enforce_symmetric_return
+      - action_forward_egress_interface
+      - action_forward_nexthop_ip
+      - action_forward_nexthop_fqdn
+      - action_forward_discard
+      - action_forward_no_pbf
+    - description: The value of the element to change. Can be a list for some of the elements. When element_to_change == 'action_forward_egress_interface', the action of the rule will be changed to 'forward' automatically.
+      isArray: true
+      name: element_value
+      required: true
+    - auto: PREDEFINED
+      description: The operation to perform on the PBF rule.
+      isArray: false
+      name: behavior
+      required: false
+      predefined:
+      - replace
+      - add
+      - remove
+      defaultValue: 'replace'
+    description: Edits a PBF rule.
+    name: pan-os-edit-pbf-rule
+  - arguments:
+    - description: The name of the pbf-rule to delete. Can be retrieved from the pan-os-list-pbf-rules command.
+      isArray: false
+      name: rulename
+      required: true
+    - description: The device-group from which the pbf-rule should be deleted. Only for a Panorama instance.
+      isArray: false
+      name: device-group
+      required: false
+    - auto: PREDEFINED
+      description: The pre-rule or post-rule (Panorama instances only).
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    description: Deletes a PBF rule.
+    name: pan-os-delete-pbf-rule
+  - arguments:
+    - description: The name of the application-group to retrieve. If not mentioned, will bring all the application-groups.
+      isArray: false
+      name: name
+      required: false
+    - description: The device-group that the nat-rules are part of.
+      isArray: false
+      name: device-group
+    - default: false
+      defaultValue: 'false'
+      description: Whether to show the un-committed application-groups or not. 
+      isArray: false
+      name: show_uncommitted
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '50'
+      description: The maximum number of application-groups to retrieve. Will be used by default if page argument was not provided.
+      isArray: false
+      name: limit
+      required: false
+    - defaultValue: '50'
+      description: The page size of the application-groups to return.
+      isArray: false
+      name: page_size
+      required: false
+    - description: The page at which to start listing application-groups. Must be a positive number.
+      isArray: false
+      name: page
+      required: false
+    description: Returns a list of application-groups of either a Panorama/firewall instance.
+    name: pan-os-list-application-groups
+    outputs:
+    - contextPath: Panorama.ApplicationGroup.Name
+      description: The name of the application-group object.
+      type: String
+    - contextPath: Panorama.ApplicationGroup.Applications
+      description: The list of the applications that the application-group has.
+      type: Unknown
+    - contextPath: Panorama.ApplicationGroup.Members
+      description: The number of the application that are part of the application-group
+      type: Number
+  - arguments:
+    - description: The name for the application-group to be created with.
+      isArray: false
+      name: name
+      required: true
+    - description: Comma-separated list of applications. Can be retrieved using the command pan-os-list-applications.
+      isArray: true
+      name: applications
+      required: true
+    - description: The device-group in which the application-group should be created. Only for a Panorama instance.
+      isArray: false
+      name: device-group
+      required: false
+    description: Creates a new application group rule in a Panorama/firewall instance.
+    name: pan-os-create-application-group
+    outputs:
+    - contextPath: Panorama.ApplicationGroup.Name
+      description: The name of the application-group object.
+      type: String
+    - contextPath: Panorama.ApplicationGroup.Applications
+      description: The list of the applications that the application-group has.
+      type: Unknown
+    - contextPath: Panorama.ApplicationGroup.Members
+      description: The number of the applications that are part of the application-group.
+      type: Number
+  - arguments:
+    - description: The name for the application-group to be edit. Can be retrieved from the pan-os-list-application-groups command.
+      isArray: false
+      name: name
+      required: true
+    - description: Comma-separated list of applications. Can be retrieved using the command pan-os-list-applications.
+      isArray: true
+      name: applications
+      required: true
+    - description: The device-group in which the application-group should be created. Only for a Panorama instance.
+      isArray: false
+      name: device-group
+      required: false
+    - description: The action to perform on the application-group.
+      isArray: false
+      name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'add'
+      - 'remove'
+      defaultValue: 'add'
+    description: Edits an application-group.
+    name: pan-os-edit-application-group
+    outputs:
+    - contextPath: Panorama.ApplicationGroup.Name
+      description: The name of the application-group object.
+      type: String
+    - contextPath: Panorama.ApplicationGroup.Applications
+      description: The list of the applications that the application-group has.
+      type: Unknown
+    - contextPath: Panorama.ApplicationGroup.Members
+      description: The number of the applications that are part of the application-group
+      type: Number
+  - arguments:
+    - description: The name of the application-group to delete. Can be retrieved from the pan-os-list-application-groups command.
+      isArray: false
+      name: name
+      required: true
+    - description: The device-group in which the application-group is part of. Only for a Panorama instance.
+      isArray: false
+      name: device-group
+      required: false
+    description: Deletes an application-group
+    name: pan-os-delete-application-group
+    outputs: []
+  dockerimage: demisto/pan-os-python:1.0.0.35806
   feed: false
   isfetch: false
   longRunning: false

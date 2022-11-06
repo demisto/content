@@ -33,7 +33,7 @@ This playbook does not use any sub-playbooks.
 | Endpoint.Hostname | The hostnames of the endpoints that were enriched. | string |
 | Endpoint.OS | The operating systems running on the endpoints that were enriched. | string |
 | Endpoint.IP | A list of the IP addresses of the endpoints. | string |
-| XMCyber.Entity.isAsset | Is Entity a Critical Asset | boolean |
+| XMCyber.Entity.isAsset | Entity is a critical asset | boolean |
 | XMCyber.Entity.affectedEntities | Number of unique entities at risk from this entity | number |
 | XMCyber.Entity.averageComplexity | Average complexity to compromise this entity | number |
 | XMCyber.Entity.criticalAssetsAtRisk | Number of unique critical assets at risk from this entity | number |

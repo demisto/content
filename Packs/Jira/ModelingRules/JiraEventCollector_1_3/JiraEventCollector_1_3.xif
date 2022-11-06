@@ -1,7 +1,6 @@
 [MODEL: dataset=atlassian_jira_raw]
 alter
-	_time = parse_timestamp("%Y-%m-%dT%H:%M:%E3S", arrayindex(split(created, "+"), 0)),
-    xdm.event.operation = summary,
+	xdm.event.operation = summary,
 	xdm.source.ipv4 = remoteAddress,
 	xdm.source.user.username = authorKey,
 	xdm.source.user.identifier = authorAccountId,

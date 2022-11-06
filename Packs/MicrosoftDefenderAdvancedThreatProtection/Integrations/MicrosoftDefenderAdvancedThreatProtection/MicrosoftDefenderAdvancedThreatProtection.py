@@ -1126,7 +1126,8 @@ class MsClient:
             app_name=app_name,
             enc_key=enc_key,
             certificate_thumbprint=certificate_thumbprint,
-            private_key=private_key
+            private_key=private_key,
+            retry_on_rate_limit=True
         )
         self.ms_client = MicrosoftClient(**client_args)
         self.alert_severities_to_fetch = alert_severities_to_fetch
@@ -1282,9 +1283,9 @@ class MsClient:
         }
         return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
 
-    def list_alerts_by_params(self, filter_req=None, params=None):
+    def list_alerts_by_params(self, filter_req=None, params=None, overwrite_rate_limit_retry=False):
         """Retrieves a collection of Alerts.
-
+            overwrite_rate_limit_retry - Skip retry mechanism, True for fetch incidents
         Returns:
             dict. Alerts info
         """
@@ -1292,7 +1293,8 @@ class MsClient:
         if not params:
             params = {'$filter': filter_req} if filter_req else None
 
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params,
+                                           overwrite_rate_limit_retry=overwrite_rate_limit_retry)
 
     def list_alerts(self, filter_req=None, limit=None, evidence=False, creation_time=None):
         """Retrieves a collection of Alerts.
@@ -1321,7 +1323,7 @@ class MsClient:
         cmd_url = f'/alerts/{alert_id}'
         return self.ms_client.http_request(method='PATCH', url_suffix=cmd_url, json_data=json_data)
 
-    def get_advanced_hunting(self, query: str, timeout: int, time_range: Optional[str] = None) -> dict:
+    def get_advanced_hunting(self, query: str, timeout: int, time_range: Optional[str] = None) -> Dict[str, Any]:
         """Retrieves results according to query.
 
         Args:
@@ -1417,7 +1419,7 @@ class MsClient:
         cmd_url = f'/alerts/{alert_id}/user'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
-    def get_machine_action_by_id(self, action_id):
+    def get_machine_action_by_id(self, action_id, overwrite_rate_limit_retry=False):
         """Retrieves specific Machine Action by its ID.
 
         Args:
@@ -1431,7 +1433,8 @@ class MsClient:
             dict. Machine Action entity
         """
         cmd_url = f'/machineactions/{action_id}'
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url,
+                                           overwrite_rate_limit_retry=overwrite_rate_limit_retry)
 
     def get_machine_actions(self, filter_req, limit):
         """Retrieves all Machine Actions.
@@ -1449,7 +1452,7 @@ class MsClient:
             params['$filter'] = filter_req
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
 
-    def get_investigation_package(self, machine_id, comment):
+    def get_investigation_package(self, machine_id, comment, overwrite_rate_limit_retry=False):
         """Collect investigation package from a machine.
 
         Args:
@@ -1463,9 +1466,10 @@ class MsClient:
         json_data = {
             'Comment': comment
         }
-        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
+        return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data,
+                                           overwrite_rate_limit_retry=overwrite_rate_limit_retry)
 
-    def get_investigation_package_sas_uri(self, action_id):
+    def get_investigation_package_sas_uri(self, action_id, overwrite_rate_limit_retry=False):
         """Get a URI that allows downloading of an Investigation package.
 
         Args:
@@ -1475,7 +1479,8 @@ class MsClient:
             dict. An object that holds the link for the package
         """
         cmd_url = f'/machineactions/{action_id}/getPackageUri'
-        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url,
+                                           overwrite_rate_limit_retry=overwrite_rate_limit_retry)
 
     def restrict_app_execution(self, machine_id, comment):
         """Restrict execution of all applications on the machine except a predefined set.
@@ -1921,14 +1926,16 @@ class MsClient:
         return self.indicators_http_request('DELETE', None, full_url=cmd_url, ok_codes=(204,),
                                             resp_type='response', should_use_security_center=use_security_center)
 
-    def get_live_response_result(self, machine_action_id, command_index=0):
+    def get_live_response_result(self, machine_action_id, command_index=0, overwrite_rate_limit_retry=False):
         cmd_url = f'machineactions/{machine_action_id}/GetLiveResponseResultDownloadLink(index={command_index})'
-        response = self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+        response = self.ms_client.http_request(method='GET', url_suffix=cmd_url,
+                                               overwrite_rate_limit_retry=overwrite_rate_limit_retry)
         return response
 
-    def create_action(self, machine_id, request_body):
+    def create_action(self, machine_id, request_body, overwrite_rate_limit_retry=False):
         cmd_url = f'machines/{machine_id}/runliveresponse'
-        response = self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=request_body)
+        response = self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=request_body,
+                                               overwrite_rate_limit_retry=overwrite_rate_limit_retry)
         return response
 
     def download_file(self, url_link):
@@ -2549,19 +2556,54 @@ def get_advanced_hunting_command(client: MsClient, args: dict):
         (str, dict, dict). Human readable, context, raw response
     """
     query = args.get('query', '')
-    timeout = int(args.get('timeout', 10))
-    time_range = args.get('time_range')
-    response = client.get_advanced_hunting(query, timeout, time_range)
-    results = response.get('Results')
-    if isinstance(results, list) and len(results) == 1:
-        report_id = results[0].get('ReportId')
-        if report_id:
-            results[0]['ReportId'] = str(report_id)
-    entry_context = {
-        'MicrosoftATP.Hunt.Result': results
-    }
-    human_readable = tableToMarkdown('Hunt results', results, removeNull=True)
+    query_batch = args.get('query_batch', '')
+    if query and query_batch:
+        raise DemistoException('Both query and query_batch were given, please provide just one')
+    if not query and not query_batch:
+        raise DemistoException('Both query and query_batch were not given, please provide one')
 
+    queries: List[Dict[str, str]] = []
+    if query:
+        queries.append({'timeout': args.get('timeout', '10'),
+                        'time_range': args.get('time_range', ''),
+                        'name': args.get('name', ''),
+                        'query': query
+                        })
+    else:
+        query = safe_load_json(query_batch)
+        queries.extend(query)
+
+    if len(queries) > 10:
+        raise DemistoException('Please provide only up to 10 queries.')
+
+    human_readable = ''
+    outputs = []
+    for query_details in queries:
+        query = query_details.get('query')
+        name = query_details.get('name')
+        timeout = int(query_details.get('timeout', '') or args.get('timeout', 10))
+        time_range = query_details.get('time_range') or args.get('time_range', '')
+
+        response = client.get_advanced_hunting(query, timeout, time_range)
+        results: Dict[str, Any] = response.get('Results', {})
+        if isinstance(results, list) and len(results) == 1:
+            report_id = results[0].get('ReportId')
+            if report_id:
+                results[0]['ReportId'] = str(report_id)
+        if name:
+            outputs.append({name: results})
+        else:
+            outputs = [results]
+        human_readable += tableToMarkdown(f'Hunt results for {name} query:', results, removeNull=True)
+
+    if len(outputs) == 1:
+        entry_context: dict[str, Any] = {
+            'MicrosoftATP.Hunt.Result': outputs[0]
+        }
+    else:
+        entry_context = {
+            'MicrosoftATP.Hunt.Result': outputs
+        }
     return human_readable, entry_context, response
 
 
@@ -2786,7 +2828,7 @@ def get_machine_investigation_package(client: MsClient, args: dict):
 
     machine_id = args.get('machine_id')
     comment = args.get('comment')
-    res = client.get_investigation_package(machine_id, comment)
+    res = client.get_investigation_package(machine_id, comment, overwrite_rate_limit_retry=True)
     human_readable = tableToMarkdown('Processing action. This may take a few minutes.', res['id'], headers=['id'])
 
     return CommandResults(outputs_prefix='MicrosoftATP.MachineAction',
@@ -2804,7 +2846,7 @@ def download_file_after_successful_status(client, res):
     machine_action_id = res['id']
 
     # get file uri from action:
-    file_uri = client.get_investigation_package_sas_uri(machine_action_id)['value']
+    file_uri = client.get_investigation_package_sas_uri(machine_action_id, overwrite_rate_limit_retry=True)['value']
     demisto.debug(f'Got file for downloading: {file_uri}')
 
     # download link, create file result. File comes back as compressed gz file.
@@ -3429,7 +3471,7 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
     incidents = []
     # get_alerts:
     try:
-        alerts = client.list_alerts_by_params(params=params)['value']
+        alerts = client.list_alerts_by_params(params=params, overwrite_rate_limit_retry=True)['value']
     except DemistoException as err:
         big_query_err_msg = 'Verify that the server URL parameter is correct and that you have access to the server' \
                             ' from your host.'
@@ -3986,7 +4028,18 @@ def lateral_movement_evidence_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.LateralMovementEvidence(**args)
+    query_args = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        file_name=args.get('file_name'),
+        sha1=args.get('sha1'),
+        sha256=args.get('sha256'),
+        md5=args.get('md5'),
+        device_id=args.get('device_id'),
+        remote_ip_count=args.get('remote_ip_count'))
+    query_builder = HuntingQueryBuilder.LateralMovementEvidence(**query_args)
     query_options = {
         'network_connections': query_builder.build_network_connections_query,
         'smb_connections': query_builder.build_smb_connections_query,
@@ -4021,7 +4074,19 @@ def persistence_evidence_command(client, args):  # pragma: no cover
     time_range = args.pop('time_range', None)
     query_purpose = args.get('query_purpose')
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.PersistenceEvidence(**args)
+    quey_args = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        query_purpose=args.get('query_purpose'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        file_name=args.get('file_name'),
+        sha1=args.get('sha1'),
+        sha256=args.get('sha256'),
+        md5=args.get('md5'),
+        device_id=args.get('device_id'),
+        process_cmd=args.get('process_cmd'))
+    query_builder = HuntingQueryBuilder.PersistenceEvidence(**quey_args)
     query_options = {
         'scheduled_job': query_builder.build_scheduled_job_query,
         'registry_entry': query_builder.build_registry_entry_query,
@@ -4059,7 +4124,17 @@ def file_origin_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.FileOrigin(**args)
+    quey_params = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        file_name=args.get('file_name'),
+        sha1=args.get('sha1'),
+        sha256=args.get('sha256'),
+        md5=args.get('md5'),
+        device_id=args.get('device_id'))
+    query_builder = HuntingQueryBuilder.FileOrigin(**quey_params)
     query = query_builder.build_file_origin_query()
 
     # send request + handle result
@@ -4085,7 +4160,19 @@ def process_details_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.ProcessDetails(**args)
+    query_params = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        file_name=args.get('file_name'),
+        sha1=args.get('sha1'),
+        sha256=args.get('sha256'),
+        md5=args.get('md5'),
+        device_id=args.get('device_id'),
+        query_purpose=args.get('query_purpose')
+    )
+    query_builder = HuntingQueryBuilder.ProcessDetails(**query_params)
     query_options = {
         'parent_process': query_builder.build_parent_process_query,
         'grandparent_process': query_builder.build_grandparent_process_query,
@@ -4121,7 +4208,19 @@ def network_connections_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.NetworkConnections(**args)
+    query_params = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        query_purpose=args.get('query_purpose'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        file_name=args.get('file_name'),
+        sha1=args.get('sha1'),
+        sha256=args.get('sha256'),
+        md5=args.get('md5'),
+        device_id=args.get('device_id')
+    )
+    query_builder = HuntingQueryBuilder.NetworkConnections(**query_params)
     query_options = {
         'external_addresses': query_builder.build_external_addresses_query,
         'dns_query': query_builder.build_dns_query,
@@ -4153,7 +4252,13 @@ def privilege_escalation_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.PrivilegeEscalation(**args)
+    quey_args = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        device_id=args.get('device_id'))
+    query_builder = HuntingQueryBuilder.PrivilegeEscalation(**quey_args)
     query = query_builder.build_query()
 
     # send request + handle result
@@ -4178,7 +4283,14 @@ def tampering_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.Tampering(**args)
+    quey_args = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        device_id=args.get('device_id')
+    )
+    query_builder = HuntingQueryBuilder.Tampering(**quey_args)
     query = query_builder.build_query()
 
     # send request + handle result
@@ -4204,7 +4316,20 @@ def cover_up_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.CoverUp(**args)
+    quey_args = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        query_purpose=args.get('query_purpose'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        file_name=args.get('file_name'),
+        sha1=args.get('sha1'),
+        sha256=args.get('sha256'),
+        md5=args.get('md5'),
+        device_id=args.get('device_id'),
+        username=args.get('username')
+    )
+    query_builder = HuntingQueryBuilder.CoverUp(**quey_args)
     query_options = {
         'file_deleted': query_builder.build_file_deleted_query,
         'event_log_cleared': query_builder.build_event_log_cleared_query,
@@ -4233,7 +4358,7 @@ def cover_up_command(client, args):  # pragma: no cover
 
 
 def test_module(client: MsClient):
-    client.ms_client.http_request(method='GET', url_suffix='/alerts', params={'$top': '1'})
+    client.ms_client.http_request(method='GET', url_suffix='/alerts', params={'$top': '1'}, overwrite_rate_limit_retry=True)
 
 
 def get_dbot_indicator(dbot_type, dbot_score, value):
@@ -4641,7 +4766,7 @@ def get_live_response_result_command(client, args):
 
 def get_machine_action_command(client, args):
     id = args['machine_action_id']
-    res = client.get_machine_action_by_id(id)
+    res = client.get_machine_action_by_id(id, overwrite_rate_limit_retry=True)
 
     return CommandResults(
         outputs_prefix='MicrosoftATP.MachineAction',
@@ -4703,7 +4828,7 @@ def run_live_response_script_action(client, args):
     }
 
     # create action:
-    res = client.create_action(machine_id, request_body)
+    res = client.create_action(machine_id, request_body, overwrite_rate_limit_retry=True)
 
     md = tableToMarkdown('Processing action. This may take a few minutes.', res['id'], headers=['id'])
     return CommandResults(
@@ -4715,7 +4840,7 @@ def run_live_response_script_action(client, args):
 
 def get_successfull_action_results_as_info(client, res):
     machine_action_id = res['id']
-    file_link = client.get_live_response_result(machine_action_id, 0)['value']
+    file_link = client.get_live_response_result(machine_action_id, 0, overwrite_rate_limit_retry=True)['value']
 
     f_data = client.download_file(file_link)
     try:
@@ -4758,7 +4883,7 @@ def get_live_response_file_action(client, args):
     }
 
     # create action:
-    res = client.create_action(machine_id, request_body)
+    res = client.create_action(machine_id, request_body, overwrite_rate_limit_retry=True)
     md = tableToMarkdown('Processing action. This may take a few minutes.', res['id'], headers=['id'])
 
     return CommandResults(
@@ -4771,7 +4896,7 @@ def get_file_get_successfull_action_results(client, res):
     machine_action_id = res['id']
 
     # get file link from action:
-    file_link = client.get_live_response_result(machine_action_id, 0)['value']
+    file_link = client.get_live_response_result(machine_action_id, 0, overwrite_rate_limit_retry=True)['value']
     demisto.debug(f'Got file for downloading: {file_link}')
 
     # download link, create file result. File comes back as compressed gz file.
@@ -4817,7 +4942,7 @@ def put_live_response_file_action(client, args):
     }
 
     # create action:
-    res = client.create_action(machine_id, request_body)
+    res = client.create_action(machine_id, request_body, overwrite_rate_limit_retry=True)
     md = tableToMarkdown('Processing action. This may take a few minutes.', res['id'], headers=['id'])
 
     return CommandResults(

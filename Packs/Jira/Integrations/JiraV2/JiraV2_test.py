@@ -2,6 +2,8 @@ from optparse import OptionParser
 from unittest.mock import Mock
 import demistomock as demisto
 import pytest
+from CommonServerPython import *
+
 
 integration_params = {
     "url": "https://localhost",
@@ -1220,6 +1222,46 @@ AUTH_CASES = [
     (BASIC, {}, {'Content-Type': 'application/json'}),
     (BASIC, {'X-Atlassian-Token': 'nocheck'}, {'X-Atlassian-Token': 'nocheck'}),
 ]
+
+
+def test_get_project_id_old_version(requests_mock):
+    """
+    Given:
+        - Jira api version less than 9.0.0.
+    When
+        - Running the create issue command.
+    Then
+        - Ensure only the original api endpoint is being used.
+    """
+    from JiraV2 import get_project_id
+    first_case_mock = requests_mock.get('https://localhost/rest/api/latest/issue/createmeta', status_code=200,
+                                        json={"projects": [{"name": "Test_name", "key": "Test_key", "id": "Test_id"}]})
+    second_case_mock = requests_mock.get('https://localhost/rest/api/latest/project', status_code=200)
+    id = get_project_id(project_name='Test_name')
+    assert id == 'Test_id'
+    assert first_case_mock.called_once and not second_case_mock.called
+
+
+def test_get_project_id(mocker):
+    """
+    Given:
+        - Jira api version greater or equal to 9.0.0.
+    When
+        - Running the create issue command.
+    Then
+        - Ensure only the new api endpoint is being used.
+    """
+    from JiraV2 import get_project_id
+
+    def mock_res(method, endpoint, resp_type):
+        if endpoint == 'rest/api/latest/issue/createmeta':
+            raise DemistoException("Status code: 404\nMessage: Issue Does Not Exist")
+        elif endpoint == 'rest/api/latest/project':
+            return [{"name": "Test_name", "key": "Test_key", "id": "Test_id"}]
+
+    mocker.patch('JiraV2.jira_req', side_effect=mock_res)
+    id = get_project_id(project_name='Test_name')
+    assert id == 'Test_id'
 
 
 @pytest.mark.parametrize('params, custom_headers, expected_headers', AUTH_CASES)
