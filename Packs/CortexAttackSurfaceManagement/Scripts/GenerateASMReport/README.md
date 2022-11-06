@@ -13,20 +13,20 @@ Generate an ASM Alert Summary report.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| alert_id | Numerical ID of the ASM Alert |
-| alert_name | Name of the Alert that triggered this playbook |
-| alert_details | Details of the Alert that triggered this playbook |
-| alert_severityStr | ASM Alert Severity String |
-| asmserviceowner | Potential service owners gathered through playbook. |
+| alert_id | Numerical ID of the ASM alert. |
+| alert_name | Name of the alert that triggered this playbook. |
+| alert_details | Details of the alert that triggered this playbook. |
+| alert_severityStr | ASM alert severity string. |
+| asmserviceowner | Potential service owners gathered through the playbook. |
 | asmremediation | Collect information on remediation action\(s\). |
-| asmservicedetection | Pre/Post remediation scan to check if service is still detectable. |
+| asmservicedetection | Pre/Post remediation scan to check if the service is still detectable. |
 | asmsystemids | Related system identifiers. |
 | asmcloud | Information on cloud assets. |
 | asmnotification | Information on notification\(s\) sent via the ASM playbook. |
 | asmdatacollection | Collect information on data collection tasks. |
 | asmtags | Tags from objects that can be used to determine other information \(if server is Dev for example\). |
 | asmprivateip | Private IP addresses found. |
-| asmrelated | Related or duplicate objects \(more of a nice to have because not sure how to track this\) |
+| asmrelated | Related or duplicate objects. \(More of a nice to have because not sure how to track this\) |
 
 ## Outputs
 ---
