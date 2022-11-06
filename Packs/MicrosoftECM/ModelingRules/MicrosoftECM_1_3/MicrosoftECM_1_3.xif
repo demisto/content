@@ -1,6 +1,6 @@
 [MODEL: dataset=msft_ecm_raw]
 // timestamp part
-| alter time = arrayindex(regextract(_raw_log, "time=\"(\d+\:\d+\:\d{2})"), 0)
+ alter time = arrayindex(regextract(_raw_log, "time=\"(\d+\:\d+\:\d{2})"), 0)
     ,date = arrayindex(regextract(_raw_log, "date=\"(\d{1,2}\-\d{1,2}\-\d{4})"), 0)
     ,timestamp = arrayindex(regextract(_raw_log, "(\d{1,2}\-\d{1,2}\-\d{4}\s+\S{8})"), 0)
 | alter dateTime = format_string("%s %s", date, time)
