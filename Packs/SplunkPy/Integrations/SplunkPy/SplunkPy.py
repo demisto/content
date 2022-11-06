@@ -2,7 +2,6 @@ import hashlib
 import io
 import json
 import re
-import ssl
 from datetime import datetime, timedelta
 
 import dateparser  # type: ignore
@@ -11,13 +10,11 @@ import pytz  # type: ignore[import]
 import requests
 import splunklib.client as client
 import splunklib.results as results
-import urllib2
 import urllib3
 from CommonServerPython import *  # noqa: F401
 from splunklib.binding import AuthenticationError, HTTPError, namespace
-from StringIO import StringIO
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+urllib3.disable_warnings()
 
 # Define utf8 as default encoding
 params = demisto.params()
@@ -99,7 +96,7 @@ class UserMappingObject:
 
     def get_xsoar_user_by_splunk(self, splunk_user):
 
-        record = self._get_record(self.splunk_user_column_name, splunk_user)
+        record = list(self._get_record(self.splunk_user_column_name, splunk_user))
 
         if not record:
 
@@ -122,7 +119,7 @@ class UserMappingObject:
 
     def get_splunk_user_by_xsoar(self, xsoar_user, map_missing=True):
 
-        record = self._get_record(self.xsoar_user_column_name, xsoar_user)
+        record = list(self._get_record(self.xsoar_user_column_name, xsoar_user))
 
         if not record:
             demisto.error(
@@ -204,7 +201,7 @@ def create_incident_custom_id(incident):
 
     extensive_log('[SplunkPy] ID after all fields were added: {}'.format(incident_custom_id))
 
-    unique_id = hashlib.md5(incident_custom_id).hexdigest()  # nosec  # guardrails-disable-line
+    unique_id = hashlib.md5(incident_custom_id.encode('utf-8')).hexdigest()  # nosec  # guardrails-disable-line
     extensive_log('[SplunkPy] Found incident ID is: {}'.format(unique_id))
     return unique_id
 
@@ -228,7 +225,7 @@ def remove_old_incident_ids(last_run_fetched_ids, current_epoch_time, occurred_l
         new_last_run_fetched_ids (list): The updated list of IDs, without old IDs.
     """
     new_last_run_fetched_ids = {}
-    for inc_id, addition_time in last_run_fetched_ids.items():
+    for inc_id, addition_time in list(last_run_fetched_ids.items()):
         max_look_behind_in_seconds = occurred_look_behind * 60
         deletion_threshold_in_seconds = max_look_behind_in_seconds * 2
         if current_epoch_time - addition_time < deletion_threshold_in_seconds:
@@ -628,7 +625,7 @@ class Notable:
             return self.id
 
         notable_raw_data = self.data.get('_raw', '')
-        raw_hash = hashlib.md5(notable_raw_data).hexdigest()  # nosec  # guardrails-disable-line
+        raw_hash = hashlib.md5(notable_raw_data.encode('utf-8')).hexdigest()  # nosec  # guardrails-disable-line
 
         if self.time_is_missing and self.index_time:
             notable_custom_id = '{}_{}'.format(self.index_time, raw_hash)  # index_time stays in epoch to differentiate
@@ -1757,7 +1754,7 @@ def rawToDict(raw):
                     val = single_key_val[1]
                     key = single_key_val[0].strip()
 
-                    if key in result.keys():
+                    if key in list(result.keys()):
                         result[key] = result[key] + "," + val
                     else:
                         result[key] = val
@@ -1783,7 +1780,7 @@ def rawToDict(raw):
 
 # Converts to an str
 def convert_to_str(obj):
-    if isinstance(obj, unicode):
+    if isinstance(obj, str):
         return obj.encode('utf-8')
     return str(obj)
 
@@ -1874,7 +1871,7 @@ def parse_notable(notable, to_dict=False):
 
     """
     notable = replace_keys(notable) if REPLACE_FLAG else notable
-    for key, val in notable.items():
+    for key, val in list(notable.items()):
         # if notable event raw fields were sent in double quotes (e.g. "DNS Destination") and the field does not exist
         # in the event, then splunk returns the field with the key as value (e.g. ("DNS Destination", "DNS Destination")
         # so we go over the fields, and check if the key equals the value and set the value to be empty string
@@ -1883,38 +1880,6 @@ def parse_notable(notable, to_dict=False):
                           'with empty string'.format(key))
             notable[key] = ''
     return dict(notable) if to_dict else notable
-
-
-def handler(proxy):
-    proxy_handler = urllib2.ProxyHandler({'http': proxy, 'https': proxy})
-    opener = urllib2.build_opener(proxy_handler)
-    urllib2.install_opener(opener)
-    return request
-
-
-def request(url, message):
-    method = message['method'].lower()
-    data = message.get('body', "") if method == 'post' else None
-    headers = dict(message.get('headers', []))
-    req = urllib2.Request(url, data, headers)  # guardrails-disable-line
-    context = ssl.create_default_context()
-
-    if VERIFY_CERTIFICATE:
-        context.verify_mode = ssl.CERT_REQUIRED
-    else:
-        context.check_hostname = False
-        context.verify_mode = ssl.CERT_NONE
-
-    try:
-        response = urllib2.urlopen(req, context=context)  # guardrails-disable-line
-    except urllib2.HTTPError as response:  # noqa: F841
-        pass  # Propagate HTTP errors via the returned response message
-    return {
-        'status': response.code,  # type: ignore
-        'reason': response.msg,  # type: ignore
-        'headers': response.info().dict,  # type: ignore
-        'body': StringIO(response.read())  # type: ignore
-    }
 
 
 def requests_handler(url, message, **kwargs):
@@ -1937,7 +1902,7 @@ def requests_handler(url, message, **kwargs):
     return {
         'status': response.status_code,
         'reason': response.reason,
-        'headers': response.headers.items(),
+        'headers': list(response.headers.items()),
         'body': io.BytesIO(response.content)
     }
 
@@ -1966,7 +1931,6 @@ def build_search_kwargs(args, polling=False):
 
 def build_search_query(args):
     query = args['query']
-    query = query.encode('utf-8')
     if not query.startswith('search') and not query.startswith('Search') and not query.startswith('|'):
         query = 'search ' + query
     return query
@@ -2031,7 +1995,7 @@ def build_search_human_readable(args, parsed_search_results):
 
 def update_headers_from_field_names(search_result, chosen_fields):
     headers = []
-    search_result_keys = set().union(*(d.keys() for d in search_result))  # type: Set
+    search_result_keys = set().union(*(list(d.keys()) for d in search_result))  # type: Set
     for field in chosen_fields:
         if field[-1] == '*':
             temp_field = field.replace('*', '.*')
@@ -2452,7 +2416,7 @@ def kv_store_collection_add_entries(service):
 
 def kv_store_collections_list(service):
     app_name = service.namespace['app']
-    names = list(map(lambda x: x.name, service.kvstore.iter()))
+    names = list([x.name for x in service.kvstore.iter()])
     human_readable = "list of collection names {}\n| name |\n| --- |\n|{}|".format(app_name, '|\n|'.join(names))
     entry_context = {"Splunk.CollectionList": names}
     return_outputs(human_readable, entry_context, entry_context)
@@ -2546,7 +2510,7 @@ def get_key_type(kv_store, _key):
 
 def get_keys_and_types(kv_store):
     keys = kv_store.content()
-    for key_name in keys.keys():
+    for key_name in list(keys.keys()):
         if not (key_name.startswith('field.') or key_name.startswith('index.')):
             del keys[key_name]
     return keys
@@ -2557,7 +2521,7 @@ def get_kv_store_config(kv_store):
     readable = ['#### configuration for {} store'.format(kv_store.name),
                 '| field name | type |',
                 '| --- | --- |']
-    for _key, val in keys.items():
+    for _key, val in list(keys.items()):
         readable.append('| {} | {} |'.format(_key, val))
     return '\n'.join(readable)
 
@@ -2587,7 +2551,7 @@ def get_store_data(service):
     for store in stores:
         store = service.kvstore[store]
         query = build_kv_store_query(store, args)
-        if isinstance(query, (str, unicode)):
+        if isinstance(query, str):
             query = {'query': query}
         yield store.data.query(**query)
 
@@ -2618,8 +2582,7 @@ def main():
         splunk_parse_raw_command()
         sys.exit(0)
     service = None
-    proxy = params.get('proxy')
-    use_requests_handler = params.get('use_requests_handler')
+    proxy = argToBoolean(params.get('proxy'))
 
     connection_args = get_connection_args()
 
@@ -2635,20 +2598,11 @@ def main():
         connection_args['password'] = password
         connection_args['autologin'] = True
 
-    if use_requests_handler:
+    if proxy:
         handle_proxy()
         connection_args['handler'] = requests_handler
 
-    elif proxy:
-        connection_args['handler'] = handler(proxy)
-
-    try:
-        service = client.connect(**connection_args)
-    except urllib2.URLError as e:
-        if e.reason.errno == 1 and sys.version_info < (2, 6, 3):  # type: ignore
-            pass
-        else:
-            raise
+    service = client.connect(**connection_args)
 
     if service is None:
         demisto.error("Could not connect to SplunkPy")
