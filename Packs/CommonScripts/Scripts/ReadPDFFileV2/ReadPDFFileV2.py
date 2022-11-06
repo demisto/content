@@ -494,7 +494,7 @@ def main():
                 # Get metadata:
                 metadata = get_pdf_metadata(cpy_file_path, user_password)
 
-                if user_password:  # The PDF is encrypted
+                if user_password or 'yes' in metadata.get('Encrypted'):  # The PDF is encrypted or has AES encryption
                     dec_file_path = f'{output_folder}/DecryptedPDF.pdf'
                     decrypt_pdf_file(cpy_file_path, user_password, dec_file_path)
                     cpy_file_path = dec_file_path
