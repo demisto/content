@@ -7,7 +7,7 @@ set -e
 BRANCH=${CI_COMMIT_BRANCH:-unknown}
 ARTIFACTS_DIR=${ARTIFACTS_FOLDER:-artifacts}
 
-# check if ID_SET exists
+# build type is staging if ID_SET doesn't exist
 ID_SET=$ARTIFACTS_FOLDER/id_set.json
 STAGING_SUFFIX=""
 if [ ! -f "$ID_SET" ]; then
