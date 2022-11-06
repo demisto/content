@@ -20,8 +20,6 @@ from StringIO import StringIO
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Define utf8 as default encoding
-reload(sys)
-sys.setdefaultencoding('utf8')  # pylint: disable=maybe-no-member
 params = demisto.params()
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 VERIFY_CERTIFICATE = not bool(params.get('unsecure'))
