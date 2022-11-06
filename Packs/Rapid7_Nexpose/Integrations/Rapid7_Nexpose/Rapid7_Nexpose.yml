@@ -19,10 +19,10 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: The 2FA token
+- display: 2FA Token
   name: token
   required: false
-  type: 0
+  type: 4
 description: Rapid7's on-premise vulnerability management solution, Nexpose, helps you reduce your threat exposure by enabling you to assess and respond to changes in your environment real time and prioritizing risk across vulnerabilities, configurations, and controls.
 display: Rapid7 Nexpose
 name: Rapid7 Nexpose
