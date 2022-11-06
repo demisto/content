@@ -14,6 +14,12 @@ def generate_dummy_client():
         def get_incident_types(self):
             pass
 
+        def get_incident(self):
+            pass
+
+        def update_incident(self):
+            pass
+
     return Client
 
 
