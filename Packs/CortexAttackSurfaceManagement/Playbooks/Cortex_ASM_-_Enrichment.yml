@@ -278,7 +278,7 @@ tasks:
       version: -1
       name: Set private IP grid field
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -384,7 +384,7 @@ tasks:
       version: -1
       name: Set service owner grid field
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -435,7 +435,7 @@ tasks:
       id: 085ab0b0-e3b5-453d-8c08-ac918e57d3d9
       version: -1
       name: Is there EC2 information?
-      description: Determines if there is EC2 information to set the private IP, cloud and tags fields.
+      description: Determines if there is EC2 information to set the private IP, cloud, and tags fields.
       type: condition
       iscommand: false
       brand: ""
@@ -480,7 +480,7 @@ tasks:
       id: bb6581a1-db3b-4253-8f99-63d0e271a148
       version: -1
       name: Is there IAM information?
-      description: Determines if there is IAM information to set the service owner field.
+      description: Determines if there is IAM information to set in the service owner field.
       type: condition
       iscommand: false
       brand: ""
@@ -616,7 +616,7 @@ tasks:
       id: 34519907-ecc9-4aea-81e6-82e272f42072
       version: -1
       name: Is there EC2 and security group information?
-      description: Determines if there is ECS and security group information to set the system IDs field.
+      description: Determines if there is EC2 and security group information to set in the system IDs field.
       type: condition
       iscommand: false
       brand: ""
@@ -667,7 +667,7 @@ tasks:
       version: -1
       name: Set system IDs grid field (VPC)
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -714,7 +714,7 @@ tasks:
       version: -1
       name: Set system IDs grid field (SG)
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -761,7 +761,7 @@ tasks:
       version: -1
       name: Set system IDs grid field (NET)
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -808,7 +808,7 @@ tasks:
       version: -1
       name: Set system IDs grid field (NIC)
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -855,7 +855,7 @@ tasks:
       version: -1
       name: Set system IDs grid field (EC2)
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -933,7 +933,7 @@ tasks:
       version: -1
       name: Set cloud grid field
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -1017,7 +1017,7 @@ tasks:
       version: -1
       name: Set tags grid field
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -1156,7 +1156,7 @@ tasks:
       id: 678ef2e8-fed3-4d2f-8666-eed51fe18480
       version: -1
       name: Is ServiceNow v2 enabled?
-      description: Determines if the "ServiceNow v2" integration instance is in order to find email accounts for ServiceNow usernames.
+      description: Determines if the "ServiceNow v2" integration instance is enabled in order to find email accounts for ServiceNow usernames.
       type: condition
       iscommand: false
       brand: ""
@@ -1217,7 +1217,7 @@ tasks:
       id: b088532b-1030-429c-881d-3cdcbf90ea84
       version: -1
       name: Pull ServiceNow user information
-      description: Pull information on the user that was "assigned_to" for CMDB object.
+      description: Pull information on the user that was "assigned_to" for a CMDB object.
       script: ServiceNow v2|||servicenow-query-users
       type: regular
       iscommand: true
@@ -1350,7 +1350,7 @@ tasks:
       version: -1
       name: Set service owner grid field (no email)
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -1402,7 +1402,7 @@ tasks:
       version: -1
       name: Set service owner grid field (email)
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -1456,7 +1456,7 @@ tasks:
       version: -1
       name: Set system IDs grid field (NIC)
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -1503,7 +1503,7 @@ tasks:
       version: -1
       name: Set system IDs grid field (Parent)
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -1550,7 +1550,7 @@ tasks:
       version: -1
       name: Set system IDs grid field (Assigned)
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -1599,7 +1599,7 @@ tasks:
       version: -1
       name: Set system IDs grid field (Company)
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -1647,7 +1647,7 @@ tasks:
       id: 982b585a-afe8-4cbe-8caf-956967f44a4b
       version: -1
       name: Is there ServiceNow record information?
-      description: Determines if there is ServiceNow record information to set the service owner field.
+      description: Determines if there is ServiceNow record information to set in the service owner field.
       type: condition
       iscommand: false
       brand: ""
@@ -1692,7 +1692,7 @@ tasks:
       id: c479944e-27dd-4d27-89e4-8baa60d5c6a9
       version: -1
       name: Is there ServiceNow record and records information?
-      description: Determines if there is ServiceNow record and records information to set the service owner field.
+      description: Determines if there is ServiceNow record and records information to set in the service owner field.
       type: condition
       iscommand: false
       brand: ""
