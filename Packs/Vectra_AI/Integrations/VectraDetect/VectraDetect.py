@@ -15,7 +15,6 @@ from CommonServerUserPython import *
 
 import dateparser
 import json
-import requests
 import traceback
 from typing import Any, Dict, List, Optional
 import urllib3
@@ -1216,8 +1215,7 @@ def detection_to_incident(detection: Dict):
 
     incident_last_run = {
         'last_timestamp': dateparser.parse(extracted_data.get('LastTimestamp'),
-                                           settings={'TO_TIMEZONE': 'UTC'}).isoformat(),
-        # type: ignore[arg-type, union-attr]
+                                           settings={'TO_TIMEZONE': 'UTC'}).isoformat(),  # type: ignore[arg-type, union-attr]
         'id': extracted_data.get('ID')
     }
 
@@ -1257,8 +1255,7 @@ def host_to_incident(host: Dict):
 
     incident_last_run = {
         'last_timestamp': dateparser.parse(extracted_data.get('LastDetectionTimestamp'),
-                                           settings={'TO_TIMEZONE': 'UTC'}).isoformat(),
-        # type: ignore[arg-type, union-attr]
+                                           settings={'TO_TIMEZONE': 'UTC'}).isoformat(),  # type: ignore[arg-type, union-attr]
         'id': extracted_data.get('ID')
     }
 
@@ -1298,8 +1295,7 @@ def account_to_incident(account: Dict):
 
     incident_last_run = {
         'last_timestamp': dateparser.parse(extracted_data.get('LastDetectionTimestamp'),
-                                           settings={'TO_TIMEZONE': 'UTC'}).isoformat(),
-        # type: ignore[arg-type, union-attr]
+                                           settings={'TO_TIMEZONE': 'UTC'}).isoformat(),  # type: ignore[arg-type, union-attr]
         'id': extracted_data.get('ID')
     }
 
@@ -1321,7 +1317,7 @@ def get_last_run_details(integration_params: Dict):
             if not last_run.get(entity_type):
                 demisto.debug(f"Last run is not set for '{entity_type}'. Using value from config : {fetch_first_time}")
                 # This will return a relative TZaware datetime (in UTC)
-                last_timestamp = dateparser.parse(fetch_first_time, settings={'TO_TIMEZONE': 'UTC'}).isoformat()
+                last_timestamp = dateparser.parse(fetch_first_time, settings={'TO_TIMEZONE': 'UTC'}).isoformat()  # type: ignore[arg-type, union-attr]
                 last_id = 0
                 output_last_run[entity_type] = {
                     'last_timestamp': last_timestamp,
