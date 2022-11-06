@@ -287,7 +287,7 @@ tasks:
       id: 2938fc77-6195-4e24-817b-1ae95d93e168
       version: -1
       name: Service exposure still observable?
-      description: Determines if service was still observable or not.
+      description: Determines if service was still observable.
       type: condition
       iscommand: false
       brand: ""
@@ -364,7 +364,7 @@ tasks:
       id: e2d36902-0e43-40ba-818d-f631d665f804
       version: -1
       name: Close alert (service not observed)
-      description: Close the current alert because service is no longer observed
+      description: Close the current alert because service is no longer observed.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -401,7 +401,7 @@ tasks:
       id: df540f4b-ac68-4817-8abb-8e896d5db7f3
       version: -1
       name: Service exposure still observable?
-      description: Determines if service was still observable or not and also if automated remediation was done.
+      description: Determines if service was still observable and also if automated remediation was done.
       type: condition
       iscommand: false
       brand: ""
@@ -498,7 +498,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: If you know the issue has been remediated, chose to keep open and have next Xpanse scan auto-close or manually close now.
+          simple: If you know the issue has been remediated, choose to keep open and have next Xpanse scan auto-close or manually close now.
         required: false
         gridcolumns: []
         defaultrows: []
@@ -633,7 +633,7 @@ tasks:
       id: 237ecca8-8df9-4757-8131-c63cf17dc135
       version: -1
       name: Select remediation action (all options)
-      description: Determines next action (remediation or ticket) based on user input.  Options are based on if ServiceNowV2 integration is setup and/or the alert meets the requirement for automated remediation.
+      description: Determines the next action (remediation or ticket) based on user input. Options are based on if ServiceNowV2 integration is setup and/or the alert meets the requirement for automated remediation.
       type: collection
       iscommand: false
       brand: ""
@@ -658,7 +658,7 @@ tasks:
       subject:
         simple: Select Remediation Action
       body:
-        simple: Cortex Xpanse has the ability to fully remediate or augment your remediation process via integrations in other security and IT tools and control surfaces. The options presented in this prompt may vary depending on the integrations that your organization has configured and the type of alert. You can learn more about why you're seeing these options and what they mean <a href="https://pan.dev">here</a>.
+        simple: Cortex Xpanse has the ability to fully remediate or augment your remediation process via integrations in other security and IT tools and control surfaces. The options presented in this prompt may vary depending on the integrations that your organization has configured and the type of alert. You can learn more about why you're seeing these options and what they mean at https://pan.dev.
       methods: []
       format: html
       bcc:
@@ -690,7 +690,7 @@ tasks:
         tooltip: A selection is necessary in order for the playbook to progress further.
         readonly: false
       title: Select a remediation option
-      description: Cortex Xpanse has the ability to fully remediate or augment your remediation process via integrations in other security and IT tools and control surfaces. The options presented in this prompt may vary depending on the integrations that your organization has configured and the type of alert. You can learn more about why you're seeing these options and what they mean at https://pan.dev
+      description: Cortex Xpanse has the ability to fully remediate or augment your remediation process via integrations in other security and IT tools and control surfaces. The options presented in this prompt may vary depending on the integrations that your organization has configured and the type of alert. You can learn more about why you're seeing these options and what they mean at https://pan.dev.
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -706,7 +706,7 @@ tasks:
       id: 2c161b6f-0ce6-4cd4-8948-9f333a82275e
       version: -1
       name: Is ServiceNow v2 enabled?
-      description: Determines if the "ServiceNow v2" integration instance is in order to find email accounts for ServiceNow usernames.
+      description: Determines if the "ServiceNow v2" integration instance is enabled in order to find email accounts for ServiceNow usernames.
       type: condition
       iscommand: false
       brand: ""
@@ -767,7 +767,7 @@ tasks:
       id: 9484507a-3504-47e2-84ca-0a113037aca8
       version: -1
       name: Meets automated remediation requirements?
-      description: Determines if alert meets the criteria for automated remediation.
+      description: Determines if the alert meets the criteria for automated remediation.
       type: condition
       iscommand: false
       brand: ""
@@ -862,7 +862,7 @@ tasks:
       id: 5f47362c-11b1-44d7-8537-84a84e290dcd
       version: -1
       name: Select remediation action (no automated-remediation)
-      description: Determines next action (remediation or ticket) based on user input.  Options are based on if ServiceNowV2 integration is setup and/or the alert meets the requirement for automated remediation.
+      description: Determines next action (remediation or ticket) based on user input. Options are based on if ServiceNowV2 integration is setup and/or the alert meets the requirement for automated remediation.
       type: collection
       iscommand: false
       brand: ""
@@ -887,7 +887,7 @@ tasks:
       subject:
         simple: Select Remediation Action
       body:
-        simple: Cortex Xpanse has the ability to fully remediate or augment your remediation process via integrations in other security and IT tools and control surfaces. The options presented in this prompt may vary depending on the integrations that your organization has configured and the type of alert. You can learn more about why you're seeing these options and what they mean <a href="https://pan.dev">here</a>.
+        simple: Cortex Xpanse has the ability to fully remediate or augment your remediation process via integrations in other security and IT tools and control surfaces. The options presented in this prompt may vary depending on the integrations that your organization has configured and the type of alert. You can learn more about why you're seeing these options and what they mean at https://pan.dev.
       methods: []
       format: html
       bcc:
@@ -918,7 +918,7 @@ tasks:
         tooltip: A selection is necessary in order for the playbook to progress further.
         readonly: false
       title: Select a remediation option
-      description: Cortex Xpanse has the ability to fully remediate or augment your remediation process via integrations in other security and IT tools and control surfaces. The options presented in this prompt may vary depending on the integrations that your organization has configured and the type of alert. You can learn more about why you're seeing these options and what they mean at https://pan.dev
+      description: Cortex Xpanse has the ability to fully remediate or augment your remediation process via integrations in other security and IT tools and control surfaces. The options presented in this prompt may vary depending on the integrations that your organization has configured and the type of alert. You can learn more about why you're seeing these options and what they mean at https://pan.dev.
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -934,7 +934,7 @@ tasks:
       id: f5b1c5f6-466d-48d1-82ff-4a7dd37518f8
       version: -1
       name: Select remediation action (no ServiceNow)
-      description: Determines next action (remediation or ticket) based on user input.  Options are based on if ServiceNowV2 integration is setup and/or the alert meets the requirement for automated remediation.
+      description: Determines the next action (remediation or ticket) based on user input. Options are based on if ServiceNowV2 integration is setup and/or the alert meets the requirement for automated remediation.
       type: collection
       iscommand: false
       brand: ""
@@ -959,7 +959,7 @@ tasks:
       subject:
         simple: Select Remediation Action
       body:
-        simple: Cortex Xpanse has the ability to fully remediate or augment your remediation process via integrations in other security and IT tools and control surfaces. The options presented in this prompt may vary depending on the integrations that your organization has configured and the type of alert. You can learn more about why you're seeing these options and what they mean <a href="https://pan.dev">here</a>.
+        simple: Cortex Xpanse has the ability to fully remediate or augment your remediation process via integrations in other security and IT tools and control surfaces. The options presented in this prompt may vary depending on the integrations that your organization has configured and the type of alert. You can learn more about why you're seeing these options and what they mean at https://pan.dev.
       methods: []
       format: html
       bcc:
@@ -990,7 +990,7 @@ tasks:
         tooltip: A selection is necessary in order for the playbook to progress further.
         readonly: false
       title: Select a remediation option
-      description: Cortex Xpanse has the ability to fully remediate or augment your remediation process via integrations in other security and IT tools and control surfaces. The options presented in this prompt may vary depending on the integrations that your organization has configured and the type of alert. You can learn more about why you're seeing these options and what they mean at https://pan.dev
+      description: Cortex Xpanse has the ability to fully remediate or augment your remediation process via integrations in other security and IT tools and control surfaces. The options presented in this prompt may vary depending on the integrations that your organization has configured and the type of alert. You can learn more about why you're seeing these options and what they mean at https://pan.dev.
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -1006,7 +1006,7 @@ tasks:
       id: 31c59e99-9071-4ce9-8dda-dc10c1f39395
       version: -1
       name: Select remediation action (base)
-      description: Determines next action (remediation or ticket) based on user input.  Options are based on if ServiceNowV2 integration is setup and/or the alert meets the requirement for automated remediation.
+      description: Determines the next action (remediation or ticket) based on user input. Options are based on if ServiceNowV2 integration is setup and/or the alert meets the requirement for automated remediation.
       type: collection
       iscommand: false
       brand: ""
@@ -1031,7 +1031,7 @@ tasks:
       subject:
         simple: Select Remediation Action
       body:
-        simple: Cortex Xpanse has the ability to fully remediate or augment your remediation process via integrations in other security and IT tools and control surfaces. The options presented in this prompt may vary depending on the integrations that your organization has configured and the type of alert. You can learn more about why you're seeing these options and what they mean <a href="https://pan.dev">here</a>.
+        simple: Cortex Xpanse has the ability to fully remediate or augment your remediation process via integrations in other security and IT tools and control surfaces. The options presented in this prompt may vary depending on the integrations that your organization has configured and the type of alert. You can learn more about why you're seeing these options and what they mean at https://pan.dev.
       methods: []
       format: html
       bcc:
@@ -1077,7 +1077,7 @@ tasks:
       id: 6cd42bb4-9f00-44d7-89ef-542eb978627f
       version: -1
       name: Is ServiceNow v2 enabled?
-      description: Determines if the "ServiceNow v2" integration instance is in order to find email accounts for ServiceNow usernames.
+      description: Determines if the "ServiceNow v2" integration instance is enabled in order to find email accounts for ServiceNow usernames.
       type: condition
       iscommand: false
       brand: ""
@@ -1172,7 +1172,7 @@ tasks:
       version: -1
       name: Set data collection grid field
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -1226,7 +1226,7 @@ tasks:
       version: -1
       name: Set data collection grid field
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -1280,7 +1280,7 @@ tasks:
       version: -1
       name: Set data collection grid field
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -1334,7 +1334,7 @@ tasks:
       version: -1
       name: Set data collection grid field
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -1517,7 +1517,7 @@ tasks:
       id: 583c5c4d-7ae6-4146-8b58-3347fe4d7e05
       version: -1
       name: What was data collection task response?
-      description: Determines next action (remediation or ticket) based on previous data collection task.
+      description: Determines the next action (remediation or ticket) based on the previous data collection task.
       type: condition
       iscommand: false
       brand: ""
@@ -1739,7 +1739,7 @@ tasks:
       id: 4bcfab5b-c7a0-44fd-8554-2d628a20989b
       version: -1
       name: Send email
-      description: Send an email to service owner with alert information.
+      description: Send an email to the service owner with alert information.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -1842,7 +1842,7 @@ tasks:
       version: -1
       name: Set notification grid field
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -1893,7 +1893,7 @@ tasks:
       version: -1
       name: Set notification grid field
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -2074,7 +2074,7 @@ tasks:
       version: -1
       name: Set remediation grid field
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -2129,7 +2129,7 @@ tasks:
       version: -1
       name: Set remediation grid field
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -2261,7 +2261,7 @@ tasks:
       version: -1
       name: Set remediation grid field
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -2322,7 +2322,7 @@ tasks:
       id: c79a22c3-6306-43b6-8889-db797c68a447
       version: -1
       name: Close alert (Auto-Close)
-      description: Close the current alert because auto-close selected
+      description: Close the current alert because auto-close was selected,
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -2359,7 +2359,7 @@ tasks:
       id: 0fa7817c-e6fc-4dcb-82fc-25c69cbc1292
       version: -1
       name: Close alert (Remediated Automatically)
-      description: Close the current alert because Automated Remediation path selected
+      description: Close the current alert because Automated Remediation path was selected.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -2464,7 +2464,7 @@ tasks:
       version: -1
       name: Set alert summary grid field
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -2533,7 +2533,7 @@ tasks:
       id: acc8782b-1183-41be-8663-cf630e2728bf
       version: -1
       name: Cortex ASM - Detect Service
-      description: Playbook that looks at what ASM sub-type the alert is and direct to different pre/post mitigation scans (such as NMAP).
+      description: Playbook that looks at what ASM sub-type the alert is and directs it to different pre/post mitigation scans (such as NMAP).
       playbookName: Cortex ASM - Detect Service
       type: playbook
       iscommand: false
@@ -2599,7 +2599,7 @@ tasks:
       id: f22a3f68-2a23-4b5e-82e6-2b745046637b
       version: -1
       name: Cortex ASM - Detect Service
-      description: Playbook that looks at what ASM sub-type the alert is and direct to different pre/post mitigation scans (such as NMAP).
+      description: Playbook that looks at what ASM sub-type the alert is and directs it to different pre/post mitigation scans (such as NMAP).
       playbookName: Cortex ASM - Detect Service
       type: playbook
       iscommand: false
@@ -2992,7 +2992,7 @@ inputs:
   value:
     simple: "False"
   required: true
-  description: 'Decide whether to potential skip analyst intervention and conduct automated remediation if meeting the following criteria: issue is Insecure OpenSSH/RDP, happened on EC2 instance, service owner information found and indicators of a non-prod host.  Default if "False" (don''t do automated remediation).  Set "True" to turn this feature on.'
+  description: 'Decide whether to potential skip analyst intervention and conduct automated remediation if meeting the following criteria: issue is Insecure OpenSSH/RDP, happened on EC2 instance, service owner information found and indicators of a non-prod host. Default is "False" (don''t do automated remediation).  Set "True" to turn this feature on.'
   playbookInputQuery:
 - key: OwnerNotificationSubject
   value:
@@ -3014,7 +3014,7 @@ inputs:
   value:
     simple: Remediation-Security-Group
   required: true
-  description: 'The firewall rule that will used for remediating internet exposures. '
+  description: 'The firewall rule that will be used for remediating internet exposures. '
   playbookInputQuery:
 outputs: []
 tests:
