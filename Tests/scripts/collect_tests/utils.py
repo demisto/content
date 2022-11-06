@@ -9,7 +9,7 @@ from packaging import version
 from packaging._structures import InfinityType, NegativeInfinityType
 from packaging.version import Version
 
-from Tests.scripts.collect_tests.constants import ALWAYS_INSTALLED_PACKS
+from Tests.scripts.collect_tests.constants import ALWAYS_INSTALLED_PACKS_XSOAR
 from Tests.scripts.collect_tests.exceptions import (
     BlankPackNameException, DeprecatedPackException, NonDictException,
     NonexistentPackException, NonXsoarSupportedPackException,
@@ -265,7 +265,7 @@ class PackManager:
 
     def validate_pack(self, pack: str) -> None:
         """raises InvalidPackException if the pack name is not valid."""
-        if pack in ALWAYS_INSTALLED_PACKS:
+        if pack in ALWAYS_INSTALLED_PACKS_XSOAR:
             return
         if not pack:
             raise BlankPackNameException(pack)
