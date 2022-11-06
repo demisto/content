@@ -1,0 +1,19 @@
+Return-Path: <testing@gmail.com>
+Received: from [172.22.100.53] ([94.188.164.68])
+ by smtp.gmail.com with ESMTPSA id t6sm46056484wmb.29.2019.07.23.05.38.26
+ for <testing@gmail.com>
+ (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+ Tue, 23 Jul 2019 05:38:26 -0700 (PDT)
+To: testing@gmail.com
+From: test ing <testing@gmail.com>
+Subject: Testing Email Attachment
+Message-ID: <a853a1b0-1ffe-4e37-d9a9-a27c6bc0bd5b@gmail.com>
+Date: Tue, 23 Jul 2019 15:38:25 +0300
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.8.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+
+This is the body of the attachment.

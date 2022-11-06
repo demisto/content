@@ -1,0 +1,8 @@
+Reporting-MTA: dns; foo@demisto.com
+Arrival-Date: Tue, 23 Apr 2019 12:44:28 +0300
+
+Original-Recipient: foo@demisto.com
+Final-Recipient: rfc822;foo@demisto.com
+Action: delayed
+Status: 4.2.2
+Diagnostic-Code: SMTP; User quota exceeded

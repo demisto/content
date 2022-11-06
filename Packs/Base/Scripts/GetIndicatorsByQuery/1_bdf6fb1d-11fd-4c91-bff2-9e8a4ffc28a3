@@ -1,0 +1,1 @@
+[{"id": 1, "value": "abc@demisto.com", "indicator_type": "Email", "score": 2, "testField": "testValue", "test2Fields": "testValue2"}, {"id": 2, "value": "abc2@demisto.com", "indicator_type": "Email", "score": 2, "testField": "testValue", "test2Fields": "testValue2"}]
