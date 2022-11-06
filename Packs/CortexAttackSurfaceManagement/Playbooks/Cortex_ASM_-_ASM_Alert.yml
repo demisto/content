@@ -1,7 +1,7 @@
 id: Cortex ASM - ASM Alert
 version: -1
 name: Cortex ASM - ASM Alert
-description: This playbook aims to handle ASM alerts by enriching asset information and providing means of remediating the issue directly or through contacting service owners.
+description: This playbook handles ASM alerts by enriching asset information and providing a means of remediating the issue directly or through contacting service owners.
 starttaskid: "0"
 tasks:
   "0":
