@@ -430,7 +430,7 @@ specified in your containment policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | The host agent ID (AID) of the host to contain. Get an agent ID from a detection. Can also be a list of ID's.  | Required | 
+| ids | The host agent ID (AID) of the host to contain. Get an agent ID from a detection. Can also be a comma separated list of IDs.  | Required | 
 
  
 
