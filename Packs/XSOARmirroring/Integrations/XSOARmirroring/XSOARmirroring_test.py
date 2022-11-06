@@ -158,5 +158,3 @@ def test_update_remote_system(mocker):
     mocker.patch.object(Client, 'update_incident', return_value=UPDATED_INCIDENT)
     update_remote_system_command(client, {}, ())
     assert REMOTE_INCIDENT['CustomFields']['custom_field'] == parsed_args.delta['custom_field']
-
-
