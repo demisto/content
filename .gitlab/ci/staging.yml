@@ -119,6 +119,9 @@ graph-prepare-testing-bucket-mpv2:
 compare_zips:
   needs: ["prepare-testing-bucket-mpv2", "graph-prepare-testing-bucket-mpv2", "create-instances", "graph-create-instances"]
   stage: stage-compare
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - if: '$NIGHTLY'
   extends:
     - .default-job-settings
   allow_failure: true
