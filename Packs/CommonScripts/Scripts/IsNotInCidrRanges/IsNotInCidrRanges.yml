@@ -18,7 +18,7 @@ args:
   description: Comma-separated list of IPv4 ranges in CIDR notation against which to match.
 scripttarget: 0
 runonce: false
-dockerimage: devdemisto/py3-master:8.1.0.37150
+dockerimage: devdemisto/py3-master:8.1.0.37158
 runas: DBotWeakRole
 tests:
 - No test - unit test

@@ -106,7 +106,7 @@ script:
     description: Subscribes to and reads messages from a topic or queue. Must provide either queue-name or topic-name. You can't provide both.
     execution: false
     name: activemq-subscribe
-  dockerimage: devdemisto/py3-master:8.1.0.37150
+  dockerimage: devdemisto/py3-master:8.1.0.37158
   feed: false
   isfetch: true
   longRunning: false
