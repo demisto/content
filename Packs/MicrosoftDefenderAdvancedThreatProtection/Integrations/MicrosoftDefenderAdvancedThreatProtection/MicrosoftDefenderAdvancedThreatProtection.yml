@@ -932,7 +932,7 @@ script:
       name: ran_once_flag
       required: false
     - default: false
-      description:  |-
+      description: |-
         A JSON array of queries, limited to 10 queries. Cannot be provided with the query argument. Example for input:
         [{
           "query": "query #1",
@@ -6248,7 +6248,7 @@ script:
       description: Troubleshooting information.
       type: String
     polling: true
-  dockerimage: demisto/crypto:1.0.0.34720
+  dockerimage: demisto/crypto:1.0.0.36225
   feed: false
   isfetch: true
   longRunning: false
