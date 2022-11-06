@@ -6,10 +6,17 @@ def url_reputation():
     results = demisto.executeCommand('url', {'url': demisto.get(demisto.args(), 'url')})
 
     for item in results:
-        if isError(item):
+        if isError(item) and is_valid_error(item):  # call to is_valid_error is a temporary fix to ignore offset 1 error
             item['Contents'] = item['Brand'] + ' returned an error.\n' + str(item['Contents'])
 
     demisto.results(results)
+
+
+# remove this method once XSUP-17626 is fixed in ExecutionMetrics / Server
+def is_valid_error(item) -> bool:
+    if item['Brand'] == 'VirusTotal (API v3)' and item['Contents'] == "'Offset': 1":
+        return False
+    return True
 
 
 def main():
