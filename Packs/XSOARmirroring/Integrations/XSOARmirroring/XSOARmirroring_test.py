@@ -1,6 +1,5 @@
 from XSOARmirroring import get_mapping_fields_command, Client, fetch_incidents, update_remote_system_command, XSOAR_DATE_FORMAT
 from datetime import datetime, timedelta
-from CommonServerPython import *
 import dateparser
 
 
@@ -20,7 +19,7 @@ def generate_dummy_client():
 def generate_dummy_UpdateRemoteSystemArgs():
     class UpdateRemoteSystemArgs:
         def __init__(self):
-            self.data = 'data'  # type: ignore
+            self.data = {'createInvestigation': True}  # type: ignore
             self.remote_incident_id = '1'
             self.delta = {'custom_field': ''}
 
