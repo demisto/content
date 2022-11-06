@@ -350,5 +350,5 @@ outputs:
   description: The actual score (only in case of report type=json).
   type: number
 tests:
-- JoeSecurityTestDetonation
+- No test
 deprecated: true

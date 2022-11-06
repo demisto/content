@@ -489,5 +489,5 @@ outputs:
   description: DBotScore malicious object
   type: unknown
 tests:
-- Detonate URL - Generic Test
+- No test
 deprecated: true
