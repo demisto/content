@@ -504,10 +504,13 @@ class TestCleanPacks:
 
         private_packs = [{'id': private_pack, 'price': 120}]
 
-        skipped_cleanup = clean_non_existing_packs(index_folder_path=index_folder_path, private_packs=private_packs,
-                                                   storage_bucket=dummy_storage_bucket,
-                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH,
-                                                   pack_list=[Pack("public_pack", "/dummy_path"), Pack("private_pack", "/dummy_path")])
+        skipped_cleanup = clean_non_existing_packs(
+            index_folder_path=index_folder_path,
+            private_packs=private_packs,
+            storage_bucket=dummy_storage_bucket,
+            storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH,
+            pack_list=[Pack("public_pack", "/dummy_path"), Pack("private_pack", "/dummy_path")]
+        )
 
         assert not skipped_cleanup
         shutil.rmtree.assert_called_with(os.path.join(index_folder_path, invalid_pack))
