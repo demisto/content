@@ -2179,7 +2179,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Deletes the specified forwarding address and revokes any verification that may have been required This method is only available to service account clients that have been delegated domain-wide authority.
+    description: Deletes the specified forwarding address and revokes any verification that may have been required. This method is only available to service account clients that have been delegated domain-wide authority.
     execution: false
     name: gmail-forwarding-address-remove
   - arguments:
