@@ -16,6 +16,18 @@ def generate_dummy_client():
 
     return Client
 
+def generate_dummy_UpdateRemoteSystemArgs():
+    class UpdateRemoteSystemArgs:
+        def __init__(self):
+            self.data = 'data'  # type: ignore
+            #self.entries = 'entries'
+            #self.incident_changed = 'incidentChanged'
+            self.remote_incident_id = '1'
+            #self.inc_status = 2
+            self.delta = {'custom_field': ''}
+
+    return UpdateRemoteSystemArgs
+
 
 INCIDENT_FIELDS = [
     {
@@ -126,4 +138,8 @@ def test_fetch_incidents(mocker):
 
 
 def test_update_remote_system(mocker):
-    pass
+    parsed_args = generate_dummy_UpdateRemoteSystemArgs()
+    mocker.patch.object(Client, 'get_incident', return_value=INCIDENT)
+    mocker.patch.object(Client, 'update_incident')
+
+
