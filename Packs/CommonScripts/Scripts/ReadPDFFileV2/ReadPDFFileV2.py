@@ -459,7 +459,7 @@ def get_urls_and_emails_from_pdf_annots(file_path: str) -> Tuple[set, set]:
     all_emails: Set[str] = set()
 
     with open(file_path, 'rb') as pdf_file:
-        pdf = PyPDF2.PdfFileReader(pdf_file, strict=False)
+        pdf = PyPDF2.PdfReader(pdf_file, strict=False)
         pages_len = len(pdf.pages)
 
         # Goes over the PDF, page by page, and extracts urls and emails:
@@ -592,7 +592,7 @@ def main():  # pragma: no cover
     except ShellException as e:
         file_name = demisto.getFilePath(entry_id).get('name')
         mark_suspicious(
-            suspicious_reason=f'The script {INTEGRATION_NAME} failed due to an error:\n{str(e)}',
+            suspicious_reason=f'The script {INTEGRATION_NAME} failed due to an error\n{str(e)}',
             entry_id=entry_id,
             path=path,
             file_name=file_name,
