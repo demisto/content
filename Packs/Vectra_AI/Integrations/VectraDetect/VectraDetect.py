@@ -18,9 +18,10 @@ import json
 import requests
 import traceback
 from typing import Any, Dict, List, Optional
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
@@ -1214,7 +1215,9 @@ def detection_to_incident(detection: Dict):
     }
 
     incident_last_run = {
-        'last_timestamp': dateparser.parse(extracted_data.get('LastTimestamp'), settings={'TO_TIMEZONE': 'UTC'}).isoformat(),
+        'last_timestamp': dateparser.parse(extracted_data.get('LastTimestamp'),
+                                           settings={'TO_TIMEZONE': 'UTC'}).isoformat(),
+        # type: ignore[arg-type, union-attr]
         'id': extracted_data.get('ID')
     }
 
@@ -1255,6 +1258,7 @@ def host_to_incident(host: Dict):
     incident_last_run = {
         'last_timestamp': dateparser.parse(extracted_data.get('LastDetectionTimestamp'),
                                            settings={'TO_TIMEZONE': 'UTC'}).isoformat(),
+        # type: ignore[arg-type, union-attr]
         'id': extracted_data.get('ID')
     }
 
@@ -1295,6 +1299,7 @@ def account_to_incident(account: Dict):
     incident_last_run = {
         'last_timestamp': dateparser.parse(extracted_data.get('LastDetectionTimestamp'),
                                            settings={'TO_TIMEZONE': 'UTC'}).isoformat(),
+        # type: ignore[arg-type, union-attr]
         'id': extracted_data.get('ID')
     }
 
