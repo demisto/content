@@ -5,3 +5,9 @@
   3. From the **Select an API key** drop down, select the API key based on the subscription type.
   4. Set your API key in the API key field of the integration configuration
 ##### See [this documentation](https://support.paloaltonetworks.com/Support) for more information about API key.
+
+
+### Fetch-incidents
+  1. Fetch-incidents imports the daily release notes.
+  2. Set the fetch-interval parameter to once a day, if there is no release notes the fetch command will try to fetch the next day again.
+  3. When setting the command for the first time, you can set the first-fetch parameter to fetch the release messages at a specified time backwards.
