@@ -1,8 +1,2 @@
-[file:Port_Scan_-_External_Source_6_0.yml]
-ignore=RM109
-
-[file:Port_Scan_-_Internal_Source_6_0.yml]
-ignore=RM109
-
 [file:Port_Scan_-_Internal_Source.yml]
 ignore=PB118
