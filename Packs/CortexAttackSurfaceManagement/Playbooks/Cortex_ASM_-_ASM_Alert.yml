@@ -3008,7 +3008,7 @@ inputs:
       Description: ${alert.details}
 
   required: true
-  description: Body of the notification (email or ticket) send to potential service owner.
+  description: Body of the notification (email or ticket) sent to potential service owner.
   playbookInputQuery:
 - key: RemediationRule
   value:
