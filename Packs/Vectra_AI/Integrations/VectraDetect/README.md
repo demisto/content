@@ -1,10 +1,10 @@
 This integration allows to create incidents based on Vectra Accounts/Hosts/Detections objects.
 This integration was integrated and tested with version 7.1 of Vectra Detect
 
-## Configure Vectra Detect (Beta) on Cortex XSOAR
+## Configure Vectra Detect on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Vectra Detect (Beta).
+2. Search for Vectra Detect.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -153,8 +153,8 @@ Returns a list of Detection objects. All search attributes will be cummulative u
 | Vectra.Detection.Category | String | Detection category \(Lateral, Exfil, ...\) | 
 | Vectra.Detection.CertaintyScore | Number | Detection certainty score | 
 | Vectra.Detection.Description | String | Detection description | 
-| vectra.Detection.DestinationIPs | String | Detection destination IPs | 
-| vectra.Detection.DestinationPorts | String | Detection destination ports | 
+| Vectra.Detection.DestinationIPs | String | Detection destination IPs | 
+| Vectra.Detection.DestinationPorts | String | Detection destination ports | 
 | Vectra.Detection.FirstTimestamp | String | First time this detection has been seen | 
 | Vectra.Detection.ID | Number | Detection ID \(unique\) | 
 | Vectra.Detection.IsTargetingKeyAsset | Boolean | Whether this detection is targeting a key asset | 
@@ -434,8 +434,8 @@ Returns a single detection details
 | Vectra.Detection.Category | String | Detection category \(Lateral, Exfil, ...\) | 
 | Vectra.Detection.CertaintyScore | Number | Detection certainty score | 
 | Vectra.Detection.Description | String | Detection description | 
-| vectra.Detection.DestinationIPs | String | Detection destination IPs | 
-| vectra.Detection.DestinationPorts | String | Detection destination ports | 
+| Vectra.Detection.DestinationIPs | String | Detection destination IPs | 
+| Vectra.Detection.DestinationPorts | String | Detection destination ports | 
 | Vectra.Detection.FirstTimestamp | String | First time this detection has been seen | 
 | Vectra.Detection.ID | Number | Detection ID \(unique\) | 
 | Vectra.Detection.IsTargetingKeyAsset | Boolean | Whether this detection is targeting a key asset | 

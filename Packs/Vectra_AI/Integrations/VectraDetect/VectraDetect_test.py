@@ -592,10 +592,10 @@ def test_test_module(requests_mock, integration_params, expected):
     "query_args,expected_outputs,expected_readable,exception",
     [
         pytest.param({'search_query_only': 'no-count'}, None, None,
-                     pytest.raises(VectraException, match='API issue'),
+                     pytest.raises(VectraException, match='API issue - Response is empty or invalid'),
                      id="api-no-count_exception"),
         pytest.param({'search_query': 'no-results'}, None, None,
-                     pytest.raises(VectraException, match='API issue'),
+                     pytest.raises(VectraException, match='API issue - Response is empty or invalid'),
                      id="api-no-results_exception")
     ]
 )
@@ -642,10 +642,10 @@ def test_vectra_search_accounts_command(requests_mock, query_args, expected_outp
     "query_args,expected_outputs,expected_readable,exception",
     [
         pytest.param({'search_query_only': 'no-count'}, None, None,
-                     pytest.raises(VectraException, match='API issue'),
+                     pytest.raises(VectraException, match='API issue - Response is empty or invalid'),
                      id="api-no-count_exception"),
         pytest.param({'search_query': 'no-results'}, None, None,
-                     pytest.raises(VectraException, match='API issue'),
+                     pytest.raises(VectraException, match='API issue - Response is empty or invalid'),
                      id="api-no-results_exception")
     ]
 )
@@ -692,10 +692,10 @@ def test_vectra_search_detections_command(requests_mock, query_args, expected_ou
     "query_args,expected_outputs,expected_readable,exception",
     [
         pytest.param({'search_query_only': 'no-count'}, None, None,
-                     pytest.raises(VectraException, match='API issue'),
+                     pytest.raises(VectraException, match='API issue - Response is empty or invalid'),
                      id="api-no-count_exception"),
         pytest.param({'search_query': 'no-results'}, None, None,
-                     pytest.raises(VectraException, match='API issue'),
+                     pytest.raises(VectraException, match='API issue - Response is empty or invalid'),
                      id="api-no-results_exception")
     ]
 )
@@ -836,10 +836,10 @@ def test_vectra_search_users_command(requests_mock, query_args, expected_outputs
                      pytest.raises(VectraException, match='"id" not specified'),
                      id="no-id_exception"),
         pytest.param('no-count', None, None,
-                     pytest.raises(VectraException, match='API issue'),
+                     pytest.raises(VectraException, match='API issue - Response is empty or invalid'),
                      id="api-no-count_exception"),
         pytest.param('no-results', None, None,
-                     pytest.raises(VectraException, match='API issue'),
+                     pytest.raises(VectraException, match='API issue - Response is empty or invalid'),
                      id="api-no-results_exception"),
         pytest.param('multiple', None, None,
                      pytest.raises(VectraException, match='Multiple Accounts found'),
@@ -907,10 +907,10 @@ def test_vectra_get_account_by_id_command(requests_mock, id, expected_outputs, e
                      pytest.raises(VectraException, match='"id" not specified'),
                      id="no-id_exception"),
         pytest.param('no-count', None, None,
-                     pytest.raises(VectraException, match='API issue'),
+                     pytest.raises(VectraException, match='API issue - Response is empty or invalid'),
                      id="api-no-count_exception"),
         pytest.param('no-results', None, None,
-                     pytest.raises(VectraException, match='API issue'),
+                     pytest.raises(VectraException, match='API issue - Response is empty or invalid'),
                      id="api-no-results_exception"),
         pytest.param('multiple', None, None,
                      pytest.raises(VectraException, match='Multiple Detections found'),
@@ -978,10 +978,10 @@ def test_vectra_get_detection_by_id_command(requests_mock, id, expected_outputs,
                      pytest.raises(VectraException, match='"id" not specified'),
                      id="no-id_exception"),
         pytest.param('no-count', None, None,
-                     pytest.raises(VectraException, match='API issue'),
+                     pytest.raises(VectraException, match='API issue - Response is empty or invalid'),
                      id="api-no-count_exception"),
         pytest.param('no-results', None, None,
-                     pytest.raises(VectraException, match='API issue'),
+                     pytest.raises(VectraException, match='API issue - Response is empty or invalid'),
                      id="api-no-results_exception"),
         pytest.param('multiple', None, None,
                      pytest.raises(VectraException, match='Multiple Hosts found'),
