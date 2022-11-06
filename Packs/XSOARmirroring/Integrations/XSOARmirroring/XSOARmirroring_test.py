@@ -1,4 +1,4 @@
-from XSOARmirroring import get_mapping_fields_command, Client, fetch_incidents, XSOAR_DATE_FORMAT
+from XSOARmirroring import get_mapping_fields_command, Client, fetch_incidents, update_remote_system_command, XSOAR_DATE_FORMAT
 from datetime import datetime, timedelta
 from CommonServerPython import *
 import dateparser
@@ -21,10 +21,7 @@ def generate_dummy_UpdateRemoteSystemArgs():
     class UpdateRemoteSystemArgs:
         def __init__(self):
             self.data = 'data'  # type: ignore
-            #self.entries = 'entries'
-            #self.incident_changed = 'incidentChanged'
             self.remote_incident_id = '1'
-            #self.inc_status = 2
             self.delta = {'custom_field': ''}
 
     return UpdateRemoteSystemArgs
@@ -109,16 +106,16 @@ INCIDENTS = [
 ]
 
 REMOTE_INCIDENT = {
-        "id": 1,
-        "created": (datetime.now() - timedelta(minutes=10)).strftime(XSOAR_DATE_FORMAT),
-        "CustomFields": {"custom_field": "some_custom_field"}
-    }
+    "id": 1,
+    "created": (datetime.now() - timedelta(minutes=10)).strftime(XSOAR_DATE_FORMAT),
+    "CustomFields": {"custom_field": "some_custom_field"}
+}
 
 UPDATED_INCIDENT = {
-        "id": 3,
-        "created": (datetime.now() - timedelta(minutes=10)).strftime(XSOAR_DATE_FORMAT),
-        "CustomFields": {"custom_field": "some_custom_field"}
-    }
+    "id": 3,
+    "created": (datetime.now() - timedelta(minutes=10)).strftime(XSOAR_DATE_FORMAT),
+    "CustomFields": {"custom_field": "some_custom_field"}
+}
 
 
 def test_fetch_incidents(mocker):
@@ -145,6 +142,16 @@ def test_fetch_incidents(mocker):
 
 
 def test_update_remote_system(mocker):
+    """
+    Given:
+        - Old incident and fields that were changed.
+
+    When:
+        - Running the update_remote_system_command.
+
+    Then:
+        - Ensure the incident was updated.
+    """
     parsed_args = generate_dummy_UpdateRemoteSystemArgs()
     client = generate_dummy_client()
     mocker.patch.object(Client, 'get_incident', return_value=REMOTE_INCIDENT)
