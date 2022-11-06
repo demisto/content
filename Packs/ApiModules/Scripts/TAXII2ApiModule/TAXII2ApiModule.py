@@ -958,13 +958,11 @@ class Taxii2FeedClient:
                 self.id_to_object[obj.get('id')] = obj
                 if not parse_objects_func.get(obj_type):
                     demisto.debug(f'There is no parsing function for object type {obj_type}, '
-                                  f'relevant parsing functions are for types: {",".join(parse_objects_func.keys())}.')
+                                  f'available parsing functions are for types: {",".join(parse_objects_func.keys())}.')
                     continue
-                result = parse_objects_func[obj_type](obj)
-                if not result:
-                    continue
-                indicators.extend(result)
-                self.update_last_modified_indicator_date(obj.get("modified"))
+                if result := parse_objects_func[obj_type](obj):
+                    indicators.extend(result)
+                    self.update_last_modified_indicator_date(obj.get("modified"))
 
                 if exceeded_limit(limit, len(indicators) + len(relationships_lst)):
                     return indicators, relationships_lst
@@ -983,10 +981,8 @@ class Taxii2FeedClient:
             self.objects_to_fetch.append('relationship')
         kwargs['type'] = self.objects_to_fetch
         if isinstance(self.collection_to_fetch, v20.Collection):
-            envelope = v20.as_pages(get_objects, per_request=page_size, **kwargs)
-        else:
-            envelope = v21.as_pages(get_objects, per_request=page_size, **kwargs)
-        return envelope
+            return v20.as_pages(get_objects, per_request=page_size, **kwargs)
+        return v21.as_pages(get_objects, per_request=page_size, **kwargs)
 
     def get_page_size(self, max_limit: int, cur_limit: int) -> int:
         """
