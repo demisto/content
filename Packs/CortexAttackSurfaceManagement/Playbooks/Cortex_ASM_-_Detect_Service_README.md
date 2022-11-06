@@ -1,4 +1,4 @@
-Playbook that looks at what ASM sub-type the alert is and direct to different pre/post mitigation scans (such as NMAP).
+Playbook that looks at what ASM sub-type the alert is and directs it to different pre/post mitigation scans (such as NMAP).
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -21,10 +21,10 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| RemoteIP | Remote IP address in alert | alert.remoteip | Required |
-| RemotePort | Remote port number in alert | alert.remoteport | Required |
-| ASMRuleID | Attack Surface Management Rule ID | alert.asmattacksurfaceruleid | Required |
-| ScanNumber | scan number in case there are multiple in the parent playbook |  | Required |
+| RemoteIP | Remote IP address in the alert. | alert.remoteip | Required |
+| RemotePort | Remote port number in the alert. | alert.remoteport | Required |
+| ASMRuleID | Attack Surface Management Rule ID. | alert.asmattacksurfaceruleid | Required |
+| ScanNumber | Scan number in case there are multiple IDs in the parent playbook. |  | Required |
 
 ## Playbook Outputs
 ---
