@@ -5067,43 +5067,47 @@ def update_scan_schedule_command(client: Client, site: Site, scan_schedule_id: i
     )
 
 
-def update_vulnerability_exception_command(client: Client, vulnerability_exception_id: str,
-                                           expiration_date: Optional[str] = None,
-                                           status: Optional[VulnerabilityExceptionStatus] = None) -> CommandResults:
+def update_vulnerability_exception_expiration_command(client: Client, vulnerability_exception_id: str,
+                                                      expiration_date: str) -> CommandResults:
     """
-    Update a vulnerability exception.
+    Update the expiration date of a vulnerability exception.
 
     Args:
         client (Client): Client to use for API requests.
         vulnerability_exception_id (str): ID of the vulnerability exception to update.
-        expiration_date (str, optional): Expiration date to set for the vulnerability exception,
+        expiration_date (str): Expiration date to set for the vulnerability exception,
             formatted in ISO 8601 format.
-        status (VulnerabilityExceptionStatus, optional): Status to set for the vulnerability exception.
     """
-    if not expiration_date and not status:
-        raise ValueError("Either expiration or status must be set.")
-
-    responses = []
-
-    if expiration_date:
-        responses.append(
-            client.update_vulnerability_exception_expiration(
+    response = client.update_vulnerability_exception_expiration(
                 vulnerability_exception_id=vulnerability_exception_id,
-                expiration_date=expiration_date
+                expiration_date=expiration_date,
             )
-        )
 
-    if status:
-        responses.append(
-            client.update_vulnerability_exception_status(
-                vulnerability_exception_id=vulnerability_exception_id,
-                status=status
-            )
+    return CommandResults(
+        readable_output=f"Successfully updated expiration date "
+                        f"of vulnerability exception {vulnerability_exception_id}.",
+        raw_response=response,
+    )
+
+
+def update_vulnerability_exception_status_command(client: Client, vulnerability_exception_id: str,
+                                                  status: VulnerabilityExceptionStatus) -> CommandResults:
+    """
+    Update the status of a vulnerability exception.
+
+    Args:
+        client (Client): Client to use for API requests.
+        vulnerability_exception_id (str): ID of the vulnerability exception to update.
+        status (VulnerabilityExceptionStatus): Status to set for the vulnerability exception.
+    """
+    response = client.update_vulnerability_exception_status(
+            vulnerability_exception_id=vulnerability_exception_id,
+            status=status,
         )
 
     return CommandResults(
-        readable_output=f"Successfully updated vulnerability exception {vulnerability_exception_id}.",
-        raw_response=responses[0] if len(responses) == 1 else responses,
+        readable_output=f"Successfully updated status of vulnerability exception {vulnerability_exception_id}.",
+        raw_response=response,
     )
 
 
@@ -5860,17 +5864,17 @@ def main():
                 scan_name=args.get("scan_name"),
                 scan_template_id=args.get("scan_template_id"),
             )
-        elif command == "nexpose-update-vulnerability-exception":
-            status = None
-
-            if args.get("status"):
-                status = VulnerabilityExceptionStatus[args.get("status")]
-
-            results = update_vulnerability_exception_command(
+        elif command == "nexpose-update-vulnerability-exception-expiration":
+            results = update_vulnerability_exception_expiration_command(
                 client=client,
                 vulnerability_exception_id=args["id"],
-                expiration_date=args.get("expiration"),
-                status=status,
+                expiration_date=args["expiration"],
+            )
+        elif command == "nexpose-update-vulnerability-exception-status":
+            results = update_vulnerability_exception_status_command(
+                client=client,
+                vulnerability_exception_id=args["id"],
+                status=VulnerabilityExceptionStatus[args["status"]],
             )
         elif command == "nexpose-search-assets":
             sites: List[Site] = []

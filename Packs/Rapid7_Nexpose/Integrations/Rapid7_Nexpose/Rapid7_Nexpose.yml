@@ -2872,18 +2872,28 @@ script:
       required: true
       secret: false
     - default: false
-      description: An expiration date for the vulnerability exception formatted in ISO 8601 format.
-        Required if `status` is not used. Must be a date in the future.
+      description: An expiration date for the vulnerability exception formatted in ISO 8601 format. Must be a date in the future.
       isArray: false
       name: expiration
-      required: false
+      required: true
+      secret: false
+    deprecated: false
+    description: Update an existing vulnerability exception.
+    execution: false
+    name: nexpose-update-vulnerability-exception-expiration
+  - arguments:
+    - default: false
+      description: The ID of the vulnerability exception to update.
+      isArray: false
+      name: id
+      required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: A status to update the vulnerability exception to. Required if `expiration` is not used.
+      description: A status to update the vulnerability exception to.
       isArray: false
       name: status
-      required: false
+      required: true
       predefined:
         - Recall
         - Approve
@@ -2892,7 +2902,7 @@ script:
     deprecated: false
     description: Update an existing vulnerability exception.
     execution: false
-    name: nexpose-update-vulnerability-exception
+    name: nexpose-update-vulnerability-exception-status
   - arguments:
     - default: false
       description: The ID of the shared credential to update.
