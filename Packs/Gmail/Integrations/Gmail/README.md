@@ -5005,7 +5005,7 @@ Gets the specified forwarding address or a list of the forwarding addresses for 
 
 ### gmail-forwarding-address-remove
 ***
-Deletes the specified forwarding address and revokes any verification that may have been required This method is only available to service account clients that have been delegated domain-wide authority.
+Deletes the specified forwarding address and revokes any verification that may have been required. This method is only available to service account clients that have been delegated domain-wide authority.
 
 
 #### Base Command
@@ -5035,7 +5035,7 @@ Lists the forwarding addresses for the specified account.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_id | User's email address. | Required | 
-| limit | The maximum number of address to return. The default value is 50. | Optional | 
+| limit | The maximum number of addresses to return. The default value is 50. | Optional | 
 
 
 #### Context Output
