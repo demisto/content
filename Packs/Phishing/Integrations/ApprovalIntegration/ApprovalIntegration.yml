@@ -1,9 +1,9 @@
 commonfields:
-  id: Approval integration
+  id: Phishing integration
   version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: Approval integration
-display: Approval integration
+name: Phishing integration
+display: Phishing integration
 category: Utilities
 description: This is the Hello World integration for getting started.
 configuration:
