@@ -16,11 +16,12 @@ def generate_dummy_client():
 
     return Client
 
+
 def generate_dummy_UpdateRemoteSystemArgs():
     class UpdateRemoteSystemArgs:
         def __init__(self):
             self.data = {'createInvestigation': True}  # type: ignore
-            self.remote_incident_id = '1'
+            self.remote_incident_id = 1
             self.delta = {'custom_field': ''}
 
     return UpdateRemoteSystemArgs
