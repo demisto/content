@@ -259,9 +259,10 @@ class TestMetadataParsing:
         assert 'Featured' in tags
 
     @pytest.mark.parametrize('pack_metadata,marketplace,expected_result',
-                             [({'tags': ['tag1', 'xsiam:tag2']}, 'xsoar', {'tag1'}),
-                              ({'tags': ['tag1', 'xsiam:tag2']}, 'xsiam', {'tag1', 'tag2'}),
-                              ({'tags': ['xsiam:tag2']}, 'xsoar', set())])
+                             [({'tags': ['tag1', 'marketplacev2:tag2']}, 'xsoar', {'tag1'}),
+                              ({'tags': ['tag1', 'marketplacev2:tag2']}, 'marketplacev2', {'tag1', 'tag2'}),
+                              ({'tags': ['marketplacev2:tag2']}, 'xsoar', set()),
+                              ({'tags': ['tag1', 'marketplacev2,xsoar:tag2']}, 'xsoar', {'tag1', 'tag2'})])
     def test_get_tags_by_marketplace(self, dummy_pack, pack_metadata, marketplace, expected_result):
         """
         Given:

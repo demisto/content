@@ -51,6 +51,6 @@
 			"Iron Bank"
 		],
 		"xsoar": [],
-		"xsiam": ["Data Source"]
+		"marketplacev2": ["Data Source"]
 	}
 }
