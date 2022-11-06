@@ -24,7 +24,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| RemoteIP | IP address of service | alert.remoteip | Optional |
+| RemoteIP | IP address of the service. | alert.remoteip | Optional |
 
 ## Playbook Outputs
 ---
