@@ -1,4 +1,4 @@
-[MODEL: dataset="vmware_esxi_raw"]
+[MODEL: dataset="VMware_ESXi_raw"]
 alter event_type = arrayindex( regextract(_raw_log ,"\d+-\d+-\d+T\d+:\d+:\d+\.*\d*Z[\s|\|]\s*([a-zA-Z0-9-_]+)"),0)
     ,username = arrayindex( regextract(_raw_log ,"User\s\'([a-zA-Z]+)\'"),0) 
     ,command_line = arrayindex( regextract(_raw_log ,"command\s\'([^\']+)\'"),0) 
