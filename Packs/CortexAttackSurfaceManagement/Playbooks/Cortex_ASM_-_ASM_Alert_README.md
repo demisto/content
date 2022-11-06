@@ -1,4 +1,4 @@
-This playbook aims to handle ASM alerts by enriching asset information and providing means of remediating the issue directly or through contacting service owners.
+This playbook handles ASM alerts by enriching asset information and providing a means of remediating the issue directly or through contacting service owners.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -10,7 +10,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Cortex ASM - Remediation Guidance
 
 ### Integrations
-* ServiceNow v2
+ServiceNow v2
 
 ### Scripts
 * GridFieldSetup
@@ -27,8 +27,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| AutomatedRemediation | Decide whether to potential skip analyst intervention and conduct automated remediation if meeting the following criteria: issue is Insecure OpenSSH/RDP, happened on EC2 instance, service owner information found and indicators of a non-prod host.  Default if "False" \(don't do automated remediation\).  Set "True" to turn this feature on. | False | Required |
-| OwnerNotificationSubject | Subject of the notification \(email or ticket\) send to potential service owner. | A new security risk was identified on an external service owned by your team | Required |
+| AutomatedRemediation | Decide whether to potential skip analyst intervention and conduct automated remediation if meeting the following criteria: issue is Insecure OpenSSH/RDP, happened on EC2 instance, service owner information found and indicators of a non-prod host. Default is "False" \(don't do automated remediation\).  Set "True" to turn this feature on. | False | Required |
+| OwnerNotificationSubject | Subject of the notification \(email or ticket\) sent to potential service owner. | A new security risk was identified on an external service owned by your team. | Required |
 | OwnerNotificationBody | Body of the notification \(email or ticket\) send to potential service owner. | Infosec identified a security risk on an external service potentially owned by your team: ${alert.name}<br/><br/>Description: ${alert.details}<br/><br/> | Required |
 | RemediationRule | The firewall rule that will used for remediating internet exposures.  | Remediation-Security-Group | Required |
 
