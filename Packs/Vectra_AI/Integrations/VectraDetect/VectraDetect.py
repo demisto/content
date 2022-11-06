@@ -1317,7 +1317,9 @@ def get_last_run_details(integration_params: Dict):
             if not last_run.get(entity_type):
                 demisto.debug(f"Last run is not set for '{entity_type}'. Using value from config : {fetch_first_time}")
                 # This will return a relative TZaware datetime (in UTC)
-                last_timestamp = dateparser.parse(fetch_first_time, settings={'TO_TIMEZONE': 'UTC'}).isoformat()  # type: ignore[arg-type, union-attr]
+                last_timestamp =\
+                    dateparser.parse(fetch_first_time,  # type: ignore[arg-type]
+                                     settings={'TO_TIMEZONE': 'UTC'}).isoformat()  # type: ignore[union-attr]
                 last_id = 0
                 output_last_run[entity_type] = {
                     'last_timestamp': last_timestamp,
