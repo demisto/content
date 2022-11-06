@@ -882,6 +882,8 @@ def get_images_data(packs_list: list):
             pack_image_data[pack.name][BucketUploadFlow.AUTHOR] = True
         if pack.uploaded_integration_images:
             pack_image_data[pack.name][BucketUploadFlow.INTEGRATIONS] = pack.uploaded_integration_images
+        if pack.uploaded_preview_images:
+            pack_image_data[pack.name][BucketUploadFlow.PREVIEW_IMAGES] = pack.uploaded_preview_images
         if pack_image_data[pack.name]:
             images_data.update(pack_image_data)
 
@@ -1115,6 +1117,7 @@ def main():
     # 1. we might need the info about this pack if a modified pack is dependent on it.
     # 2. even if the pack is not updated, we still keep some fields in it's metadata updated, such as download count,
     # changelog, etc.
+    pack: Pack
     for pack in list(packs_for_current_marketplace_dict.values()):
         task_status = pack.collect_content_items()
         if not task_status:
@@ -1137,7 +1140,7 @@ def main():
             continue
 
         if is_bucket_upload_flow:
-            task_status, modified_files_data = pack.filter_modified_files_by_id_set(id_set, modified_rn_files_paths)
+            task_status, _ = pack.filter_modified_files_by_id_set(id_set, modified_rn_files_paths)
 
             # if not task_status:
             #     pack.status = PackStatus.CHANGES_ARE_NOT_RELEVANT_FOR_MARKETPLACE.name
@@ -1163,7 +1166,7 @@ def main():
         if is_bucket_upload_flow:
             task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number,
                                                                         modified_rn_files_paths,
-                                                                        modified_files_data, marketplace, id_set)
+                                                                        marketplace, id_set)
 
             if not task_status:
                 pack.status = PackStatus.FAILED_RELEASE_NOTES.name

@@ -4,9 +4,10 @@ from demisto_sdk.commands.common.constants import (SAMPLES_DIR,
                                                    MarketplaceVersions)
 
 XSOAR_SANITY_TEST_NAMES: tuple[str, ...] = (
-    'Sanity Test - Playbook with integration',
+    # Skipped until helloworld server will be fixed
+    # 'Sanity Test - Playbook with integration',
     'Sanity Test - Playbook with no integration',
-    'Sanity Test - Playbook with mocked integration',
+    # 'Sanity Test - Playbook with mocked integration',
     'Sanity Test - Playbook with Unmockable Whois Integration',
 )
 SANITY_TEST_TO_PACK: dict[str, str] = {
@@ -22,10 +23,12 @@ DEFAULT_REPUTATION_TESTS: tuple[str, ...] = (
     'Indicators reputation-.json Test',
 )
 
-ALWAYS_INSTALLED_PACKS = (
+ALWAYS_INSTALLED_PACKS_XSOAR = (
     'Base',
     'DeveloperTools',
 )
+
+ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2 = ALWAYS_INSTALLED_PACKS_XSOAR + ('CoreAlertFields',)
 
 DEFAULT_MARKETPLACE_WHEN_MISSING: MarketplaceVersions = MarketplaceVersions.XSOAR
 
