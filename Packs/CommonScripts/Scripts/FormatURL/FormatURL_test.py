@@ -97,11 +97,11 @@ FIREEYE_REDIRECT = [
 
 TRENDMICRO_REDIRECT = [
     ('https://imsva91-ctp.trendmicro.com:443/wis/clicktime/v1/query?'
-     'url==3Dhttp%3a%2f%2fclick.sanantonioshoemakers.com' # disable-secrets-detection
+     'url==3Dhttp%3a%2f%2fclick.sanantonioshoemakers.com'  # disable-secrets-detection
      '%2f%3fqs%3dba654fa7d9346fec1b=3fa6c55906d045be350d0ee6e3edc4ff33ef33eacb79b79602f5aaf719ee16c3d24e8489293=4d3&'
      'umid=3DB8AB568B-E738-A205-9C9E-ECD7B0A0383F&auth==3D00e18db2b3f9ca3ba6337946518e0b003516e16e-'
      '5a8d41640e706acd29c760ae7a8cd40=f664d6489',
-     'http://click.sanantonioshoemakers.com/?qs=ba654fa7d9346fec1b=' # disable-secrets-detection
+     'http://click.sanantonioshoemakers.com/?qs=ba654fa7d9346fec1b='  # disable-secrets-detection
      '3fa6c55906d045be350d0ee6e3edc4ff33ef33eacb'
      '79b79602f5aaf719ee16c3d24e8489293=4d3'),
 ]
