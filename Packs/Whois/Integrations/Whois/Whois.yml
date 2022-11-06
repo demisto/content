@@ -55,6 +55,7 @@ script:
       predefined:
       - true
       - false
+      type: Boolean
     deprecated: false
     description: Provides data enrichment for domains.
     execution: false
