@@ -1,4 +1,7 @@
-# Abnormal Security 
+#### Modeling Rules
+##### Abnormal Security Event Collector
+- Added a modeling rules with the new XDM schema.
+- Note: Queries and modeling rules in this content pack version support XDR 3.5 / XSIAM 1.3 or later.
 
 Abnormal Security detects the whole spectrum of email attacks, from vendor email compromise and spear-phishing to unwanted email spam and graymail. To stop these advanced attacks, Abnormal leverages the industry’s most advanced behavioral data science to baseline known good behavior and detects anomalies. The integration of Abnormal Security's SOAR API with Cortex XSOAR empowers security teams to respond to incidents with speed and helps to dramatically reduce mean time to respond.
 
