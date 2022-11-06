@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Microsoft Management Activity API (O365 Azure Events)
   version: -1
@@ -8,62 +11,77 @@ configuration:
   name: base_url
   required: false
   type: 0
-- display: ID (received from the authorization step - see Detailed Instructions (?)
-    section)
+  section: Connect
+- display: ID (received from the authorization step - see Detailed Instructions (?) section)
   name: auth_id
   required: false
   type: 4
-- display: Key (received from the authorization step - see Detailed Instructions (?)
-    section)
+  section: Connect
+- display: Key (received from the authorization step - see Detailed Instructions (?) section)
   name: enc_key
   required: false
   type: 4
+  section: Connect
 - display: Token (received from the authorization step - see Detailed Instructions (?) section)
   name: refresh_token
   required: false
   type: 4
+  section: Connect
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
   type: 4
+  section: Connect
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
   required: false
   type: 14
+  section: Connect
 - display: Use a self-deployed Azure application
   name: self_deployed
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Application redirect URI (for self-deployed mode)
   name: redirect_uri
   required: false
   type: 0
-- display: The authentication code you got for the service. For instructions on how
-    to receive it, see Detailed Instructions ('?') section.
+  section: Connect
+  advanced: true
+- display: The authentication code you got for the service. For instructions on how to receive it, see Detailed Instructions ('?') section.
   name: auth_code
   required: false
   type: 4
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - defaultvalue: 10 minutes
   display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
   name: first_fetch_delta
   required: false
   type: 0
+  section: Collect
 - additionalinfo: The default timeout (in seconds) for API calls. Default is 15 seconds.
   defaultvalue: 15
   display: Timeout
   name: timeout
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: Content types to fetch
   name: content_types_to_fetch
   options:
@@ -74,35 +92,35 @@ configuration:
   - DLP.All
   required: false
   type: 16
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
-- display: Record types to fetch. (Comma-separated list of the record types you wish
-    to fetch. Content records with a record type that isn't specified will not be
-    fetched. If this field is left empty, all record types will be fetched.)
+  section: Connect
+- display: Record types to fetch. (Comma-separated list of the record types you wish to fetch. Content records with a record type that isn't specified will not be fetched. If this field is left empty, all record types will be fetched.)
   name: record_types_filter
   required: false
   type: 0
-- display: Workloads to fetch. (Comma-separated list of the workloads you wish to fetch.
-    Content records with a workload that isn't specified will not be fetched. If this
-    field is left empty, all workloads will be fetched.)
+  section: Collect
+- display: Workloads to fetch. (Comma-separated list of the workloads you wish to fetch. Content records with a workload that isn't specified will not be fetched. If this field is left empty, all workloads will be fetched.)
   name: workloads_filter
   required: false
   type: 0
-- display: Operations to fetch. (Comma-separated list of the operations you wish to fetch.
-    Content records with an operation that isn't specified will not be fetched. If
-    this field is left empty, all operations will be fetched.)
+  section: Collect
+  advanced: true
+- display: Operations to fetch. (Comma-separated list of the operations you wish to fetch. Content records with an operation that isn't specified will not be fetched. If this field is left empty, all operations will be fetched.)
   name: operations_filter
   required: false
   type: 0
-description: The Microsoft Management Activity API integration enables you to subscribe
-  or unsubscribe to different audits, receive their content, and fetch new content
-  as incidents.
+  section: Collect
+  advanced: true
+description: The Microsoft Management Activity API integration enables you to subscribe or unsubscribe to different audits, receive their content, and fetch new content as incidents.
 display: Microsoft Management Activity API (O365 Azure Events)
 name: Microsoft Management Activity API (O365 Azure Events)
 script:
@@ -166,44 +184,31 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The earliest time to get content from. If start_time is specified,
-        end_time must also be specified. The start_time must be before the end_time,
-        can be at most 7 days ago, and has to be within 24 hours from end_time. Required
-        format: YYYY-MM-DDTHH:MM:SS. If not specified, start time will be 24 hours
-        ago.'
+      description: 'The earliest time to get content from. If start_time is specified, end_time must also be specified. The start_time must be before the end_time, can be at most 7 days ago, and has to be within 24 hours from end_time. Required format: YYYY-MM-DDTHH:MM:SS. If not specified, start time will be 24 hours ago.'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'The latest time to get content from. If end_time is specified,
-        start_time must be also specified. The start_time must be before the end_time
-        and has to be within 24 hours from start_time. Required format: YYYY-MM-DDTHH:MM:SS.
-        If not specified, end_time will be now.'
+      description: 'The latest time to get content from. If end_time is specified, start_time must be also specified. The start_time must be before the end_time and has to be within 24 hours from start_time. Required format: YYYY-MM-DDTHH:MM:SS. If not specified, end_time will be now.'
       isArray: false
       name: end_time
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of the record types to fetch. Content records
-        with a record type that isn't specified will not be fetched. If this field
-        is left empty, all record types will be fetched.
+      description: A comma-separated list of the record types to fetch. Content records with a record type that isn't specified will not be fetched. If this field is left empty, all record types will be fetched.
       isArray: false
       name: record_types_filter
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of the workloads to fetch. Content records
-        with a workload that isn't specified will not be fetched. If this field is
-        left empty, all workloads will be fetched.
+      description: A comma-separated list of the workloads to fetch. Content records with a workload that isn't specified will not be fetched. If this field is left empty, all workloads will be fetched.
       isArray: false
       name: workloads_filter
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of the operations to fetch. Content records
-        with an operation that isn't specified will not be fetched. If this field
-        is left empty, all operations will be fetched.
+      description: A comma-separated list of the operations to fetch. Content records with an operation that isn't specified will not be fetched. If this field is left empty, all operations will be fetched.
       isArray: false
       name: operations_filter
       required: false
