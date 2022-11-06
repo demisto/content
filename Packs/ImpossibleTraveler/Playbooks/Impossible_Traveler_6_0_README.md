@@ -8,26 +8,26 @@ in the amount of time determined. Also, it takes steps to remediate the incident
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* IP Enrichment - Generic v2
 * Block IP - Generic v3
+* IP Enrichment - Generic v2
 * Active Directory - Get User Manager Details
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
-* EmailAskUser
-* CalculateGeoDistance
-* Set
 * CalculateTimeDifference
+* Set
+* CalculateGeoDistance
+* EmailAskUser
 
 ### Commands
 * setIncident
-* rasterize
-* ad-get-user
-* closeInvestigation
-* ad-disable-account
 * ip
+* ad-get-user
+* rasterize
+* ad-disable-account
+* closeInvestigation
 
 ## Playbook Inputs
 ---
