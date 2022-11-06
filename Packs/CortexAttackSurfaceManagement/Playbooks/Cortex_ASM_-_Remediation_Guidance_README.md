@@ -10,7 +10,7 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-* Set
+Set
 
 ### Commands
 This playbook does not use any commands.
@@ -20,14 +20,14 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| IssueTypeID | Attack surface management issue rule ID | alert.asmattacksurfaceruleid | Required |
+| IssueTypeID | Attack surface management issue rule ID. | alert.asmattacksurfaceruleid | Required |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| RemediationGuidance | Remediation guidance to be sent to service owner via notification \(email or ticketing system\) | unknown |
+| RemediationGuidance | Remediation guidance to be sent to the service owner via notification \(email or ticketing system\). | unknown |
 
 ## Playbook Image
 ---
