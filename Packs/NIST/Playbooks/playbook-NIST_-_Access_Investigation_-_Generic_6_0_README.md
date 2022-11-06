@@ -11,8 +11,8 @@ Used Sub-playbooks:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Account Enrichment - Generic v2.1
 * Block IP - Generic v3
+* Account Enrichment - Generic v2.1
 * IP Enrichment - Generic v2
 * NIST - Lessons Learned
 
@@ -20,13 +20,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Active Directory Query v2
 
 ### Scripts
-* GenerateInvestigationSummaryReport
 * ADGetUser
+* GenerateInvestigationSummaryReport
 
 ### Commands
 * send-mail
-* closeInvestigation
 * ad-expire-password
+* closeInvestigation
 * ad-disable-account
 * setIncident
 
@@ -40,7 +40,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | Username | The email address of the account that was used to access the DstIP. |  | Optional |
 | NotifyEmail | Email addresses to notify about the incident. |  | Optional |
 | RemediationSLA | The Remediation SLA for the 'Containment, Eradication, and Recovery' stage \(in minutes\). |  | Optional |
-| IPBlacklistMiner | The name of the IP block list miner in MineMeld. |  | Optional |
 
 ## Playbook Outputs
 ---
