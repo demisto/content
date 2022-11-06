@@ -1409,7 +1409,8 @@
             "playbookID": "EWS search-mailbox test",
             "instance_names": [
                 "ewv2_regular",
-                "ews_mail_sender_labdemisto"
+                "ews_mail_sender_labdemisto",
+                "ewso365_dev_team"
             ],
             "timeout": 300
         },
@@ -4105,6 +4106,11 @@
             "integrations": [
                 "CofenseIntelligenceV2"
             ]
+        },
+        {
+            "integrations": "Cofense Vision",
+            "playbookID": "CofenseVision-Test",
+            "fromversion": "6.2.0"
         },
         {
             "playbookID": "opsgenie-test-playbook",
