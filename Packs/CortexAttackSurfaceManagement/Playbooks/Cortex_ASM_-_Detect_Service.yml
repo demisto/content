@@ -1,7 +1,7 @@
 id: Cortex ASM - Detect Service
 version: -1
 name: Cortex ASM - Detect Service
-description: Playbook that looks at what ASM sub-type the alert is and direct to different pre/post mitigation scans (such as NMAP).
+description: Playbook that looks at what ASM sub-type the alert is and directs it to different pre/post mitigation scans (such as NMAP).
 starttaskid: "0"
 tasks:
   "0":
@@ -42,7 +42,7 @@ tasks:
       id: 46326462-8ebf-4c24-843b-96edfd7479d0
       version: -1
       name: What is the sub-alert type?
-      description: Determines if ASM sub-alert type for different scans.
+      description: Determines ASM sub-alert type for different scans.
       type: condition
       iscommand: false
       brand: ""
@@ -337,7 +337,7 @@ tasks:
       version: -1
       name: Set service detection grid field
       description: |-
-        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
@@ -441,7 +441,7 @@ inputs:
             value:
               simple: None
   required: true
-  description: Remote IP address in alert
+  description: Remote IP address in alert.
   playbookInputQuery:
 - key: RemotePort
   value:
@@ -456,7 +456,7 @@ inputs:
             value:
               simple: None
   required: true
-  description: Remote port number in alert
+  description: Remote port number in alert.
   playbookInputQuery:
 - key: ASMRuleID
   value:
@@ -469,7 +469,7 @@ inputs:
 - key: ScanNumber
   value: {}
   required: true
-  description: scan number in case there are multiple in the parent playbook
+  description: Scan number in case there are multiple numbers in the parent playbook.
   playbookInputQuery:
 outputs: []
 fromversion: 6.5.0
