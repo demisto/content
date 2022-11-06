@@ -13,7 +13,9 @@
     "tags": [
         "Use Case"
     ],
-    "useCases": [],
+    "useCases": [
+        "Compliance"
+    ],
     "keywords": [],
     "dependencies": {
         "Okta": {
