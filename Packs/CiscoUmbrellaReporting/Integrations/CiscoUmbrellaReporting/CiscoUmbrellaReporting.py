@@ -14,7 +14,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 # CORTEX XSOAR COMMAND CONSTANTS
 COUNT = 0
-LIMIT = 50
+DEFAULT_PAGE_SIZE = 50
 FROM_DATE = "-7days"
 TO_DATE = "now"
 OFFSET = 0
@@ -229,7 +229,7 @@ def check_valid_indicator_value(indicator_type: str,
         intrusion_list = argToList(indicator_value)
         for intrusion in intrusion_list:
             if intrusion not in ["would_block", "blocked", "detected"]:
-                raise ValueError("Invalid input Error: supported value for "
+                raise ValueError("Invalid input Error: supported values for "
                                  "intrusion_action are: 'would_block', 'blocked' and 'detected'.")
 
     return True
@@ -831,7 +831,7 @@ def pagination(page: Optional[int], page_size: Optional[int]):
     if (page and page <= 0) or (page_size and page_size <= 0):
         raise DemistoException(PAGE_NUMBER_ERROR_MSG)
     page = 0 if not page else page - 1
-    page_size = LIMIT if not page_size else page_size
+    page_size = DEFAULT_PAGE_SIZE if not page_size else page_size
     limit = page_size
     offset = page * page_size
     return limit, offset
@@ -847,7 +847,7 @@ def get_param(limit: Optional[int], offset: Optional[int], args: Dict) -> Dict:
     Returns:
         Return arguments dict.
     """
-    args["limit"] = limit if limit != 50 else args.get('limit', LIMIT)
+    args["limit"] = limit if limit != 50 else args.get('limit', DEFAULT_PAGE_SIZE)
     args["offset"] = offset
     args["from"] = args.pop('from', FROM_DATE)
     args["to"] = args.pop('to', TO_DATE)
@@ -879,7 +879,7 @@ def get_destinations_list_command(client: Client, args: Dict[str, Any]):
     if domains := args.get("domains"):
         check_valid_indicator_value('domains', domains)
     page = arg_to_number(args.get('page'), arg_name='page')
-    page_size = arg_to_number(args.get('page_size', LIMIT), arg_name='page_size')
+    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE), arg_name='page_size')
     limit, offset = pagination(page, page_size)
     params = get_param(limit, offset, args)
     title = get_command_title_string("Destination", page, page_size)
@@ -919,7 +919,7 @@ def get_categories_list_command(client: Client, args: Dict[str, Any]):
     if domains := args.get("domains"):
         check_valid_indicator_value('domains', domains)
     page = arg_to_number(args.get('page'), arg_name='page')
-    page_size = arg_to_number(args.get('page_size', LIMIT),
+    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE),
                               arg_name='page_size')
     limit, offset = pagination(page, page_size)
     params = get_param(limit, offset, args)
@@ -959,7 +959,7 @@ def get_identities_list_command(client: Client, args: Dict[str, Any]):
     if domains := args.get("domains"):
         check_valid_indicator_value('domains', domains)
     page = arg_to_number(args.get('page'), arg_name='page')
-    page_size = arg_to_number(args.get('page_size', LIMIT),
+    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE),
                               arg_name='page_size')
     limit, offset = pagination(page, page_size)
     params = get_param(limit, offset, args)
@@ -997,7 +997,7 @@ def get_file_list_command(client: Client, args: Dict[str, Any]):
     if domains := args.get("domains"):
         check_valid_indicator_value('domains', domains)
     page = arg_to_number(args.get('page'), arg_name='page')
-    page_size = arg_to_number(args.get('page_size', LIMIT),
+    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE),
                               arg_name='page_size')
     limit, offset = pagination(page, page_size)
     params = get_param(limit, offset, args)
@@ -1036,7 +1036,7 @@ def get_threat_list_command(client: Client, args: Dict[str, Any]):
     if domains := args.get("domains"):
         check_valid_indicator_value('domains', domains)
     page = arg_to_number(args.get('page'), arg_name='page')
-    page_size = arg_to_number(args.get('page_size', LIMIT),
+    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE),
                               arg_name='page_size')
     limit, offset = pagination(page, page_size)
     params = get_param(limit, offset, args)
@@ -1073,7 +1073,7 @@ def get_event_types_list_command(client: Client, args: Dict[str, Any]):
     if domains := args.get("domains"):
         check_valid_indicator_value('domains', domains)
     page = arg_to_number(args.get('page'), arg_name='page')
-    page_size = arg_to_number(args.get('page_size', LIMIT),
+    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE),
                               arg_name='page_size')
     limit, offset = pagination(page, page_size)
     params = get_param(limit, offset, args)
@@ -1110,7 +1110,7 @@ def get_activity_list_command(client: Client, args: Dict[str, Any]):
     if domains := args.get("domains"):
         check_valid_indicator_value('domains', domains)
     page = arg_to_number(args.get('page'), arg_name='page')
-    page_size = arg_to_number(args.get('page_size', LIMIT),
+    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE),
                               arg_name='page_size')
     limit, offset = pagination(page, page_size)
     params = get_param(limit, offset, args)
@@ -1149,7 +1149,7 @@ def get_activity_by_traffic_type_command(client: Client, args: Dict[str, Any]):
         endpoint = "activity/amp-retrospective" if traffic_type == "amp"\
             else f"activity/{traffic_type}"
     else:
-        raise DemistoException("Please select traffic type")
+        raise DemistoException("Please select a traffic type.")
     markdown_function = {
         "dns": activity_dns_lookup_to_markdown,
         "proxy": activity_proxy_lookup_to_markdown,
@@ -1179,7 +1179,7 @@ def get_activity_by_traffic_type_command(client: Client, args: Dict[str, Any]):
     if intrusion_action := args.get("intrusion_action"):
         check_valid_indicator_value("intrusion_action", intrusion_action)
     page = arg_to_number(args.get('page'), arg_name='page')
-    page_size = arg_to_number(args.get('page_size', LIMIT),
+    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE),
                               arg_name='page_size')
     limit, offset = pagination(page, page_size)
     params = get_param(limit, offset, args)
@@ -1240,7 +1240,7 @@ def get_summary_list_command(client: Client, args: Dict[str, Any]):
     if intrusion_action := args.get("intrusion_action"):
         check_valid_indicator_value("intrusion_action", intrusion_action)
     page = arg_to_number(args.get('page'), arg_name='page')
-    page_size = arg_to_number(args.get('page_size', LIMIT),
+    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE),
                               arg_name='page_size')
     limit, offset = pagination(page, page_size)
     params = get_param(limit, offset, args)
