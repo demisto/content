@@ -10,10 +10,10 @@
     "categories": [
         "IT Services"
     ],
-    "tags": [],
-    "useCases": [
-        "Employee Offboarding"
+    "tags": [
+        "Use Case"
     ],
+    "useCases": [],
     "keywords": [],
     "dependencies": {
         "Okta": {
