@@ -49,13 +49,13 @@ script:
       defaultValue: true
     - name: verbose
       description: Whether to add the raw response as a dictionary to the context
-      required: False
-      defaultValue: false 
+      required: false
+      defaultValue: false
+      isArray: false 
       auto: PREDEFINED
       predefined:
       - true
       - false
-      type: Boolean
     deprecated: false
     description: Provides data enrichment for domains.
     execution: false
