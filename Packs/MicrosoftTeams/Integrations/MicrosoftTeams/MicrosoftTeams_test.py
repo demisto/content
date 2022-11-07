@@ -1412,13 +1412,6 @@ def test_direct_message_handler(mocker, requests_mock):
         'type': 'message'
     }
 
-    # verify create incident fails on un allowed arguments manner
-    message: str = 'create incident name:GoFish, type:Phishing'
-    direct_message_handler(integration_context, request_body, conversation, message)
-    assert requests_mock.request_history[0].json() == {
-        'text': 'Please specify arguments in the following manner: name=<name> type=[type] or json=<json>.'
-    }
-
     # verify get my incidents
     my_incidents: str = "```ID         | Name                 | Status      | Type        | Owner       | Created" \
                         "             | Link\n ===========|======================|=============|=============|====" \
