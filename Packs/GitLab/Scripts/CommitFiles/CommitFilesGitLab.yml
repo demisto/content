@@ -23,7 +23,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/python3:3.10.5.31928
+dockerimage: demisto/xsoar-tools-hf:1.0.0.31061
 enabled: true
 name: CommitFilesGitLab
 outputs:
