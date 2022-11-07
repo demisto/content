@@ -474,116 +474,28 @@ class Client(BaseClient):
         Returns:
             dict: API response with information about the newly created shared credential.
         """
-        account_data: dict = {"service": service.value}
-
-        S = CredentialService  # Simplify object name for shorter lines
-
-        # Services where "username" field is required
-        if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL, S.ORACLE,
-                       S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SNMPV3, S.SSH, S.SSH_KEY, S.SYBASE, S.TELNET):
-            if username is None:
-                raise ValueError(f"Username is required for {service.value} services.")
-
-            account_data["username"] = username
-
-        # Services where "password" field is required
-        if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL,
-                       S.ORACLE, S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SSH, S.SYBASE, S.TELNET):
-            if password is None:
-                raise ValueError(f"Password is required for {service.value} services.")
-
-            account_data["password"] = password
-
-        # Services with optional "useWindowsAuthentication" field.
-        if service in (S.MS_SQL, S.SYBASE) and use_windows_authentication is not None:
-            account_data["useWindowsAuthentication"] = use_windows_authentication
-
-        # Services with optional "domain" field.
-        if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.MS_SQL, S.SYBASE) and domain is not None:
-            if service in (S.MS_SQL, S.SYBASE):
-                if use_windows_authentication:
-                    account_data["domain"] = domain
-
-            else:
-                account_data["domain"] = domain
-
-        # Services with optional "database" field.
-        if service in (S.DB2, S.MS_SQL, S.MYSQL, S.POSTGRESQL, S.SYBASE) and database_name is not None:
-            account_data["database"] = database_name
-
-        if service == S.CIFSHASH:
-            if ntlm_hash is None:
-                raise ValueError(f"NTLM hash is required for {service.value} services.")
-
-            account_data["ntlmHash"] = ntlm_hash
-
-        if service == S.HTTP and http_realm is not None:
-            account_data["realm"] = http_realm
-
-        if service == S.NOTES and notes_id_password is not None:
-            account_data["notesIDPassword"] = notes_id_password
-
-        if service == S.ORACLE:
-            if oracle_sid is not None:
-                account_data["sid"] = oracle_sid
-
-            if oracle_enumerate_sids is not None:
-                account_data["enumerateSids"] = oracle_enumerate_sids
-
-                if oracle_enumerate_sids and oracle_listener_password is None:
-                    raise ValueError("Oracle listener password is required when enumerating SIDs.")
-
-                account_data["oracleListenerPassword"] = oracle_listener_password
-
-        if service == S.SNMP:
-            if snmp_community_name is None:
-                raise ValueError(f"Community name is required for {service.value} services.")
-
-            account_data["community"] = snmp_community_name
-
-        if service == S.SNMPV3:
-            if snmpv3_authentication_type is None:
-                raise ValueError(f"Authentication type is required for {service.value} services.")
-
-            account_data["authenticationType"] = snmpv3_authentication_type.value
-
-            if snmpv3_authentication_type != SNMPv3AuthenticationType.NO_AUTHENTICATION:
-                if password is None:
-                    raise ValueError(f"Password is required for {service.value} services when authentication "
-                                     f"is md5 to anything other than \"no-authentication\".")
-
-                account_data["password"] = password
-
-            if snmpv3_privacy_type is not None:
-                account_data["privacyType"] = snmpv3_privacy_type.value
-
-                if snmpv3_privacy_type != SNMPv3PrivacyType.NO_PRIVACY and snmpv3_privacy_password is None:
-                    raise ValueError(f"Privacy password is required for {service.value} services when the "
-                                     f"authentication type is set to a value other than \"no-authentication\", "
-                                     f"and privacy type is set to a value other than \"no-privacy\".")
-
-                account_data["privacyPassword"] = snmpv3_privacy_password
-
-        if service in (S.SSH, S.SSH_KEY):
-            if ssh_permission_elevation:
-                account_data["permissionElevation"] = ssh_permission_elevation.value
-
-            if ssh_permission_elevation not in (SSHElevationType.NONE, SSHElevationType.PBRUN):
-                if None in (ssh_permission_elevation_username, ssh_permission_elevation_password):
-                    raise ValueError(f"Elevation username and password are required for \"{service.value}\" "
-                                     "services when \"ssh_permission_elevation\" is not \"none\" or \"pbrun\".")
-
-                account_data["permissionElevationUsername"] = ssh_permission_elevation_username
-                account_data["permissionElevationPassword"] = ssh_permission_elevation_password
-
-        if service == S.SSH_KEY:
-            if ssh_key_pem is None:
-                raise ValueError(f"SSH private key is required for {service.value} services.")
-
-            account_data["pemKey"] = ssh_key_pem
-
-            if ssh_private_key_password is None:
-                account_data["privateKeyPassword"] = ssh_private_key_password
+        account_data = create_credential_creation_body(
+            service=service,
+            database_name=database_name,
+            domain=domain,
+            http_realm=http_realm,
+            notes_id_password=notes_id_password,
+            ntlm_hash=ntlm_hash,
+            oracle_enumerate_sids=oracle_enumerate_sids,
+            oracle_listener_password=oracle_listener_password,
+            oracle_sid=oracle_sid,
+            password=password,
+            snmp_community_name=snmp_community_name,
+            snmpv3_authentication_type=snmpv3_authentication_type,
+            snmpv3_privacy_password=snmpv3_privacy_password,
+            snmpv3_privacy_type=snmpv3_privacy_type,
+            ssh_key_pem=ssh_key_pem,
+            ssh_permission_elevation=ssh_permission_elevation,
+            ssh_permission_elevation_password=ssh_permission_elevation_password,
+            ssh_permission_elevation_username=ssh_permission_elevation_username,
+            ssh_private_key_password=ssh_private_key_password,
+            use_windows_authentication=use_windows_authentication,
+            username=username)
 
         post_data = find_valid_params(
             description=description,
@@ -804,116 +716,28 @@ class Client(BaseClient):
         Returns:
             dict: API response with information about the newly created shared credential.
         """
-        account_data: dict = {"service": service.value}
-
-        S = CredentialService  # Simplify object name for shorter lines
-
-        # Services where "username" field is required
-        if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL, S.ORACLE,
-                       S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SNMPV3, S.SSH, S.SSH_KEY, S.SYBASE, S.TELNET):
-            if username is None:
-                raise ValueError(f"Username is required for {service.value} services.")
-
-            account_data["username"] = username
-
-        # Services where "password" field is required
-        if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL,
-                       S.ORACLE, S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SSH, S.SYBASE, S.TELNET):
-            if password is None:
-                raise ValueError(f"Password is required for {service.value} services.")
-
-            account_data["password"] = password
-
-        # Services with optional "useWindowsAuthentication" field.
-        if service in (S.MS_SQL, S.SYBASE) and use_windows_authentication is not None:
-            account_data["useWindowsAuthentication"] = use_windows_authentication
-
-        # Services with optional "domain" field.
-        if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.MS_SQL, S.SYBASE) and domain is not None:
-            if service in (S.MS_SQL, S.SYBASE):
-                if use_windows_authentication:
-                    account_data["domain"] = domain
-
-            else:
-                account_data["domain"] = domain
-
-        # Services with optional "database" field.
-        if service in (S.DB2, S.MS_SQL, S.MYSQL, S.POSTGRESQL, S.SYBASE) and database_name is not None:
-            account_data["database"] = database_name
-
-        if service == S.CIFSHASH:
-            if ntlm_hash is None:
-                raise ValueError(f"NTLM hash is required for {service.value} services.")
-
-            account_data["ntlmHash"] = ntlm_hash
-
-        if service == S.HTTP and http_realm is not None:
-            account_data["realm"] = http_realm
-
-        if service == S.NOTES and notes_id_password is not None:
-            account_data["notesIDPassword"] = notes_id_password
-
-        if service == S.ORACLE:
-            if oracle_sid is not None:
-                account_data["sid"] = oracle_sid
-
-            if oracle_enumerate_sids is not None:
-                account_data["enumerateSids"] = oracle_enumerate_sids
-
-                if oracle_enumerate_sids and oracle_listener_password is None:
-                    raise ValueError("Oracle listener password is required when enumerating SIDs.")
-
-                account_data["oracleListenerPassword"] = oracle_listener_password
-
-        if service == S.SNMP:
-            if snmp_community_name is None:
-                raise ValueError(f"Community name is required for {service.value} services.")
-
-            account_data["community"] = snmp_community_name
-
-        if service == S.SNMPV3:
-            if snmpv3_authentication_type is None:
-                raise ValueError(f"Authentication type is required for {service.value} services.")
-
-            account_data["authenticationType"] = snmpv3_authentication_type.value
-
-            if snmpv3_authentication_type != SNMPv3AuthenticationType.NO_AUTHENTICATION:
-                if password is None:
-                    raise ValueError(f"Password is required for {service.value} services when authentication "
-                                     f"is md5 to anything other than \"no-authentication\".")
-
-                account_data["password"] = password
-
-            if snmpv3_privacy_type is not None:
-                account_data["privacyType"] = snmpv3_privacy_type.value
-
-                if snmpv3_privacy_type != SNMPv3PrivacyType.NO_PRIVACY and snmpv3_privacy_password is None:
-                    raise ValueError(f"Privacy password is required for {service.value} services when the "
-                                     f"authentication type is set to a value other than \"no-authentication\", "
-                                     f"and privacy type is set to a value other than \"no-privacy\".")
-
-                account_data["privacyPassword"] = snmpv3_privacy_password
-
-        if service in (S.SSH, S.SSH_KEY):
-            if ssh_permission_elevation:
-                account_data["permissionElevation"] = ssh_permission_elevation.value
-
-            if ssh_permission_elevation not in (SSHElevationType.NONE, SSHElevationType.PBRUN):
-                if None in (ssh_permission_elevation_username, ssh_permission_elevation_password):
-                    raise ValueError(f"Elevation username and password are required for \"{service.value}\" "
-                                     f"services when permission elevation is not \"none\" or \"pbrun\".")
-
-                account_data["permissionElevationUsername"] = ssh_permission_elevation_username
-                account_data["permissionElevationPassword"] = ssh_permission_elevation_password
-
-        if service == S.SSH_KEY:
-            if ssh_key_pem is None:
-                raise ValueError(f"SSH private key password is required for {service.value} services.")
-
-            account_data["pemKey"] = ssh_key_pem
-
-            if ssh_private_key_password is None:
-                account_data["privateKeyPassword"] = ssh_private_key_password
+        account_data = create_credential_creation_body(
+            service=service,
+            database_name=database_name,
+            domain=domain,
+            http_realm=http_realm,
+            notes_id_password=notes_id_password,
+            ntlm_hash=ntlm_hash,
+            oracle_enumerate_sids=oracle_enumerate_sids,
+            oracle_listener_password=oracle_listener_password,
+            oracle_sid=oracle_sid,
+            password=password,
+            snmp_community_name=snmp_community_name,
+            snmpv3_authentication_type=snmpv3_authentication_type,
+            snmpv3_privacy_password=snmpv3_privacy_password,
+            snmpv3_privacy_type=snmpv3_privacy_type,
+            ssh_key_pem=ssh_key_pem,
+            ssh_permission_elevation=ssh_permission_elevation,
+            ssh_permission_elevation_password=ssh_permission_elevation_password,
+            ssh_permission_elevation_username=ssh_permission_elevation_username,
+            ssh_private_key_password=ssh_private_key_password,
+            use_windows_authentication=use_windows_authentication,
+            username=username)
 
         post_data = find_valid_params(
             description=description,
@@ -1808,116 +1632,28 @@ class Client(BaseClient):
         Returns:
             dict: API response with information about the newly created shared credential.
         """
-        account_data: dict = {"service": service.value}
-
-        S = CredentialService  # Simplify object name for shorter lines
-
-        # Services where "username" field is required
-        if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL, S.ORACLE,
-                       S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SNMPV3, S.SSH, S.SSH_KEY, S.SYBASE, S.TELNET):
-            if username is None:
-                raise ValueError(f"Username is required for {service.value} services.")
-
-            account_data["username"] = username
-
-        # Services where "password" field is required
-        if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.DB2, S.FTP, S.HTTP, S.MS_SQL, S.MYSQL,
-                       S.ORACLE, S.POP, S.POSTGRESQL, S.REMOTE_EXEC, S.SSH, S.SYBASE, S.TELNET):
-            if password is None:
-                raise ValueError(f"Password is required for {service.value} services.")
-
-            account_data["password"] = password
-
-        # Services with optional "useWindowsAuthentication" field.
-        if service in (S.MS_SQL, S.SYBASE) and use_windows_authentication is not None:
-            account_data["useWindowsAuthentication"] = use_windows_authentication
-
-        # Services with optional "domain" field.
-        if service in (S.AS400, S.CIFS, S.CIFSHASH, S.CVS, S.MS_SQL, S.SYBASE) and domain is not None:
-            if service in (S.MS_SQL, S.SYBASE):
-                if use_windows_authentication:
-                    account_data["domain"] = domain
-
-            else:
-                account_data["domain"] = domain
-
-        # Services with optional "database" field.
-        if service in (S.DB2, S.MS_SQL, S.MYSQL, S.POSTGRESQL, S.SYBASE) and database_name is not None:
-            account_data["database"] = database_name
-
-        if service == S.CIFSHASH:
-            if ntlm_hash is None:
-                raise ValueError(f"NTLM hash is required for {service.value} services.")
-
-            account_data["ntlmHash"] = ntlm_hash
-
-        if service == S.HTTP and http_realm is not None:
-            account_data["realm"] = http_realm
-
-        if service == S.NOTES and notes_id_password is not None:
-            account_data["notesIDPassword"] = notes_id_password
-
-        if service == S.ORACLE:
-            if oracle_sid is not None:
-                account_data["sid"] = oracle_sid
-
-            if oracle_enumerate_sids is not None:
-                account_data["enumerateSids"] = oracle_enumerate_sids
-
-                if oracle_enumerate_sids and oracle_listener_password is None:
-                    raise ValueError("Oracle listener password is required when enumerating SIDs.")
-
-                account_data["oracleListenerPassword"] = oracle_listener_password
-
-        if service == S.SNMP:
-            if snmp_community_name is None:
-                raise ValueError(f"Community name is required for {service.value} services.")
-
-            account_data["community"] = snmp_community_name
-
-        if service == S.SNMPV3:
-            if snmpv3_authentication_type is None:
-                raise ValueError(f"Authentication type is required for {service.value} services.")
-
-            account_data["authenticationType"] = snmpv3_authentication_type.value
-
-            if snmpv3_authentication_type != SNMPv3AuthenticationType.NO_AUTHENTICATION:
-                if password is None:
-                    raise ValueError(f"Password is required for {service.value} services when authentication "
-                                     f"is md5 to anything other than \"no-authentication\".")
-
-                account_data["password"] = password
-
-            if snmpv3_privacy_type is not None:
-                account_data["privacyType"] = snmpv3_privacy_type.value
-
-                if snmpv3_privacy_type != SNMPv3PrivacyType.NO_PRIVACY and snmpv3_privacy_password is None:
-                    raise ValueError(f"Privacy password is required for {service.value} services when the "
-                                     f"authentication type is set to a value other than \"no-authentication\", "
-                                     f"and privacy type is set to a value other than \"no-privacy\".")
-
-                account_data["privacyPassword"] = snmpv3_privacy_password
-
-        if service in (S.SSH, S.SSH_KEY):
-            if ssh_permission_elevation:
-                account_data["permissionElevation"] = ssh_permission_elevation.value
-
-            if ssh_permission_elevation not in (SSHElevationType.NONE, SSHElevationType.PBRUN):
-                if None in (ssh_permission_elevation_username, ssh_permission_elevation_password):
-                    raise ValueError(f"Elevation username and password are required for \"{service.value}\" "
-                                     f"services when permission elevation is not \"none\" or \"pbrun\".")
-
-                account_data["permissionElevationUsername"] = ssh_permission_elevation_username
-                account_data["permissionElevationPassword"] = ssh_permission_elevation_password
-
-        if service == S.SSH_KEY:
-            if ssh_key_pem is None:
-                raise ValueError(f"SSH private key password is required for {service.value} services.")
-
-            account_data["pemKey"] = ssh_key_pem
-
-            if ssh_private_key_password is not None:
-                account_data["privateKeyPassword"] = ssh_private_key_password
+        account_data = create_credential_creation_body(
+            service=service,
+            database_name=database_name,
+            domain=domain,
+            http_realm=http_realm,
+            notes_id_password=notes_id_password,
+            ntlm_hash=ntlm_hash,
+            oracle_enumerate_sids=oracle_enumerate_sids,
+            oracle_listener_password=oracle_listener_password,
+            oracle_sid=oracle_sid,
+            password=password,
+            snmp_community_name=snmp_community_name,
+            snmpv3_authentication_type=snmpv3_authentication_type,
+            snmpv3_privacy_password=snmpv3_privacy_password,
+            snmpv3_privacy_type=snmpv3_privacy_type,
+            ssh_key_pem=ssh_key_pem,
+            ssh_permission_elevation=ssh_permission_elevation,
+            ssh_permission_elevation_password=ssh_permission_elevation_password,
+            ssh_permission_elevation_username=ssh_permission_elevation_username,
+            ssh_private_key_password=ssh_private_key_password,
+            use_windows_authentication=use_windows_authentication,
+            username=username)
 
         post_data = find_valid_params(
             description=description,
@@ -2008,116 +1744,28 @@ class Client(BaseClient):
         Returns:
             dict: API response with information about the newly created shared credential.
         """
-        account_data: dict = {"service": service.value}
-
-        s = CredentialService  # Simplify object name for shorter lines
-
-        # Services where "username" field is required
-        if service in (s.AS400, s.CIFS, s.CIFSHASH, s.CVS, s.DB2, s.FTP, s.HTTP, s.MS_SQL, s.MYSQL, s.ORACLE,
-                       s.POP, s.POSTGRESQL, s.REMOTE_EXEC, s.SNMPV3, s.SSH, s.SSH_KEY, s.SYBASE, s.TELNET):
-            if username is None:
-                raise ValueError(f"Username is required for {service.value} services.")
-
-            account_data["username"] = username
-
-        # Services where "password" field is required
-        if service in (s.AS400, s.CIFS, s.CIFSHASH, s.CVS, s.DB2, s.FTP, s.HTTP, s.MS_SQL, s.MYSQL,
-                       s.ORACLE, s.POP, s.POSTGRESQL, s.REMOTE_EXEC, s.SSH, s.SYBASE, s.TELNET):
-            if password is None:
-                raise ValueError(f"Password is required for {service.value} services.")
-
-            account_data["password"] = password
-
-        # Services with optional "useWindowsAuthentication" field.
-        if service in (s.MS_SQL, s.SYBASE) and use_windows_authentication is not None:
-            account_data["useWindowsAuthentication"] = use_windows_authentication
-
-        # Services with optional "domain" field.
-        if service in (s.AS400, s.CIFS, s.CIFSHASH, s.CVS, s.MS_SQL, s.SYBASE) and domain is not None:
-            if service in (s.MS_SQL, s.SYBASE):
-                if use_windows_authentication:
-                    account_data["domain"] = domain
-
-            else:
-                account_data["domain"] = domain
-
-        # Services with optional "database" field.
-        if service in (s.DB2, s.MS_SQL, s.MYSQL, s.POSTGRESQL, s.SYBASE) and database_name is not None:
-            account_data["database"] = database_name
-
-        if service == s.CIFSHASH:
-            if ntlm_hash is None:
-                raise ValueError(f"NTLM hash is required for {service.value} services.")
-
-            account_data["ntlmHash"] = ntlm_hash
-
-        if service == s.HTTP and http_realm is not None:
-            account_data["realm"] = http_realm
-
-        if service == s.NOTES and notes_id_password is not None:
-            account_data["notesIDPassword"] = notes_id_password
-
-        if service == s.ORACLE:
-            if oracle_sid is not None:
-                account_data["sid"] = oracle_sid
-
-            if oracle_enumerate_sids is not None:
-                account_data["enumerateSids"] = oracle_enumerate_sids
-
-                if oracle_enumerate_sids and oracle_listener_password is None:
-                    raise ValueError("Oracle listener password is required when enumerating SIDs.")
-
-                account_data["oracleListenerPassword"] = oracle_listener_password
-
-        if service == s.SNMP:
-            if snmp_community_name is None:
-                raise ValueError(f"Community name is required for {service.value} services.")
-
-            account_data["community"] = snmp_community_name
-
-        if service == s.SNMPV3:
-            if snmpv3_authentication_type is None:
-                raise ValueError(f"Authentication type is required for {service.value} services.")
-
-            account_data["authenticationType"] = snmpv3_authentication_type.value
-
-            if snmpv3_authentication_type != SNMPv3AuthenticationType.NO_AUTHENTICATION:
-                if password is None:
-                    raise ValueError(f"Password is required for {service.value} services when authentication "
-                                     f"is md5 to anything other than \"no-authentication\".")
-
-                account_data["password"] = password
-
-            if snmpv3_privacy_type is not None:
-                account_data["privacyType"] = snmpv3_privacy_type.value
-
-                if snmpv3_privacy_type != SNMPv3PrivacyType.NO_PRIVACY and snmpv3_privacy_password is None:
-                    raise ValueError(f"Privacy password is required for {service.value} services when the "
-                                     f"authentication type is set to a value other than \"no-authentication\", "
-                                     f"and privacy type is set to a value other than \"no-privacy\".")
-
-                account_data["privacyPassword"] = snmpv3_privacy_password
-
-        if service in (s.SSH, s.SSH_KEY):
-            if ssh_permission_elevation:
-                account_data["permissionElevation"] = ssh_permission_elevation.value
-
-            if ssh_permission_elevation not in (SSHElevationType.NONE, SSHElevationType.PBRUN):
-                if None in (ssh_permission_elevation_username, ssh_permission_elevation_password):
-                    raise ValueError(f"Elevation username and password are required for \"{service.value}\" "
-                                     f"services when permission elevation is not \"none\" or \"pbrun\".")
-
-                account_data["permissionElevationUsername"] = ssh_permission_elevation_username
-                account_data["permissionElevationPassword"] = ssh_permission_elevation_password
-
-        if service == s.SSH_KEY:
-            if ssh_key_pem is None:
-                raise ValueError(f"SSH private key password is required for {service.value} services.")
-
-            account_data["pemKey"] = ssh_key_pem
-
-            if ssh_private_key_password is None:
-                account_data["privateKeyPassword"] = ssh_private_key_password
+        account_data = create_credential_creation_body(
+            service=service,
+            database_name=database_name,
+            domain=domain,
+            http_realm=http_realm,
+            notes_id_password=notes_id_password,
+            ntlm_hash=ntlm_hash,
+            oracle_enumerate_sids=oracle_enumerate_sids,
+            oracle_listener_password=oracle_listener_password,
+            oracle_sid=oracle_sid,
+            password=password,
+            snmp_community_name=snmp_community_name,
+            snmpv3_authentication_type=snmpv3_authentication_type,
+            snmpv3_privacy_password=snmpv3_privacy_password,
+            snmpv3_privacy_type=snmpv3_privacy_type,
+            ssh_key_pem=ssh_key_pem,
+            ssh_permission_elevation=ssh_permission_elevation,
+            ssh_permission_elevation_password=ssh_permission_elevation_password,
+            ssh_permission_elevation_username=ssh_permission_elevation_username,
+            ssh_private_key_password=ssh_private_key_password,
+            use_windows_authentication=use_windows_authentication,
+            username=username)
 
         post_data = find_valid_params(
             description=description,
@@ -2436,6 +2084,209 @@ def convert_datetime_str(time_str: str) -> struct_time:
 
     except ValueError:
         return strptime(time_str, "%Y-%m-%dT%H:%M:%SZ")
+
+
+def create_credential_creation_body(service: CredentialService,
+                                    database_name: Optional[str] = None,
+                                    domain: Optional[str] = None,
+                                    http_realm: Optional[str] = None,
+                                    notes_id_password: Optional[str] = None,
+                                    ntlm_hash: Optional[str] = None,
+                                    oracle_enumerate_sids: Optional[bool] = None,
+                                    oracle_listener_password: Optional[str] = None,
+                                    oracle_sid: Optional[str] = None,
+                                    password: Optional[str] = None,
+                                    snmp_community_name: Optional[str] = None,
+                                    snmpv3_authentication_type: Optional[SNMPv3AuthenticationType] = None,
+                                    snmpv3_privacy_password: Optional[str] = None,
+                                    snmpv3_privacy_type: Optional[SNMPv3PrivacyType] = None,
+                                    ssh_key_pem: Optional[str] = None,
+                                    ssh_permission_elevation: Optional[SSHElevationType] = None,
+                                    ssh_permission_elevation_password: Optional[str] = None,
+                                    ssh_permission_elevation_username: Optional[str] = None,
+                                    ssh_private_key_password: Optional[str] = None,
+                                    use_windows_authentication: Optional[bool] = None,
+                                    username: Optional[str] = None) -> dict:
+    """
+    Create `account` body for credential-creation API requests.
+
+        Args:
+            service (CredentialService): Credential service type.
+            database_name (str, optional): Database name.
+            domain (str, optional): Domain address.
+            http_realm (str, optional): HTTP realm.
+            notes_id_password (str, optional): Password for the notes account that will be used for authenticating.
+            ntlm_hash (str, optional): NTLM password hash.
+            oracle_enumerate_sids (bool, optional): Whether the scan engine should attempt to enumerate
+                SIDs from the environment.
+            oracle_listener_password (str, optional): The Oracle Net Listener password.
+                Used to enumerate SIDs from the environment.
+            oracle_sid (str, optional): Oracle database name.
+            password (str, optional): Password for the credential.
+            snmp_community_name (str, optional): SNMP community for authentication.
+            snmpv3_authentication_type (SNMPv3AuthenticationType): SNMPv3 authentication type for the credential.
+            snmpv3_privacy_password (str, optional): SNMPv3 privacy password to use.
+            snmpv3_privacy_type (SNMPv3PrivacyType, optional): SNMPv3 Privacy protocol to use.
+            ssh_key_pem (str, optional): PEM formatted private key.
+            ssh_permission_elevation (SSHElevationType, optional): Elevation type to use for scans.
+            ssh_permission_elevation_password (str, optional): Password to use for elevation.
+            ssh_permission_elevation_username (str, optional): Username to use for elevation.
+            ssh_private_key_password (str, optional): Password for the private key.
+            use_windows_authentication (bool, optional): Whether to use Windows authentication.
+            username (str, optional): Username for the credential.
+
+        Returns:
+            dict: `account` body to use for credential-creation API requests.
+    """
+    missing_params: List[str] = []
+    special_validation_errors: List[str] = []
+
+    account_data: dict = {"service": service.value}
+
+    s = CredentialService  # Simplify object name for shorter lines
+
+    # Services where "username" field is required
+    if service in (s.AS400, s.CIFS, s.CIFSHASH, s.CVS, s.DB2, s.FTP, s.HTTP, s.MS_SQL, s.MYSQL, s.ORACLE,
+                   s.POP, s.POSTGRESQL, s.REMOTE_EXEC, s.SNMPV3, s.SSH, s.SSH_KEY, s.SYBASE, s.TELNET):
+        if username is None:
+            missing_params.append("Username")
+
+        else:
+            account_data["username"] = username
+
+    # Services where "password" field is required
+    if service in (s.AS400, s.CIFS, s.CIFSHASH, s.CVS, s.DB2, s.FTP, s.HTTP, s.MS_SQL, s.MYSQL,
+                   s.ORACLE, s.POP, s.POSTGRESQL, s.REMOTE_EXEC, s.SSH, s.SYBASE, s.TELNET):
+        if password is None:
+            missing_params.append("Password")
+
+        else:
+            account_data["password"] = password
+
+    # Services with optional "useWindowsAuthentication" field.
+    if service in (s.MS_SQL, s.SYBASE) and use_windows_authentication is not None:
+        account_data["useWindowsAuthentication"] = use_windows_authentication
+
+    # Services with optional "domain" field.
+    if service in (s.AS400, s.CIFS, s.CIFSHASH, s.CVS, s.MS_SQL, s.SYBASE) and domain is not None:
+        if service in (s.MS_SQL, s.SYBASE):
+            if use_windows_authentication:
+                account_data["domain"] = domain
+
+        else:
+            account_data["domain"] = domain
+
+    # Services with optional "database" field.
+    if service in (s.DB2, s.MS_SQL, s.MYSQL, s.POSTGRESQL, s.SYBASE) and database_name is not None:
+        account_data["database"] = database_name
+
+    if service == s.CIFSHASH:
+        if ntlm_hash is None:
+            missing_params.append("NTLM hash")
+
+        else:
+            account_data["ntlmHash"] = ntlm_hash
+
+    if service == s.HTTP and http_realm is not None:
+        account_data["realm"] = http_realm
+
+    if service == s.NOTES and notes_id_password is not None:
+        account_data["notesIDPassword"] = notes_id_password
+
+    if service == s.ORACLE:
+        if oracle_sid is not None:
+            account_data["sid"] = oracle_sid
+
+        if oracle_enumerate_sids is not None:
+            account_data["enumerateSids"] = oracle_enumerate_sids
+
+            if oracle_enumerate_sids and oracle_listener_password is None:
+                missing_params.append("Oracle Listener Password")
+
+            else:
+                account_data["oracleListenerPassword"] = oracle_listener_password
+
+    if service == s.SNMP:
+        if snmp_community_name is None:
+            missing_params.append("Community Name")
+
+        else:
+            account_data["community"] = snmp_community_name
+
+    if service == s.SNMPV3:
+        if snmpv3_authentication_type is None:
+            missing_params.append("Authentication Type")
+
+        else:
+            account_data["authenticationType"] = snmpv3_authentication_type.value
+
+        if snmpv3_authentication_type != SNMPv3AuthenticationType.NO_AUTHENTICATION:
+            if password is None:
+                special_validation_errors.append(f"Password is required for {service.value} services "
+                                                 "when authentication type is set to anything other "
+                                                 "than \"no-authentication\".")
+
+            else:
+                account_data["password"] = password
+
+        if snmpv3_privacy_type is not None:
+            account_data["privacyType"] = snmpv3_privacy_type.value
+
+            if snmpv3_privacy_type != SNMPv3PrivacyType.NO_PRIVACY and snmpv3_privacy_password is None:
+                special_validation_errors.append(f"Privacy password is required for {service.value} services when the "
+                                                 f"authentication type is set to any value other than "
+                                                 f"\"no-authentication\", and privacy type is set to any value other "
+                                                 f"than \"no-privacy\".")
+
+            else:
+                account_data["privacyPassword"] = snmpv3_privacy_password
+
+    if service in (s.SSH, s.SSH_KEY):
+        if ssh_permission_elevation:
+            account_data["permissionElevation"] = ssh_permission_elevation.value
+
+        if ssh_permission_elevation not in (SSHElevationType.NONE, SSHElevationType.PBRUN):
+            missing_elevation_params: List[str] = []
+
+            if ssh_permission_elevation_username is None:
+                missing_elevation_params.append("Elevation Username")
+
+            else:
+                account_data["permissionElevationUsername"] = ssh_permission_elevation_username
+
+            if ssh_permission_elevation_password is None:
+                missing_elevation_params.append("Elevation Password")
+
+            else:
+                account_data["permissionElevationPassword"] = ssh_permission_elevation_password
+
+            if len(missing_elevation_params) > 0:
+                special_validation_errors.append(f"{', '.join(missing_elevation_params)} are required for "
+                                                 f"\"{service.value}\" services when \"ssh_permission_elevation\" "
+                                                 f"is not set to \"none\" or \"pbrun\".")
+
+    if service == s.SSH_KEY:
+        if ssh_key_pem is None:
+            missing_params.append("SSH Key PEM")
+
+        else:
+            account_data["pemKey"] = ssh_key_pem
+
+        if ssh_private_key_password is None:
+            account_data["privateKeyPassword"] = ssh_private_key_password
+
+    error_message: str = ""
+    if len(missing_params) > 0:
+        error_message += f"Missing required parameters for \"{service.value}\": {', '.join(missing_params)}.\n"
+
+    if len(special_validation_errors) > 0:
+        for special_validation_error in special_validation_errors:
+            error_message += f"{special_validation_error}\n"
+
+    if error_message:
+        raise ValueError(error_message.rstrip("\n"))
+
+    return account_data
 
 
 def create_report(client: Client, scope: dict[str, Any], template_id: Optional[str] = None,
