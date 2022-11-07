@@ -109,4 +109,6 @@ def main() -> None:
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
+    from GSuiteApiModule import *
+    temp = GSuiteClient.strip_dict(demisto.args())
     main()
