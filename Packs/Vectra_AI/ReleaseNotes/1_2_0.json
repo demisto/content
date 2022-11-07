@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "Some command outputs name were aligned with existing ones 'Vectra.xxx' instead of 'vectra.xxx'"
-}
