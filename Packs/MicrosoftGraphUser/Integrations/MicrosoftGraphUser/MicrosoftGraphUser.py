@@ -1,8 +1,8 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
 from typing import Dict
 from urllib.parse import quote
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 # disable insecure warnings
 
@@ -76,6 +76,15 @@ def get_unsupported_chars_in_user(user: Optional[str]) -> set:
     if not user:
         return set([])
     return set(INVALID_USER_CHARS_REGEX.findall(user))
+
+
+def parse_signins_timestamp(ago):
+    """
+    Formats the timestamp required for filtering with 'createdDateTime' in auditLogs/signIns
+    """
+    created_date_str = dateparser.parse(ago).isoformat()
+    created_date = dateparser.parse(created_date_str)
+    return created_date.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 class MsGraphClient:
@@ -227,6 +236,41 @@ class MsGraphClient:
             url_suffix=f'users/{quote(user)}/revokeSignInSessions',
             resp_type="text"
         )
+
+    def get_signins(self, user: str, ago: str, ofilter: str, page_size: int, page_url: str):
+        if page_url:
+            response = self.ms_client.http_request(method='GET', url_suffix='auditLogs/signIns', full_url=page_url)
+        else:
+            filters = f"$filter=createdDateTime ge {parse_signins_timestamp(ago)}"
+            if user:
+                filters += f" and userPrincipalName eq '{user}'"
+            if ofilter:
+                filters += f" and {ofilter}"
+            response = self.ms_client.http_request(method='GET', url_suffix=f"auditLogs/signIns?{filters}&$top={page_size}")
+        next_page_url = response.get('@odata.nextLink')
+        signins = response.get('value')
+        return signins, next_page_url
+
+    def force_user_password_change(self, user: str, revoke_sessions: bool):
+        body = {
+            "passwordProfile":
+                {
+                    "forceChangePasswordNextSignInWithMfa": True
+                }
+        }
+
+        if revoke_sessions:
+            self.ms_client.http_request(
+                method='POST',
+                url_suffix=f'users/{quote(user)}/revokeSignInSessions',
+                resp_type="text"
+            )
+
+        self.ms_client.http_request(
+            method='PATCH',
+            url_suffix=f'users/{quote(user)}',
+            json_data=body,
+            resp_type="text")
 
 
 def suppress_errors_with_404_code(func):
@@ -460,6 +504,35 @@ def revoke_user_session_command(client: MsGraphClient, args: Dict):
     return human_readable, None, None
 
 
+@suppress_errors_with_404_code
+def get_user_signins_command(client: MsGraphClient, args: Dict):
+    user = args.get('user', None)
+    ago = args.get('ago', '6 hours ago')
+    ofilter = args.get('filter', None)
+    page_size = args.get('page_size', '100')
+    next_page = args.get('next_page', None)
+    users_data, result_next_page = client.get_signins(user, ago, ofilter, page_size, next_page)
+    users_readable, users_outputs = parse_outputs(users_data)
+    metadata = None
+    outputs = {'MSGraphUser(val.ID == obj.ID)': users_outputs}
+    if result_next_page:
+        metadata = "To get further results, enter this to the next_page parameter:\n" + str(result_next_page)
+        # .NextPage.indexOf(\'http\')>=0 : will make sure the NextPage token will always be updated because it's a url
+        outputs['MSGraphUser(val.NextPage.indexOf(\'http\')>=0)'] = {'NextPage': result_next_page}
+    name = f"{user}'s sign-in activity the last {ago}" if user else f"Sign-in activity the last {ago}"
+    human_readable = tableToMarkdown(name=name, t=users_readable, removeNull=True, metadata=metadata)
+    return human_readable, outputs, users_data
+
+
+@suppress_errors_with_404_code
+def force_user_password_change_command(client: MsGraphClient, args: Dict):
+    user = str(args.get('user'))
+    revoke_sessions = args.get('revoke_sessions', 'true') == 'true'
+    client.force_user_password_change(user, revoke_sessions)
+    human_readable = f'Successfully reset the password for {user}. The user must perform a multi-factor authentication (MFA) before being forced to change their password.'
+    return human_readable, {}, {}
+
+
 def main():
     params: dict = demisto.params()
     url = params.get('host', '').rstrip('/') + '/v1.0/'
@@ -500,6 +573,8 @@ def main():
         'msgraph-user-get-manager': get_manager_command,
         'msgraph-user-assign-manager': assign_manager_command,
         'msgraph-user-session-revoke': revoke_user_session_command,
+        'msgraph-user-get-signins': get_user_signins_command,
+        'msgraph-user-password-reset': force_user_password_change_command,
     }
     command = demisto.command()
     LOG(f'Command being called is {command}')
