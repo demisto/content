@@ -10,6 +10,7 @@
 	"overrideCommand": false,
 	"mounts": [
 		"source=venv,target=${containerWorkspaceFolder}/.venv,type=volume",
+		"source=poetry-venv,target=/home/demisto/.cache/pypoetry,type=volume",
 		"source=node-modules,target=${containerWorkspaceFolder}/node_modules,type=volume",
 		"source=dind-var-lib-docker,target=/var/lib/docker,type=volume"
 	],
@@ -20,7 +21,17 @@
 			"zsh": {
 				"path": "/bin/zsh"
 			}
-		}
+		},
+		"cSpell.words": [
+			"demisto",
+			"xsoar",
+			"xsiam",
+			"fromversion",
+			"toversion",
+			"marketplacev",
+			"ciac",
+			"whois",
+		]
 	},
 	"extensions": [
 		"cortexxsoarext.xsoar",
@@ -43,7 +54,8 @@
 		"mikestead.dotenv",
 		"KevinRose.vsc-python-indent",
 		"rangav.vscode-thunder-client",
-		"ms-python.black-formatter"
+		"ms-python.black-formatter",
+		"LittleFoxTeam.vscode-python-test-adapter"
 	],
 	"remoteEnv": {
 		"LOCAL_WORKSPACE_PATH": "${localWorkspaceFolder}",
@@ -79,5 +91,5 @@
 	// "overrideFeatureInstallOrder": [
 	// 	"ghcr.io/devcontainers/features/common-utils:1"
 	// ],
-	"onCreateCommand": "dos2unix .devcontainer/createCommand.sh && chmod +x .devcontainer/createCommand.sh && bash .devcontainer/createCommand.sh"
+	"onCreateCommand": "dos2unix .devcontainer/createCommand.sh && chmod +x .devcontainer/createCommand.sh && bash .devcontainer/createCommand.sh",
 }

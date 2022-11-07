@@ -29,7 +29,6 @@ RUN VERSION="lts" bash install-node.sh
 RUN curl -sSL https://install.python-poetry.org | python3 - \
     && python -m pip install --user pipx \
     && python -m pipx ensurepath \
-    && git config --global http.sslCAInfo /usr/local/share/ca-certificates/certs.crt \
     && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $HOME/.zsh/zsh-syntax-highlighting \
     && echo "source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> $HOME/.zshrc \
     && git clone https://github.com/zsh-users/zsh-autosuggestions $HOME/.zsh/zsh-autosuggestions \

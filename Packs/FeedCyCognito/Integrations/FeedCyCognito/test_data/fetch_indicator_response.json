@@ -1,0 +1,384 @@
+[
+    {
+        "severe_issues": 1,
+        "last_seen": "2022-03-31T03:39:22.568Z",
+        "tags": [
+            "Vulnerable Software",
+            "Red Hat"
+        ],
+        "id": "ip/127.0.0.1",
+        "first_seen": "2022-03-23T12:36:17.808Z",
+        "open_ports": [
+            {
+                "status": "open",
+                "port": 3306,
+                "protocol": "tcp"
+            }
+        ],
+        "investigation_status": "investigated",
+        "status": "new",
+        "locations": [
+            "MYS"
+        ],
+        "dynamically_resolved": "no",
+        "ip": "127.0.0.1",
+        "security_grade": "F",
+        "domains": [],
+        "type": "ip",
+        "closed_ports": [
+            {
+                "status": "closed",
+                "port": 3389,
+                "protocol": "tcp"
+            }
+        ],
+        "organizations": [
+            "Acme Corporation"
+        ],
+        "discoverability": "Extreme",
+        "hosting_type": "owned",
+        "alive": true,
+        "comment": null,
+        "issues_count": 1
+    },
+    {
+        "severe_issues": 1,
+        "last_seen": "2022-03-31T03:39:22.568Z",
+        "tags": [
+            "Block Cipher"
+        ],
+        "id": "ip/127.0.0.2",
+        "first_seen": "2022-03-23T12:27:04.354Z",
+        "open_ports": [
+            {
+                "status": "open",
+                "port": 587,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 21,
+                "protocol": "tcp"
+            }
+        ],
+        "investigation_status": "investigated",
+        "status": "new",
+        "locations": [
+            "MYS"
+        ],
+        "dynamically_resolved": "no",
+        "ip": "127.0.0.2",
+        "security_grade": "F",
+        "domains": [],
+        "type": "ip",
+        "closed_ports": [
+            {
+                "status": "closed",
+                "port": 3389,
+                "protocol": "tcp"
+            }
+        ],
+        "organizations": [
+            "Acme Corporation"
+        ],
+        "discoverability": "Extreme",
+        "hosting_type": "owned",
+        "alive": true,
+        "comment": null,
+        "issues_count": 2
+    },
+    {
+        "severe_issues": 1,
+        "last_seen": "2022-03-31T03:39:22.568Z",
+        "tags": [],
+        "id": "ip/127.0.0.3",
+        "first_seen": "2022-03-23T12:38:19.520Z",
+        "open_ports": [
+            {
+                "status": "open",
+                "port": 9999,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 2000,
+                "protocol": "tcp"
+            }
+        ],
+        "investigation_status": "uninvestigated",
+        "status": "new",
+        "locations": [
+            "IND"
+        ],
+        "dynamically_resolved": "no",
+        "ip": "127.0.0.3",
+        "security_grade": "F",
+        "domains": [],
+        "type": "ip",
+        "closed_ports": [
+            {
+                "status": "closed",
+                "port": 3389,
+                "protocol": "tcp"
+            },
+            {
+                "status": "closed",
+                "port": 1723,
+                "protocol": "tcp"
+            }
+        ],
+        "organizations": [
+            "Acme Interior Design"
+        ],
+        "discoverability": "High",
+        "hosting_type": "owned",
+        "alive": true,
+        "comment": null,
+        "issues_count": 1
+    },
+    {
+        "severe_issues": 1,
+        "last_seen": "2022-03-31T03:39:22.568Z",
+        "tags": [],
+        "id": "ip/127.0.0.4",
+        "first_seen": "2022-03-23T12:38:44.208Z",
+        "open_ports": [
+            {
+                "status": "open",
+                "port": 2000,
+                "protocol": "tcp"
+            }
+        ],
+        "investigation_status": "investigating",
+        "status": "new",
+        "locations": [
+            "HKG"
+        ],
+        "dynamically_resolved": "no",
+        "ip": "127.0.0.4",
+        "security_grade": "F",
+        "domains": [],
+        "type": "ip",
+        "closed_ports": [
+            {
+                "status": "closed",
+                "port": 3389,
+                "protocol": "tcp"
+            },
+            {
+                "status": "closed",
+                "port": 3306,
+                "protocol": "tcp"
+            }
+        ],
+        "organizations": [
+            "Acme Corporation"
+        ],
+        "discoverability": "Extreme",
+        "hosting_type": "owned",
+        "alive": true,
+        "comment": null,
+        "issues_count": 1
+    },
+    {
+        "severe_issues": 1,
+        "last_seen": "2022-03-31T03:39:22.568Z",
+        "tags": [
+            "Open Ports"
+        ],
+        "id": "ip/127.0.0.5",
+        "first_seen": "2022-03-23T12:27:29.407Z",
+        "open_ports": [
+            {
+                "status": "open",
+                "port": 587,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 143,
+                "protocol": "tcp"
+            }
+        ],
+        "investigation_status": "investigated",
+        "status": "new",
+        "locations": [
+            "HKG"
+        ],
+        "dynamically_resolved": "no",
+        "ip": "127.0.0.5",
+        "security_grade": "F",
+        "domains": [],
+        "type": "ip",
+        "closed_ports": [
+            {
+                "status": "closed",
+                "port": 110,
+                "protocol": "tcp"
+            }
+        ],
+        "organizations": [
+            "Acme Corporation"
+        ],
+        "discoverability": "Extreme",
+        "hosting_type": "owned",
+        "alive": true,
+        "comment": null,
+        "issues_count": 2
+    },
+    {
+        "severe_issues": 1,
+        "last_seen": "2022-03-31T03:39:22.568Z",
+        "tags": [],
+        "id": "ip/127.0.0.6",
+        "first_seen": "2022-03-23T12:26:56.446Z",
+        "open_ports": [
+            {
+                "status": "open",
+                "port": 3389,
+                "protocol": "tcp"
+            }
+        ],
+        "investigation_status": "uninvestigated",
+        "status": "new",
+        "locations": [
+            "FRA"
+        ],
+        "dynamically_resolved": "no",
+        "ip": "127.0.0.6",
+        "security_grade": "F",
+        "domains": [],
+        "type": "ip",
+        "closed_ports": [],
+        "organizations": [
+            "ACME Studio"
+        ],
+        "discoverability": "High",
+        "hosting_type": "owned",
+        "alive": true,
+        "comment": null,
+        "issues_count": 1
+    },
+    {
+        "severe_issues": 1,
+        "last_seen": "2022-03-31T03:39:22.568Z",
+        "tags": [
+            "Exposed Service"
+        ],
+        "id": "ip/127.0.0.7",
+        "first_seen": "2022-03-23T12:38:27.441Z",
+        "open_ports": [
+            {
+                "status": "open",
+                "port": 3389,
+                "protocol": "tcp"
+            }
+        ],
+        "investigation_status": "investigated",
+        "status": "new",
+        "locations": [
+            "MYS"
+        ],
+        "dynamically_resolved": "no",
+        "ip": "127.0.0.7",
+        "security_grade": "F",
+        "domains": [],
+        "type": "ip",
+        "closed_ports": [
+            {
+                "status": "closed",
+                "port": 3306,
+                "protocol": "tcp"
+            },
+            {
+                "status": "closed",
+                "port": 5986,
+                "protocol": "tcp"
+            }
+        ],
+        "organizations": [
+            "Acme Corporation"
+        ],
+        "discoverability": "Extreme",
+        "hosting_type": "owned",
+        "alive": true,
+        "comment": null,
+        "issues_count": 3
+    },
+    {
+        "severe_issues": 1,
+        "last_seen": "2022-03-31T03:39:22.568Z",
+        "tags": [
+            "Vulnerable Library"
+        ],
+        "id": "ip/127.0.0.8",
+        "first_seen": "2022-03-23T12:26:59.305Z",
+        "open_ports": [
+            {
+                "status": "open",
+                "port": 443,
+                "protocol": "tcp"
+            }
+        ],
+        "investigation_status": "investigated",
+        "status": "new",
+        "locations": [
+            "USA"
+        ],
+        "dynamically_resolved": "no",
+        "ip": "127.0.0.8",
+        "security_grade": "F",
+        "domains": [],
+        "type": "ip",
+        "closed_ports": [],
+        "organizations": [
+            "ACME Ticketing",
+            "ACME Cleantech Solutions",
+            "Acme Holdings"
+        ],
+        "discoverability": "Moderate",
+        "hosting_type": "cloud",
+        "alive": true,
+        "comment": null,
+        "issues_count": 1
+    },
+    {
+        "severe_issues": 2,
+        "last_seen": "2022-03-31T03:39:22.568Z",
+        "tags": [],
+        "id": "ip/127.0.0.9",
+        "first_seen": "2022-03-14T14:08:29.718Z",
+        "open_ports": [
+            {
+                "status": "open",
+                "port": 3306,
+                "protocol": "tcp"
+            }
+        ],
+        "investigation_status": "uninvestigated",
+        "status": "new",
+        "locations": [
+            "MYS"
+        ],
+        "dynamically_resolved": "no",
+        "ip": "127.0.0.9",
+        "security_grade": "F",
+        "domains": [],
+        "type": "ip",
+        "closed_ports": [
+            {
+                "status": "closed",
+                "port": 3389,
+                "protocol": "tcp"
+            }
+        ],
+        "organizations": [
+            "Acme Corporation"
+        ],
+        "discoverability": "Extreme",
+        "hosting_type": "owned",
+        "alive": true,
+        "comment": null,
+        "issues_count": 3
+    }
+]
