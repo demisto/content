@@ -10,9 +10,9 @@
           "myTestPlaybook"
         ]
       },
-      "mySkippedIntegration": {
-        "name": "mySkippedIntegration",
-        "file_path": "Packs/myPack/Integrations/mySkippedIntegration/mySkippedIntegration.yml",
+      "myDeprecatedIntegration": {
+        "name": "myDeprecatedIntegration",
+        "file_path": "Packs/myPack/Integrations/myDeprecatedIntegration/myDeprecatedIntegration.yml",
         "pack": "myPack",
         "tests": [
           "myOtherTestPlaybook"

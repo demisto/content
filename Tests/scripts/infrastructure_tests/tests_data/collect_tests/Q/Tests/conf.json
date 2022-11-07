@@ -5,14 +5,11 @@
       "playbookID": "myTestPlaybook"
     },
     {
-      "integrations": "mySkippedIntegration",
+      "integrations": "myDeprecatedIntegration",
       "playbookID": "myOtherTestPlaybook"
     }
   ],
   "skipped_tests": {},
-  "skipped_integrations": {
-    "mySkippedIntegration": "Skipped for testing skipped_integrations in case J"
-  },
   "nightly_packs": [
     "myPack"
   ],
