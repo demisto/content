@@ -2,21 +2,27 @@ category: Analytics & SIEM
 commonfields:
   id: SplunkPy
   version: -1
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - display: Host - IP (x.x.x.x)
   name: host
   required: true
   type: 0
+  section: Connect
 - display: Username
   name: authentication
   required: true
   type: 9
+  section: Connect
 - defaultvalue: '8089'
   display: Port
   name: port
   required: true
   type: 0
-- additionalinfo: The Splunk search query by which to fetch events. The default query fetches ES notable events. You can edit this query to fetch other types of events. Note, that to fetch ES noatable events, make sure to include the \`notable\` macro in your query.
+  section: Connect
+- additionalinfo: The Splunk search query by which to fetch events. The default query fetches ES notable events. You can edit this query to fetch other types of events. Note, that to fetch ES notable events, make sure to include the \`notable\` macro in your query.
   defaultvalue: search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain) | expandtoken
   display: Fetch events query
   name: fetchQuery
@@ -27,56 +33,74 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - defaultvalue: 'true'
   display: Use Splunk Clock Time For Fetch
   name: useSplunkTime
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - defaultvalue: 'false'
   display: Parse Raw Part of Notable Events
   name: parseNotableEventsRaw
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - defaultvalue: 'false'
   display: Replace with Underscore in Incident Fields
   name: replaceKeys
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - display: Timezone of the Splunk server, in minutes. For example, if GMT is gmt +3, set timezone to +180. For UTC, set the timezone to 0. (Set only if the Splunk server is different than the Cortex XSOAR server.) Relevant only for fetching and mirroring notable events.
   name: timezone
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - additionalinfo: The amount of time to go back when performing the first fetch, or when creating a mapping using the Select Schema option.
   defaultvalue: 10 minutes
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: fetch_time
   required: false
   type: 0
+  section: Collect
 - display: Extract Fields - CSV fields that will be parsed out of _raw notable events
   name: extractFields
   required: false
   type: 12
+  section: Collect
+  advanced: true
 - additionalinfo: Used only for mapping with the Select Schema option. The name of the field that contains the type of the event or alert. The default value is "source", which is a good option for notable events. However, you may choose any custom field.
   defaultvalue: source
   display: Event Type Field
   name: type_field
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - additionalinfo: If selected, when creating a mapper using the `Select Schema` feature (supported from Cortex XSOAR V6.0), the Splunk CIM field will be pulled. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more information.
   defaultvalue: 'false'
   display: Use CIM Schemas for Mapping
   name: use_cim
   required: false
   type: 8
-- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Splunk to XSOAR), Outgoing (from XSOAR to Splunk), or Incoming and Outgoing (from/to XSOAR and Splunk).'
+  section: Collect
+  advanced: true
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Splunk to Cortex XSOAR), Outgoing (from Cortex XSOAR to Splunk), or Incoming and Outgoing (from/to Cortex XSOAR and Splunk).'
   defaultvalue: None
   display: Incident Mirroring Direction
   name: mirror_direction
@@ -87,42 +111,59 @@ configuration:
   - Incoming And Outgoing
   required: false
   type: 15
+  section: Collect
 - additionalinfo: When selected, closing the Splunk notable event is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
   name: close_incident
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Splunk.
   defaultvalue: 'false'
   display: Close Mirrored Splunk Notable Event
   name: close_notable
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: unsecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: The app context of the namespace
   name: app
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - display: HEC Token (HTTP Event Collector)
   name: hec_token
   required: false
   type: 4
+  section: Collect
+  advanced: true
 - display: 'HEC BASE URL (e.g: https://localhost:8088 or https://example.splunkcloud.com/).'
   name: hec_url
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - display: Use Python requests handler
   name: use_requests_handler
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - additionalinfo: Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual (without enrichment). For more info about enrichment types see the integration additional info.
   display: Enrichment Types
   name: enabled_enrichments
@@ -132,61 +173,83 @@ configuration:
   - Identity
   required: false
   type: 16
+  section: Collect
+  advanced: true
 - additionalinfo: When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
   defaultvalue: '5'
   display: Enrichment Timeout (Minutes)
   name: enrichment_timeout
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - additionalinfo: The limit of how many events to retrieve per each one of the enrichment types (Drilldown, Asset, and Identity). To retrieve all events, enter "0" (not recommended).
   defaultvalue: '20'
   display: Number of Events Per Enrichment Type
   name: num_enrichment_events
   required: false
   type: 0
-- display: 'Advanced: Extensive logging (for debugging purposes) - Please do not use this option unless advised otherwise.'
+  section: Collect
+  advanced: true
+- display: 'Advanced: Extensive logging (for debugging purposes). Do not use this option unless advised otherwise.'
   name: extensive_logs
   required: false
   type: 8
-- additionalinfo: The fetch time range will be at least of the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk. To decide how long the backwards window should be, you need to analyze what is the average time between them both on your splunk envorinment.
+  section: Collect
+  advanced: true
+- additionalinfo: The fetch time range will be at least the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk. To decide how long the backwards window should be, you need to determine the average time between them both in your Splunk environment.
   defaultvalue: '15'
   display: 'Advanced: Fetch backwards window for the events occurrence time (minutes)'
   name: occurrence_look_behind
   required: false
   type: 0
-- additionalinfo: Use this parameter to specify a list of comma separated fields, which together are a unique identifier for the events you wish to fetch.
+  section: Collect
+  advanced: true
+- additionalinfo: A comma-separated list of fields, which together are a unique identifier for the events to fetch in order to avoid fetching duplicates incidents.
   display: 'Advanced: Unique ID fields'
   name: unique_id_fields
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - defaultvalue: 'false'
   display: Enable user mapping
   name: userMapping
   required: false
   type: 8
-- additionalinfo: The name of the lookup table in splunk, containing the username's mapping data.
+  section: Collect
+  advanced: true
+- additionalinfo: The name of the lookup table in Splunk, containing the username's mapping data.
   defaultvalue: splunk_xsoar_users
   display: Users Lookup table name
   name: user_map_lookup_name
   required: false
   type: 0
-- additionalinfo: The name of the lookup column containing the xsoar username.
+  section: Connect
+  advanced: true
+- additionalinfo: The name of the lookup column containing the Cortex XSOAR username.
   defaultvalue: xsoar_username
   display: XSOAR user key
   name: xsoar_user_field
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - additionalinfo: The name of the lookup table containing the Splunk username.
   defaultvalue: splunk_username
   display: SPLUNK user key
   name: splunk_user_field
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
   type: 19
+  section: Collect
+  advanced: true
 description: Runs queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
@@ -415,7 +478,7 @@ script:
     name: splunk-kv-store-collection-data-list
     outputs:
     - contextPath: Splunk.KVstoreData
-      description: An array of collection names. Each collection name will have an array of values, e.g., Splunk.KVstoreData.<colletion_name> is a list of the data in the collection).
+      description: An array of collection names. Each collection name will have an array of values, e.g., Splunk.KVstoreData.<collection_name> is a list of the data in the collection).
       type: Unknown
   - arguments:
     - default: true
@@ -491,12 +554,12 @@ script:
       name: id
       required: true
     - defaultValue: '0'
-      description: ISO format date with timezone, e.g. 2021-02-09T16:41:30.589575+02:00. The incident is only updated if it was modified after the last update time.
+      description: ISO format date with timezone, e.g., 2021-02-09T16:41:30.589575+02:00. The incident is only updated if it was modified after the last update time.
       name: lastUpdate
     description: Gets data from a notable event. This method does not update the current incident, and should be used for debugging purposes.
     name: get-remote-data
   - arguments:
-    - description: ISO format date with timezone, e.g. 2021-02-09T16:41:30.589575+02:00. The incident is only returned if it was modified after the last update time.
+    - description: ISO format date with timezone, e.g., 2021-02-09T16:41:30.589575+02:00. The incident is only returned if it was modified after the last update time.
       name: lastUpdate
     description: Gets the list of notable events that were modified since the last update. This command should be used for debugging purposes, and is available from Cortex XSOAR version 6.1.
     name: get-modified-remote-data
@@ -505,18 +568,18 @@ script:
     arguments: []
   - arguments:
     - default: true
-      description: Xsoar username to match in splunk's usernames records.
+      description: Cortex XSOAR username to match in Splunk's usernames records.
       isArray: true
       name: xsoar_username
       required: true
-    description: Returns the Splunk's username matching the given Xsoar's username.
+    description: Returns the Splunk's username matching the given Cortex XSOAR's username.
     name: splunk-get-username-by-xsoar-user
     outputs:
     - contextPath: Splunk.UserMapping.XsoarUser
-      description: xsoar user mapping.
+      description: Cortex XSOAR user mapping.
       type: String
     - contextPath: Splunk.UserMapping.SplunkUser
-      description: splunk user mapping.
+      description: Splunk user mapping.
       type: String
   dockerimage: demisto/splunksdk:1.0.0.33029
   isfetch: true
