@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Iterable, Optional, Sequence, Union
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions, CONTENT_ENTITIES_DIRS
-from demisto_sdk.commands.common.tools import find_type, str2bool
+from demisto_sdk.commands.common.tools import find_type, str2bool, get_yaml
 
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.constants import (
@@ -400,6 +400,7 @@ class TestCollector(ABC):
         self._validate_path(path)
         if is_integration:
             self.__validate_skipped_integration(id_, path)
+            self.__validate_deprecated_integration(path)
         self.__validate_marketplace_compatibility(marketplaces or (), path)
         self.__validate_support_level_is_xsoar(pack_id, version_range)
 
@@ -474,6 +475,13 @@ class TestCollector(ABC):
     def __validate_skipped_integration(self, id_: str, path: Path):
         if id_ in self.conf.skipped_integrations:
             raise NothingToCollectException(path, 'integration is skipped')
+
+    @staticmethod
+    def __validate_deprecated_integration(path: Path):
+        if path.suffix == '.yml':
+            yml_dict = get_yaml(path)
+            if yml_dict.get('deprecated'):
+                raise NothingToCollectException(path, 'integration is deprecated')
 
     def __validate_triggering_sanity_test(self, path: Path):
         if path in PATHS.files_triggering_sanity_tests:
