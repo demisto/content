@@ -5,17 +5,17 @@ from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 from enum import Enum
 from pathlib import Path
-from typing import Iterable, Optional, Sequence
+from typing import Iterable, Optional, Sequence, Union
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions, CONTENT_ENTITIES_DIRS
 from demisto_sdk.commands.common.tools import find_type, str2bool
 
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.constants import (
-    ALWAYS_INSTALLED_PACKS, DEFAULT_MARKETPLACE_WHEN_MISSING,
+    ALWAYS_INSTALLED_PACKS_XSOAR, DEFAULT_MARKETPLACE_WHEN_MISSING,
     DEFAULT_REPUTATION_TESTS, IGNORED_FILE_TYPES, NON_CONTENT_FOLDERS,
     ONLY_INSTALL_PACK_FILE_TYPES, SANITY_TEST_TO_PACK,
-    SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, XSOAR_SANITY_TEST_NAMES)
+    SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, XSOAR_SANITY_TEST_NAMES, ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2)
 from Tests.scripts.collect_tests.exceptions import (
     DeprecatedPackException, IncompatibleMarketplaceException,
     InvalidTestException, NonDictException, NonXsoarSupportedPackException,
@@ -23,7 +23,7 @@ from Tests.scripts.collect_tests.exceptions import (
     NotUnderPackException, PrivateTestException, SkippedPackException,
     SkippedTestException, TestMissingFromIdSetException,
     NonNightlyPackInNightlyBuildException)
-from Tests.scripts.collect_tests.id_set import IdSet, IdSetItem
+from Tests.scripts.collect_tests.id_set import Graph, IdSet, IdSetItem
 from Tests.scripts.collect_tests.logger import logger
 from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.collect_tests.test_conf import TestConf
@@ -72,7 +72,7 @@ class CollectionResult:
             version_range: Optional[VersionRange],
             reason_description: str,
             conf: Optional[TestConf],
-            id_set: Optional[IdSet],
+            id_set: Optional[Union[IdSet, Graph]],
             is_sanity: bool = False,
             is_nightly: bool = False,
             override_pack_compatibility_check: bool = False,
@@ -148,7 +148,7 @@ class CollectionResult:
             test: Optional[str],
             reason: CollectionReason,
             conf: Optional[TestConf],
-            id_set: Optional[IdSet],
+            id_set: Optional[Union[IdSet, Graph]],
             is_sanity: bool,
             is_nightly: bool,
             skip_pack_compatibility: bool,
@@ -244,9 +244,12 @@ class CollectionResult:
 
 
 class TestCollector(ABC):
-    def __init__(self, marketplace: MarketplaceVersions):
+    def __init__(self, marketplace: MarketplaceVersions, graph: bool = False):
         self.marketplace = marketplace
-        self.id_set = IdSet(marketplace, PATHS.id_set_path)
+        if graph:
+            self.id_set = Graph(marketplace)
+        else:
+            self.id_set = IdSet(marketplace, PATHS.id_set_path)
         self.conf = TestConf(PATHS.conf_path)
         self.trigger_sanity_tests = False
 
@@ -268,10 +271,12 @@ class TestCollector(ABC):
 
     @property
     def _always_installed_packs(self) -> Optional[CollectionResult]:
+        always_installed_packs_list = ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2 if \
+            self.marketplace == MarketplaceVersions.MarketplaceV2 else ALWAYS_INSTALLED_PACKS_XSOAR
         return CollectionResult.union(tuple(
             CollectionResult(test=None, pack=pack, reason=CollectionReason.ALWAYS_INSTALLED_PACKS,
                              version_range=None, reason_description=pack, conf=None, id_set=None, is_sanity=True)
-            for pack in ALWAYS_INSTALLED_PACKS)
+            for pack in always_installed_packs_list)
         )
 
     @property
@@ -524,6 +529,7 @@ class BranchTestCollector(TestCollector):
             marketplace: MarketplaceVersions,
             service_account: Optional[str],
             private_pack_path: Optional[str] = None,
+            graph: bool = False,
     ):
         """
 
@@ -532,7 +538,7 @@ class BranchTestCollector(TestCollector):
         :param service_account: used for comparing with the latest upload bucket
         :param private_pack_path: path to a pack, only used for content-private.
         """
-        super().__init__(marketplace)
+        super().__init__(marketplace, graph)
         logger.debug(f'Created BranchTestCollector for {branch_name}')
         self.branch_name = branch_name
         self.service_account = service_account
@@ -870,8 +876,8 @@ class NightlyTestCollector(TestCollector, ABC):
 
 
 class XSIAMNightlyTestCollector(NightlyTestCollector):
-    def __init__(self):
-        super().__init__(MarketplaceVersions.MarketplaceV2)
+    def __init__(self, graph: bool = False):
+        super().__init__(MarketplaceVersions.MarketplaceV2, graph=graph)
 
     def _collect_packs_of_content_matching_marketplace_value(self) -> Optional[CollectionResult]:
         """
@@ -914,16 +920,19 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
 
     @property
     def sanity_tests(self) -> Optional[CollectionResult]:
-        return CollectionResult(
-            test='Sanity Test - Playbook with Unmockable Whois Integration',
-            pack='Whois',
-            reason=CollectionReason.SANITY_TESTS,
-            reason_description='XSIAM Nightly sanity',
-            version_range=None,
-            conf=self.conf,
-            id_set=self.id_set,
-            is_sanity=True,
-        )
+        return CollectionResult.union(tuple(
+            CollectionResult(
+                test=test,
+                pack=SANITY_TEST_TO_PACK.get(test),  # None in most cases
+                reason=CollectionReason.SANITY_TESTS,
+                version_range=None,
+                reason_description='XSIAM Nightly sanity',
+                conf=self.conf,
+                id_set=self.id_set,
+                is_sanity=True
+            )
+            for test in self.conf['test_marketplacev2']
+        ))
 
     def _collect(self) -> Optional[CollectionResult]:
         return CollectionResult.union((
@@ -935,8 +944,8 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
 
 
 class XSOARNightlyTestCollector(NightlyTestCollector):
-    def __init__(self):
-        super().__init__(MarketplaceVersions.XSOAR)
+    def __init__(self, graph: bool = False):
+        super().__init__(MarketplaceVersions.XSOAR, graph=graph)
 
     def _collect(self) -> Optional[CollectionResult]:
         return CollectionResult.union((
@@ -976,6 +985,7 @@ if __name__ == '__main__':
     parser.add_argument('-mp', '--marketplace', type=MarketplaceVersions, help='marketplace version',
                         default='xsoar')
     parser.add_argument('--service_account', help="Path to gcloud service account")
+    parser.add_argument('--graph', '-g', type=str2bool, help='Should use graph', default=False, required=False)
     args = parser.parse_args()
     args_string = '\n'.join(f'{k}={v}' for k, v in vars(args).items())
     logger.debug(f'parsed args:\n{args_string}')
@@ -985,23 +995,23 @@ if __name__ == '__main__':
     marketplace = MarketplaceVersions(args.marketplace)
     nightly = args.nightly
     service_account = args.service_account
-
+    graph = args.graph
     collector: TestCollector
 
     if args.changed_pack_path:
-        collector = BranchTestCollector('master', marketplace, service_account, args.changed_pack_path)
+        collector = BranchTestCollector('master', marketplace, service_account, args.changed_pack_path, graph=graph)
 
     elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
-        collector = UploadCollector(branch_name, marketplace, service_account)
+        collector = UploadCollector(branch_name, marketplace, service_account, graph=graph)
 
     else:
         match (nightly, marketplace):
             case False, _:  # not nightly
-                collector = BranchTestCollector(branch_name, marketplace, service_account)
+                collector = BranchTestCollector(branch_name, marketplace, service_account, graph=graph)
             case True, MarketplaceVersions.XSOAR:
-                collector = XSOARNightlyTestCollector()
+                collector = XSOARNightlyTestCollector(graph=graph)
             case True, MarketplaceVersions.MarketplaceV2:
-                collector = XSIAMNightlyTestCollector()
+                collector = XSIAMNightlyTestCollector(graph=graph)
             case _:
                 raise ValueError(f"unexpected values of {marketplace=} and/or {nightly=}")
 
