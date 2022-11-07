@@ -200,7 +200,7 @@ prepare-testing-bucket-xpanse:
     - gke
   extends:
     - .default-job-settings
-  rules:  # todo: change not running on branch
+  rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
   cache:
@@ -213,7 +213,6 @@ prepare-testing-bucket-xpanse:
   script:
     - !reference [.download-demisto-conf]
     - !reference [.create-id-set-xpanse]
-    # todo: why it is here?
     - !reference [.create-release-notes-and-common-docs]
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
@@ -243,16 +242,14 @@ prepare-testing-bucket-xpanse:
 
     - echo "Not triggering Collect_Tests"
 
-#    # todo: yaankiis part
-#    - section_start "Prepare Content Packs for Testing"
-#    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_V2_BUCKET" "$STORAGE_BASE_PATH" "marketplacev2"
-#    - section_end "Prepare Content Packs for Testing"
-#
-#    # todo: not sure that changes needed?
-#    - section_start "Upload Artifacts to GCP" --collapsed
-#    - ./Tests/scripts/upload_artifacts.sh
-#    - section_end "Upload Artifacts to GCP"
-#    - echo "create instances done" > "$ARTIFACTS_FOLDER/create_instances_done.txt"
+    - section_start "Prepare Content Packs for Testing"
+    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_V2_BUCKET" "$STORAGE_BASE_PATH" "xpanse"
+    - section_end "Prepare Content Packs for Testing"
+
+    - section_start "Upload Artifacts to GCP" --collapsed
+    - ./Tests/scripts/upload_artifacts.sh
+    - section_end "Upload Artifacts to GCP"
+    - echo "create instances done" > "$ARTIFACTS_FOLDER/create_instances_done.txt"
 
 
 .test_content_on_xsoar_server_instances_base:
