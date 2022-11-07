@@ -358,14 +358,14 @@ upload-packs-to-xpanse-marketplace:
     - *check_user_permissions_to_upload_packs
     - section_start "Upload Packs To Marketplace Storage"
     - |
-      if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$GCS_MARKET_V2_BUCKET" != "$GCS_PRODUCTION_V2_BUCKET" ]]; then
+      if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$GCS_MARKET_XPANSE_BUCKET" != "$GCS_PRODUCTION_XPANSE_BUCKET" ]]; then
         EXTRACT_FOLDER=$(mktemp -d)
         PACK_ARTIFACTS=$ARTIFACTS_FOLDER/content_packs.zip
         PACKS_DEPENDENCIES=$ARTIFACTS_FOLDER/packs_dependencies.json
         CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
         GCS_BUILD_BUCKET="marketplace-ci-build"
         if [[ -z $STORAGE_BASE_PATH ]]; then
-          if [[ $GCS_MARKET_V2_BUCKET == $GCS_PRODUCTION_V2_BUCKET ]]; then
+          if [[ $GCS_MARKET_XPANSE_BUCKET == $GCS_PRODUCTION_XPANSE_BUCKET ]]; then
             STORAGE_BASE_PATH="content"
           else
             STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
