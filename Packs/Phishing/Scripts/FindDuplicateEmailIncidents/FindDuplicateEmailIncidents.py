@@ -13,7 +13,7 @@ import tldextract
 from urllib.parse import urlparse
 import re
 
-no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None)
+no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None, cache_dir=None)
 pd.options.mode.chained_assignment = None  # default='warn'
 
 SIMILARITY_THRESHOLD = float(demisto.args().get('threshold', 0.97))
