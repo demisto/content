@@ -8503,7 +8503,7 @@ def whois_command(reliability):
     args = demisto.args()
     query = args.get('query')
     is_recursive = argToBoolean(args.get('recursive'))
-    verbose = argToBoolean(args.get('verbose'))
+    verbose = argToBoolean(args.get('verbose', 'false'))
     for query in argToList(query):
         domain = get_domain_from_query(query)
         whois_result = get_whois(domain, is_recursive=is_recursive)
