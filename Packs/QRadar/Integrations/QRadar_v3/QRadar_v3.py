@@ -1478,7 +1478,7 @@ def get_cidrs_indicators(query):
 
     indicators = []
     for indicator in res.get('iocs', []):
-        if indicator.get('indicator_type') == 'CIDR':
+        if indicator.get('indicator_type').lower() == 'cidr':
             indicators.append(indicator.get('value'))
 
     return indicators

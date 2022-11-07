@@ -2357,6 +2357,36 @@
    "status": "CLOSED"
   }
  },
+ "get_remote_network_cidr": {
+  "response": [
+    {
+     "name": "String",
+     "description": "String",
+     "cidrs": [
+      "127.0.0.2"
+     ],
+     "id": 42,
+     "group": "String1"
+    },
+    {
+     "name": "String",
+     "description": "String",
+     "cidrs": [
+      "127.0.0.1/32"
+     ],
+     "id": 43,
+     "group": "String2"
+    }
+  ],
+  "expected": {
+   "outputs_prefix": "Qradar.RemoteNetworkCIDR",
+   "outputs_key_field": "id",
+   "outputs": [
+    {"id": 42, "name": "String", "description": "String"},
+    {"id": 43, "name": "String", "description": "String"}
+   ]
+  }
+ },
  "all_events_query": "SELECT QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME(\"creEventList\"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime  FROM events WHERE INOFFENSE(16)  limit 20 START 1613399051536",
  "correlation_events_query": "SELECT QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME(\"creEventList\"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime  FROM events WHERE INOFFENSE(16)  AND LOGSOURCETYPENAME(devicetype) = 'Custom Rule Engine'  limit 20 START 1613399051536"
 }
