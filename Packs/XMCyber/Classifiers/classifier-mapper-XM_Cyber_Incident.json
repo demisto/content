@@ -165,7 +165,7 @@
         "XM Cyber Security Score": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "XM Cyber current security score": {
+                "XM Cyber current Security score": {
                     "complex": {
                         "filters": [],
                         "root": "current_score",
