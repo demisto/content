@@ -110,7 +110,7 @@ THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {
 }
 
 
-def exceeded_limit(limit: int, element_count: int):
+def reached_limit(limit: int, element_count: int):
     demisto.debug(f'{element_count=}')
     return element_count >= limit > -1
 
@@ -964,7 +964,7 @@ class Taxii2FeedClient:
                     indicators.extend(result)
                     self.update_last_modified_indicator_date(obj.get("modified"))
 
-                if exceeded_limit(limit, len(indicators)):
+                if reached_limit(limit, len(indicators)):
                     return indicators, relationships_lst
 
         return indicators, relationships_lst

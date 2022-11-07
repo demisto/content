@@ -859,7 +859,7 @@ class TestParsingSCOIndicators:
                           (8, 9, True),
                           (8, 0, False),
                           (-1, 10, False)])
-def test_exceeded_limit(limit, element_count, return_value):
+def test_reached_limit(limit, element_count, return_value):
     """
     Given:
         - A limit and element count.
@@ -868,5 +868,5 @@ def test_exceeded_limit(limit, element_count, return_value):
     Then:
         - Assert that the element count is not exceeded.
     """
-    from TAXII2ApiModule import exceeded_limit
-    assert exceeded_limit(limit, element_count) == return_value
+    from TAXII2ApiModule import reached_limit
+    assert reached_limit(limit, element_count) == return_value
