@@ -1739,7 +1739,8 @@ class Pack(object):
 
         final_release_notes = construct_entities_block(filtered_release_notes).strip()
         if not final_release_notes:
-            final_release_notes = f"Changes are not relevant for {'XSIAM' if marketplace == 'marketplacev2' else marketplace.upper()} marketplace."
+            final_release_notes = f"Changes are not relevant for " \
+                                  f"{'XSIAM' if marketplace == 'marketplacev2' else marketplace.upper()} marketplace."
 
         changelog_entry[Changelog.RELEASE_NOTES] = final_release_notes
         logging.debug(f"Finall release notes - \n{changelog_entry[Changelog.RELEASE_NOTES]}")
@@ -1883,7 +1884,7 @@ class Pack(object):
 
         # Filters out for XSOAR tags
         release_notes = remove_tags_section_from_rn(release_notes, XSOAR_MP, upload_marketplace)
-        
+
         # Filters out for XPANSE tags
         release_notes = remove_tags_section_from_rn(release_notes, XPANSE_MP, upload_marketplace)
 
