@@ -53,7 +53,8 @@ DOCKER_HARDENING_CONFIGURATION = {
     'docker.cpu.limit': '1.0',
     'docker.run.internal.asuser': 'true',
     'limit.docker.cpu': 'true',
-    'python.pass.extra.keys': f'--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192##--env##no_proxy={NO_PROXY}',  # noqa: E501
+    'python.pass.extra.keys': f'--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192##--env##no_proxy={NO_PROXY}',
+    # noqa: E501
     'powershell.pass.extra.keys': f'--env##no_proxy={NO_PROXY}',
     'monitoring.pprof': 'true',
     'enable.pprof.memory.dump': 'true',
@@ -408,11 +409,15 @@ class Build:
             new_ints_params_set = set_integration_params(self,
                                                          new_integrations,
                                                          instance_names_conf,
-                                                         placeholders_map)
+                                                         self.secret_conf,
+                                                         placeholders_map,
+                                                         self.project_id)
             ints_to_configure_params_set = set_integration_params(self,
                                                                   integrations_to_configure,
-                                                                  self.secret_conf['integrations'],
-                                                                  instance_names_conf, placeholders_map)
+                                                                  instance_names_conf,
+                                                                  self.secret_conf,
+                                                                  placeholders_map,
+                                                                  self.project_id)
             if not new_ints_params_set:
                 logging.error(f'failed setting parameters for integrations: {new_integrations}')
             if not ints_to_configure_params_set:
@@ -721,7 +726,7 @@ class XSIAMBuild(Build):
         super().__init__(options)
         self.is_xsiam = True
         self.xsiam_machine = options.xsiam_machine
-        self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id =\
+        self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id = \
             self.get_xsiam_configuration(options.xsiam_machine, options.xsiam_servers_path,
                                          options.xsiam_servers_api_keys)
         self.servers = [XSIAMServer(self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id,
@@ -1070,9 +1075,10 @@ def change_placeholders_to_values(placeholders_map, config_item):
 
 def set_integration_params(build,
                            integrations,
-                           project_id,
                            instance_names,
+                           secret_conf,
                            placeholders_map,
+                           project_id,
                            logging_module=logging):
     """
     For each integration object, fill in the parameter values needed to configure an instance from
@@ -1102,32 +1108,19 @@ def set_integration_params(build,
         (bool): True if integrations params were filled with secret configuration values, otherwise false
     """
     for integration in integrations:
+        # Secret name will be the name of the integration + the instance_name
+        # "name": "McAfee__ESM__v2",
+        # "instance_name": "v11.1.3",
+        # McAfee__ESM__v2__v11.1.3
         # integration_params = [change_placeholders_to_values(placeholders_map, item) for item
         #                       in secret_params if item['name'] == integration['name']]
-        self.secret_conf.get_secret(project_id, '''get name from integration'''),
-        if integration_params:
-            matched_integration_params = integration_params[0]
-            # if there are more than one integration params, it means that there are configuration
-            # values in our secret conf for multiple instances of the given integration and now we
-            # need to match the configuration values to the proper instance as specified in the
-            # 'instance_names' list argument
-            if len(integration_params) != 1:
-                found_matching_instance = False
-                for item in integration_params:
-                    if item.get('instance_name', 'Not Found') in instance_names:
-                        matched_integration_params = item
-                        found_matching_instance = True
 
-                if not found_matching_instance:
-                    optional_instance_names = [optional_integration.get('instance_name', 'None')
-                                               for optional_integration in integration_params]
-                    failed_match_instance_msg = 'There are {} instances of {}, please select one of them by using' \
-                                                ' the instance_name argument in conf.json. The options are:\n{}'
-                    logging_module.error(failed_match_instance_msg.format(len(integration_params),
-                                                                          integration['name'],
-                                                                          '\n'.join(optional_instance_names)))
-                    return False
-
+        instance = secret.get('instance_name', '')
+        secret = secret_conf.get_secret(project_id, f'{integration["name"]}__{instance}')
+        logging.debug(
+            f'the secrete we got from the API:')
+        if secret:
+            matched_integration_params = change_placeholders_to_values(placeholders_map, f'{secret}__{instance}')
             integration['params'] = matched_integration_params.get('params', {})
             integration['byoi'] = matched_integration_params.get('byoi', True)
             integration['instance_name'] = matched_integration_params.get('instance_name', integration['name'])
@@ -1140,6 +1133,10 @@ def set_integration_params(build,
                 integration['params'].update({'proxy': False})
                 logging.debug(
                     f'Configuring integration "{integration["name"]}" with proxy=False')
+        else:
+            logging.debug(
+                f'Could not fined the secret config fo "{integration["name"]}" with secret {secret}__{instance}')
+            return False
 
     return True
 
@@ -1715,7 +1712,8 @@ def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Tu
     return packs_with_higher_min_version.union(non_hidden_packs), non_hidden_packs
 
 
-def get_packs_with_higher_min_version(packs_names: Set[str], content_path: str, server_numeric_version: str) -> Set[str]:
+def get_packs_with_higher_min_version(packs_names: Set[str], content_path: str, server_numeric_version: str) -> Set[
+    str]:
     """
     Return a set of packs that have higher min version than the server version.
 
@@ -1782,7 +1780,8 @@ def main():
         packs_not_to_install, packs_to_install_in_post_update = get_packs_not_to_install(modified_packs_names, build)
         packs_to_install = modified_packs_names - packs_not_to_install
         build.install_packs(pack_ids=packs_to_install)
-        new_integrations_names, modified_integrations_names = build.get_changed_integrations(packs_to_install_in_post_update)
+        new_integrations_names, modified_integrations_names = build.get_changed_integrations(
+            packs_to_install_in_post_update)
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations_names,
                                                                                             modified_integrations_names)
         modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
