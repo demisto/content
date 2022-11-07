@@ -101,7 +101,7 @@ def complete_auth_command(code: str, credentials: Credentials, base_url: str, in
         'grant_type': 'authorization_code',
         'code': code,
     }
-    auth = (credentials.identifier, credentials.password)
+    auth = (credentials.identifier or '', credentials.password)
 
     response = requests.post(f'{base_url}/oauth2/token', data=data, auth=auth, verify=insecure)
     if response.ok:
