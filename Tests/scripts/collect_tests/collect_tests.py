@@ -29,7 +29,8 @@ from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.collect_tests.test_conf import TestConf
 from Tests.scripts.collect_tests.utils import (ContentItem, Machine,
                                                PackManager, find_pack_folder,
-                                               find_yml_content_type, to_tuple, hotfix_detect_old_script_yml)
+                                               find_yml_content_type, to_tuple, hotfix_detect_old_script_yml,
+                                               FilesToCollect)
 from Tests.scripts.collect_tests.version_range import VersionRange
 
 PATHS = PathManager(Path(__file__).absolute().parents[3])
@@ -52,7 +53,7 @@ class CollectionReason(str, Enum):
     ALWAYS_INSTALLED_PACKS = 'packs that are always installed'
     PACK_TEST_DEPENDS_ON = 'a test depends on this pack'
     NON_XSOAR_SUPPORTED = 'support level is not xsoar: collecting the pack, not collecting tests'
-
+    FILES_MOVED_FROM_PACK = 'files were moved from this pack, installing to make sure it is not broken'
     DUMMY_OBJECT_FOR_COMBINING = 'creating an empty object, to combine two CollectionResult objects'
 
 
@@ -550,18 +551,26 @@ class BranchTestCollector(TestCollector):
         return tuple(str(path) for path in self.private_pack_path.rglob('*') if path.is_file())
 
     def _collect(self) -> Optional[CollectionResult]:
-        result = []
-        paths: tuple[str, ...] = self._get_private_pack_files() \
+        collect_from = FilesToCollect(changed_files=self._get_private_pack_files(),
+                                      pack_ids_files_were_removed_from=tuple()) \
             if self.private_pack_path \
-            else self._get_changed_files()
+            else self._get_git_diff()
 
-        for raw_path in paths:
+        return CollectionResult.union([
+            self.__collect_from_changed_files(collect_from.changed_files),
+            self.__collect_packs_from_which_files_were_moved(collect_from.pack_ids_files_were_removed_from)
+        ])
+
+    def __collect_from_changed_files(self, changed_files: tuple[str, ...]) -> Optional[CollectionResult]:
+        """NOTE: this should only be used from _collect"""
+        collected = []
+        for raw_path in changed_files:
             path = PATHS.content_path / raw_path
             logger.debug(f'Collecting tests for {raw_path}')
             try:
-                result.append(self._collect_single(path))
+                collected.append(self._collect_single(path))
             except NonXsoarSupportedPackException as e:
-                result.append(self._collect_pack(
+                collected.append(self._collect_pack(
                     pack_id=find_pack_folder(path).name,
                     reason=CollectionReason.NON_XSOAR_SUPPORTED,
                     reason_description=raw_path,
@@ -572,8 +581,25 @@ class BranchTestCollector(TestCollector):
             except Exception as e:
                 logger.exception(f'Error while collecting tests for {raw_path}', exc_info=True, stack_info=True)
                 raise e
+        return CollectionResult.union(collected)
 
-        return CollectionResult.union(result)
+    def __collect_packs_from_which_files_were_moved(self, pack_ids: tuple[str, ...]) -> Optional[CollectionResult]:
+        """NOTE: this should only be used from _collect"""
+        collected: list[CollectionResult] = []
+        for pack_id in pack_ids:
+            logger.info(f'one or more files were moved from the {pack_id} pack, attempting to collect the pack.')
+            try:
+                if pack_to_collect := self._collect_pack(pack_id=pack_id,
+                                                         reason=CollectionReason.FILES_MOVED_FROM_PACK,
+                                                         reason_description='',
+                                                         allow_incompatible_marketplace=True):
+                    collected.append(pack_to_collect)
+            except NothingToCollectException as e:
+                logger.info(e.message)
+            except Exception as e:
+                logger.exception(f'Error while collecting tests for {pack_id=}', exc_info=True, stack_info=True)
+                raise e
+        return CollectionResult.union(collected)
 
     def _collect_yml(self, content_item_path: Path) -> Optional[CollectionResult]:
         """
@@ -771,9 +797,10 @@ class BranchTestCollector(TestCollector):
             for test in tests)
         )
 
-    def _get_changed_files(self) -> tuple[str, ...]:
+    def _get_git_diff(self) -> FilesToCollect:
         repo = PATHS.content_repo
         changed_files: list[str] = []
+        packs_files_were_removed_from: set[str] = set()
 
         previous_commit = 'origin/master'
         current_commit = self.branch_name
@@ -804,11 +831,15 @@ class BranchTestCollector(TestCollector):
                 case 2:
                     git_status, file_path = parts
                 case 3:
-                    git_status, _, file_path = parts  # R <old location> <new location>
+                    git_status, old_file_path, file_path = parts  # R <old location> <new location>
 
                     if git_status.startswith('R'):
                         logger.debug(f'{git_status=} for {file_path=}, considering it as <M>odified')
                         git_status = 'M'
+
+                    if pack_file_removed_from := find_pack_file_removed_from(old_file_path, file_path):
+                        packs_files_were_removed_from.add(pack_file_removed_from)
+
                 case _:
                     raise ValueError(f'unexpected line format '
                                      f'(expected `<modifier>\t<file>` or `<modifier>\t<old_location>\t<new_location>`'
@@ -822,7 +853,29 @@ class BranchTestCollector(TestCollector):
                                f'skipping it as TestCollector cannot properly find the appropriate tests (by design)')
                 continue
             changed_files.append(file_path)  # non-deleted files (added, modified)
-        return tuple(changed_files)
+        return FilesToCollect(changed_files=tuple(changed_files),
+                              pack_ids_files_were_removed_from=tuple(packs_files_were_removed_from))
+
+
+def find_pack_file_removed_from(old_path: Path, new_path: Path):
+    """
+    If a file is moved between packs, we should collect the older one, to make sure it is installed properly.
+    """
+    # two try statements as we need to tell which of the two is a pack, separately.
+    try:
+        old_pack = find_pack_folder(old_path).name
+    except NotUnderPackException:
+        return None  # not moved from a pack, no special treatment we can do here.
+
+    try:
+        new_pack = find_pack_folder(new_path).name
+    except NotUnderPackException:
+        new_pack = None
+
+    if old_pack != new_pack:  # file moved between packs
+        logger.info(f'file {old_path.name} was moved '
+                    f'from pack {old_pack}, adding it, to make sure it still installs properly')
+        return old_pack
 
 
 class UploadCollector(BranchTestCollector):
