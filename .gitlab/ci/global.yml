@@ -44,7 +44,6 @@
   - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json $ARTIFACTS_FOLDER/logs; fi
   - section_end "Create ID Set"
 
-# todo: edit to fit xpanse
 .create-id-set-xpanse: &create-id-set-xpanse
   - section_start "Create ID Set" --collapsed
   - demisto-sdk create-id-set -o ./Tests/id_set.json --marketplace "xpanse" >> $ARTIFACTS_FOLDER/logs/create_id_set.log
