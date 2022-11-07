@@ -37,6 +37,8 @@ run-validations-upload-flow:
 
 
 run-unittests-and-lint-upload-flow:
+  cache:
+    policy: push
   extends:
     - .run-unittests-and-lint
     - .bucket-upload-rule

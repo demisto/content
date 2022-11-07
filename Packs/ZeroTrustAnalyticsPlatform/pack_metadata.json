@@ -10,14 +10,10 @@
         "ZTAP"
     ],
     "categories": [
-        "Analytics & SIEM"
+        "Forensics & Malware Analysis"
     ],
-    "tags": [
-        "Incident Response"
-    ],
-    "useCases": [
-        "Incident Response"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "Critical Start",
         "ZTAP"
