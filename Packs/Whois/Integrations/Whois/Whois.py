@@ -8504,6 +8504,7 @@ def whois_command(reliability):
     query = args.get('query')
     is_recursive = argToBoolean(args.get('recursive', 'false'))
     verbose = argToBoolean(args.get('verbose', 'false'))
+    demisto.info(f'whois command is called with the query {query}')
     for query in argToList(query):
         domain = get_domain_from_query(query)
         whois_result = get_whois(domain, is_recursive=is_recursive)
