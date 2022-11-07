@@ -1,4 +1,4 @@
-[MODEL: dataset="aws_guard_duty_raw", model="Endpoint"]
+[MODEL: dataset="aws_guardduty_raw", model="Endpoint"]
 alter
     XDM.Endpoint.original_event_type = json_extract_scalar(Resource, "$.ResourceType"),
     XDM.Endpoint.original_event_sub_type = Type,
