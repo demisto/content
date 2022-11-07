@@ -2770,10 +2770,8 @@ script:
   - name: qradar-remote-network-cidr-create
     arguments:
     - name: cidrs
-      auto: PREDEFINED
       description: An input list of CIDRs to add to Qradar (can be obtained from automatically from EDL integrations and playbook). Multiple values in the same object are separated by commas. One of the cidr or query is required.
       isArray: true
-      type: unknown
     - name: query
       description: The query for getting indicators from Cortex XSOAR. One of the cidr or query is required.
     - name: name
@@ -2790,6 +2788,38 @@ script:
     - name: fields
       description: 'Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded from the output. Specify subfields in brackets, and multiple fields in the same object are separated by commas.  The possible fields are id, group, name, CIDR, and description. '
     description: Create remote network cidrs
+  - name: qradar-remote-network-cidr-list
+    arguments:
+      - name: range
+        description: Limit argument - Range of results to return. The default is 0-49.
+          (e.g., 0-20, 3-5, 3-3).
+        isArray: true
+      - name: group
+        description: The name of the remote network group that CIDRs associated with, as it appears in Qradar.
+      - name: id
+        description: Id of CIDR (remote network).
+      - name: name
+        description: The name of CIDRs (remote network) appears in Qradar.
+      - name: filter
+        description: Additional options to filter results using a query_expression.
+      - name: fields
+        description: Use this parameter to specify which fields you would like to get back in the response.
+          Fields that are not named are excluded.
+          By default, set this argument to return all fields (id, name, cidrs, group, description).
+    outputs:
+    - contextPath: Qradar.RemoteNetworkCIDR
+      description: Array of - A list of all the retrieved CIDRs.
+      type: Number
+    - contextPath: Qradar.RemoteNetworkCIDR.id
+      description: Id of each CIDR remote network that is part of the group.
+      type: Number
+    - contextPath: Qradar.RemoteNetworkCIDR.name
+      description: The associated CIDR description as appear in Qradar.
+      type: String
+    - contextPath: Qradar.RemoteNetworkCIDR.description
+      description: The associated CIDR name as appear in Qradar.
+      type: String
+    description: Retrieves the list of staged remote networks.
   runonce: false
   script: '-'
   type: python

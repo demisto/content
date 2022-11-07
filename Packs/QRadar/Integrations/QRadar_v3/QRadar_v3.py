@@ -683,6 +683,17 @@ class Client(BaseClient):
             additional_headers=headers
         )
 
+    def get_remote_network_cidr(self, range_: Optional[str] = None, filter_: Optional[str] = None, fields: Optional[str] = None):
+        headers = {'Range': range_}
+        params = assign_params(filter=filter_, fields=fields)
+
+        return self.http_request(
+            method='GET',
+            url_suffix='/staged_config/remote_networks',
+            params=params,
+            additional_headers=headers
+        )
+
     def test_connection(self):
         """
         Test connection with databases (should always be up)
@@ -3697,8 +3708,36 @@ def qradar_remote_network_cidr_create_command(client: Client, args) -> CommandRe
     )
 
 
-def qradar_remote_network_cidr_list_command(client, args):
-    pass
+def qradar_remote_network_cidr_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
+    group = args.get('group')
+    id_ = args.get('id')
+    name = args.get('name')
+    filter_ = args.get('filter', '')
+    fields = args.get('fields')
+
+    if not filter_:
+        if group:
+            filter_ += f'group={group}'
+        if id_:
+            filter_ += f' AND id={id_}' if group else f'id={id_}'
+        if name:
+            filter_ += f' AND name={name}' if (group or id_) else f'name={name}'
+
+    response = client.get_remote_network_cidr(range_, filter_, fields)
+    success_message = 'List of the staged remote networks'
+    outputs = [{'id': res.get('id'),
+                'name': res.get('name'),
+                'description': res.get('description')}
+               for res in response]
+
+    return CommandResults(
+        outputs_prefix='Qradar.RemoteNetworkCIDR',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=tableToMarkdown(success_message, response)
+    )
 
 
 def qradar_remote_network_cidr_delete_command(client, args):
