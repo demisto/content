@@ -8,17 +8,17 @@ configuration:
   name: base_url
   required: false
   type: 0
-- display: ID (received from the authorization step - see Detailed Instructions (?)
+- display: Application ID or Client ID
     section)
   name: auth_id
   required: false
   type: 4
-- display: Key (received from the authorization step - see Detailed Instructions (?)
+- display: Key or Client Secret
     section)
   name: enc_key
   required: false
   type: 4
-- display: Token (received from the authorization step - see Detailed Instructions (?) section)
+- display: Token or Tenant ID
   name: refresh_token
   required: false
   type: 4
@@ -41,7 +41,7 @@ configuration:
   required: false
   type: 0
 - display: The authentication code you got for the service. For instructions on how
-    to receive it, see Detailed Instructions ('?') section.
+    to receive it, see Detailed Instructions section.
   name: auth_code
   required: false
   type: 4
@@ -54,7 +54,8 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 10 minutes
-  display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
+  display: First fetch time range
+  additionalinfo: <number> <time unit>, e.g., 1 hour, 30 minutes
   name: first_fetch_delta
   required: false
   type: 0
@@ -82,21 +83,24 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: Record types to fetch. (Comma-separated list of the record types you wish
+- display: Record types to fetch.
+  additionalinfo: Comma-separated list of the record types you wish
     to fetch. Content records with a record type that isn't specified will not be
-    fetched. If this field is left empty, all record types will be fetched.)
+    fetched. If this field is left empty, all record types will be fetched.
   name: record_types_filter
   required: false
   type: 0
-- display: Workloads to fetch. (Comma-separated list of the workloads you wish to fetch.
+- display: Workloads to fetch.
+  additionalinfo: Comma-separated list of the workloads you wish to fetch.
     Content records with a workload that isn't specified will not be fetched. If this
-    field is left empty, all workloads will be fetched.)
+    field is left empty, all workloads will be fetched.
   name: workloads_filter
   required: false
   type: 0
-- display: Operations to fetch. (Comma-separated list of the operations you wish to fetch.
+- display: Operations to fetch.
+  additionalinfo: Comma-separated list of the operations you wish to fetch.
     Content records with an operation that isn't specified will not be fetched. If
-    this field is left empty, all operations will be fetched.)
+    this field is left empty, all operations will be fetched.
   name: operations_filter
   required: false
   type: 0
