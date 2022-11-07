@@ -1,4 +1,4 @@
-[MODEL: dataset = "mcafee_epo_raw" ]
+[MODEL: dataset = "mcafee_epo_raw"]
 filter
     AnalyzerName = "McAfee Endpoint Security" or AnalyzerName = "Data Loss Prevention"
 | alter
