@@ -81,7 +81,7 @@
         "is_array": false
     },
     "spt": {
-        "type": "number",
+        "type": "int",
         "is_array": false
     },
     "inzone": {
@@ -97,7 +97,7 @@
         "is_array": false
     },
     "dpt": {
-        "type": "number",
+        "type": "int",
         "is_array": false
     },
     "outzone": {
@@ -179,7 +179,7 @@
         "is_array": false
     },
     "dpt": {
-        "type": "number",
+        "type": "int",
         "is_array": false
     }
   },
@@ -261,7 +261,7 @@
         "is_array": false
     },
     "spt": {
-        "type": "number",
+        "type": "int",
         "is_array": false
     },
     "dhost": {
@@ -273,7 +273,7 @@
         "is_array": false
     },
     "dpt": {
-        "type": "number",
+        "type": "int",
         "is_array": false
     }
   },
@@ -363,7 +363,7 @@
         "is_array": false
     },
     "dpt": {
-        "type": "number",
+        "type": "int",
         "is_array": false
     }
   },
