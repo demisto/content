@@ -20,6 +20,7 @@ variables:
   DONT_CACHE_LAST_RESPONSE: "true"
   GCS_MARKET_BUCKET: "marketplace-dist"
   GCS_MARKET_V2_BUCKET: "marketplace-v2-dist"
+  GCS_MARKET_XPANSE_BUCKET: "xpanse-dist"
   STORAGE_BASE_PATH: ""
   SLACK_CHANNEL: "dmst-build"
   DEMISTO_README_VALIDATION: "true"
@@ -37,6 +38,7 @@ variables:
   ENV_RESULTS_PATH: "/builds/xsoar/content/artifacts/env_results.json"
   GCS_PRODUCTION_BUCKET: "marketplace-dist"
   GCS_PRODUCTION_V2_BUCKET: "marketplace-v2-dist"
+  GCS_PRODUCTION_XPANSE_BUCKET: "xpanse-dist"
   DEMISTO_CONNECTION_POOL_MAXSIZE: "180" # see this issue for more info https://github.com/demisto/etc/issues/36886
   SDK_REF: "master" # The default sdk branch to use
   OVERRIDE_ALL_PACKS: "false"
