@@ -149,7 +149,7 @@ def sync_s1_xsoar_incidents():
     total_incidents = 0
     updated_incidents = 0
     page = 0
-    size = 100
+    size = 99
     while True:
         try:
             xsoar_s1_incidents = get_xsoar_s1_incidents(page, size)
@@ -207,7 +207,7 @@ def sync_xsoar_s1_incidents():
         Incident sync from XSOAR to S1
     """
     page = 0
-    size = 100
+    size = 99
     total_incidents = 0
     updated_incidents = 0
     while True:
