@@ -2361,7 +2361,7 @@ class Site:
                 site_id = client.find_site_id(site_name)
 
                 if not site_id:
-                    raise InvalidSiteNameException(f"No site with name `{site_name}` was found.")
+                    raise InvalidSiteNameException(f"No site with name \"{site_name}\" was found.")
 
                 self.id = site_id
 
@@ -3330,7 +3330,7 @@ def create_vulnerability_exception_command(client: Client, vulnerability_id: str
     """
 
     if scope_type != VulnerabilityExceptionScopeType.GLOBAL and scope_id is None:
-        raise ValueError("`scope_id` must be set when using scopes different than `Global`.")
+        raise ValueError(f"\"scope_id\" must be set when using scopes different than \"{scope_type.GLOBAL.value}\".")
 
     response_data = client.create_vulnerability_exception(
         vulnerability_id=vulnerability_id,
@@ -4738,7 +4738,7 @@ def start_assets_scan_command(client: Client, ip_addresses: Optional[list] = Non
             Defaults to None (Results in using a "scan <date>" format).
     """
     if ip_addresses is None and hostnames is None:
-        raise ValueError("At least one of `ips` and `hostnames` must be provided.")
+        raise ValueError("At least one of \"ips\" and \"hostnames\" must be provided.")
 
     if not scan_name:
         scan_name = f"scan {datetime.now()}"

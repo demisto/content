@@ -30,7 +30,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: integer <int64> The identifier of the asset.
+      description: Asset ID.
       isArray: false
       name: id
       required: true
@@ -147,26 +147,26 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The number of records to retrieve in each API call when pagination is used.
+      description: Number of records to retrieve in each API call when pagination is used.
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: false
-      description: An option to retrieve a specific page when pagination is used.
+      description: A specific page to retrieve when pagination is used.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: 'Multiple criteria of <string> The criteria to sort the records by, in the format: property[,ASC|DESC]. The default sort order is ascending. Multiple sort criteria can be specified using multiple sort query parameters separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
+      description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
       isArray: false
       name: sort
       required: false
       secret: false
     - default: false
       defaultValue: '10'
-      description: The number of records to retrieve.
+      description: A number of records to limit the response to.
       isArray: false
       name: limit
       required: false
@@ -223,68 +223,68 @@ script:
       type: string
   - arguments:
     - default: false
-      description: 'Multiple criteria of <string> Filter to match assets, according to the Search Criteria API standard. multiple filters can be provided using '';'' separator. For example: ''ip-address in-range 1.2.3.4,1.2.3.8;host-name is myhost''. For more information regarding Search Criteria, refer to https://help.rapid7.com/insightvm/en-us/api/index.html#section/Overview/Responses'
+      description: 'Queries to use as a filter, according to the Search Criteria API standard. Multiple queries can be specified, separated by a '';'' separator. For example: ''ip-address in-range 1.2.3.4,1.2.3.8;host-name is myhost''. For more information regarding Search Criteria, refer to https://help.rapid7.com/insightvm/en-us/api/index.html#section/Overview/Responses'
       isArray: false
       name: query
       required: false
       secret: false
     - default: false
-      description: The number of records to retrieve in each API call when pagination is used.
+      description: Number of records to retrieve in each API call when pagination is used.
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: false
-      description: An option to retrieve a specific page when pagination is used.
+      description: A specific page to retrieve when pagination is used.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
       defaultValue: '10'
-      description: The number of records to retrieve.
+      description: A number of records to limit the response to.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: 'Multiple criteria of <string> The criteria to sort the records by, in the format: property[,ASC|DESC]. The default sort order is ascending. Multiple sort criteria can be specified using multiple sort query parameters separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
+      description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a '';'' separator. For example: ''riskScore,DESC;hostName,ASC'''
       isArray: false
       name: sort
       required: false
       secret: false
     - default: false
-      description: <string> Search by a specific IP address
+      description: A specific IP address to search.
       isArray: false
       name: ipAddressIs
       required: false
       secret: false
     - default: false
-      description: <string> Search by a specific host name
+      description: A specific host name to search.
       isArray: false
       name: hostNameIs
       required: false
       secret: false
     - default: false
-      description: <float> Get all assets whose risk score is higher
+      description: A minimum risk score to use as a filter.
       isArray: false
       name: riskScoreHigherThan
       required: false
       secret: false
     - default: false
-      description: <string> Search by vulnerability title
+      description: A string to search for in vulnerabilities titles.
       isArray: false
       name: vulnerabilityTitleContains
       required: false
       secret: false
     - default: false
-      description: Multiple criteria of integer<int32> Search by site ids
+      description: Site IDs to filter for. Can be a comma-separated list.
       isArray: true
       name: siteIdIn
       required: false
       secret: false
     - default: false
-      description: Multiple criteria of <string> Search by site names
+      description: Site names to filter for. Can be a comma-separated list.
       isArray: true
       name: siteNameIn
       required: false
@@ -292,7 +292,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: all
-      description: <string> Operator to determine how to match filters. all requires that all filters match for an asset to be included. any requires only one filter to match for an asset to be included.
+      description: Operator to determine how to match filters. "all" requires that all filters match for an asset to be included. "any" requires only one filter to match for an asset to be included.
       isArray: false
       name: match
       predefined:
@@ -301,7 +301,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns all assets for which you have access that match the given search criteria.
+    description: Search all assets matching filters (with Returns all assets for which you have access that match the given search criteria.
     execution: false
     name: nexpose-search-assets
     outputs:
@@ -352,13 +352,13 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Multiple criteria of integer <int64> Identifiers of scans
+      description: ID of a specific scan to retrieve.  Can be a comma-separated list.
       isArray: true
       name: id
       required: true
       secret: false
     deprecated: false
-    description: Returns the specified scan.
+    description: Get a specific scan.
     execution: false
     name: nexpose-get-scan
     outputs:
@@ -397,19 +397,19 @@ script:
       type: number
   - arguments:
     - default: false
-      description: integer <int64> The identifier of the asset.
+      description: ID of an asset to search for the vulnerability.
       isArray: false
       name: id
       required: true
       secret: false
     - default: false
-      description: <string> The identifier of the vulnerability.
+      description: "ID of a vulnerability to search for. Example: 7-zip-cve-2008-6536"
       isArray: false
       name: vulnerabilityId
       required: true
       secret: false
     deprecated: false
-    description: Returns the details and possible remediations for an asset's given vulnerability.
+    description: Returns details and possible remediations for an asset's vulnerability.
     execution: false
     name: nexpose-get-asset-vulnerability
     outputs:
@@ -586,7 +586,7 @@ script:
         required: false
         secret: false
       - default: false
-        description: The Oracle Net Listener password. Used to enumerate SIDs from your environment.
+        description: Oracle Net Listener password. Used to enumerate SIDs from your environment.
         isArray: false
         name: oracle_listener_password
         required: false
@@ -712,32 +712,32 @@ script:
         type: number
   - arguments:
     - default: false
-      description: <string> The site name. Name must be unique.
+      description: Site name. Must be unique.
       isArray: false
       name: name
       required: true
       secret: false
     - default: false
-      description: <string> The site's description.
+      description: Site's description.
       isArray: false
       name: description
       required: false
       secret: false
     - default: false
-      description: Multiple criteria of <string> Specify asset addresses to be included in site scans
+      description: Addresses of assets to include in site scans. Can be a comma-separated list.
       isArray: true
       name: assets
       required: true
       secret: false
     - default: false
-      description: '<string> The identifier of a scan template. Use nexpose-get-report-templates to get all templates,  default scan template is selected when not specified. '
+      description: ID of a scan template to use. If not specified, the default scan template will be used. Use `nexpose-get-report-templates` to get a list of all available templates.
       isArray: false
       name: scanTemplateId
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: <string> The site importance. Defaults to "normal" if not specified.
+      description: Site importance. Defaults to "normal" if not specified.
       isArray: false
       name: importance
       predefined:
@@ -754,7 +754,7 @@ script:
     name: nexpose-create-site
     outputs:
     - contextPath: Nexpose.Site.Id
-      description: The created site Id
+      description: ID of the created site.
       type: number
   - arguments:
       - default: false
@@ -784,7 +784,7 @@ script:
         secret: false
       - auto: PREDEFINED
         default: false
-        description: The state of the vulnerability exception.
+        description: State of the vulnerability exception.
         isArray: false
         name: state
         predefined:
@@ -802,7 +802,7 @@ script:
         secret: false
       - auto: PREDEFINED
         default: false
-        description: The reason the vulnerability exception was submitted.
+        description: Reason why the vulnerability exception was submitted.
         isArray: false
         name: reason
         predefined:
@@ -897,7 +897,7 @@ script:
     name: nexpose-delete-site-scan-credential
   - arguments:
     - default: false
-      description: The ID of the site to delete
+      description: ID of a site to delete
       isArray: false
       name: id
       required: false
@@ -914,7 +914,7 @@ script:
     name: nexpose-delete-site
   - arguments:
     - default: false
-      description: The ID of the vulnerability exception to delete.
+      description: ID of the vulnerability exception to delete.
       isArray: false
       name: id
       required: true
@@ -925,26 +925,26 @@ script:
     name: nexpose-delete-vulnerability-exception
   - arguments:
     - default: false
-      description: The number of records to retrieve in each API call when pagination is used.
+      description: Number of records to retrieve in each API call when pagination is used.
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: false
-      description: An option to retrieve a specific page when pagination is used.
+      description: A specific page to retrieve when pagination is used.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
       defaultValue: '10'
-      description: The number of records to retrieve.
+      description: A number of records to limit the response to.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: 'Multiple criteria of <string> The criteria to sort the records by, in the format: property[,ASC|DESC]. The default sort order is ascending. Multiple sort criteria can be specified using multiple sort query parameters separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
+      description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
       isArray: false
       name: sort
       required: false
@@ -1012,7 +1012,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The primary IPv4 or IPv6 address of the asset.
+      description: Primary IPv4 or IPv6 address of the asset.
       isArray: true
       name: ip
       required: true
@@ -1048,26 +1048,26 @@ script:
         type: string
   - arguments:
     - default: false
-      description: Multiple criteria of integer<int64> Asset ids to create the report on, comma separated.
+      description: Asset IDs to create the report on. Can be a comma-separated list.
       isArray: true
       name: assets
       required: true
       secret: false
     - default: false
-      description: <string> Report template id to create the report with. If none is provided, the first template available will be used.
+      description: Report template ID to create the report with. If not provided, the first available template will be used.
       isArray: false
       name: template
       required: false
       secret: false
     - default: false
-      description: <string> The report name
+      description: Report name.
       isArray: false
       name: name
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: <string> The report format, default is PDF
+      description: Report format (uses PDF by default).
       isArray: false
       name: format
       predefined:
@@ -1080,7 +1080,7 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: If true, downloads the report immediately after the report is generated. The default is "true". If the report takes longer than 10 seconds to generate, set to "false".
+      description: Whether to download the report immediately after the report is generated. Defaults to "true". If the report takes longer than 10 seconds to generate, set to "false".
       name: download_immediately
       predefined:
       - 'true'
@@ -1122,32 +1122,32 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Multiple criteria of integer<int32> Site ids to create the report on, comma separated.
+      description: Site IDs to create the report on, can be a comma-separated list.
       isArray: true
       name: sites
       required: false
       secret: false
     - default: false
-      description: Multiple criteria of <string> Site names to create the report on, comma separated.
+      description: Names of sites to create the report on, can be a comma-separated list.
       isArray: true
       name: site_names
       required: false
       secret: false
     - default: false
-      description: <string> Report template id to create the report with. If none is provided, the first template available will be used.
+      description: Report template ID to use for report's creation. If not provided, the first available template will be used.
       isArray: false
       name: template
       required: false
       secret: false
     - default: false
-      description: <string> The report name
+      description: Report name
       isArray: false
       name: name
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: <string> The report format, default is PDF
+      description: Report format (uses PDF by default).
       isArray: false
       name: format
       predefined:
@@ -1300,7 +1300,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The Oracle Net Listener password. Used to enumerate SIDs from your environment.
+      description: Oracle Net Listener password. Used to enumerate SIDs from your environment.
       isArray: false
       name: oracle_listener_password
       required: false
@@ -1419,26 +1419,26 @@ script:
         type: number
   - arguments:
     - default: false
-      description: integer <int64> The identifier of the scan.
+      description: ID of the scan to create a report about.
       isArray: false
       name: scan
       required: true
       secret: false
     - default: false
-      description: <string> Report template id to create the report with. If none is provided, the first template available will be used.
+      description: Report template ID to use for creation. If not provided, the first available template will be used.
       isArray: false
       name: template
       required: false
       secret: false
     - default: false
-      description: <string> The report name
+      description: Report name.
       isArray: false
       name: name
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: <string> The report format, default is PDF
+      description: Report format (uses PDF by default).
       isArray: false
       name: format
       predefined:
@@ -1639,7 +1639,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The number of records retrieve.
+      description: A number of records to limit the response to.
       isArray: false
       name: limit
       required: false
@@ -1669,27 +1669,26 @@ script:
         required: false
         secret: false
       - default: false
-        description: The number of records to retrieve in each API call when pagination is used.
+        description: Number of records to retrieve in each API call when pagination is used.
         isArray: false
         name: page_size
         required: false
         secret: false
       - default: false
-        description: An option to retrieve a specific page when pagination is used.
+        description: A specific page to retrieve when pagination is used.
         isArray: false
         name: page
         required: false
         secret: false
       - default: false
         defaultValue: '10'
-        description: The number of records retrieve.
+        description: A number of records to limit the response to.
         isArray: false
         name: limit
         required: false
         secret: false
       - default: false
-        description: 'The criteria to sort the records by, in the format: property[,ASC|DESC].
-        The default sort order is ascending. Multiple sort criteria can be specified using multiple sort query parameters separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
+        description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
         isArray: false
         name: sort
         required: false
@@ -1845,7 +1844,7 @@ script:
         required: false
         secret: false
       - default: false
-        description: The number of records retrieve.
+        description: A number of records to limit the response to.
         isArray: false
         name: limit
         required: false
@@ -1913,7 +1912,7 @@ script:
         secret: false
       - default: false
         defaultValue: '10'
-        description: The number of records retrieve.
+        description: A number of records to limit the response to.
         isArray: false
         name: limit
         required: false
@@ -2028,7 +2027,7 @@ script:
         secret: false
       - default: true
         defaultValue: '50'
-        description: The number of records retrieve.
+        description: A number of records to limit the response to.
         isArray: false
         name: limit
         required: false
@@ -2124,26 +2123,26 @@ script:
         required: false
         secret: false
       - default: false
-        description: The number of records to retrieve in each API call when pagination is used.
+        description: Number of records to retrieve in each API call when pagination is used.
         isArray: false
         name: page_size
         required: false
         secret: false
       - default: false
-        description: An option to retrieve a specific page when pagination is used.
+        description: A specific page to retrieve when pagination is used.
         isArray: false
         name: page
         required: false
         secret: false
       - default: true
         defaultValue: submit.date,ASC
-        description: 'Multiple criteria of <string> The criteria to sort the records by, in the format: property[,ASC|DESC]. The default sort order is ascending. Multiple sort criteria can be specified using multiple sort query parameters separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
+        description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
         isArray: false
         name: sort
         required: false
         secret: false
       - default: false
-        description: The number of records retrieve.
+        description: A number of records to limit the response to.
         isArray: false
         name: limit
         required: false
@@ -2209,13 +2208,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Multiple criteria of <string> The hosts that should be included as a part of the scan. This should be a mixture of IP Addresses and host names as a comma separated string array.
+      description: Hosts that should be included as a part of the scan. Can an IP Addresses or a hostname. Can be a comma-separated list.
       isArray: true
       name: hosts
       required: false
       secret: false
     - default: false
-      description: <string> The user-driven scan name for the scan.
+      description: Scan name.
       isArray: false
       name: name
       required: false
@@ -2260,19 +2259,19 @@ script:
       type: number
   - arguments:
     - default: false
-      description: Multiple criteria of <string> IP addresses of assets, comma separated.
+      description: IP addresses of assets to scan. Can be a comma-separated list.
       isArray: true
       name: IPs
       required: false
       secret: false
     - default: false
-      description: Multiple criteria of <string> Host names of assets, comma separated.
+      description: Hostnames of assets to scan. Can be a comma-separated list.
       isArray: true
       name: hostNames
       required: false
       secret: false
     - default: false
-      description: <string> The user-driven scan name for the scan.
+      description: Scan name.
       isArray: false
       name: name
       required: false
@@ -2317,42 +2316,42 @@ script:
       type: number
   - arguments:
     - default: false
-      description: integer <int64> ID of the scan to stop.
+      description: ID of a running scan.
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
-    description: Stop the specified scan
+    description: Stop a running scan.
     execution: false
     name: nexpose-stop-scan
   - arguments:
     - default: false
-      description: integer <int64> ID of the scan to pause.
+      description: ID of a running scan.
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
-    description: Pause the specified scan
+    description: Pause a running scan.
     execution: false
     name: nexpose-pause-scan
   - arguments:
     - default: false
-      description: integer <int64> ID of the scan to resume.
+      description: ID of a paused scan.
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
-    description: Resume the specified scan
+    description: Resume a paused scan.
     execution: false
     name: nexpose-resume-scan
   - arguments:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: <boolean> Return active or past scans.
+      description: Whether to return only active scans or not.
       isArray: false
       name: active
       predefined:
@@ -2361,32 +2360,32 @@ script:
       required: false
       secret: false
     - default: false
-      description: The number of records to retrieve in each API call when pagination is used.
+      description: Number of records to retrieve in each API call when pagination is used.
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: false
-      description: An option to retrieve a specific page when pagination is used.
+      description: A specific page to retrieve when pagination is used.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
       defaultValue: '10'
-      description: integer <int32> The number of records retrieve.
+      description: A number of records to limit the response to.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: 'Multiple criteria of <string> The criteria to sort the records by, in the format: property[,ASC|DESC]. The default sort order is ascending. Multiple sort criteria can be specified using multiple sort query parameters separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
+      description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
       isArray: false
       name: sort
       required: false
       secret: false
     deprecated: false
-    description: Returns a list of scans.
+    description: Return a list of scans. Returns only active scans by default (active=true).
     execution: false
     name: nexpose-get-scans
     outputs:
@@ -2435,13 +2434,13 @@ script:
   - arguments:
     - name: report_id
       required: true
-      description: The identifier of the report.
+      description: ID of the report.
     - name: instance_id
       required: true
-      description: The identifier of the report instance. Also supports the "latest"
+      description: ID of the report instance. Supports a "latest" value.
         keyword.
     - name: name
-      description: The report name.
+      description: Report name.
     - name: format
       auto: PREDEFINED
       predefined:
@@ -2451,7 +2450,7 @@ script:
       - html
       - text
       - nexpose-simple-xml
-      description: The report format, default is pdf.
+      description: Report format (uses PDF by default).
       defaultValue: pdf
     name: nexpose-download-report
     outputs:
@@ -2498,10 +2497,10 @@ script:
   - arguments:
     - name: report_id
       required: true
-      description: The identifier of the report.
+      description: ID of the report.
     - name: instance_id
       required: true
-      description: The identifier of the report instance. Also supports the "latest"
+      description: ID of the report instance. Supports a "latest" value.
         keyword.
     name: nexpose-get-report-status
     outputs:
@@ -2758,7 +2757,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The Oracle Net Listener password. Used to enumerate SIDs from your environment.
+      description: Oracle Net Listener password. Used to enumerate SIDs from your environment.
       isArray: false
       name: oracle_listener_password
       required: false
@@ -2873,7 +2872,7 @@ script:
     name: nexpose-update-site-scan-credential
   - arguments:
     - default: false
-      description: The ID of the vulnerability exception to update.
+      description: ID of the vulnerability exception to update.
       isArray: false
       name: id
       required: true
@@ -2890,7 +2889,7 @@ script:
     name: nexpose-update-vulnerability-exception-expiration
   - arguments:
     - default: false
-      description: The ID of the vulnerability exception to update.
+      description: ID of the vulnerability exception to update.
       isArray: false
       name: id
       required: true
@@ -2912,7 +2911,7 @@ script:
     name: nexpose-update-vulnerability-exception-status
   - arguments:
     - default: false
-      description: The ID of the shared credential to update.
+      description: ID of the shared credential to update.
       isArray: false
       name: id
       required: true
@@ -3014,7 +3013,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The Oracle Net Listener password. Used to enumerate SIDs from your environment.
+      description: Oracle Net Listener password. Used to enumerate SIDs from your environment.
       isArray: false
       name: oracle_listener_password
       required: false
