@@ -8502,7 +8502,7 @@ def ip_command(ips, reliability):
 def whois_command(reliability):
     args = demisto.args()
     query = args.get('query')
-    is_recursive = argToBoolean(args.get('recursive'))
+    is_recursive = argToBoolean(args.get('recursive', 'false'))
     verbose = argToBoolean(args.get('verbose', 'false'))
     for query in argToList(query):
         domain = get_domain_from_query(query)
@@ -8521,7 +8521,7 @@ def whois_command(reliability):
             'ContentsFormat': formats['markdown'],
             'Contents': str(whois_result),
             'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
-            'EntryContext': dbot_score, 
+            'EntryContext': dbot_score,
         })
 
 
