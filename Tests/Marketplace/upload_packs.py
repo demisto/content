@@ -226,14 +226,14 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
     valid_pack_names = {p.name for p in pack_list}
     if marketplace == 'xsoar':
         private_packs_names = {p.get('id', '') for p in private_packs}
-        valid_packs_names = valid_pack_names.union(private_packs_names)
+        valid_pack_names.update(private_packs_names)
         # search for invalid packs folder inside index
         invalid_packs_names = {(entry.name, entry.path) for entry in os.scandir(index_folder_path) if
-                               entry.name not in valid_packs_names and entry.is_dir()}
+                               entry.name not in valid_pack_names and entry.is_dir()}
     else:
         # search for invalid packs folder inside index
         invalid_packs_names = {(entry.name, entry.path) for entry in os.scandir(index_folder_path) if
-                               entry.name not in valid_packs_names and entry.is_dir()}
+                               entry.name not in valid_pack_names and entry.is_dir()}
 
     if invalid_packs_names:
         try:
