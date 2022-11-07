@@ -488,16 +488,14 @@ def lookup_observables(client: Client, args: Any) -> CommandResults:
     value_eiq = args.get("value")
     if not validate_type(type_eiq, value_eiq):
         raise ValueError("Type does not match specified value")
-    data = client.lookup_obs(type_eiq, value_eiq)
-    if data.get("data"):
-        data = data["data"]
+    response = client.lookup_obs(type_eiq, value_eiq)
+    if response.get("data"):
+        data_item = response["data"]
     else:
         return "No observable data found"  # type:ignore
-    data = client.lookup_obs(type_eiq, value_eiq)
-    data = data["data"] if data.get("data") else []
     standard_observable_outputs = []
     final_data = []
-    for observable in data:
+    for observable in data_item:
         maliciousness = observable.get("meta", {}).get("maliciousness")
         score = maliciousness_to_dbotscore(maliciousness)
         standard_observable_output = {
