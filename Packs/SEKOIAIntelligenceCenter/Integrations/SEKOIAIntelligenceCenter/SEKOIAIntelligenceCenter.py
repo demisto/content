@@ -368,7 +368,7 @@ def get_email_indicator_reputation(stix_object: dict, reputation_score: int, rel
     email = Common.EMAIL(address=email_addr, domain=email_addr.split("@")[-1], dbot_score=dbot_score, traffic_light_protocol=tlp)
 
     return CommandResults(
-        outputs_prefix="SEKOIAIntelligenceCenter.URL",
+        outputs_prefix="SEKOIAIntelligenceCenter.EMAIL",
         outputs_key_field="name",
         outputs=stix_object,
         indicator=email,
