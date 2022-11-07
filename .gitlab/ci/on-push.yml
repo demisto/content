@@ -243,7 +243,7 @@ prepare-testing-bucket-xpanse:
     - echo "Not triggering Collect_Tests"
 
     - section_start "Prepare Content Packs for Testing"
-    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_V2_BUCKET" "$STORAGE_BASE_PATH" "xpanse"
+    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_XPANSE_BUCKET" "$STORAGE_BASE_PATH" "xpanse"
     - section_end "Prepare Content Packs for Testing"
 
     - section_start "Upload Artifacts to GCP" --collapsed
