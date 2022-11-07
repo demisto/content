@@ -1,7 +1,7 @@
 {
   "mcafee_epo_raw": {
     "_raw_log": {
-      "type": "timestamp",
+      "type": "datetime",
       "is_array": false
     },
     "ThreatEventID": {
