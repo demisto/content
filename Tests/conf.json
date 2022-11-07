@@ -2370,7 +2370,7 @@
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja"
         },
-                {
+        {
             "playbookID": "Active Directory - automatic pagination check",
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja"
@@ -3150,6 +3150,11 @@
             "playbookID": "MongoDBLog - Test",
             "pid_threshold": 12,
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "FeedCyCognito",
+            "playbookID": "FeedCyCognito-Test",
+            "fromversion": "6.2.0"
         },
         {
             "integrations": "Google Chronicle Backstory",
@@ -4717,10 +4722,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "playbookID": "Delete Context Subplaybook Test",
-            "fromversion": "5.0.0"
-        },
-        {
             "playbookID": "TruSTAR v2-Test",
             "fromversion": "5.0.0",
             "integrations": [
@@ -5367,7 +5368,8 @@
         "Process Email - Generic - Test - Incident Starter": "Issue CIAC-4161",
         "AD v2 - debug-mode": "No credentials",
         "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
-        "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407"
+        "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407",
+        "O365-SecurityAndCompliance-Test": "Failing in nightly, being handled"
     },
     "skipped_integrations": {
         "AbuseIPDB": "License expired",

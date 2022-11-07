@@ -8,6 +8,7 @@ import sys
 import warnings
 
 import dateparser
+from freezegun import freeze_time
 import pytest
 import requests
 from pytest import raises, mark
@@ -3063,6 +3064,7 @@ class TestParseDateRange:
         assert abs(utc_start_time - utc_end_time).days == 2
 
     @staticmethod
+    @freeze_time("2022-11-03 13:40:00 UTC")
     def test_case_insensitive():
         utc_now = datetime.utcnow()
         utc_start_time, utc_end_time = parse_date_range('2 Days', utc=True)
