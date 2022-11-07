@@ -28,8 +28,8 @@ def test_AquatoneDiscover(mocker):
     Then:
         - Ensure that Popen and demisto.results were called with the expected arguments
     """
-    from AquatoneDiscover import main
-    with patch("AquatoneDiscover.Popen") as Popen:
+    from AquatoneDiscoverV2 import main
+    with patch("AquatoneDiscoverV2.Popen") as Popen:
         proc = MagicMock()
         Popen.return_value = proc
         proc.communicate.return_value = ["Output message", "Error message"]
