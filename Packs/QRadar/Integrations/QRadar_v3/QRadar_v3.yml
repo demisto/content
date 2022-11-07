@@ -2793,7 +2793,6 @@ script:
       - name: range
         description: Limit argument - Range of results to return. The default is 0-49.
           (e.g., 0-20, 3-5, 3-3).
-        isArray: true
       - name: group
         description: The name of the remote network group that CIDRs associated with, as it appears in Qradar.
       - name: id
@@ -2814,10 +2813,10 @@ script:
       description: Id of each CIDR remote network that is part of the group.
       type: Number
     - contextPath: Qradar.RemoteNetworkCIDR.name
-      description: The associated CIDR description as appear in Qradar.
+      description: The associated CIDR name as appear in Qradar.
       type: String
     - contextPath: Qradar.RemoteNetworkCIDR.description
-      description: The associated CIDR name as appear in Qradar.
+      description: The associated CIDR description as appear in Qradar.
       type: String
     description: Retrieves the list of staged remote networks.
   runonce: false

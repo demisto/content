@@ -2363,7 +2363,7 @@
      "name": "String",
      "description": "String",
      "cidrs": [
-      "127.0.0.2"
+      "127.0.0.2/24"
      ],
      "id": 42,
      "group": "String1"

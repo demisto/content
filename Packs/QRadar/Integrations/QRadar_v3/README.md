@@ -2623,7 +2623,7 @@ Create remote network cidrs
 | id | The associated CIDR id.<br>Only possible when a single CIDR is created. | Optional | 
 | description | Description that will be displayed and associated with all the newly uploaded CIDRs on Qradar. | Required | 
 | group | The exact name of the remote network group that CIDRs should be associated with as it appears in Qradar. A single group can be assigned to each create command.<br>A new remote network group can be created in Qradar by giving a new unique remote network group name (that does not already exist in Qradar remote networks). | Required | 
-| fields | Use this parameter to specify which fields you would like to get back in the response.<br>Fields that are not named are excluded from the output. Specify subfields in brackets, and multiple fields in the same object are separated by commas.<br>The possible fields are id, group, name, cidr, and description. | Optional | 
+| fields | Use this parameter to specify which fields you would like to get back in the response.<br>Fields that are not named are excluded from the output.<br>The possible fields are id, group, name, cidr, and description. | Optional | 
 
 
 #### Context Output
@@ -2659,3 +2659,45 @@ There is no context output for this command.
     <td>example_name</td>
   </tr>
 </table>
+
+
+### qradar-remote-network-cidr-list
+***
+Retrieves a list of staged remote networks.
+
+
+#### Base Command
+
+`qradar-remote-network-cidr-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| range | Limit argument - Range of results to return. The default is 0-49. (e.g., 0-20, 3-5, 3-3).<br>Default is 0-49. | Optional | 
+| group | The name of the remote network group that CIDRs associated with, as it appears in Qradar. | Optional | 
+| id | Id of CIDR (remote network). | Optional | 
+| name | The name of CIDRs (remote network) appears in Qradar. | Required | 
+| filter | Additional options to filter results using a query_expression. | Optional | 
+| fields | Use this parameter to specify which fields you would like to get back in the response.<br>Fields that are not named are excluded from the output.<br>The possible fields are id, group, name, cidr, and description. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Qradar.RemoteNetworkCIDR | Number | Array of - A list of all the retrieved CIDRs. | 
+| Qradar.RemoteNetworkCIDR.id | Number |  Id of each CIDR remote network that is part of the group. | 
+| Qradar.RemoteNetworkCIDR.name | String | The associated CIDR name as appear in Qradar. | 
+| Qradar.RemoteNetworkCIDR.description | String | The associated CIDR description as appear in Qradar. | 
+
+
+#### Command example
+```!qradar-remote-network-cidr-list range=0-1```
+#### Human Readable Output
+
+### List of the staged remote networks
+
+| cidrs | description | group | id | name |
+| --- | --- | --- | --- | --- |
+| 1.2.3.4/32,<br>8.8.8.8/2 | example_description | example_group1 | 12 | example_name |
+| 127.0.0.1/32 | example_description | example_group2 | 13 | example_name |
