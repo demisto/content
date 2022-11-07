@@ -391,7 +391,7 @@ upload-packs-to-xpanse-marketplace:
 
     - section_start "Download packs from GCP"
     - |
-      PACKS_SRC="gs://$GCS_MARKET_V2_BUCKET/$STORAGE_BASE_PATH/packs"
+      PACKS_SRC="gs://$GCS_MARKET_XPANSE_BUCKET/$STORAGE_BASE_PATH/packs"
       ZIP_FOLDER=$(mktemp -d)
       gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auth.out
       echo "successfully activated google cloud service account"
