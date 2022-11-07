@@ -1,5 +1,3 @@
-import traceback
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -9,8 +7,8 @@ from CommonServerPython import *  # noqa: F401
 def main():
 
     try:
-        issue_id = demisto.executeCommand("Print", {"value": "${incident.cycognitoissueid}"})[0]["Contents"]
-        asset_id = demisto.executeCommand("Print", {"value": "${incident.cycognitoaffectedasset}"})[0]["Contents"]
+        issue_id = demisto.incident().get('CustomFields', {}).get('cycognitoissueid')
+        asset_id = demisto.incident().get('CustomFields', {}).get('cycognitoaffectedasset')
 
         issue_id = issue_id.replace('issue/', '')
 
@@ -29,7 +27,6 @@ def main():
         })
 
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(f'Could not find Deeplink:\n{e}')
 
 

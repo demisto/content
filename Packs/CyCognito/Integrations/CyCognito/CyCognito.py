@@ -257,7 +257,6 @@ def convert_country_names_to_alpha_3_codes(locations: List[str]):
         try:
             converted_locations.append(pycountry.countries.search_fuzzy(location)[0].alpha_3)
         except LookupError:
-            demisto.error(f"[+] CyCognito: Error while parsing country name: {location}")
             raise ValueError(ERRORS['INVALID_COUNTRY_ERROR'].format(location))
 
     return converted_locations
@@ -420,7 +419,7 @@ def prepare_hr_for_asset_get(response) -> str:
 
     hr_output_certificate_details = [
         {
-            'Certificate Signature': response.get('id').split('/', 1)[-1],
+            'Certificate Signature': response.get('id', '').split('/', 1)[-1],
             'Expiration Time': expiration,
             'Subject Organization Unit': response.get("subject_organization_unit"),
             'Subject Common Name': response.get('subject_common_name'),
@@ -1064,7 +1063,7 @@ def update_remote_system_command(client: CyCognitoClient, args: Dict[str, Any]):
     demisto.debug(f"[+] CyCognito: params -> {params}")
     updated_incident = client.change_issue_investigation_status(params)
     updated_incident = prepare_context_for_issue_investigation_status_change(updated_incident.json(), params)
-    return updated_incident.get('id').replace('issue/', '')  # type: ignore
+    return updated_incident.get('id', '').replace('issue/', '')
 
 
 def cycognito_issue_get_command(client: CyCognitoClient, args: Dict[str, Any]) -> CommandResults:
@@ -1308,7 +1307,7 @@ def main():
     api_key = params.pop('api_key')
 
     verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    proxy = argToBoolean(params.get('proxy', False))
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
@@ -1353,7 +1352,6 @@ def main():
             else:
                 raise NotImplementedError(f'Command {command} is not implemented')
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
