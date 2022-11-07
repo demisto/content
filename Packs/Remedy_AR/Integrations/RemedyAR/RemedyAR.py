@@ -28,8 +28,7 @@ if not demisto.params()['proxy']:
 
 def http_request(method, url_suffix, data, headers):
     data = {} if data is None else data
-    LOG.print_log('running request with url=%s\tdata=%s\theaders=%s' % (BASE_URL + url_suffix,
-        data, headers))
+    LOG.print_log(f'running request with url={BASE_URL}{url_suffix}\tdata={data}\theaders={headers}')
     try:
         res = requests.request(method,
                                BASE_URL + url_suffix,
