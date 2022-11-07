@@ -2889,7 +2889,7 @@ tasks:
       '#default#':
       - "62"
       "yes":
-      - "21"
+      - "23"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2920,7 +2920,8 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "56_30_#default#": 0.42
+      "56_30_#default#": 0.42,
+      "87_23_yes": 0.38
     },
     "paper": {
       "dimensions": {
