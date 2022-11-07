@@ -145,7 +145,7 @@ def test_update_remote_system(mocker):
     args = {'incidentChanged': True,
             'remoteId': 1,
             'delta': {'custom_field': 'updated_field'}
-    }
+            }
     client = generate_dummy_client()
     mocker.patch.object(client, 'get_incident', return_value=REMOTE_INCIDENT)
     result = mocker.patch.object(client, 'update_incident')
