@@ -233,7 +233,7 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
     else:
         # search for invalid packs folder inside index
         invalid_packs_names = {(entry.name, entry.path) for entry in os.scandir(index_folder_path) if
-                               entry.name not in valid_packs_names and entry.is_dir()}
+                               entry.name not in valid_pack_names and entry.is_dir()}
 
     if invalid_packs_names:
         try:
