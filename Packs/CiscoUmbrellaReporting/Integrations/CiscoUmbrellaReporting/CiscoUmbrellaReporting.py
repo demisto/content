@@ -62,6 +62,7 @@ SUMMARY_TYPE_DICT = {
 
 ''' CLIENT CLASS '''
 
+
 class Client(BaseClient):
     """
     This Client implements API calls, and does not contain any XSOAR logic.
