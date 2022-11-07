@@ -1,0 +1,38 @@
+{
+    "meta": {
+        "status": 200,
+        "pagination": {
+            "pageSize": 1,
+            "totalCount": 1
+        }
+    },
+    "data": [
+        {
+            "messages": [
+                {
+                    "id": "1234",
+                    "fromEnv": {
+                        "emailAddress": "test@gmail.com"
+                    },
+                    "fromHeader": {
+                        "emailAddress": "test@gmail.com"
+                    },
+                    "to": {
+                        "emailAddress": "test@gmail.com"
+                    },
+                    "subject": "Crestar confirmations",
+                    "attachment": true,
+                    "routing": "inbound",
+                    "size": 7110,
+                    "remoteIp": "1.2.3.4",
+                    "attempts": 2,
+                    "nextAttempt": "2022-07-28T10:46:54+0000",
+                    "created": "2022-07-28T10:45:30+0000",
+                    "info": "Time out waiting for cached result to finish for , result is empty",
+                    "priority": "normal"
+                }
+            ]
+        }
+    ],
+    "fail": []
+}

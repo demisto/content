@@ -14,6 +14,9 @@
   },
   "skipped_integrations": {
   },
+  "nightly_packs": [
+    "myPack"
+  ],
   "unmockable_integrations": {},
   "nightly_integrations": [],
   "parallel_integrations": [],

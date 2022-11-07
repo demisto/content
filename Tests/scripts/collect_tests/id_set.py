@@ -2,10 +2,15 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Iterable, Optional
 
-from Tests.scripts.collect_tests.constants import SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK
-from Tests.scripts.collect_tests.exceptions import NotUnderPackException
 from demisto_sdk.commands.common.constants import MarketplaceVersions
+from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
+from demisto_sdk.commands.content_graph.common import ContentType
+from demisto_sdk.commands.content_graph.objects.content_item import ContentItem
 
+
+from Tests.scripts.collect_tests.constants import \
+    SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK
+from Tests.scripts.collect_tests.exceptions import NotUnderPackException
 from Tests.scripts.collect_tests.logger import logger
 from Tests.scripts.collect_tests.utils import (DictBased, DictFileBased,
                                                PackManager, find_pack_folder,
@@ -36,6 +41,12 @@ class IdSetItem(DictBased):
         self.deprecated: Optional[bool] = \
             self.get('deprecated', warn_if_missing=False) or self.get('hidden', warn_if_missing=False)
 
+    @classmethod
+    def from_model(cls, model: ContentItem):
+        return cls(id_=model.object_id,
+                   dict_=model.to_id_set_entity(),
+                   )
+
     @property
     def integrations(self):
         return to_tuple(self.get('integrations', (), warn_if_missing=False))
@@ -62,9 +73,24 @@ class IdSetItem(DictBased):
 
         except NotUnderPackException:
             if path.name in SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK:
+                logger.info(f'{path=} is not under a pack, '
+                            'but is part of SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, skipping')
                 return None
             else:
                 raise
+
+    @property
+    def implementing_integrations(self) -> tuple[str, ...]:
+        result: set[str] = set()
+        # command_to_integrations maps commands to either a single integration, or a list of them
+        # e.g. { command1: integration1,
+        #        command2: [integration1, integration2, ...] }
+        for command, integrations in self.get('command_to_integration', {}, warn_if_missing=False).items():
+            result.update(
+                (integrations,) if isinstance(integrations, str)
+                else integrations
+            )
+        return tuple(sorted(result))
 
 
 class IdSet(DictFileBased):
@@ -77,6 +103,7 @@ class IdSet(DictFileBased):
         self.marketplace = marketplace
 
         self.id_to_integration: dict[str, IdSetItem] = self._parse_items('integrations')
+        self.id_to_script: dict[str, IdSetItem] = self._parse_items('scripts')
         self.id_to_test_playbook: dict[str, IdSetItem] = self._parse_items('TestPlaybooks')
 
         self.implemented_scripts_to_tests: dict[str, list] = defaultdict(list)
@@ -132,3 +159,38 @@ class IdSet(DictFileBased):
 
                     result[id_] = item
         return result
+
+
+class Graph:
+    def __init__(self, marketplace: MarketplaceVersions) -> None:
+        self.marketplace = marketplace
+        with Neo4jContentGraphInterface() as content_graph_interface:
+            integrations = content_graph_interface.search(marketplace=marketplace,
+                                                          content_type=ContentType.INTEGRATION)
+            scripts = content_graph_interface.search(marketplace=marketplace,
+                                                     content_type=ContentType.SCRIPT)
+            test_playbooks = content_graph_interface.search(marketplace=marketplace,
+                                                            content_type=ContentType.TEST_PLAYBOOK)
+            playbooks = content_graph_interface.search(marketplace=marketplace,
+                                                       content_type=ContentType.PLAYBOOK)
+            # maps content_items to test playbook where they are used recursively
+
+            self.id_to_integration = {integration.object_id: IdSetItem.from_model(integration) for integration in integrations}
+            self.id_to_script = {script.object_id: IdSetItem.from_model(script) for script in scripts}
+            self.id_to_test_playbook = {
+                test_playbook.object_id: IdSetItem.from_model(test_playbook) for test_playbook in test_playbooks}
+            self.implemented_playbooks_to_tests = {playbook.object_id: [IdSetItem.from_model(test) for test in playbook.tested_by]
+                                                   for playbook in playbooks}
+            self.implemented_scripts_to_tests = {script.object_id: [IdSetItem.from_model(test) for test in script.tested_by]
+                                                 for script in scripts}
+
+            self.test_playbooks = self.id_to_test_playbook.values()
+
+    @property
+    def artifact_iterator(self) -> Iterable[IdSetItem]:
+        """ returns an iterator for all content items EXCLUDING PACKS """
+        with Neo4jContentGraphInterface() as content_graph_interface:
+            content_items = content_graph_interface.search(self.marketplace, content_type=ContentType.BASE_CONTENT)
+            for content_item in content_items:
+                if content_item.content_type not in {ContentType.COMMAND, ContentType.PACK}:
+                    yield IdSetItem.from_model(content_item)

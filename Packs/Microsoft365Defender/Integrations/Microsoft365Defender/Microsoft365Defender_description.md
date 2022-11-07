@@ -30,18 +30,20 @@ To use a self-configured Azure application, you need to add a new Azure App Regi
     * offline_access - Delegated 
       
       And one of the following:
-      * Incident.Read.All	- Application
-      * AdvancedHunting.Read.All - Application
+      * Incident.Read.All	- Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)
+      * AdvancedHunting.Read.All - Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)
     
 
 * microsoft-365-defender-incident-update:
    * offline_access - Delegated
-   * Incident.ReadWrite.All - Application
+   * Incident.ReadWrite.All - Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)
+
 
 
 * microsoft-365-defender-advanced-hunting:
     * offline_access - Delegated   
-    * AdvancedHunting.Read.All - Application
+    * AdvancedHunting.Read.All - Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)
+
 
 
 ### Client Credentials Flow
@@ -60,7 +62,3 @@ Follow these steps for a self-deployed configuration:
  * Incident.ReadWrite.All - Application
 
 ----
-
-
----
-[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-365-defender)

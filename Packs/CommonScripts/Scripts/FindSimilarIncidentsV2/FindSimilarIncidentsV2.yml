@@ -142,7 +142,7 @@ outputs:
   description: Similar incident name.
   type: string
 script: '-'
-subtype: python2
+subtype: python3
 system: false
 tags:
 - dedup
@@ -150,7 +150,7 @@ tags:
 - incidents
 timeout: 300ns
 type: python
-dockerimage: demisto/python:2.7.18.27799
+dockerimage: demisto/python3:3.10.6.33415
 runonce: false
 tests:
 - Dedup - Generic v3

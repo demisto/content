@@ -11,7 +11,8 @@ from CommonServerPython import DemistoException
 from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, parse_ip_addresses, \
     print_ip_addresses, get_machine_details_command, run_polling_command, run_live_response_script_action, \
     get_live_response_file_action, put_live_response_file_action, HuntingQueryBuilder, assign_params, \
-    get_machine_users_command, get_machine_alerts_command, SECURITY_GCC_RESOURCE, SECURITY_CENTER_RESOURCE
+    get_machine_users_command, get_machine_alerts_command, SECURITY_GCC_RESOURCE, SECURITY_CENTER_RESOURCE, \
+    get_advanced_hunting_command
 
 ARGS = {'id': '123', 'limit': '2', 'offset': '0'}
 with open('test_data/expected_hunting_queries.json') as expected_json:
@@ -26,7 +27,8 @@ def mock_demisto(mocker):
 client_mocker = MsClient(
     tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name', base_url='url', verify='use_ssl',
     proxy='proxy', self_deployed='self_deployed', alert_severities_to_fetch='Informational,Low,Medium,High',
-    alert_time_to_fetch='3 days', alert_status_to_fetch='New', max_fetch='10', is_gcc=False,)
+    alert_time_to_fetch='3 days', alert_status_to_fetch='New', max_fetch='10', is_gcc=False, auth_code='',
+    auth_type='', redirect_uri='')
 
 
 def atp_mocker(mocker, file_name):
@@ -1253,7 +1255,7 @@ def test_fetch_fails(mocker):
     from MicrosoftDefenderAdvancedThreatProtection import fetch_incidents
     mocker.patch.object(demisto, 'debug')
 
-    def raise_mock(params=None):
+    def raise_mock(params=None, overwrite_rate_limit_retry=True):
         raise DemistoException("""Verify that the server URL parameter is correct and that you have access to the server from your host.
 Error Type: <requests.exceptions.ConnectionError>
 Error Number: [None]
@@ -2332,7 +2334,8 @@ def test_gcc_resource(mocker, is_gcc: bool):
         tenant_id="tenant_id", auth_id="auth_id", enc_key='enc_key', app_name='app_name', base_url='url',
         verify='use_ssl',
         proxy='proxy', self_deployed='self_deployed', alert_severities_to_fetch='Informational,Low,Medium,High',
-        alert_time_to_fetch='3 days', alert_status_to_fetch='New', max_fetch='10', is_gcc=is_gcc, )
+        alert_time_to_fetch='3 days', alert_status_to_fetch='New', max_fetch='10', is_gcc=is_gcc, auth_code='',
+        auth_type='', redirect_uri='')
     # use requests_mock to catch a get to example.com
     req = mocker.patch.object(client.ms_client, 'http_request')
     with requests_mock.Mocker() as m:
@@ -2362,3 +2365,60 @@ def test_get_machines(mocker, page_num, page_size, res):
     req = mocker.patch.object(client_mocker.ms_client, 'http_request', return_value='')
     client_mocker.get_machines('filter', page_num=page_num, page_size=page_size)
     assert res == req.call_args.kwargs.get('params')
+
+
+@pytest.mark.parametrize('query, query_batch, hr_name, timeout',
+                         [('', '[{"query": "DeviceInfo | where OnboardingStatus == Onboarded | limit 10'
+                           ' | distinct DeviceName", "name": "name1", "timeout": "20"}]', "name1", 20),
+                          ('DeviceInfo | where OnboardingStatus == Onboarded | limit 10 | distinct DeviceName', '', "name", 10)])
+def test_get_advanced_hunting_command(mocker, query, query_batch, hr_name, timeout):
+    """
+    Given:
+        - query, query_batch, human readable name and a timeout
+
+    When:
+        - Running the get_advanced_hunting_command command
+
+    Then:
+        - verify the expected results
+    """
+    args = {'timeout': '10',
+            'time_range': '1 day',
+            'name': 'name',
+            'query': query,
+            'query_batch': query_batch}
+    req = mocker.patch.object(client_mocker, 'get_advanced_hunting',
+                              return_value={'Results': [{'DeviceName': 'win2016-msde-agent.msde.lab.demisto'},
+                                                        {'DeviceName': 'ec2amaz-ua9hieu'}]})
+    human_readable, _, _ = get_advanced_hunting_command(client_mocker, args)
+    assert f'### Hunt results for {hr_name} query' in human_readable
+    assert timeout == req.call_args[0][1]
+
+
+@pytest.mark.parametrize('query, query_batch, exception, return_value',
+                         [('', '', 'Both query and query_batch were not given, please provide one',
+                           {'Results': [{'DeviceName': 'win2016-msde-agent.msde.lab.demisto'}]}),
+                          ('query', 'query_batch', 'Both query and query_batch were given, please provide just one',
+                          {'Results': [{'DeviceName': 'win2016-msde-agent.msde.lab.demisto'}]})])
+def test_get_advanced_hunting_command_exception(mocker, query, query_batch, exception, return_value):
+    """
+    Given:
+        - query, query_batch
+
+    When:
+        - Running the get_advanced_hunting_command command expecting an exception
+
+    Then:
+        - verify the expected exception has the correct value
+    """
+    args = {'timeout': '10',
+            'time_range': '1 day',
+            'name': 'name',
+            'query': query,
+            'query_batch': query_batch}
+    mocker.patch.object(client_mocker, 'get_advanced_hunting', return_value=return_value)
+
+    with pytest.raises(Exception) as e:
+        get_advanced_hunting_command(client_mocker, args)
+
+    assert str(e.value) == exception

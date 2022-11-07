@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "XDR Best Practice Assessment"
+    ],
+    "caseInsensitive": true,
+    "cliName": "xdrbpamanagementoverviewrecommendation",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_xdrbpamanagementoverviewrecommendation",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "XDR BPA Management Overview Recommendation",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "markdown",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

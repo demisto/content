@@ -506,6 +506,32 @@ script:
     execution: false
     name: aws-s3-put-bucket-policy
   - arguments:
+    - description: The name of the bucket from which the server-side encryption configuration is retrieved.
+      name: bucket
+      required: true
+    - description: The account ID of the exepcted bucket owner.
+      name: expectedBucketOwner
+    - description: The AWS Region, if not specified the default region will be used.
+      name: region
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: Get AWS S3 Bucket Encryption
+    name: aws-s3-get-bucket-encryption
+    outputs:
+    - contextPath: AWS.S3.Buckets.BucketName.ServerSideEncryptionConfiguration.Rules.ApplyServerSideEncryptionByDefault.SSEAlgorithm
+      description: S3 Bucket Encryption SSE Algorithm.
+      type: string
+    - contextPath: AWS.S3.Buckets.BucketName.ServerSideEncryptionConfiguration.Rules.ApplyServerSideEncryptionByDefault.KMSMasterKeyID
+      description: S3 Bucket Encryption KMS Master Key ID.
+      type: string
+    - contextPath: AWS.S3.Buckets.BucketName.ServerSideEncryptionConfiguration.Rules.BucketKeyEnabled
+      description: S3 Bucket Encryption Key Enabled.
+      type: boolean
+  - arguments:
     - default: false
       description: Entry ID of the file to upload
       isArray: false
@@ -619,12 +645,12 @@ script:
     description: Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket.
     execution: false
     name: aws-s3-put-public-access-block
-  dockerimage: demisto/boto3:2.0.0.24033
+  dockerimage: demisto/boto3py3:1.0.0.35343
   isfetch: false
   runonce: false
   script: ''
   type: python
-  subtype: python2
+  subtype: python3
 tests:
 - 97393cfc-2fc4-4dfe-8b6e-af64067fc436
 fromversion: 5.0.0

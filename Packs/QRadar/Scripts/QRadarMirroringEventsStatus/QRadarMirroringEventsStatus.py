@@ -42,9 +42,9 @@ def main():
 
         if message == '':
             status = 'Not Started'
-        elif message == 'Mirroring events has reached events limit in this incident.':
+        elif message == 'Fetching events has reached events limit in this incident.':
             status = 'Completed and Stopped'
-        elif message == 'All available events in the offense were mirrored.':
+        elif message == 'All available events in the offense were fetched.':
             status = 'Completed'
         elif message == 'In queue.':
             status = 'In Progress'

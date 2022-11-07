@@ -1,0 +1,9 @@
+{
+  "value": "https://google.com",
+  "type": "URL",
+  "rawJSON": {"id": "xxxx", "ownerName": "xxx", "type": "URL", "dateAdded": "2019-06-27T18:37:55Z", "lastModified": "2019-06-27T18:37:55Z", "rating": 2.0, "confidence": 75, "threatAssessRating": 2.06, "threatAssessConfidence": 75.0, "threatAssessScore": 229, "webLink": "https://app.threatconnect.com/", "summary": "https://google.com", "observationCount": 0, "falsePositiveCount": 0, "privateFlag": false, "active": true, "activeLocked": true, "associatedIndicators": {"data": [{"summary": "summary", "type": "type"}]}},
+  "score": 1,
+  "fields": {"firstseenbysource": "2019-06-27T18:37:55Z", "updateddate": "2019-06-27T18:37:55Z", "verdict": 2.06, "confidence": 75.0, "name": "https://google.com", "reportedby": ["xxx"], "feedrelatedindicators": [{"summary": "summary", "type": "type"}]},
+  "relationships": [{"name": "related-to", "reverseName": "related-to", "type": "IndicatorToIndicator", "entityA": "https://google.com", "entityAFamily": "Indicator", "entityAType": "URL", "entityB": "summary", "entityBFamily": "Indicator", "entityBType": "type", "fields": {}}]
+}
+
