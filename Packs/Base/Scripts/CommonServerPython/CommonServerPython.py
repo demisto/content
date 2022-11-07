@@ -8553,16 +8553,7 @@ if 'requests' in sys.modules:
                     if error_handler:
                         error_handler(res)
                     else:
-                        err_msg = 'Error in API call [{}] - {}' \
-                            .format(res.status_code, res.reason)
-                        try:
-                            # Try to parse json error response
-                            error_entry = res.json()
-                            err_msg += '\n{}'.format(json.dumps(error_entry))
-                            raise DemistoException(err_msg, res=res)
-                        except ValueError:
-                            err_msg += '\n{}'.format(res.text)
-                            raise DemistoException(err_msg, res=res)
+                        self.client_error_handler(res)
 
                 if not empty_valid_codes:
                     empty_valid_codes = [204]
@@ -8637,6 +8628,23 @@ if 'requests' in sys.modules:
             if status_codes:
                 return response.status_code in status_codes
             return response.ok
+
+        def  client_error_handler(self, res):
+            """Generic handler for API call error
+            Constructs and throws a proper error for the API call response.
+
+            :type response: ``requests.Response``
+            :param response: Response from API after the request for which to check the status.
+            """
+            err_msg = 'Error in API call [{}] - {}'.format(res.status_code, res.reason)
+            try:
+                # Try to parse json error response
+                error_entry = res.json()
+                err_msg += '\n{}'.format(json.dumps(error_entry))
+                raise DemistoException(err_msg, res=res)
+            except ValueError:
+                err_msg += '\n{}'.format(res.text)
+                raise DemistoException(err_msg, res=res)
 
 
 def batch(iterable, batch_size=1):

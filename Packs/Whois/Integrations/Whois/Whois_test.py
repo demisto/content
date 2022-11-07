@@ -267,6 +267,30 @@ def test_parse_raw_whois_empty_nameserver():
     assert result['nameservers'] == ['ns1060.ui-dns.biz']
 
 
+@pytest.mark.parametrize('input, expected_result', [(['2024-05-09T00:00:00Z'], datetime.datetime(2024, 5, 9, 0, 0, 0)),
+                                                    (['0000-00-00T00:00:00Z'], Whois.InvalidDateHandler(year=0, month=0, day=0)),
+                                                    (['0000-01-02T11:22:33Z'], datetime.datetime(2000, 1, 2, 11, 22, 33)),
+                                                    (['0000-00-02T00:00:00Z'], Whois.InvalidDateHandler(year=0, month=0, day=2))
+                                                    ])
+def test_parse_dates_invalid_time(input, expected_result):
+    assert type(Whois.parse_dates(input)[0]) == type(expected_result)
+
+
+@pytest.mark.parametrize('input, expected_result', [(['2024-05-09T00:00:00Z'], datetime.datetime(2024, 5, 9, 0, 0, 0)),
+                                                    (['2024-20-09T00:00:00Z'], datetime.datetime(2024, 9, 20, 0, 0, 0))])
+def test_swap_month_day_in_parse_dates(input, expected_result):
+    assert Whois.parse_dates(input)[0] == expected_result
+
+
+@pytest.mark.parametrize('updated_date, expected_res',
+                         [({'updated_date': [Whois.InvalidDateHandler(0, 0, 0)]}, '0-0-0'),
+                          ({'updated_date': [datetime.datetime(2025, 6, 8, 0, 0, 0)]}, '08-06-2025')])
+def test_create_outputs_invalid_time(updated_date, expected_res):
+
+    res = Whois.create_outputs(updated_date, 'test_domain', DBotScoreReliability.A)
+    assert res[0]['Updated Date'] == expected_res
+
+
 def test_parse_nic_contact():
     data = ["%%\n%% This is the AFNIC Whois server.\n%%\n%% complete date format : YYYY-MM-DDThh:mm:ssZ\n%% short date "
             "format    : DD/MM\n%% version              : FRNIC-2.5\n%%\n%% Rights restricted by copyright.\n%% See "
