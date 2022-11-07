@@ -53,8 +53,8 @@ script:
       defaultValue: false 
       auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
     deprecated: false
     description: Provides data enrichment for domains.
     execution: false

@@ -309,7 +309,7 @@ def test_whois_with_verbose(args, expected_res, mocker):
         get_whois_ret_value = pickle.load(f)
     mocker.patch('Whois.get_whois', return_value=get_whois_ret_value)
     demisto_results = mocker.patch.object(demisto, 'results')
-    
+
     Whois.whois_command('B - Usually reliable')
     demisto_results_call_args = demisto_results.call_args[0][0]
     assert len(demisto_results_call_args.get('EntryContext')) == expected_res
