@@ -3808,9 +3808,16 @@ def get_asset_vulnerability_command(client: Client, asset_id: str,
 
             except DemistoException as e2:
                 if e2.res is not None and e2.res.status_code is not None and e2.res.status_code == 404:
-                    return CommandResults(readable_output="Asset not found.")
+                    raise ValueError("Asset not found.")
 
-            return CommandResults(readable_output=f"Asset is not vulnerable to \"{vulnerability_id}\".")
+            try:
+                client.get_vulnerability(vulnerability_id)
+
+            except DemistoException as e2:
+                if e2.res is not None and e2.res.status_code is not None and e2.res.status_code == 404:
+                    raise ValueError("Vulnerability not found.")
+
+            return CommandResults(readable_output=f"Asset {asset_id} is not vulnerable to \"{vulnerability_id}\".")
 
         raise e
 
