@@ -8517,7 +8517,7 @@ def whois_command(reliability):
             demisto.info('Verbose response')
             whois_result['query'] = query
             json_res = json.dumps(whois_result, indent=4, sort_keys=True, default=str)
-            context_res.update({'Whois.RawResponse(val.query==obj.query)': json.loads(json_res)})
+            context_res.update({'Whois(val.query==obj.query)': json.loads(json_res)})
 
         demisto.results({
             'Type': entryTypes['note'],
