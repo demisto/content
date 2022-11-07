@@ -10,7 +10,7 @@ from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR
 from demisto_sdk.commands.common.tools import find_type
 
-PR_TEMPLATE = '### Pull Request created in Cortex XSOAR\n' \
+MR_TEMPLATE = '### Merge Request created in Cortex XSOAR\n' \
               '**Created by:** {}\n' \
               '**Pack:** {}\n' \
               '**Branch:** {}\n' \
@@ -62,7 +62,7 @@ def commit_content_item(branch_name, content_file):
         # new file added
         new_files.append(content_file.file_name)
 #  gitlab-file-create
-    status, commit_res = execute_command('Github-commit-file', commit_args)
+    status, commit_res = execute_command('gitlab-file-create', commit_args)
     if not status:
         raise DemistoException(commit_res)
 
@@ -146,7 +146,7 @@ class ContentFile:
     content_type: str = ''
     file_text: str = ''
     entry_id: str = ''
-
+    print('icarly4')
     def __init__(self, pack_name=None, file=None):
         if not pack_name and not file:
             return
@@ -179,6 +179,7 @@ class ContentFile:
 
 
 def main():
+    print('iCarly1')
     try:
         files = demisto.getArg('files')
         branch_name = demisto.getArg('branch')
@@ -188,7 +189,7 @@ def main():
         template = demisto.getArg('template')
 
         if not template:
-            template = PR_TEMPLATE
+            template = MR_TEMPLATE
 
         if not comment:
             comment = ''
@@ -196,7 +197,7 @@ def main():
         username = user.get('username')
         if user.get('email'):
             username = f'{username} ({user.get("email")})'
-
+        print('iCarly2')
         # commit the files from the input
         for file in files:
             if file.get('Unzipped'):
@@ -215,7 +216,7 @@ def main():
                 commit_content_item(branch_name, content_file)
 
         incident_url = demisto.demistoUrls().get('investigation')
-
+        print('iCarly3')
         # create the PR text
         pr_body = template.format(username, pack_name, branch_name, incident_url, comment)
         if new_files:
@@ -228,7 +229,7 @@ def main():
 
         return_results(CommandResults(
             readable_output=pr_body,
-            outputs_prefix='PR_text',
+            outputs_prefix='MR_text',
             outputs=pr_body
         ))
 
@@ -240,4 +241,5 @@ def main():
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
+    print("what is happening")
     main()
