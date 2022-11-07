@@ -148,7 +148,7 @@ def main():  # pragma: no cover
             collection_to_fetch=collection_to_fetch,
             proxies=proxies,
             verify=verify_certificate,
-            objects_to_fetch=['indicator'],
+            objects_to_fetch=['indicator', 'relationship'],
             skip_complex_mode=skip_complex_mode,
             tags=feed_tags,
             limit_per_request=limit_per_request,

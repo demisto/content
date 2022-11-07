@@ -977,7 +977,8 @@ class Taxii2FeedClient:
         :param page_size: size of the request page
         """
         get_objects = self.collection_to_fetch.get_objects
-        if len(self.objects_to_fetch) > 1:  # when fetching one type no need to fetch relationship
+        if 'relationship' not in self.objects_to_fetch and \
+                len(self.objects_to_fetch) > 1:  # when fetching one type no need to fetch relationship
             self.objects_to_fetch.append('relationship')
         kwargs['type'] = self.objects_to_fetch
         if isinstance(self.collection_to_fetch, v20.Collection):
