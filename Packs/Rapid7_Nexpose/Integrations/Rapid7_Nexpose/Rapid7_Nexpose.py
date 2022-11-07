@@ -7,16 +7,18 @@ from copy import deepcopy
 from datetime import datetime
 from enum import Enum, EnumMeta
 from time import strptime, struct_time
-from typing import Optional, Union
+from typing import Optional, Union, TypeVar, Type
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+T = TypeVar('T')
 
+VENDOR_NAME = "Rapid7 Nexpose"  # Vendor name to use for indicators.
 API_DEFAULT_PAGE_SIZE = 10  # Default page size that's set on the API. Used for calculations.
 DEFAULT_PAGE_SIZE = 50  # Default page size to use
 MATCH_DEFAULT_VALUE = "any"  # Default "match" value to use when using search filters. Can be either "all" or "any".
+REMOVE_RESPONSE_LINKS = True  # Whether to remove `links` keys from responses.
 REPORT_DOWNLOAD_WAIT_TIME = 60  # Time in seconds to wait before downloading a report after starting its generation
-VENDOR_NAME = "Rapid7 Nexpose"  # Vendor name to use for indicators.
 
 urllib3.disable_warnings()  # Disable insecure warnings
 
@@ -213,6 +215,24 @@ class Client(BaseClient):
             ok_codes=(200, 201),
             verify=verify,
         )
+
+    def _http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
+                          params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
+                          return_empty_response=False, retries=0, status_list_to_retry=None,
+                          backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
+                          error_handler=None, empty_valid_codes=None, **kwargs):
+        """
+        Wrapper for BaseClient._http_request() that removes `links` keys from responses.
+        """
+        response = super()._http_request(method, url_suffix, full_url, headers, auth, json_data, params, data, files,
+                                     timeout, resp_type, ok_codes, return_empty_response, retries, status_list_to_retry,
+                                     backoff_factor, raise_on_redirect, raise_on_status, error_handler,
+                                     empty_valid_codes, **kwargs)
+
+        if REMOVE_RESPONSE_LINKS:
+            return remove_dict_key(response, "links")
+
+        return response
 
     def _generate_session_id(self) -> str:
         """
@@ -2786,9 +2806,27 @@ def readable_duration_time(duration: str) -> str:
     return ", ".join(result)
 
 
-def replace_key_names(data: Union[dict, list, tuple],
+def remove_dict_key(data: Type[T], key_name: str) -> T:
+    """
+    Recursively remove a dictionary key from an object
+    """
+    if isinstance(data, dict):
+        if key_name in data:
+            del data[key_name]
+
+        for key in data:
+            remove_dict_key(data[key], key_name)
+
+    if isinstance(data, (list, tuple)):
+        for item in data:
+            remove_dict_key(item, key_name)
+
+    return data
+
+
+def replace_key_names(data: T,
                       name_mapping: dict[str, str], use_reference: bool = False,
-                      original_reference: Union[dict, None] = None) -> Union[dict, list, tuple, set]:
+                      original_reference: Union[dict, None] = None) -> T:
     """
     Replace key names in a dictionary.
 
