@@ -17,15 +17,15 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 50
         }
       }
@@ -82,10 +82,11 @@ tasks:
                         simple: active
                 accessor: brand
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 195
         }
       }
@@ -98,10 +99,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 578c260e-fced-4b70-83af-552dffc2bcda
+    taskid: e5880426-a2ca-4286-807c-23641388b07e
     type: regular
     task:
-      id: 578c260e-fced-4b70-83af-552dffc2bcda
+      id: e5880426-a2ca-4286-807c-23641388b07e
       version: -1
       name: Panorama Query Logs
       description: Query logs
@@ -111,7 +112,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "5"
     scriptarguments:
       action:
         complex:
@@ -131,6 +132,8 @@ tasks:
       log-type:
         complex:
           root: inputs.log_type
+      polling:
+        simple: "true"
       port-dst:
         complex:
           root: inputs.port-dst
@@ -153,109 +156,12 @@ tasks:
         complex:
           root: inputs.zone-src
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 162.5,
           "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: 18309376-a27f-4db9-8936-c8a62354fbc4
-    type: playbook
-    task:
-      id: 18309376-a27f-4db9-8936-c8a62354fbc4
-      version: -1
-      name: GenericPolling
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      Ids:
-        complex:
-          root: Panorama
-          accessor: Monitor.JobID
-      Interval:
-        simple: "1"
-      PollingCommandArgName:
-        simple: job_id
-      PollingCommandName:
-        simple: pan-os-check-logs-status
-      Timeout:
-        simple: "15"
-      dt:
-        simple: Panorama.Monitor(val.Status != 'Completed' && val.Status != 'Failed').JobID
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
-    taskid: fe4d46a7-0e8a-437b-8b5c-3a46ffd6167d
-    type: regular
-    task:
-      id: fe4d46a7-0e8a-437b-8b5c-3a46ffd6167d
-      version: -1
-      name: Panorama Get Logs
-      description: Retrieves log query data by job ID.
-      tags:
-      - PanoramaResults
-      script: '|||pan-os-get-logs'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      job_id:
-        complex:
-          root: Panorama
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Panorama.Monitor.Status
-                iscontext: true
-              right:
-                value:
-                  simple: Completed
-          accessor: Monitor.JobID
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
         }
       }
     note: false
@@ -276,99 +182,12 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: 3516389a-7392-4907-8336-e3da80e36abb
-    type: regular
-    task:
-      id: 3516389a-7392-4907-8336-e3da80e36abb
-      version: -1
-      name: Panorama Check Log Status
-      description: Checks the status of a log query.
-      script: '|||pan-os-check-logs-status'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      job_id:
-        complex:
-          root: Panorama
-          accessor: Monitor.JobID
-    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: 3a40b2a9-6c37-4bd7-85cd-bb8c5720b91c
-    type: condition
-    task:
-      id: 3a40b2a9-6c37-4bd7-85cd-bb8c5720b91c
-      version: -1
-      name: Filter JobID
-      description: Filtering the JOBID.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "3"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: Panorama
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Panorama.Monitor.Status
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Pending
-                accessor: Monitor.JobID
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
           "y": 545
         }
       }
@@ -385,8 +204,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1260,
-        "width": 605,
+        "height": 560,
+        "width": 492.5,
         "x": 50,
         "y": 50
       }
@@ -397,70 +216,70 @@ inputs:
   value: {}
   required: true
   description: 'Log type to query. Can be: traffic, threat, wildfire, url or data-filtering.'
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: query
   value: {}
   required: false
   description: The query string by which to match criteria for the logs. This is similar
     to the query provided in the web interface under the Monitor tab when viewing
     the logs.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: time-generated
   value: {}
   required: false
   description: 'The time the log was generated from the timestamp and prior to it.
     For example: "2019/08/11 01:10:44".'
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: addr-src
   value: {}
   required: false
   description: Source address.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: addr-dst
   value: {}
   required: false
   description: Destination address.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ip
   value: {}
   required: false
   description: Source or destination IP address.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: zone-src
   value: {}
   required: false
   description: Source zone.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: zone-dst
   value: {}
   required: false
   description: Destination zone.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: action
   value: {}
   required: false
   description: Rule action.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: port-dst
   value: {}
   required: false
   description: Destination port.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: rule
   value: {}
   required: false
   description: 'Rule name, for example: "Allow all outbound".'
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: url
   value: {}
   required: false
   description: 'URL, for example: "safebrowsing.googleapis.com".'
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: filedigest
   value: {}
   required: false
   description: File hash (for WildFIre logs only).
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: Panorama.Monitor
   description: Monitor logs object.
@@ -615,5 +434,4 @@ outputs:
   type: string
 tests:
 - Panorama Query Logs - Test
-fromversion: 5.0.0
-toversion: 6.1.9
+fromversion: 6.2.0
