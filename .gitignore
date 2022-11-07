@@ -63,9 +63,6 @@ Packs/**/report_pytest.json
 *.pem
 *.crt
 *.key
-/replace_README.md
-/replace_README_url_replaced.md
-/Retrieve_Asset_Details_-_Lansweeper.png
-/HelloWorldPremium_Scan.png
-/hello_world_premium_readme_url_replaces.md
-/hello_world_premium_readme.md
+
+# neo4j
+neo4j-data
