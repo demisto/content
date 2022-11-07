@@ -112,7 +112,7 @@ script:
     description: Manual command used to fetch events and display them.
     execution: false
     name: aws-gd-get-events
-  dockerimage: demisto/boto3py3:1.0.0.33999
+  dockerimage: devdemisto/py3-master:8.1.0.37158
   isfetchevents: true
   runonce: false
   subtype: python3

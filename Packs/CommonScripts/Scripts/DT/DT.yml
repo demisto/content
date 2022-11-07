@@ -22,4 +22,4 @@ runonce: false
 tests:
 - No tests - script used for testing
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: devdemisto/py3-master:8.1.0.37158

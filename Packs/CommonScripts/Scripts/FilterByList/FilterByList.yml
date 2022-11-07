@@ -69,4 +69,4 @@ runonce: false
 tests:
 - FilterByList - Test
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.4.29342
+dockerimage: devdemisto/py3-master:8.1.0.37158

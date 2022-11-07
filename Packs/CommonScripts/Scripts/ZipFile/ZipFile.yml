@@ -65,6 +65,6 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/py3-tools:0.0.1.30715
+dockerimage: devdemisto/py3-master:8.1.0.37158
 runonce: false
 fromversion: 5.0.0

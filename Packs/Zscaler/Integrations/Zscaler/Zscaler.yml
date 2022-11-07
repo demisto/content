@@ -471,7 +471,7 @@ script:
   runonce: false
   script: ''
   subtype: python3
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: devdemisto/py3-master:8.1.0.37158
   type: python
 fromversion: 5.0.0
 tests:
