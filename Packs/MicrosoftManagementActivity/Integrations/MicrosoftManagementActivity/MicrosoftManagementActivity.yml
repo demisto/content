@@ -40,8 +40,8 @@ configuration:
   name: redirect_uri
   required: false
   type: 0
-- display: The authentication code you got for the service. For instructions on how
-    to receive it, see Detailed Instructions section.
+- display: The authentication code you got for the service
+  additionalinfo: For instructions on how to receive it, see the Detailed Instructions section.  
   name: auth_code
   required: false
   type: 4
@@ -55,7 +55,7 @@ configuration:
   type: 8
 - defaultvalue: 10 minutes
   display: First fetch time range
-  additionalinfo: <number> <time unit>, e.g., 1 hour, 30 minutes
+  additionalinfo: <number> <time unit>, for example 1 hour, 30 minutes
   name: first_fetch_delta
   required: false
   type: 0
@@ -83,23 +83,23 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: Record types to fetch.
-  additionalinfo: Comma-separated list of the record types you wish
-    to fetch. Content records with a record type that isn't specified will not be
+- display: Record types to fetch
+  additionalinfo: A comma-separated list of the record types you want
+    to fetch. Content records with a record type that is not specified will not be
     fetched. If this field is left empty, all record types will be fetched.
   name: record_types_filter
   required: false
   type: 0
-- display: Workloads to fetch.
-  additionalinfo: Comma-separated list of the workloads you wish to fetch.
-    Content records with a workload that isn't specified will not be fetched. If this
+- display: Workloads to fetch
+  additionalinfo: A comma-separated list of the workloads you want to fetch.
+    Content records with a workload that is not specified will not be fetched. If this
     field is left empty, all workloads will be fetched.
   name: workloads_filter
   required: false
   type: 0
-- display: Operations to fetch.
-  additionalinfo: Comma-separated list of the operations you wish to fetch.
-    Content records with an operation that isn't specified will not be fetched. If
+- display: Operations to fetch
+  additionalinfo: A comma-separated list of the operations you want to fetch.
+    Content records with an operation that is not specified will not be fetched. If
     this field is left empty, all operations will be fetched.
   name: operations_filter
   required: false
