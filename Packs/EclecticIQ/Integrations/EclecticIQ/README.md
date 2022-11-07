@@ -9,7 +9,7 @@ Note: Support for this Pack will be moved to the Partner on NOV, 01, 2022
 ### EclecticIQ Cortex App
 * Get the EIQ data in Cortex XSOAR by integrating both using API Key and URL of EclecticIQ.
 * Using scripts
-  * Create a command to get the lookup observables 
+  * Create a command to get the lookup observables
   * Create a command to create observables 
   * Create a command to create sighting for EIQ data in the EIQ platform.
 
@@ -70,7 +70,7 @@ The user needs to perform the following after Cortex XSOAR installation.
 6. Click on the "Create New Incident" button
 
 ##  1. Command Line Interface(CLI)
-### Lookup Observable
+### lookup observables
 * For lookup observables, the user has to execute the lookup observables command in the CLI
 * Below arguments will be passed along with the lookup observables command
   * Type:Type of value to search (ipv4,ipv6,domain,uri,email,hash-md5,hash-sha1,hash-sha256,hash-sha512)
@@ -80,7 +80,7 @@ The user needs to perform the following after Cortex XSOAR installation.
   * If unsuccessful, the failure message will be displayed in the war room
  
 
-#### Steps to execute the lookuo_observables command
+#### Steps to execute the lookup_observables command
 1. Login to Cortex XSOAR
 2. Go to "Incidents" (left-hand side down) and click on it
 3. Click on the created Incident from the Table
@@ -96,7 +96,7 @@ The user needs to perform the following after Cortex XSOAR installation.
 
 ## Command
 ```http
- lookuo_observables
+ lookup_observables
 ```
 ## 1.1 Get the reputation of an IP address observable
 Gets the reputation of an IP address observable.
@@ -520,8 +520,8 @@ Gets the reputation of uri observable.
 |`value`|	172.168.156.115|
 
 ##  2. Playbook
-### Lookup Observable
-#### Steps to create the Playbook for lookuo_observables
+### lookup observables
+#### Steps to create the Playbook for lookup_observables
 1. Login to Cortex XSOAR
 2. Go to Playbook (left-hand side) and click on  it
 3. Click on the New Playbook button (right-hand side up corner)
@@ -530,12 +530,12 @@ Gets the reputation of uri observable.
 ![image](/Packs/EclecticIQ/doc_files/18.png)
 5. Go to EclecticIQ and expand it (which is displayed under Task Library-Automation)
 ![image](/Packs/EclecticIQ/doc_files/19.png)
-6. Click on the "Add" button to add the Lookup Observable command to Playbook
+6. Click on the "Add" button to add the lookup observables command to Playbook
 ![image](/Packs/EclecticIQ/doc_files/20.png)
 7. Pass the inputs: type and value
 ![image](/Packs/EclecticIQ/doc_files/21.png)
 8. Click on Ok
-9. Connect "Playbook Triggered" to the "lookuo_observables" task
+9. Connect "Playbook Triggered" to the "lookup_observables" task
 10. Click on "Save Playbook"
 ![image](/Packs/EclecticIQ/doc_files/22.png)
 11. Go to "Incidents" (left-hand side) and click on it
