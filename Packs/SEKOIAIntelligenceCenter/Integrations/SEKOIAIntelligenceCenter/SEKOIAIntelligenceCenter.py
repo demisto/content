@@ -59,9 +59,7 @@ class Client(BaseClient):
             url_suffix="/v1/apiauth/auth/validate",
         )
         if response.get("message") == "The token is invalid":
-            raise DemistoException(
-                f"{INTEGRATION_NAME} error: the request failed due to: {response}"
-            )
+            raise DemistoException(f"{INTEGRATION_NAME} error: the request failed due to: {response}")
 
         return "ok"
 
@@ -209,50 +207,36 @@ def get_tlp(object_marking_refs: list[str], stix_bundle: dict) -> str:
     """
     for object_marking_ref in object_marking_refs:
         for stix_object in stix_bundle["objects"]:
-            if (
-                stix_object["id"] == object_marking_ref
-                and stix_object.get("definition_type") == "tlp"
-            ):
+            if stix_object["id"] == object_marking_ref and stix_object.get("definition_type") == "tlp":
                 return stix_object["definition"]["tlp"]
 
     return "red"
 
 
-def get_stix_object_reputation(
-    stix_bundle: dict, stix_object: dict
-) -> Optional[CommandResults]:
+def get_stix_object_reputation(stix_bundle: dict, stix_object: dict) -> Optional[CommandResults]:
     """ "
     Transform a STIX object into a Cortex XSOAR indicator
     """
 
     reputation_score: int = get_reputation_score(stix_object.get("indicator_types", []))
-    reliability_score: str = get_reliability_score(
-        int(stix_object.get("confidence", -1))
-    )
+    reliability_score: str = get_reliability_score(int(stix_object.get("confidence", -1)))
     tlp: str = get_tlp(stix_object["object_marking_refs"], stix_bundle)
 
-    if (
-        "ipv4-addr" in stix_object["x_ic_observable_types"]
-        or "ipv6-addr" in stix_object["x_ic_observable_types"]
-    ):
-        return get_ip_indicator_reputation(
-            stix_object, reputation_score, reliability_score, tlp
-        )
+    if "ipv4-addr" in stix_object["x_ic_observable_types"] or "ipv6-addr" in stix_object["x_ic_observable_types"]:
+        return get_ip_indicator_reputation(stix_object, reputation_score, reliability_score, tlp)
     if "file" in stix_object["x_ic_observable_types"]:
-        return get_file_indicator_reputation(
-            stix_object, reputation_score, reliability_score, tlp
-        )
+        return get_file_indicator_reputation(stix_object, reputation_score, reliability_score, tlp)
     if "domain-name" in stix_object["x_ic_observable_types"]:
-        return get_domain_indicator_reputation(stix_object, reputation_score)
+        return get_domain_indicator_reputation(stix_object, reputation_score, reliability_score, tlp)
     if "url" in stix_object["x_ic_observable_types"]:
-        return get_url_indicator_reputation(stix_object, reputation_score)
+        return get_url_indicator_reputation(stix_object, reputation_score, reliability_score, tlp)
+    if "email-addr" in stix_object["x_ic_observable_types"]:
+        return get_email_indicator_reputation(stix_object, reputation_score, reliability_score, tlp)
 
     return None
 
 
-def get_ip_indicator_reputation(
-    stix_object: dict, reputation_score: int, reliability_score: str, tlp: str
-) -> CommandResults:
+def get_ip_indicator_reputation(stix_object: dict, reputation_score: int, reliability_score: str, tlp: str) -> CommandResults:
     """
     Return stix_object of type IP as indicator
     """
@@ -278,9 +262,7 @@ def get_ip_indicator_reputation(
     )
 
 
-def get_file_indicator_reputation(
-    stix_object: dict, reputation_score: int, reliability_score: str, tlp: str
-) -> CommandResults:
+def get_file_indicator_reputation(stix_object: dict, reputation_score: int, reliability_score: str, tlp: str) -> CommandResults:
     """
     Return stix_object of type file as indicator
     """
@@ -310,9 +292,7 @@ def get_file_indicator_reputation(
     )
 
 
-def get_domain_indicator_reputation(
-    stix_object: dict, reputation_score: int
-) -> CommandResults:
+def get_domain_indicator_reputation(stix_object: dict, reputation_score: int, reliability_score: str, tlp: str) -> CommandResults:
     """
     Return stix_object of type domain as indicator
     """
@@ -322,12 +302,14 @@ def get_domain_indicator_reputation(
         indicator_type=DBotScoreType.DOMAIN,
         integration_name=INTEGRATION_NAME,
         score=reputation_score,
+        reliability=reliability_score,
     )
 
     domain_name = extract_indicator_from_pattern(stix_object["pattern"])
     domain = Common.Domain(
         domain=domain_name,
         dbot_score=dbot_score,
+        traffic_light_protocol=tlp,
     )
 
     return CommandResults(
@@ -338,9 +320,7 @@ def get_domain_indicator_reputation(
     )
 
 
-def get_url_indicator_reputation(
-    stix_object: dict, reputation_score: int
-) -> CommandResults:
+def get_url_indicator_reputation(stix_object: dict, reputation_score: int, reliability_score: str, tlp: str) -> CommandResults:
     """
     Return stix_object of type url as indicator
     """
@@ -350,16 +330,45 @@ def get_url_indicator_reputation(
         indicator_type=DBotScoreType.URL,
         integration_name=INTEGRATION_NAME,
         score=reputation_score,
+        reliability=reliability_score,
     )
 
     url_addr = extract_indicator_from_pattern(stix_object["pattern"])
-    url = Common.URL(url=url_addr, dbot_score=dbot_score)
+    url = Common.URL(
+        url=url_addr,
+        dbot_score=dbot_score,
+        traffic_light_protocol=tlp,
+    )
 
     return CommandResults(
         outputs_prefix="SEKOIAIntelligenceCenter.URL",
         outputs_key_field="name",
         outputs=stix_object,
         indicator=url,
+    )
+
+
+def get_email_indicator_reputation(stix_object: dict, reputation_score: int, reliability_score: str, tlp: str) -> CommandResults:
+    """
+    Return stix_object of type email as indicator
+    """
+
+    dbot_score = Common.DBotScore(
+        indicator=stix_object["name"],
+        indicator_type=DBotScoreType.EMAIL,
+        integration_name=INTEGRATION_NAME,
+        score=reputation_score,
+        reliability=reliability_score,
+    )
+
+    email_addr = extract_indicator_from_pattern(stix_object["pattern"])
+    email = Common.EMAIL(address=email_addr, dbot_score=dbot_score, traffic_light_protocol=tlp)
+
+    return CommandResults(
+        outputs_prefix="SEKOIAIntelligenceCenter.URL",
+        outputs_key_field="name",
+        outputs=stix_object,
+        indicator=email,
     )
 
 
@@ -405,9 +414,7 @@ def indicator_context_to_markdown(indicator_context: dict) -> str:
         if linked_stix_objects_refs:
             # Retrieve STIX objects which are the target in the relationship
             linked_stix_objects = [
-                stix_object
-                for stix_object in stix_bundle["objects"]
-                if stix_object["id"] in linked_stix_objects_refs
+                stix_object for stix_object in stix_bundle["objects"] if stix_object["id"] in linked_stix_objects_refs
             ]
 
             # Add "more_info" link, which redirect to SEKOIA Intelligence Center
@@ -426,9 +433,7 @@ def indicator_context_to_markdown(indicator_context: dict) -> str:
     return markdown
 
 
-def extract_indicators(
-    indicator_context: dict, command_results_list: list[CommandResults]
-) -> list:
+def extract_indicators(indicator_context: dict, command_results_list: list[CommandResults]) -> list:
     """
     Return each indicators of the STIX bundles as a list of CommandResults
     """
@@ -492,24 +497,18 @@ def get_observable_command(client: Client, args: dict[str, str]) -> CommandResul
     indicator_value = args.get("value")
     indicator_type = args.get("type")
     if not indicator_value or not indicator_type:
-        raise ValueError(
-            f"incomplete command for value {indicator_value} and type {indicator_type}"
-        )
+        raise ValueError(f"incomplete command for value {indicator_value} and type {indicator_type}")
 
     result = client.get_observable(value=indicator_value, indicator_type=indicator_type)
     indicator = {"value": indicator_value, "type": indicator_type}
     outputs = {"indicator": indicator, "items": result.get("items", [])}
 
     if result["items"] == []:
-        markdown = (
-            f"### {indicator_value} of type {indicator_type} is an unknown observable."
-        )
+        markdown = f"### {indicator_value} of type {indicator_type} is an unknown observable."
     else:
         table_title = f'Observable {result["items"][0].get("value")}'
         table_headers = ["modified", "created"]
-        markdown = tableToMarkdown(
-            table_title, result["items"][0], headers=table_headers
-        )
+        markdown = tableToMarkdown(table_title, result["items"][0], headers=table_headers)
         table_headers = ["valid_from", "valid_until", "name"]
         markdown += tableToMarkdown(
             "Associated tags",
@@ -550,9 +549,7 @@ def get_indicator_command(client: Client, args: dict[str, str]) -> CommandResult
     indicator_value = args.get("value")
     indicator_type = args.get("type")
     if not indicator_value or not indicator_type:
-        raise ValueError(
-            f"incomplete command for value {indicator_value} and type {indicator_type}"
-        )
+        raise ValueError(f"incomplete command for value {indicator_value} and type {indicator_type}")
 
     result = client.get_indicator(value=indicator_value, indicator_type=indicator_type)
     indicator = {"value": indicator_value, "type": indicator_type}
@@ -560,9 +557,7 @@ def get_indicator_command(client: Client, args: dict[str, str]) -> CommandResult
 
     # Format output
     if result["items"] == []:
-        markdown = (
-            f"### {indicator_value} of type {indicator_type} is an unknown indicator."
-        )
+        markdown = f"### {indicator_value} of type {indicator_type} is an unknown indicator."
     else:
         markdown = (
             f'### Indicator {result["items"][0].get("name")}'
@@ -588,9 +583,7 @@ def get_indicator_command(client: Client, args: dict[str, str]) -> CommandResult
     )
 
 
-def get_indicator_context_command(
-    client: Client, args: dict[str, str]
-) -> list[CommandResults]:
+def get_indicator_context_command(client: Client, args: dict[str, str]) -> list[CommandResults]:
     """ip command: Returns IP reputation for a list of IPs
 
     :type client: ``Client``
@@ -613,9 +606,7 @@ def get_indicator_context_command(
 
     command_results_list: list[CommandResults] = []
 
-    indicator_context = client.get_indicator_context(
-        value=indicator["value"], indicator_type=indicator["type"]
-    )
+    indicator_context = client.get_indicator_context(value=indicator["value"], indicator_type=indicator["type"])
     outputs = {"indicator": indicator, "items": indicator_context.get("items", [])}
 
     if indicator_context["items"] == []:
@@ -652,9 +643,7 @@ def ip_command(client: Client, args: dict[str, str]) -> list[CommandResults]:
     return results
 
 
-def reputation_command(
-    client: Client, args: dict[str, str], indicator_type
-) -> list[CommandResults]:
+def reputation_command(client: Client, args: dict[str, str], indicator_type) -> list[CommandResults]:
     """reputation command: Returns reputation for a list of indicator
 
     This command is a wrapper around the `get_indicator_context_command`
@@ -695,9 +684,7 @@ def main() -> None:
     try:
         headers = {"Authorization": f"Bearer {api_key}"}
 
-        client = Client(
-            base_url=BASE_URL, verify=verify_certificate, headers=headers, proxy=proxy
-        )
+        client = Client(base_url=BASE_URL, verify=verify_certificate, headers=headers, proxy=proxy)
 
         if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
@@ -718,11 +705,7 @@ def main() -> None:
             return_results(ip_command(client, demisto.args()))
 
         elif demisto.command() in ["url", "domain", "file", "email"]:
-            return_results(
-                reputation_command(
-                    client, demisto.args(), indicator_type=demisto.command()
-                )
-            )
+            return_results(reputation_command(client, demisto.args(), indicator_type=demisto.command()))
 
     # Log exceptions and return errors
     except Exception as e:
