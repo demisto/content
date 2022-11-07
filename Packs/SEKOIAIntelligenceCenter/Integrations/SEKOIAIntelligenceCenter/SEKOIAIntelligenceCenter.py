@@ -362,7 +362,10 @@ def get_email_indicator_reputation(stix_object: dict, reputation_score: int, rel
     )
 
     email_addr = extract_indicator_from_pattern(stix_object["pattern"])
-    email = Common.EMAIL(address=email_addr, dbot_score=dbot_score, traffic_light_protocol=tlp)
+    if not email_addr:
+        return
+
+    email = Common.EMAIL(address=email_addr, domain=email_addr.split("@")[-1], dbot_score=dbot_score, traffic_light_protocol=tlp)
 
     return CommandResults(
         outputs_prefix="SEKOIAIntelligenceCenter.URL",
