@@ -3365,7 +3365,7 @@ def get_asset_command(client: Client, asset_id: str) -> Union[CommandResults, Li
 
     except DemistoException as e:
         if e.res is not None and e.res.status_code is not None and e.res.status_code == 404:
-            return CommandResults(readable_output="Asset not found",)
+            return CommandResults(readable_output="Asset not found.",)
 
         raise e
 
@@ -3540,9 +3540,8 @@ def get_asset_command(client: Client, asset_id: str) -> Union[CommandResults, Li
     )
 
     if cve_indicators:
-        results = [result]
-        results.extend(cve_indicators)
-        return results
+        cve_indicators.append(result)
+        return cve_indicators
 
     return result
 
