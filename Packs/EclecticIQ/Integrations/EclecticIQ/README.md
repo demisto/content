@@ -38,35 +38,35 @@ Note: Support for this Pack will be moved to the Partner on NOV, 01, 2022
 The user needs to perform the following after Cortex XSOAR installation.
 #### Steps to upload the Integration
 1. Login to Cortex XSOAR
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/1.png)
+![image](/Packs/EclecticIQ/doc_files/1.png)
 2. Go to settings (left-hand side down corner) and click on it
 3. Click on the Upload integration icon (right-hand side up corner) 
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/2.png)
+![image](/Packs/EclecticIQ/doc_files/2.png)
 4. Select the file and it will be uploaded
 5. Click on the Save icon (beside the Save Version button)
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/3.png)
+![image](/Packs/EclecticIQ/doc_files/3.png)
 
 #### Steps to Add instance to the Integration
 1. Login to Cortex XSOAR
 2. Go to settings (left-hand side down corner) and click on it
 3. Go to Integrations 
 4. Search for the uploaded integration by entering the integration name in the given search field on the Settings page
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/4.png)
+![image](/Packs/EclecticIQ/doc_files/4.png)
 5. Click on "Add instance" (right-hand side)
 6. Pass the valid API key
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/5.png)
+![image](/Packs/EclecticIQ/doc_files/5.png)
 7. Click on the "Test" button and get a success message
 8. Click on the "Save & exit" button
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/6.png)
+![image](/Packs/EclecticIQ/doc_files/6.png)
 
 #### Steps to create Incident
 1. Login to Cortex XSOAR
 2. Go to "Incidents" (left-hand side down) and click on it
 3. Click on the "New Incident" button (right-hand side)
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/7.png)
+![image](/Packs/EclecticIQ/doc_files/7.png)
 4. New Incident page will be displayed
 5. Enter the Incident Name and required details
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/8.png)
+![image](/Packs/EclecticIQ/doc_files/8.png)
 6. Click on the "Create New Incident" button
 
 ##  1. Command Line Interface(CLI)
@@ -80,23 +80,23 @@ The user needs to perform the following after Cortex XSOAR installation.
   * If unsuccessful, the failure message will be displayed in the war room
  
 
-#### Steps to execute the lookup_observable command
+#### Steps to execute the lookuo_observables command
 1. Login to Cortex XSOAR
 2. Go to "Incidents" (left-hand side down) and click on it
 3. Click on the created Incident from the Table
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/9.png)
+![image](/Packs/EclecticIQ/doc_files/9.png)
 4. Click on War room
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/10.png)
+![image](/Packs/EclecticIQ/doc_files/10.png)
 5. Pass the command in CLI and press enter button
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/11.png)
+![image](/Packs/EclecticIQ/doc_files/11.png)
 6. User gets the success message
 7. Output Data will be stored in Context Data, to view the that click on a button(i.e, right shoulder button) that is beside the "Actions" button 
 8. Click on "Context Data" to view the stored Output Data
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/12.png)
+![image](/Packs/EclecticIQ/doc_files/12.png)
 
 ## Command
 ```http
- lookup_observable
+ lookuo_observables
 ```
 ## 1.1 Get the reputation of an IP address observable
 Gets the reputation of an IP address observable.
@@ -417,11 +417,11 @@ Gets the reputation of uri observable.
 3. Click on the created Incident from the Table
 4. Click on War room
 5. Pass the command in CLI and press enter button
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/13.png)
+![image](/Packs/EclecticIQ/doc_files/13.png)
 6. User gets the success message
 7. Output Data will be stored in Context Data, to view the that click on a button(i.e, right shoulder button) that is beside the "Actions" button 
 8. Click on "Context Data" to view the stored Output Data
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/14.png)
+![image](/Packs/EclecticIQ/doc_files/14.png)
 
 ### Base command
 ```http
@@ -476,11 +476,11 @@ Gets the reputation of uri observable.
 3. Click on the created Incident from the Table
 4. Click on War room
 5. Pass the command in CLI and press enter button
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/15.png)
+![image](/Packs/EclecticIQ/doc_files/15.png)
 6. User gets the success message
 7. Output Data will be stored in Context Data, to view the that click on a button(i.e, right shoulder button) that is beside the "Actions" button 
 8. Click on "Context Data" to view the stored Output Data
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/16.png)
+![image](/Packs/EclecticIQ/doc_files/16.png)
 
 ### Base command
 ```http
@@ -521,36 +521,36 @@ Gets the reputation of uri observable.
 
 ##  2. Playbook
 ### Lookup Observable
-#### Steps to create the Playbook for lookup_observable
+#### Steps to create the Playbook for lookuo_observables
 1. Login to Cortex XSOAR
 2. Go to Playbook (left-hand side) and click on  it
 3. Click on the New Playbook button (right-hand side up corner)
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/17.png)
+![image](/Packs/EclecticIQ/doc_files/17.png)
 4. Enter the Playbook Name and click on Save
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/18.png)
+![image](/Packs/EclecticIQ/doc_files/18.png)
 5. Go to EclecticIQ and expand it (which is displayed under Task Library-Automation)
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/19.png)
+![image](/Packs/EclecticIQ/doc_files/19.png)
 6. Click on the "Add" button to add the Lookup Observable command to Playbook
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/20.png)
+![image](/Packs/EclecticIQ/doc_files/20.png)
 7. Pass the inputs: type and value
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/21.png)
+![image](/Packs/EclecticIQ/doc_files/21.png)
 8. Click on Ok
-9. Connect "Playbook Triggered" to the "lookup_observable" task
+9. Connect "Playbook Triggered" to the "lookuo_observables" task
 10. Click on "Save Playbook"
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/22.png)
+![image](/Packs/EclecticIQ/doc_files/22.png)
 11. Go to "Incidents" (left-hand side) and click on it
 12. Click on the created Incident from the Table
 13. Click on Work Plan
 14. Search the Playbook from the Default dropdown and click on that
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/23.png)
+![image](/Packs/EclecticIQ/doc_files/23.png)
 15. Click on the "Yes I know what I am doing" button
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/24.png)
+![image](/Packs/EclecticIQ/doc_files/24.png)
 16. Playbook will Run and user gets a success message
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/25.png)
+![image](/Packs/EclecticIQ/doc_files/25.png)
 17. Click on a button(i.e, right shoulder button) that is beside the "Actions" button 
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/26.png)
+![image](/Packs/EclecticIQ/doc_files/26.png)
 18. Click on "Context Data" to view the output of the Playbook
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/27.png)
+![image](/Packs/EclecticIQ/doc_files/27.png)
 
 ### Create Observable
 #### Steps to create the Playbook for create_observable
@@ -570,11 +570,11 @@ Gets the reputation of uri observable.
 14. Search the Playbook from the Default dropdown
 15. Click on the "Yes I know what I am doing" button
 16. Playbook will Run and get a success message
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/28.png)
+![image](/Packs/EclecticIQ/doc_files/28.png)
 17. Click on a button(i.e, right shoulder button) that is beside the "Actions" button 
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/29.png)
+![image](/Packs/EclecticIQ/doc_files/29.png)
 18. Click on "Context Data" to view the output of the Playbook
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/30.png)
+![image](/Packs/EclecticIQ/doc_files/30.png)
 
 ### Create Sighting
 #### Steps to create the Playbook for create_sighting
@@ -585,18 +585,18 @@ Gets the reputation of uri observable.
 5. Go to EclecticIQ and expand it (which is displayed under Task Library-Automation)
 6. Click on the "Add" button to add the Create Sighting command to Playbook
 7. Pass the inputs:value,description,title,tags,type and confidence_level
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/31.png)
+![image](/Packs/EclecticIQ/doc_files/31.png)
 8. Click on Ok
 9. Connect "Playbook Triggered" to the "create_sighting" task
 10. Click on "Save Playbook"
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/32.png)
+![image](/Packs/EclecticIQ/doc_files/32.png)
 11. Go to "Incidents" (left-hand side) and click on it
 12. Click on the created Incident from the Table
 13. Click on Work Plan
 14. Search the Playbook from the Default dropdown
 15. Click on the "Yes I know what I am doing" button
 16. Playbook will Run and get a success message
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/33.png)
+![image](/Packs/EclecticIQ/doc_files/33.png)
 17. Click on a button(i.e, right shoulder button) that is beside the "Actions" button 
 18. Click on "Context Data" to view the output of the Playbook
-![image](/Packs/EclecticIQ/Integrations/EclecticIQ/Screenshots/34.png)
+![image](/Packs/EclecticIQ/doc_files/34.png)
