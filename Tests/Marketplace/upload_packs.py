@@ -212,7 +212,7 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
         storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
         storage_base_path (str): the source path of the packs in the target bucket.
         id_set (dict): current id_set
-        marketplace (str): name of current markeplace, xsoar or marketplacev2
+        marketplace (str): name of current marketplace the upload is made for. (can be xsoar, marketplacev2 or xpanse)
 
     Returns:
         bool: whether cleanup was skipped or not.
@@ -360,7 +360,7 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
         index_folder_path (str): The index folder path.
         artifacts_dir (str): The CI artifacts directory to upload the corepacks.json to.
         storage_base_path (str): the source path of the core packs in the target bucket.
-        marketplace (str): the marketplace type of the bucket. possible options: xsoar, marketplace_v2
+        marketplace (str): the marketplace type of the bucket. possible options: xsoar, marketplace_v2 or xpanse
 
     """
     marketplace_core_packs = GCPConfig.get_core_packs(marketplace)
@@ -1259,7 +1259,7 @@ def main():
                             artifacts_dir=os.path.dirname(packs_artifacts_path),
                             storage_bucket=storage_bucket)
 
-    # marketplace v2 isn't currently supported - dependencies zip should only be used for v1
+    # dependencies zip is currently supported only for marketplace=xsoar, not for xsiam/xpanse
     if is_create_dependencies_zip and marketplace == 'xsoar':
         # handle packs with dependencies zip
         upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signature_key,
