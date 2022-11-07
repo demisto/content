@@ -8,7 +8,8 @@ args:
   required: true
   predefined:
   - gitlab-branch-list
-  - 
+  - GitHub-get-branch
+  - bitbucket-branch-get
 comment: |
   The script gets the pack name as input and suggests an available branch name, for example:
   pack name is "MyPack" the branch name will be "MyPack".
