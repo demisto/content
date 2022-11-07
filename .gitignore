@@ -63,3 +63,6 @@ Packs/**/report_pytest.json
 *.pem
 *.crt
 *.key
+
+# neo4j
+neo4j-data
