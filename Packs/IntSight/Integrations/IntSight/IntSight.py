@@ -1,3 +1,5 @@
+from CommonServerPython import *
+import demistomock as demisto
 import os
 
 URL = demisto.getParam('server')
