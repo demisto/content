@@ -38,19 +38,19 @@ configuration:
   required: false
   type: 8
 - display: Email address from which to fetch incidents
-  additionalinfo: e.g. "example@demisto.com"
+  additionalinfo: For example, "example@demisto.com"
   name: mailbox_to_fetch
   required: false
   type: 0
 - defaultvalue: Inbox
   display: Name of the folder or sub-folder from which to fetch incidents
-  additionalinfo: supports Folder ID and sub-folders e.g. Inbox/Phishing.
+  additionalinfo: Supports folder ID and sub-folders, for example Inbox/Phishing.
   name: folder_to_fetch
   required: false
   type: 0
 - defaultvalue: 15 minutes
   display: First fetch timestamp
-  additionalinfo: <number> <time unit>, e.g., 12 hours, 7 days.
+  additionalinfo: <number> <time unit>, for example 12 hours, 7 days.
   name: first_fetch
   required: false
   type: 0
