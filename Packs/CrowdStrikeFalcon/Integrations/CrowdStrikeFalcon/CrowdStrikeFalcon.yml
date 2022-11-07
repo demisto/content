@@ -329,7 +329,7 @@ script:
     description: Contains containment for a specified host. When contained, a host can only communicate with the CrowdStrike cloud and any IPs specified in your containment policy.
     name: cs-falcon-contain-host
   - arguments:
-    - description: The host agent ID (AID) of the host you want to contain. Get an agent ID from a detection.
+    - description: The host agent ID (AID) of the host you want to contain. Get an agent ID from a detection. Can also be a comma separated list of IDs.
       isArray: true
       name: ids
       required: true
