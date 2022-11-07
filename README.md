@@ -48,3 +48,4 @@ Cortex XSOAR Platform support flexible reports written in JSON. All of our stand
 
 ---
 Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](https://www.demisto.com/community/).
+ 
