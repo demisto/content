@@ -11,9 +11,7 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [],
-    "useCases": [
-        "Default"
-    ],
+    "useCases": [],
     "keywords": [],
     "dependencies": {
         "CommonPlaybooks": {
