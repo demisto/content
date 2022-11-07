@@ -146,7 +146,6 @@ class ContentFile:
     content_type: str = ''
     file_text: str = ''
     entry_id: str = ''
-    print('icarly4')
     def __init__(self, pack_name=None, file=None):
         if not pack_name and not file:
             return
