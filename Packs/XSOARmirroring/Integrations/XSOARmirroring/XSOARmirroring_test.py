@@ -107,12 +107,6 @@ REMOTE_INCIDENT = {
     "CustomFields": {"custom_field": "some_custom_field"}
 }
 
-UPDATED_INCIDENT = {
-    "id": 3,
-    "created": (datetime.now() - timedelta(minutes=10)).strftime(XSOAR_DATE_FORMAT),
-    "CustomFields": {"custom_field": "some_custom_field"}
-}
-
 
 def test_fetch_incidents(mocker):
     """
@@ -148,12 +142,12 @@ def test_update_remote_system(mocker):
     Then:
         - Ensure the incident was updated.
     """
-    args = {'data': {'createInvestigation': True},  # type: ignore
-            'remote_incident_id': 1,
-            'delta': {'custom_field': ''}
+    args = {'incidentChanged': True,
+            'remoteId': 1,
+            'delta': {'custom_field': 'updated_field'}
     }
     client = generate_dummy_client()
     mocker.patch.object(client, 'get_incident', return_value=REMOTE_INCIDENT)
-    mocker.patch.object(client, 'update_incident', return_value=UPDATED_INCIDENT)
-    update_remote_system_command(client, args, ())
-    assert REMOTE_INCIDENT['CustomFields']['custom_field'] == args['delta']['custom_field']
+    result = mocker.patch.object(client, 'update_incident')
+    update_remote_system_command(client, args, {})
+    assert result.call_args.kwargs['incident']['CustomFields']['custom_field'] == args['delta']['custom_field']
