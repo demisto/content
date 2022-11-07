@@ -62,7 +62,7 @@ configuration:
   name: query
   required: false
   type: 0
-  additionalinfo: Define a query to determine which offenses to fetch. E.g., "severity >= 4 AND id > 5 AND status=OPEN".
+  additionalinfo: Define a query to determine which offenses to fetch. E.g., "severity >= 4 AND id > 5". filtering by status in the query may result in unexpected behavior when changing an incident's status.
 - defaultvalue: IPs And Assets
   display: 'Incidents Enrichment'
   name: enrichment
