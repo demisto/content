@@ -53,7 +53,7 @@ configuration:
   type: 13
 - defaultvalue: 1 day
   display: First fetch time range
-  additionalinfo: <number> <time unit>, e.g., 1 hour, 30 minutes
+  additionalinfo: <number> <time unit>, for example 1 hour, 30 minutes
   hidden: false
   name: fetch_time
   required: false
@@ -64,16 +64,16 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
-- display: Fetch incidents of the given providers only. If empty, incidents of all providers will be fetched.
-  additionalinfo: Multiple providers can be inserted, seperated by a comma, e.g. "{first_provider},{second_provioder}".
+- display: Fetch incidents of the given providers only. 
+  additionalinfo: Multiple providers can be inserted separated by a comma, for example "{first_provider},{second_provioder}". If empty, incidents of all providers will be fetched.
   hidden: false
   name: fetch_providers
   required: false
   type: 0
-- display: Use this field to filter the incidents that are being fetched according
-    to any of the alert properties. Overrides the providers list, if given.
-  additionalinfo: Filter should be in the format "{property} eq
-    '{property-value}'", multiple filters can be applied seperated with " and ", e.g.
+- display: Fetched incidents filter 
+  additionalinfo: Use this field to filter fetched incidents according
+    to any of the alert properties. Overrides the providers list, if given. Filter should be in the format "{property} eq
+    '{property-value}'". Multiple filters can be applied separated with " and ", for example
     "createdDateTime eq YYYY-MM-DD and severity eq 'high'".
   hidden: false
   name: fetch_filter
