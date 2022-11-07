@@ -279,7 +279,6 @@ def convert_alpha_3_codes_to_country_names(locations: List[str]):
         try:
             converted_locations.append(pycountry.countries.search_fuzzy(location)[0].name)
         except LookupError:
-            demisto.error(f"[+] CyCognito: Error while parsing country name: {location}")
             raise ValueError(ERRORS['INVALID_COUNTRY_ERROR'].format(location))
 
     return converted_locations
