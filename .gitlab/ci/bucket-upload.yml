@@ -351,7 +351,7 @@ upload-packs-to-marketplace-v2:
 upload-packs-to-xpanse-marketplace:
   tags:
     - gke
-  needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "prepare-testing-bucket-xpanse"] # "install-packs-in-xpanse-dev"
+  needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "prepare-testing-bucket-xpanse-upload-flow"] # "install-packs-in-xpanse-dev"
   stage: upload-to-marketplace
   artifacts:
     expire_in: 48 hrs
