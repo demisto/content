@@ -249,7 +249,7 @@ def paginated_search_for_user(user_to_search: str):
     while True:
         workspace_users = response['members'] if response and response.get('members',
                                                                            []) else []
-        cursor = response.get('response_metadata', {}).get('next_cursor')
+        cursor = response.get('response_metadata', {}).get('next_cursor')  # type: ignore[call-overload]
         user = return_user_filter(user_to_search.lower(), workspace_users)  # type: ignore[call-overload]
         if user:
             break
@@ -2716,7 +2716,7 @@ def main() -> None:
     """
     Main
     """
-    global CLIENT
+    global CLIENT, EXTENSIVE_LOGGING
 
     commands = {
         'test-module': test_module,
