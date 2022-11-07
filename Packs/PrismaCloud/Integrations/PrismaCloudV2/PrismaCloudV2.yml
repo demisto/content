@@ -1,0 +1,658 @@
+commonfields:
+  id: PrismaCloud v2
+  version: -1
+name: PrismaCloud v2
+display: Prisma Cloud v2
+category: Network Security
+description: Cloud threat defense
+configuration:
+- name: url
+  display: Server URL
+  defaultvalue: https://api.prismacloud.io/
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- name: proxy
+  display: Use system proxy settings
+  defaultvalue: 'false'
+  type: 8
+  required: false
+- name: insecure
+  display: Trust any certificate (not secure)
+  defaultvalue: 'false'
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+script:
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.9.40422
+  isfetch: true
+  commands:
+  - arguments:
+    - default: false
+      description: Comma-separated list of alert IDs to be dismissed.
+      isArray: true
+      name: alert_ids
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of policy IDs.
+      isArray: true
+      name: policy_ids
+      required: false
+      secret: false
+    - default: false
+      description: The amount of time for snoozing alert. Both snooze value and unit must be specified if snoozing.
+      isArray: false
+      name: snooze_value
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The time unit for snoozing alert. Both snooze value and unit must be specified if snoozing.
+      isArray: false
+      name: snooze_unit
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      required: false
+      secret: false
+    - default: false
+      description: Reason for dismissal.
+      isArray: false
+      name: dismissal_note
+      required: true
+      secret: false
+    - default: false
+      description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
+      isArray: false
+      name: time_range_date_from
+      required: false
+      secret: false
+    - default: false
+      description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
+      isArray: false
+      name: time_range_date_to
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The search time unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if "time_range_value" is not provided.'
+      isArray: false
+      name: time_range_unit
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+      required: false
+      secret: false
+    - default: false
+      description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
+      isArray: false
+      name: time_range_value
+      required: false
+      secret: false
+    - default: false
+      description: 'Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running "prisma-cloud-alert-filter-list" command.'
+      isArray: true
+      name: filters
+      required: false
+      secret: false
+    deprecated: false
+    description: Dismiss the alerts matching the given filter. Either policy IDs or alert IDs must be provided.
+    execution: true
+    name: prisma-cloud-alert-dismiss
+  - name: prisma-cloud-alert-get-details
+    description: Gets the details of an alert based on alert ID
+    arguments:
+    - default: true
+      description: The alert ID
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Allows retrieving entire / trimmed alert model
+      isArray: false
+      name: detailed
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    outputs:
+    - contextPath: PrismaCloud.Alert.id
+      description: The alert ID
+      type: String
+    - contextPath: PrismaCloud.Alert.status
+      description: The alert status
+      type: String
+    - contextPath: PrismaCloud.Alert.reason
+      description: The alert reason
+      type: String
+    - contextPath: PrismaCloud.Alert.alertTime
+      description: The time of the alert
+      type: Date
+    - contextPath: PrismaCloud.Alert.firstSeen
+      description: The time the alert was first seen at
+      type: Date
+    - contextPath: PrismaCloud.Alert.lastSeen
+      description: The time the alert was last seen at
+      type: Date
+    - contextPath: PrismaCloud.Alert.eventOccurred
+      description: The time the event occurred
+      type: Date
+    - contextPath: PrismaCloud.Alert.alertRules
+      description: Names of the alert rules that triggered this alert.
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.resourceApiName
+      description: The resource API name
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.id
+      description: The resource id
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.account
+      description: The resource account
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.accountId
+      description: The resource account id
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.resourceType
+      description: The resource type
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.policyId
+      description: The policy ID
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.name
+      description: The policy name
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.policyType
+      description: The type of policy
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.severity
+      description: The policy severity
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.recommendation
+      description: The policy recommendation
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.remediation.description
+      description: The policy remediation description
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.remediation.cliScriptTemplate
+      description: The policy remediation CLI script template
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.description
+      description: The policy description
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.labels
+      description: The policy labels
+      type: Unknown
+    - contextPath: PrismaCloud.Alert.resource.cloudType
+      description: The resource cloud type
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.rrn
+      description: The resource RRN
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.regionId
+      description: The resource region ID
+      type: String
+    - contextPath: PrismaCloud.Alert.resource.url
+      description: The resource url
+      type: String
+    - contextPath: PrismaCloud.Alert.policy.remediable
+      description: Whether or not the policy is remediable
+      type: Boolean
+    - contextPath: PrismaCloud.Alert.policy.systemDefault
+      description: Whether or not the policy is system default
+      type: Boolean
+    - contextPath: PrismaCloud.Alert.policy.deleted
+      description: Whether or not the policy is deleted
+      type: Boolean
+  - description: List the acceptable filters and values for alerts
+    name: prisma-cloud-alert-filter-list
+    outputs:
+    - contextPath: PrismaCloud.AlertFilters.filterName
+      description: The filter name
+      type: String
+    - contextPath: PrismaCloud.AlertFilters.options
+      description: The filter value options
+      type: String
+    - contextPath: PrismaCloud.AlertFilters.staticFilter
+      description: Whether or not the filter is static
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Comma-seperated list of alert IDs for which to get remediation details. Provided alert IDs must be associated with the same policy. If a policy is specified, all the alerts specified must belong to that policy.
+      isArray: true
+      name: alert_ids
+      required: false
+      secret: false
+    - default: false
+      description: Comma-seperated list of policy IDs for which to get remediation details.
+      isArray: true
+      name: policy_ids
+      required: false
+      secret: false
+    - default: false
+      description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
+      isArray: false
+      name: time_range_date_from
+      required: false
+      secret: false
+    - default: false
+      description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
+      isArray: false
+      name: time_range_date_to
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The search time unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if "time_range_value" is not provided.'
+      isArray: false
+      name: time_range_unit
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+      required: false
+      secret: false
+    - default: false
+      description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
+      isArray: false
+      name: time_range_value
+      required: false
+      secret: false
+    description: Gets remediation command list details for the given alerts or policies. Either policy IDs or alert IDs must be provided.
+    execution: false
+    name: prisma-cloud-remediation-command-list
+    outputs:
+    - contextPath: PrismaCloud.Alert.Remediation.description
+      description: Description of CLI remediation instructions.
+      type: string
+    - contextPath: PrismaCloud.Alert.Remediation.scriptImpact
+      description: Impact of CLI remediation instructions.
+      type: string
+    - contextPath: PrismaCloud.Alert.Remediation.alertId
+      description: The ID of the alert to which the remediation details apply.
+      type: string
+    - contextPath: PrismaCloud.Alert.Remediation.CLIScript
+      description: The exact CLI command string.
+      type: string
+  - name: prisma-cloud-alert-remediate
+    description: Remediates the alert with the specified ID, if that alert is associated with a remediable policy
+    execution: true
+    arguments:
+    - default: true
+      description: The alert ID
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+  - arguments:
+    - default: false
+      description: Comma-separated list of alert IDs to be dismissed.
+      isArray: true
+      name: alert_ids
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of policy IDs.
+      isArray: true
+      name: policy_ids
+      required: false
+      secret: false
+    - default: false
+      description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
+      isArray: false
+      name: time_range_date_from
+      required: false
+      secret: false
+    - default: false
+      description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
+      isArray: false
+      name: time_range_date_to
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The search time unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if "time_range_value" is not provided.'
+      isArray: false
+      name: time_range_unit
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+      required: false
+      secret: false
+    - default: false
+      description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
+      isArray: false
+      name: time_range_value
+      required: false
+      secret: false
+    - default: false
+      description: 'Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running "prisma-cloud-alert-filter-list" command.'
+      isArray: true
+      name: filters
+      required: false
+      secret: false
+    description: Re-open the alerts matching the given filter. Either policy IDs or alert IDs must be provided.
+    execution: true
+    name: prisma-cloud-alert-reopen
+  - arguments:
+    - default: false
+      description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
+      isArray: false
+      name: time_range_date_from
+      required: false
+      secret: false
+    - default: false
+      description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
+      isArray: false
+      name: time_range_date_to
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The search time unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if "time_range_value" is not provided.'
+      isArray: false
+      name: time_range_unit
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+      required: false
+      secret: false
+    - default: false
+      description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
+      isArray: false
+      name: time_range_value
+      required: false
+      secret: false
+    - default: false
+      description: 'Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running "prisma-cloud-alert-filter-list" command.'
+      isArray: true
+      name: filters
+      required: false
+      secret: false
+    - name: page
+      description: Index of the page of results to retrieve. Default is 1.
+      required: false
+      isArray: false
+    - name: page_size
+      description: The number of assets to return on a page. Default is 100, maximum is 10,000.
+      required: false
+      isArray: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Allows retrieving entire / trimmed alert model
+      isArray: false
+      name: detailed
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    description: Search alerts on the Prisma Cloud platform. If no time-range arguments are given, the search will filter only alerts from the last 7 days.
+    execution: false
+    name: prisma-cloud-alert-search
+    outputs:
+    - contextPath: PrismaCloud.Alert.id
+      description: The ID of the returned alert.
+      type: string
+    - contextPath: PrismaCloud.Alert.status
+      description: The status of the returned alert.
+      type: string
+    - contextPath: PrismaCloud.Alert.reason
+      description: The reason of the returned alert.
+      type: string
+    - contextPath: PrismaCloud.Alert.lastSeen
+      description: The time the returned alert was last seen.
+      type: string
+    - contextPath: PrismaCloud.Alert.firstSeen
+      description: The time the returned alert was first seen.
+      type: string
+    - contextPath: PrismaCloud.Alert.lastUpdated
+      description: The time the returned was last updated.
+      type: string
+    - contextPath: PrismaCloud.Alert.alertTime
+      description: The time of the returned alert.
+      type: string
+    - contextPath: PrismaCloud.Alert.policy.policyId
+      description: The policy ID of the returned alert.
+      type: string
+    - contextPath: PrismaCloud.Alert.policy.name
+      description: The policy name of the returned alert.
+      type: string
+    - contextPath: PrismaCloud.Alert.policy.policyType
+      description: The policy type of the returned alert.
+      type: string
+    - contextPath: PrismaCloud.Alert.policy.severity
+      description: The policy severity of the returned alert.
+      type: string
+    - contextPath: PrismaCloud.Alert.policy.remediable
+      description: Whether or not the policy is remediable.
+      type: boolean
+    - contextPath: PrismaCloud.Alert.policy.description
+      description: The policy description of the returned alert.
+      type: string
+    - contextPath: PrismaCloud.Alert.policy.recommendation
+      description: The policy recommendation of the returned alert.
+      type: string
+    - contextPath: PrismaCloud.Alert.policy.remediation.description
+      description: The policy remediation description of the returned alert.
+      type: string
+    - contextPath: PrismaCloud.Alert.policy.remediation.cliScriptTemplate
+      description: The policy cli script template description of the returned alert.
+      type: string
+    - contextPath: PrismaCloud.Alert.policy.systemDefault
+      description: Whether or not the policy is system default.
+      type: boolean
+    - contextPath: PrismaCloud.Alert.policy.deleted
+      description: Whether or not the policy is deleted.
+      type: boolean
+    - contextPath: PrismaCloud.Alert.resource.resourceType
+      description: The resource type of the returned alert.
+      type: string
+    - contextPath: PrismaCloud.Alert.resource.name
+      description: The resource name of the returned alert.
+      type: string
+    - contextPath: PrismaCloud.Alert.resource.account
+      description: The resource account of the returned alert.
+      type: string
+    - contextPath: PrismaCloud.Alert.resource.cloudType
+      description: The resource cloud type of the returned alert.
+      type: string
+    - contextPath: PrismaCloud.Alert.resource.rrn
+      description: The resource rrn of the returned alert.
+      type: string
+  - arguments:
+    - default: false
+      description: 'Start time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
+      isArray: false
+      name: time_range_date_from
+      required: false
+      secret: false
+    - default: false
+      description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
+      isArray: false
+      name: time_range_date_to
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The search time unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if "time_range_value" is not provided.'
+      isArray: false
+      name: time_range_unit
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+      required: false
+      secret: false
+    - default: false
+      description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
+      isArray: false
+      name: time_range_value
+      required: false
+      secret: false
+    - default: false
+      description: Query to run in Prisma Cloud config API using RQL language.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Maximum number of entries to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: ID to search by.
+      isArray: false
+      name: search_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'desc'
+      description: The direction to sort the results by. Both sort direction and field must be specified if sorting.
+      isArray: false
+      name: sort_direction
+      predefined:
+      - asc
+      - desc
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'insertTs'
+      description: The field to sort the results by. Both sort direction and field must be specified if sorting.
+      isArray: false
+      name: sort_field
+      predefined:
+      - id
+      - time
+      - apiName
+      - customerId
+      - insertTs
+      - json
+      - cloudAccount
+      - cloudRegion
+      - stateId
+      required: false
+      secret: false
+    description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with 'config'.
+    execution: false
+    name: prisma-cloud-config-search
+    outputs:
+    - contextPath: PrismaCloud.Config.accountId
+      description: Cloud Account ID
+      type: String
+    - contextPath: PrismaCloud.Config.accountName
+      description: Cloud Account Name
+      type: String
+    - contextPath: PrismaCloud.Config.allowDrillDown
+      description: Flag to allow drill down.
+      type: Boolean
+    - contextPath: PrismaCloud.Config.cloudType
+      description: Cloud Type
+      type: String
+    - contextPath: PrismaCloud.Config.deleted
+      description: Asset was deleted?
+      type: Boolean
+    - contextPath: PrismaCloud.Config.hasExtFindingRiskFactors
+      description: Has External Finding Risk Factors?
+      type: Boolean
+    - contextPath: PrismaCloud.Config.hasExternalFinding
+      description: Has External Finding?
+      type: Boolean
+    - contextPath: PrismaCloud.Config.hasExternalIntegration
+      description: Has External Integration?
+      type: Boolean
+    - contextPath: PrismaCloud.Config.hasNetwork
+      description: Has Network?
+      type: Boolean
+    - contextPath: PrismaCloud.Config.id
+      description: Prisma Cloud config ID
+      type: String
+    - contextPath: PrismaCloud.Config.assetId
+      description: Prisma Cloud Asset ID
+      type: String
+    - contextPath: PrismaCloud.Config.data
+      description: Prisma Cloud Asset specific data
+      type: Unknown
+    - contextPath: PrismaCloud.Config.insertTs
+      description: Insert Ts
+      type: Date
+    - contextPath: PrismaCloud.Config.createdTs
+      description: Insert Ts
+      type: Date
+    - contextPath: PrismaCloud.Config.name
+      description: Asset Name
+      type: String
+    - contextPath: PrismaCloud.Config.regionId
+      description: Cloud Region ID
+      type: String
+    - contextPath: PrismaCloud.Config.regionName
+      description: Cloud Region Name
+      type: String
+    - contextPath: PrismaCloud.Config.resourceType
+      description: Cloud Resource type
+      type: String
+    - contextPath: PrismaCloud.Config.rrn
+      description: Cloud RRN
+      type: String
+    - contextPath: PrismaCloud.Config.service
+      description: Cloud service
+      type: String
+    - contextPath: PrismaCloud.Config.stateId
+      description: State ID
+      type: String
+  - name: prisma-cloud-trigger-scan
+    description: Trigger asynchronous scan of all resources to refresh the current state at Prisma Cloud Code Security. In order to use this command, "Code Security" module needs to be enabled and accessible in Prisma Cloud UI.
+tests:
+- No tests
+defaultmapperin: RedLock-mapper
+defaultclassifier: RedLock
+fromversion: 8.0.0
