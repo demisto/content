@@ -2289,7 +2289,7 @@ def create_credential_creation_body(service: CredentialService,
     return account_data
 
 
-def create_report(client: Client, scope: dict[str, Any], template_id: Optional[str] = None,
+def create_report(client: Client, scope: Dict[str, Any], template_id: Optional[str] = None,
                   report_name: Optional[str] = None, report_format: Optional[ReportFileFormat] = None,
                   download_immediately: Optional[bool] = None) -> Union[dict, CommandResults]:
     """
@@ -3049,7 +3049,7 @@ def create_sites_report_command(client: Client, sites: list[Site],
         download_immediately: (bool | None, optional) = Whether to download the report automatically after creation.
             Defaults to True.
     """
-    scope = {"sites": sites}
+    scope = {"sites": [int(site.id) for site in sites]}
 
     return create_report(
         client=client,
@@ -5221,7 +5221,7 @@ def main():
                 [Site(site_name=site_name, client=client) for site_name in argToList(args.get("site_names"))]
             )
 
-            if not sites_list:
+            if len(sites_list) == 0:
                 raise Exception("At least one site ID or site name must be provided.")
 
             download_immediately = None
