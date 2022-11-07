@@ -2370,7 +2370,7 @@
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja"
         },
-                {
+        {
             "playbookID": "Active Directory - automatic pagination check",
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja"
@@ -3150,6 +3150,11 @@
             "playbookID": "MongoDBLog - Test",
             "pid_threshold": 12,
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "FeedCyCognito",
+            "playbookID": "FeedCyCognito-Test",
+            "fromversion": "6.2.0"
         },
         {
             "integrations": "Google Chronicle Backstory",
@@ -4106,6 +4111,11 @@
             "integrations": [
                 "CofenseIntelligenceV2"
             ]
+        },
+        {
+            "integrations": "Cofense Vision",
+            "playbookID": "CofenseVision-Test",
+            "fromversion": "6.2.0"
         },
         {
             "playbookID": "opsgenie-test-playbook",
