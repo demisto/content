@@ -143,21 +143,27 @@ def show_password_command(client: Client, password_expiration_in_minute=int, sap
     response = client.show_password(password_expiration_in_minute, sapm_db_id, comment)
     if isinstance(response, str):
         raise Exception(f"Error in Single Connect API call: {response}")
-    return CommandResults(
-        outputs_prefix='SingleConnect.SapmAccount',
-        outputs=response
-    )
+    if isinstance(response, dict) and len(response) > 0:
+        return CommandResults(
+            outputs_prefix='SingleConnect.SapmAccount',
+            outputs=response
+        )
+    else:
+        raise Exception("Unexpected response format")
 
 
 def get_sapm_user_info_command(client: Client, device_ip: str) -> CommandResults:
     response = client.get_sapm_user_info(device_ip)
     if isinstance(response, str):
         raise Exception(f"Error in Single Connect API call: {response}")
-    return CommandResults(
-        outputs_prefix='SingleConnect.SapmAccount',
-        outputs_key_field='dbId',
-        outputs=response
-    )
+    if isinstance(response, list) and len(response) > 0:
+        return CommandResults(
+            outputs_prefix='SingleConnect.SapmAccount',
+            outputs_key_field='dbId',
+            outputs=response
+        )
+    else:
+        raise Exception("Unexpected response format")
 
 
 ''' MAIN FUNCTION '''

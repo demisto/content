@@ -53,7 +53,7 @@ EMPTY_SEARCH_SAPM_ACCOUNTS_RESPONSE = {
     "searchResults": []
 }
 
-GET_SAPM_USER_INFO_RESPONSE = {
+GET_SAPM_USER_INFO_RESPONSE = [{
     "changePeriod": 7,
     "comment": None,
     "configName": "Linux",
@@ -76,7 +76,7 @@ GET_SAPM_USER_INFO_RESPONSE = {
     "secretNotes": None,
     "secretType": "DYNAMIC",
     "username": "account6"
-}
+}]
 
 SHOW_PASSWORD_RESPONSE = {
     "password": "pass123",

@@ -26,17 +26,21 @@ ARGS_SHOW_PASSWORD = {
     "comment": "reason for password request"
 }
 
+EMPTY_DICT = {}
 
-@pytest.mark.parametrize('search_command, args', [
-    (list_all_sapm_accounts_command, {}),
-    (search_sapm_with_secret_name_command, ARGS_SEARCH_SAPM_WITH_SECRET_NAME)
+EMPTY_LIST = []
+
+
+@pytest.mark.parametrize('search_command, args, invalid_response_type', [
+    (list_all_sapm_accounts_command, {}, EMPTY_DICT),
+    (search_sapm_with_secret_name_command, ARGS_SEARCH_SAPM_WITH_SECRET_NAME, EMPTY_DICT)
 ])
-def test_search_sapm_account_commands(search_command, args, mocker):
+def test_search_sapm_account_commands(search_command, args, invalid_response_type, mocker):
     mocker.patch.object(Client, '_generate_token')
 
     mocker.patch.object(Client, '_http_request', side_effect=[SEARCH_SAPM_ACCOUNTS_RESPONSE,
                                                               EMPTY_SEARCH_SAPM_ACCOUNTS_RESPONSE,
-                                                              {},
+                                                              invalid_response_type,
                                                               ERROR_MESSAGE_RESPONSE])
 
     client = Client(base_url='https://localhost', username='admin', password='admin', use_ssl=False, proxy=False)
@@ -55,14 +59,15 @@ def test_search_sapm_account_commands(search_command, args, mocker):
         search_command(client, **args)
 
 
-@pytest.mark.parametrize('command, args, http_response', [
-    (get_sapm_user_info_command, ARGS_GET_SAPM_USER_INFO, GET_SAPM_USER_INFO_RESPONSE),
-    (show_password_command, ARGS_SHOW_PASSWORD, SHOW_PASSWORD_RESPONSE)
+@pytest.mark.parametrize('command, args, http_response, invalid_response_type', [
+    (get_sapm_user_info_command, ARGS_GET_SAPM_USER_INFO, GET_SAPM_USER_INFO_RESPONSE, EMPTY_DICT),
+    (show_password_command, ARGS_SHOW_PASSWORD, SHOW_PASSWORD_RESPONSE, EMPTY_LIST)
 ])
-def test_single_connect_commands(command, args, http_response, mocker):
+def test_single_connect_commands(command, args, http_response, invalid_response_type, mocker):
     mocker.patch.object(Client, '_generate_token')
 
     mocker.patch.object(Client, '_http_request', side_effect=[http_response,
+                                                              invalid_response_type,
                                                               ERROR_MESSAGE_RESPONSE])
 
     client = Client(base_url='https://localhost', username='admin', password='admin', use_ssl=False, proxy=False)
@@ -71,5 +76,7 @@ def test_single_connect_commands(command, args, http_response, mocker):
     assert type(command_output) is CommandResults
     assert command_output.outputs == http_response
 
+    with raises(Exception, match=UNEXPECTED_RESPONSE_FORMAT):
+        command(client, **args)
     with raises(Exception, match=ERROR_SINGLE_CONNECT):
         command(client, **args)
