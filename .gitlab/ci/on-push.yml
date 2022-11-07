@@ -217,6 +217,7 @@ prepare-testing-bucket-xpanse:
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
     - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "xpanse" --no-zip -fbi -idp ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
+    # todo: try to trigger without this lines
     - zip -j $ARTIFACTS_FOLDER/uploadable_packs_xpanse.zip $ARTIFACTS_FOLDER/uploadable_packs/* >> $ARTIFACTS_FOLDER/logs/zipping_uploadable_packs.log || echo "failed to zip the uploadable packs, ignoring the failure"
     - rm -rf $ARTIFACTS_FOLDER/uploadable_packs
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
