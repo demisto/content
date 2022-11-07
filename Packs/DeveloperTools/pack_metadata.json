@@ -16,37 +16,9 @@
         "tools",
         "developer"
     ],
-    "dependencies": {
-        "GenericSQL": {
-            "mandatory": true,
-            "display_name": "GenericSQL"
-        },
-        "CommonScripts": {
-            "mandatory": true,
-            "display_name": "Common Scripts"
-        },
-        "DemistoRESTAPI": {
-            "mandatory": true,
-            "display_name": "Cortex REST API"
-        },
-        "CommonTypes": {
-            "mandatory": true,
-            "display_name": "Common Types"
-        },
-        "D2": {
-            "mandatory": true,
-            "display_name": "D2 (Deprecated)"
-        }
-    },
+    "dependencies": {},
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ],
-    "displayedImages": [
-        "GenericSQL",
-        "CommonScripts",
-        "DemistoRESTAPI",
-        "CommonTypes",
-        "D2"
     ]
 }
