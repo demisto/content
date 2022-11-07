@@ -250,7 +250,7 @@ def paginated_search_for_user(user_to_search: str):
         workspace_users = response['members'] if response and response.get('members',
                                                                            []) else []
         cursor = response.get('response_metadata', {}).get('next_cursor')
-        user = return_user_filter(user_to_search.lower(), workspace_users)  # type: ignore
+        user = return_user_filter(user_to_search.lower(), workspace_users)  # type: ignore[call-overload]
         if user:
             break
         if not cursor:
@@ -1271,7 +1271,8 @@ def search_text_for_entitlement(text: str, user: AsyncSlackResponse) -> str:
     if entitlement_match:
         demisto.debug('Slack - handling entitlement in message.')
         content, guid, incident_id, task_id = extract_entitlement(entitlement_match.group(), text)
-        demisto.handleEntitlementForUser(incident_id, guid, user.get('profile', {}).get('email'), content, task_id)  # type: ignore
+        demisto.handleEntitlementForUser(
+            incident_id, guid, user.get('profile', {}).get('email'), content, task_id)  # type: ignore
 
         return 'Thank you for your response.'
     else:
@@ -2156,7 +2157,7 @@ def slack_send_request(to: str = None, channel: str = None, group: str = None, e
                 'users': user.get('id')
             }
             im = send_slack_request_sync(CLIENT, 'conversations.open', body=body)
-            destinations.append(im.get('channel', {}).get('id'))  # type: ignore[]
+            destinations.append(im.get('channel', {}).get('id'))  # type: ignore[call-overload]
     if channel or group or channel_id:
         if channel_id:
             destinations.append(channel_id)
