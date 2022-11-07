@@ -294,6 +294,14 @@ def test_create_outputs_invalid_time(updated_date, expected_res):
 @pytest.mark.parametrize('args, expected_res', [({"query": "cnn.com", "recursive": "true", "verbose": "true"}, 3),
                                                 ({"query": "cnn.com", "recursive": "true"}, 2)])
 def test_whois_with_verbose(args, expected_res, mocker):
+    """
+    Given:
+        - The args for the whois command with or without the verbose arg.
+    When:
+        - calling the whois command.
+    Then:
+        - validate that another context path is added for the raw-response if verbose arg is true.
+    """
     mocker.patch.object(demisto, 'command', 'whois')
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch('Whois.get_domain_from_query', return_value='cnn.com')
