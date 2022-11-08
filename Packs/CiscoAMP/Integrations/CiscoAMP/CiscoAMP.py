@@ -1189,9 +1189,7 @@ def fetch_incidents(
             break
 
         # Continue if the incident severity isn't in the requested list (only if there is one).
-        severity = item.get('severity')
-
-        if incident_severities and severity not in incident_severities:
+        if incident_severities and (severity := item.get('severity')) not in incident_severities:
             continue
 
         # Continue if the incident ID has been fetched already.
