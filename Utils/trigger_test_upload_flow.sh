@@ -142,7 +142,7 @@ if [ -n "$_gitlab" ]; then
   fi
 
   source Utils/gitlab_triggers/trigger_build_url.sh
-
+  echo "_bucket_xpanse=${_bucket_xpanse}"
   curl --request POST \
     --form token="${_ci_token}" \
     --form ref="${_branch}" \

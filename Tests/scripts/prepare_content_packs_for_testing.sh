@@ -34,6 +34,8 @@ else
   fi
 fi
 
+echo "GCS_PRODUCTION_BUCKET=$GCS_PRODUCTION_BUCKET"
+
 echo "Preparing content packs for testing ..."
 gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
 echo "Auth loaded successfully."
@@ -55,6 +57,8 @@ if [[ -z "$1" ]]; then
 else
   GCS_MARKET_BUCKET=$1
 fi
+
+echo "GCS_MARKET_BUCKET=$GCS_MARKET_BUCKET"
 
 if [[ "$GCS_MARKET_BUCKET" == "$GCS_PRODUCTION_BUCKET" ]]; then  # case 1: a prod upload, the source is in the prod bucket
   SOURCE_PATH="content"
