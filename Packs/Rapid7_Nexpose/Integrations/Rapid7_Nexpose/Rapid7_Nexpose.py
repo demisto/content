@@ -419,7 +419,7 @@ class Client(BaseClient):
                                  oracle_sid: Optional[str] = None,
                                  password: Optional[str] = None,
                                  port_restriction: Optional[str] = None,
-                                 sites: Optional[List[int]] = None,
+                                 sites: Optional[list[int]] = None,
                                  snmp_community_name: Optional[str] = None,
                                  snmpv3_authentication_type: Optional[SNMPv3AuthenticationType] = None,
                                  snmpv3_privacy_password: Optional[str] = None,
@@ -457,7 +457,7 @@ class Client(BaseClient):
             password (str, optional): Password for the credential.
             port_restriction (str, optional): Further restricts the credential to attempt to authenticate
                 on a specific port. Can be used only if `host_restriction` is used.
-            sites (List[int], optional): List of site IDs for the shared credential that are explicitly assigned
+            sites (list[int], optional): List of site IDs for the shared credential that are explicitly assigned
                 access to the shared scan credential, allowing it to use the credential during a scan.
             snmp_community_name (str, optional): SNMP community for authentication.
             snmpv3_authentication_type (SNMPv3AuthenticationType): SNMPv3 authentication type for the credential.
@@ -1576,7 +1576,7 @@ class Client(BaseClient):
                                  oracle_sid: Optional[str] = None,
                                  password: Optional[str] = None,
                                  port_restriction: Optional[str] = None,
-                                 sites: Optional[List[int]] = None,
+                                 sites: Optional[list[int]] = None,
                                  snmp_community_name: Optional[str] = None,
                                  snmpv3_authentication_type: Optional[SNMPv3AuthenticationType] = None,
                                  snmpv3_privacy_password: Optional[str] = None,
@@ -1615,7 +1615,7 @@ class Client(BaseClient):
             password (str, optional): Password for the credential.
             port_restriction (str, optional): Further restricts the credential to attempt to authenticate
                 on a specific port. Can be used only if `host_restriction` is used.
-            sites (List[int], optional): List of site IDs for the shared credential that are explicitly assigned
+            sites (list[int], optional): List of site IDs for the shared credential that are explicitly assigned
                 access to the shared scan credential, allowing it to use the credential during a scan.
             snmp_community_name (str, optional): SNMP community for authentication.
             snmpv3_authentication_type (SNMPv3AuthenticationType): SNMPv3 authentication type for the credential.
@@ -2138,8 +2138,8 @@ def create_credential_creation_body(service: CredentialService,
         Returns:
             dict: `account` body to use for credential-creation API requests.
     """
-    missing_params: List[str] = []
-    special_validation_errors: List[str] = []
+    missing_params: list[str] = []
+    special_validation_errors: list[str] = []
 
     account_data: dict = {"service": service.value}
 
@@ -2246,7 +2246,7 @@ def create_credential_creation_body(service: CredentialService,
             account_data["permissionElevation"] = ssh_permission_elevation.value
 
         if ssh_permission_elevation not in (SSHElevationType.NONE, SSHElevationType.PBRUN):
-            missing_elevation_params: List[str] = []
+            missing_elevation_params: list[str] = []
 
             if ssh_permission_elevation_username is None:
                 missing_elevation_params.append("Elevation Username")
@@ -2289,7 +2289,7 @@ def create_credential_creation_body(service: CredentialService,
     return account_data
 
 
-def create_report(client: Client, scope: Dict[str, Any], template_id: Optional[str] = None,
+def create_report(client: Client, scope: dict[str, Any], template_id: Optional[str] = None,
                   report_name: Optional[str] = None, report_format: Optional[ReportFileFormat] = None,
                   download_immediately: Optional[bool] = None) -> Union[dict, CommandResults]:
     """
@@ -2637,10 +2637,10 @@ def readable_duration_time(duration: str) -> str:
 
     for item in t_duration:
         designator = item[-1]
-        number: Union[int, float] = float(item[:-1])
+        number: float = float(item[:-1])
 
         if number.is_integer():
-            number = int(number)
+            duration_values[duration_mapping_t[designator]] = int(number)
 
         duration_values[duration_mapping_t[designator]] = number
 
@@ -2657,7 +2657,7 @@ def readable_duration_time(duration: str) -> str:
     return ", ".join(result)
 
 
-def remove_dict_key(data: Type[T], key_name: str) -> T:
+def remove_dict_key(data: T, key_name: str) -> T:
     """
     Recursively remove a dictionary key from an object
     """
@@ -2703,9 +2703,6 @@ def replace_key_names(data: T,
     if not use_reference:
         data = deepcopy(data)
 
-    if original_reference is None and isinstance(data, dict):
-        original_reference: dict = data
-
     if isinstance(data, (list, tuple)):
         for i in range(len(data)):
             replace_key_names(
@@ -2716,6 +2713,9 @@ def replace_key_names(data: T,
             )
 
     elif isinstance(data, dict):
+        if original_reference is None:
+            original_reference = data
+
         for key, value in name_mapping.items():
             nested_keys = key.split(".")
 
@@ -2911,7 +2911,7 @@ def create_shared_credential_command(client: Client, name: str,
                                      oracle_sid: Optional[str] = None,
                                      password: Optional[str] = None,
                                      port_restriction: Optional[str] = None,
-                                     sites: Optional[List[int]] = None,
+                                     sites: Optional[list[int]] = None,
                                      snmp_community_name: Optional[str] = None,
                                      snmpv3_authentication_type: Optional[SNMPv3AuthenticationType] = None,
                                      snmpv3_privacy_password: Optional[str] = None,
@@ -2947,7 +2947,7 @@ def create_shared_credential_command(client: Client, name: str,
         password (str, optional): Password for the credential.
         port_restriction (str, optional): Further restricts the credential to attempt to authenticate
             on a specific port. Can be used only if `host_restriction` is used.
-        sites (List[int], optional): List of site IDs for the shared credential that are explicitly assigned
+        sites (list[int], optional): List of site IDs for the shared credential that are explicitly assigned
             access to the shared scan credential, allowing it to use the credential during a scan.
         snmp_community_name (str, optional): SNMP community for authentication.
         snmpv3_authentication_type (SNMPv3AuthenticationType): SNMPv3 authentication type for the credential.
@@ -3181,7 +3181,8 @@ def create_vulnerability_exception_command(client: Client, vulnerability_id: str
     """
 
     if scope_type != VulnerabilityExceptionScopeType.GLOBAL and scope_id is None:
-        raise ValueError(f"\"scope_id\" must be set when using scopes different than \"{scope_type.GLOBAL.value}\".")
+        raise ValueError(f"\"scope_id\" must be set when using scopes different than "
+                         f"\"{VulnerabilityExceptionScopeType.GLOBAL.value}\".")
 
     response_data = client.create_vulnerability_exception(
         vulnerability_id=vulnerability_id,
@@ -3352,7 +3353,7 @@ def download_report_command(client: Client, report_id: str, instance_id: str,
     )
 
 
-def get_asset_command(client: Client, asset_id: str) -> Union[CommandResults, List[CommandResults]]:
+def get_asset_command(client: Client, asset_id: str) -> Union[CommandResults, list[CommandResults]]:
     """
     Retrieve information about an asset.
 
@@ -3788,17 +3789,15 @@ def get_asset_vulnerability_command(client: Client, asset_id: str,
         )
 
     if vulnerability_outputs.get("CVES"):
-        results = [result]
-
-        results.extend([CommandResults(
+        results = [CommandResults(
             indicator=Common.CVE(
                 id=cve,
                 cvss=None,  # type: ignore
                 description=None,  # type: ignore
                 modified=None,  # type: ignore
                 published=None,  # type: ignore
-            )) for cve in vulnerability_outputs["CVES"]])
-
+            )) for cve in vulnerability_outputs["CVES"]]
+        results.append(result)
         return results
 
     return result
@@ -3813,7 +3812,6 @@ def get_generated_report_status_command(client: Client, report_id: str, instance
         report_id (str): ID of the report to retrieve information about.
         instance_id (str): ID of the report instance to retrieve information about.
     """
-
     response = client.get_report_history(report_id, instance_id)
 
     context = {
@@ -4596,7 +4594,7 @@ def start_assets_scan_command(client: Client, ip_addresses: Optional[list] = Non
     if ip_addresses:
         asset_filter = "ip-address is " + ip_addresses[0]
 
-    else:  # elif hostnames
+    elif hostnames:
         asset_filter = "host-name is " + hostnames[0]
 
     asset_data = client.search_assets(filters=convert_asset_search_filters(asset_filter), match="all")
@@ -4669,7 +4667,7 @@ def start_site_scan_command(client: Client, site: Site,
             raw_response=scan_response,
         )
 
-    scan_data = client.get_scan(scan_response.get("id"))
+    scan_data = client.get_scan(scan_response["id"])
     return get_scan_entry(scan_data)
 
 
@@ -4705,7 +4703,7 @@ def update_shared_credential_command(client: Client, shared_credential_id: str, 
                                      oracle_sid: Optional[str] = None,
                                      password: Optional[str] = None,
                                      port_restriction: Optional[str] = None,
-                                     sites: Optional[List[int]] = None,
+                                     sites: Optional[list[int]] = None,
                                      snmp_community_name: Optional[str] = None,
                                      snmpv3_authentication_type: Optional[SNMPv3AuthenticationType] = None,
                                      snmpv3_privacy_password: Optional[str] = None,
@@ -4742,7 +4740,7 @@ def update_shared_credential_command(client: Client, shared_credential_id: str, 
         password (str, optional): Password for the credential.
         port_restriction (str, optional): Further restricts the credential to attempt to authenticate
             on a specific port. Can be used only if `host_restriction` is used.
-        sites (List[int], optional): List of site IDs for the shared credential that are explicitly assigned
+        sites (list[int], optional): List of site IDs for the shared credential that are explicitly assigned
             access to the shared scan credential, allowing it to use the credential during a scan.
         snmp_community_name (str, optional): SNMP community for authentication.
         snmpv3_authentication_type (SNMPv3AuthenticationType): SNMPv3 authentication type for the credential.
@@ -5021,7 +5019,7 @@ def main():
             verify=not params.get("unsecure")
         )
 
-        results: Union[CommandResults, List[CommandResults], dict, str]
+        results: Union[CommandResults, list[CommandResults], dict, str]
 
         if command == "test-module":
             client.get_assets(page_size=1, limit=1)
@@ -5773,7 +5771,7 @@ def main():
                 status=VulnerabilityExceptionStatus[args["status"]],
             )
         elif command == "nexpose-search-assets":
-            sites: List[Site] = []
+            sites: list[Site] = []
             page_size = None
             page = None
             limit = None
