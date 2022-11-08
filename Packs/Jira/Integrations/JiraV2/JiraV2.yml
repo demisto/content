@@ -172,7 +172,7 @@ script:
       description: The ticket summary.
       type: Unknown
     - contextPath: Ticket.Description
-      description: The ticket project description.
+      description: The ticket's project description.
       type: String
     - contextPath: Ticket.Status
       description: The ticket status.
