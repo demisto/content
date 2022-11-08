@@ -2143,7 +2143,6 @@ def fetch_incidents():
         last_fetch = str(last_fetch.isoformat()).split('.')[0] + 'Z'
 
     last_fetch = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ')
-    current_fetch = last_fetch
     service = get_service(
         'gmail',
         'v1',
@@ -2178,8 +2177,11 @@ def fetch_incidents():
             last_fetch = occurred + timedelta(seconds=1)
 
         # avoid duplication due to weak time query
-        if occurred > current_fetch:
+        if (not is_valid_date) or (occurred >= last_fetch):
             incidents.append(incident)
+        else:
+            demisto.info(f'skipped incident with lower date: {occurred} than fetch: {last_fetch} name: {incident.get("name")}')
+
     demisto.info(f'extract {len(incidents)} incidents')
     demisto.setLastRun({'gmt_time': last_fetch.isoformat().split('.')[0] + 'Z',
                         'ignore_list_used': ignore_list_used,
