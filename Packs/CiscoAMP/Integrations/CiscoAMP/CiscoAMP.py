@@ -2945,7 +2945,6 @@ def endpoint_command(client: Client, args: Dict[str, Any]) -> List[CommandResult
 
             endpoints.append(CommandResults(
                 readable_output=readable_output,
-                outputs_prefix='',
                 raw_response=response,
                 outputs_key_field='_id',
                 indicator=endpoint
@@ -2975,7 +2974,7 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
         try:
             hash_type = get_hash_type(file_hash)
 
-            if hash_type not in 'sha256':
+            if hash_type != 'sha256':
                 raise ValueError(f'Cisco AMP: Hash "{file_hash}" is not of type SHA-256')
 
             raw_response = client.event_list_request(
