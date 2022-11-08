@@ -4,5 +4,4 @@ name: Mcafee Epo Modeling Rule
 rules: ''
 schema: ''
 tags: McafeeEpoModelingRules
-to_xdr_version: 3.4.9
 toversion: 6.9.9
