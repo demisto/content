@@ -234,7 +234,16 @@ def get_occurred_date(email_data: dict) -> Tuple[datetime, bool]:
     Returns:
         Tuple[datetime, bool]: occurred datetime, can be used for incrementing search date
     """
+    internalDate = email_data.get('internalDate')
+    if internalDate and internalDate != '0':
+        # intenalDate timestamp has 13 digits, but epoch-timestamp counts the seconds since Jan 1st 1970
+        # (which is currently less than 13 digits) thus a need to cut the timestamp down to size.
+        timestamp_len = len(str(int(time.time())))
+        if len(str(internalDate)) > timestamp_len:
+            internalDate = (str(internalDate)[:timestamp_len])
+        return datetime.fromtimestamp(int(internalDate), tz=timezone.utc), True
     headers = demisto.get(email_data, 'payload.headers')
+    demisto.info(f"couldn't extract occurred date from internalDate trying headers: {headers}")
     if not headers or not isinstance(headers, list):
         demisto.error(f"couldn't get headers for msg (shouldn't happen): {email_data}")
     else:
@@ -248,15 +257,6 @@ def get_occurred_date(email_data: dict) -> Tuple[datetime, bool]:
                     if res:
                         demisto.debug(f"Using occurred date: {res} from header: {name} value: {val}")
                         return res, True
-    internalDate = email_data.get('internalDate')
-    demisto.info(f"couldn't extract occurred date from headers trying internalDate: {internalDate}")
-    if internalDate and internalDate != '0':
-        # intenalDate timestamp has 13 digits, but epoch-timestamp counts the seconds since Jan 1st 1970
-        # (which is currently less than 13 digits) thus a need to cut the timestamp down to size.
-        timestamp_len = len(str(int(time.time())))
-        if len(str(internalDate)) > timestamp_len:
-            internalDate = (str(internalDate)[:timestamp_len])
-        return datetime.fromtimestamp(int(internalDate), tz=timezone.utc), True
     # we didn't get a date from anywhere
     demisto.info("Failed finding date from internal or headers. Using 'datetime.now()'")
     return datetime.now(tz=timezone.utc), False
@@ -2158,7 +2158,7 @@ def fetch_incidents():
 
     incidents = []
     # so far, so good
-    LOG('GMAIL: possible new incidents are %s' % (result,))
+    demisto.info(f'GMAIL: possible new incidents are {result}')
     for msg in result.get('messages', []):
         msg_id = msg['id']
         if msg_id in ignore_ids:
@@ -2180,9 +2180,10 @@ def fetch_incidents():
         # avoid duplication due to weak time query
         if occurred > current_fetch:
             incidents.append(incident)
-
     demisto.info(f'extract {len(incidents)} incidents')
-    demisto.setLastRun({'gmt_time': last_fetch.isoformat().split('.')[0] + 'Z', 'ignore_list_used': ignore_list_used})
+    demisto.setLastRun({'gmt_time': last_fetch.isoformat().split('.')[0] + 'Z',
+                        'ignore_list_used': ignore_list_used,
+                        'ignore_ids': ignore_ids})
     return incidents
 
 

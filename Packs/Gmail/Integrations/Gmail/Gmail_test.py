@@ -457,3 +457,13 @@ def test_emails_to_entry(title, raw_emails, format_data, mailbox, expected_resul
     result = emails_to_entry(title, raw_emails, format_data, mailbox)
     assert result.get("Contents") == expected_result.get("except_contents")
     assert result.get("HumanReadable") == expected_result.get("expected_human_readable")
+
+
+def test_no_date_mail():
+    from email.utils import parsedate_to_datetime
+    from Gmail import get_email_context
+    context_gmail, _, _, occurred, is_valid = get_email_context(input_data.email_without_date, "some_mail")
+    # check that the x-received date was usd
+    assert occurred.timestamp() == parsedate_to_datetime('Mon, 21 Dec 2020 12:11:57 -0800').timestamp()
+    assert is_valid
+    assert context_gmail.get('Date') == 'Mon, 21 Dec 2020 12:11:57 -0800'
