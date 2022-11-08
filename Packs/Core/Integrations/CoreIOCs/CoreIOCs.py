@@ -68,7 +68,7 @@ class Client:
             raise DemistoException(f'{status_code}: {res.text}')
         try:
             return res.json()
-        except Exception as e:
+        except json.decoder.JSONDecodeError as e:
             raise DemistoException(f'Could not parse json out of {res.content.decode()}', exception=e, res=res)
 
     @property

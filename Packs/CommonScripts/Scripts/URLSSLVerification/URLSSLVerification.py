@@ -27,7 +27,7 @@ def arg_to_list_with_regex(arg):
     if isinstance(arg, STRING_TYPES):
         if arg[0] == '[' and arg[-1] == ']':
             return json.loads(arg)
-        return re.split(URL_REGEX_PATTERN, arg)
+        return re.split(URL_REGEX_PATTERN, arg)  # split expects only str, and not bytes, could be a bug
     return arg
 
 

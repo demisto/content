@@ -95,7 +95,7 @@ def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=Fals
             raise Warning(res.content)
         if not res.status_code == 404 and not accept_404:
             return_error(
-                'Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(
+                'Got status code ' + str(res.status_code) + ' with body ' + res.text + ' with headers ' + str(
                     res.headers))
     return json.loads(res.text) if res.text else res.ok
 
