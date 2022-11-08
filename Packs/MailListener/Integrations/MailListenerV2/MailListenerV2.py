@@ -3,7 +3,7 @@ from datetime import timezone
 from typing import Any, Dict, Tuple, List, Optional
 
 from dateparser import parse
-from mailparser import parse_from_bytes
+from mailparser import parse_from_bytes, parse_from_string
 from imap_tools import OR
 from imapclient import IMAPClient
 
@@ -12,7 +12,7 @@ from CommonServerPython import *
 
 
 class Email(object):
-    def __init__(self, message_bytes: bytes, include_raw_body: bool, save_file: bool, id_: int) -> None:
+    def __init__(self, message_bytes: bytes, include_raw_body: bool, save_file: bool, id_: int, msg_str=None) -> None:
         """
         Initialize Email class with all relevant data
         Args:
@@ -27,11 +27,13 @@ class Email(object):
         except UnicodeDecodeError as e:
             demisto.info(f'Failed parsing mail from bytes: [{e}]\n{traceback.format_exc()}.'
                          '\nWill replace backslash and try to parse again')
-        except Exception as e:
-            email_object = parse_from_bytes(decode_header(message_bytes))
-
             message_bytes = self.handle_message_slashes(message_bytes)
             email_object = parse_from_bytes(message_bytes)
+        except Exception as e:
+            try:
+                email_object = parse_from_bytes(msg_str)
+            except Exception as e:
+                email_object = parse_from_string(msg_str.decode('ISO-8859-1'))
 
         self.id = id_
         self.to = [mail_addresses for _, mail_addresses in email_object.to]
@@ -315,6 +317,7 @@ def fetch_mails(client: IMAPClient,
     demisto.debug(f'Messages to fetch: {messages_uids}')
     for mail_id, message_data in client.fetch(messages_uids, 'RFC822').items():
         message_bytes = message_data.get(b'RFC822')
+        msg_str = message_data.get(b'RFC822')
         # For cases the message_bytes is returned as a string. If failed, will try to use the message_bytes returned.
         try:
             message_bytes = bytes(message_bytes)
@@ -323,7 +326,7 @@ def fetch_mails(client: IMAPClient,
 
         if not message_bytes:
             continue
-        email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id)
+        email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id, msg_str=msg_str)
 
         # Add mails if the current email UID is higher than the previous incident UID
         if int(email_message_object.id) > int(uid_to_fetch_from):
