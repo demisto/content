@@ -1195,15 +1195,32 @@ script:
     description: Generic JSON patch command for Papi Property Default Rule
     name: akamai-patch-papi-property-rule-generic
   - arguments:
-    - name: contract_id
+    - description: A unique identifier for each configuration.
+      name: contract_id
       required: true
-    - name: group_id
+    - description: A unique identifier for each group.
+      name: group_id
       required: true
-    - name: property_id
+    - description: A unique identifier for each Papi Property
+      name: property_id
       required: true
-    - name: property_version
+    - description: A unique identifier for each Papi Property Version.
+      name: property_version
       required: true
-    - name: validate_rules
+    - description: whether validate rule or not
+      name: validate_rules
+      required: true
+    - description: add/replace/remove
+      name: operation
+      required: true
+    - description: json rule tree path for the default rule
+      name: path
+      required: true
+    - description: value to be operated against
+      name: value
+      required: true
+    - description: whether to convert value to json format. yes/no
+      name: value_to_json
       required: true
     description: get papi property rule json and dump into string
     name: akamai-get-papi-property-rule
