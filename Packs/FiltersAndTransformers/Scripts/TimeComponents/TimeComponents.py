@@ -31,9 +31,9 @@ def detect_time_zone(value: Any) -> tzinfo:
 
             # Try to parse as time string
             try:
-                tz = dateparser.parse(value).tzinfo
-                if tz is not None:
-                    return tz
+                dt = dateparser.parse(value)
+                if dt is not None and dt.tzinfo is not None:
+                    return dt.tzinfo
             except Exception:
                 pass
 
