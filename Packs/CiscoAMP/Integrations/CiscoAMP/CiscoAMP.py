@@ -1270,9 +1270,9 @@ def computer_list_command(client: Client, args: Dict[str, Any]) -> List[CommandR
     Returns:
         List[CommandResults]: Information about a list of computers or a specific computer.
     """
-    page = arg_to_number(args.get('page'))
-    page_size = arg_to_number(args.get('page_size'))
-    limit = arg_to_number(args.get('limit'))
+    page = arg_to_number(args.get('page', 0))
+    page_size = arg_to_number(args.get('page_size', 0))
+    limit = arg_to_number(args.get('limit', 0))
     connector_guid = args.get('connector_guid', '')
     hostnames = argToList(args.get('hostname'))
     internal_ip = args.get('internal_ip')
@@ -1375,9 +1375,9 @@ def computer_trajectory_list_command(client: Client, args: Dict[str, Any]) -> Co
         CommandResults: Information about a computer's trajectory.
     """
     connector_guid = args['connector_guid']
-    page = arg_to_number(args.get('page'))
-    page_size = arg_to_number(args.get('page_size'))
-    limit = arg_to_number(args.get('limit'))
+    page = arg_to_number(args.get('page', 0))
+    page_size = arg_to_number(args.get('page_size', 0))
+    limit = arg_to_number(args.get('limit', 0))
     query_string = args.get('query_string')
 
     if connector_guid and query_string:
@@ -1419,9 +1419,9 @@ def computer_user_activity_list_command(client: Client, args: Dict[str, Any]) ->
         CommandResults: Information about computers with user activity on them.
     """
     username = args['username']
-    page = arg_to_number(args.get('page'))
-    page_size = arg_to_number(args.get('page_size'))
-    limit = arg_to_number(args.get('limit'))
+    page = arg_to_number(args.get('page', 0))
+    page_size = arg_to_number(args.get('page_size', 0))
+    limit = arg_to_number(args.get('limit', 0))
 
     pagination = get_pagination_parameters(page, page_size, limit)
     raw_response_list: List[Dict[str, Any]] = []
@@ -1472,9 +1472,9 @@ def computer_user_trajectory_list_command(client: Client, args: Dict[str, Any]) 
         CommandResults: Information about a computer's trajectory.
     """
     connector_guid = args['connector_guid']
-    page = arg_to_number(args.get('page'))
-    page_size = arg_to_number(args.get('page_size'))
-    limit = arg_to_number(args.get('limit'))
+    page = arg_to_number(args.get('page', 0))
+    page_size = arg_to_number(args.get('page_size', 0))
+    limit = arg_to_number(args.get('limit', 0))
     username = args.get('username')
 
     pagination = get_pagination_parameters(page, page_size, limit)
@@ -1512,9 +1512,9 @@ def computer_vulnerabilities_list_command(client: Client, args: Dict[str, Any]) 
     connector_guid = args['connector_guid']
     start_time = args.get('start_time')
     end_time = args.get('end_time')
-    page = arg_to_number(args.get('page'))
-    page_size = arg_to_number(args.get('page_size'))
-    limit = arg_to_number(args.get('limit'))
+    page = arg_to_number(args.get('page', 0))
+    page_size = arg_to_number(args.get('page_size', 0))
+    limit = arg_to_number(args.get('limit', 0))
 
     pagination = get_pagination_parameters(page, page_size, limit)
     raw_response_list: List[Dict[str, Any]] = []
@@ -1643,9 +1643,9 @@ def computer_activity_list_command(client: Client, args: Dict[str, Any]) -> Comm
         CommandResults: Information about computers with query activity on them.
     """
     query_string = args['query_string']
-    page = arg_to_number(args.get('page'))
-    page_size = arg_to_number(args.get('page_size'))
-    limit = arg_to_number(args.get('limit'))
+    page = arg_to_number(args.get('page', 0))
+    page_size = arg_to_number(args.get('page_size', 0))
+    limit = arg_to_number(args.get('limit', 0))
 
     filename_regex = r'[0-9a-zA-Z_\-.]+[0-9a-zA-Z_\-. ]*'
 
@@ -1962,9 +1962,9 @@ def event_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
     start_date = args.get('start_date')
     event_type = argToList(args.get('event_type'))
     event_type = [arg_to_number(et) for et in event_type if et is not None]
-    page = arg_to_number(args.get('page'))
-    page_size = arg_to_number(args.get('page_size'))
-    limit = arg_to_number(args.get('limit'))
+    page = arg_to_number(args.get('page', 0))
+    page_size = arg_to_number(args.get('page_size', 0))
+    limit = arg_to_number(args.get('limit', 0))
 
     if detection_sha256 and sha256Regex.match(detection_sha256):
         raise ValueError('detection_sha256 must be: SHA-256')
@@ -2050,9 +2050,9 @@ def event_type_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
     Returns:
         CommandResults: Information about event types.
     """
-    page = arg_to_number(args.get('page'))
-    page_size = arg_to_number(args.get('page_size'))
-    limit = arg_to_number(args.get('limit'))
+    page = arg_to_number(args.get('page', 0))
+    page_size = arg_to_number(args.get('page_size', 0))
+    limit = arg_to_number(args.get('limit', 0))
 
     pagination = get_pagination_parameters(page, page_size, limit)
     raw_response = client.event_type_list_request()
@@ -2104,9 +2104,9 @@ def file_list_list_command(client: Client, args: Dict[str, Any]) -> CommandResul
     file_list_type = args.get('file_list_type', 'Application Blocking')
     names = argToList(args.get('name'))
     file_list_guid = args.get('file_list_guid')
-    page = arg_to_number(args.get('page'))
-    page_size = arg_to_number(args.get('page_size'))
-    limit = arg_to_number(args.get('limit'))
+    page = arg_to_number(args.get('page', 0))
+    page_size = arg_to_number(args.get('page_size', 0))
+    limit = arg_to_number(args.get('limit', 0))
 
     file_list_request_by_type = {
         'Application Blocking': client.file_list_application_blocking_list_request,
@@ -2170,9 +2170,9 @@ def file_list_item_list_command(client: Client, args: Dict[str, Any]) -> Command
     """
     file_list_guid = args['file_list_guid']
     sha256 = args.get('sha256')
-    page = arg_to_number(args.get('page'))
-    page_size = arg_to_number(args.get('page_size'))
-    limit = arg_to_number(args.get('limit'))
+    page = arg_to_number(args.get('page', 0))
+    page_size = arg_to_number(args.get('page_size', 0))
+    limit = arg_to_number(args.get('limit', 0))
 
     if not sha256:
         pagination = get_pagination_parameters(page, page_size, limit)
@@ -2319,9 +2319,9 @@ def group_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     group_guid = args.get('group_guid')
     name = args.get('name')
-    page = arg_to_number(args.get('page'))
-    page_size = arg_to_number(args.get('page_size'))
-    limit = arg_to_number(args.get('limit'))
+    page = arg_to_number(args.get('page', 0))
+    page_size = arg_to_number(args.get('page_size', 0))
+    limit = arg_to_number(args.get('limit', 0))
 
     if not group_guid:
         pagination = get_pagination_parameters(page, page_size, limit)
@@ -2549,9 +2549,9 @@ def indicator_list_command(client: Client, args: Dict[str, Any]) -> CommandResul
         CommandResults: Information about indicators.
     """
     indicator_guid = args.get('indicator_guid')
-    page = arg_to_number(args.get('page'))
-    page_size = arg_to_number(args.get('page_size'))
-    limit = arg_to_number(args.get('limit'))
+    page = arg_to_number(args.get('page', 0))
+    page_size = arg_to_number(args.get('page_size', 0))
+    limit = arg_to_number(args.get('limit', 0))
 
     if not indicator_guid:
         pagination = get_pagination_parameters(page, page_size, limit)
@@ -2626,9 +2626,9 @@ def policy_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     policy_guid = args.get('policy_guid')
     products = argToList(args.get('product'))
     names = argToList(args.get('name'))
-    page = arg_to_number(args.get('page'))
-    page_size = arg_to_number(args.get('page_size'))
-    limit = arg_to_number(args.get('limit'))
+    page = arg_to_number(args.get('page', 0))
+    page_size = arg_to_number(args.get('page_size', 0))
+    limit = arg_to_number(args.get('limit', 0))
 
     if not policy_guid:
         pagination = get_pagination_parameters(page, page_size, limit)
@@ -2686,9 +2686,9 @@ def app_trajectory_query_list_command(client: Client, args: Dict[str, Any]) -> C
         CommandResults: Information about an app trajectory.
     """
     ios_bid = args['ios_bid']
-    page = arg_to_number(args.get('page'))
-    page_size = arg_to_number(args.get('page_size'))
-    limit = arg_to_number(args.get('limit'))
+    page = arg_to_number(args.get('page', 0))
+    page_size = arg_to_number(args.get('page_size', 0))
+    limit = arg_to_number(args.get('limit', 0))
 
     pagination = get_pagination_parameters(page, page_size, limit)
 
@@ -2767,9 +2767,9 @@ def vulnerability_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     group_guid = argToList(args.get('group_guid'))
     start_time = args.get('start_time')
     end_time = args.get('end_time')
-    page = arg_to_number(args.get('page'))
-    page_size = arg_to_number(args.get('page_size'))
-    limit = arg_to_number(args.get('limit'))
+    page = arg_to_number(args.get('page', 0))
+    page_size = arg_to_number(args.get('page_size', 0))
+    limit = arg_to_number(args.get('limit', 0))
 
     pagination = get_pagination_parameters(page, page_size, limit)
     raw_response_list: List[Dict[str, Any]] = []
@@ -3025,8 +3025,8 @@ def get_pagination_parameters(
             is_automatic (bool): Whether the pagination type is automatic.
             is_manual (bool): Whether the pagination type is manual.
     """
-    is_automatic: bool = limit is not None
-    is_manual: bool = page is not None or page_size is not None
+    is_automatic: bool = limit != 0 and limit is not None
+    is_manual: bool = (page != 0 or page_size != 0) and (page is not None or page_size is not None)
 
     if is_manual and is_automatic:
         raise ValueError('page or page_size can not be entered with limit.')
@@ -3046,8 +3046,8 @@ def get_pagination_parameters(
 
     # Manual Pagination
     elif is_manual:
-        page = page if page is not None else 1
-        page_size = page_size if page_size is not None else 1
+        page = page or 1
+        page_size = page_size or 1
         number_of_requests = 1
         limit = page_size
         offset = (page - 1) * page_size
