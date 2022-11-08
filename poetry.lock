@@ -170,14 +170,14 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.26.4"
+version = "1.26.5"
 description = "The AWS SDK for Python"
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.29.4,<1.30.0"
+botocore = ">=1.29.5,<1.30.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -186,7 +186,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.29.4"
+version = "1.29.5"
 description = "Low-level, data-driven core of boto 3."
 category = "dev"
 optional = false
@@ -505,8 +505,8 @@ build = ["gsutil (==5.14)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "81c946b0b4aba04fa0c43137a46640bf57056b38"
-resolved_reference = "81c946b0b4aba04fa0c43137a46640bf57056b38"
+reference = "ca6a8efcbcd01e2405960f4f57a7d5c808c739dc"
+resolved_reference = "ca6a8efcbcd01e2405960f4f57a7d5c808c739dc"
 
 [[package]]
 name = "Deprecated"
@@ -1937,7 +1937,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-cryptography"
-version = "3.3.23.1"
+version = "3.3.23.2"
 description = "Typing stubs for cryptography"
 category = "dev"
 optional = false
@@ -2020,7 +2020,7 @@ types-cryptography = "*"
 
 [[package]]
 name = "types-protobuf"
-version = "3.20.4.2"
+version = "3.20.4.3"
 description = "Typing stubs for protobuf"
 category = "dev"
 optional = false
@@ -2036,7 +2036,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-python-dateutil"
-version = "2.8.19.2"
+version = "2.8.19.3"
 description = "Typing stubs for python-dateutil"
 category = "dev"
 optional = false
@@ -2111,7 +2111,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-urllib3"
-version = "1.26.25.1"
+version = "1.26.25.2"
 description = "Typing stubs for urllib3"
 category = "dev"
 optional = false
@@ -2293,7 +2293,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "ef721d0f99afd71611be216cd61e53ecc1e6ec88de444df1f84fbefbf532364f"
+content-hash = "c3cb4f160e5ad6751490c94e54f88525b8d6e9f3f777593b244e2c315db3fccc"
 
 [metadata.files]
 aiohttp = [
@@ -2468,12 +2468,12 @@ blessings = [
     {file = "blessings-1.7.tar.gz", hash = "sha256:98e5854d805f50a5b58ac2333411b0482516a8210f23f43308baeb58d77c157d"},
 ]
 boto3 = [
-    {file = "boto3-1.26.4-py3-none-any.whl", hash = "sha256:9bfe15f394a7cd8ca2520e42722269d9aa2bbc222e348283c527d3aa88484314"},
-    {file = "boto3-1.26.4.tar.gz", hash = "sha256:244fd0776fc1f69c3ed34f359db7a90a6108372486abc999ce8515a79bbfc86e"},
+    {file = "boto3-1.26.5-py3-none-any.whl", hash = "sha256:7b6fb7b0346c239b53ad5e5fdf5eeef3c6452186d91239beeb66f106531cb2c3"},
+    {file = "boto3-1.26.5.tar.gz", hash = "sha256:cb4eca34b6e13e4ead46a68f66759feaae6bf5e97362b2c979b7b9f1d203715e"},
 ]
 botocore = [
-    {file = "botocore-1.29.4-py3-none-any.whl", hash = "sha256:4c7dedc1096417ac8a120a3f42b81bddaec5451cdd6add7af98680903fd73b18"},
-    {file = "botocore-1.29.4.tar.gz", hash = "sha256:fa86747f5092723c0dc7f201a48cdfac3ad8d03dd6cb7abc189abc708be43269"},
+    {file = "botocore-1.29.5-py3-none-any.whl", hash = "sha256:94e820994e731568d191373d622507fee6067c9e68b5a121aed46322fd6d3d45"},
+    {file = "botocore-1.29.5.tar.gz", hash = "sha256:8a1a074bce7567576947869d41026c45d507e00885f3890c1719180a9400ec40"},
 ]
 bracex = [
     {file = "bracex-2.3.post1-py3-none-any.whl", hash = "sha256:351b7f20d56fb9ea91f9b9e9e7664db466eb234188c175fd943f8f755c807e73"},
@@ -3802,8 +3802,8 @@ types-chardet = [
     {file = "types_chardet-5.0.4-py3-none-any.whl", hash = "sha256:6946e22f32789a473852570810b4afe632172fae03c04bdbffe670606cc4ac11"},
 ]
 types-cryptography = [
-    {file = "types-cryptography-3.3.23.1.tar.gz", hash = "sha256:f108e7a7161eedd9fe391e1a8ae5a98d40c1da2f0418bc0812a9119990272314"},
-    {file = "types_cryptography-3.3.23.1-py3-none-any.whl", hash = "sha256:b9f8aa93d9e4d7ff920961cdce3dc7cca479946890924d68356b66f15f4f35e3"},
+    {file = "types-cryptography-3.3.23.2.tar.gz", hash = "sha256:09cc53f273dd4d8c29fa7ad11fefd9b734126d467960162397bc5e3e604dea75"},
+    {file = "types_cryptography-3.3.23.2-py3-none-any.whl", hash = "sha256:b965d548f148f8e87f353ccf2b7bd92719fdf6c845ff7cedf2abb393a0643e4f"},
 ]
 types-dateparser = [
     {file = "types-dateparser-1.1.4.2.tar.gz", hash = "sha256:391ad267c22511312e29e85ff7447483f0e0950e96e7028bc3026f98e1f928d5"},
@@ -3842,16 +3842,16 @@ types-paramiko = [
     {file = "types_paramiko-2.11.6-py3-none-any.whl", hash = "sha256:9d6adb74a645c28e01e8539b218e8b8a4bab0b73925c60aca35993cc87f7d5a0"},
 ]
 types-protobuf = [
-    {file = "types-protobuf-3.20.4.2.tar.gz", hash = "sha256:fd65ab8502f9a08e089f2cad26d52fab04cd57322cf896c570ab3391ca760bae"},
-    {file = "types_protobuf-3.20.4.2-py3-none-any.whl", hash = "sha256:329bec368fd11a8cb95192b33aa61e59e0b30f659ec14be75301c651026c4cc1"},
+    {file = "types-protobuf-3.20.4.3.tar.gz", hash = "sha256:6213176ddae149bbfa3982c56f2fe68e95460066c360b47ae35eb375a3694cd7"},
+    {file = "types_protobuf-3.20.4.3-py3-none-any.whl", hash = "sha256:0ec26b5d351c2ccaa0d824cdc393ab1db09889e20f626b5eeff1069a5164f536"},
 ]
 types-PyMySQL = [
     {file = "types-PyMySQL-1.0.19.1.tar.gz", hash = "sha256:c24ce221cd76a24445b4614fff84b13644d7fb4966fc7a07a742e8546da29507"},
     {file = "types_PyMySQL-1.0.19.1-py3-none-any.whl", hash = "sha256:6748b3d830b9fc0299bd85ebf0f4a29de8c51f452a11fee83690ee4b26deede8"},
 ]
 types-python-dateutil = [
-    {file = "types-python-dateutil-2.8.19.2.tar.gz", hash = "sha256:e6e32ce18f37765b08c46622287bc8d8136dc0c562d9ad5b8fd158c59963d7a7"},
-    {file = "types_python_dateutil-2.8.19.2-py3-none-any.whl", hash = "sha256:3f4dbe465e7e0c6581db11fd7a4855d1355b78712b3f292bd399cd332247e9c0"},
+    {file = "types-python-dateutil-2.8.19.3.tar.gz", hash = "sha256:a313284df5ed3fd078303262edc0efde28998cd08e5061ef1ccc0bb5fef4d2da"},
+    {file = "types_python_dateutil-2.8.19.3-py3-none-any.whl", hash = "sha256:ce6af1bdf0aca6b7dc8815a664f0e8b55da91ff7851102cf87c87178e7c8e7ec"},
 ]
 types-pytz = [
     {file = "types-pytz-2022.6.0.1.tar.gz", hash = "sha256:d078196374d1277e9f9984d49373ea043cf2c64d5d5c491fbc86c258557bd46f"},
@@ -3886,8 +3886,8 @@ types-ujson = [
     {file = "types_ujson-5.5.0-py3-none-any.whl", hash = "sha256:6051e6b80d71382f1f85b0f97b475d84621eae3e2789ed24c5721f784b0846e1"},
 ]
 types-urllib3 = [
-    {file = "types-urllib3-1.26.25.1.tar.gz", hash = "sha256:a948584944b2412c9a74b9cf64f6c48caf8652cb88b38361316f6d15d8a184cd"},
-    {file = "types_urllib3-1.26.25.1-py3-none-any.whl", hash = "sha256:f6422596cc9ee5fdf68f9d547f541096a20c2dcfd587e37c804c9ea720bf5cb2"},
+    {file = "types-urllib3-1.26.25.2.tar.gz", hash = "sha256:a3a510db609b363670cc62edb76598b8270bd34d4eb2f6c9f088d0e7d8196d6b"},
+    {file = "types_urllib3-1.26.25.2-py3-none-any.whl", hash = "sha256:7b78e4304b4534a010cfef97d1a3f3ebff0fa7119b205d08a355266d7c4e8e22"},
 ]
 typing-extensions = [
     {file = "typing_extensions-4.4.0-py3-none-any.whl", hash = "sha256:16fa4864408f655d35ec496218b85f79b3437c829e93320c7c9215ccfd92489e"},
