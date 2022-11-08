@@ -1,5 +1,6 @@
 import random
 import string
+import subprocess
 from typing import Dict
 
 import dateparser
@@ -19,7 +20,6 @@ import logging
 import warnings
 import email
 from requests.exceptions import ConnectionError
-
 from multiprocessing import Process
 import exchangelib
 from exchangelib.errors import (
@@ -549,7 +549,7 @@ def exchangelib_cleanup():
         exchangelib.close_connections()
     except Exception as ex:
         demisto.error("Error was found in exchangelib cleanup, ignoring: {}".format(ex))
-    for key, protocol in key_protocols:
+    for key, (protocol, _) in key_protocols:
         try:
             if "thread_pool" in protocol.__dict__:
                 demisto.debug(
@@ -766,6 +766,8 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
         if type(value) in [str, str, int, float, bool, Body, HTMLBody, None]:
             raw_dict[field] = value
     raw_dict["id"] = item.id
+    demisto.debug("checking for attachments")
+    log_memory()
     if getattr(item, "attachments", None):
         raw_dict["attachments"] = [
             parse_attachment_as_dict(item.id, x) for x in item.attachments
@@ -2030,7 +2032,8 @@ def parse_incident_from_item(item):
     """
     incident = {}
     labels = []
-
+    demisto.debug("starting parse to incident")
+    log_memory()
     try:
         incident["details"] = item.text_body or item.body
     except AttributeError:
@@ -2195,7 +2198,12 @@ def parse_incident_from_item(item):
         labels.append({"type": "Email/ConversionID", "value": item.conversation_id.id})
 
     incident["labels"] = labels
+    demisto.debug("before rawjson")
+    log_memory()
     incident["rawJSON"] = json.dumps(parse_item_as_dict(item, None), ensure_ascii=False)
+    log_memory()
+    demisto.debug("after rawjson")
+
 
     return incident
 
@@ -2207,6 +2215,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
     :param last_run: last run dict
     :return:
     """
+    log_memory()
     last_run = get_last_run(client, last_run)
     excluded_ids = set(last_run.get(LAST_RUN_IDS, []))
     try:
@@ -2288,6 +2297,8 @@ def fetch_last_emails(
     :return: list of exchangelib.Items
     """
     qs = client.get_folder_by_path(folder_name, is_public=client.is_public_folder)
+    demisto.debug("finished folder get")
+    log_memory()
     if since_datetime:
         qs = qs.filter(datetime_received__gte=since_datetime)
     else:
@@ -2297,11 +2308,12 @@ def fetch_last_emails(
         first_fetch_ews_datetime = EWSDateTime.from_datetime(first_fetch_datetime.replace(tzinfo=tz))
         qs = qs.filter(last_modified_time__gte=first_fetch_ews_datetime)
     qs = qs.filter().only(*[x.name for x in Message.FIELDS])
-    qs = qs.filter().order_by("datetime_received")
-
+    qs = qs.filter().order_by("datetime_received")  # .exclude(id__in=list(exclude_ids))
     result = []
     exclude_ids = exclude_ids if exclude_ids else set()
     demisto.debug(f'{APP_NAME} - Exclude ID list: {exclude_ids}')
+    # qs.chunk_size = 200
+    # qs.page_size = 200
     for item in qs:
         if isinstance(item, Message) and item.message_id not in exclude_ids:
             result.append(item)
@@ -2309,8 +2321,8 @@ def fetch_last_emails(
                 break
         else:
             demisto.debug(f'message_id {item.message_id} was excluded. IsMessage: {isinstance(item, Message)}')
-
     demisto.debug(f'{APP_NAME} - Got total of {len(result)} from ews query.')
+    log_memory()
     return result
 
 
@@ -2413,6 +2425,7 @@ def sub_main():
             return_outputs(*output)
 
     except Exception as e:
+        demisto.debug(f"got an err, {str(e)}")
         start_logging()
         debug_log = log_stream.getvalue()  # type: ignore[union-attr]
         error_message_simple = ""
@@ -2524,6 +2537,10 @@ def main():
             demisto.error("Failed starting Process: {}".format(ex))
     else:
         sub_main()
+
+
+def log_memory():
+    demisto.debug(f'memstat\n{subprocess.check_output(["ps", "-opid,comm,rss"])}')
 
 
 from MicrosoftApiModule import *  # noqa: E402
