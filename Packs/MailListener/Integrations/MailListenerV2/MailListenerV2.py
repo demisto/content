@@ -3,7 +3,8 @@ from datetime import timezone
 from typing import Any, Dict, Tuple, List, Optional
 
 from dateparser import parse
-from mailparser import parse_from_bytes
+from mailparser import parse_from_bytes, parse_from_string
+from email.header import decode_header
 from imap_tools import OR
 from imapclient import IMAPClient
 
@@ -30,7 +31,8 @@ class Email(object):
 
             message_bytes = self.handle_message_slashes(message_bytes)
             email_object = parse_from_bytes(message_bytes)
-
+        except Exception as e:
+            email_object = parse_from_bytes(decode_header(message_bytes))
         self.id = id_
         self.to = [mail_addresses for _, mail_addresses in email_object.to]
         self.cc = [mail_addresses for _, mail_addresses in email_object.cc]
