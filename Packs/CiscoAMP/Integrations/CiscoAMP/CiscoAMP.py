@@ -1963,8 +1963,7 @@ def computer_isolation_polling_command(
     else:
         command_results = computer_isolation_get_command(client, args)
 
-    raw_response = command_results.raw_response
-    status = dict_safe_get(raw_response, ['data', 'status'])
+    status = dict_safe_get(command_results.raw_response, ['data', 'status'])
 
     if status in result_isolation_status:
         return PollResult(
