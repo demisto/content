@@ -1,4 +1,3 @@
-import locale
 import re
 from datetime import timezone, tzinfo
 import dateparser
@@ -47,12 +46,14 @@ def parse_date_time_value(value: Any) -> datetime:
     :param value: The date or time to parse
     :return: aware datetime object
     """
-    if value is None or (isinstance(value, str) and not value):
+    if value in [None, '']:
         return datetime.now(timezone.utc)
 
     if isinstance(value, int):
         # Parse as time stamp
         try:
+            # Considered the value as milliseconds when it's too large (> uint max).
+            # (Currently later than 2106-02-07 06:28:15)
             if value > 4294967295:
                 value /= 1000
 
@@ -63,9 +64,11 @@ def parse_date_time_value(value: Any) -> datetime:
 
     if isinstance(value, str):
         value = value.strip()
-        if value.isdecimal() and value.isascii():
+        try:
             # Parse as time stamp
             return parse_date_time_value(int(value))
+        except (TypeError, ValueError):
+            pass
 
     try:
         date_time = dateparser.parse(value)
@@ -74,19 +77,18 @@ def parse_date_time_value(value: Any) -> datetime:
         if date_time.tzinfo is not None:
             return date_time
 
-        date_time = dateparser.parse(value, settings={'TIMEZONE': 'UTC'})
+        date_time = dateparser.parse(value, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
         assert date_time is not None, f'could not parse {value}'
-        return date_time.replace(tzinfo=timezone.utc)
+        return date_time
     except Exception as err:
         raise DemistoException(f'Error with input date / time - {err}')
 
 
 def main():
     try:
-        locale.setlocale(locale.LC_TIME, 'C')
-
-        date_time = parse_date_time_value(demisto.getArg('value'))
-        if time_zone := demisto.getArg('time_zone'):
+        args = demisto.args()
+        date_time = parse_date_time_value(args.get('value'))
+        if time_zone := args.get('time_zone'):
             date_time = date_time.astimezone(detect_time_zone(time_zone))
 
         time_components = {
@@ -128,7 +130,7 @@ def main():
             'HH:mm:ss': f"{date_time.strftime('%H')}:{date_time.strftime('%M')}:{date_time.strftime('%S')}",
         }
 
-        if key := demisto.getArg('key'):
+        if key := args.get('key'):
             if (component := time_components.get(key)) is None:
                 raise DemistoException(f'No key is found in the time components - {key}')
             return_results(component)

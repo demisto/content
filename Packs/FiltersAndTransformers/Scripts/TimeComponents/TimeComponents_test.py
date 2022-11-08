@@ -11,6 +11,9 @@ class TestTimeComponents:
         now = datetime(2022, 1, 23, 12, 34, 56, tzinfo=timezone.utc)
         assert now == TimeComponents.parse_date_time_value(None).astimezone(timezone.utc)
 
+        now = datetime(2022, 1, 23, 12, 34, 56, tzinfo=timezone.utc)
+        assert now == TimeComponents.parse_date_time_value('now').astimezone(timezone.utc)
+
     def test_main(self, mocker, monkeypatch):
         with open('./test_data/test.json', 'r') as f:
             test_list = json.load(f)
@@ -27,4 +30,8 @@ class TestTimeComponents:
             if isinstance(results, dict):
                 r = {k: int(v) if isinstance(v, float) else v for k, v in results.items()}
                 t = {k: int(v) if isinstance(v, float) else v for k, v in test_case['results'].items()}
-            assert json.dumps(r) == json.dumps(t)
+            rstr = json.dumps(r)
+            tstr = json.dumps(t)
+            if rstr != tstr:
+                print(test_case.get('comments'))
+                assert rstr == tstr
