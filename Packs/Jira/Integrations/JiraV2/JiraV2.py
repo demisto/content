@@ -4,9 +4,8 @@ from requests_oauthlib import OAuth1
 from dateparser import parse
 from datetime import timedelta
 from CommonServerPython import *
-
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()   # type: ignore[attr-defined]
+import urllib3
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 BASE_URL = demisto.getParam('url').rstrip('/') + '/'
