@@ -70,7 +70,7 @@ def parse_date_time_value(value: Any) -> datetime:
             pass
 
     try:
-        date_time: Optional[datatime] = dateparser.parse(value)
+        date_time: Optional[datetime] = dateparser.parse(value)
         assert date_time is not None, f'could not parse {value}'
 
         if date_time.tzinfo is not None:
