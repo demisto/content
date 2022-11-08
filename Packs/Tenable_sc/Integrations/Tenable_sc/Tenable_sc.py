@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 import re
 from requests import Session
-import requests
+import urllib3
 import functools
 import json
 from datetime import datetime
@@ -10,7 +10,7 @@ from requests import cookies
 
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 if not demisto.params().get('proxy', False):
     del os.environ['HTTP_PROXY']
