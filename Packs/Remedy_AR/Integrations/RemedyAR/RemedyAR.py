@@ -4,8 +4,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
-from Packs.Base.Scripts.CommonServerPython.CommonServerPython import LOG
-
 ''' IMPORTS '''
 import json
 import os
@@ -119,7 +117,7 @@ def get_server_details(qualification, fields):
 ''' EXECUTION CODE '''
 auth = login()
 token = auth.content
-DEFAULT_HEADERS['Authorization'] = 'AR-JWT ' + token
+DEFAULT_HEADERS['Authorization'] = f'AR-JWT {token}'
 
 LOG('command is %s' % (demisto.command(), ))
 try:
