@@ -50,11 +50,13 @@ def mock_client() -> Client:
     Returns:
         Client: Connection to client.
     """
+    from CommonServerPython import DBotScoreReliability
+
     return Client(
         server_url=SERVER_URL,
         api_key=API_KEY,
         client_id=CLIENT_ID,
-        reliability='C - Fairly reliable'
+        reliability=DBotScoreReliability.C
     )
 
 

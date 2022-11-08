@@ -172,7 +172,7 @@ class Client(BaseClient):
         server_url: str,
         api_key: str,
         client_id: str,
-        reliability: DBotScoreReliability,
+        reliability: str,
         verify: bool = False,
         proxy: bool = False
     ):
@@ -183,7 +183,7 @@ class Client(BaseClient):
             server_url (str): CiscoAMP API URL.
             api_key (str): API key to connect to the server.
             client_id (str): 3rd Party API Client ID.
-            reliability (DBotScoreReliability): Reliability of the source providing the intelligence data.
+            reliability (str): Reliability of the source providing the intelligence data.
             verify (bool, optional): SSL verification handled by BaseClient. Defaults to False.
             proxy (bool, optional): System proxy is handled by BaseClient. Defaults to False.
         """
@@ -3162,12 +3162,12 @@ def is_query_wrong(query: str = None) -> bool:
         and not re.match(urlRegex, query)
 
 
-def get_dbotscore(reliability: DBotScoreReliability, sha256: str = None, disposition: str = None) -> Common.DBotScore:
+def get_dbotscore(reliability: str, sha256: str = None, disposition: str = None) -> Common.DBotScore:
     """
     Get XSOAR score for the file's disposition.
 
     Args:
-        reliability (DBotScoreReliability): Reliability of the source providing the intelligence data.
+        reliability (str): Reliability of the source providing the intelligence data.
         sha256 (str, optional): SHA256 of the file.
             Defaults to None.
         disposition (str, optional): 3rd party score of the file's disposition.
