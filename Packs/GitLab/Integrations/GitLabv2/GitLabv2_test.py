@@ -695,14 +695,12 @@ def test_get_raw_file_command(mocker):
 
 
 ARGS_VERIFY_ID = [
-    ("",
-     'project_id must be an positive integer'),
     ('-10',
-     'project_id must be an positive integer'),
+     'Project with project_id -10 does not exist'),
     ('10',
      'Project with project_id 10 does not exist'),
-    ('0',
-     'project_id must be an positive integer')
+    ('-1',
+     'Project with project_id -1 does not exist')
 ]
 
 
@@ -834,7 +832,7 @@ def test_partial_response(response, object_name, expected_response):
     """
     from GitLabv2 import partial_response
     result = partial_response(response, object_name)
-    assert result == expected_response    
+    assert result == expected_response
 
 
 ARGS_ISO_CHECK = [
