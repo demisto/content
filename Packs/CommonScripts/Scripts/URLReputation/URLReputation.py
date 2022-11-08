@@ -12,7 +12,7 @@ def url_reputation():
     demisto.results(results)
 
 
-# remove this method once XSUP-17626 is fixed in ExecutionMetrics / Server
+# remove this method once XSUP-18208 is fixed in ExecutionMetrics / Server
 def is_valid_error(item) -> bool:
     if item['Brand'] == 'VirusTotal (API v3)' and item['Contents'] == "'Offset': 1":
         return False
