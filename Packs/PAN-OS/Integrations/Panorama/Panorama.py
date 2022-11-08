@@ -27,10 +27,11 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple, Union, Callable, ValuesView, Iterator
 
 import requests
+import urllib3
 from urllib.parse import urlparse
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS '''
 URL = ''
