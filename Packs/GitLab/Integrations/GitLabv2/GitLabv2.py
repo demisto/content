@@ -435,15 +435,14 @@ def partial_response(response: list, object_type: str):
     return partial_response
 
 
-def verify_project_id(client: Client, project_id: Any) -> Boolean:
+def verify_project_id(client: Client, project_id: int) -> Boolean:
     '''
     This function verify that the user can access the project.
     input: project_id
     output: True is the project_id is valid, otherwise an error will occur.
     '''
-    project_id = arg_to_number(project_id, required=True) or -1
     # This is a way to search the project_id api.
-    params = {'id_before': (project_id + 1), 'per_page': 1}
+    params = assign_params(id_before=(project_id + 1), per_page=1)
     response = client.get_project_list_request(params)
     if response[0].get('id') != project_id:
         raise DemistoException(f'Project with project_id {project_id} does not exist')
@@ -536,7 +535,7 @@ def get_project_list_command(client: Client, args: Dict[str, Any]) -> CommandRes
                                'Name': project.get('name', ''),
                                'Description': project.get('description', ''),
                                'Path': project.get('path', '')})
-    return_partial = args.get('partial_response') == 'true'
+    return_partial = argToBoolean(args.get('partial_response', True))
     outputs = partial_response(response, 'Project') if return_partial else response
     human_readable = tableToMarkdown('List Projects', response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
@@ -584,7 +583,7 @@ def issue_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         if issue.get('milestone'):
             issue_details['Milestone'] = issue.get('milestone', {}).get('title', '')
         response_to_hr.append(issue_details)
-    return_partial = args.get('partial_response') == 'true'
+    return_partial = argToBoolean(args.get('partial_response', True))
     outputs = partial_response(response, 'Issue') if return_partial else response
     human_readable = tableToMarkdown('List Issues', response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
@@ -627,7 +626,7 @@ def create_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults
         human_readable_dict['Assignee'] = response.get('assignee', {}).get('name', '')
     if response.get('milestone'):
         human_readable_dict['Milestone'] = response.get('milestone', {}).get('title', '')
-    return_partial = args.get('partial_response') == 'true'
+    return_partial = argToBoolean(args.get('partial_response', True))
     outputs = partial_response([response], 'Issue') if return_partial else response
     human_readable = tableToMarkdown('Created Issue', human_readable_dict, headers=headers, removeNull=True)
     return CommandResults(
@@ -664,7 +663,7 @@ def branch_create_command(client: Client, args: Dict[str, Any]) -> CommandResult
         'IsProtected': response.get('protected', 'False')
     }
     human_readable = tableToMarkdown('Created Branch', human_readable_dict, headers=headers)
-    return_partial = args.get('partial_response') == 'true'
+    return_partial = argToBoolean(args.get('partial_response', True))
     outputs = partial_response([response], 'Branch') if return_partial else response
     command_results = CommandResults(
         outputs_prefix='GitLab.Branch',
@@ -785,7 +784,7 @@ def issue_update_command(client: Client, args: Dict[str, Any]) -> CommandResults
         human_readable_dict['CreatedBy'] = response['author'].get('name', '')
     if response.get('milestone'):
         human_readable_dict['Milestone'] = response['milestone'].get('title', '')
-    return_partial = args.get('partial_response') == 'true'
+    return_partial = argToBoolean(args.get('partial_response', True))
     outputs = partial_response([response], 'Issue') if return_partial else response
     human_readable = tableToMarkdown('Update Issue', human_readable_dict, removeNull=True, headers=headers)
     return CommandResults(
@@ -991,7 +990,7 @@ def commit_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                                'ShortId': commit.get('short_id', ''),
                                'Author': commit.get('author_name', ''),
                                'CreatedAt': commit.get('created_at', '')})
-    return_partial = args.get('partial_response') == 'true'
+    return_partial = argToBoolean(args.get('partial_response', True))
     outputs = partial_response(response, 'Commit') if return_partial else response
     human_readable = tableToMarkdown(response_title, response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
@@ -1033,7 +1032,7 @@ def branch_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                                'CreatedAt': branch.get('commit', {}).get('created_at', ''),
                                'CommitShortId': branch.get('commit', {}).get('short_id', ''),
                                'CommitTitle': branch.get('commit', {}).get('title', '')})
-    return_partial = args.get('partial_response') == 'true'
+    return_partial = argToBoolean(args.get('partial_response', True))
     outputs = partial_response(response, 'Branch') if return_partial else response
     human_readable = tableToMarkdown(response_title, response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
@@ -1098,7 +1097,7 @@ def issue_note_create_command(client: Client, args: Dict[str, Any]) -> CommandRe
     body = args.get('body', '')
     confidential = args.get('confidential')
     response = client.issue_note_create_request(issue_iid, body, confidential)
-    return_partial = args.get('partial_response') == 'true'
+    return_partial = argToBoolean(args.get('partial_response', True))
     outputs = partial_response([response], 'Issue Note') if return_partial else response
     return CommandResults(
         outputs_prefix='GitLab.IssueNote',
@@ -1146,7 +1145,7 @@ def issue_note_update_command(client: Client, args: Dict[str, Any]) -> CommandRe
     note_id = args.get('note_id')
     body = args.get('body')
     response = client.issue_note_update_request(issue_iid, note_id, body)
-    return_partial = args.get('partial_response') == 'true'
+    return_partial = argToBoolean(args.get('partial_response', True))
     outputs = partial_response([response], 'Issue Note') if return_partial else response
     return CommandResults(
         outputs_prefix='GitLab.IssueNote',
@@ -1182,7 +1181,7 @@ def issue_note_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
                            'CreatedAt': issue_note.get('created_at', ''),
                            }
         response_to_hr.append(issue_note_edit)
-    return_partial = args.get('partial_response') == 'true'
+    return_partial = argToBoolean(args.get('partial_response', True))
     outputs = partial_response(response, 'Issue Note') if return_partial else response
     human_readable = tableToMarkdown('List Issue notes', response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
@@ -1237,7 +1236,7 @@ def merge_request_list_command(client: Client, args: Dict[str, Any]) -> CommandR
         if merge_request.get('merge_user'):
             merge_request_edit['MergeBy'] = merge_request.get('merge_user', {}).get('username', '')
         response_to_hr.append(merge_request_edit)
-    return_partial = args.get('partial_response') == 'true'
+    return_partial = argToBoolean(args.get('partial_response', True))
     outputs = partial_response(response, 'Merge Request') if return_partial else response
     human_readable = tableToMarkdown('List Merge requests', response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
@@ -1280,7 +1279,7 @@ def merge_request_create_command(client: Client, args: Dict[str, Any]) -> Comman
                                                    reviewer_ids, description, target_project_id, labels,
                                                    milestone_id, remove_source_branch, allow_collaboration,
                                                    allow_maintainer_to_push, approvals_before_merge, squash)
-    return_partial = args.get('partial_response') == 'true'
+    return_partial = argToBoolean(args.get('partial_response', True))
     outputs = partial_response([response], 'Merge Request') if return_partial else response
     return CommandResults(
         outputs_prefix='GitLab.MergeRequest',
@@ -1324,7 +1323,7 @@ def merge_request_update_command(client: Client, args: Dict[str, Any]) -> Comman
                                                    milestone_id, state_event, remove_source_branch, allow_collaboration,
                                                    allow_maintainer_to_push, approvals_before_merge, discussion_locked,
                                                    squash)
-    return_partial = args.get('partial_response') == 'true'
+    return_partial = argToBoolean(args.get('partial_response', True))
     outputs = partial_response([response], 'Merge Request') if return_partial else response
     return CommandResults(
         outputs_prefix='GitLab.MergeRequest',
@@ -1362,7 +1361,7 @@ def merge_request_note_list_command(client: Client, args: Dict[str, Any]) -> Com
         if merge_request_note.get('author'):
             merge_request_note_edit['Author'] = merge_request_note.get('author', {}).get('name', '')
         response_to_hr.append(merge_request_note_edit)
-    return_partial = args.get('partial_response') == 'true'
+    return_partial = argToBoolean(args.get('partial_response', True))
     outputs = partial_response(response, 'Merge Request Note') if return_partial else response
     human_readable = tableToMarkdown('List Merge Issue Notes', response_to_hr, removeNull=True, headers=headers)
     return CommandResults(
@@ -1388,7 +1387,7 @@ def merge_request_note_create_command(client: Client, args: Dict[str, Any]) -> C
     merge_request_iid = args.get('merge_request_iid')
     body = args.get('body')
     response = client.merge_request_note_create_request(merge_request_iid, body)
-    return_partial = args.get('partial_response') == 'true'
+    return_partial = argToBoolean(args.get('partial_response', True))
     outputs = partial_response([response], 'Merge Request Note') if return_partial else response
     return CommandResults(
         outputs_prefix='GitLab.MergeRequestNote',
@@ -1416,7 +1415,7 @@ def merge_request_note_update_command(client: Client, args: Dict[str, Any]) -> C
     note_id = args.get('note_id')
     body = args.get('body')
     response = client.merge_request_note_update_request(merge_request_iid, note_id, body)
-    return_partial = args.get('partial_response') == 'true'
+    return_partial = argToBoolean(args.get('partial_response', True))
     outputs = partial_response([response], 'Merge Request Note') if return_partial else response
     return CommandResults(
         outputs_prefix='GitLab.MergeRequestNote',
@@ -1546,7 +1545,7 @@ def main() -> None:  # pragma: no cover
     headers['PRIVATE-TOKEN'] = params.get('credentials', {}).get('password')
     LOG(f'Command being called is {command}')
     server_url = params.get('url', '')
-    project_id = params.get('project_id')
+    project_id = arg_to_number(params.get('project_id'), required=True)
     commands = {'gitlab-group-project-list': group_project_list_command,
                 'gitlab-issue-create': create_issue_command,
                 'gitlab-branch-create': branch_create_command,
@@ -1582,7 +1581,7 @@ def main() -> None:  # pragma: no cover
 
     try:
         client = Client(project_id, urljoin(server_url, ""), verify_certificate, proxy, headers=headers)
-        if verify_project_id(client, project_id):
+        if project_id and verify_project_id(client, project_id):
             if demisto.command() == 'test-module':
                 return_results(test_module(client))
 

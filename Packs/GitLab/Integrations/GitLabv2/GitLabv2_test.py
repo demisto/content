@@ -695,11 +695,11 @@ def test_get_raw_file_command(mocker):
 
 
 ARGS_VERIFY_ID = [
-    ('-10',
+    (-10,
      'Project with project_id -10 does not exist'),
-    ('10',
+    (10,
      'Project with project_id 10 does not exist'),
-    ('-1',
+    (-1,
      'Project with project_id -1 does not exist')
 ]
 

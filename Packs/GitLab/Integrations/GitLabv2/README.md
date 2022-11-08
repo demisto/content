@@ -270,8 +270,8 @@ Get a list of a project's issues.
 #### Human Readable Output
 ## List Issues:
 |Issue_iid|Title|CreatedAt|CreatedBy|UpdatedAt|State|Assignee|
-|---|---|---|---|
-|4|iisueExample|2000-09-15T17:22:42.246Z|demo-user|2000-09-15T17:23:42.246Z|Open|demoAssignee|
+|---|---|---|---|---|---|---|
+|4|issueExample|2000-09-15T17:22:42.246Z|demo-user|2000-09-15T17:23:42.246Z|Open|demoAssignee|
 
 ### gitlab-issue-update
 ***
@@ -360,7 +360,7 @@ Updates an existing project issue. This call is also used to mark an issue as cl
 #### Human Readable Output
 ## Update Issue:
 |Iid|Title|CreatedAt|CreatedBy|UpdatedAt|Milstone|State|Assignee|
-|---|---|---|---|
+|---|---|---|---|---|---|---|---|
 |4|iisueExample|2000-09-15T17:22:42.246Z|demo-user|2000-09-15T17:23:42.246Z|16|Open|demoAssignee|
 
 ### gitlab-commit-list
@@ -394,7 +394,7 @@ Get a list of repository commits in a project.
 #### Human Readable Output
 ## List Commits:
 |Title|Message|ShortId|Author|CreatedAt|
-|---|---|---|---|
+|---|---|---|---|---|
 |commitExample|this is example|c156b66b|demo-user|2000-09-15T17:22:42.246Z|
 
 #### Context Output
@@ -471,7 +471,7 @@ Get all merge requests for this project.
 #### Human Readable Output
 ## List Merge requests :
 |Iid|Title|CreatedAt|CreatedBy|UpdatedAt|Status|MergeBy|MergedAt|Reviewers|
-|---|---|---|---|
+|---|---|---|---|---|---|---|---|---|
 |444|MergeExample|2022-10-15T17:22:42.246Z|demo-user|2022-11-15T17:23:42.246Z|Open|demoMerge|2022-10-15T17:22:42.246Z|demoReviewer|
 
 ### gitlab-merge-request-create
@@ -936,7 +936,7 @@ Gets a list of all notes for a single issue.
 #### Human Readable Output
 ## List Issue notes:
 |Id|Author|Text|CreatedAt|UpdatedAt|
-|---|---|---|---|
+|---|---|---|---|---|
 |4|authorExample|text example|2000-09-15T17:22:42.246Z|2000-09-15T17:23:42.246Z|
 
 ### gitlab-merge-request-note-list
@@ -987,7 +987,7 @@ Gets a list of all notes for a single merge request.
 #### Human Readable Output
 >### List Merge Issue Notes
 |Id|Author|Text|CreatedAt|UpdatedAt|
-|---|---|---|---|
+|---|---|---|---|---|
 |41|demoAuthor|example|2000-09-15T17:22:42.246Z|2000-09-15T17:23:42.246Z|
 
 ### gitlab-merge-request-note-create
@@ -1791,7 +1791,7 @@ Get a list of repository branches from a project, sorted by name alphabetically.
 #### Human Readable Output
 ## Branch details:
 |Title|CommitShortId|CommitTitle|CreatedAt|IsMerge|IsProtected|
-|---|---|---|---|
+|---|---|---|---|---|---|
 |branchName|c1123|CommitTitle|2000-09-15T17:22:42.246Z|true|false|
 
 ### gitlab-group-list
@@ -1852,7 +1852,7 @@ Get a list of visible groups for the authenticated user. When accessed without a
 #### Human Readable Output
 ## List Groups:
 |Id|Name|Path|Description|CreatedAt|Visibility|
-|---|---|---|---|
+|---|---|---|---|---|---|
 |4|groupExample|demgroup|example description|2000-09-15T17:22:42.246Z|private|
 
 ### gitlab-group-member-list
@@ -1900,7 +1900,7 @@ Gets a list of group or project members viewable by the authenticated user.
 #### Human Readable Output
 ## List Group Members:
 |Id|Name|UserName|MembershipState|ExpiresAt|
-|---|---|---|---|
+|---|---|---|---|---|
 |4|demo|demgroup|Active|2000-09-15T17:22:42.246Z|
 
 ### gitlab-code-search
@@ -1940,7 +1940,7 @@ Using Scope blobs. Blobs searches are performed on both filenames and contents.
 #### Human Readable Output
 ## Results:
 |basename|data|filename|id|path|project_id
-|---|---|---|---|
+|---|---|---|---|---|---|
 |README|testSearch|exampleCode|123|README.md|5531|
 
 ### gitlab-project-user-list
@@ -1977,7 +1977,7 @@ Get the users list of a project.
 #### Human Readable Output
 ## List Users :
 |Id|UserName|Name|State|WebLink|
-|---|---|---|---|
+|---|---|---|---|---|
 |123|demoExample|demo user|active|WebLink/demoExample|
 
 
