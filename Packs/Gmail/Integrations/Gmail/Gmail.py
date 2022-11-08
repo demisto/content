@@ -7,6 +7,7 @@ import re
 import json
 import base64
 from datetime import datetime, timedelta
+from email.utils import parsedate_to_datetime, format_datetime
 from typing import *
 import httplib2
 from urllib.parse import urlparse
@@ -225,7 +226,67 @@ def create_base_time(internal_date_timestamp, header_date):
     return base_time
 
 
+def get_occurred_date(email_data: dict) -> Tuple[datetime, bool]:
+    """Get the occurred date of an email. The date gmail uses is actually the X-Received or the top Received
+    dates in the header. If fails finding these dates will fall back to internal date.
+    Args:
+        email_data (dict): email to extract from
+    Returns:
+        Tuple[datetime, bool]: occurred datetime, can be used for incrementing search date
+    """
+    headers = demisto.get(email_data, 'payload.headers')
+    if not headers or not isinstance(headers, list):
+        demisto.error(f"couldn't get headers for msg (shouldn't happen): {email_data}")
+    else:
+        # use x-received or recvived. We want to use x-received first and fallback to received.
+        for name in ['x-received', 'received', ]:
+            header = next(filter(lambda ht: ht.get('name', '').lower() == name, headers), None)
+            if header:
+                val = header.get('value')
+                if val:
+                    res = get_date_from_email_header(val)
+                    if res:
+                        demisto.debug(f"Using occurred date: {res} from header: {name} value: {val}")
+                        return res, True
+    internalDate = email_data.get('internalDate')
+    demisto.info(f"couldn't extract occurred date from headers trying internalDate: {internalDate}")
+    if internalDate and internalDate != '0':
+        # intenalDate timestamp has 13 digits, but epoch-timestamp counts the seconds since Jan 1st 1970
+        # (which is currently less than 13 digits) thus a need to cut the timestamp down to size.
+        timestamp_len = len(str(int(time.time())))
+        if len(str(internalDate)) > timestamp_len:
+            internalDate = (str(internalDate)[:timestamp_len])
+        return datetime.fromtimestamp(int(internalDate), tz=timezone.utc), True
+    # we didn't get a date from anywhere
+    demisto.info("Failed finding date from internal or headers. Using 'datetime.now()'")
+    return datetime.now(tz=timezone.utc), False
+
+
+def get_date_from_email_header(header: str) -> Optional[datetime]:
+    """Parse an email header such as Date or Received. The format is either just the date
+    or name value pairs followed by ; and the date specification. For example:
+    by 2002:a17:90a:77cb:0:0:0:0 with SMTP id e11csp4670216pjs;        Mon, 21 Dec 2020 12:11:57 -0800 (PST)
+    Args:
+        header (str): header value to parse
+    Returns:
+        Optional[datetime]: parsed datetime
+    """
+    if not header:
+        return None
+    try:
+        date_part = header.split(';')[-1].strip()
+        res = parsedate_to_datetime(date_part)
+        if res.tzinfo is None:
+            # some headers may contain a non TZ date so we assume utc
+            res = res.replace(tzinfo=timezone.utc)
+        return res
+    except Exception as ex:
+        demisto.debug(f'Failed parsing date from header value: [{header}]. Err: {ex}. Will ignore and continue.')
+    return None
+
+
 def get_email_context(email_data, mailbox):
+    occurred, occurred_is_valid = get_occurred_date(email_data)
     context_headers = email_data.get('payload', {}).get('headers', [])
     context_headers = [{'Name': v['name'], 'Value': v['value']}
                        for v in context_headers]
@@ -233,16 +294,11 @@ def get_email_context(email_data, mailbox):
     body = demisto.get(email_data, 'payload.body.data')
     body = body.encode('ascii') if body is not None else ''
     parsed_body = base64.urlsafe_b64decode(body)
-    if email_data.get('internalDate') is not None:
-        base_time = create_base_time(email_data.get('internalDate'), str(headers.get('date', '')))
-
-    else:
-        # in case no internalDate field exists will revert to extracting the date from the email payload itself
-        # Note: this should not happen in any command other than other than gmail-move-mail which doesn't return the
-        # email payload nor internalDate
-        demisto.info(
-            "No InternalDate timestamp found - getting Date from mail payload - msg ID:" + str(email_data['id']))
-        base_time = str(headers.get('date', ''))
+    base_time = email_data.get('internalDate')
+    if not base_time or not get_date_from_email_header(base_time):
+        # we have an invalid date. use the occurred in rfc 2822
+        demisto.debug(f'Using Date base time from occurred: {occurred} instead of date header: [{base_time}]')
+        base_time = format_datetime(occurred)
 
     context_gmail = {
         'Type': 'Gmail',
@@ -305,7 +361,7 @@ def get_email_context(email_data, mailbox):
         context_email['Attachment Names'] = ', '.join(
             [attachment['Name'] for attachment in context_email['Attachments']])  # type: ignore
 
-    return context_gmail, headers, context_email
+    return context_gmail, headers, context_email, occurred, occurred_is_valid
 
 
 TIME_REGEX = re.compile(r'^([\w,\d: ]*) (([+-]{1})(\d{2}):?(\d{2}))?[\s\w\(\)]*$')  # pylint: disable=E1101
@@ -364,7 +420,7 @@ def emails_to_entry(title, raw_emails, format_data, mailbox):
     gmail_emails = []
     emails = []
     for email_data in raw_emails:
-        context_gmail, _, context_email = get_email_context(email_data, mailbox)
+        context_gmail, _, context_email, occurred, occurred_is_valid = get_email_context(email_data, mailbox)
         gmail_emails.append(context_gmail)
         emails.append(context_email)
 
@@ -388,9 +444,19 @@ def emails_to_entry(title, raw_emails, format_data, mailbox):
     }
 
 
-def mail_to_incident(msg, service, user_key):
-    parsed_msg, headers, _ = get_email_context(msg, user_key)
+def get_date_isoformat_server(dt: datetime) -> str:
+    """Get the  datetime str in the format a server can parse. UTC based with Z at the end
+    Args:
+        dt (datetime): datetime
+    Returns:
+        str: string representation
+    """
+    return datetime.fromtimestamp(dt.timestamp()).isoformat(timespec='seconds') + 'Z'
 
+
+def mail_to_incident(msg, service, user_key):
+    parsed_msg, headers, _, occurred, occurred_is_valid = get_email_context(msg, user_key)
+    occurred_str = get_date_isoformat_server(occurred)
     file_names = []
     command_args = {
         'messageId': parsed_msg['ID'],
@@ -415,18 +481,18 @@ def mail_to_incident(msg, service, user_key):
             'name': attachment['Name'],
         })
     # date in the incident itself is set to GMT time, the correction to local time is done in Demisto
-    gmt_time = move_to_gmt(parsed_msg['Date'])
+    # gmt_time = move_to_gmt(parsed_msg['Date'])
 
     incident = {
         'type': 'Gmail',
         'name': parsed_msg['Subject'],
         'details': parsed_msg['Body'],
         'labels': create_incident_labels(parsed_msg, headers),
-        'occurred': gmt_time,
+        'occurred': occurred_str,
         'attachment': file_names,
         'rawJSON': json.dumps(parsed_msg),
     }
-    return incident
+    return incident, occurred, occurred_is_valid
 
 
 def users_to_entry(title, response, next_page_token=None):
@@ -2068,9 +2134,12 @@ def fetch_incidents():
     query = '' if params['query'] is None else params['query']
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('gmt_time')
+    ignore_ids: List[str] = last_run.get('ignore_ids') or []
+    ignore_list_used = last_run.get('ignore_list_used') or False  # can we reset the ignore list if we haven't used it
+
     # handle first time fetch - gets current GMT time -1 day
     if last_fetch is None:
-        last_fetch, _ = parse_date_range(date_range=FETCH_TIME, utc=True, to_timestamp=False)
+        last_fetch = dateparser.parse(date_string=FETCH_TIME, settings={'TIMEZONE': 'UTC'})
         last_fetch = str(last_fetch.isoformat()).split('.')[0] + 'Z'
 
     last_fetch = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ')
@@ -2082,8 +2151,7 @@ def fetch_incidents():
         user_key)
 
     query += last_fetch.strftime(' after:%Y/%m/%d')
-    LOG('GMAIL: fetch parameters:\nuser: %s\nquery=%s\nfetch time: %s' %
-        (user_key, query, last_fetch,))
+    demisto.info(f'GMAIL: fetch parameters:\nuser: {user_key}\nquery={query}\nfetch time: {last_fetch}')
 
     result = service.users().messages().list(
         userId=user_key, maxResults=100, q=query).execute()
@@ -2092,21 +2160,29 @@ def fetch_incidents():
     # so far, so good
     LOG('GMAIL: possible new incidents are %s' % (result,))
     for msg in result.get('messages', []):
+        msg_id = msg['id']
+        if msg_id in ignore_ids:
+            demisto.info(f'Ignoring msg id: {msg_id} as it is in the ignore list')
+            ignore_list_used = True
+            continue
         msg_result = service.users().messages().get(
-            id=msg['id'], userId=user_key).execute()
-        incident = mail_to_incident(msg_result, service, user_key)
-        temp_date = datetime.strptime(
-            incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
+            id=msg_id, userId=user_key).execute()
+        incident, occurred, is_valid_date = mail_to_incident(msg_result, service, user_key)
+        if not is_valid_date:  # if  we can't trust the date store the msg id in the ignore list
+            demisto.info(f'appending to ignore list msg id: {msg_id}. name: {incident.get("name")}')
+            ignore_list_used = True
+            ignore_ids.append(msg_id)
+        # update last run only if we trust the occurred timestamp
         # update last run
-        if temp_date > last_fetch:
-            last_fetch = temp_date + timedelta(seconds=1)
+        if is_valid_date and occurred > last_fetch:
+            last_fetch = occurred + timedelta(seconds=1)
 
         # avoid duplication due to weak time query
-        if temp_date > current_fetch:
+        if occurred > current_fetch:
             incidents.append(incident)
 
     demisto.info(f'extract {len(incidents)} incidents')
-    demisto.setLastRun({'gmt_time': last_fetch.isoformat().split('.')[0] + 'Z'})
+    demisto.setLastRun({'gmt_time': last_fetch.isoformat().split('.')[0] + 'Z', 'ignore_list_used': ignore_list_used})
     return incidents
 
 
