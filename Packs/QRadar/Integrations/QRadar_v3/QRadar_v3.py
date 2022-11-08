@@ -369,7 +369,7 @@ class Client(BaseClient):
 
     def http_request(self, method: str, url_suffix: str, params: Optional[Dict] = None,
                      json_data: Optional[Dict] = None, additional_headers: Optional[Dict] = None,
-                     timeout: Optional[int] = None):
+                     timeout: Optional[int] = None, resp_type: str = 'json'):
         headers = {**additional_headers, **self.base_headers} if additional_headers else self.base_headers
         return self._http_request(
             method=method,
@@ -378,7 +378,8 @@ class Client(BaseClient):
             json_data=json_data,
             headers=headers,
             error_handler=self.qradar_error_handler,
-            timeout=timeout
+            timeout=timeout,
+            resp_type=resp_type
         )
 
     @staticmethod
@@ -692,6 +693,13 @@ class Client(BaseClient):
             url_suffix='/staged_config/remote_networks',
             params=params,
             additional_headers=headers
+        )
+
+    def delete_remote_network_cidr(self, id_):
+        return self.http_request(
+            method='DELETE',
+            url_suffix=f'/staged_config/remote_networks/{id_}',
+            resp_type='response'
         )
 
     def test_connection(self):
@@ -3716,6 +3724,9 @@ def qradar_remote_network_cidr_list_command(client: Client, args: Dict[str, Any]
     filter_ = args.get('filter', '')
     fields = args.get('fields')
 
+    if filter_ and (group or id_ or name):
+        raise DemistoException('You can not use filter argument with group, id or name arguments.')
+
     if not filter_:
         if group:
             filter_ += f'group={group}'
@@ -3730,18 +3741,38 @@ def qradar_remote_network_cidr_list_command(client: Client, args: Dict[str, Any]
                 'name': res.get('name'),
                 'description': res.get('description')}
                for res in response]
+    headers = ['id', 'name', 'group', 'cidrs', 'description']
 
     return CommandResults(
         outputs_prefix='Qradar.RemoteNetworkCIDR',
         outputs_key_field='id',
         outputs=outputs,
         raw_response=response,
-        readable_output=tableToMarkdown(success_message, response)
+        readable_output=tableToMarkdown(success_message, response, headers=headers)
     )
 
 
-def qradar_remote_network_cidr_delete_command(client, args):
-    pass
+def qradar_remote_network_cidr_delete_command(client: Client, args) -> CommandResults:
+    ids = argToList(args.get('id'))
+    success_delete_ids = []
+    unsuccessful_delete_ids = []
+
+    for id_ in ids:
+        try:
+            client.delete_remote_network_cidr(id_)
+            success_delete_ids.append(id_)
+        except DemistoException as e:
+            unsuccessful_delete_ids.append(assign_params(ID=id_, Error=e.message))
+
+    success_human_readable = tableToMarkdown('Successfully deleted the following remote network CIDR',
+                                             success_delete_ids, headers=['ID'])
+    unsuccessful_human_readable = tableToMarkdown('Failed to delete the following remote network CIDR',
+                                                  unsuccessful_delete_ids, headers=['ID', 'Error'])
+
+    return CommandResults(
+        readable_output=((success_human_readable if success_delete_ids else '')
+                         + (unsuccessful_human_readable if unsuccessful_delete_ids else ''))
+    )
 
 
 def qradar_remote_network_cidr_update_command(client, args):

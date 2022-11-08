@@ -2819,6 +2819,14 @@ script:
       description: The associated CIDR description as appear in Qradar.
       type: String
     description: Retrieves the list of staged remote networks.
+  - name: qradar-remote-network-cidr-delete
+    arguments:
+      - name: id
+        type: number
+        isArray: true
+        required: true
+        description: ID that is used to locate the staged remote network that users want to remove from Qradar.
+    description: Deletes an existing staged remote network.
   runonce: false
   script: '-'
   type: python
