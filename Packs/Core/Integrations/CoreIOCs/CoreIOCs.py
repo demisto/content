@@ -10,6 +10,8 @@ from urllib3 import disable_warnings
 from math import ceil
 from google.cloud import storage
 
+
+# comment
 disable_warnings()
 DEMISTO_TIME_FORMAT: str = '%Y-%m-%dT%H:%M:%SZ'
 core_types_to_demisto: Dict = {

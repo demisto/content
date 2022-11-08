@@ -12,6 +12,8 @@ from six import string_types
 import pytz
 import collections
 
+# comment
+
 EPOCH = datetime.utcfromtimestamp(0).replace(tzinfo=pytz.UTC)
 SCRIPT_NAME = 'STIXParser'
 
