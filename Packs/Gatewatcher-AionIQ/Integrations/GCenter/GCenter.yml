@@ -31,345 +31,6 @@ display: GCenter
 name: GCenter
 script:
   commands:
-  - name: gw-list-alerts
-    description: List all alerts
-    outputs:
-    - contextPath: GCenter.Alert.List.sha256
-      description: The 256 Shasum Of The File
-      type: String
-    - contextPath: GCenter.Alert.List.id
-      description: The Id Of The Inspectra Alert
-      type: String
-    - contextPath: GCenter.Alert.List.flow_id
-      description: The Flow Id Of The Alert
-      type: Number
-    - contextPath: GCenter.Alert.List.severity
-      description: The Severity Of The Alert
-      type: Number
-    - contextPath: GCenter.Alert.List.src_ip
-      description: The Ip Address Of The Alert'S Source
-      type: String
-    - contextPath: GCenter.Alert.List.dest_ip
-      description: The Ip Address Of The Alert'S Target
-      type: String
-    - contextPath: GCenter.Alert.List.src_port
-      description: The Port Of The Alert'S Source
-      type: Number
-    - contextPath: GCenter.Alert.List.dest_port
-      description: The Port Of The Alert'S Target
-      type: Number
-    - contextPath: GCenter.Alert.List.gcap
-      description: The Gcap That Raised The Alert
-      type: String
-    - contextPath: GCenter.Alert.List.type
-      description: Which Type Of Alert (Sigflow, Codebreaker...)
-      type: String
-    - contextPath: GCenter.Alert.List.proto
-      description: The Protocol Used
-      type: String
-    - contextPath: GCenter.Alert.List.host
-      description: The Host Where The Alert Was Found
-      type: String
-    - contextPath: GCenter.Alert.List.app_proto
-      description: The Malware Application Prototype
-      type: String
-    - contextPath: GCenter.Alert.List.alert_type
-      description: Which Event It Is ?
-      type: String
-    - contextPath: GCenter.Alert.List.state
-      description: The State Of The Alert
-      type: String
-    - contextPath: GCenter.Alert.List.matched_event
-      description: Value Of The Id Of An Other Alert That Matched (Allows The Correlation Between Alerts)
-      type: String
-    - contextPath: GCenter.Alert.List.domain_name
-      description: For Dga Alerts Only
-      type: String
-    - contextPath: GCenter.Alert.List.probability
-      description: The Severity Probability
-      type: Number
-    - contextPath: GCenter.Alert.List.timestamp_detected
-      description: When The Alert Was Detected
-      type: Date
-    - contextPath: GCenter.Alert.List.timestamp_analyzed
-      description: When The Alert Was Analysed
-      type: Date
-    - contextPath: GCenter.Alert.List.retrohunt.timestamp_package
-      description: Utc Date When The Ioc Was Added To The Lastinfosec Update Package
-      type: String
-    - contextPath: GCenter.Alert.List.retrohunt.ioc_creation_date
-      description: The Ioc Creation Date
-      type: Date
-    - contextPath: GCenter.Alert.List.retrohunt.ioc_updated_date
-      description: The Ioc Updated Date
-      type: Date
-    - contextPath: GCenter.Alert.List.retrohunt.description
-      description: The Alert Description
-      type: String
-    - contextPath: GCenter.Alert.List.retrohunt.ioc_type
-      description: Host, Md5, Sha1, Sha256, Url
-      type: String
-    - contextPath: GCenter.Alert.List.retrohunt.ioc_value
-      description: Characteristic Value Of The Ioc
-      type: String
-    - contextPath: GCenter.Alert.List.retrohunt.matched_app_proto
-      description: The Sigflow Protocol That Contains This Ioc
-      type: String
-    - contextPath: GCenter.Alert.List.retrohunt.matched_event_type
-      description: The Sigflow Event Type That Contains This Ioc
-      type: String
-    - contextPath: GCenter.Alert.List.retrohunt.case_id
-      description: Uuid Of The Box To Which The Ioc Belongs
-      type: String
-    - contextPath: GCenter.Alert.List.retrohunt.ioc_id
-      description: Uuid Of The Ioc
-      type: String
-    - contextPath: GCenter.Alert.List.retrohunt.risk
-      description: Suspicious, High Suspicious, Malicious
-      type: String
-    - contextPath: GCenter.Alert.List.retrohunt.usage_mode
-      description: Usage Mode
-      type: String
-    - contextPath: GCenter.Alert.List.retrohunt.tlp
-      description: Tlp
-      type: String
-    - contextPath: GCenter.Alert.List.powershell.file_id
-      description: The File Id
-      type: String
-    - contextPath: GCenter.Alert.List.powershell.scores.proba_obfuscated
-      description: The Probability It Is Obfuscated
-      type: Number
-    - contextPath: GCenter.Alert.List.powershell.scores.analysis
-      description: The Powershell Analysis Score
-      type: Number
-    - contextPath: GCenter.Alert.List.shellcode.file_id
-      description: The File Id
-      type: String
-    - contextPath: GCenter.Alert.List.shellcode.encodings.name
-      description: The Name Of The Encoding
-      type: String
-    - contextPath: GCenter.Alert.List.shellcode.encodings.count
-      description: The Number Of The Encoding Elements
-      type: Number
-    - contextPath: GCenter.Alert.List.shellcode.calls.call
-      description: The Name Of The Call Of The Alert
-      type: String
-    - contextPath: GCenter.Alert.List.shellcode.calls.args
-      description: The Argument Used For The Call
-      type: String
-    - contextPath: GCenter.Alert.List.shellcode.calls.ret
-      description: The Retention Of The Call
-      type: String
-    - contextPath: GCenter.Alert.List.shellcode.calls.index
-      description: The Call Index
-      type: Number
-    - contextPath: GCenter.Alert.List.malware.analyzed_clean
-      description: Number Of Engines That Returned A Clean Status
-      type: Number
-    - contextPath: GCenter.Alert.List.malware.analyzed_infected
-      description: Number Of Engines That Returned An Infected Status
-      type: Number
-    - contextPath: GCenter.Alert.List.malware.analyzed_suspicious
-      description: Number Of Engines That Returned A Suspicious Status
-      type: Number
-    - contextPath: GCenter.Alert.List.malware.analyzed_other
-      description: Number Of Engines That Returned Other Statuses
-      type: Number
-    - contextPath: GCenter.Alert.List.malware.analyzed_error
-      description: Number Of Engines That Failed To Analyze The File
-      type: Number
-    - contextPath: GCenter.Alert.List.malware.code
-      description: The Global Code Result
-      type: Number
-    - contextPath: GCenter.Alert.List.malware.def_time
-      description: 'When The Last Engines Have Ended The Scan '
-      type: Date
-    - contextPath: GCenter.Alert.List.malware.scan_time
-      description: The Scan Time In Ms.
-      type: Number
-    - contextPath: GCenter.Alert.List.malware.threats_found
-      description: The Threats Found By The Engines
-      type: String
-    - contextPath: GCenter.Alert.List.malware.reporting_token
-      description: The Reporting Token Returned By The Gbox.
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.0.id
-      description: The Hash Pf The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.0.threat_details
-      description: The Threat Found By The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.0.scan_result
-      description: Analysis Result
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.1.id
-      description: The Hash Pf The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.1.threat_details
-      description: The Threat Found By The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.1.scan_result
-      description: Analysis Result
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.2.id
-      description: The Hash Pf The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.2.threat_details
-      description: The Threat Found By The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.2.scan_result
-      description: Analysis Result
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.3.id
-      description: The Hash Pf The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.3.threat_details
-      description: The Threat Found By The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.3.scan_result
-      description: Analysis Result
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.4.id
-      description: The Hash Pf The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.4.threat_details
-      description: The Threat Found By The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.4.scan_result
-      description: Analysis Result
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.5.id
-      description: The Hash Pf The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.5.threat_details
-      description: The Threat Found By The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.5.scan_result
-      description: Analysis Result
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.6.id
-      description: The Hash Pf The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.6.threat_details
-      description: The Threat Found By The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.6.scan_result
-      description: Analysis Result
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.7.id
-      description: The Hash Pf The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.7.threat_details
-      description: The Threat Found By The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.7.scan_result
-      description: Analysis Result
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.8.id
-      description: The Hash Pf The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.8.threat_details
-      description: The Threat Found By The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.8.scan_result
-      description: Analysis Result
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.9.id
-      description: The Hash Pf The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.9.threat_details
-      description: The Threat Found By The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.9.scan_result
-      description: Analysis Result
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.10.id
-      description: The Hash Pf The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.10.threat_details
-      description: The Threat Found By The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.10.scan_result
-      description: Analysis Result
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.11.id
-      description: The Hash Pf The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.11.threat_details
-      description: The Threat Found By The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.11.scan_result
-      description: Analysis Result
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.12.id
-      description: The Hash Pf The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.12.threat_details
-      description: The Threat Found By The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.12.scan_result
-      description: Analysis Result
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.13.id
-      description: The Hash Pf The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.13.threat_details
-      description: The Threat Found By The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.13.scan_result
-      description: Analysis Result
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.14.id
-      description: The Hash Pf The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.14.threat_details
-      description: The Threat Found By The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.14.scan_result
-      description: Analysis Result
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.15.id
-      description: The Hash Pf The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.15.threat_details
-      description: The Threat Found By The Engine
-      type: String
-    - contextPath: GCenter.Alert.List.malware.engines_report.15.scan_result
-      description: Analysis Result
-      type: String
-    - contextPath: GCenter.Alert.List.malware.magic_details
-      description: The File Magic
-      type: String
-    - contextPath: GCenter.Alert.List.malware.total_found
-      description: The Malcore Number Of Engines That Found The File Suspicious / The Total Number Of Engines
-      type: String
-    - contextPath: GCenter.Alert.List.sigflow.alert.action
-      description: Action
-      type: String
-    - contextPath: GCenter.Alert.List.sigflow.alert.signature_id
-      description: Signature Id
-      type: String
-    - contextPath: GCenter.Alert.List.sigflow.alert.gid
-      description: Gid
-      type: String
-    - contextPath: GCenter.Alert.List.sigflow.alert.category
-      description: Category
-      type: String
-    - contextPath: GCenter.Alert.List.sigflow.packet
-      description: Packet
-      type: String
-    - contextPath: GCenter.Alert.List.sigflow.in_iface
-      description: In Which Interface The Alert Occurred
-      type: String
-    - contextPath: GCenter.Alert.List.sigflow.stream
-      description: Is It Streaming (!= 0)
-      type: Number
-    - contextPath: GCenter.Alert.List.sigflow.payload
-      description: Payload
-      type: String
-    - contextPath: GCenter.Alert.List.sigflow.payload_printable
-      description: Payload Printable
-      type: String
   - name: gw-get-alert
     description: Get an alert by it's uid
     arguments:
@@ -725,6 +386,9 @@ script:
       - codebreaker
       - netdata
       - syslog
+      - machine_learning
+      - retrohunt
+      - iocs
       description: Index to be queried
       defaultValue: suricata
     - name: query
@@ -1114,12 +778,278 @@ script:
     - contextPath: GCenter.Gscan.Shellcode.is_whiteblack_listed
       description: Is White Or Black Listed?
       type: Boolean
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      description: index
+      isArray: false
+      name: index
+      predefined:
+      - suricata
+      - codebreaker
+      - malware
+      - netdata
+      - syslog
+      - machine_learning
+      - retrohunt
+      - iocs
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        List and count each distinct values of a document field using the terms aggregation
+        If aggs_term is empty list hits value
+        Exemple : "src_ip,dest_ip"
+      isArray: true
+      name: aggs_term
+      predefined:
+      - src_ip
+      - dest_ip
+      - http.hostname
+      - tls.sni
+      - SHA256
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Filter document that match the value using the term query
+        Exemple : "alert.severity=1,app_proto=http"
+      isArray: false
+      name: must_match
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Filter document with existing key using the exists query
+        Exemple : "http.hostname,http.url"
+      isArray: false
+      name: must_exists
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '24'
+      description: Set the lower timerange in hour based on the now keyword
+      isArray: false
+      name: timerange
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'True'
+      description: True to get the list of aggregation value False to get entire response
+      isArray: false
+      name: formatted
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Set the number of aggregate or hits value that can be returned
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    deprecated: false
+    description: Get Elasticsearch data using a wrapper
+    execution: false
+    name: gw-es-wrapper
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: List type
+      isArray: false
+      name: type
+      predefined:
+      - white
+      - black
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the malcore whitelist/blacklist
+    execution: false
+    name: gw-get-malcore-list-entry
+    outputs:
+    - contextPath: GCenter.Malcore.List.sha256
+      description: Sha256
+      type: String
+    - contextPath: GCenter.Malcore.List.created
+      description: Created
+      type: Date
+    - contextPath: GCenter.Malcore.List.comment
+      description: Comment
+      type: String
+    - contextPath: GCenter.Malcore.List.threat
+      description: Name Of Threat For Reference
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: List type
+      isArray: false
+      name: type
+      predefined:
+      - white
+      - black
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the dga whitelist/blacklist
+    execution: false
+    name: gw-get-dga-list-entry
+    outputs:
+    - contextPath: GCenter.Dga.List.domain_name
+      description: Domain Name
+      type: String
+    - contextPath: GCenter.Dga.List.created
+      description: Created
+      type: Date
+    - contextPath: GCenter.Dga.List.comment
+      description: Comment
+      type: String
+    - contextPath: GCenter.Dga.List.is_wildcard
+      description: Is Wildcard
+      type: Boolean
+  - deprecated: false
+    description: Get all the ignored asset names
+    execution: false
+    name: gw-get-ignore-asset-name
+    outputs:
+    - contextPath: GCenter.Ignore.AssetName.List.id
+      description: Id
+      type: String
+    - contextPath: GCenter.Ignore.AssetName.List.created_at
+      description: Created At
+      type: Date
+    - contextPath: GCenter.Ignore.AssetName.List.created_by
+      description: Created By
+      type: String
+    - contextPath: GCenter.Ignore.AssetName.List.name
+      description: Ignored Name For The Assets (Hostnames). Case Insensitive.
+      type: String
+    - contextPath: GCenter.Ignore.AssetName.List.is_startswith_pattern
+      description: Should The Assets (Hostnames) Be Ignored If They Start With This
+        Name ?
+      type: Boolean
+    - contextPath: GCenter.Ignore.AssetName.List.is_endswith_pattern
+      description: Should The Assets (Hostnames) Be Ignored If They End With This
+        Name ?
+      type: Boolean
+  - deprecated: false
+    description: Get all the ignored kuser IP
+    execution: false
+    name: gw-get-ignore-kuser-ip
+    outputs:
+    - contextPath: GCenter.Ignore.KuserIP.List.id
+      description: Id
+      type: String
+    - contextPath: GCenter.Ignore.KuserIP.List.created_at
+      description: Created At
+      type: Date
+    - contextPath: GCenter.Ignore.KuserIP.List.created_by
+      description: Created By
+      type: String
+    - contextPath: GCenter.Ignore.KuserIP.List.ip
+      description: Ignored Ip For The Kerberos Users
+      type: String
+  - deprecated: false
+    description: Get all the ignored kuser name
+    execution: false
+    name: gw-get-ignore-kuser-name
+    outputs:
+    - contextPath: GCenter.Ignore.KuserName.List.id
+      description: Id
+      type: String
+    - contextPath: GCenter.Ignore.KuserName.List.created_at
+      description: Created At
+      type: Date
+    - contextPath: GCenter.Ignore.KuserName.List.created_by
+      description: Created By
+      type: String
+    - contextPath: GCenter.Ignore.KuserName.List.name
+      description: Ignored Name For The Kerberos Users. Case Insensitive.
+      type: String
+    - contextPath: GCenter.Ignore.KuserName.List.is_startswith_pattern
+      description: Should The Kerberos Users Be Ignored If They Start With This Name
+        ?
+      type: Boolean
+    - contextPath: GCenter.Ignore.KuserName.List.is_endswith_pattern
+      description: Should The Kerberos Users Be Ignored If They End With This Name
+        ?
+      type: Boolean
+  - deprecated: false
+    description: Get all the ignored mac addresses
+    execution: false
+    name: gw-get-ignore-mac-address
+    outputs:
+    - contextPath: GCenter.Ignore.MacAddress.List.id
+      description: Id
+      type: String
+    - contextPath: GCenter.Ignore.MacAddress.List.created_at
+      description: Created At
+      type: Date
+    - contextPath: GCenter.Ignore.MacAddress.List.created_by
+      description: Created By
+      type: String
+    - contextPath: GCenter.Ignore.MacAddress.List.address
+      description: Address
+      type: String
+    - contextPath: GCenter.Ignore.MacAddress.List.is_startswith_pattern
+      description: Should The Mac Addresses Be Ignored If They Start With This Address
+        Value ?
+      type: Boolean
+  - arguments:
+    - default: false
+      description: 'Set the lower timerange in minute based on the now keyword when uuid is not given
+
+        Default value to 60 minutes'
+      isArray: false
+      name: timerange
+      required: false
+      secret: false
+    - default: false
+      description: 'Set the number of aggregate value that can be returned when uuid is not given
+
+        Get all the values by default'
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    - default: false
+      description: The uuid of the file to get
+      isArray: false
+      name: uuid
+      required: false
+      secret: false
+    - default: false
+      description: 'The state of the files to get, in list, when uuid is not given
+
+        Default value to Infected,Suspicious'
+      isArray: false
+      name: state
+      predefined:
+      - ''
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Get a file from an uuid.
+
+      If there is no uuid, get all the files infected from a time interval.'
+    execution: false
+    name: gw-get-file-infected
+    outputs:
+    - contextPath: Gcenter.File.Infected
+      description: File infected
+      type: String
+  feed: false
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.8.35482
+  dockerimage: demisto/python3:3.10.8.36650
 fromversion: 6.2.0
 tests:
 - Gcenter Test Playbook
