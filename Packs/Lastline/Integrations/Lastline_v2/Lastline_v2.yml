@@ -612,7 +612,7 @@ script:
     - contextPath: Lastline.Submission.Process.process_id
       description: The process ID.
       type: string
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: devdemisto/py3-master:8.1.0.37158
   isfetch: false
   longRunning: false
   longRunningPort: false

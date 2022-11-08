@@ -1009,7 +1009,7 @@ script:
       description: File containing result
     description: Returns data regarding the analysis processes
   runonce: false
-  dockerimage: demisto/python3:3.10.7.35188
+  dockerimage: devdemisto/py3-master:8.1.0.37158
 tests:
 - ThreatGridTest
 fromversion: 5.0.0

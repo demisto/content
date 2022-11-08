@@ -895,7 +895,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: devdemisto/py3-master:8.1.0.37158
 tests:
 - No test - beta_integration
 beta: true
