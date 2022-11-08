@@ -291,6 +291,33 @@ def test_create_outputs_invalid_time(updated_date, expected_res):
     assert res[0]['Updated Date'] == expected_res
 
 
+<<<<<<< Updated upstream
+=======
+@pytest.mark.parametrize('args, expected_res', [({"query": "cnn.com", "recursive": "true", "verbose": "true"}, 3),
+                                                ({"query": "cnn.com", "recursive": "true"}, 2)])
+def test_whois_with_verbose(args, expected_res, mocker):
+    """
+    Given:
+        - The args for the whois command with or without the verbose arg.
+    When:
+        - calling the whois command.
+    Then:
+        - validate that another context path is added for the raw-response if verbose arg is true.
+    """
+    mocker.patch.object(demisto, 'command', 'whois')
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch('Whois.get_domain_from_query', return_value='cnn.com')
+    with open('test_data/cnn2', 'rb') as f:
+        get_whois_ret_value = pickle.load(f)
+    mocker.patch('Whois.get_whois', return_value=get_whois_ret_value)
+    demisto_results = mocker.patch.object(demisto, 'results')
+
+    Whois.whois_command('B - Usually reliable')
+    demisto_results_call_args = demisto_results.call_args[0][0]
+    assert len(demisto_results_call_args.get('EntryContext')) == expected_res
+
+
+>>>>>>> Stashed changes
 def test_parse_nic_contact():
     data = ["%%\n%% This is the AFNIC Whois server.\n%%\n%% complete date format : YYYY-MM-DDThh:mm:ssZ\n%% short date "
             "format    : DD/MM\n%% version              : FRNIC-2.5\n%%\n%% Rights restricted by copyright.\n%% See "
