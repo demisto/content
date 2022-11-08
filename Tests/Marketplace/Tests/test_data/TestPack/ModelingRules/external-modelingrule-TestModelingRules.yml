@@ -1,4 +1,3 @@
-from_xdr_version: 3.4.0
 fromversion: 6.8.0
 id: test_rule
 name: Test Modeling Rule
@@ -24,5 +23,4 @@ schema: >-
       }
   }
 tags: test
-to_xdr_version: 3.4.9
 toversion: 6.9.9
