@@ -674,12 +674,12 @@ class Client(BaseClient):
             additional_headers={'Range': range_} if range_ else None
         )
 
-    def create_remote_network_cidr(self, body: Dict[str, Any], fields: str):
+    def create_update_remote_network_cidr(self, body: Dict[str, Any], fields: str, update: bool = False):
         headers = {'fields': fields}
 
         return self.http_request(
             method='POST',
-            url_suffix='/staged_config/remote_networks',
+            url_suffix='/staged_config/remote_networks' + (f'/{body.get("id")}' if update else ''),
             json_data=body,
             additional_headers=headers
         )
@@ -1492,7 +1492,7 @@ def get_cidrs_indicators(query):
     return indicators
 
 
-def verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, id, group, fields):
+def verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, id_, group, fields):
     # verify that only one of the arguments is given
     if cidrs_list and cidrs_from_query:
         return 'Cannot specify both cidrs and query arguments.'
@@ -1510,12 +1510,8 @@ def verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, id, 
     if not NAME_AND_GROUP_REGEX.match(name) or not NAME_AND_GROUP_REGEX.match(group):
         return 'Name and group arguments only allow letters, numbers, \'_\' and \'-\'.'
 
-    # verify that id is given only if a single cidr is given
-    if (len(cidrs_list) > 1 or len(cidrs_from_query) > 1) and id:
-        return 'ID is possible only when a single CIDR is created.'
-
     # verify that the given id is valid
-    if id and id < 0:
+    if id_ and id_ < 0:
         return 'ID must be a positive number.'
 
     fields_list = argToList(fields)
@@ -3690,12 +3686,12 @@ def qradar_remote_network_cidr_create_command(client: Client, args) -> CommandRe
     cidrs_list = argToList(args.get('cidrs'))
     cidrs_from_query = get_cidrs_indicators(args.get('query'))
     name = args.get('name')
-    id = arg_to_number(args.get('id'))
+    id_ = arg_to_number(args.get('id'))
     description = args.get('description')
     group = args.get('group')
     fields = args.get('fields')
 
-    error_message = verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, id, group, fields)
+    error_message = verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, id_, group, fields)
     if error_message:
         raise DemistoException(error_message)
 
@@ -3703,11 +3699,11 @@ def qradar_remote_network_cidr_create_command(client: Client, args) -> CommandRe
         "name": name,
         "description": description,
         "cidrs": cidrs_list or cidrs_from_query,
-        "id": id,
+        "id": id_,
         "group": group
     }
 
-    response = client.create_remote_network_cidr(body, fields)
+    response = client.create_update_remote_network_cidr(body, fields)
     success_message = 'The new staged remote network was successfully created.'
 
     return CommandResults(
@@ -3742,13 +3738,14 @@ def qradar_remote_network_cidr_list_command(client: Client, args: Dict[str, Any]
                 'description': res.get('description')}
                for res in response]
     headers = ['id', 'name', 'group', 'cidrs', 'description']
+    readable_output = tableToMarkdown(success_message, response, headers=headers) if response else 'No results found.'
 
     return CommandResults(
         outputs_prefix='Qradar.RemoteNetworkCIDR',
         outputs_key_field='id',
         outputs=outputs,
         raw_response=response,
-        readable_output=tableToMarkdown(success_message, response, headers=headers)
+        readable_output=readable_output
     )
 
 
@@ -3775,8 +3772,40 @@ def qradar_remote_network_cidr_delete_command(client: Client, args) -> CommandRe
     )
 
 
-def qradar_remote_network_cidr_update_command(client, args):
-    pass
+def qradar_remote_network_cidr_update_command(client: Client, args):
+    id_ = arg_to_number(args.get('id'))
+    name = args.get('name')
+    cidrs_list = argToList(args.get('cidrs'))
+    cidrs_from_query = get_cidrs_indicators(args.get('query'))
+    description = args.get('description')
+    group = args.get('group')
+    fields = args.get('fields')
+
+    error_message = verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, id_, group, fields)
+    if error_message:
+        raise DemistoException(error_message)
+
+    body = {
+        "name": name,
+        "description": description,
+        "cidrs": cidrs_list or cidrs_from_query,
+        "id": id_,
+        "group": group
+    }
+
+    response = client.create_update_remote_network_cidr(body, fields, update=True)
+    success_message = 'The staged remote network was successfully updated'
+    outputs = {'id': response.get('id'),
+               'name': response.get('name'),
+               'group': response.get('group')}
+
+    return CommandResults(
+        outputs_prefix='Qradar.RemoteNetworkCIDR',
+        outputs_key_field='id',
+        outputs=outputs,
+        readable_output=tableToMarkdown(success_message, response),
+        raw_response=response
+    )
 
 
 def qradar_remote_network_deploy_execution_command(client, args):

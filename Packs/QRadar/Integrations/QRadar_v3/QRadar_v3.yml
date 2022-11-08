@@ -2778,7 +2778,7 @@ script:
       required: true
       description: A CIDRs (remote networks) name that will be displayed for all uploaded values in Qradar.
     - name: id
-      description: The associated CIDR id.  Only possible when a single CIDR is created
+      description: The associated CIDR id. Only possible when a single CIDR is created
     - name: description
       required: true
       description: Description that will be displayed and associated with all the newly uploaded CIDRs on Qradar.
@@ -2827,6 +2827,48 @@ script:
         required: true
         description: ID that is used to locate the staged remote network that users want to remove from Qradar.
     description: Deletes an existing staged remote network.
+  - name: qradar-remote-network-cidr-update
+    arguments:
+      - name: id
+        description: The id that is associated with the CIDR object which needs to be modified.
+        required: true
+      - name: name
+        description: The CIDR name in Qradar. If the CIDR name should be changed, it can be inserted here.
+        required: true
+      - name: cidrs
+        description: An input list of CIDRs to add to Qradar (can be obtained from automatically from EDL integrations and playbook).
+          Multiple values in the same object are separated by commas.
+          One of the cidr or query is required.
+        isArray: true
+      - name: query
+        description: The query for getting indicators from Cortex XSOAR.
+          One of the cidr or query is required.
+      - name: description
+        description: CIDR associated description presented in Qradar.
+          If the CIDR description should be changed, it can be inserted here.
+        required: true
+      - name: group
+        description: The remote network group that CIDRs should belong to.
+          If the CIDR-associated group should be changed, it can be inserted here.
+      - name: fields
+        description: Use this parameter to specify which fields you would like to get back in the response.
+          Fields that are not named are excluded.
+          Specify subfields in brackets, and multiple fields in the same object are separated by commas.
+          The possible fields are id,group,name,cidr,description. 
+    outputs:
+    - contextPath: Qradar.RemoteNetworkCIDR
+      description: Array of - A list of all the CIDR ranges that were changed.
+      type: Number
+    - contextPath: Qradar.RemoteNetworkCIDR.id
+      description: The associated CIDR id.
+      type: Number
+    - contextPath: Qradar.RemoteNetworkCIDR.name
+      description: The associated CIDR name.
+      type: String
+    - contextPath: Qradar.RemoteNetworkCIDR.group
+      description: The group to which the remote network belongs.
+      type: String
+    description: Updates an existing staged remote network.
   runonce: false
   script: '-'
   type: python
