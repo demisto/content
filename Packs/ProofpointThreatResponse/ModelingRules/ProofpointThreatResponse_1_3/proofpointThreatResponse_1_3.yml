@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: proofpoint_threat_response_collection
+name: Proofpoint Threat Response Collection
+rules: ''
+schema: ''
+tags: Proofpoint Threat Response
