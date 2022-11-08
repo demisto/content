@@ -561,8 +561,8 @@ script:
         required: true
     description: Retrieves URL information from Joe Security.
     outputs:
-      - contextPath: URL.Name
-        description: Name of the URL.
+      - contextPath: URL.Data
+        description: The URL data.
         type: String
       - contextPath: Joe.URL.Name
         description: Name of the URL.
