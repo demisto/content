@@ -2437,12 +2437,12 @@ def group_policy_update_command(client: Client, args: Dict[str, Any]) -> Command
     android_policy_guid = args.get('android_policy_guid')
     linux_policy_guid = args.get('linux_policy_guid')
 
-    has_no_policy_guid = not(any(
+    has_no_policy_guid = not(any((
         windows_policy_guid,
         mac_policy_guid,
         android_policy_guid,
         linux_policy_guid,
-    ))
+    )))
 
     if has_no_policy_guid:
         raise ValueError('At least one Policy GUID must be entered.')
