@@ -75,6 +75,7 @@ class GCPConfig(object):
     USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
     PRODUCTION_BUCKET = "marketplace-dist"
+    PRODUCTION_BUCKET_V2 = "marketplace-v2-dist"
     CI_BUILD_BUCKET = "marketplace-ci-build"
     PRODUCTION_PRIVATE_BUCKET = "marketplace-dist-private"
     CI_PRIVATE_BUCKET = "marketplace-ci-build-private"

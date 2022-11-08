@@ -1621,7 +1621,7 @@ class Pack(object):
                             for version, modified_release_notes_lines in modified_release_notes_lines_dict.items():
                                 versions, _ = self.get_same_block_versions(release_notes_dir, version, changelog)
                                 all_relevant_pr_nums_for_unified = list({pr_num for version in versions.keys()
-                                                                         for pr_num in version_to_prs[version]})
+                                                                        for pr_num in version_to_prs[version]})
                                 logging.debug(f"{all_relevant_pr_nums_for_unified=}")
                                 updated_entry = self._get_updated_changelog_entry(
                                     changelog=changelog,
@@ -3034,7 +3034,7 @@ class Pack(object):
             bool: Whether the operation succeeded.
         """
         task_status = True
-        err_msg = f"Failed copying {self._pack_name} pack integrations images."
+        err_msg = f"Failed copying {self._pack_name} pack readme images."
         pc_uploaded_readme_images = images_data.get(self._pack_name, {}).get(BucketUploadFlow.README_IMAGES, False)
 
         if not pc_uploaded_readme_images:
@@ -3077,7 +3077,7 @@ class Pack(object):
         return task_status
 
     def upload_readme_images(self, storage_bucket, storage_base_path, diff_files_list=None, detect_changes=False,
-                             marketplace=''):
+                             marketplace='xsoar'):
         """ Downloads pack readme links to images, and upload them to gcs.
 
             Searches for image links in pack readme.
@@ -3087,8 +3087,8 @@ class Pack(object):
                 storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where readme image will be uploaded.
                 storage_base_path (str): the path under the bucket to upload to.
                 diff_files_list (list): The list of all modified/added files found in the diff
-                detect_changes (bool): Whether to detect changes or upload the author image in any case.
-                marketplace (str): The marketplace the pack is linked to.
+                detect_changes (bool): Whether to detect changes or upload the readme images in any case.
+                marketplace (str): The marketplace the upload is made for.
             Returns:
                 bool: whether the operation succeeded.
         """
@@ -3144,11 +3144,11 @@ class Pack(object):
         """
         logging.info(f'{marketplace=}')
         if marketplace == 'xsoar':
-            marketplace = 'marketplace-dist'
+            marketplace_bucket = GCPConfig.PRODUCTION_BUCKET
         else:
-            marketplace = 'marketplace-v2-dist'
+            marketplace_bucket = GCPConfig.PRODUCTION_BUCKET_V2
 
-        google_api_readme_images_url = f'https://storage.googleapis.com/{marketplace}/content/packs/{self.name}'
+        google_api_readme_images_url = f'https://storage.googleapis.com/{marketplace_bucket}/content/packs/{self.name}'
         url_regex = r"^!\[(.*)\]\((?P<url>.*)\)"
         urls_list = []
 
@@ -3197,35 +3197,39 @@ class Pack(object):
         """
         # Open the url image, set stream to True, this will return the stream content.
         readme_original_url = urllib.parse.urlparse(readme_original_url)
-        r = requests.get(readme_original_url.geturl(), stream=True)
+        try:
+            r = requests.get(readme_original_url.geturl(), stream=True)
 
-        # Check if the image was retrieved successfully
-        if r.status_code == 200:
-            # Set decode_content value to True, otherwise the downloaded image file's size will be zero.
-            r.raw.decode_content = True
+            # Check if the image was retrieved successfully
+            if r.status_code == 200:
+                # Set decode_content value to True, otherwise the downloaded image file's size will be zero.
+                r.raw.decode_content = True
 
-            with open(image_name, 'wb') as f:
-                shutil.copyfileobj(r.raw, f)
+                with open(image_name, 'wb') as f:
+                    shutil.copyfileobj(r.raw, f)
 
-            # init the blob with the correct path to save the image on gcs
-            readme_image = storage_bucket.blob(gcs_storage_path)
+                # init the blob with the correct path to save the image on gcs
+                readme_image = storage_bucket.blob(gcs_storage_path)
 
-            # load the file from local memo to the gcs
-            with open(image_name, "rb") as image_file:
-                readme_image.upload_from_file(image_file)
-                logging.info('Uploaded the image to gcs')
+                # load the file from local memo to the gcs
+                with open(image_name, "rb") as image_file:
+                    readme_image.upload_from_file(image_file)
+                    logging.info('Uploaded the image to gcs')
 
-            # remove local saved image
-            os.remove(image_name)
+                # remove local saved image
+                os.remove(image_name)
 
-            logging.info(f'Image sucessfully Downloaded: {image_name}')
-            return True
-        else:
-            logging.error(f'Image {image_name} could not be retreived status code {r.status_code}')
+                logging.info(f'Image sucessfully Downloaded: {image_name}')
+                return True
+            else:
+                logging.error(f'Image {image_name} could not be retreived status code {r.status_code}')
+                return False
+        except Exception as e:
+            logging.error(f'Failed downloading the image in url {readme_original_url}. or failed uploading it to GCP error message {e}')
             return False
 
     def upload_images(self, index_folder_path, storage_bucket, storage_base_path, diff_files_list, override_all_packs,
-                      marketplace=''):
+                      marketplace='xsoar'):
         """
         Upload the images related to the pack.
         The image is uploaded in the case it was modified, OR if this is the first time the current pack is being
@@ -3236,6 +3240,7 @@ class Pack(object):
             storage_base_path (str): the path under the bucket to upload to.
             diff_files_list (list): The list of all modified/added files found in the diff
             override_all_packs (bool): Whether to override all packs without checking for changes
+            marketplace (str): the marketplace the upload is made for
         Returns:
             True if the images were successfully uploaded, false otherwise.
 
