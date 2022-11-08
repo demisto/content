@@ -3342,9 +3342,9 @@ def sophos_central_group_list(
         results = client.get_endpoint_group(page_size, number_of_page)
         items = results.get("items", [])
         pages = results.get("pages", {})
-        records = pages["items"]
-        current = pages["current"]
-        total = pages["total"]
+        records = pages.get("items", 0),
+        current = pages.get("current", 0),
+        total = pages.get("total", 0)
 
         if number_of_page > total:
             return CommandResults(

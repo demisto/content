@@ -3030,7 +3030,7 @@ script:
       - contextPath: SophosCentral.DeletedUsers.deletedUserId
         description: Deleted User's Id.
         type: String
-  dockerimage: demisto/python3:3.10.7.35188
+  dockerimage: demisto/python3:3.10.8.36650
   feed: false
   isfetch: true
   longRunning: false
