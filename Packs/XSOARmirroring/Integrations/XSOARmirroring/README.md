@@ -33,7 +33,7 @@ The mirroring instance in the first tenant contains a new incident type, called 
 
 ## Important notes:
 - In order to mirror custom fields, you need to create an incoming mapper for the integration and explicitly specify them in it.
-- In order to mirror custom fields in both directions, the custom fields in both instances must have the same cli name.
+- In order to mirror custom fields in both directions, the custom fields in both XSOAR instances must have the same cli name.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
