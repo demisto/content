@@ -1461,7 +1461,6 @@ class Client(BaseClient):
         return self._http_request(method='Post',
                                   url_suffix=f'appsec/v1/configs/{config_id}/versions',
                                   json_data=body,
-                                  timeout=(60, 180),
                                   )
 
     # created by D.S.
@@ -4553,15 +4552,16 @@ def new_or_renew_match_target_command(client: Client,
 
 @logger
 def patch_papi_property_rule_command(client: Client,
-                                     contract_id: str,
-                                     group_id: str,
-                                     property_id: str,
-                                     property_version: str,
-                                     validate_rules: str,
-                                     operation: str,
-                                     path: str,
-                                     value: str,
-                                     ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+                                            contract_id: str,
+                                            group_id: str,
+                                            property_id: str,
+                                            property_version: str,
+                                            validate_rules: str,
+                                            operation: str,
+                                            path: str,
+                                            value: str,
+                                            value_to_json: str,
+                                            ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         Generic JSON patch command for Papi Property default rule
     Args:
@@ -4573,6 +4573,7 @@ def patch_papi_property_rule_command(client: Client,
         operation:
         path:
         value:
+        value_to_josn:
 
     Returns:
         human readable (markdown format), entry context and raw response
@@ -4584,10 +4585,10 @@ def patch_papi_property_rule_command(client: Client,
         {
             "op": operation,
             "path": path,
-            "value": json.loads(value)
+            "value": json.loads(value) if value_to_json.lower() =="yes" else value
         }
     ]
-
+    
     raw_response: Dict = client.patch_papi_property_rule(contract_id=contract_id,
                                                          group_id=group_id,
                                                          property_id=property_id,
