@@ -153,6 +153,7 @@ def test_computer_trajectory_list_command(requests_mock, mock_client):
     assert len(response.outputs) == args['page_size']
     assert 'connector_guid' in response.outputs[1]
     assert response.outputs[0]['timestamp'] == 'data_events[2]_timestamp'
+    assert_output_has_no_links(response.outputs)
 
 
 def test_computer_trajectory_list_error_command(requests_mock, mock_client):
@@ -271,6 +272,7 @@ def test_computer_vulnerabilities_list_command(requests_mock, mock_client):
     assert response.outputs_prefix == 'CiscoAMP.ComputerVulnerability'
     assert len(response.outputs) == 1
     assert 'connector_guid' in response.outputs[0]
+    assert_output_has_no_links(response.outputs)
 
 
 def test_computer_move_command(requests_mock, mock_client):
