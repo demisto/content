@@ -1399,7 +1399,7 @@ def computer_trajectory_list_command(client: Client, args: Dict[str, Any]) -> Co
 
         raw_response['data']['events'] = raw_response['data']['events'][start:stop]
 
-    else:
+    else:  # The user hasn't entered any pagination parameter, therefore the pagination isn't manual or automatic.
         raw_response['data']['events'] = raw_response['data']['events'][:MAX_PAGE_SIZE]
 
     context_output = get_context_output(raw_response, ['links'])
