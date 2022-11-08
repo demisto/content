@@ -8210,7 +8210,7 @@ class Topology:
                 else:
                     self.ha_active_devices[serial_number] = "STANDALONE"
 
-        self.ha_pair_serials = ha_pair_dict
+        self.ha_pair_serials = {**self.ha_pair_serials, **ha_pair_dict}
 
     def add_device_object(self, device: Union[PanDevice, Panorama, Firewall]):
         """
