@@ -8500,19 +8500,31 @@ def ip_command(ips, reliability):
 
 
 def whois_command(reliability):
-    query = demisto.args().get('query')
-    is_recursive = argToBoolean(demisto.args().get('recursive'))
+    args = demisto.args()
+    query = args.get('query')
+    is_recursive = argToBoolean(args.get('recursive', 'false'))
+    verbose = argToBoolean(args.get('verbose', 'false'))
+    demisto.info(f'whois command is called with the query {query}')
     for query in argToList(query):
         domain = get_domain_from_query(query)
         whois_result = get_whois(domain, is_recursive=is_recursive)
         md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability, query)
-        dbot_score.update({Common.Domain.CONTEXT_PATH: standard_ec})
+        context_res = {}
+        context_res.update(dbot_score)
+        context_res.update({Common.Domain.CONTEXT_PATH: standard_ec})
+
+        if verbose: 
+            demisto.info('Verbose response')
+            whois_result['query'] = query
+            json_res = json.dumps(whois_result, indent=4, sort_keys=True, default=str)
+            context_res.update({'Whois(val.query==obj.query)': json.loads(json_res)})
+
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
             'Contents': str(whois_result),
             'HumanReadable': tableToMarkdown('Whois results for {}'.format(domain), md),
-            'EntryContext': dbot_score,
+            'EntryContext': context_res,
         })
 
 
