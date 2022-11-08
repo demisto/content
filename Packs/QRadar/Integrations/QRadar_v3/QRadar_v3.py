@@ -3764,9 +3764,9 @@ def qradar_remote_network_cidr_delete_command(client: Client, args) -> CommandRe
         except DemistoException as e:
             unsuccessful_delete_ids.append(assign_params(ID=id_, Error=e.message))
 
-    success_human_readable = tableToMarkdown('Successfully deleted the following remote network CIDR',
+    success_human_readable = tableToMarkdown('Successfully deleted the following remote network',
                                              success_delete_ids, headers=['ID'])
-    unsuccessful_human_readable = tableToMarkdown('Failed to delete the following remote network CIDR',
+    unsuccessful_human_readable = tableToMarkdown('Failed to delete the following remote network',
                                                   unsuccessful_delete_ids, headers=['ID', 'Error'])
 
     return CommandResults(

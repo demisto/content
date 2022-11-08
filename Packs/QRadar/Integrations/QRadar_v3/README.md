@@ -2701,3 +2701,42 @@ Retrieves a list of staged remote networks.
 | --- | --- | --- | --- | --- |
 | 1.2.3.4/32,<br>8.8.8.8/2 | example_description | example_group1 | 12 | example_name |
 | 127.0.0.1/32 | example_description | example_group2 | 13 | example_name |
+
+
+### qradar-remote-network-cidr-delete
+***
+Deletes an existing staged remote network.
+
+
+#### Base Command
+
+`qradar-remote-network-cidr-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID that is used to locate the staged remote network to remove from Qradar. | Required |  
+
+
+#### Context Output
+
+There is no context output for this command.
+
+
+#### Command example
+```!qradar-remote-network-cidr-list id=1,2,3,4```
+#### Human Readable Output
+
+### Successfully deleted the following remote network
+
+| ID |
+| --- |
+| 1 |
+| 4 |
+
+### Failed to delete the following remote network
+
+| ID | 	Error |
+| --- | --- |
+| 2 | Error in API call [404] - 404<br>Delete failed. Staged remote network with id=2 does not exist. |
+| 3 | Error in API call [404] - 404<br>Delete failed. Staged remote network with id=3 does not exist. |
