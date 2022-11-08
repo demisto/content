@@ -8,14 +8,11 @@
     "email": "",
     "created": "2020-04-01T08:30:00Z",
     "categories": [
-        "Case Management"
+        "Utilities"
     ],
-    "tags": [
-        "Incident Handling"
+    "tags": ["Core"
     ],
-    "useCases": [
-        "Case Management"
-    ],
+    "useCases": [],
     "keywords": [
         "Shift management",
         "Handover",

@@ -22,7 +22,7 @@ def prepare_query_params(params: dict) -> dict:
     Parses the given inputs into Slack Audit Logs API expected format.
     """
     query_params = {
-        'limit': arg_to_number(params.get('limit')) or 200,
+        'limit': arg_to_number(params.get('limit')) or 1000,
         'oldest': arg_to_timestamp(params.get('oldest')),
         'latest': arg_to_timestamp(params.get('latest')),
         'action': params.get('action'),
@@ -30,8 +30,6 @@ def prepare_query_params(params: dict) -> dict:
         'entity': params.get('entity'),
         'cursor': params.get('cursor'),
     }
-    if not 0 < query_params['limit'] <= 1000:  # type: ignore
-        raise ValueError('limit argument must be an integer between 1 to 1000.')
     return query_params
 
 
@@ -101,15 +99,13 @@ class Client(BaseClient):
 
                 else:
                     # Finished iterating through all events in this batch (did not encounter a break statement)
-                    if not cursor:
-                        demisto.debug('Finished iterating through all events in this fetch run.')
-                        break
+                    if cursor:
+                        demisto.debug('Using the cursor from the last API call to execute the next call.')
+                        query_params['cursor'] = cursor
+                        _, events, cursor = self.get_logs(query_params)
+                        continue
 
-                    demisto.debug('Using the cursor from the last API call to execute the next call.')
-                    query_params['cursor'] = cursor
-                    _, events, cursor = self.get_logs(query_params)
-
-                # Encountered a break statement in the for loop - exit while loop
+                demisto.debug('Finished iterating through all events in this fetch run.')
                 break
 
         except DemistoException as e:

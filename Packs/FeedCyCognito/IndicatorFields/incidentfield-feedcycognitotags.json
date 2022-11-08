@@ -1,0 +1,33 @@
+{
+    "id": "indicator_feedcycognitotags",
+    "version": -1,
+    "modified": "2022-05-28T17:06:55.14429494+05:30",
+    "name": "FeedCyCognito Tags",
+    "ownerOnly": false,
+    "cliName": "feedcycognitotags",
+    "type": "tagsSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "CyCognito Asset",
+        "IP",
+        "Domain"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0"
+}

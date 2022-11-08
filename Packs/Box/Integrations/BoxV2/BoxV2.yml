@@ -255,7 +255,12 @@ script:
       name: query
       required: false
       secret: false
-    deprecated: false
+    - default: false
+      description: User who is making the request.
+      isArray: false
+      name: as_user
+      required: false
+      secret: false
     description: Searches for files, folders, web links, and shared files across the
       users' content or across the entire enterprise.
     execution: false
