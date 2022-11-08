@@ -154,7 +154,7 @@ def test_move_to_gmt():
 
 def test_no_label_mail_context_creation():
     from Gmail import get_email_context
-    context_gmail, _, _ = get_email_context(MOCK_MAIL_NO_LABELS, "some_mail")
+    context_gmail, _, _, _, _ = get_email_context(MOCK_MAIL_NO_LABELS, "some_mail")
     assert context_gmail.get('Labels') == EXPECTED_GMAIL_CONTEXT.get('Labels')
     assert context_gmail.get('To') == EXPECTED_GMAIL_CONTEXT.get('To')
     assert context_gmail.get('From') == EXPECTED_GMAIL_CONTEXT.get('From')
