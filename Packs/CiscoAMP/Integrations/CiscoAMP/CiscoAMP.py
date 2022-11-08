@@ -172,6 +172,7 @@ class Client(BaseClient):
         server_url: str,
         api_key: str,
         client_id: str,
+        reliability: DBotScoreReliability,
         verify: bool = False,
         proxy: bool = False
     ):
@@ -182,6 +183,7 @@ class Client(BaseClient):
             server_url (str): CiscoAMP API URL.
             api_key (str): API key to connect to the server.
             client_id (str): 3rd Party API Client ID.
+            reliability (DBotScoreReliability): Reliability of the source providing the intelligence data.
             verify (bool, optional): SSL verification handled by BaseClient. Defaults to False.
             proxy (bool, optional): System proxy is handled by BaseClient. Defaults to False.
         """
@@ -191,6 +193,8 @@ class Client(BaseClient):
             proxy=proxy,
             auth=(client_id, api_key)
         )
+
+        self.reliability = reliability
 
     def computer_list_request(
         self,
@@ -2058,7 +2062,7 @@ def event_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
             sha256 = dict_safe_get(context_output, ['file', 'identity', 'sha256'])
             disposition = dict_safe_get(context_output, ['file', 'disposition'])
 
-            dbot_score = get_dbotscore(sha256, disposition)
+            dbot_score = get_dbotscore(client.reliability, sha256, disposition)
 
             file_indicator = Common.File(
                 md5=dict_safe_get(context_output, ['file', 'identity', 'md5']),
@@ -2986,7 +2990,7 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
             data_list = raw_response['data']
 
             disposition = dict_safe_get(data_list[0], ['file', 'disposition'])
-            dbot_score = get_dbotscore(file_hash, disposition)
+            dbot_score = get_dbotscore(client.reliability, file_hash, disposition)
 
             file_indicator = Common.File(
                 md5=dict_safe_get(data_list[0], ['file', 'identity', 'md5']),
@@ -3000,7 +3004,7 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 
             for data in data_list[1:]:
                 disposition = dict_safe_get(data, ['file', 'disposition'])
-                dbot_score = get_dbotscore(file_hash, disposition)
+                dbot_score = get_dbotscore(client.reliability, file_hash, disposition)
 
                 file_indicator.md5 = file_indicator.md5 or dict_safe_get(data, ['file', 'identity', 'md5'])
                 file_indicator.sha1 = file_indicator.sha1 or dict_safe_get(data, ['file', 'identity', 'sha1'])
@@ -3168,11 +3172,12 @@ def is_query_wrong(query: str = None) -> bool:
         and not re.match(urlRegex, query)
 
 
-def get_dbotscore(sha256: str = None, disposition: str = None) -> Common.DBotScore:
+def get_dbotscore(reliability: DBotScoreReliability, sha256: str = None, disposition: str = None) -> Common.DBotScore:
     """
     Get XSOAR score for the file's disposition.
 
     Args:
+        reliability (DBotScoreReliability): Reliability of the source providing the intelligence data.
         sha256 (str, optional): SHA256 of the file.
             Defaults to None.
         disposition (str, optional): 3rd party score of the file's disposition.
@@ -3195,7 +3200,7 @@ def get_dbotscore(sha256: str = None, disposition: str = None) -> Common.DBotSco
         indicator_type=DBotScoreType.FILE,
         integration_name='CiscoAMP',
         malicious_description=disposition,
-        reliability=DBotScoreReliability.C,
+        reliability=reliability,
         score=score
     )
 
@@ -3440,7 +3445,15 @@ def main() -> None:
     client_id = params['credentials']['identifier']
     api_key = params['credentials']['password']
     verify_certificate = not params.get('insecure', False)
+    reliability = params.get('integrationReliability')
     proxy = params.get('proxy', False)
+
+    reliability = reliability if reliability else DBotScoreReliability.C
+
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        raise Exception('Please provide a valid value for the Source Reliability parameter.')
 
     commands = {
         'cisco-amp-computer-list': computer_list_command,
@@ -3483,6 +3496,7 @@ def main() -> None:
             api_key=api_key,
             client_id=client_id,
             verify=verify_certificate,
+            reliability=reliability,
             proxy=proxy,
         )
 
