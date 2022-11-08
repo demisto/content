@@ -117,13 +117,14 @@ def test_module_test(client: Client) -> None:
 def main() -> None:
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
-    url = params.get('url')
-    verify_certificate: bool = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
     headers = {}
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     try:
+        customer_id = params.get('customer_id')
+        service_account_json = params.get('user_service_account_json')
+        verify_certificate: bool = not params.get('insecure', False)
+        proxy = params.get('proxy', False)
         client: Client = Client(BASE_URL, verify_certificate, proxy, headers=headers, auth=None)
         test_module_test(client=client)
         return
