@@ -17,7 +17,7 @@ from slack_sdk import WebClient
 
 yaml = YAML()
 
-SKIPPED_FILES = {"signatures.sf"}
+SKIPPED_FILES = {"signatures.sf", "script-CommonServerPython.yml"}
 
 
 def sort_dict(dct: dict):
@@ -85,7 +85,7 @@ def compare_files(
         compare_files(subdir, subdir.left, subdir.right, output_path / Path(subdir.left).name, diff_files)
 
 
-def file_diff_text(output_path_file: Path, file1_path: Path, file2_path: Path):
+def file_diff_text(file1_path: Path, file2_path: Path, output_path_file: Path):
     output_path_file.unlink(missing_ok=True)
 
     with output_path_file.open("w") as f:
@@ -111,7 +111,7 @@ def file_diff(output_path: Path, zip1_files: str, zip2_files: str, file: str, di
     try:
         file1_path = Path(zip1_files) / file
         file2_path = Path(zip2_files) / file
-        file_diff_text(output_path / f"{file}-textdiff.log", file1_path, file2_path)
+        file_diff_text(file1_path, file2_path, output_path / f"{file}-textdiff.log")
         if file1_path.suffix == ".yml":
             load_func = yaml.load
         elif file1_path.suffix == ".json":
@@ -140,6 +140,45 @@ def file_diff(output_path: Path, zip1_files: str, zip2_files: str, file: str, di
         print(f"could not diff files {file1_path}:{file2_path}: {e}")
 
 
+def compare(
+    marketplace: str,
+    zip_id_set: Path,
+    zip_graph: Path,
+    index_id_set_path: Path,
+    index_graph_path: Path,
+    collected_packs_id_set: Path,
+    collected_packs_graph: Path,
+    message: list[str],
+    output_path: Path,
+):
+    diff_found = False
+    output_path.mkdir(exist_ok=True, parents=True)
+    # compare directories
+    dir_cmp = filecmp.dircmp(zip_id_set, zip_graph)
+    dir_cmp.report_full_closure()
+    for file in dir_cmp.common_files:
+        pack = file.removesuffix(".zip")
+        if diff_files := compare_zips(zip_id_set / file, zip_graph / file, output_path / pack):
+            diff_found = True
+            message.append(f'Detected differences in the following files for pack {pack}: {", ".join(diff_files)}')
+    if compare_indexes(index_id_set_path, index_graph_path, output_path):
+        diff_found = True
+        message.append("Detected differences between index.json files")
+    if file_diff_text(collected_packs_id_set, collected_packs_graph, output_path / "collect_tests_diff.log"):
+        diff_found = True
+        message.append("Detected differences between collect tests results")
+        shutil.copy(collected_packs_id_set, output_path / "collected_packs-id_set.txt")
+        shutil.copy(collected_packs_graph, output_path / "collected_packs-graph.txt")
+
+    shutil.make_archive(str(output_path / f"diff-{marketplace}"), "zip", output_path)
+
+    if not diff_found:
+        message.insert(2, "No difference were found!")
+    else:
+        message.insert(2, f"Difference for {output_path}")
+    return message
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--artifacts", help="artifacts of the build")
@@ -162,30 +201,32 @@ def main():
     collected_packs_id_set = artifacts / "content_packs_to_install.txt"
     collected_packs_graph = artifacts / "content_packs_to_install-graph.txt"
 
-    output_path.mkdir(exist_ok=True, parents=True)
-    # compare directories
-    dir_cmp = filecmp.dircmp(zip_id_set, zip_graph)
-    dir_cmp.report_full_closure()
     message = [
         f"Diff report for {marketplace}",
         f'Job URL: {os.getenv("CI_JOB_URL")}',
-        f"Zip difference for {output_path}",
     ]
-    for file in dir_cmp.common_files:
-        pack = file.removesuffix(".zip")
-        if diff_files := compare_zips(zip_id_set / file, zip_graph / file, output_path / pack):
-            message.append(f'Detected differences in the following files for pack {pack}: {", ".join(diff_files)}')
-    if compare_indexes(index_id_set_path, index_graph_path, output_path):
-        message.append("Detected differences between index.json files")
-    if file_diff_text(output_path / "collect_tests_diff.json", collected_packs_id_set, collected_packs_graph):
-        message.append("Detected differences between collect tests results")
-        shutil.copy(collected_packs_id_set, output_path / "collected_packs-id_set.txt")
-        shutil.copy(collected_packs_graph, output_path / "collected_packs-graph.txt")
-
-    shutil.make_archive(str(output_path / f"diff-{marketplace}"), "zip", output_path)
+    if not (graph_exists := collected_packs_id_set.exists()) or not (id_set_exists := collected_packs_graph.exists()):
+        message.extend(
+            [
+                f"Graph exists: {graph_exists}",
+                f"id-set exists: {id_set_exists}",
+            ]
+        )
+    else:
+        message = compare(
+            marketplace,
+            zip_id_set,
+            zip_graph,
+            index_id_set_path,
+            index_graph_path,
+            collected_packs_id_set,
+            collected_packs_graph,
+            message,
+            output_path,
+        )
     if slack_token:
         slack_client = WebClient(token=slack_token)
-        slack_client.files_upload(
+        slack_client.files_upload_v2(
             file=str(output_path / f"diff-{marketplace}.zip"),
             channels="dmst-graph-tests",
             initial_comment="\n".join(message),
