@@ -661,9 +661,9 @@ def extract_from_xml(xml, path):
 def generate_field_contents(client, fields_values, level_fields):
     if fields_values and not isinstance(fields_values, dict):
         try:
-            fields_values = json.loads(fields_values)
+            fields_values = json.loads(fields_values.replace("\\", "\\\\"))
         except Exception:
-            raise Exception('Failed to parese fields-values argument')
+            raise Exception('Failed to parse fields-values argument')
 
     field_content = {}
     for field_name in fields_values.keys():
