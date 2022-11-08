@@ -832,7 +832,7 @@ script:
       for debugging.
     execution: false
     name: get-modified-remote-data
-  dockerimage: demisto/oauthlib:1.0.0.33879
+  dockerimage: devdemisto/py3-master:8.1.0.37158
   feed: false
   isfetch: true
   ismappable: true
