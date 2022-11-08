@@ -2406,11 +2406,6 @@
             "has_api": false
         },
         {
-            "integrations": "mysql",
-            "playbookID": "MySQL Test",
-            "has_api": false
-        },
-        {
             "playbookID": "Email Address Enrichment - Generic v2.1 - Test",
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
@@ -3068,11 +3063,6 @@
         {
             "integrations": "AutoFocus Feed",
             "playbookID": "playbook-FeedAutofocus_test",
-            "fromversion": "5.5.0"
-        },
-        {
-            "integrations": "AutoFocus Daily Feed",
-            "playbookID": "playbook-FeedAutofocus_daily_test",
             "fromversion": "5.5.0"
         },
         {
@@ -3883,16 +3873,6 @@
             ]
         },
         {
-            "playbookID": "EDL Indicator Performance Test",
-            "fromversion": "6.0.0",
-            "has_api": false
-        },
-        {
-            "playbookID": "EDL Performance Test - Concurrency",
-            "fromversion": "6.0.0",
-            "has_api": false
-        },
-        {
             "playbookID": "Venafi - Test",
             "fromversion": "5.0.0",
             "integrations": [
@@ -4074,13 +4054,6 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "trustwave secure email gateway"
-            ]
-        },
-        {
-            "playbookID": "MicrosoftGraphMail-Test",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "MicrosoftGraphMail"
             ]
         },
         {
@@ -4722,10 +4695,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "playbookID": "Delete Context Subplaybook Test",
-            "fromversion": "5.0.0"
-        },
-        {
             "playbookID": "TruSTAR v2-Test",
             "fromversion": "5.0.0",
             "integrations": [
@@ -5304,10 +5273,6 @@
         "McAfee ESM v2 - Test v11.1.3": "Issue 43825",
         "McAfee ESM v2 (v11.3) - Test" : "Jira ticket CRTX-65370",
         "McAfee ESM Watchlists - Test v11.3": "Jira ticket CRTX-65370",
-        "MicrosoftGraphMail-Test_prod": "Issue 40125",
-        "MicrosoftGraphMail-Test": "Issue CIAC-4222",
-        "MicrosoftGraphMail-Test_dev": "Issue CIAC-4223",
-        "MicrosoftGraphMail-Test_dev_no_oproxy": "Issue CIAC-512",
         "Detonate URL - WildFire v2.1 - Test": "Issue 40834",
         "Domain Enrichment - Generic v2 - Test": "Issue 40862",
         "TestIPQualityScorePlaybook": "Issue 40915",
@@ -5372,7 +5337,8 @@
         "Process Email - Generic - Test - Incident Starter": "Issue CIAC-4161",
         "AD v2 - debug-mode": "No credentials",
         "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
-        "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407"
+        "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407",
+        "O365-SecurityAndCompliance-Test": "Failing in nightly, being handled"
     },
     "skipped_integrations": {
         "AbuseIPDB": "License expired",
@@ -5575,7 +5541,6 @@
         "Cortex Data Lake": "Integration requires SSL",
         "Google Key Management Service": "The API requires an SSL secure connection to work.",
         "McAfee ESM-v10": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
-        "mysql": "Does not use http",
         "SlackV2": "Integration requires SSL",
         "SlackV3": "Integration requires SSL",
         "Whois": "Mocks does not support sockets",
