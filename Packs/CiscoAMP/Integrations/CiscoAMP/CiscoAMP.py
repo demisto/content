@@ -2890,7 +2890,7 @@ def endpoint_command(client: Client, args: Dict[str, Any]) -> List[CommandResult
     endpoint_ips = argToList(args.get('ip'))
     endpoint_hostnames = argToList(args.get('hostname'))
 
-    if not endpoint_ids and not endpoint_ips and not endpoint_hostnames:
+    if not any((endpoint_ids, endpoint_ips, endpoint_hostnames)):
         raise DemistoException('CiscoAMP - In order to run this command, please provide a valid id, ip or hostname')
 
     responses = []
