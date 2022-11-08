@@ -2715,7 +2715,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "66"
+      - "90"
     scriptarguments:
       all:
         simple: "yes"
@@ -2767,40 +2767,6 @@ tasks:
     timertriggers:
     - fieldname: timetoassignment
       action: start
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "83":
-    id: "83"
-    taskid: 6e4e1bda-9cd4-4872-8891-785710efaa84
-    type: regular
-    task:
-      id: 6e4e1bda-9cd4-4872-8891-785710efaa84
-      version: -1
-      name: gmail-forwarding-address-list
-      description: Lists the forwarding addresses for the specified account.
-      script: Gmail|||gmail-forwarding-address-list
-      type: regular
-      iscommand: true
-      brand: Gmail
-    scriptarguments:
-      limit:
-        simple: "10"
-      user_id:
-        simple: me
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 380,
-          "y": 2910
-        }
-      }
-    note: false
-    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -2963,6 +2929,124 @@ tasks:
         "position": {
           "x": 2130,
           "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: 2006346d-80d6-4168-8204-4f163fc51f65
+    type: regular
+    task:
+      id: 2006346d-80d6-4168-8204-4f163fc51f65
+      version: -1
+      name: gmail-forwarding-address-list
+      description: Lists the forwarding addresses for the specified account.
+      script: '|||gmail-forwarding-address-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "91"
+    scriptarguments:
+      user_id:
+        simple: me
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 5615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "91":
+    id: "91"
+    taskid: 5e0b418d-fbc6-4196-80c4-1ff5afbe5147
+    type: condition
+    task:
+      id: 5e0b418d-fbc6-4196-80c4-1ff5afbe5147
+      version: -1
+      name: Check forwarding existence
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "66"
+      "yes":
+      - "73"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Gmail.ForwardingAddress.forwardingEmail
+            iscontext: true
+          right:
+            value:
+              simple: admin@demistodev.com
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 5750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: 4b55d100-1bbe-49d1-8275-98c1e32b113d
+    type: regular
+    task:
+      id: 4b55d100-1bbe-49d1-8275-98c1e32b113d
+      version: -1
+      name: delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 5920
         }
       }
     note: false
