@@ -1,5 +1,5 @@
 fromversion: 6.10.0
-id: microsoft_adfs_collection
+id: Microsoft_ADFS_Collection
 name: Microsoft ADFS Collection
 rules: ''
 schema: ''
