@@ -10,9 +10,11 @@
     "categories": [
         "IT Services"
     ],
-    "tags": [],
+    "tags": [
+        "Use Case"
+    ],
     "useCases": [
-        "Employee Offboarding"
+        "Compliance"
     ],
     "keywords": [],
     "dependencies": {
