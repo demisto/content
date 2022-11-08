@@ -2,6 +2,11 @@ from CommonServerPython import *
 import demistomock as demisto
 
 ''' IMPORTS '''
+import googleapiclient.discovery
+''' CONSTANTS '''
+BASE_URL = 'https://admin.googleapis.com/'
+
+requests.packages.urllib3.disable_warnings()
 
 
 class Client(BaseClient):
@@ -78,6 +83,34 @@ def google_chromeosdevice_action_command(client: Client, args: Dict[str, Any]) -
 
 def test_module(client: Client) -> None:
     # Test functions here
+    from google.oauth2 import service_account
+    customer_id = 'C02f0zfqw'
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ya29.a0AeTM1iftg_DsvbhAJ2qj5jn-gMr9-OUZUHemMZPQQMfPMYYjfXR18nEgiX-PYiRAjyluo0ZUIp6B3REMJ2V8IGXy9Y6M4r0sCZXePAR-0jF3b3hb7zNiG3yoscYgOTX0uvEmUwipfUIk4LcMst48tM0PLNo9GdvKrbW8zwaCgYKAbsSARASFQHWtWOmDJaqSIsPmOK66HZvxrsFbA0173'
+    }
+    response = client._http_request(
+        'GET', f'admin/directory/v1/customer/{customer_id}/devices/mobile', headers=headers)
+    credentials = service_account.Credentials.from_service_account_file(
+        'Integrations/GoogleWorkspaceAdmin/delta-heading-367810-a433b2f4eaad.json', scopes=['https://www.googleapis.com/auth/admin.directory.device.mobile '])
+    return_results('ok')
+
+
+def test_module_test(client: Client) -> None:
+    # Test functions here
+    from google.oauth2 import service_account
+    import google.auth.transport.requests
+    credentials = service_account.Credentials.from_service_account_file(
+        'Integrations/GoogleWorkspaceAdmin/delta-heading-367810-a433b2f4eaad.json', scopes=['https://www.googleapis.com/auth/admin.directory.device.mobile '])
+    request = google.auth.transport.requests.Request()
+    credentials.refresh(request)
+    customer_id = 'C02f0zfqw'
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {credentials.token}'
+    }
+    response = client._http_request(
+        'GET', f'admin/directory/v1/customer/{customer_id}/devices/mobile', headers=headers)
     return_results('ok')
 
 
@@ -91,8 +124,9 @@ def main() -> None:
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     try:
-        requests.packages.urllib3.disable_warnings()
-        client: Client = Client(urljoin(url, ''), verify_certificate, proxy, headers=headers, auth=None)
+        client: Client = Client(BASE_URL, verify_certificate, proxy, headers=headers, auth=None)
+        test_module_test(client=client)
+        return
         commands = {
             'googleworkspaceadmin-google-mobiledevice-action': google_mobiledevice_action_command,
             'googleworkspaceadmin-google-mobiledevice-list': google_mobiledevice_list_command,
@@ -105,10 +139,9 @@ def main() -> None:
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
     except Exception as e:
+        print(str(e))
         return_error(str(e))
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
-    from GSuiteApiModule import *
-    temp = GSuiteClient.strip_dict(demisto.args())
     main()
