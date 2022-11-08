@@ -7,19 +7,12 @@
     "url": "",
     "email": "support@cycognito.com",
     "categories": [
-        "Data Enrichment & Threat Intelligence",
-        "External Exposure",
-        "Vulnerability Management"
+        "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Threat Intelligence",
-        "Security"
+        "Threat Intelligence Management"
     ],
-    "useCases": [
-        "Asset Management",
-        "Threat Intelligence Management",
-        "Vulnerability Management"
-    ],
+    "useCases": [],
     "keywords": [
         "Assets",
         "CyCognito",
