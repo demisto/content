@@ -1,4 +1,3 @@
-from_xdr_version: 3.5.0
 fromversion: 6.10.0
 id: microsoft_365_defender_event_collector
 name: Microsoft 365 Defender Event Collector
