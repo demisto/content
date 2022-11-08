@@ -1394,33 +1394,7 @@ def computer_trajectory_list_command(client: Client, args: Dict[str, Any]) -> Co
         query_string=query_string,
     )
 
-    if pagination.is_automatic:
-        raw_response['data']['events'] = raw_response['data']['events'][:pagination.limit]
-
-    elif pagination.is_manual:
-        start = (pagination.page - 1) * pagination.page_size
-        stop = pagination.page * pagination.page_size
-
-        raw_response['data']['events'] = raw_response['data']['events'][start:stop]
-
-    else:  # The user hasn't entered any pagination parameter, therefore the pagination isn't manual or automatic.
-        raw_response['data']['events'] = raw_response['data']['events'][:MAX_PAGE_SIZE]
-
-    context_output = get_context_output(raw_response, ['links'])
-    context_output = context_output[0]['events']
-    add_item_to_all_dictionaries(
-        context_output,
-        'connector_guid',
-        dict_safe_get(raw_response, ['data', 'computer', 'connector_guid'])
-    )
-
-    readable_output = get_computer_readable_output(raw_response)
-    readable_output += get_readable_output(
-        response=raw_response,
-        header_by_keys=TRAJECTORY_HEADERS_BY_KEYS,
-        keys_to_items_option_1=['data', 'events'],
-        title=TRAJECTORY_TITLE,
-    )
+    context_output, readable_output = extract_pagination_from_response(pagination, raw_response)
 
     return CommandResults(
         outputs_prefix='CiscoAMP.ComputerTrajectory',
@@ -1511,33 +1485,7 @@ def computer_user_trajectory_list_command(client: Client, args: Dict[str, Any]) 
         username=username,
     )
 
-    if pagination.is_automatic:
-        raw_response['data']['events'] = raw_response['data']['events'][:pagination.limit]
-
-    elif pagination.is_manual:
-        start = (pagination.page - 1) * pagination.page_size
-        stop = pagination.page * pagination.page_size
-
-        raw_response['data']['events'] = raw_response['data']['events'][start:stop]
-
-    else:
-        raw_response['data']['events'] = raw_response['data']['events'][:MAX_PAGE_SIZE]
-
-    context_output = get_context_output(raw_response, ['links'])
-    context_output = context_output[0]['events']
-    add_item_to_all_dictionaries(
-        context_output,
-        'connector_guid',
-        dict_safe_get(raw_response, ['data', 'computer', 'connector_guid'])
-    )
-
-    readable_output = get_computer_readable_output(raw_response)
-    readable_output += get_readable_output(
-        response=raw_response,
-        header_by_keys=TRAJECTORY_HEADERS_BY_KEYS,
-        keys_to_items_option_1=['data', 'events'],
-        title=TRAJECTORY_TITLE,
-    )
+    context_output, readable_output = extract_pagination_from_response(pagination, raw_response)
 
     return CommandResults(
         outputs_prefix='CiscoAMP.ComputerUserTrajectory',
@@ -3113,6 +3061,48 @@ def get_pagination_parameters(
         offset_multiplier = 1
 
     return Pagination(page, page_size, limit, offset, number_of_requests, offset_multiplier, is_automatic, is_manual)
+
+
+def extract_pagination_from_response(pagination: Pagination, raw_response: Dict[str, Any]) -> Tuple[List, str]:
+    """
+    Extract values from the response according to pagination parameters.
+
+    Args:
+        pagination (Pagination): Pagination parameters to extract values according to.
+        raw_response (Dict[str, Any]): Raw response to extract values from.
+
+    Returns:
+        Tuple[List, str]: Context output and Readable output.
+    """
+    if pagination.is_automatic:
+        raw_response['data']['events'] = raw_response['data']['events'][:pagination.limit]
+
+    elif pagination.is_manual:
+        start = (pagination.page - 1) * pagination.page_size
+        stop = pagination.page * pagination.page_size
+
+        raw_response['data']['events'] = raw_response['data']['events'][start:stop]
+
+    else:  # The user hasn't entered any pagination parameter, therefore the pagination isn't manual or automatic.
+        raw_response['data']['events'] = raw_response['data']['events'][:MAX_PAGE_SIZE]
+
+    context_output = get_context_output(raw_response, ['links'])
+    context_output = context_output[0]['events']
+    add_item_to_all_dictionaries(
+        context_output,
+        'connector_guid',
+        dict_safe_get(raw_response, ['data', 'computer', 'connector_guid'])
+    )
+
+    readable_output = get_computer_readable_output(raw_response)
+    readable_output += get_readable_output(
+        response=raw_response,
+        header_by_keys=TRAJECTORY_HEADERS_BY_KEYS,
+        keys_to_items_option_1=['data', 'events'],
+        title=TRAJECTORY_TITLE,
+    )
+
+    return context_output, readable_output
 
 
 def delete_keys_from_dict(dictionary: MutableMapping, keys_to_delete: List[str] | Set[str]) -> Dict[str, Any]:

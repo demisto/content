@@ -54,6 +54,7 @@ def mock_client() -> Client:
         server_url=SERVER_URL,
         api_key=API_KEY,
         client_id=CLIENT_ID,
+        reliability='C - Fairly reliable'
     )
 
 
