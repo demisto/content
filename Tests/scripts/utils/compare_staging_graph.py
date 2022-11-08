@@ -205,7 +205,7 @@ def main():
         f"Diff report for {marketplace}",
         f'Job URL: {os.getenv("CI_JOB_URL")}',
     ]
-    if not (graph_exists := collected_packs_id_set.exists()) or not (id_set_exists := collected_packs_graph.exists()):
+    if not (graph_exists := zip_graph.exists()) or not (id_set_exists := zip_id_set.exists()):
         message.extend(
             [
                 f"Graph exists: {graph_exists}",
