@@ -1269,7 +1269,7 @@ def computer_list_command(client: Client, args: Dict[str, Any]) -> List[CommandR
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit'))
-    connector_guid = args.get('connector_guid')
+    connector_guid = args.get('connector_guid', '')
     hostnames = argToList(args.get('hostname'))
     internal_ip = args.get('internal_ip')
     external_ip = args.get('external_ip')
@@ -1318,7 +1318,7 @@ def computer_list_command(client: Client, args: Dict[str, Any]) -> List[CommandR
 
     else:
         raw_response = client.computer_get_request(
-            connector_guid=connector_guid,  # type: ignore
+            connector_guid=connector_guid,
         )
 
     context_outputs = get_context_output(raw_response, ['links'])
@@ -2032,7 +2032,7 @@ def event_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
             connector_guids=connector_guid,
             group_guids=group_guid,
             start_date=start_date,
-            event_types=event_type,  # type: ignore
+            event_types=event_type,
             limit=pagination.limit,
             offset=None if pagination.offset is None else pagination.offset * request_number,
         ))
@@ -3081,8 +3081,8 @@ def get_pagination_parameters(
 
     # Automatic Pagination
     if is_automatic:
-        if limit > MAX_PAGE_SIZE:  # type: ignore
-            number_of_requests = math.ceil(limit / MAX_PAGE_SIZE)  # type: ignore
+        if limit > MAX_PAGE_SIZE:  # type: ignore[operator]
+            number_of_requests = math.ceil(limit / MAX_PAGE_SIZE)  # type: ignore[operator]
             limit = MAX_PAGE_SIZE
             offset = MAX_PAGE_SIZE
             offset_multiplier = 0
@@ -3493,19 +3493,26 @@ def main() -> None:
             incident_severities = argToList(params.get('incident_severities'))
             max_incidents_to_fetch = arg_to_number(params.get('max_fetch', FETCH_LIMIT))
             event_types = argToList(params.get('event_types'))
-            first_fetch_time = arg_to_datetime(
+            first_fetch_datetime = arg_to_datetime(
                 arg=params['first_fetch'],
                 arg_name='First fetch time',
                 required=True
             )
-            first_fetch_time = first_fetch_time.strftime(ISO_8601_FORMAT)  # type: ignore
+
+            if not isinstance(max_incidents_to_fetch, int):
+                raise ValueError('Failed to get max fetch.')
+
+            if not isinstance(first_fetch_datetime, datetime):
+                raise ValueError('Failed to get first fetch time.')
+
+            first_fetch_time = first_fetch_datetime.strftime(ISO_8601_FORMAT)
 
             next_run, incidents = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
-                first_fetch_time=first_fetch_time,  # type: ignore
+                first_fetch_time=first_fetch_time,
                 incident_severities=incident_severities,
-                max_incidents_to_fetch=max_incidents_to_fetch,  # type: ignore
+                max_incidents_to_fetch=max_incidents_to_fetch,
                 event_types=event_types,
             )
 
