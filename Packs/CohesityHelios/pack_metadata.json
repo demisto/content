@@ -7,22 +7,13 @@
     "url": "https://www.cohesity.com",
     "email": "support@cohesity.com",
     "categories": [
-        "Utilities"
+        "Vulnerability Management"
     ],
     "itemPrefix": [
         "Cohesity Helios"
     ],
-    "tags": [
-        "Malware",
-        "Breach",
-        "Security",
-        "Incident Response",
-        "Compliance"
-    ],
-    "useCases": [
-        "Ransomware",
-        "Vulnerability Management"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "Ransomware",
         "backup and recovery",

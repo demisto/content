@@ -10,18 +10,8 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "Relationship",
-        "Scam",
-        "Spam",
-        "Security",
-        "Threat Intelligence"
-    ],
-    "useCases": [
-        "Phishing",
-        "Hunting",
-        "Threat Intelligence Management"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "phishing",
         "web",
