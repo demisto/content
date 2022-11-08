@@ -1278,17 +1278,17 @@ def computer_list_command(client: Client, args: Dict[str, Any]) -> List[CommandR
     last_seen_over = arg_to_number(args.get('last_seen_over'))
 
     is_get_request = bool(connector_guid)
-    is_list_request = (
-        page
-        or page_size
-        or limit
-        or hostnames
-        or internal_ip
-        or external_ip
-        or group_guids
-        or last_seen_within
-        or last_seen_over
-    )
+    is_list_request = any((
+        page,
+        page_size,
+        limit,
+        hostnames,
+        internal_ip,
+        external_ip,
+        group_guids,
+        last_seen_within,
+        last_seen_over,
+    ))
 
     if is_get_request and is_list_request:
         raise ValueError('connector_guid must be the only input, when fetching a specific computer.')
