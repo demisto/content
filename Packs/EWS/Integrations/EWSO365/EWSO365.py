@@ -2084,6 +2084,7 @@ def parse_incident_from_item(item):
 
                         # save the attachment
                         file_name = get_attachment_name(attachment.name)
+                        demisto.debug(f"saving content of size {sys.getsizeof(attachment.content)}")
                         file_result = fileResult(file_name, attachment.content)
 
                         # check for error
@@ -2413,6 +2414,7 @@ def sub_main():
         elif command == "fetch-incidents":
             last_run = demisto.getLastRun()
             incidents = fetch_emails_as_incidents(client, last_run)
+            demisto.debug(f"returning incidents with size {sys.getsizeof(incidents)}")
             demisto.incidents(incidents)
 
         # special outputs commands
@@ -2540,7 +2542,7 @@ def main():
 
 
 def log_memory():
-    demisto.debug(f'memstat\n{subprocess.check_output(["ps", "-opid,comm,rss"])}')
+    demisto.debug(f'memstat\n{subprocess.check_output(["ps", "-opid,comm,rss,vsz"])}')
 
 
 from MicrosoftApiModule import *  # noqa: E402
