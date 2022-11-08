@@ -204,9 +204,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "13"
-      - "26"
-      - "7"
+      - "96"
     note: false
     quietmode: 0
     scriptarguments:
@@ -282,8 +280,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
-          "y": 1755
+          "x": 650,
+          "y": 1765
         }
       }
     continueonerrortype: ""
@@ -415,7 +413,7 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 1565
+          "y": 1625
         }
       }
     continueonerrortype: ""
@@ -805,7 +803,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "6"
+      - "94"
     note: false
     quietmode: 0
     scriptarguments:
@@ -886,7 +884,7 @@ tasks:
       {
         "position": {
           "x": 1780,
-          "y": 1740
+          "y": 1780
         }
       }
     continueonerrortype: ""
@@ -921,7 +919,7 @@ tasks:
       {
         "position": {
           "x": 1780,
-          "y": 1585
+          "y": 1635
         }
       }
     continueonerrortype: ""
@@ -3056,6 +3054,120 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: dcbe9321-dac0-431e-8672-fb3d068cc3f3
+    type: condition
+    task:
+      id: dcbe9321-dac0-431e-8672-fb3d068cc3f3
+      version: -1
+      name: Check user's existence
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "96"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Account.Gmail.Address
+            iscontext: true
+          right:
+            value:
+              simple: johns@demistodev.com
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: 232a2da1-fc14-4d3f-8776-57dbbc1ff0cb
+    type: regular
+    task:
+      id: 232a2da1-fc14-4d3f-8776-57dbbc1ff0cb
+      version: -1
+      name: List all users
+      script: '|||gmail-list-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      retry-count:
+        simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: b289fe3b-db86-40d1-837f-06498c5477fc
+    type: regular
+    task:
+      id: b289fe3b-db86-40d1-837f-06498c5477fc
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+      - "13"
+      - "26"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 1475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 version: -1
 view: |-
   {
@@ -3065,7 +3177,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 8225,
-        "width": 2490,
+        "width": 2560,
         "x": 20,
         "y": -810
       }
