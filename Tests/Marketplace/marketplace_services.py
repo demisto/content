@@ -3225,7 +3225,9 @@ class Pack(object):
                 logging.error(f'Image {image_name} could not be retreived status code {r.status_code}')
                 return False
         except Exception as e:
-            logging.error(f'Failed downloading the image in url {readme_original_url}. or failed uploading it to GCP error message {e}')
+            logging.error(
+                f'Failed downloading the image in url {readme_original_url}. '
+                f'or failed uploading it to GCP error message {e}')
             return False
 
     def upload_images(self, index_folder_path, storage_bucket, storage_base_path, diff_files_list, override_all_packs,
