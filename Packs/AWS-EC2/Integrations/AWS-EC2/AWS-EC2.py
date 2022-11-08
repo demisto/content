@@ -1519,7 +1519,7 @@ def authorize_security_group_egress_command(args, aws_client):
 
 
 def create_ip_permissions_dict(args):
-    IpPermissions_dict = {}
+    IpPermissions_dict: dict[str, Any] = {}
     UserIdGroupPairs_keys = (('IpPermissionsfromPort', 'FromPort'), ('IpPermissionsToPort', 'ToPort'))
     for args_key, dict_key in UserIdGroupPairs_keys:
         if args.get(args_key) is not None:
