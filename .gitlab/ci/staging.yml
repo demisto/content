@@ -17,7 +17,7 @@ graph-create-instances:
   needs: []
   stage: create-instances
   script:
-    - pip3 install "git+https://github.com/demisto/demisto-sdk@master
+    - pip3 install git+https://github.com/demisto/demisto-sdk@master
 
     - !reference [.download-demisto-conf]
     - !reference [.create-release-notes-and-common-docs]
@@ -75,7 +75,7 @@ graph-prepare-testing-bucket-mpv2:
   stage: create-instances
   allow_failure: true
   script:
-    - pip3 install "git+https://github.com/demisto/demisto-sdk@master
+    - pip3 install git+https://github.com/demisto/demisto-sdk@master
 
     - !reference [.download-demisto-conf]
     - !reference [.create-release-notes-and-common-docs]
