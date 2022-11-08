@@ -10,16 +10,16 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-* Set
 * CommitFiles
+* Set
 * SuggestBranchName
 
 ### Commands
-* GitHub-create-pull-request
-* GitHub-create-branch
-* GitHub-list-branch-pull-requests
-* GitHub-get-branch
 * GitHub-request-review
+* GitHub-create-branch
+* GitHub-get-branch
+* GitHub-create-pull-request
+* GitHub-list-branch-pull-requests
 
 ## Playbook Inputs
 ---
@@ -32,3 +32,7 @@ This playbook does not use any integrations.
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
+
+## Playbook Image
+---
+![Pull Request Creation - Github](../doc_files/Pull_Request_Creation_-_Github.png)
