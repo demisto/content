@@ -4722,10 +4722,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "playbookID": "Delete Context Subplaybook Test",
-            "fromversion": "5.0.0"
-        },
-        {
             "playbookID": "TruSTAR v2-Test",
             "fromversion": "5.0.0",
             "integrations": [
