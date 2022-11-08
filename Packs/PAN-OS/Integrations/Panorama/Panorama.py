@@ -9160,8 +9160,8 @@ class DeviceGroupInformation(ResultData):
     """
     serial: str
     connected: str
-    hostname: str
     last_commit_all_state_sp: str
+    hostname: Optional[str] = ""
     name: str = ""
 
     _output_prefix = OUTPUT_PREFIX + "DeviceGroupOp"

@@ -2718,12 +2718,14 @@ class TestPanoramaCommand:
         patched_run_op_command.return_value = load_xml_root_from_test_file(TestPanoramaCommand.SHOW_DEVICEGROUPS_XML)
 
         result = PanoramaCommand.get_device_groups(mock_topology)
-        assert len(result) == 2
+        assert len(result) == 3
         assert result[0].name
         assert result[0].hostid
         assert result[0].connected
         assert result[0].serial
         assert result[0].last_commit_all_state_sp
+        # Support for missing hostname
+        assert not result[2].hostname
 
     @patch("Panorama.run_op_command")
     def test_get_template_stacks(self, patched_run_op_command, mock_topology):
