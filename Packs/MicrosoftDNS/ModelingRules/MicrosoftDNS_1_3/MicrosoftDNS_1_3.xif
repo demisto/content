@@ -1,4 +1,4 @@
-[MODEL: dataset="microsoft_dns_raw"]
+[MODEL: dataset="msft_dns_raw"]
 alter ResponseRequest=arrayindex(regextract(_raw_log,"(\s|R)\s"),7),
 Context=arrayindex(regextract(_raw_log,"(\w+)\s+"),5)
 |alter xdm.source.port=to_number(sourcePort),

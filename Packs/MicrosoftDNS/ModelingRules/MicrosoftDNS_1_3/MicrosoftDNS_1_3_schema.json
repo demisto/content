@@ -1,5 +1,5 @@
 {
-    "microsoft_dns_raw ": {
+    "msft_dns_raw": {
     "_raw_log": {
         "type": "string",
         "is_array": false
