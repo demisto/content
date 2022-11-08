@@ -110,13 +110,10 @@ def test_computer_list_error_command(requests_mock, mock_client):
         f'{BASE_URL}/computers/{args["connector_guid"]}'
     )
 
-    try:
+    with pytest.raises(ValueError) as ve:
         from CiscoAMP import computer_list_command
         computer_list_command(mock_client, args)
 
-        assert False
-
-    except ValueError as ve:
         assert str(ve) == 'connector_guid must be the only input, when fetching a specific computer.'
 
 
@@ -175,13 +172,10 @@ def test_computer_trajectory_list_error_command(requests_mock, mock_client):
         f'{BASE_URL}/computers/{args["connector_guid"]}/trajectory'
     )
 
-    try:
+    with pytest.raises(ValueError) as ve:
         from CiscoAMP import computer_trajectory_list_command
         computer_trajectory_list_command(mock_client, args)
 
-        assert False
-
-    except ValueError as ve:
         assert str(ve) == 'connector_guid cannot be entered with a query_string'
 
 
@@ -354,13 +348,10 @@ def test_computer_delete_error_command(requests_mock, mock_client):
         json=mock_response
     )
 
-    try:
+    with pytest.raises(ValueError) as ve:
         from CiscoAMP import computer_delete_command
         computer_delete_command(mock_client, args)
 
-        assert False
-
-    except ValueError as ve:
         assert str(ve).startswith('Failed to delete Connector GUID:')
 
 
@@ -412,13 +403,10 @@ def test_computer_activity_list_error_command(requests_mock, mock_client):
         f'{BASE_URL}/computers/activity'
     )
 
-    try:
+    with pytest.raises(ValueError) as ve:
         from CiscoAMP import computer_activity_list_command
         print(computer_activity_list_command(mock_client, args))
 
-        assert False
-
-    except ValueError as ve:
         assert str(ve) == 'query_string must be: SHA-256/IPv4/URL/Filename'
 
 
@@ -775,13 +763,10 @@ def test_file_list_item_delete_error_command(requests_mock, mock_client):
         json=mock_response
     )
 
-    try:
+    with pytest.raises(ValueError) as ve:
         from CiscoAMP import file_list_item_delete_command
         file_list_item_delete_command(mock_client, args)
 
-        assert False
-
-    except ValueError as ve:
         assert str(ve) == \
             f'Failed to delete-\nFile List GUID: "{args["file_list_guid"]}"\nSHA-256: "{args["sha256"]}".'
 
@@ -874,13 +859,10 @@ def test_group_policy_update_error_command(requests_mock, mock_client):
         f'{BASE_URL}/groups/{args["group_guid"]}'
     )
 
-    try:
+    with pytest.raises(ValueError) as ve:
         from CiscoAMP import group_policy_update_command
         group_policy_update_command(mock_client, args)
 
-        assert False
-
-    except ValueError as ve:
         assert str(ve) == 'At least one Policy GUID must be entered.'
 
 
@@ -1000,13 +982,10 @@ def test_group_delete_error_command(requests_mock, mock_client):
         json=mock_response
     )
 
-    try:
+    with pytest.raises(ValueError) as ve:
         from CiscoAMP import groups_delete_command
         groups_delete_command(mock_client, args)
 
-        assert False
-
-    except ValueError as ve:
         assert str(ve) == f'Failed to delete Group GUID: "{args["group_guid"]}".'
 
 
