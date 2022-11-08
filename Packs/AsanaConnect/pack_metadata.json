@@ -10,7 +10,9 @@
     "categories": [
         "Case Management"
     ],
-    "tags": [],
+    "tags": [
+        "Data Source"
+    ],
     "useCases": [],
     "keywords": [],
     "githubUser": [

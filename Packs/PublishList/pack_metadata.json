@@ -7,8 +7,12 @@
     "url": "",
     "email": "",
     "created": "2021-10-27T19:33:47Z",
-    "categories": ["Utilities"],
-    "tags": [],
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [
+        "Data Source"
+    ],
     "useCases": [],
     "keywords": [],
     "githubUser": [

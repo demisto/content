@@ -6,8 +6,12 @@
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "categories": ["IT Services"],
-    "tags": [],
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [
+        "Data Source"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

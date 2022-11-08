@@ -3,21 +3,32 @@
     "description": "CRYPTOSIM meets the SIEM needs of corporations by its unique correlation engine works, capable of hierarchical correlation.",
     "support": "partner",
     "currentVersion": "1.0.0",
-    "itemPrefix": ["CRYPTOSIM"],
+    "itemPrefix": [
+        "CRYPTOSIM"
+    ],
     "author": "CRYPTTECH",
     "url": "https://crypttech.com",
     "email": "support@crypttech.com",
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Data Source"
+    ],
     "useCases": [],
     "keywords": [
-        "Alerts", "Security", "Security Analytics", "TIM", "Threat Intelligence"
+        "Alerts",
+        "Security",
+        "Security Analytics",
+        "TIM",
+        "Threat Intelligence"
     ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
     ],
-    "githubUser": ["haldunerbay", "crypttech"]
+    "githubUser": [
+        "haldunerbay",
+        "crypttech"
+    ]
 }

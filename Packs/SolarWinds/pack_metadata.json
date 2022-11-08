@@ -10,7 +10,9 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Data Source"
+    ],
     "useCases": [],
     "keywords": [
         "SolarWinds",

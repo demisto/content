@@ -9,7 +9,9 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "Data Source"
+    ],
     "created": "2020-05-12T13:09:02Z",
     "updated": "2021-05-20T11:28:02Z",
     "certification": "certified",

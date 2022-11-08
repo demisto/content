@@ -10,7 +10,9 @@
     "categories": [
         "Cloud Services"
     ],
-    "tags": [],
+    "tags": [
+        "Data Source"
+    ],
     "useCases": [],
     "keywords": [],
     "dependencies": {

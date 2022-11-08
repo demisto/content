@@ -10,7 +10,9 @@
     "categories": [
         "IT Services"
     ],
-    "tags": [],
+    "tags": [
+        "Data Source"
+    ],
     "useCases": [],
     "keywords": [
         "Asset Management"

@@ -10,7 +10,9 @@
     "categories": [
         "Utilities"
     ],
-    "tags": [],
+    "tags": [
+        "Data Source"
+    ],
     "useCases": [],
     "keywords": [],
     "dependencies": {},

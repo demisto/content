@@ -10,7 +10,9 @@
     "categories": [
         "Database"
     ],
-    "tags": [],
+    "tags": [
+        "Data Source"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

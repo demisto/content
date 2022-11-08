@@ -10,7 +10,9 @@
     "categories": [
         "Cloud Security"
     ],
-    "tags": [],
+    "tags": [
+        "Data Source"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
