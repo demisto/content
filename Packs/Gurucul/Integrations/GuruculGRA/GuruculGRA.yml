@@ -940,6 +940,8 @@ script:
     - name: toDate
       required: true
       description: To Date ( yyyy-MM-dd )
+    - name: entityTypeId
+      description: Entity Type Id
     outputs:
     - contextPath: Gra.Analytical.Features.Entity.Value.analyticalFeatures
       description: Analytical Features
