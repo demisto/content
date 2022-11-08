@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: TestCreateWordFile
 script: >
-  from StringIO import StringIO
+  from io import BytesIO
 
   from docx import Document
 
@@ -22,7 +22,7 @@ script: >
   try:
       document = Document()
       document.add_paragraph(args['text'])
-      target_stream = StringIO()
+      target_stream = BytesIO()
       document.save(target_stream)
       res = fileResult(args['name'], target_stream.getvalue())
   except BaseException as e:
@@ -31,7 +31,7 @@ script: >
 
   demisto.results(res)
 type: python
-subtype: python2
+subtype: python3
 tags: []
 comment: A test script to create a word file with a text as content and file name and put it in the context.
 enabled: true
@@ -43,5 +43,5 @@ args:
   required: true
   description: The content of the file to create
 scripttarget: 0
-dockerimage: demisto/word-parser
+dockerimage: demisto/docxpy:1.0.0.33689
 fromversion: 5.0.0

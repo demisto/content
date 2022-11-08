@@ -511,7 +511,6 @@ class FeedIndicatorType(object):
     MUTEX = "Mutex"
     Malware = "Malware"
 
-
     @staticmethod
     def is_valid_type(_type):
         return _type in (
@@ -7884,12 +7883,29 @@ def is_demisto_version_ge(version, build_number=''):
     :return: True if running within a Server version greater or equal than the passed version
     :rtype: ``bool``
     """
+
+    def versionzfill(v):
+        """ Split version on . and zfill. So we can compare 6.10 to 6.5 properly.
+
+        :type v: ``srt``
+        :param v: Version str to fill
+
+        :return: Version with zfill
+        :rtype: ``str``
+        """
+        vzfill = []
+        for ver in v.split("."):
+            vzfill.append(ver.zfill(8))
+        return tuple(vzfill)
+
     server_version = {}
     try:
         server_version = get_demisto_version()
-        if server_version.get('version') > version:
+        server_zfill = versionzfill(server_version.get('version'))
+        ver_zfill = versionzfill(version)
+        if server_zfill > ver_zfill:
             return True
-        elif server_version.get('version') == version:
+        elif server_zfill == ver_zfill:
             if build_number:
                 return int(server_version.get('buildNumber')) >= int(build_number)  # type: ignore[arg-type]
             return True  # No build number
@@ -8537,16 +8553,7 @@ if 'requests' in sys.modules:
                     if error_handler:
                         error_handler(res)
                     else:
-                        err_msg = 'Error in API call [{}] - {}' \
-                            .format(res.status_code, res.reason)
-                        try:
-                            # Try to parse json error response
-                            error_entry = res.json()
-                            err_msg += '\n{}'.format(json.dumps(error_entry))
-                            raise DemistoException(err_msg, res=res)
-                        except ValueError:
-                            err_msg += '\n{}'.format(res.text)
-                            raise DemistoException(err_msg, res=res)
+                        self.client_error_handler(res)
 
                 if not empty_valid_codes:
                     empty_valid_codes = [204]
@@ -8621,6 +8628,23 @@ if 'requests' in sys.modules:
             if status_codes:
                 return response.status_code in status_codes
             return response.ok
+
+        def  client_error_handler(self, res):
+            """Generic handler for API call error
+            Constructs and throws a proper error for the API call response.
+
+            :type response: ``requests.Response``
+            :param response: Response from API after the request for which to check the status.
+            """
+            err_msg = 'Error in API call [{}] - {}'.format(res.status_code, res.reason)
+            try:
+                # Try to parse json error response
+                error_entry = res.json()
+                err_msg += '\n{}'.format(json.dumps(error_entry))
+                raise DemistoException(err_msg, res=res)
+            except ValueError:
+                err_msg += '\n{}'.format(res.text)
+                raise DemistoException(err_msg, res=res)
 
 
 def batch(iterable, batch_size=1):
@@ -10709,7 +10733,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
         'content-encoding': 'gzip'
     }
 
-    header_msg = 'Error sending new events into XSIAM. \n'
+    header_msg = 'Error sending new events into XSIAM.\n'
 
     def events_error_handler(res):
         """
@@ -10723,14 +10747,18 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
                 error += ": " + xsiam_server_err_msg
 
         except ValueError:
-            error = '\n{}'.format(res.text)
+            if res.text:
+                error = '\n{}'.format(res.text)
+            else:
+                error = "Received empty response from the server"
 
         api_call_info = (
             'Parameters used:\n'
             '\tURL: {xsiam_url}\n'
             '\tHeaders: {headers}\n\n'
+            'Response status code: {status_code}\n'
             'Error received:\n\t{error}'
-        ).format(xsiam_url=xsiam_url, headers=json.dumps(headers, indent=4), error=error)
+        ).format(xsiam_url=xsiam_url, headers=json.dumps(headers, indent=8), status_code=res.status_code, error=error)
 
         demisto.error(header_msg + api_call_info)
         raise DemistoException(header_msg + error, DemistoException)

@@ -1,0 +1,79 @@
+commonfields:
+  id: OPSWAT-Metadefender V2
+  version: -1
+  sortvalues: []
+name: OPSWAT-Metadefender V2
+display: OPSWAT-Metadefender v2
+category: Data Enrichment & Threat Intelligence
+description: multi-scanning engine uses 30+ anti-malware engines to scan files for threats, significantly increasing malware detection.
+configuration:
+- display: Server URL (e.g. http://localhost:8008/metascan_rest/)
+  name: url
+  type: 0
+  required: true
+- display: API Key - Needed in cloud based solutions
+  name: api_key
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: Cloud based
+  name: cloud
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: The high threshold
+  name: highPercnt
+  defaultvalue: "66"
+  type: 0
+  required: false
+- display: The low threshold
+  name: lowPercnt
+  defaultvalue: "34"
+  type: 0
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: opswat-scan-file
+    arguments:
+    - name: fileId
+      required: true
+      default: true
+      description: Entry id of a file in Demisto
+    outputs:
+    - contextPath: OPSWAT.FileName
+      description: OPSWAT file name to scan
+      type: string
+    - contextPath: OPSWAT.ScanId
+      description: OPSWAT scan id of the scan
+      type: string
+    description: Scan file in OPSWAT
+  - name: opswat-hash
+    arguments:
+    - name: hash
+      required: true
+      default: true
+      description: File hash (Can be any hash type)
+    description: Check file hash on OPSWAT
+  - name: opswat-scan-result
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: OPSWAT scan id
+    description: Get OPSWAT result
+  dockerimage: demisto/python3:3.10.7.33922
+  subtype: python3
+  runonce: false
+tests:
+- No tests - no instance
+fromversion: 5.0.0

@@ -6,7 +6,8 @@ from CommonServerPython import *  # noqa: F401
 
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+urllib3.disable_warnings()
 
 INCIDENT = 'incident'
 SIR_INCIDENT = 'sn_si_incident'
@@ -399,6 +400,12 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
     inv_approval = {v: k for k, v in approval.items()} if approval else {}
     fields_to_clear = argToList(
         args.get('clear_fields', []))  # This argument will contain fields to allow their value empty
+
+    # This is for updating null fields for update_remote_system function for example: assigned_to.
+    for arg in args.keys():
+        if not args[arg]:
+            fields_to_clear.append(arg)
+    demisto.debug(f'Fields to clear {fields_to_clear}')
 
     ticket_fields = {}
     for arg in SNOW_ARGS:
@@ -2298,13 +2305,28 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                 'Type': EntryType.NOTE,
                 'Contents': {
                     'dbotIncidentClose': True,
-                    'closeReason': f'From ServiceNow: {ticket.get("close_notes")}'
+                    'closeNotes': f'From ServiceNow: {ticket.get("close_notes")}',
+                    'closeReason': converts_state_close_reason(ticket.get("state"))
                 },
                 'ContentsFormat': EntryFormat.JSON
             })
 
     demisto.debug(f'Pull result is {ticket}')
     return [ticket] + entries
+
+
+def converts_state_close_reason(ticket_state: str):
+    """
+    converts between XSOAR and service now state.
+    Args:
+        ticket_state: Service now state
+    Returns:
+        The XSOAR state
+    """
+    if ticket_state in ['6', '7']:
+        return 'Resolved'
+
+    return 'Other'
 
 
 def update_remote_system_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> str:

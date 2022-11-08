@@ -10,7 +10,9 @@
     "videos": [
         "https://www.youtube.com/watch?v=Wk1g43cgo98"
     ],
-    "categories": [],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
