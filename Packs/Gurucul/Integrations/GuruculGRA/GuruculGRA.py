@@ -340,6 +340,7 @@ def main() -> None:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
+
 ''' ENTRY POINT '''
 
 
