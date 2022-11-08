@@ -835,7 +835,7 @@ script:
       for debugging.
     execution: false
     name: get-modified-remote-data
-  dockerimage: demisto/oauthlib:1.0.0.33879
+  dockerimage: demisto/oauthlib:1.0.0.36344
   feed: false
   isfetch: true
   ismappable: true
