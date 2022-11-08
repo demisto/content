@@ -8,12 +8,12 @@
     "email": "",
     "created": "2020-03-09T17:08:23Z",
     "categories": [
-        "Forensics & Malware Analysis"
+        "Analytics & SIEM"
     ],
-    "tags": [],
-    "useCases": [
-        "Impossible Traveler"
+    "tags": [
+        "Use Case"
     ],
+    "useCases": [],
     "keywords": [],
     "dependencies": {
         "GoogleChronicleBackstory": {
