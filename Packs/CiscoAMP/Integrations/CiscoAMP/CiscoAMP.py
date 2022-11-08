@@ -1376,7 +1376,10 @@ def computer_trajectory_list_command(client: Client, args: Dict[str, Any]) -> Co
     limit = arg_to_number(args.get('limit'))
     query_string = args.get('query_string')
 
-    if is_query_correct(query_string):
+    if connector_guid and query_string:
+        raise ValueError('connector_guid cannot be entered with a query_string')
+
+    if not connector_guid and is_query_wrong(query_string):
         raise ValueError('query_string must be: SHA-256/IPv4/URL')
 
     pagination = get_pagination_parameters(page, page_size, limit)
@@ -1692,10 +1695,10 @@ def computer_activity_list_command(client: Client, args: Dict[str, Any]) -> Comm
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit'))
 
-    filename_regex = r'[0-9a-zA-Z_\-.]*[0-9a-zA-Z_\-. ]*'
+    filename_regex = r'[0-9a-zA-Z_\-.]+[0-9a-zA-Z_\-. ]*'
 
-    if is_query_correct(query_string) \
-            and not re.match(filename_regex, query_string):
+    if is_query_wrong(query_string) \
+            and not bool(re.match(filename_regex, query_string)):
         raise ValueError('query_string must be: SHA-256/IPv4/URL/Filename')
 
     pagination = get_pagination_parameters(page, page_size, limit)
@@ -3146,7 +3149,7 @@ def add_item_to_all_dictionaries(dictionaries: List[Dict[str, Any]], key: str, v
         dictionary[key] = value
 
 
-def is_query_correct(query: str = None) -> bool:
+def is_query_wrong(query: str = None) -> bool:
     """
     Check if the query format is correct
 
@@ -3158,7 +3161,7 @@ def is_query_correct(query: str = None) -> bool:
         bool: Whether the format is correct or not
     """
     if not query:
-        return False
+        return True
 
     return not sha256Regex.match(query) \
         and not re.match(ipv4Regex, query) \

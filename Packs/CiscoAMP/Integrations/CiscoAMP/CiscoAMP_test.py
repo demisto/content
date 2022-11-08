@@ -60,26 +60,21 @@ def mock_client() -> Client:
 @pytest.mark.parametrize(
     'args, suffix, file',
     [({'limit': '34'}, '', 'computer_list_response.json'),
-     ({'connector_guid': '1'}, '/1', 'computer_get_response.json'),
-     ({'connector_guid': '1', 'group_guid': '2'}, '/1', 'computer_get_response.json')]
+     ({'connector_guid': '1'}, '/1', 'computer_get_response.json')]
 )
 def test_computer_list_command(requests_mock, mock_client, args, suffix, file):
     """
     Scenario:
     -   Get a list of 34 computers.
     -   Get a single computer.
-    -   Search for a specific computer and get a list of computers in a group.
     Given:
     -   The user has entered a limit.
     -   The user has entered a connector_guid.
-    -   The user has entered a connector_guid and a group_guid.
     When:
     -    cisco-amp-computer-list is called.
     Then:
     -   Ensure outputs_prefix is correct.
     -   Ensure links don't exist.
-    OR
-    -   Ensure an exception has been raised.
     """
     mock_response = load_mock_response(file)
     requests_mock.get(
@@ -87,31 +82,50 @@ def test_computer_list_command(requests_mock, mock_client, args, suffix, file):
         json=mock_response
     )
 
+    from CiscoAMP import computer_list_command
+    responses = computer_list_command(mock_client, args)
+
+    for response in responses[:-1]:
+        assert response.outputs_prefix == 'CiscoAMP.Computer'
+        assert 'links' not in response.outputs
+
+
+def test_computer_list_error_command(requests_mock, mock_client):
+    """
+    Scenario:
+    -   Search for a specific computer and get a list of computers in a group.
+    Given:
+    -   The user has entered a connector_guid and a group_guid.
+    When:
+    -    cisco-amp-computer-list is called.
+    Then:
+    -   Ensure an exception has been raised.
+    """
+    args = {
+        'connector_guid': '1',
+        'group_guid': '2'
+    }
+
+    requests_mock.get(
+        f'{BASE_URL}/computers/{args["connector_guid"]}'
+    )
+
     try:
         from CiscoAMP import computer_list_command
-        responses = computer_list_command(mock_client, args)
+        computer_list_command(mock_client, args)
 
-        for response in responses[:-1]:
-            assert response.outputs_prefix == 'CiscoAMP.Computer'
-            assert 'links' not in response.outputs
+        assert False
 
     except ValueError as ve:
         assert str(ve) == 'connector_guid must be the only input, when fetching a specific computer.'
 
 
-@pytest.mark.parametrize(
-    'args',
-    ({'connector_guid': '1', 'page': '2', 'page_size': '2'},
-     {'connector_guid': '1', 'query_string': '1'})
-)
-def test_computer_trajectory_list_command(requests_mock, mock_client, args):
+def test_computer_trajectory_list_command(requests_mock, mock_client):
     """
     Scenario:
     -   Get a computer's trajectory with pagination.
-    -   Get a computer's trajectory and filter it by a false query.
     Given:
     -   The user has entered a connector_guid, page and page_size.
-    -   The user has entered a connector_guid and a query_string.
     When:
     -    cisco-amp-computer-trajectory-get is called.
     Then:
@@ -119,26 +133,56 @@ def test_computer_trajectory_list_command(requests_mock, mock_client, args):
     -   Ensure length of the events in context output is correct.
     -   Ensure connector_guid is in the events.
     -   Ensure pagination worked.
-    OR
-    -   Ensure an exception has been raised.
     """
+    args = {
+        'connector_guid': '1',
+        'page': 2,
+        'page_size': 2
+    }
+
     mock_response = load_mock_response('computer_trajectory_response.json')
     requests_mock.get(
         f'{BASE_URL}/computers/{args["connector_guid"]}/trajectory',
         json=mock_response
     )
 
+    from CiscoAMP import computer_trajectory_list_command
+    response = computer_trajectory_list_command(mock_client, args)
+
+    assert response.outputs_prefix == 'CiscoAMP.ComputerTrajectory'
+    assert len(response.outputs) == args['page_size']
+    assert 'connector_guid' in response.outputs[1]
+    assert response.outputs[0]['timestamp'] == 'data_events[2]_timestamp'
+
+
+def test_computer_trajectory_list_error_command(requests_mock, mock_client):
+    """
+    Scenario:
+    -   Get a computer's trajectory and filter it by a false query.
+    Given:
+    -   The user has entered a connector_guid and a query_string.
+    When:
+    -    cisco-amp-computer-trajectory-get is called.
+    Then:
+    -   Ensure an exception has been raised.
+    """
+    args = {
+        'connector_guid': '1',
+        'query_string': '1'
+    }
+
+    requests_mock.get(
+        f'{BASE_URL}/computers/{args["connector_guid"]}/trajectory'
+    )
+
     try:
         from CiscoAMP import computer_trajectory_list_command
-        response = computer_trajectory_list_command(mock_client, args)
+        computer_trajectory_list_command(mock_client, args)
 
-        assert response.outputs_prefix == 'CiscoAMP.ComputerTrajectory'
-        assert len(response.outputs) == 2
-        assert 'connector_guid' in response.outputs[1]
-        assert response.outputs[0]['timestamp'] == 'data_events[2]_timestamp'
+        assert False
 
     except ValueError as ve:
-        assert str(ve) == 'query_string must be: SHA-256/IPv4/URL'
+        assert str(ve) == 'connector_guid cannot be entered with a query_string'
 
 
 def test_computer_user_activity_list_command(requests_mock, mock_client):
@@ -262,11 +306,7 @@ def test_computer_move_command(requests_mock, mock_client):
     assert 'links' not in response.outputs
 
 
-@pytest.mark.parametrize(
-    'file',
-    ('computer_delete_response.json', 'computer_delete_fail_response.json')
-)
-def test_computer_delete_command(requests_mock, mock_client, file):
+def test_computer_delete_command(requests_mock, mock_client):
     """
     Scenario:
     -   Delete a computer.
@@ -276,14 +316,39 @@ def test_computer_delete_command(requests_mock, mock_client, file):
     -   cisco-amp-computer-delete is called.
     Then:
     -   Ensure the computer has been deleted.
-    OR
+    """
+    args: Dict[str, Any] = {
+        'connector_guid': 1
+    }
+
+    mock_response = load_mock_response('computer_delete_response.json')
+    requests_mock.delete(
+        f'{BASE_URL}/computers/{args["connector_guid"]}',
+        json=mock_response
+    )
+
+    from CiscoAMP import computer_delete_command
+    response = computer_delete_command(mock_client, args)
+
+    assert response.raw_response['data']['deleted'] is True
+
+
+def test_computer_delete_error_command(requests_mock, mock_client):
+    """
+    Scenario:
+    -   Delete a computer.
+    Given:
+    -   The user has entered a connector_guid.
+    When:
+    -   cisco-amp-computer-delete is called.
+    Then:
     -   Ensure a value error has been raised.
     """
     args: Dict[str, Any] = {
         'connector_guid': 1
     }
 
-    mock_response = load_mock_response(file)
+    mock_response = load_mock_response('computer_delete_fail_response.json')
     requests_mock.delete(
         f'{BASE_URL}/computers/{args["connector_guid"]}',
         json=mock_response
@@ -291,45 +356,67 @@ def test_computer_delete_command(requests_mock, mock_client, file):
 
     try:
         from CiscoAMP import computer_delete_command
-        response = computer_delete_command(mock_client, args)
+        computer_delete_command(mock_client, args)
 
-        assert response.raw_response['data']['deleted'] is True
+        assert False
 
     except ValueError as ve:
         assert str(ve).startswith('Failed to delete Connector GUID:')
 
 
-@pytest.mark.parametrize(
-    'args',
-    ({'query_string': 'hello.com'}, {'query_string': '"'})
-)
-def test_computer_activity_list_command(requests_mock, mock_client, args):
+def test_computer_activity_list_command(requests_mock, mock_client):
     """
     Scenario:
     -   Get activity on computers by query.
     Given:
     -   The user has entered a url to query.
-    -   The user has entered a false query.
     When:
     -    cisco-amp-computer-activity-list is called.
     Then:
     -   Ensure outputs_prefix is correct.
     -   Ensure a links doesn't exist in outputs.
-    OR
-    -   Ensure a value has been raised.
     """
+    args = {
+        'query_string': '8.8.8.8'
+    }
+
     mock_response = load_mock_response('computer_activity_response.json')
     requests_mock.get(
         f'{BASE_URL}/computers/activity',
         json=mock_response
     )
 
+    from CiscoAMP import computer_activity_list_command
+    response = computer_activity_list_command(mock_client, args)
+
+    assert response.outputs_prefix == 'CiscoAMP.ComputerActivity'
+    assert_output_has_no_links(response.outputs)
+
+
+def test_computer_activity_list_error_command(requests_mock, mock_client):
+    """
+    Scenario:
+    -   Get activity on computers by query.
+    Given:
+    -   The user has entered a false query.
+    When:
+    -    cisco-amp-computer-activity-list is called.
+    Then:
+    -   Ensure a value has been raised.
+    """
+    args = {
+        'query_string': '"'
+    }
+
+    requests_mock.get(
+        f'{BASE_URL}/computers/activity'
+    )
+
     try:
         from CiscoAMP import computer_activity_list_command
-        response = computer_activity_list_command(mock_client, args)
+        print(computer_activity_list_command(mock_client, args))
 
-        assert response.outputs_prefix == 'CiscoAMP.ComputerActivity'
-        assert_output_has_no_links(response.outputs)
+        assert False
 
     except ValueError as ve:
         assert str(ve) == 'query_string must be: SHA-256/IPv4/URL/Filename'
@@ -637,17 +724,7 @@ def test_file_list_item_create_command(requests_mock, mock_client):
     assert 'links' not in response.outputs
 
 
-@pytest.mark.parametrize(
-    'file, args',
-    [(
-        'file_list_item_delete_response.json',
-        {'file_list_guid': '1', 'sha256': '1'},
-    ), (
-        'file_list_item_delete_fail_response.json',
-        {'file_list_guid': '1', 'sha256': '1'},
-    )]
-)
-def test_file_list_item_delete_command(requests_mock, mock_client, file, args):
+def test_file_list_item_delete_command(requests_mock, mock_client):
     """
     Scenario:
     -   Delete a file item from a file item list.
@@ -657,10 +734,42 @@ def test_file_list_item_delete_command(requests_mock, mock_client, file, args):
     -    cisco-amp-file-list-item-delete is called.
     Then:
     -   Ensure the deletion succeeded.
-    Or:
+    """
+    args = {
+        'file_list_guid': '1',
+        'sha256': '1'
+    }
+
+    mock_response = load_mock_response('file_list_item_delete_response.json')
+    requests_mock.delete(
+        f'{BASE_URL}/file_lists/{args["file_list_guid"]}/files/{args["sha256"]}',
+        json=mock_response
+    )
+
+    from CiscoAMP import file_list_item_delete_command
+    response = file_list_item_delete_command(mock_client, args)
+
+    assert response.readable_output == \
+        f'SHA-256: "{args["sha256"]}" Successfully deleted from File List GUID: "{args["file_list_guid"]}".'
+
+
+def test_file_list_item_delete_error_command(requests_mock, mock_client):
+    """
+    Scenario:
+    -   Delete a file item from a file item list.
+    Given:
+    -   The user has entered a file_list_guid and a sha256.
+    When:
+    -    cisco-amp-file-list-item-delete is called.
+    Then:
     -   Ensure the deletion failed.
     """
-    mock_response = load_mock_response(file)
+    args = {
+        'file_list_guid': '1',
+        'sha256': '1'
+    }
+
+    mock_response = load_mock_response('file_list_item_delete_fail_response.json')
     requests_mock.delete(
         f'{BASE_URL}/file_lists/{args["file_list_guid"]}/files/{args["sha256"]}',
         json=mock_response
@@ -668,10 +777,9 @@ def test_file_list_item_delete_command(requests_mock, mock_client, file, args):
 
     try:
         from CiscoAMP import file_list_item_delete_command
-        response = file_list_item_delete_command(mock_client, args)
+        file_list_item_delete_command(mock_client, args)
 
-        assert response.readable_output == \
-            f'SHA-256: "{args["sha256"]}" Successfully deleted from File List GUID: "{args["file_list_guid"]}".'
+        assert False
 
     except ValueError as ve:
         assert str(ve) == \
@@ -714,12 +822,7 @@ def test_group_list_command(requests_mock, mock_client, file, args, suffix):
         assert_output_has_no_links(policies)
 
 
-@pytest.mark.parametrize(
-    'args, no_policy_error',
-    [({'group_guid': '1', 'windows_policy_guid': '1'}, ''),
-     ({'group_guid': '1'}, 'At least one Policy GUID must be entered.')]
-)
-def test_group_policy_update_command(requests_mock, mock_client, args, no_policy_error):
+def test_group_policy_update_command(requests_mock, mock_client):
     """
     Scenario:
     -   Update a group policy.
@@ -732,23 +835,53 @@ def test_group_policy_update_command(requests_mock, mock_client, args, no_policy
     -   Ensure outputs_prefix is correct.
     -   Ensure there are no links in the outputs.
     """
+    args = {
+        'group_guid': '1',
+        'windows_policy_guid': '1'
+    }
+
     mock_response = load_mock_response('group_response.json')
     requests_mock.patch(
         f'{BASE_URL}/groups/{args["group_guid"]}',
         json=mock_response
     )
 
+    from CiscoAMP import group_policy_update_command
+    response = group_policy_update_command(mock_client, args)
+
+    assert response.outputs_prefix == 'CiscoAMP.Group'
+
+    if policies := response.outputs[0].get('policies'):
+        assert_output_has_no_links(policies)
+
+
+def test_group_policy_update_error_command(requests_mock, mock_client):
+    """
+    Scenario:
+    -   Update a group policy.
+    Given:
+    -   The user hasn't entered any policy arguments.
+    When:
+    -    cisco-amp-group-policy-update is called.
+    Then:
+    -   Ensure an error has been raised
+    """
+    args = {
+        'group_guid': '1'
+    }
+
+    requests_mock.patch(
+        f'{BASE_URL}/groups/{args["group_guid"]}'
+    )
+
     try:
         from CiscoAMP import group_policy_update_command
-        response = group_policy_update_command(mock_client, args)
+        group_policy_update_command(mock_client, args)
 
-        assert response.outputs_prefix == 'CiscoAMP.Group'
-
-        if policies := response.outputs[0].get('policies'):
-            assert_output_has_no_links(policies)
+        assert False
 
     except ValueError as ve:
-        assert str(ve) == no_policy_error
+        assert str(ve) == 'At least one Policy GUID must be entered.'
 
 
 @pytest.mark.parametrize(
@@ -819,12 +952,7 @@ def test_group_create_command(requests_mock, mock_client):
         assert_output_has_no_links(policies)
 
 
-@pytest.mark.parametrize(
-    'file',
-    [('group_delete_response.json'),
-     ('group_delete_fail_response.json')]
-)
-def test_group_delete_command(requests_mock, mock_client, file):
+def test_group_delete_command(requests_mock, mock_client):
     """
     Scenario:
     -   Delete a group.
@@ -834,14 +962,39 @@ def test_group_delete_command(requests_mock, mock_client, file):
     -    cisco-amp-groups-delete is called.
     Then:
     -   Ensure the deletion succeeded.
-    Or:
+    """
+    args: Dict[str, Any] = {
+        'group_guid': '1',
+    }
+
+    mock_response = load_mock_response('group_delete_response.json')
+    requests_mock.delete(
+        f'{BASE_URL}/groups/{args["group_guid"]}',
+        json=mock_response
+    )
+
+    from CiscoAMP import groups_delete_command
+    response = groups_delete_command(mock_client, args)
+
+    assert response.readable_output == f'Group GUID: "{args["group_guid"]}"\nSuccessfully deleted.'
+
+
+def test_group_delete_error_command(requests_mock, mock_client):
+    """
+    Scenario:
+    -   Delete a group.
+    Given:
+    -   The user has entered a group_guid.
+    When:
+    -    cisco-amp-groups-delete is called.
+    Then:
     -   Ensure the deletion failed.
     """
     args: Dict[str, Any] = {
         'group_guid': '1',
     }
 
-    mock_response = load_mock_response(file)
+    mock_response = load_mock_response('group_delete_fail_response.json')
     requests_mock.delete(
         f'{BASE_URL}/groups/{args["group_guid"]}',
         json=mock_response
@@ -849,14 +1002,12 @@ def test_group_delete_command(requests_mock, mock_client, file):
 
     try:
         from CiscoAMP import groups_delete_command
-        response = groups_delete_command(mock_client, args)
+        groups_delete_command(mock_client, args)
 
-        assert response.readable_output == \
-            f'Group GUID: "{args["group_guid"]}"\nSuccessfully deleted.'
+        assert False
 
     except ValueError as ve:
-        assert str(ve) == \
-            f'Failed to delete Group GUID: "{args["group_guid"]}".'
+        assert str(ve) == f'Failed to delete Group GUID: "{args["group_guid"]}".'
 
 
 @pytest.mark.parametrize(
