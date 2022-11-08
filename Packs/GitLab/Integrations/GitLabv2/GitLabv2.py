@@ -441,9 +441,8 @@ def verify_project_id(client: Client, project_id: Any) -> Boolean:
     input: project_id
     output: True is the project_id is valid, otherwise an error will occur.
     '''
-    project_id = arg_to_number(project_id)
-    if not project_id or project_id < 0:
-        raise DemistoException('project_id must be an positive integer')
+    project_id = arg_to_number(project_id, required=True) or -1
+    # This is a way to search the project_id api.
     params = {'id_before': (project_id + 1), 'per_page': 1}
     response = client.get_project_list_request(params)
     if response[0].get('id') != project_id:
@@ -454,8 +453,8 @@ def verify_project_id(client: Client, project_id: Any) -> Boolean:
 def return_date_arg_as_iso(arg: str | None) -> str | None:
     '''
     This function convert timestamp format (<number> <time unit>, e.g., 12 hours, 7 days) to isu format
-    input: project_id
-    output: True is the project_id is valid, otherwise an error will occur.
+    input: arg in timestamp format
+    output: returns the iso format for the timestamp if exist
     '''
     arg_to_iso = arg_to_datetime(arg)
     return arg_to_iso.isoformat() if arg_to_iso else None
@@ -494,7 +493,7 @@ def group_project_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     Returns:
         (CommandResults).
     """
-    response_to_hr, headers, human_readable = [], ['Id', 'Name', 'Description', 'Path'], ''
+    response_to_hr, headers = [], ['Id', 'Name', 'Description', 'Path']
     page_number = arg_to_number(args.get('page')) or 1
     limit = arg_to_number(args.get('limit', '50')) or 50
     group_id = args.get('group_id')
@@ -1101,11 +1100,10 @@ def issue_note_create_command(client: Client, args: Dict[str, Any]) -> CommandRe
     response = client.issue_note_create_request(issue_iid, body, confidential)
     return_partial = args.get('partial_response') == 'true'
     outputs = partial_response([response], 'Issue Note') if return_partial else response
-    human_readable_str = 'Issue note created successfully'
     return CommandResults(
         outputs_prefix='GitLab.IssueNote',
         outputs_key_field='id',
-        readable_output=human_readable_str,
+        readable_output='Issue note created successfully',
         outputs=outputs,
         raw_response=response
     )
@@ -1126,9 +1124,8 @@ def issue_note_delete_command(client: Client, args: Dict[str, Any]) -> CommandRe
     issue_iid = arg_to_number(args.get('issue_iid'))
     note_id = arg_to_number(args.get('note_id'))
     client.issue_note_delete_request(issue_iid, note_id)
-    human_readable_str = 'Issue note deleted successfully'
     return CommandResults(
-        readable_output=human_readable_str
+        readable_output='Issue note deleted successfully'
     )
 
 
@@ -1151,11 +1148,10 @@ def issue_note_update_command(client: Client, args: Dict[str, Any]) -> CommandRe
     response = client.issue_note_update_request(issue_iid, note_id, body)
     return_partial = args.get('partial_response') == 'true'
     outputs = partial_response([response], 'Issue Note') if return_partial else response
-    human_readable_str = 'Issue note updated was updated successfully.'
     return CommandResults(
         outputs_prefix='GitLab.IssueNote',
         outputs_key_field='id',
-        readable_output=human_readable_str,
+        readable_output='Issue note updated was updated successfully.',
         outputs=outputs,
         raw_response=response
     )
@@ -1286,11 +1282,10 @@ def merge_request_create_command(client: Client, args: Dict[str, Any]) -> Comman
                                                    allow_maintainer_to_push, approvals_before_merge, squash)
     return_partial = args.get('partial_response') == 'true'
     outputs = partial_response([response], 'Merge Request') if return_partial else response
-    human_readable_str = 'Merge request created successfully.'
     return CommandResults(
         outputs_prefix='GitLab.MergeRequest',
         outputs_key_field='iid',
-        readable_output=human_readable_str,
+        readable_output='Merge request created successfully.',
         outputs=outputs,
         raw_response=response
     )
@@ -1331,11 +1326,10 @@ def merge_request_update_command(client: Client, args: Dict[str, Any]) -> Comman
                                                    squash)
     return_partial = args.get('partial_response') == 'true'
     outputs = partial_response([response], 'Merge Request') if return_partial else response
-    human_readable_str = 'Merge request was updated successfully.'
     return CommandResults(
         outputs_prefix='GitLab.MergeRequest',
         outputs_key_field='iid',
-        readable_output=human_readable_str,
+        readable_output='Merge request was updated successfully.',
         outputs=outputs,
         raw_response=response
     )
@@ -1394,13 +1388,12 @@ def merge_request_note_create_command(client: Client, args: Dict[str, Any]) -> C
     merge_request_iid = args.get('merge_request_iid')
     body = args.get('body')
     response = client.merge_request_note_create_request(merge_request_iid, body)
-    human_readable_str = 'Merge request note created successfully.'
     return_partial = args.get('partial_response') == 'true'
     outputs = partial_response([response], 'Merge Request Note') if return_partial else response
     return CommandResults(
         outputs_prefix='GitLab.MergeRequestNote',
         outputs_key_field='id',
-        readable_output=human_readable_str,
+        readable_output='Merge request note created successfully.',
         outputs=outputs,
         raw_response=response
     )
@@ -1425,11 +1418,10 @@ def merge_request_note_update_command(client: Client, args: Dict[str, Any]) -> C
     response = client.merge_request_note_update_request(merge_request_iid, note_id, body)
     return_partial = args.get('partial_response') == 'true'
     outputs = partial_response([response], 'Merge Request Note') if return_partial else response
-    human_readable_str = 'Merge request note was updated successfully'
     return CommandResults(
         outputs_prefix='GitLab.MergeRequestNote',
         outputs_key_field='id',
-        readable_output=human_readable_str,
+        readable_output='Merge request note was updated successfully',
         outputs=outputs,
         raw_response=response
     )
@@ -1450,9 +1442,8 @@ def merge_request_note_delete_command(client: Client, args: Dict[str, Any]) -> C
     merge_request_iid = args.get('merge_request_iid')
     note_id = args.get('note_id')
     client.merge_request_note_delete_request(merge_request_iid, note_id)
-    human_readable_str = 'Merge request note deleted successfully'
     return CommandResults(
-        readable_output=human_readable_str
+        readable_output='Merge request note deleted successfully'
     )
 
 
@@ -1498,11 +1489,14 @@ def code_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     page_number = arg_to_number(args.get('page')) or 1
     limit = arg_to_number(args.get('limit')) or 50
+    headers = ['id', 'basename', 'ref', 'filename', 'path', 'startline', 'data']
     params = assign_params(search=args.get('search'), scope='blobs')
     response = response_according_pagination(client.codes_search_request, limit, page_number, params,
                                              None)
+    human_readable = tableToMarkdown('Code Search Results', response, removeNull=True, headers=headers)
     return CommandResults(
         outputs_prefix='GitLab.Code',
+        readable_output=human_readable,
         outputs=response,
         raw_response=response
     )

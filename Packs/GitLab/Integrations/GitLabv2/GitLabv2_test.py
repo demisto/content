@@ -1,6 +1,7 @@
 import io
 import json
 import pytest
+from freezegun import freeze_time
 
 
 def util_load_json(path):
@@ -833,4 +834,34 @@ def test_partial_response(response, object_name, expected_response):
     """
     from GitLabv2 import partial_response
     result = partial_response(response, object_name)
-    assert result == expected_response
+    assert result == expected_response    
+
+
+ARGS_ISO_CHECK = [
+    (None, True, None),
+    ('7 days', True, '2022-10-31T15:11:11.704807'),
+    ('7 months', True, '2022-04-07T15:11:11.704807')
+]
+
+
+@freeze_time('2022-11-07T15:11:11.704807')
+@pytest.mark.parametrize('arg, isValidDate, expected_response', ARGS_ISO_CHECK)
+def test_return_date_arg_as_iso(arg, isValidDate, expected_response):
+    """
+    Given:
+        - arg representing time stamp
+    When:
+        - running return_date_arg_as_iso
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from GitLabv2 import return_date_arg_as_iso
+    from CommonServerPython import DemistoException
+    if isValidDate:
+        result = return_date_arg_as_iso(arg)
+        assert result == expected_response
+    else:
+        with pytest.raises(DemistoException) as e:
+            return_date_arg_as_iso(arg)
+
+        assert str(e.value) == expected_response

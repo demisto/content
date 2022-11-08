@@ -1,40 +1,6 @@
 ## Overview
 GitLab v2 is The DevOps platform that empowers organizations to maximize the overall return on software development by delivering software faster and efficiently while strengthening security and compliance.
 
-## API relevant Scopes for each command
-| **api** | **read_api** | **read_user** | **read_repository** | **write_repository** |
-| --- | --- | --- | --- | --- |
-| gitlab-group-project-list | gitlab-group-project-list | gitlab-version-get | gitlab-raw-file-get | gitlab-file-create |
-| gitlab-issue-create | gitlab-raw-file-get |  | gitlab-file-get | gitlab-file-update |
-| gitlab-branch-create | gitlab-project-list |  |  | gitlab-file-delete |
-| gitlab-branch-delete | gitlab-version-get |  |  |  |
-| gitlab-merged-branch-delete | gitlab-issue-list |  |  |  |
-| gitlab-raw-file-get | gitlab-file-get |  |  |  |
-| gitlab-project-list | gitlab-commit-list |  |  |  |
-| gitlab-version-get | gitlab-branch-list |  |  |  |
-| gitlab-issue-list | gitlab-merge-request-list |  |  |  |
-| gitlab-file-get | gitlab-issue-note-list |  |  |  |
-| gitlab-commit-list | gitlab-merge-request-note-list  |  |  |  |
-| gitlab-branch-list | gitlab-group-member-list |  |  |  |
-| gitlab-group-list | gitlab-code-search  |  |  |  |
-| gitlab-issue-update | gitlab-project-user-list |  |  |  |
-| gitlab-merge-request-list |  |  |  |  |
-| gitlab-issue-note-list |  |  |  |  |
-| gitlab-issue-note-create |  |  |  |  |
-| gitlab-issue-note-delete |  |  |  |  |
-| gitlab-issue-note-update |  |  |  |  |
-| gitlab-merge-request-create |  |  |  |  |
-| gitlab-merge-request-update |  |  |  |  |
-| gitlab-merge-request-note-create |  |  |  |  |
-| gitlab-merge-request-note-list |  |  |  |  |
-| gitlab-merge-request-note-update |  |  |  |  |
-| gitlab-merge-request-note-delete |  |  |  |  |
-| gitlab-group-member-list |  |  |  |  |
-| gitlab-file-create |  |  |  |  |
-| gitlab-file-update |  |  |  |  |
-| gitlab-file-delete |  |  |  |  |
-| gitlab-code-search |  |  |  |  |
-| gitlab-project-user-list |  |  |  |  |
 ## Use Cases
 This integration enables you to:
 - Create, close, or update a GitLab issue.
@@ -2013,3 +1979,39 @@ Get the users list of a project.
 |Id|UserName|Name|State|WebLink|
 |---|---|---|---|
 |123|demoExample|demo user|active|WebLink/demoExample|
+
+
+## API relevant Scopes for each command
+| **api** | **read_api** | **read_user** | **read_repository** | **write_repository** |
+| --- | --- | --- | --- | --- |
+| gitlab-group-project-list | gitlab-group-project-list | gitlab-version-get | gitlab-raw-file-get | gitlab-file-create |
+| gitlab-issue-create | gitlab-raw-file-get |  | gitlab-file-get | gitlab-file-update |
+| gitlab-branch-create | gitlab-project-list |  |  | gitlab-file-delete |
+| gitlab-branch-delete | gitlab-version-get |  |  |  |
+| gitlab-merged-branch-delete | gitlab-issue-list |  |  |  |
+| gitlab-raw-file-get | gitlab-file-get |  |  |  |
+| gitlab-project-list | gitlab-commit-list |  |  |  |
+| gitlab-version-get | gitlab-branch-list |  |  |  |
+| gitlab-issue-list | gitlab-merge-request-list |  |  |  |
+| gitlab-file-get | gitlab-issue-note-list |  |  |  |
+| gitlab-commit-list | gitlab-merge-request-note-list  |  |  |  |
+| gitlab-branch-list | gitlab-group-member-list |  |  |  |
+| gitlab-group-list | gitlab-code-search  |  |  |  |
+| gitlab-issue-update | gitlab-project-user-list |  |  |  |
+| gitlab-merge-request-list |  |  |  |  |
+| gitlab-issue-note-list |  |  |  |  |
+| gitlab-issue-note-create |  |  |  |  |
+| gitlab-issue-note-delete |  |  |  |  |
+| gitlab-issue-note-update |  |  |  |  |
+| gitlab-merge-request-create |  |  |  |  |
+| gitlab-merge-request-update |  |  |  |  |
+| gitlab-merge-request-note-create |  |  |  |  |
+| gitlab-merge-request-note-list |  |  |  |  |
+| gitlab-merge-request-note-update |  |  |  |  |
+| gitlab-merge-request-note-delete |  |  |  |  |
+| gitlab-group-member-list |  |  |  |  |
+| gitlab-file-create |  |  |  |  |
+| gitlab-file-update |  |  |  |  |
+| gitlab-file-delete |  |  |  |  |
+| gitlab-code-search |  |  |  |  |
+| gitlab-project-user-list |  |  |  |  |
