@@ -34,7 +34,7 @@ class Client:
 
     def session_post(self, url: str, json_cmd: dict) -> dict:
         response = self.session.post(url=url, json=json_cmd, verify=self.verify,
-                                     headers=self.session_metadata["headers"])
+                                     headers=self.session_metadata.get("headers"))
         json_response = json.loads(response.text)
         if 'type' in json_response and json_response['type'] == 'exception':
             if 'message' in json_response:
@@ -62,6 +62,7 @@ class Client:
             'ok': 'Log In'
         }
         try:
+            headers = {}
             if LooseVersion(demisto.params().get('version', '8')) >= LooseVersion('10.1.6'):
                 # We do this to get the cookie we need to add to the requests in the new version of PAN-OS
                 response = self.session.get(url=f'{self.session_metadata["base_url"]}/php/login.php?',
