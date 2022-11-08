@@ -4,7 +4,7 @@ import demistomock as demisto
 def test_file_reputation(mocker):
     """
     Given:
-        - The script args.
+        - Script args:  MD5 hash string.
 
     When:
         - Running the file_reputation function.
@@ -25,13 +25,13 @@ def test_file_reputation(mocker):
 def test_file_reputation_ignore_offset_error(mocker):
     """
     Given:
-        - The script args.
+        - Script args: MD5 hash string.
 
     When:
-        - Running the file_reputation function.
+        - Running file_reputation function using VT integration and an error entry (type 4) of "offset 1" is returned.
 
     Then:
-        - Ignores the offset 1 error.
+        - Ensure the script will ignore the offset 1 error.
     """
     from FileReputation import file_reputation
     mocker.patch.object(demisto, 'args', return_value={'file': 'somefile'})

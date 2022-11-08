@@ -5,9 +5,11 @@ from CommonServerPython import *  # noqa: F401
 def test_url_reputation(mocker):
     """
     Given:
-        - The script args.
+        - Script args: URL string.
+
     When:
         - Running url_reputation function.
+
     Then:
         - Validating the outputs as expected.
     """
@@ -24,13 +26,13 @@ def test_url_reputation(mocker):
 def test_url_reputation_ignore_offset_error(mocker):
     """
     Given:
-        - The script args.
+        - Script args: URL string.
 
     When:
-        - Running url_reputation function.
+        - Running url_reputation function using VT integration and an error entry (type 4) of "offset 1" is returned.
 
     Then:
-        - Ignores offset 1 error.
+        - Ensure the script will ignore the offset 1 error.
     """
     from URLReputation import url_reputation
     mocker.patch.object(demisto, 'args', return_value={'url': 'www.url.com'})

@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 def test_domain_reputation(mocker):
     """
     Given:
-        - The script args.
+        - Script args: A network domain string.
     When:
         - Running ip_reputation function.
     Then:
@@ -25,12 +25,11 @@ def test_domain_reputation(mocker):
 def test_domain_reputation_ignore_offset_error(mocker):
     """
     Given:
-        - The script args.
-
+        - Script args: A network domain string.
     When:
-        - Running ip_reputation function.
+        - Running domain_reputation function using VT integration and an error entry (type 4) of "offset 1" is returned.
     Then:
-        - Ignores offset 1 error.
+        - Ensure the script will ignore the offset 1 error.
     """
     from DomainReputation import domain_reputation
     mocker.patch.object(demisto, 'args', return_value={'ip': 'domain.com'})

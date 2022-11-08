@@ -12,9 +12,11 @@ def url_reputation():
     demisto.results(results)
 
 
-# remove this method once XSUP-18208 is fixed in ExecutionMetrics / Server
 def is_valid_error(item) -> bool:
-    if item['Brand'] == 'VirusTotal (API v3)' and item['Contents'] == "'Offset': 1":
+    '''error msg: 'Offset: 1' will not be displayed to Users
+       This method is temporary and will be removed
+       once XSUP-18208 issue is fixed.'''
+    if item['Contents'] == "'Offset': 1":
         return False
     return True
 
