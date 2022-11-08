@@ -348,7 +348,9 @@ def get_url_indicator_reputation(stix_object: dict, reputation_score: int, relia
     )
 
 
-def get_email_indicator_reputation(stix_object: dict, reputation_score: int, reliability_score: str, tlp: str) -> CommandResults:
+def get_email_indicator_reputation(
+    stix_object: dict, reputation_score: int, reliability_score: str, tlp: str
+) -> CommandResults | None:
     """
     Return stix_object of type email as indicator
     """
@@ -363,7 +365,7 @@ def get_email_indicator_reputation(stix_object: dict, reputation_score: int, rel
 
     email_addr = extract_indicator_from_pattern(stix_object["pattern"])
     if not email_addr:
-        return
+        return None
 
     email = Common.EMAIL(address=email_addr, domain=email_addr.split("@")[-1], dbot_score=dbot_score, traffic_light_protocol=tlp)
 
