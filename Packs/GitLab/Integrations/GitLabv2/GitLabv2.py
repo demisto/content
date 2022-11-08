@@ -3,6 +3,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from typing import Dict, Any, List
+import urllib.parse
 
 '''--------------------- CLIENT CLASS --------------------'''
 
@@ -879,7 +880,8 @@ def file_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         file_path_entry_id = demisto.getFilePath(entry_id).get('path')
         with open(file_path_entry_id, 'rb') as f:
             file_content = f.read()
-
+    elif file_path:
+        file_path = urllib.parse.quote(file_path, safe='')
     response = client.file_create_request(file_path, branch, commit_msg, author_email, author_name,
                                           file_content, execute_filemode)
     return CommandResults(
@@ -922,8 +924,11 @@ def file_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         file_path_entry_id = demisto.getFilePath(entry_id).get('path')
         with open(file_path_entry_id, 'rb') as f:
             file_content = f.read()
+    elif file_path:
+        file_path = urllib.parse.quote(file_path, safe='')
     response = client.file_update_request(file_path, branch, start_branch, encoding, author_email, author_name, commit_message,
                                           last_commit_id, execute_filemode, file_content)
+
     return CommandResults(
         outputs_prefix='GitLab.File',
         outputs_key_field='file_path',
