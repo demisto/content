@@ -57,8 +57,7 @@ def parse_date_time_value(value: Any) -> datetime:
             if value > 4294967295:
                 value /= 1000
 
-            date_time = datetime.fromtimestamp(value)
-            return date_time.astimezone(timezone.utc)
+            return datetime.fromtimestamp(value).astimezone(timezone.utc)
         except Exception as err:
             raise DemistoException(f'Error with input date / time - {err}')
 
@@ -71,7 +70,7 @@ def parse_date_time_value(value: Any) -> datetime:
             pass
 
     try:
-        date_time = dateparser.parse(value)
+        date_time: Optional[datatime] = dateparser.parse(value)
         assert date_time is not None, f'could not parse {value}'
 
         if date_time.tzinfo is not None:
