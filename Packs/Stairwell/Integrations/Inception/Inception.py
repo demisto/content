@@ -22,12 +22,14 @@ class Client(BaseClient):
 
 
 def test_module(client):  # pragma: no cover
-    # We'll use a default file hash, accessible by all, to test the connection
-    response = client.get_file_reputation("e7762f90024c5366807c7c145d3456f0ac3be086c0ec3557427d3c2c10a2052d")
-    response = json.dumps(response)
-    if("attributes" in response):
-        return 'ok'
-    else:
+    try:
+        # We'll use a default file hash, accessible by all, to test the connection
+        response = client.get_file_reputation("e7762f90024c5366807c7c145d3456f0ac3be086c0ec3557427d3c2c10a2052d")
+        if response.status_code != 200:
+            return 'Authorization Error: make sure API Key is correctly set'
+        else:
+            return 'ok'
+    except Exception:
         return 'Authorization Error: make sure API Key is correctly set'
 
 
