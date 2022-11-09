@@ -81,10 +81,10 @@ def make_indicator_table(query, title, use_alt_link):
 
 
 indicator_table = make_indicator_table(query, name, use_alt_link)
-
+output_text = f"Indicator Table Created in the FancyEmails.IndicatorTable Context - {use_alt_link}"
 return_results(CommandResults(outputs_prefix="FancyEmails.IndicatorTable",
                               outputs={'name': name,
                                              'html': indicator_table},
-                              readable_output=f"Indicator Table Created in the FancyEmails.IndicatorTable Context - {use_alt_link}",
+                              readable_output=output_text,
                               )
                )
