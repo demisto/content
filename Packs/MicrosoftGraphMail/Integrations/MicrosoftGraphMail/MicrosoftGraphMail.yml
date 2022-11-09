@@ -9,16 +9,19 @@ configuration:
   required: true
   type: 0
 - displaypassword: Application ID or Client ID
+  additionalinfo: see Detailed Instructions
   hiddenusername: true
   name: creds_auth_id
   required: false
   type: 9
 - displaypassword: Token or Tenant ID
+  additionalinfo: see Detailed Instructions
   hiddenusername: true
   name: creds_tenant_id
   required: false
   type: 9
 - displaypassword: Key or Client Secret
+  additionalinfo: see Detailed Instructions
   name: credentials
   required: false
   type: 9
