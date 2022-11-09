@@ -1,0 +1,117 @@
+id: SyncXSOARToSentinelOneIncidents
+version: -1
+fromversion: "5.0.0"
+name: SyncXSOARToSentinelOneIncidents
+description: |
+  This playbook will run based on the option selected in the input to sync XSOAR incidents to SentinelOne.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a4ae58e2-768d-42fa-8574-8fdbec822ca1
+    type: start
+    task:
+      id: a4ae58e2-768d-42fa-8574-8fdbec822ca1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 3e3698f3-e450-470d-850e-9191a9049d67
+    type: regular
+    task:
+      id: 3e3698f3-e450-470d-850e-9191a9049d67
+      version: -1
+      name: SyncIncidents
+      scriptName: SyncIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      playbook_to_run:
+        simple: SyncXSOARToSentinelOne
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 7df843c0-92db-434e-8518-f8d3f810fb05
+    type: title
+    task:
+      id: 7df843c0-92db-434e-8518-f8d3f810fb05
+      version: -1
+      name: Task Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 415,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No test

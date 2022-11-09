@@ -1,0 +1,26 @@
+commonfields:
+  id: SyncIncidents
+  version: -1
+name: SyncIncidents
+comment: |-
+  This script is used to sync incidents from XSOAR to SentinelOne and SentinelOne to XSOAR
+script: ''
+type: python
+tags: []
+enabled: true
+args:
+- name: playbook_to_run
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - SyncSentinelOneToXSOAR
+  - SyncXSOARToSentinelOne
+  description: Choose one option need to sync Incidents
+scripttarget: 0
+subtype: python3
+runonce: false
+tests:
+  - SyncXSOARSentinelOneIncidents-test
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.8.37233
+runas: DBotWeakRole
