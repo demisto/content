@@ -1,0 +1,5 @@
+{
+  "Remediation status": "FAILURE",
+  "Reason": "Failed to get ProbeRemediationRequest for action: com.cybereason.commads.remediation.RemediationAction@202e8d25. Ignoring remediation action.",
+  "Remediation ID": "892ebce5-70de-4f42-9843-c8e58d82ac88"
+}
