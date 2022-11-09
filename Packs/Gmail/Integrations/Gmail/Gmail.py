@@ -2164,8 +2164,7 @@ def fetch_incidents():
         'v1',
         ['https://www.googleapis.com/auth/gmail.readonly'],
         user_key)
-    z  = pickle.dumps(service)
-    # y = json.dumps(service())
+
     # use seconds for the filter (note that it is inclusive)
     # see: https://developers.google.com/gmail/api/guides/filtering
     query += f' after:{int(last_fetch.timestamp())}'
@@ -2174,7 +2173,6 @@ def fetch_incidents():
         max_results = 200
     LOG(f'GMAIL: fetch parameters: user: {user_key} query={query}'
         f' fetch time: {last_fetch} page_token: {page_token} max results: {max_results}')
-    result_messages = service.users()
     result = service.users().messages().list(
         userId=user_key, maxResults=max_results, q=query).execute()
 

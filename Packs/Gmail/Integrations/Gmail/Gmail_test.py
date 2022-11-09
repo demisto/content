@@ -472,23 +472,42 @@ def test_no_date_mail():
 
 class MockMessages:
     def messages(self):
-        return MockList()
+        return MockListAndGet()
 
 
-class MockExecute:
+class MockExecuteMessagesList:
     def execute(self):
         return input_data.service_result
 
 
-class MockList:
+class MockExecute:
+
+    def __init__(self, name, userId):
+        self.name = name
+        self.user_id = userId
+
+    def message(self):
+        return 0
+
+    def execute(self):
+        if self.name == "list":
+            return input_data.service_result
+        if self.name == "get":
+            return self.message()
+
+
+class MockListAndGet:
     def list(self, userId, maxResults, q):
-        return MockExecute()
+        return MockExecute("list", 0)
+
+    def get(self, id, userId):
+        return MockExecute("get", userId)
 
 
 class MockService:
     def users(self):
         return MockMessages()
-  
+
 
 def test_fetch_incidents(mocker):
     """
