@@ -674,7 +674,7 @@ class Client(BaseClient):
             additional_headers={'Range': range_} if range_ else None
         )
 
-    def create_update_remote_network_cidr(self, body: Dict[str, Any], fields: str, update: bool = False):
+    def create_and_update_remote_network_cidr(self, body: Dict[str, Any], fields: str, update: bool = False):
         headers = {'fields': fields}
 
         return self.http_request(
@@ -3703,7 +3703,7 @@ def qradar_remote_network_cidr_create_command(client: Client, args) -> CommandRe
         "group": group
     }
 
-    response = client.create_update_remote_network_cidr(body, fields)
+    response = client.create_and_update_remote_network_cidr(body, fields)
     success_message = 'The new staged remote network was successfully created.'
 
     return CommandResults(
@@ -3793,7 +3793,7 @@ def qradar_remote_network_cidr_update_command(client: Client, args):
         "group": group
     }
 
-    response = client.create_update_remote_network_cidr(body, fields, update=True)
+    response = client.create_and_update_remote_network_cidr(body, fields, update=True)
     success_message = 'The staged remote network was successfully updated'
     outputs = {'id': response.get('id'),
                'name': response.get('name'),

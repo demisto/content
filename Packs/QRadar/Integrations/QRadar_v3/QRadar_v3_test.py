@@ -31,7 +31,7 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     flatten_nested_geolocation_values, get_modified_remote_data_command, get_remote_data_command, is_valid_ip, \
     qradar_ips_source_get_command, qradar_ips_local_destination_get_command, \
     qradar_remote_network_cidr_create_command, get_cidrs_indicators, verify_args_for_remote_network_cidr, \
-    qradar_remote_network_cidr_list_command, \
+    qradar_remote_network_cidr_list_command, qradar_remote_network_cidr_update_command, \
     migrate_integration_ctx, enrich_offense_with_events, \
     perform_long_running_loop, validate_integration_context, FetchMode
 
@@ -821,7 +821,8 @@ def test_outputs_enriches(mocker, enrich_func, mock_func_name, args, mock_respon
                              (qradar_geolocations_for_ip_command, 'geolocations_for_ip'),
                              (qradar_log_sources_list_command, 'log_sources_list'),
                              (qradar_get_custom_properties_command, 'custom_properties'),
-                             (qradar_remote_network_cidr_list_command, 'get_remote_network_cidr')
+                             (qradar_remote_network_cidr_list_command, 'get_remote_network_cidr'),
+                             (qradar_remote_network_cidr_update_command, 'create_and_update_remote_network_cidr')
                          ])
 def test_commands(mocker, command_func: Callable[[Client, Dict], CommandResults], command_name: str):
     """
@@ -1205,7 +1206,7 @@ def test_qradar_remote_network_cidr_create_command(mocker):
                                   'id': 12,
                                   'group': 'test_group'}
 
-    mocker.patch.object(client, 'create_remote_network_cidr', return_value=expected_response_from_api)
+    mocker.patch.object(client, 'create_and_update_remote_network_cidr', return_value=expected_response_from_api)
 
     res = qradar_remote_network_cidr_create_command(client, {'name': 'test_name',
                                                              'description': 'description',
@@ -1428,18 +1429,16 @@ VERIFY_MESSAGES_ERRORS = [
 ]
 
 
-@pytest.mark.parametrize('cidrs_list, cidrs_from_query, name, id, group, fields, expected', [
+@pytest.mark.parametrize('cidrs_list, cidrs_from_query, name, id_, group, fields, expected', [
     (['1.2.3.4/32', '5.6.7.8/2'], ['8.8.8.8/12'], 'test1', '', 'test_group1', '', VERIFY_MESSAGES_ERRORS[0]),
     ([], [], 'test2', '', 'test_group2', '', VERIFY_MESSAGES_ERRORS[1]),
     (['1.2.3.4'], [], 'test3', '', 'test_group3', '', VERIFY_MESSAGES_ERRORS[2]),
     (['1.2.3.4/32'], [], 'test4!', '', 'test_group4', '', VERIFY_MESSAGES_ERRORS[3]),
     (['1.2.3.4/32'], [], 'test5', '', 'test_group5!', '', VERIFY_MESSAGES_ERRORS[3]),
-    (['1.2.3.4/32', '5.6.7.8/2'], [], 'test6', '6', 'test_group6', '', VERIFY_MESSAGES_ERRORS[4]),
-    ([], ['1.2.3.4/32', '5.6.7.8/2'], 'test7', '7', 'test_group7', '', VERIFY_MESSAGES_ERRORS[4]),
     (['1.2.3.4/32'], [], 'test8', -1, 'test_group8', '', VERIFY_MESSAGES_ERRORS[5]),
     (['1.2.3.4/32'], [], 'test9', '', 'test_group9', 'id,cidr', VERIFY_MESSAGES_ERRORS[6]),
 ])
-def test_verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, id, group, fields, expected):
+def test_verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, id_, group, fields, expected):
     """
     Given: Command arguments
 
@@ -1447,6 +1446,6 @@ def test_verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name,
 
     Then: Verify that the correct error message is returned
     """
-    error_message = verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, id, group, fields)
+    error_message = verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, id_, group, fields)
 
     assert error_message == expected
