@@ -1572,7 +1572,7 @@ Get the list of projects of a given group.
 #### Human Readable Output
 ## List of the group projects
 |Id|Name|Description|Path|
-|--- |--- |--- |--- |--- |
+|---|---|---|---|
 |1|GroupProjectExample|this is a group project example|groupproject1|
 
 ### gitlab-raw-file-get
@@ -1766,7 +1766,7 @@ Get a list of repository branches from a project, sorted by name alphabetically.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | GitLab.Branch.name | String | The branch's name. | 
-| GitLab.Branch.merged | Boolean | If the branch had nerged. | 
+| GitLab.Branch.merged | Boolean | If the branch had merged. | 
 | GitLab.Branch.protected | Boolean | If the branch is protected. | 
 | GitLab.Branch.default | Boolean | If the branch is the default branch of the project. | 
 | GitLab.Branch.developers_can_push | Boolean | If developers can push to the branch. | 
