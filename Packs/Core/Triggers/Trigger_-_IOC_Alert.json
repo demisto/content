@@ -1,5 +1,5 @@
 {
-  "trigger_id": "478f3161aac3290efb445b0841eb1366",
+  "trigger_id": "674abe1c33857b48c54832d8244db1a8",
   "playbook_id": "IOC Alert",
   "suggestion_reason": "Recommended for alerts triggered by XDR IOC",
   "description": "This trigger is responsible for XDR IOC alerts",
@@ -17,3 +17,4 @@
   }
 }
 
+K
