@@ -150,68 +150,6 @@ class GwRequests():
         )
         return requests.post(**kwargs)
 
-    def _put(self, endpoint: str,
-             data: dict = None,
-             json_data: dict = None,
-             params: dict = None,
-             headers: dict = None,
-             cookies: dict = None,
-             redirects: bool = True,
-             files: dict = None) -> requests.Response:
-        """Wrap the put requests.
-
-        Same arguments as _gen_request_kwargs functions.
-
-        Returns:
-            Return a requests object with properties:
-
-            - status_code
-            - reason
-            - headers
-            - text
-        """
-        kwargs = self._gen_request_kwargs(
-            endpoint=endpoint,
-            data=data,  # type: ignore
-            json_data=json_data,  # type: ignore
-            params=params,  # type: ignore
-            headers=headers,  # type: ignore
-            cookies=cookies,  # type: ignore
-            redirects=redirects,
-            files=files
-        )
-        return requests.put(**kwargs)
-
-    def _delete(self, endpoint: str,
-                data: dict = None,
-                json_data: dict = None,
-                params: dict = None,
-                headers: dict = None,
-                cookies: dict = None,
-                redirects: bool = True) -> requests.Response:
-        """Wrap the delete requests.
-
-        Same arguments as _gen_request_kwargs functions.
-
-        Returns:
-            Return a requests object with properties:
-
-            - status_code
-            - reason
-            - headers
-            - text
-        """
-        kwargs = self._gen_request_kwargs(
-            endpoint=endpoint,
-            data=data,  # type: ignore
-            json_data=json_data,  # type: ignore
-            params=params,  # type: ignore
-            headers=headers,  # type: ignore
-            cookies=cookies,  # type: ignore
-            redirects=redirects
-        )
-        return requests.delete(**kwargs)
-
 
 class GwClient(GwRequests):
     """Client class to interact with the service API."""
