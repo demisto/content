@@ -1429,7 +1429,8 @@
         },
         {
             "playbookID": "GmailTest",
-            "integrations": "Gmail"
+            "integrations": "Gmail",
+            "nightly": true
         },
         {
             "playbookID": "Gmail Convert Html Test",

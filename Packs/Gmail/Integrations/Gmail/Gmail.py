@@ -2053,6 +2053,7 @@ def forwarding_address_add_command_without_disposition(user_id, forwarding_email
     if raw_response_list_failure:
         result_failure = {"message": f"Can't create forwarding to: {', '.join(emails_list_failure)}",
                           "outputs": {"errors": raw_response_list_failure}}
+        demisto.info(result_failure)
     if raw_response_list_success:
         result_success = CommandResults(raw_response=raw_response_list_success,
                                         outputs=outputs,
@@ -2093,6 +2094,7 @@ def forwarding_address_add_command_with_disposition(user_id, forwarding_email_li
     if raw_response_list_failure:
         result_failure = {"message": f"Can't create forwarding to: {', '.join(emails_list_failure)}",
                           "outputs": {"errors": raw_response_list_failure}}
+        demisto.info(result_failure)
     if raw_response_list_success:
         result_success = CommandResults(raw_response=raw_response_list_success,
                                         outputs=outputs,
