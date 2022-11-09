@@ -825,7 +825,7 @@ class MsGraphClient:
 
         return parsed_email
 
-    def _get_attachment_mime(self, message_id, attachment_id, overwrite_rate_limit_retry):
+    def _get_attachment_mime(self, message_id, attachment_id, overwrite_rate_limit_retry=False):
         """
         Gets attachment mime.
 
@@ -918,7 +918,8 @@ class MsGraphClient:
         parsed_email = self._parse_item_as_dict(email)
 
         # handling attachments of fetched email
-        attachments = self._get_email_attachments(message_id=email.get('id', ''), overwrite_rate_limit_retry=True)
+        attachments = self._get_email_attachments(message_id=email.get('id', ''),
+                                                  overwrite_rate_limit_retry=overwrite_rate_limit_retry)
         if attachments:
             parsed_email['Attachments'] = attachments
 
