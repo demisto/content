@@ -1014,7 +1014,7 @@ tasks:
       {
         "position": {
           "x": 850,
-          "y": 7350
+          "y": 7860
         }
       }
     note: false
@@ -1518,7 +1518,7 @@ tasks:
       {
         "position": {
           "x": 850,
-          "y": 5330
+          "y": 5280
         }
       }
     note: false
@@ -1683,7 +1683,7 @@ tasks:
       {
         "position": {
           "x": 850,
-          "y": 5520
+          "y": 5430
         }
       }
     note: false
@@ -2152,7 +2152,7 @@ tasks:
       {
         "position": {
           "x": 1565,
-          "y": 735
+          "y": 750
         }
       }
     note: false
@@ -2321,8 +2321,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 850,
-          "y": 5710
+          "x": 840,
+          "y": 5930
         }
       }
     note: false
@@ -2364,8 +2364,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 850,
-          "y": 6760
+          "x": 840,
+          "y": 7180
         }
       }
     note: false
@@ -2404,7 +2404,7 @@ tasks:
       {
         "position": {
           "x": 850,
-          "y": 7210
+          "y": 7690
         }
       }
     note: false
@@ -2444,7 +2444,7 @@ tasks:
       {
         "position": {
           "x": 850,
-          "y": 5995
+          "y": 6235
         }
       }
     note: false
@@ -2482,7 +2482,7 @@ tasks:
       {
         "position": {
           "x": 850,
-          "y": 6130
+          "y": 6370
         }
       }
     note: false
@@ -2519,8 +2519,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 850,
-          "y": 5835
+          "x": 840,
+          "y": 6055
         }
       }
     note: false
@@ -2558,7 +2558,7 @@ tasks:
       {
         "position": {
           "x": 850,
-          "y": 6270
+          "y": 6520
         }
       }
     note: false
@@ -2598,7 +2598,7 @@ tasks:
       {
         "position": {
           "x": 850,
-          "y": 6435
+          "y": 6685
         }
       }
     note: false
@@ -2623,7 +2623,7 @@ tasks:
       brand: Gmail
     nexttasks:
       '#none#':
-      - "67"
+      - "97"
     scriptarguments:
       user-id:
         simple: me
@@ -2633,7 +2633,7 @@ tasks:
       {
         "position": {
           "x": 850,
-          "y": 6615
+          "y": 6835
         }
       }
     note: false
@@ -2674,8 +2674,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 850,
-          "y": 6920
+          "x": 840,
+          "y": 7320
         }
       }
     note: false
@@ -2714,8 +2714,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1270,
-          "y": 5670
+          "x": 850,
+          "y": 5570
         }
       }
     note: false
@@ -2787,7 +2787,7 @@ tasks:
       {
         "position": {
           "x": 850,
-          "y": 7065
+          "y": 7505
         }
       }
     note: false
@@ -2953,7 +2953,7 @@ tasks:
       {
         "position": {
           "x": 370,
-          "y": 5615
+          "y": 5745
         }
       }
     note: false
@@ -2996,47 +2996,7 @@ tasks:
       {
         "position": {
           "x": 370,
-          "y": 5750
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "92":
-    id: "92"
-    taskid: 4b55d100-1bbe-49d1-8275-98c1e32b113d
-    type: regular
-    task:
-      id: 4b55d100-1bbe-49d1-8275-98c1e32b113d
-      version: -1
-      name: delete context
-      description: |-
-        Delete field from context.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "66"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 370,
-          "y": 5920
+          "y": 5900
         }
       }
     note: false
@@ -3160,12 +3120,90 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "97":
+    id: "97"
+    taskid: 5824956c-5e2d-4760-8015-aa507a5ff47a
+    type: regular
+    task:
+      id: 5824956c-5e2d-4760-8015-aa507a5ff47a
+      version: -1
+      name: gmail-forwarding-address-list
+      description: Lists the forwarding addresses for the specified account.
+      script: '|||gmail-forwarding-address-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "98"
+    scriptarguments:
+      user_id:
+        simple: me
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 6950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "98":
+    id: "98"
+    taskid: b81a19ce-171c-4ff3-8e61-a7335e9e6190
+    type: condition
+    task:
+      id: b81a19ce-171c-4ff3-8e61-a7335e9e6190
+      version: -1
+      name: Check forwarding existence
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "85"
+      "yes":
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Gmail.ForwardingAddress.forwardingEmail
+            iscontext: true
+          right:
+            value:
+              simple: admin@demistodev.com
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 7100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 8225,
+        "height": 8735,
         "width": 2560,
         "x": 20,
         "y": -810
