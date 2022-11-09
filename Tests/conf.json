@@ -1393,7 +1393,8 @@
                 "Gmail"
             ],
             "playbookID": "Gmail Single User - Test",
-            "fromversion": "4.5.0"
+            "fromversion": "4.5.0",
+            "memory_threshold": 100
         },
         {
             "integrations": "EWS v2",
@@ -4935,9 +4936,11 @@
         {
             "playbookID": "Get Original Email - Gmail v2 - test",
             "fromversion": "6.1.0",
+            "memory_threshold": 100,
             "integrations": [
                 "Gmail"
             ]
+            
         },
         {
             "playbookID": "Get Original Email - EWS v2 - test",
