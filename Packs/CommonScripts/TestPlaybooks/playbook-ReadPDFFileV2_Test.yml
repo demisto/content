@@ -1,6 +1,5 @@
 id: ReadPDFFileV2-Test
-version: 2
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: ReadPDFFileV2-Test
 description: Creates a text file and tests ReadFile script
 starttaskid: "0"
@@ -15,11 +14,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
-      "#none#":
-        - "3"
+      '#none#':
+      - "3"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -32,6 +31,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "1":
@@ -41,14 +41,14 @@ tasks:
     task:
       id: 6b57c1d5-0306-4671-8234-1bfe79cecce9
       version: -1
-      name: "Get corrupted file "
+      name: 'Get corrupted file '
       scriptName: http
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
-        - "2"
+      '#none#':
+      - "2"
     scriptarguments:
       method:
         simple: GET
@@ -57,7 +57,6 @@ tasks:
       url:
         simple: https://github.com/demisto/content/raw/master/TestData/pdf_noeof.pdf
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -70,6 +69,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "2":
@@ -86,14 +86,13 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
-        - "5"
+      '#none#':
+      - "5"
     scriptarguments:
       entryID:
         simple: ${File.EntryID}
-    separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -106,6 +105,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
@@ -121,13 +121,12 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
-        - "1"
+      '#none#':
+      - "1"
     scriptarguments:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -140,6 +139,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "5":
@@ -149,28 +149,27 @@ tasks:
     task:
       id: b7076318-2987-45cb-8a3b-523f852abfd1
       version: -1
-      name: "Check if file failed to open "
+      name: 'Check if file failed to open '
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      "#default#":
-        - "14"
+      '#default#':
+      - "14"
       "yes":
-        - "6"
+      - "6"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "2"
-    continueonerrortype: ""
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "2"
     view: |-
       {
         "position": {
@@ -183,6 +182,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "6":
@@ -198,13 +198,12 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
-        - "7"
+      '#none#':
+      - "7"
     scriptarguments:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -217,6 +216,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "7":
@@ -232,8 +232,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
-        - "8"
+      '#none#':
+      - "8"
     scriptarguments:
       method:
         simple: GET
@@ -242,7 +242,6 @@ tasks:
       url:
         simple: https://github.com/demisto/content/raw/master/TestData/pdfworking.pdf
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -255,6 +254,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "8":
@@ -271,13 +271,12 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
-        - "21"
+      '#none#':
+      - "21"
     scriptarguments:
       entryID:
         simple: ${File.EntryID}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -290,6 +289,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "9":
@@ -303,8 +303,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -317,6 +317,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "14":
@@ -334,9 +335,8 @@ tasks:
       brand: ""
     scriptarguments:
       message:
-        simple: "File was not marked as suspicious "
+        simple: 'File was not marked as suspicious '
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -349,6 +349,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "16":
@@ -364,8 +365,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
-        - "17"
+      '#none#':
+      - "17"
     scriptarguments:
       method:
         simple: GET
@@ -374,7 +375,6 @@ tasks:
       url:
         simple: https://github.com/demisto/content/raw/b65ded3ca7213c08e44f548288f58147ee89025b/Scripts/ReadPDFFileV2/test_data/Docker-Cookbook.pdf
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -387,6 +387,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "17":
@@ -403,14 +404,13 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
-        - "9"
+      '#none#':
+      - "9"
     scriptarguments:
       entryID:
         simple: ${File.EntryID}
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -423,6 +423,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "18":
@@ -438,13 +439,12 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
-        - "16"
+      '#none#':
+      - "16"
     scriptarguments:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -457,6 +457,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "21":
@@ -472,20 +473,19 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "18"
+      - "18"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: URL.Data
-                iscontext: true
-              right:
-                value:
-                  simple: https://malformedurl.com
-    continueonerrortype: ""
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+          right:
+            value:
+              simple: https://malformedurl.com
     view: |-
       {
         "position": {
@@ -498,6 +498,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
 view: |-
@@ -514,3 +515,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

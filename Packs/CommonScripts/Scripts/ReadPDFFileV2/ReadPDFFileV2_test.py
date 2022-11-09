@@ -12,36 +12,6 @@ def open_html_file(file):
         return f.read()
 
 
-COPY_PROTECTED_CASES = [
-    (f'{CWD}/copy_protect_with_images.pdf', 'ahsdkljhakjhdasjk\n\n\x0c\x0c', 1)
-]
-
-
-@pytest.mark.parametrize('pdf_file, expected_text, num_of_images', COPY_PROTECTED_CASES)
-def test_copy_protected(tmp_path, pdf_file, expected_text, num_of_images):
-    """
-    Given:
-        - A `copy-protected` file that has text and images in it.
-    When:
-        - Trying to extract data from it.
-    Then:
-        - We bypass this limitation and proceed to extract the relevant data.
-    """
-    from ReadPDFFileV2 import get_pdf_text, get_images_paths_in_path, get_pdf_htmls_content
-    from pikepdf import Pdf
-    import shutil
-    with Pdf.open(pdf_file) as pdf:
-        assert not pdf._allow_extract, 'The file provided must be `copy-protected`'
-    cpy_file_path = f'{tmp_path}/WorkingReadPDF.pdf'
-    shutil.copy(pdf_file, cpy_file_path)
-
-    text = get_pdf_text(file_path=cpy_file_path, pdf_text_output_path=f'{tmp_path}/text_output.txt')
-    get_pdf_htmls_content(cpy_file_path, tmp_path)
-    images = get_images_paths_in_path(tmp_path)
-    assert text in expected_text
-    assert len(images) == num_of_images, 'Failed to extract images'
-
-
 def test_urls_are_found_correctly(mocker):
     """
     Given
