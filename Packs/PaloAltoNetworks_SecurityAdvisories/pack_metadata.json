@@ -10,7 +10,10 @@
     "categories": [
         "Network Security"
     ],
-    "tags": ["Palo Alto Networks Products"],
+    "tags": [
+        "Palo Alto Networks Products",
+        "Data Source"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
@@ -18,4 +21,3 @@
         "marketplacev2"
     ]
 }
-

@@ -9,7 +9,9 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": ["Data Source"],
+    "tags": [
+        "Data Source"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

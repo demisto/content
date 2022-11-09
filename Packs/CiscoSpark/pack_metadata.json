@@ -10,7 +10,9 @@
     "categories": [
         "Messaging"
     ],
-    "tags": [],
+    "tags": [
+        "Data Source"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

@@ -10,7 +10,10 @@
     "categories": [
         "Utilities"
     ],
-    "tags": ["Core"],
+    "tags": [
+        "Core",
+        "Data Source"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

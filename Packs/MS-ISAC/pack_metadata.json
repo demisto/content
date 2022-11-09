@@ -10,11 +10,12 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "Data Source"
+    ],
     "useCases": [],
     "keywords": [],
-    "githubUser": [
-    ],
+    "githubUser": [],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

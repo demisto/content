@@ -11,9 +11,9 @@
         "Case Management"
     ],
     "tags": [
+        "Data Source"
     ],
-    "useCases": [
-    ],
+    "useCases": [],
     "keywords": [
         "Service",
         "ServiceDesk",

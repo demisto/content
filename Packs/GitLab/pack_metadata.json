@@ -10,7 +10,9 @@
     "categories": [
         "Cloud Services"
     ],
-    "tags": ["Data Source"],
+    "tags": [
+        "Data Source"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

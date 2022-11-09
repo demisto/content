@@ -11,7 +11,9 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "Data Source"
+    ],
     "useCases": [],
     "keywords": [],
     "dependencies": {

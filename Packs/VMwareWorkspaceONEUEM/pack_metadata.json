@@ -10,9 +10,9 @@
         "IT Services"
     ],
     "tags": [
+        "Data Source"
     ],
-    "useCases": [
-    ],
+    "useCases": [],
     "keywords": [
         "Endpoint",
         "VMware",

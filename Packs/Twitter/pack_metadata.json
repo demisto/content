@@ -11,7 +11,9 @@
     "categories": [
         "Utilities"
     ],
-    "tags": [],
+    "tags": [
+        "Data Source"
+    ],
     "githubUser": [
         "cbrake1"
     ],

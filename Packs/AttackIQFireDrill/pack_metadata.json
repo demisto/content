@@ -10,7 +10,9 @@
     "categories": [
         "Vulnerability Management"
     ],
-    "tags": [],
+    "tags": [
+        "Data Source"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
