@@ -2801,3 +2801,34 @@ Updates an existing staged remote network.
     <td>Malicious-IPs-for-blocking</td>
   </tr>
 </table>
+
+
+### qradar-remote-network-deploy-execution
+***
+Executes a deploy.
+
+
+#### Base Command
+
+`qradar-remote-network-deploy-execution`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_ip | The IP of qradar console host. | Required |
+| status | TMust be in capital letters (“INITIATING”). | Required |
+| deployment_type | Must be in capital letters (“INCREMENTAL” or “FULL”). | Required |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Qradar.deploy.status | String | The deployment status (INITIALIZING, IN_PROGRESS, COMPLETE). | 
+
+
+#### Command example
+```!qradar-remote-network-deploy-execution status=INITIATING deployment_type=INCREMENTAL host_ip=127.0.0.1```
+#### Human Readable Output
+
+The remote network deploy execution was successfully created.
