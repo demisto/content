@@ -267,15 +267,15 @@ def get_file_indicator_reputation(stix_object: dict, reputation_score: int, reli
     Return stix_object of type file as indicator
     """
 
+    hashes = extract_file_indicator_hashes(stix_object["pattern"])
     dbot_score = Common.DBotScore(
-        indicator=stix_object["name"],
+        indicator=hashes["md5"],
         indicator_type=DBotScoreType.FILE,
         integration_name=INTEGRATION_NAME,
         score=reputation_score,
         reliability=reliability_score,
     )
 
-    hashes = extract_file_indicator_hashes(stix_object["pattern"])
     file = Common.File(
         md5=hashes["md5"],
         sha1=hashes["sha1"],
