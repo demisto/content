@@ -3,8 +3,7 @@ version: -1
 name: Detonate URL - JoeSecurity
 fromversion: 5.0.0
 description: |-
-  Detonates one or more URLs using the Joe Security sandbox integration.
-  Returns relevant reports to the War Room and url reputations to the context data.
+  Deprecated. Use the joe-submit-url command instead.
 starttaskid: "0"
 tasks:
   "0":
@@ -490,4 +489,5 @@ outputs:
   description: DBotScore malicious object
   type: unknown
 tests:
-- Detonate URL - Generic Test
+- No test
+deprecated: true
