@@ -1,1 +1,28 @@
-{}
+{
+  "box_box_raw": {
+    "source": {
+      "type": "json",
+      "is_array": false
+    },
+    "additional_details": {
+      "type": "json",
+      "is_array": false
+    },
+    "created_by": {
+      "type": "json",
+      "is_array": false
+    },
+    "event_id": {
+      "type": "string",
+      "is_array": false
+    },
+    "event_type": {
+      "type": "string",
+      "is_array": false
+    },
+    "ip_address": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}
