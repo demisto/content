@@ -837,7 +837,7 @@ class BranchTestCollector(TestCollector):
                         logger.debug(f'{git_status=} for {file_path=}, considering it as <M>odified')
                         git_status = 'M'
 
-                    if pack_file_removed_from := find_pack_file_removed_from(old_file_path, file_path):
+                    if pack_file_removed_from := find_pack_file_removed_from(Path(old_file_path), Path(file_path)):
                         packs_files_were_removed_from.add(pack_file_removed_from)
 
                 case _:
@@ -1029,7 +1029,7 @@ def output(result: Optional[CollectionResult]):
 
 
 if __name__ == '__main__':
-    logger.info('TestCollector v20220913')
+    logger.info('TestCollector v20221108')
     sys.path.append(str(PATHS.content_path))
     parser = ArgumentParser()
     parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
