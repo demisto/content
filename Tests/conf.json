@@ -565,11 +565,6 @@
         {
             "integrations": "Azure Security Center v2",
             "playbookID": "Azure SecurityCenter - Test",
-            "instance_names": "ms_azure_sc_dev"
-        },
-        {
-            "integrations": "Azure Security Center v2",
-            "playbookID": "Azure SecurityCenter - Test",
             "instance_names": "ms_azure_sc_self_deployed"
         },
         {
@@ -2336,10 +2331,6 @@
         {
             "playbookID": "Phishing - Core - Test - Actual Incident",
             "fromversion": "6.0.0"
-        },
-        {
-            "integrations": "duo",
-            "playbookID": "DUO Test Playbook"
         },
         {
             "playbookID": "SLA Scripts - Test",
@@ -5419,7 +5410,6 @@
         "carbonblackprotection": "License expired",
         "icebrg": "Issue 14312",
         "Freshdesk": "Trial account expired",
-        "Threat Grid": "Issue 16197",
         "Kafka V2": "Can not connect to instance from remote",
         "KafkaV3": "Can not connect to instance from remote",
         "Check Point Sandblast": "Issue 15948",
