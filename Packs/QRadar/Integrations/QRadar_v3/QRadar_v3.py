@@ -3760,7 +3760,7 @@ def qradar_remote_network_cidr_list_command(client: Client, args: Dict[str, Any]
     readable_output = tableToMarkdown(success_message, response, headers=headers) if response else 'No results found.'
 
     return CommandResults(
-        outputs_prefix='Qradar.RemoteNetworkCIDR',
+        outputs_prefix='QRadar.RemoteNetworkCIDR',
         outputs_key_field='id',
         outputs=outputs,
         raw_response=response,
@@ -3839,7 +3839,7 @@ def qradar_remote_network_cidr_update_command(client: Client, args):
                'description': response.get('description')}
 
     return CommandResults(
-        outputs_prefix='Qradar.RemoteNetworkCIDR',
+        outputs_prefix='QRadar.RemoteNetworkCIDR',
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown(success_message, response),
@@ -3873,7 +3873,7 @@ def qradar_remote_network_deploy_execution_command(client: Client, args):
     success_message = 'The remote network deploy execution was successfully created.'
 
     return CommandResults(
-        outputs_prefix='Qradar.deploy',
+        outputs_prefix='QRadar.deploy',
         outputs={'status': response['status']},
         readable_output=success_message,
         raw_response=response

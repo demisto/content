@@ -2685,10 +2685,10 @@ Retrieves a list of staged remote networks.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qradar.RemoteNetworkCIDR | Number | Array of - A list of all the retrieved CIDRs. | 
-| Qradar.RemoteNetworkCIDR.id | Number |  Id of each CIDR remote network that is part of the group. | 
-| Qradar.RemoteNetworkCIDR.name | String | The associated CIDR name as appear in Qradar. | 
-| Qradar.RemoteNetworkCIDR.description | String | The associated CIDR description as appear in Qradar. | 
+| QRadar.RemoteNetworkCIDR | Number | Array of - A list of all the retrieved CIDRs. | 
+| QRadar.RemoteNetworkCIDR.id | Number |  Id of each CIDR remote network that is part of the group. | 
+| QRadar.RemoteNetworkCIDR.name | String | The associated CIDR name as appear in Qradar. | 
+| QRadar.RemoteNetworkCIDR.description | String | The associated CIDR description as appear in Qradar. | 
 
 
 #### Command example
@@ -2767,11 +2767,11 @@ Updates an existing staged remote network.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qradar.RemoteNetworkCIDR | Number | Array of - A list of all the CIDR ranges that were changed. | 
-| Qradar.RemoteNetworkCIDR.id | Number |  The associated CIDR id. | 
-| Qradar.RemoteNetworkCIDR.name | String | The associated CIDR name. | 
-| Qradar.RemoteNetworkCIDR.group | String | The group to which the remote network belongs. | 
-| Qradar.RemoteNetworkCIDR.description | String | The associated CIDR description. |
+| QRadar.RemoteNetworkCIDR | Number | Array of - A list of all the CIDR ranges that were changed. | 
+| QRadar.RemoteNetworkCIDR.id | Number |  The associated CIDR id. | 
+| QRadar.RemoteNetworkCIDR.name | String | The associated CIDR name. | 
+| QRadar.RemoteNetworkCIDR.group | String | The group to which the remote network belongs. | 
+| QRadar.RemoteNetworkCIDR.description | String | The associated CIDR description. |
 
 
 #### Command example
@@ -2825,7 +2825,7 @@ Executes a deploy.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qradar.deploy.status | String | The deployment status (INITIALIZING, IN_PROGRESS, COMPLETE). | 
+| QRadar.deploy.status | String | The deployment status (INITIALIZING, IN_PROGRESS, COMPLETE). | 
 
 
 #### Command example

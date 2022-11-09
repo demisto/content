@@ -2806,16 +2806,16 @@ script:
           Fields that are not named are excluded.
           By default, set this argument to return all fields (id, name, cidrs, group, description).
     outputs:
-    - contextPath: Qradar.RemoteNetworkCIDR
+    - contextPath: QRadar.RemoteNetworkCIDR
       description: Array of - A list of all the retrieved CIDRs.
       type: Number
-    - contextPath: Qradar.RemoteNetworkCIDR.id
+    - contextPath: QRadar.RemoteNetworkCIDR.id
       description: Id of each CIDR remote network that is part of the group.
       type: Number
-    - contextPath: Qradar.RemoteNetworkCIDR.name
+    - contextPath: QRadar.RemoteNetworkCIDR.name
       description: The associated CIDR name as appear in Qradar.
       type: String
-    - contextPath: Qradar.RemoteNetworkCIDR.description
+    - contextPath: QRadar.RemoteNetworkCIDR.description
       description: The associated CIDR description as appear in Qradar.
       type: String
     description: Retrieves the list of staged remote networks.
@@ -2856,19 +2856,19 @@ script:
           Specify subfields in brackets, and multiple fields in the same object are separated by commas.
           The possible fields are id,group,name,cidr,description. 
     outputs:
-    - contextPath: Qradar.RemoteNetworkCIDR
+    - contextPath: QRadar.RemoteNetworkCIDR
       description: Array of - A list of all the CIDR ranges that were changed.
       type: Number
-    - contextPath: Qradar.RemoteNetworkCIDR.id
+    - contextPath: QRadar.RemoteNetworkCIDR.id
       description: The associated CIDR id.
       type: Number
-    - contextPath: Qradar.RemoteNetworkCIDR.name
+    - contextPath: QRadar.RemoteNetworkCIDR.name
       description: The associated CIDR name.
       type: String
-    - contextPath: Qradar.RemoteNetworkCIDR.group
+    - contextPath: QRadar.RemoteNetworkCIDR.group
       description: The group to which the remote network belongs.
       type: String
-    - contextPath: Qradar.RemoteNetworkCIDR.description
+    - contextPath: QRadar.RemoteNetworkCIDR.description
       description: The description of the remote network.
       type: String
     description: Updates an existing staged remote network.
@@ -2891,7 +2891,7 @@ script:
         description: Must be in capital letters (“INCREMENTAL” or “FULL”).
         required: true
     outputs:
-    - contextPath: Qradar.deploy.status
+    - contextPath: QRadar.deploy.status
       description: The deployment status (INITIALIZING, IN_PROGRESS, COMPLETE).
       type: String
     description: Executes a deploy.
