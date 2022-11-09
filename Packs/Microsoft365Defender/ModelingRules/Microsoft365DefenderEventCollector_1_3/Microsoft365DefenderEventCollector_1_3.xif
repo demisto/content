@@ -24,4 +24,6 @@ alter
     xdm.target.registry.value = json_extract_scalar(evidence, "$.registryValue"),
     xdm.source.user.username = json_extract_scalar(evidence, "$.accountName"),
     xdm.source.user.domain = json_extract_scalar(evidence, "$.domainName"),
-    xdm.source.user.identifier = json_extract_scalar(evidence, "$.userSid");
+    xdm.source.user.identifier = json_extract_scalar(evidence, "$.userSid"),
+    xdm.target.ipv4 = json_extract_scalar(evidence, "$.ipAddress"),
+    xdm.event.outcome = json_extract_scalar(evidence, "$.detectionStatus");
