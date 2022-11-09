@@ -38,6 +38,7 @@ comment: |-
   - period_12_clock
   - time_zone_hhmm
   - time_zone_offset
+  - time_zone_abbreviations
   - unix_epoch_time
   - iso_8601
   - y-m-d
@@ -84,6 +85,7 @@ args:
   - period_12_clock
   - time_zone_hhmm
   - time_zone_offset
+  - time_zone_abbreviations
   - unix_epoch_time
   - iso_8601
   - y-m-d
@@ -96,7 +98,7 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.8.36650
+dockerimage: demisto/python3:3.10.8.37233
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:

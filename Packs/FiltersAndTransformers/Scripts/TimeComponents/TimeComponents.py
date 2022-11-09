@@ -6,6 +6,16 @@ import pytz
 from CommonServerPython import *  # noqa: F401
 
 
+def timezone_abbreviations(utc_offset: timedelta) -> set[str]:
+    tznames = set()
+    now = datetime.now(pytz.utc)
+    for tz in map(pytz.timezone, pytz.all_timezones_set):
+        if (d := now.astimezone(tz)).utcoffset() == utc_offset:
+            if (tzname := d.tzname())[0:1] not in ('+', '-'):
+                tznames.add(tzname)
+    return tznames
+
+
 def detect_time_zone(value: Any) -> tzinfo:
     if isinstance(value, int):
         return timezone(timedelta(minutes=value))
@@ -31,9 +41,9 @@ def detect_time_zone(value: Any) -> tzinfo:
 
             # Try to parse as time string
             try:
-                dt = dateparser.parse(value)
-                if dt is not None and dt.tzinfo is not None:
-                    return dt.tzinfo
+                tz = dateparser.parse(value).tzinfo
+                if tz is not None:
+                    return tz
             except Exception:
                 pass
 
@@ -52,12 +62,13 @@ def parse_date_time_value(value: Any) -> datetime:
     if isinstance(value, int):
         # Parse as time stamp
         try:
-            # Considered the value as milliseconds when it's too large (> uint max).
+            # Considered the value as seconds > milliseconds > microseconds when it's too large (> uint max).
             # (Currently later than 2106-02-07 06:28:15)
-            if value > 4294967295:
+            while value > 4294967295:
                 value /= 1000
 
-            return datetime.fromtimestamp(value).astimezone(timezone.utc)
+            date_time = datetime.fromtimestamp(value)
+            return date_time.astimezone(timezone.utc)
         except Exception as err:
             raise DemistoException(f'Error with input date / time - {err}')
 
@@ -70,7 +81,7 @@ def parse_date_time_value(value: Any) -> datetime:
             pass
 
     try:
-        date_time: Optional[datetime] = dateparser.parse(value)
+        date_time = dateparser.parse(value)
         assert date_time is not None, f'could not parse {value}'
 
         if date_time.tzinfo is not None:
@@ -119,6 +130,7 @@ def main():
             'period_12_clock': date_time.strftime('%p'),
             'time_zone_hhmm': date_time.strftime('%z'),
             'time_zone_offset': (date_time.utcoffset() or timedelta(hours=0)).total_seconds() / 60,
+            'time_zone_abbreviations': sorted(timezone_abbreviations(date_time.utcoffset())),
             'unix_epoch_time': int(date_time.timestamp()),
             'iso_8601': date_time.isoformat(),
             'y-m-d': f'{date_time.year}-{date_time.month}-{date_time.day}',

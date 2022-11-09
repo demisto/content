@@ -28,6 +28,7 @@ Returns a dictionary with the following components.
 - period_12_clock
 - time_zone_hhmm
 - time_zone_offset
+- time_zone_abbreviations
 - unix_epoch_time
 - iso_8601
 - y-m-d
@@ -103,6 +104,7 @@ There are no outputs for this script.
   "period_12_clock": "AM",
   "time_zone_hhmm": "+0000",
   "time_zone_offset": 0.0,
+  "time_zone_abbreviations": ["GMT", "UTC", "WET"],
   "unix_epoch_time": 1642901025,
   "iso_8601": "2022-01-23T01:23:45+00:00",
   "y-m-d": "2022-1-23",
@@ -156,6 +158,7 @@ There are no outputs for this script.
   "period_12_clock": "AM",
   "time_zone_hhmm": "+0900",
   "time_zone_offset": 540.0,
+  "time_zone_abbreviations": ["JST", "KST", "WIT"],
   "unix_epoch_time": 1642901025,
   "iso_8601": "2022-01-23T10:23:45+09:00",
   "y-m-d": "2022-1-23",
@@ -209,6 +212,7 @@ There are no outputs for this script.
   "period_12_clock": "PM",
   "time_zone_hhmm": "+0000",
   "time_zone_offset": 0.0,
+  "time_zone_abbreviations": ["GMT", "UTC", "WET"],
   "unix_epoch_time": 1642868625,
   "iso_8601": "2022-01-22T16:23:45+00:00",
   "y-m-d": "2022-1-22",
