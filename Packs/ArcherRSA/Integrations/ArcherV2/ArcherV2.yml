@@ -1,6 +1,6 @@
 category: Case Management
 commonfields:
-  id: RSA Archer v2
+  id: RSA Archer v2 test
   version: -1
 configuration:
 - display: Server URL (e.g., https://192.168.0.1/rsaarcher or https://192.168.0.1/
@@ -79,8 +79,8 @@ configuration:
   type: 19
 description: The RSA Archer GRC platform provides a common foundation for managing
   policies, controls, risks, assessments, and deficiencies across lines of business.
-display: RSA Archer v2
-name: RSA Archer v2
+display: RSA Archer v2 test
+name: RSA Archer v2 test
 script:
   commands:
   - arguments:
