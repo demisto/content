@@ -9,17 +9,17 @@ configuration:
   required: false
   type: 0
 - display: Application ID or Client ID
-  additionalinfo: See Detailed Instructions.
+  additionalinfo: See the Detailed Instructions section.
   name: auth_id
   required: false
   type: 4
 - display: Key or Client Secret
-  additionalinfo: See Detailed Instructions.
+  additionalinfo: See the Detailed Instructions section.
   name: enc_key
   required: false
   type: 4
 - display: Token or Tenant ID
-  additionalinfo: See Detailed Instructions.
+  additionalinfo: See the Detailed Instructions section.
   name: refresh_token
   required: false
   type: 4
@@ -42,7 +42,7 @@ configuration:
   required: false
   type: 0
 - display: The authentication code you got for the service
-  additionalinfo: For instructions on how to receive it, see Detailed Instructions.  
+  additionalinfo: For instructions on how to receive it, see the Detailed Instructions section.  
   name: auth_code
   required: false
   type: 4
