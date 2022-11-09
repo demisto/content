@@ -32,6 +32,7 @@ Provides data enrichment for domains.
 | --- | --- | --- |
 | query | The domain to enrich. | Required | 
 | recursive | Whether to get the raw response from the whois servers recursively. Default value is True. | Optional | 
+| verbose | Whether to add the raw response as a dictionary to the context. | Optional |
 
 
 #### Context Output
