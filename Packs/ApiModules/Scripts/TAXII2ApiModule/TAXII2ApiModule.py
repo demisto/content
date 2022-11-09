@@ -254,8 +254,12 @@ class Taxii2FeedClient:
             logging.disable(logging.NOTSET)
 
     def set_api_root(self):
-        roots_to_api = {str(api_root.url).split('/')[-2]: api_root
-                        for api_root in self.server.api_roots}  # type: ignore[attr-defined]
+        roots_to_api = {}
+        for api_root in self.server.api_roots:
+            # ApiRoots are initialized with wrong _conn because we are not providing auth or cert to Server
+            # closing wrong unused connections
+            api_root._conn.close()
+            roots_to_api[str(api_root.url).split('/')[-2]] = api_root
 
         if self.default_api_root:
             if not roots_to_api.get(self.default_api_root):
