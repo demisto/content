@@ -2379,7 +2379,7 @@
     }
   ],
   "expected": {
-   "outputs_prefix": "Qradar.RemoteNetworkCIDR",
+   "outputs_prefix": "QRadar.RemoteNetworkCIDR",
    "outputs_key_field": "id",
    "outputs": [
     {"id": 42, "name": "String", "description": "String"},
@@ -2407,9 +2407,9 @@
    "group": "test-group"
   },
   "expected": {
-   "outputs_prefix": "Qradar.RemoteNetworkCIDR",
+   "outputs_prefix": "QRadar.RemoteNetworkCIDR",
    "outputs_key_field": "id",
-   "outputs": {"id": 45, "name": "test-name", "group": "test-group"}
+   "outputs": {"id": 45, "name": "test-name", "group": "test-group", "description": "test-description"}
   }
  },
  "remote_network_deploy_execution": {
@@ -2420,7 +2420,7 @@
   },
   "response": {"status": "IN_PROGRESS"},
   "expected": {
-   "outputs_prefix": "Qradar.deploy",
+   "outputs_prefix": "QRadar.deploy",
    "outputs_key_field": null,
    "outputs": {"status": "IN_PROGRESS"}
   }
