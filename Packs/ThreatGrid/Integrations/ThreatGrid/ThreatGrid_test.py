@@ -115,9 +115,12 @@ def test_create_analysis_json_human_readable(mocker, test_dict, expected_result)
 
 def test_feed_helper_byte_response(mocker):
     from ThreatGrid import feeds_helper
+
     class MockResponse:
         def __init__(self):
-            self.content = b'{"api_version":2,"id":1234,"request_id":"req-7","data":{"items":[{"path":"w.dll","sample_id":"123","severity":100,"aid":1}],"items_per_page":1000}}'
+            self.content = b'{"api_version":2,"id":1234,"request_id":"req-7","data":' \
+                           b'{"items":[{"path":"w.dll","sample_id":"123","severity":100,"aid":1}],' \
+                           b'"items_per_page":1000}}'
 
     res = MockResponse()
     mocker.patch('ThreatGrid.req', return_value=res)
