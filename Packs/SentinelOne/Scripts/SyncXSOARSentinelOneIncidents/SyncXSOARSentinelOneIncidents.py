@@ -149,7 +149,7 @@ def sync_s1_xsoar_incidents():
     total_incidents = 0
     updated_incidents = 0
     page = 0
-    size = 99
+    size = 100
     while True:
         try:
             xsoar_s1_incidents = get_xsoar_s1_incidents(page, size)
@@ -172,7 +172,7 @@ def sync_s1_xsoar_incidents():
 
                     s1_xsoar_threat_id = incident_info.get("threatId")
                     if latest_s1_threat_contents.get("id") == s1_xsoar_threat_id and \
-                       (s1_inc_modified_time != xsoar_s1_inc_modified_time or not xsoar_job_updated_inc):
+                       (s1_inc_modified_time > xsoar_s1_inc_modified_time):
                         # The Incident in XSOAR is present in S1, processing further
                         # Updating the labels response for next pull, only if the incident on S1 was modified
                         # Update the incident status if it has changed on S1 and getting XSOAR and S1 incidents status
@@ -198,8 +198,11 @@ def sync_s1_xsoar_incidents():
         except Exception as ex:
             demisto.error(f'Exception when getting data: {str(ex)}')
 
-    output_res = {"Total Incidents": total_incidents, "Updated Incidents": updated_incidents}
-    return CommandResults(readable_output=tableToMarkdown("Results", output_res))
+    output_res = {"Total Incidents": total_incidents, "Synced Incidents(from sentinelone to xsoar)": updated_incidents}
+    return CommandResults(readable_output=tableToMarkdown(
+            "Results- \nSynced Incidents will show how many incidents changed per run of playbook.",
+            output_res, headers=("Total Incidents", "Synced Incidents(from sentinelone to xsoar)"),
+            headerTransform=string_to_table_header))
 
 
 def sync_xsoar_s1_incidents():
@@ -207,7 +210,7 @@ def sync_xsoar_s1_incidents():
         Incident sync from XSOAR to S1
     """
     page = 0
-    size = 99
+    size = 100
     total_incidents = 0
     updated_incidents = 0
     while True:
@@ -235,13 +238,11 @@ def sync_xsoar_s1_incidents():
                         if S1_XSOAR_STATUS_MAPPING.get(s1_incident_status) != xsoar_incident_status:
                             # Update the incident in S1
                             update_s1_threat_incident(s1_xsoar_threat_id, XSOAR_S1_STATUS_MAPPING.get(xsoar_incident_status))
-                            write_s1_threat_note(s1_xsoar_threat_id)
-                            updated_incidents += 1
 
-                        # Update the Analyst Verdict by checking the closed Reason.
-                        if xsoar_incident_verdict == 'False Positive':
-                            verdict_value = 'false_positive'
-                            update_s1_threat_verdict(s1_xsoar_threat_id, verdict_value)
+                            # Update the Analyst Verdict by checking the closed Reason.
+                            if xsoar_incident_verdict == 'False Positive':
+                                verdict_value = 'false_positive'
+                                update_s1_threat_verdict(s1_xsoar_threat_id, verdict_value)
                             write_s1_threat_note(s1_xsoar_threat_id)
                             updated_incidents += 1
                         break
@@ -251,8 +252,12 @@ def sync_xsoar_s1_incidents():
         except Exception as ex:
             demisto.error(f'Exception when getting data: {str(ex)}')
 
-    output_res = {"Total Incidents": total_incidents, "Updated Incidents": updated_incidents}
-    return CommandResults(readable_output=tableToMarkdown("Results", output_res))
+    output_res = {"Total Incidents": total_incidents, "Synced Incidents(from xsoar to sentinelone)": updated_incidents}
+    return CommandResults(readable_output=tableToMarkdown(
+            "Results- \nSynced Incidents will show how many incidents changed per run of playbook.",
+            output_res, headers=("Total Incidents", "Synced Incidents(from xsoar to sentinelone)"),
+            headerTransform=string_to_table_header))
+
 
 
 def update_s1_threat_incident(threatId, status):

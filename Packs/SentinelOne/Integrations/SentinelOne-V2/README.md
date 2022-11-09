@@ -2744,7 +2744,7 @@ If you have XSOAR, that’s your system of record, threats will be receiving upd
 1. New threats from S1 to XSOAR
 2. Threat is updated in S1
 3. New threat status reflected in XSOAR
-Open the Playbook in XSOAR and run it will give result showing how many incidents updated in XSOAR from Total number of incidents.
+Create a job to run this playbook `SyncSentinelOneToXSOARIncidents` manually or even select recurring option to run the job to see results.
 
 #### Playbook to Sync the status of a threat in XSOAR to SentinelOne
 ```SyncXSOARToSentinelOneIncidents```
@@ -2758,5 +2758,5 @@ In XSOAR if status or verdict of an incident updated, related changes will be re
 1. New threat syncs from S1 to XSOAR
 2. Threat is updated in XSOAR
 3. New threat status and analyst verdict reflected in XSOAR
-Open the Playbook in XSOAR and run it will give result showing how many incidents updated to SentinelOne from Total number of incidents.
+Create a job to run this playbook `SyncXSOARToSentinelOneIncidents` manually or even select recurring option to run the job to see results.
 
