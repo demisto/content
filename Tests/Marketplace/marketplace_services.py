@@ -3144,9 +3144,9 @@ class Pack(object):
         """
         logging.info(f'{marketplace=}')
         if marketplace == 'xsoar':
-            marketplace_bucket = GCPConfig.PRODUCTION_BUCKET
+            marketplace_bucket = "marketplace-dist"
         else:
-            marketplace_bucket = GCPConfig.PRODUCTION_BUCKET_V2
+            marketplace_bucket = "marketplace-v2-dist"
 
         google_api_readme_images_url = f'https://storage.googleapis.com/{marketplace_bucket}/content/packs/{self.name}'
         url_regex = r"^!\[(.*)\]\((?P<url>.*)\)"
