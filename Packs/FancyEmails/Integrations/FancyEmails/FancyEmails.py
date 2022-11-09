@@ -112,15 +112,10 @@ td{{
 {CUSTOM_CSS}
 """
 
-##################################################################################
-#     # ####### #     # #         #     #    #    #    # ####### ######   #####
-#     #    #    ##   ## #         ##   ##   # #   #   #  #       #     # #     #
-#     #    #    # # # # #         # # # #  #   #  #  #   #       #     # #
-#######    #    #  #  # #         #  #  # #     # ###    #####   ######   #####
-#     #    #    #     # #         #     # ####### #  #   #       #   #         #
-#     #    #    #     # #         #     # #     # #   #  #       #    #  #     #
-#     #    #    #     # #######   #     # #     # #    # ####### #     #  #####
-##################################################################################
+
+'''
+    +++++ HTML MAKERS +++++
+'''
 
 
 def check_for_datetime(value, include_raw: bool = True):
@@ -130,7 +125,7 @@ def check_for_datetime(value, include_raw: bool = True):
             return f'{fancy_value}<br/><small>(raw: {value})</small>'
         else:
             return fancy_value
-    except:
+    except ValueError:
         return value
 
 
@@ -179,7 +174,8 @@ def make_vertical_table_row(items, header):
     '''
         [{Object1}, {Object2}] -> <tr><th>Objec1t.header</th><td>Object1.value</td><td>Object2.value</td></tr>
     '''
-    def extract_value(x): return x.get(header, '')
+    def extract_value(x):
+        return x.get(header, '')
     values = list(map(extract_value, items))
     values = list(map(make_cell, values))
     values = ''.join(values)
@@ -277,15 +273,10 @@ def make_logo():
     '''
 
 
-######################################################################################################
- ######
- #     # ###### #    # #  ####  #####  ####    #    #   ##   #    # #####  #      ###### #####   ####
- #     # #      ##  ## # #        #   #    #   #    #  #  #  ##   # #    # #      #      #    # #
- #     # #####  # ## # #  ####    #   #    #   ###### #    # # #  # #    # #      #####  #    #  ####
- #     # #      #    # #      #   #   #    #   #    # ###### #  # # #    # #      #      #####       #
- #     # #      #    # # #    #   #   #    #   #    # #    # #   ## #    # #      #      #   #  #    #
- ######  ###### #    # #  ####    #    ####    #    # #    # #    # #####  ###### ###### #    #  ####
-######################################################################################################
+'''
+    +++++ DEMISTO HANDLERS +++++
+'''
+
 args = demisto.args()
 
 
