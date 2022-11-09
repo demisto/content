@@ -7,20 +7,18 @@
     "url": "https://www.glimps.fr/",
     "email": "contact@glimps.re",
     "categories": [
-        "Forensics & Malware Analysis",
-        "Data Enrichment & Threat Intelligence"
+        "Forensics & Malware Analysis"
     ],
-    "tags": [
+    "tags": [],
+    "useCases": [],
+    "keywords": [
         "Machine Learning",
         "Malware",
         "Scam",
-        "Security",
         "MITRE ATT&CK",
         "Threat Intelligence",
         "Incident Response"
     ],
-    "useCases": [],
-    "keywords": [],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
