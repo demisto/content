@@ -3,17 +3,20 @@ from CommonServerPython import *
 from IAMApiModule import *
 import jwt
 import urllib3
+from datetime import timedelta
+import dateparser
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 DEFAULT_OUTGOING_MAPPER = "User Profile - SCIM (Outgoing)"
 DEFAULT_INCOMING_MAPPER = "User Profile - SCIM (Incoming)"
-
+TOKEN_LIFE_TIME = timedelta(minutes=58)
 ERROR_CODES_TO_SKIP = [
     404
 ]
 BASE_URL = 'https://api.zoom.us/v2/'
+OAUTH_TOKEN_GENERATOR_URL = 'https://zoom.us/oauth/token'
 
 '''CLIENT CLASS'''
 
@@ -21,11 +24,58 @@ BASE_URL = 'https://api.zoom.us/v2/'
 class Client(BaseClient):
     """ A client class that implements logic to authenticate with Zoom application. """
 
-    def __init__(self, base_url, api_key, api_secret, verify=True, proxy=False):
+    def __init__(self, base_url, api_key, api_secret, account_id, client_id, client_secret, verify=True, proxy=False):
         super().__init__(base_url, verify, proxy)
         self.api_key = api_key
         self.api_secret = api_secret
+        self.account_id = account_id
+        self.client_id = client_id
+        self.client_secret = client_secret
         self.access_token = get_jwt(api_key, api_secret)
+
+    """
+    Generate an OAuth Access token using the app credentials (AKA: client id and client secret) and the account id
+    
+    :return: valid token
+    """
+
+    def generate_token(self):
+        token_res = self._http_request(method="POST", full_url=OAUTH_TOKEN_GENERATOR_URL,
+                                       params={"account_id": self.account_id,
+                                               "grant_type": "account_credentials"}, auth=(self.client_id, self.client_secret))
+        return token_res.get('access_token')
+
+    def get_token(self, force_gen_new_token=False):
+        """
+            Retrieves the token from the server if it's expired and updates the global HEADERS to include it
+
+            :param force_gen_new_token: If set to True will generate a new token regardless of time passed
+
+            :rtype: ``str``
+            :return: Token
+        """
+        now = datetime.now()
+        ctx = get_integration_context()
+        # ctx["generation_time"]
+        if not ctx or not ctx.get('generation_time', force_gen_new_token):
+            # new token is needed
+            auth_token = self.generate_token()
+        else:
+            generation_time = dateparser.parse(ctx.get('generation_time'))
+            if generation_time and now:
+                time_passed = now - generation_time
+            else:
+                time_passed = TOKEN_LIFE_TIME
+            if time_passed < TOKEN_LIFE_TIME:
+                # token hasn't expired
+                return ctx.get('auth_token')
+            else:
+                # token expired
+                auth_token = self.generate_token()
+
+        ctx.update({'auth_token': auth_token, 'generation_time': now.strftime("%Y-%m-%dT%H:%M:%S")})
+        set_integration_context(ctx)
+        return auth_token
 
     def test(self):
         """ Tests connectivity with the application. """
@@ -163,7 +213,7 @@ class Client(BaseClient):
 
 def get_jwt(api_key: str, api_secret: str) -> str:
     """
-    Encode the JWT token given the api ket and secret
+    Encode the JWT token given the api key and secret
     """
     now = time.time()
     expire_time = int(now) + 5000
@@ -218,6 +268,10 @@ def main():
     params = demisto.params()
     api_key = params.get('api_key')
     api_secret = params.get('api_secret')
+    account_id = params.get('account_id')
+    client_id = params.get('client_id')
+    client_secret = params.get('client_secret')
+
     mapper_in = params.get('mapper_in', DEFAULT_INCOMING_MAPPER)
     # mapper_out = params.get('mapper_out', DEFAULT_OUTGOING_MAPPER)
     verify_certificate = not params.get('insecure', False)
@@ -243,8 +297,11 @@ def main():
         proxy=proxy,
         api_key=api_key,
         api_secret=api_secret,
+        account_id=account_id,
+        client_id=client_id,
+        client_secret=client_id,
     )
-
+    
     demisto.debug(f'Command being called is {command}')
 
     '''CRUD commands'''
