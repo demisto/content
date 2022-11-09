@@ -12,7 +12,7 @@ from CommonServerPython import *
 
 
 class Email(object):
-    def __init__(self, message_bytes: bytes, include_raw_body: bool, save_file: bool, id_: int, msg_str=None) -> None:
+    def __init__(self, message_bytes: bytes, include_raw_body: bool, save_file: bool, id_: int) -> None:
         """
         Initialize Email class with all relevant data
         Args:
@@ -314,7 +314,6 @@ def fetch_mails(client: IMAPClient,
     demisto.debug(f'Messages to fetch: {messages_uids}')
     for mail_id, message_data in client.fetch(messages_uids, 'RFC822').items():
         message_bytes = message_data.get(b'RFC822')
-        msg_str = message_data.get(b'RFC822')
         # For cases the message_bytes is returned as a string. If failed, will try to use the message_bytes returned.
         try:
             message_bytes = bytes(message_bytes)
@@ -323,7 +322,7 @@ def fetch_mails(client: IMAPClient,
 
         if not message_bytes:
             continue
-        email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id, msg_str=msg_str)
+        email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id)
 
         # Add mails if the current email UID is higher than the previous incident UID
         if int(email_message_object.id) > int(uid_to_fetch_from):
