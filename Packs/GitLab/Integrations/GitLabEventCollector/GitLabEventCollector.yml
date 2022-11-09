@@ -1,10 +1,10 @@
 category: Analytics & SIEM
-commonfields:
-  id: GitLab Event Collector
-  version: -1
 sectionOrder:
 - Connect
 - Collect
+commonfields:
+  id: GitLab Event Collector
+  version: -1
 configuration:
 - display: Server URL
   name: url
@@ -22,14 +22,12 @@ configuration:
   name: group_ids
   required: false
   type: 0
-  section: Connect
-  advanced: true
+  section: Collect
 - display: Projects IDS
   name: project_ids
   required: false
   type: 0
-  section: Connect
-  advanced: true
+  section: Collect
 - display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days, 3 months, 1 year)
   name: after
   required: true
@@ -69,7 +67,7 @@ script:
     description: Manual command to fetch events and display them.
     execution: false
     name: gitlab-get-events
-  dockerimage: demisto/fastapi:1.0.0.32142
+  dockerimage: demisto/fastapi:1.0.0.36992
   runonce: false
   isfetchevents: true
   subtype: python3

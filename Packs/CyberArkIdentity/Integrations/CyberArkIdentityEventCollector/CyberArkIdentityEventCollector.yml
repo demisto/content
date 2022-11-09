@@ -1,10 +1,10 @@
 category: Analytics & SIEM
-commonfields:
-  id: CyberArk Identity Event Collector
-  version: -1
 sectionOrder:
 - Connect
 - Collect
+commonfields:
+  id: CyberArk Identity Event Collector
+  version: -1
 configuration:
 - defaultvalue: https://<tenant>.my.idaptive.app
   display: Server URL
@@ -17,7 +17,7 @@ configuration:
   name: app_id
   required: true
   type: 0
-  section: Connect
+  section: Collect
 - display: User name
   additionalinfo: The user name (admin@example.com) and password.
   name: credentials
@@ -83,7 +83,7 @@ script:
   isfetchevents: true
   type: python
   subtype: python3
-  dockerimage: demisto/fastapi:1.0.0.32142
+  dockerimage: demisto/fastapi:1.0.0.36992
 marketplaces:
 - marketplacev2
 fromversion: 6.8.0
