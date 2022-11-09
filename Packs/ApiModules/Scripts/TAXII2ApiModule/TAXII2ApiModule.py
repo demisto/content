@@ -258,8 +258,10 @@ class Taxii2FeedClient:
         for api_root in self.server.api_roots:
             # ApiRoots are initialized with wrong _conn because we are not providing auth or cert to Server
             # closing wrong unused connections
+            api_root_name = str(api_root.url).split('/')[-2]
+            demisto.debug(f'closing api_root._conn for {api_root_name}')
             api_root._conn.close()
-            roots_to_api[str(api_root.url).split('/')[-2]] = api_root
+            roots_to_api[api_root_name] = api_root
 
         if self.default_api_root:
             if not roots_to_api.get(self.default_api_root):
@@ -945,6 +947,7 @@ class Taxii2FeedClient:
         for envelope in envelopes:
             stix_objects = envelope.get("objects")
             if not stix_objects:
+                demisto.info(f'breaking as no stix_objects, {envelope=}')
                 # no fetched objects
                 break
 
@@ -986,7 +989,9 @@ class Taxii2FeedClient:
             self.objects_to_fetch.append('relationship')
         kwargs['type'] = self.objects_to_fetch
         if isinstance(self.collection_to_fetch, v20.Collection):
+            demisto.debug('in v2.0')
             return v20.as_pages(get_objects, per_request=page_size, **kwargs)
+        demisto.debug('in v2.1')
         return v21.as_pages(get_objects, per_request=page_size, **kwargs)
 
     def get_page_size(self, max_limit: int, cur_limit: int) -> int:
