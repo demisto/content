@@ -19,8 +19,7 @@ def test_domain_reputation(mocker):
     domain_reputation()
     assert execute_mock.call_count == 1
     assert 'returned an error' in results_mock.call_args[0][0][0]['Contents']
-    from DomainReputation import domain_reputation
-
+    
 
 def test_domain_reputation_ignore_offset_error(mocker):
     """
