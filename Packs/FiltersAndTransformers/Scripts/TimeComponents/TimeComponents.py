@@ -69,8 +69,7 @@ def parse_date_time_value(value: Any) -> datetime:
             while value > 4294967295:
                 value /= 1000
 
-            date_time = datetime.fromtimestamp(value)
-            return date_time.astimezone(timezone.utc)
+            return datetime.fromtimestamp(value).astimezone(timezone.utc)
         except Exception as err:
             raise DemistoException(f'Error with input date / time - {err}')
 
