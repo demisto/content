@@ -66,7 +66,7 @@ def format_indicator_table(indicator):
     }
 
 
-def make_indicator_table(query, title, use_alt_link):
+def make_indicator_table(query, use_alt_link):
     indicators = demisto.searchIndicators(query=query, size=300)['iocs']
     headers = ['Name', ' ', 'Type', 'Score', 'Incident Count', 'Last Seen']
 
@@ -80,7 +80,7 @@ def make_indicator_table(query, title, use_alt_link):
     return ''
 
 
-indicator_table = make_indicator_table(query, name, use_alt_link)
+indicator_table = make_indicator_table(query, use_alt_link)
 output_text = f"Indicator Table Created in the FancyEmails.IndicatorTable Context - {use_alt_link}"
 return_results(CommandResults(outputs_prefix="FancyEmails.IndicatorTable",
                               outputs={'name': name,
