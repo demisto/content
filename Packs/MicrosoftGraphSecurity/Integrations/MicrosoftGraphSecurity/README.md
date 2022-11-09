@@ -1,6 +1,14 @@
 Unified gateway to security insights - all from a unified Microsoft Graph Security API.
 This integration was integrated and tested with version 1.0 of Microsoft Graph
 
+## Authentication
+For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication)
+
+### Required Permissions
+1. SecurityEvents.Read.All - Application (required for the commands: `msg-search-alerts` and `msg-get-alert-details`
+2. SecurityEvents.ReadWrite.All - Application (required for updating alerts with the command: `msg-update-alert`)
+3. User.Read.All - Application (Only required if using the deprecated commands: `msg-get-user` and `msg-get-users`)
+
 ## Configure Microsoft Graph Security on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
