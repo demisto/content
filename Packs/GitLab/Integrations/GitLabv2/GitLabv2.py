@@ -451,7 +451,7 @@ def verify_project_id(client: Client, project_id: int) -> Boolean:
 
 def return_date_arg_as_iso(arg: str | None) -> str | None:
     '''
-    This function convert timestamp format (<number> <time unit>, e.g., 12 hours, 7 days) to isu format
+     This function converts timestamp format (<number> <time unit>, e.g., 12 hours, 7 days) to ISO format.
     input: arg in timestamp format
     output: returns the iso format for the timestamp if exist
     '''
