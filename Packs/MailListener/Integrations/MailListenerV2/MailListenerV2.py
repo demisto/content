@@ -29,11 +29,8 @@ class Email(object):
                          '\nWill replace backslash and try to parse again')
             message_bytes = self.handle_message_slashes(message_bytes)
             email_object = parse_from_bytes(message_bytes)
-        except Exception as e:
-            try:
-                email_object = parse_from_bytes(msg_str)
-            except Exception as e:
-                email_object = parse_from_string(msg_str.decode('ISO-8859-1'))
+        except Exception:
+            email_object = parse_from_string(message_bytes.decode('ISO-8859-1'))
 
         self.id = id_
         self.to = [mail_addresses for _, mail_addresses in email_object.to]
