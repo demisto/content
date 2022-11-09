@@ -1,5 +1,5 @@
 {
-  "aws_guard_duty_raw": {
+  "aws_guardduty_raw": {
     "Resource": {
       "type": "string",
       "is_array": false
