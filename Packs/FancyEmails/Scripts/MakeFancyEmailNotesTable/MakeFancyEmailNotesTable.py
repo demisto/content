@@ -11,7 +11,8 @@ def get_user_display_name(username):
 
 
 def make_fancy_time(timestamp):
-    return demisto.executeCommand('fancy-email-make-timestring', {'value': timestamp, 'include_raw': False})[0]['Contents']['html']
+    params = {'value': timestamp, 'include_raw': False}
+    return demisto.executeCommand('fancy-email-make-timestring', params)[0]['Contents']['html']
 
 
 def extract_entry(entry):
@@ -32,8 +33,15 @@ def convert_to_fancy_table(notes):
                                                              })
 
 
-def get_note(entry): return extract_entry(entry) if entry.get('Note') else None
-def filter_out_none(note): return note != None
+def get_note(entry):
+    return extract_entry(entry) if entry.get('Note') else None
+
+
+def filter_out_none(note):
+    if note:
+        return True
+    else:
+        return False
 
 
 entries = list(filter(filter_out_none, map(get_note, entries)))
