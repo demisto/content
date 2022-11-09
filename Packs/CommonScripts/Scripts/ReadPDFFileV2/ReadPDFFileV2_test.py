@@ -266,39 +266,39 @@ def test_get_urls_and_emails_from_pdf_annots_with_encrypt(file_path):
     assert emails == expected_emails
 
 
-# def test_get_urls_and_emails_from_pdf_annots_with_encrypt_aes():
-#     """
-#     This test verifies URL and Emails extraction from an encrypted PDF file.
-#
-#         Given:
-#         A path to an encrypted PDF file with AES encoding:
-#
-#         When:
-#             Running 'get_urls_and_emails_from_pdf_annots' function on the PDF file.
-#
-#         Then:
-#             Verify that PDF is parsed.
-#
-#     """
-#     from ReadPDFFileV2 import get_urls_and_emails_from_pdf_annots, decrypt_pdf_file
-#
-#     expected_urls = {}
-#     expected_emails = {}
-#
-#     # Decrypt the PDF:
-#     file_path = f'{CWD}/Test_document_with_aes.pdf'
-#     dec_file_path = f'{CWD}/decrypted.pdf'
-#     decrypt_pdf_file(file_path, '', dec_file_path)
-#
-#     # Extract URLs and Emails:
-#     urls, emails = get_urls_and_emails_from_pdf_annots(dec_file_path)
-#
-#     # Delete Decrypted file:
-#     if os.path.exists(dec_file_path):
-#         os.remove(dec_file_path)
-#
-#     assert urls == expected_urls
-#     assert emails == expected_emails
+def test_get_urls_and_emails_from_pdf_annots_with_encrypt_aes():
+    """
+    This test verifies URL and Emails extraction from an encrypted PDF file with AES-256.
+
+        Given:
+        A path to an encrypted PDF file with AES encoding:
+
+        When:
+            Running 'get_urls_and_emails_from_pdf_annots' function on the PDF file.
+
+        Then:
+            Verify that PDF is parsed.
+
+    """
+    from ReadPDFFileV2 import get_urls_and_emails_from_pdf_annots, decrypt_pdf_file
+
+    expected_urls = set()
+    expected_emails = set()
+
+    # Decrypt the PDF:
+    file_path = f'{CWD}/Test_document_with_aes.pdf'
+    dec_file_path = f'{CWD}/decrypted.pdf'
+    decrypt_pdf_file(file_path, '', dec_file_path)
+
+    # Extract URLs and Emails:
+    urls, emails = get_urls_and_emails_from_pdf_annots(dec_file_path)
+
+    # Delete Decrypted file:
+    if os.path.exists(dec_file_path):
+        os.remove(dec_file_path)
+
+    assert urls == expected_urls
+    assert emails == expected_emails
 
 
 @pytest.mark.parametrize('file_path', [
