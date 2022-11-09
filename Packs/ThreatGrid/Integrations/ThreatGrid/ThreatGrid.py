@@ -1011,12 +1011,14 @@ def feeds_helper(name):
     requested_feed = name_conversion[name] if name in name_conversion else name
     url = SUB_API + 'iocs/feeds/' + requested_feed
     r = req('GET', url, params=handle_filters())
+    content = json.loads(r.content.decode('utf-8')) if isinstance(r.content, bytes) else r.content,
+
     demisto.results([
         {
             'Type': entryTypes['note'],
             'EntryContext': {},
             'HumanReadable': 'Your feeds ' + name + ' file download request has been completed successfully',
-            'Contents': r.content,
+            'Contents': content,
             'ContentsFormat': formats['json']
         },
         fileResult(url, r.content)
