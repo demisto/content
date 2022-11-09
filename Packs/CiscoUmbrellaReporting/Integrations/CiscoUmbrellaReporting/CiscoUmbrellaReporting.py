@@ -1,5 +1,4 @@
 import demistomock as demisto
-import copy
 
 from CommonServerPython import *
 from typing import Dict, List, Optional
@@ -23,43 +22,42 @@ INTEGRATION_CONTEXT_NAME = 'UmbrellaReporting'
 TOKEN_ENDPOINT = "https://management.api.umbrella.com/auth/v2/oauth2/token"
 IP_PARAM = 'ip'
 DOMAIN_PARAM = 'domains'
+URL_PARAM = 'urls'
 SHA256_PARAM = 'sha256'
 INTRUSION_ACTION = 'intrusion_action'
-DATE_TIME_FORMAT = "%b %d, %Y %H:%M %p"
-PAGE_NUMBER_ERROR_MSG = 'Invalid Input Error: page number should be greater ' \
-                        'than zero.'
+DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+PAGE_NUMBER_ERROR_MSG = 'Invalid Input Error: page number should be greater than zero.'
 
 ACTIVITY_TRAFFIC_TYPE_DICT = {
-    "dns": ["limit", "from", "to", "offset", "domains", "ip", "verdict",
+    "dns": ["traffic_type", "limit", "from", "to", "offset", "domains", "ip", "verdict",
             "threats", "threat_types", "identity_types", "page", "page_size"],
-    "proxy": ["limit", "from", "to", "offset", "domains", "ip", "verdict",
-              "threats", "threat_types", "urls", "ports", "identity_types",
-              "file_name", "amp_disposition", "page", "page_size"],
-    "firewall": ["limit", "from", "to", "offset", "ip", "ports", "verdict",
+    "proxy": ["traffic_type", "limit", "from", "to", "offset", "domains",
+              "ip", "verdict", "threats", "threat_types", "urls", "ports",
+              "identity_types", "file_name", "amp_disposition", "page", "page_size"],
+    "firewall": ["traffic_type", "limit", "from", "to", "offset", "ip", "ports", "verdict",
                  "page", "page_size"],
-    "intrusion": ["limit", "from", "to", "offset", "ip", "ports",
+    "intrusion": ["traffic_type", "limit", "from", "to", "offset", "ip", "ports",
                   "signatures", "intrusion_action", "page", "page_size"],
-    "ip": ["limit", "from", "to", "offset", "ip", "ports", "identity_types",
+    "ip": ["traffic_type", "limit", "from", "to", "offset", "ip", "ports", "identity_types",
            "verdict", "page", "page_size"],
-    "amp": ["limit", "from", "to", "offset", "amp_disposition", "sha256",
+    "amp": ["traffic_type", "limit", "from", "to", "offset", "amp_disposition", "sha256",
             "page", "page_size"]
 }
 
 SUMMARY_TYPE_DICT = {
-    "all": ["limit", "from", "to", "offset", "domains", "urls", "ip",
+    "all": ["summary_type", "limit", "from", "to", "offset", "domains", "urls", "ip",
             "identity_types", "verdict", "file_name", "threats",
             "threat_types", "amp_disposition", "page", "page_size", "ports"],
-    "category": ["limit", "from", "to", "offset", "domains", "urls", "ip",
+    "category": ["summary_type", "limit", "from", "to", "offset", "domains", "urls", "ip",
                  "identity_types", "verdict", "file_name", "threats",
                  "threat_types", "amp_disposition", "page", "page_size"],
-    "destination": ["limit", "from", "to", "offset", "domains", "urls", "ip",
+    "destination": ["summary_type", "limit", "from", "to", "offset", "domains", "urls", "ip",
                     "identity_types", "verdict", "file_name", "threats",
                     "threat_types", "amp_disposition", "page", "page_size"],
-    "intrusion_rule": ["limit", "from", "to", "offset", "signatures", "ip",
+    "intrusion_rule": ["summary_type", "limit", "from", "to", "offset", "signatures", "ip",
                        "identity_types", "intrusion_action", "ports", "page",
                        "page_size"]
 }
-
 ''' CLIENT CLASS '''
 
 
@@ -85,6 +83,9 @@ class Client(BaseClient):
         self.secret_key = secret_key
         self.client_key = client_key
         self.organisation_id = organisation_id
+        if not self.organisation_id.isdigit():
+            raise DemistoException("Invalid Input Error:The Organization ID "
+                                   "must be a number.")
 
     def access_token(self):
         """
@@ -110,38 +111,43 @@ class Client(BaseClient):
 
     def fetch_data_from_cisco_api(self, end_point: str, params: dict) -> Dict:
         """
-        : param end_point: Cisco Umbrella Reporting endpoint
-        :return: return the raw api response from Cisco Umbrella Reporting API.
+        Fetch Cisco Umbrella Reporting API
+        Args:
+            end_point (str): Cisco Umbrella Reporting endpoint
+            params (dict): Params
+        Returns:
+             Return the raw api response from Cisco Umbrella Reporting API.
         """
         return self.query(end_point, params)
 
     def query(self, end_point: str, params: dict) -> Dict:
         """
-        :param end_point: Cisco Umbrella Reporting endpoint
-        :param params: Kwargs
-        :return: return the raw api response from Cisco Umbrella Reporting API.
-
+        Call Cisco Umbrella Reporting API
+        Args:
+            end_point (str): Cisco Umbrella Reporting endpoint
+            params (dict): Params
+        Returns:
+            Return the raw api response from Cisco Umbrella Reporting API.
         """
         result: Dict = {}
         url_path = f'{self._base_url}/v2/organizations' \
                    f'/{self.organisation_id}/{end_point}'
         access_token = self.access_token()
-        payload: Dict = {}
         response = requests.get(
             url=url_path,
             headers={'Authorization': f'Bearer {access_token}'},
-            data=payload,
             params=params,
             allow_redirects=False,
         )
         if response.status_code in range(300, 310):
-            # payload = {}
             response = requests.get(
                 response.headers['Location'],
                 headers={'Authorization': f'Bearer {access_token}'},
                 data={}, allow_redirects=True)
             if response.ok:
                 result = response.json()
+        elif response.status_code in range(200, 299):
+            result = response.json()
         elif response.status_code >= 400:
             error_message = response.json().get("data", {}).get("error")
             if "invalid organization" in error_message:
@@ -155,46 +161,6 @@ class Client(BaseClient):
 
         return result
 
-    def test_module(self) -> str:
-        """
-        Tests API connectivity and authentication
-        When 'ok' is returned it indicates the integration works like
-        it is supposed to and connection to the service is successful.
-        :return: connection ok
-        :Raises exceptions if something goes wrong.
-        """
-        if not self.organisation_id.isdigit():
-            raise DemistoException("Invalid Input Error:The Organization ID "
-                                   "must be a number.")
-        token = self.access_token()
-        url = f'{self._base_url}/v2/organizations/{self.organisation_id}/activity'
-
-        payload: Dict = {}
-        params: Dict = {
-            "limit": 1,
-            "from": "-1days",
-            "to": "now",
-            "offset": 0
-        }
-        response = requests.get(
-            url=url,
-            headers={'Authorization': f'Bearer {token}'},
-            data=payload,
-            params=params,
-            allow_redirects=False,
-        )
-        if response.status_code >= 400:
-            error_message = response.json().get("data", {}).get("error")
-            if "invalid organization" in error_message:
-                raise DemistoException("Authorization Error: The provided Organization ID is invalid.")
-            elif "unauthorized" in error_message:
-                raise DemistoException(
-                    "Authorization Error: The provided credentials for Cisco "
-                    "Umbrella Reporting are invalid. Please provide a valid "
-                    "Client ID and Client Secret.")
-            raise DemistoException(error_message)
-        return 'ok'
-
 
 ''' HELPER FUNCTIONS '''
 
@@ -202,15 +168,13 @@ class Client(BaseClient):
 def check_valid_indicator_value(indicator_type: str,
                                 indicator_value: str) -> bool:
     """
-
-    :param indicator_type: Indicator type provided in the command
-    :param indicator_value: Indicator value provided in the command
-    :return: true if the provided indicator values are valid.
-
+    Check valid indicator value
+    Args:
+        indicator_type: Indicator type provided in the command
+        indicator_value: Indicator value provided in the command
+    Returns:
+        True if the provided indicator values are valid.
     """
-    # not using default urlRegex for domain validation
-    # as it is failing in some cases, for example
-    # 'fluber12.duckdns.org' is validated as invalid
     domain_regex = re.compile(
         r'^(?:[a-zA-Z0-9]'  # First character of the domain
         r'(?:[a-zA-Z0-9-_]{0,61}[A-Za-z0-9])?\.)'  # Sub domain + hostname
@@ -224,6 +188,12 @@ def check_valid_indicator_value(indicator_type: str,
             if not re.match(domain_regex, domain):
                 raise ValueError(
                     f'Domain {domain} is invalid')
+    elif indicator_type == URL_PARAM:
+        indicator_value_list = argToList(indicator_value)
+        for url in indicator_value_list:
+            if not re.match(urlRegex, url):
+                raise ValueError(
+                    f'URL {url} is invalid')
     elif indicator_type == IP_PARAM:
         if not is_ip_valid(indicator_value, accept_v6_ips=True):  # check IP's validity
             raise ValueError(f'IP "{indicator_value}" is not valid')
@@ -244,10 +214,13 @@ def check_valid_indicator_value(indicator_type: str,
 def get_command_title_string(sub_context: str, page: Optional[int],
                              page_size: Optional[int]) -> str:
     """
-    : param sub_context: Commands sub_context
-    : param page: page_number
-    : param page_size: page_size
-    : return: returns the title for the readable output
+    Define command title
+    Args:
+        sub_context: Commands sub_context
+        page: page_number
+        page_size: page_size
+    Returns:
+        Returns the title for the readable output
     """
     if page and page_size and (page > 0 and page_size > 0):
         return f"{sub_context} List\nShowing page {page}\nCurrent page size:" \
@@ -843,9 +816,9 @@ def pagination(page: Optional[int], page_size: Optional[int]):
     return limit, offset
 
 
-def get_param(limit: Optional[int], offset: Optional[int], args: Dict) -> Dict:
+def create_cisco_umbrella_args(limit: Optional[int], offset: Optional[int], args: Dict) -> Dict:
     """
-    Setup parameter.
+    This function creates a dictionary of the arguments sent to the Cisco Umbrella API based on the demisto.args().
     Args:
         limit: Records per page.
         offset: The number of records to be skipped.
@@ -853,20 +826,81 @@ def get_param(limit: Optional[int], offset: Optional[int], args: Dict) -> Dict:
     Returns:
         Return arguments dict.
     """
-    args["limit"] = limit if limit != 50 else args.get('limit', DEFAULT_PAGE_SIZE)
-    args["offset"] = offset
-    args["from"] = args.pop('from', FROM_DATE)
-    args["to"] = args.pop('to', TO_DATE)
-    args["threattypes"] = args.pop('threat_types', None)
-    args["identitytypes"] = args.pop('identity_types', None)
-    args["ampdisposition"] = args.pop("amp_disposition", None)
-    args["filename"] = args.pop("file_name", None)
-    args["intrusionaction"] = args.pop("intrusion_action", None)
+    cisco_umbrella_args: Dict = {}
+    if sha256 := args.get('sha256'):
+        check_valid_indicator_value("sha256", sha256)
+    if ip := args.get('ip'):
+        check_valid_indicator_value("ip", ip)
+    if domains := args.get("domains"):
+        check_valid_indicator_value('domains', domains)
+    if urls := args.get("urls"):
+        check_valid_indicator_value('urls', urls)
+    if intrusion_action := args.get("intrusion_action"):
+        check_valid_indicator_value("intrusion_action", intrusion_action)
 
-    return args
+    cisco_umbrella_args["limit"] = limit if limit != 50 else args.get('limit', DEFAULT_PAGE_SIZE)
+    cisco_umbrella_args["offset"] = offset
+    cisco_umbrella_args["from"] = args.get('from', FROM_DATE)
+    cisco_umbrella_args["to"] = args.get('to', TO_DATE)
+    cisco_umbrella_args["threattypes"] = args.get('threat_types', None)
+    cisco_umbrella_args["identitytypes"] = args.get('identity_types', None)
+    cisco_umbrella_args["ampdisposition"] = args.get("amp_disposition", None)
+    cisco_umbrella_args["filename"] = args.get("file_name", None)
+    cisco_umbrella_args["intrusionaction"] = args.get("intrusion_action", None)
+    cisco_umbrella_args["domains"] = args.get('domains', None)
+    cisco_umbrella_args["urls"] = args.get("urls", None)
+    cisco_umbrella_args["ip"] = args.get("ip", None)
+    cisco_umbrella_args["ports"] = args.get("ports", None)
+    cisco_umbrella_args["verdict"] = args.get("verdict", None)
+    cisco_umbrella_args["threats"] = args.get("threats", None)
+    cisco_umbrella_args["signatures"] = args.get("signatures", None)
+    cisco_umbrella_args["sha256"] = args.get("sha256", None)
+
+    return cisco_umbrella_args
 
 
 ''' COMMAND FUNCTIONS '''
+
+
+def test_module(client: Client) -> str:
+    """
+    Tests API connectivity and authentication
+    When 'ok' is returned it indicates the integration works like
+    it is supposed to and connection to the service is successful.
+    Args:
+        client(Client): Client class object
+    Returns:
+        Connection ok
+    """
+    token = client.access_token()
+    url = f'{client._base_url}/v2/organizations/{client.organisation_id}/activity'
+
+    payload: Dict = {}
+    params: Dict = {
+        "limit": 1,
+        "from": "-1days",
+        "to": "now",
+        "offset": 0
+    }
+    response = requests.get(
+        url=url,
+        headers={'Authorization': f'Bearer {token}'},
+        data=payload,
+        params=params,
+        allow_redirects=False,
+    )
+    if response.status_code >= 400:
+        error_message = response.json().get("data", {}).get("error")
+        if "invalid organization" in error_message:
+            raise DemistoException(
+                "Authorization Error: The provided Organization ID is invalid.")
+        elif "unauthorized" in error_message:
+            raise DemistoException(
+                "Authorization Error: The provided credentials for Cisco "
+                "Umbrella Reporting are invalid. Please provide a valid "
+                "Client ID and Client Secret.")
+        raise DemistoException(error_message)
+    return 'ok'
 
 
 def get_destinations_list_command(client: Client, args: Dict[str, Any]):
@@ -879,20 +913,14 @@ def get_destinations_list_command(client: Client, args: Dict[str, Any]):
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    traffic_type = args.pop("traffic_type", None)
+    traffic_type = args.get("traffic_type", None)
     endpoint = f"top-destinations/{traffic_type}" if traffic_type else "top-destinations"
-    if sha256 := args.get('sha256'):
-        check_valid_indicator_value("sha256", sha256)
-    if ip := args.get('ip'):
-        check_valid_indicator_value("ip", ip)
-    if domains := args.get("domains"):
-        check_valid_indicator_value('domains', domains)
     page = arg_to_number(args.get('page'), arg_name='page')
     page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE), arg_name='page_size')
     limit, offset = pagination(page, page_size)
-    params = get_param(limit, offset, args)
+    cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
     title = get_command_title_string("Destination", page, page_size)
-    raw_json_response = client.fetch_data_from_cisco_api(endpoint, params)
+    raw_json_response = client.fetch_data_from_cisco_api(endpoint, cisco_umbrella_args)
     data = raw_json_response.get("data", [])
     if data:
         readable_output = destination_lookup_to_markdown(data, title)
@@ -919,21 +947,15 @@ def get_categories_list_command(client: Client, args: Dict[str, Any]):
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    traffic_type = args.pop("traffic_type", None)
+    traffic_type = args.get("traffic_type", None)
     endpoint = f"top-categories/{traffic_type}" if traffic_type else "top-categories"
-    if sha256 := args.get('sha256'):
-        check_valid_indicator_value("sha256", sha256)
-    if ip := args.get('ip'):
-        check_valid_indicator_value("ip", ip)
-    if domains := args.get("domains"):
-        check_valid_indicator_value('domains', domains)
     page = arg_to_number(args.get('page'), arg_name='page')
     page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE),
                               arg_name='page_size')
     limit, offset = pagination(page, page_size)
-    params = get_param(limit, offset, args)
+    cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
     title = get_command_title_string("Category", page, page_size)
-    raw_json_response = client.fetch_data_from_cisco_api(endpoint, params)
+    raw_json_response = client.fetch_data_from_cisco_api(endpoint, cisco_umbrella_args)
     data = raw_json_response.get("data", [])
     if data:
         readable_output = categories_lookup_to_markdown(data, title)
@@ -961,19 +983,13 @@ def get_identities_list_command(client: Client, args: Dict[str, Any]):
     """
     traffic_type = args.get("traffic_type", None)
     endpoint = f"top-identities/{traffic_type}" if traffic_type else "top-identities"
-    if sha256 := args.get('sha256'):
-        check_valid_indicator_value("sha256", sha256)
-    if ip := args.get('ip'):
-        check_valid_indicator_value("ip", ip)
-    if domains := args.get("domains"):
-        check_valid_indicator_value('domains', domains)
     page = arg_to_number(args.get('page'), arg_name='page')
     page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE),
                               arg_name='page_size')
     limit, offset = pagination(page, page_size)
-    params = get_param(limit, offset, args)
+    cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
     title = get_command_title_string("Identities", page, page_size)
-    raw_json_response = client.fetch_data_from_cisco_api(endpoint, params)
+    raw_json_response = client.fetch_data_from_cisco_api(endpoint, cisco_umbrella_args)
     data = raw_json_response.get("data", [])
     if data:
         readable_output = identities_lookup_to_markdown(data, title)
@@ -999,20 +1015,14 @@ def get_file_list_command(client: Client, args: Dict[str, Any]):
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    if sha256 := args.get('sha256'):
-        check_valid_indicator_value("sha256", sha256)
-    if ip := args.get('ip'):
-        check_valid_indicator_value("ip", ip)
-    if domains := args.get("domains"):
-        check_valid_indicator_value('domains', domains)
     page = arg_to_number(args.get('page'), arg_name='page')
     page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE),
                               arg_name='page_size')
     limit, offset = pagination(page, page_size)
-    params = get_param(limit, offset, args)
+    cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
     endpoint = 'top-files'
     title = get_command_title_string("File", page, page_size)
-    raw_json_response = client.fetch_data_from_cisco_api(endpoint, params)
+    raw_json_response = client.fetch_data_from_cisco_api(endpoint, cisco_umbrella_args)
     data = raw_json_response.get("data", [])
     if data:
         readable_output = file_type_lookup_to_markdown(data, title)
@@ -1038,19 +1048,15 @@ def get_threat_list_command(client: Client, args: Dict[str, Any]):
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    traffic_type = args.pop("traffic_type", None)
+    traffic_type = args.get("traffic_type", None)
     endpoint = f"top-threats/{traffic_type}" if traffic_type else "top-threats"
-    if ip := args.get('ip'):
-        check_valid_indicator_value("ip", ip)
-    if domains := args.get("domains"):
-        check_valid_indicator_value('domains', domains)
     page = arg_to_number(args.get('page'), arg_name='page')
     page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE),
                               arg_name='page_size')
     limit, offset = pagination(page, page_size)
-    params = get_param(limit, offset, args)
+    cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
     title = get_command_title_string("Threat", page, page_size)
-    raw_json_response = client.fetch_data_from_cisco_api(endpoint, params)
+    raw_json_response = client.fetch_data_from_cisco_api(endpoint, cisco_umbrella_args)
     data = raw_json_response.get("data", [])
     if data:
         readable_output = threat_lookup_to_markdown(data, title)
@@ -1077,18 +1083,14 @@ def get_event_types_list_command(client: Client, args: Dict[str, Any]):
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    if ip := args.get('ip'):
-        check_valid_indicator_value("ip", ip)
-    if domains := args.get("domains"):
-        check_valid_indicator_value('domains', domains)
     page = arg_to_number(args.get('page'), arg_name='page')
     page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE),
                               arg_name='page_size')
     limit, offset = pagination(page, page_size)
-    params = get_param(limit, offset, args)
+    cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
     endpoint = "top-eventtypes"
     title = get_command_title_string("Event Type", page, page_size)
-    raw_json_response = client.fetch_data_from_cisco_api(endpoint, params)
+    raw_json_response = client.fetch_data_from_cisco_api(endpoint, cisco_umbrella_args)
     data = raw_json_response.get("data", [])
     if data:
         readable_output = event_types_lookup_to_markdown(data, title)
@@ -1114,18 +1116,14 @@ def get_activity_list_command(client: Client, args: Dict[str, Any]):
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    if ip := args.get('ip'):
-        check_valid_indicator_value("ip", ip)
-    if domains := args.get("domains"):
-        check_valid_indicator_value('domains', domains)
     page = arg_to_number(args.get('page'), arg_name='page')
     page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE),
                               arg_name='page_size')
     limit, offset = pagination(page, page_size)
-    params = get_param(limit, offset, args)
+    cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
     endpoint = "activity"
     title = get_command_title_string("Activity", page, page_size)
-    raw_json_response = client.fetch_data_from_cisco_api(endpoint, params)
+    raw_json_response = client.fetch_data_from_cisco_api(endpoint, cisco_umbrella_args)
     data = raw_json_response.get("data", [])
     if data:
         readable_output = activity_lookup_to_markdown(data, title)
@@ -1153,7 +1151,7 @@ def get_activity_by_traffic_type_command(client: Client, args: Dict[str, Any]):
         CommandResults: A ``CommandResults`` object that is then passed
          to ``return_results``, that contains an updated result.
     """
-    traffic_type = args.pop("traffic_type", None)
+    traffic_type = args.get("traffic_type", None)
     if traffic_type:
         endpoint = "activity/amp-retrospective" if traffic_type == "amp"\
             else f"activity/{traffic_type}"
@@ -1179,22 +1177,14 @@ def get_activity_by_traffic_type_command(client: Client, args: Dict[str, Any]):
     if not set(args.keys()).issubset(traffic_type_params_list):
         raise DemistoException(
             f"Invalid optional parameter is selected for {traffic_type}")
-    if sha256 := args.get('sha256'):
-        check_valid_indicator_value("sha256", sha256)
-    if ip := args.get('ip'):
-        check_valid_indicator_value("ip", ip)
-    if domains := args.get("domains"):
-        check_valid_indicator_value('domains', domains)
-    if intrusion_action := args.get("intrusion_action"):
-        check_valid_indicator_value("intrusion_action", intrusion_action)
     page = arg_to_number(args.get('page'), arg_name='page')
     page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE),
                               arg_name='page_size')
     limit, offset = pagination(page, page_size)
-    params = get_param(limit, offset, args)
+    cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
     title = get_command_title_string(f"{traffic_type.capitalize()} "
                                      f"Activity", page, page_size)
-    raw_json_response = client.fetch_data_from_cisco_api(endpoint, params)
+    raw_json_response = client.fetch_data_from_cisco_api(endpoint, cisco_umbrella_args)
     data = raw_json_response.get("data", [])
     if data:
         readable_output = markdown_function[traffic_type](data, title)
@@ -1235,25 +1225,27 @@ def get_summary_list_command(client: Client, args: Dict[str, Any]):
         "destination": "SummaryWithDestination",
         "intrusion_rule": "SignatureListSummary"
     }
-    summary_type = args.pop("summary_type", None)
+    summary_type = args.get("summary_type", None)
     endpoint = summary_endpoint_dict.get(summary_type, "summary")
     category_type_param_list = SUMMARY_TYPE_DICT.get(summary_type,
                                                      SUMMARY_TYPE_DICT["all"])
     if not set(args.keys()).issubset(category_type_param_list):
         raise DemistoException(
             f"Invalid optional parameter is selected for {summary_type}")
-    if ip := args.get('ip'):
-        check_valid_indicator_value("ip", ip)
-    if domains := args.get("domains"):
-        check_valid_indicator_value('domains', domains)
-    if intrusion_action := args.get("intrusion_action"):
-        check_valid_indicator_value("intrusion_action", intrusion_action)
+    # if ip := args.get('ip'):
+    #     check_valid_indicator_value("ip", ip)
+    # if domains := args.get("domains"):
+    #     check_valid_indicator_value('domains', domains)
+    # if urls := args.get("urls"):
+    #     check_valid_indicator_value('urls', urls)
+    # if intrusion_action := args.get("intrusion_action"):
+    #     check_valid_indicator_value("intrusion_action", intrusion_action)
     page = arg_to_number(args.get('page'), arg_name='page')
     page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE),
                               arg_name='page_size')
     limit, offset = pagination(page, page_size)
-    params = get_param(limit, offset, args)
-    raw_json_response = client.fetch_data_from_cisco_api(endpoint, params)
+    cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
+    raw_json_response = client.fetch_data_from_cisco_api(endpoint, cisco_umbrella_args)
 
     if summary_type:
         data = raw_json_response.get('data', [])
@@ -1296,7 +1288,6 @@ def main():
     args = demisto.args()
     command = demisto.command()
     params = demisto.params()
-    copy_args = copy.deepcopy(args)
     secret_key = params.get('credentials', {}).get('password')
     client_key = params.get('credentials', {}).get('identifier')
     organisation_id = params.get('organization_id')
@@ -1340,9 +1331,9 @@ def main():
                 get_summary_list_command
         }
         if command == "test-module":
-            return_results(client.test_module())
+            return_results(test_module(client))
         elif command in commands:
-            return_results(commands[command](client, copy_args))
+            return_results(commands[command](client, args))
         else:
             raise NotImplementedError
     # Log exceptions

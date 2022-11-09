@@ -73,61 +73,12 @@ List of destinations ordered by the number of requests made in descending order.
 | UmbrellaReporting.Destination.counts.requests | Number | Total number of requests. | 
 
 #### Command example
-```!umbrella-reporting-destination-list limit=2 from=-30days to=now```
+```!umbrella-reporting-destination-list limit=2```
 #### Context Example
 ```json
 {
     "UmbrellaReporting": {
         "Destination": [
-            {
-                "bandwidth": null,
-                "categories": [
-                    {
-                        "deprecated": false,
-                        "id": 167,
-                        "integration": false,
-                        "label": "Computers and Internet",
-                        "type": "content"
-                    },
-                    {
-                        "deprecated": false,
-                        "id": 123,
-                        "integration": false,
-                        "label": "Infrastructure and Content Delivery Networks",
-                        "type": "content"
-                    },
-                    {
-                        "deprecated": false,
-                        "id": 148,
-                        "integration": false,
-                        "label": "Application",
-                        "type": "application"
-                    },
-                    {
-                        "deprecated": true,
-                        "id": 25,
-                        "integration": false,
-                        "label": "Software/Technology",
-                        "type": "content"
-                    },
-                    {
-                        "deprecated": true,
-                        "id": 32,
-                        "integration": false,
-                        "label": "Business Services",
-                        "type": "content"
-                    }
-                ],
-                "count": 1286,
-                "counts": {
-                    "allowedrequests": 1286,
-                    "blockedrequests": 0,
-                    "requests": 1286
-                },
-                "domain": "www.cisco.com",
-                "policycategories": [],
-                "rank": 1
-            },
             {
                 "bandwidth": null,
                 "categories": [
@@ -174,13 +125,55 @@ List of destinations ordered by the number of requests made in descending order.
                         "type": "content"
                     }
                 ],
-                "count": 1003,
+                "count": 119,
                 "counts": {
-                    "allowedrequests": 1003,
+                    "allowedrequests": 119,
                     "blockedrequests": 0,
-                    "requests": 1003
+                    "requests": 119
                 },
                 "domain": "presence.teams.microsoft.com",
+                "policycategories": [],
+                "rank": 1
+            },
+            {
+                "bandwidth": null,
+                "categories": [
+                    {
+                        "deprecated": false,
+                        "id": 167,
+                        "integration": false,
+                        "label": "Computers and Internet",
+                        "type": "content"
+                    },
+                    {
+                        "deprecated": false,
+                        "id": 123,
+                        "integration": false,
+                        "label": "Infrastructure and Content Delivery Networks",
+                        "type": "content"
+                    },
+                    {
+                        "deprecated": false,
+                        "id": 148,
+                        "integration": false,
+                        "label": "Application",
+                        "type": "application"
+                    },
+                    {
+                        "deprecated": true,
+                        "id": 25,
+                        "integration": false,
+                        "label": "Software/Technology",
+                        "type": "content"
+                    }
+                ],
+                "count": 110,
+                "counts": {
+                    "allowedrequests": 110,
+                    "blockedrequests": 0,
+                    "requests": 110
+                },
+                "domain": "api.apple-cloudkit.com",
                 "policycategories": [],
                 "rank": 2
             }
@@ -194,8 +187,8 @@ List of destinations ordered by the number of requests made in descending order.
 >### Destination List
 >|Destination|Category|Allowed|Blocked|Requests|
 >|---|---|---|---|---|
->| www.cisco.com | Computers and Internet, Infrastructure and Content Delivery Networks, Application, Software/Technology, Business Services | 1286 | 0 | 1286 |
->| presence.teams.microsoft.com | Business and Industry, Computers and Internet, Online Meetings, Application, Software/Technology, Business Services | 1003 | 0 | 1003 |
+>| presence.teams.microsoft.com | Business and Industry, Computers and Internet, Online Meetings, Application, Software/Technology, Business Services | 119 | 0 | 119 |
+>| api.apple-cloudkit.com | Computers and Internet, Infrastructure and Content Delivery Networks, Application, Software/Technology | 110 | 0 | 110 |
 
 
 ### umbrella-reporting-category-list
@@ -241,24 +234,12 @@ List of categories ordered by the number of requests made matching the categorie
 | UmbrellaReporting.Category.rank | Number | Rank of the category. | 
 
 #### Command example
-```!umbrella-reporting-category-list limit=2 from=-30days to=now```
+```!umbrella-reporting-category-list limit=2```
 #### Context Example
 ```json
 {
     "UmbrellaReporting": {
         "Category": [
-            {
-                "bandwidth": 7974662,
-                "category": {
-                    "deprecated": false,
-                    "id": 148,
-                    "integration": false,
-                    "label": "Application",
-                    "type": "application"
-                },
-                "count": 32446,
-                "rank": 1
-            },
             {
                 "bandwidth": null,
                 "category": {
@@ -268,32 +249,20 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Software/Technology",
                     "type": "content"
                 },
-                "count": 26112,
-                "rank": 2
-            },
-            {
-                "bandwidth": 0,
-                "category": {
-                    "deprecated": false,
-                    "id": 123,
-                    "integration": false,
-                    "label": "Infrastructure and Content Delivery Networks",
-                    "type": "content"
-                },
-                "count": 20351,
-                "rank": 3
+                "count": 3312,
+                "rank": 1
             },
             {
                 "bandwidth": null,
                 "category": {
-                    "deprecated": true,
-                    "id": 32,
+                    "deprecated": false,
+                    "id": 148,
                     "integration": false,
-                    "label": "Business Services",
-                    "type": "content"
+                    "label": "Application",
+                    "type": "application"
                 },
-                "count": 19012,
-                "rank": 4
+                "count": 3204,
+                "rank": 2
             },
             {
                 "bandwidth": null,
@@ -304,7 +273,31 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Computers and Internet",
                     "type": "content"
                 },
-                "count": 18040,
+                "count": 2755,
+                "rank": 3
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": false,
+                    "id": 123,
+                    "integration": false,
+                    "label": "Infrastructure and Content Delivery Networks",
+                    "type": "content"
+                },
+                "count": 2311,
+                "rank": 4
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": true,
+                    "id": 32,
+                    "integration": false,
+                    "label": "Business Services",
+                    "type": "content"
+                },
+                "count": 1759,
                 "rank": 5
             },
             {
@@ -316,8 +309,20 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Business and Industry",
                     "type": "content"
                 },
-                "count": 11251,
+                "count": 1170,
                 "rank": 6
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": false,
+                    "id": 142,
+                    "integration": false,
+                    "label": "Online Meetings",
+                    "type": "content"
+                },
+                "count": 477,
+                "rank": 7
             },
             {
                 "bandwidth": null,
@@ -328,56 +333,8 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Search Engines",
                     "type": "content"
                 },
-                "count": 5931,
-                "rank": 7
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 190,
-                    "integration": false,
-                    "label": "Search Engines and Portals",
-                    "type": "content"
-                },
-                "count": 4714,
+                "count": 376,
                 "rank": 8
-            },
-            {
-                "bandwidth": 7974662,
-                "category": {
-                    "deprecated": false,
-                    "id": 142,
-                    "integration": false,
-                    "label": "Online Meetings",
-                    "type": "content"
-                },
-                "count": 3734,
-                "rank": 9
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 27,
-                    "integration": false,
-                    "label": "Advertisements",
-                    "type": "content"
-                },
-                "count": 3280,
-                "rank": 10
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 132,
-                    "integration": false,
-                    "label": "SaaS and B2B",
-                    "type": "content"
-                },
-                "count": 3164,
-                "rank": 11
             },
             {
                 "bandwidth": null,
@@ -388,8 +345,8 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Chat",
                     "type": "content"
                 },
-                "count": 2444,
-                "rank": 12
+                "count": 353,
+                "rank": 9
             },
             {
                 "bandwidth": null,
@@ -400,68 +357,8 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Instant Messaging",
                     "type": "content"
                 },
-                "count": 2376,
-                "rank": 13
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 205,
-                    "integration": false,
-                    "label": "Online Document Sharing and Collaboration",
-                    "type": "content"
-                },
-                "count": 2189,
-                "rank": 14
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": true,
-                    "id": 31,
-                    "integration": false,
-                    "label": "Webmail",
-                    "type": "content"
-                },
-                "count": 1994,
-                "rank": 15
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 198,
-                    "integration": false,
-                    "label": "Cloud and Data Centers",
-                    "type": "content"
-                },
-                "count": 1993,
-                "rank": 16
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 162,
-                    "integration": false,
-                    "label": "Web-based Email",
-                    "type": "content"
-                },
-                "count": 1831,
-                "rank": 17
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 141,
-                    "integration": false,
-                    "label": "Organizational Email",
-                    "type": "content"
-                },
-                "count": 1829,
-                "rank": 18
+                "count": 348,
+                "rank": 10
             },
             {
                 "bandwidth": null,
@@ -472,56 +369,140 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Chat and Instant Messaging",
                     "type": "content"
                 },
-                "count": 1509,
-                "rank": 19
+                "count": 249,
+                "rank": 11
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": false,
+                    "id": 190,
+                    "integration": false,
+                    "label": "Search Engines and Portals",
+                    "type": "content"
+                },
+                "count": 247,
+                "rank": 12
             },
             {
                 "bandwidth": null,
                 "category": {
                     "deprecated": true,
-                    "id": 8,
+                    "id": 31,
                     "integration": false,
-                    "label": "Ecommerce/Shopping",
+                    "label": "Webmail",
                     "type": "content"
                 },
-                "count": 1425,
+                "count": 223,
+                "rank": 13
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": false,
+                    "id": 27,
+                    "integration": false,
+                    "label": "Advertisements",
+                    "type": "content"
+                },
+                "count": 196,
+                "rank": 14
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": false,
+                    "id": 205,
+                    "integration": false,
+                    "label": "Online Document Sharing and Collaboration",
+                    "type": "content"
+                },
+                "count": 164,
+                "rank": 15
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": false,
+                    "id": 162,
+                    "integration": false,
+                    "label": "Web-based Email",
+                    "type": "content"
+                },
+                "count": 163,
+                "rank": 16
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": false,
+                    "id": 141,
+                    "integration": false,
+                    "label": "Organizational Email",
+                    "type": "content"
+                },
+                "count": 163,
+                "rank": 17
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": false,
+                    "id": 198,
+                    "integration": false,
+                    "label": "Cloud and Data Centers",
+                    "type": "content"
+                },
+                "count": 134,
+                "rank": 18
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": false,
+                    "id": 132,
+                    "integration": false,
+                    "label": "SaaS and B2B",
+                    "type": "content"
+                },
+                "count": 112,
+                "rank": 19
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": false,
+                    "id": 124,
+                    "integration": false,
+                    "label": "Internet Telephony",
+                    "type": "content"
+                },
+                "count": 99,
                 "rank": 20
             },
             {
                 "bandwidth": null,
                 "category": {
                     "deprecated": true,
-                    "id": 28,
+                    "id": 9,
                     "integration": false,
-                    "label": "Video Sharing",
+                    "label": "File Storage",
                     "type": "content"
                 },
-                "count": 1013,
+                "count": 72,
                 "rank": 21
             },
             {
                 "bandwidth": null,
                 "category": {
                     "deprecated": false,
-                    "id": 194,
+                    "id": 184,
                     "integration": false,
-                    "label": "Streaming Video",
+                    "label": "Online Storage and Backup",
                     "type": "content"
                 },
-                "count": 924,
+                "count": 72,
                 "rank": 22
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 191,
-                    "integration": false,
-                    "label": "Shopping",
-                    "type": "content"
-                },
-                "count": 922,
-                "rank": 23
             },
             {
                 "bandwidth": null,
@@ -532,7 +513,19 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Movies",
                     "type": "content"
                 },
-                "count": 856,
+                "count": 50,
+                "rank": 23
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": true,
+                    "id": 36,
+                    "integration": false,
+                    "label": "Music",
+                    "type": "content"
+                },
+                "count": 46,
                 "rank": 24
             },
             {
@@ -544,80 +537,8 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Software Updates",
                     "type": "content"
                 },
-                "count": 795,
+                "count": 40,
                 "rank": 25
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 124,
-                    "integration": false,
-                    "label": "Internet Telephony",
-                    "type": "content"
-                },
-                "count": 785,
-                "rank": 26
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 113,
-                    "integration": false,
-                    "label": "Computer Security",
-                    "type": "content"
-                },
-                "count": 691,
-                "rank": 27
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 24,
-                    "integration": false,
-                    "label": "Social Networking",
-                    "type": "content"
-                },
-                "count": 665,
-                "rank": 28
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": true,
-                    "id": 9,
-                    "integration": false,
-                    "label": "File Storage",
-                    "type": "content"
-                },
-                "count": 469,
-                "rank": 29
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": true,
-                    "id": 18,
-                    "integration": false,
-                    "label": "News/Media",
-                    "type": "content"
-                },
-                "count": 431,
-                "rank": 30
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": true,
-                    "id": 36,
-                    "integration": false,
-                    "label": "Music",
-                    "type": "content"
-                },
-                "count": 424,
-                "rank": 31
             },
             {
                 "bandwidth": null,
@@ -628,20 +549,20 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Podcasts",
                     "type": "content"
                 },
-                "count": 364,
-                "rank": 32
+                "count": 34,
+                "rank": 26
             },
             {
                 "bandwidth": null,
                 "category": {
                     "deprecated": true,
-                    "id": 21,
+                    "id": 8,
                     "integration": false,
-                    "label": "Portals",
+                    "label": "Ecommerce/Shopping",
                     "type": "content"
                 },
-                "count": 316,
-                "rank": 33
+                "count": 25,
+                "rank": 27
             },
             {
                 "bandwidth": null,
@@ -652,7 +573,79 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Blogs",
                     "type": "content"
                 },
-                "count": 279,
+                "count": 25,
+                "rank": 28
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": true,
+                    "id": 28,
+                    "integration": false,
+                    "label": "Video Sharing",
+                    "type": "content"
+                },
+                "count": 16,
+                "rank": 29
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": false,
+                    "id": 113,
+                    "integration": false,
+                    "label": "Computer Security",
+                    "type": "content"
+                },
+                "count": 16,
+                "rank": 30
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": false,
+                    "id": 119,
+                    "integration": false,
+                    "label": "Freeware and Shareware",
+                    "type": "content"
+                },
+                "count": 16,
+                "rank": 31
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": true,
+                    "id": 49,
+                    "integration": false,
+                    "label": "Forums/Message boards",
+                    "type": "content"
+                },
+                "count": 15,
+                "rank": 32
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": false,
+                    "id": 194,
+                    "integration": false,
+                    "label": "Streaming Video",
+                    "type": "content"
+                },
+                "count": 14,
+                "rank": 33
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": false,
+                    "id": 130,
+                    "integration": false,
+                    "label": "Professional Networking",
+                    "type": "content"
+                },
+                "count": 13,
                 "rank": 34
             },
             {
@@ -664,43 +657,43 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Research/Reference",
                     "type": "content"
                 },
-                "count": 219,
+                "count": 12,
                 "rank": 35
             },
             {
                 "bandwidth": null,
                 "category": {
-                    "deprecated": true,
-                    "id": 49,
+                    "deprecated": false,
+                    "id": 24,
                     "integration": false,
-                    "label": "Forums/Message boards",
+                    "label": "Social Networking",
                     "type": "content"
                 },
-                "count": 184,
+                "count": 11,
                 "rank": 36
             },
             {
                 "bandwidth": null,
                 "category": {
                     "deprecated": false,
-                    "id": 184,
+                    "id": 191,
                     "integration": false,
-                    "label": "Online Storage and Backup",
+                    "label": "Shopping",
                     "type": "content"
                 },
-                "count": 183,
+                "count": 9,
                 "rank": 37
             },
             {
                 "bandwidth": null,
                 "category": {
-                    "deprecated": false,
-                    "id": 202,
+                    "deprecated": true,
+                    "id": 16,
                     "integration": false,
-                    "label": "Internet of Things",
+                    "label": "Jobs/Employment",
                     "type": "content"
                 },
-                "count": 181,
+                "count": 7,
                 "rank": 38
             },
             {
@@ -712,248 +705,8 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Online Communities",
                     "type": "content"
                 },
-                "count": 166,
+                "count": 6,
                 "rank": 39
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 130,
-                    "integration": false,
-                    "label": "Professional Networking",
-                    "type": "content"
-                },
-                "count": 164,
-                "rank": 40
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 71,
-                    "integration": false,
-                    "label": "Block List",
-                    "type": "customer"
-                },
-                "count": 129,
-                "rank": 41
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": true,
-                    "id": 16,
-                    "integration": false,
-                    "label": "Jobs/Employment",
-                    "type": "content"
-                },
-                "count": 118,
-                "rank": 42
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 188,
-                    "integration": false,
-                    "label": "Reference",
-                    "type": "content"
-                },
-                "count": 116,
-                "rank": 43
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 179,
-                    "integration": false,
-                    "label": "News",
-                    "type": "content"
-                },
-                "count": 109,
-                "rank": 44
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 182,
-                    "integration": false,
-                    "label": "Not Actionable",
-                    "type": "content"
-                },
-                "count": 105,
-                "rank": 45
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 168,
-                    "integration": false,
-                    "label": "Education",
-                    "type": "content"
-                },
-                "count": 87,
-                "rank": 46
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": true,
-                    "id": 33,
-                    "integration": false,
-                    "label": "Educational Institutions",
-                    "type": "content"
-                },
-                "count": 87,
-                "rank": 47
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 201,
-                    "integration": false,
-                    "label": "DoH and DoT",
-                    "type": "content"
-                },
-                "count": 86,
-                "rank": 48
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 107,
-                    "integration": false,
-                    "label": "URL Shorteners",
-                    "type": "content"
-                },
-                "count": 84,
-                "rank": 49
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": true,
-                    "id": 50,
-                    "integration": false,
-                    "label": "Non-Profits",
-                    "type": "content"
-                },
-                "count": 75,
-                "rank": 50
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": true,
-                    "id": 34,
-                    "integration": false,
-                    "label": "Financial Institutions",
-                    "type": "content"
-                },
-                "count": 73,
-                "rank": 51
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": true,
-                    "id": 43,
-                    "integration": false,
-                    "label": "Proxy/Anonymizer",
-                    "type": "content"
-                },
-                "count": 67,
-                "rank": 52
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 134,
-                    "integration": false,
-                    "label": "Science and Technology",
-                    "type": "content"
-                },
-                "count": 63,
-                "rank": 53
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": true,
-                    "id": 20,
-                    "integration": false,
-                    "label": "Photo Sharing",
-                    "type": "content"
-                },
-                "count": 56,
-                "rank": 54
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 172,
-                    "integration": false,
-                    "label": "Finance",
-                    "type": "content"
-                },
-                "count": 51,
-                "rank": 55
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 169,
-                    "integration": false,
-                    "label": "Entertainment",
-                    "type": "content"
-                },
-                "count": 45,
-                "rank": 56
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 119,
-                    "integration": false,
-                    "label": "Freeware and Shareware",
-                    "type": "content"
-                },
-                "count": 42,
-                "rank": 57
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 193,
-                    "integration": false,
-                    "label": "Streaming Audio",
-                    "type": "content"
-                },
-                "count": 36,
-                "rank": 58
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 177,
-                    "integration": false,
-                    "label": "Job Search",
-                    "type": "content"
-                },
-                "count": 21,
-                "rank": 59
             },
             {
                 "bandwidth": null,
@@ -964,8 +717,8 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Visual Search Engines",
                     "type": "content"
                 },
-                "count": 19,
-                "rank": 60
+                "count": 4,
+                "rank": 40
             },
             {
                 "bandwidth": null,
@@ -976,8 +729,80 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Photo Search and Images",
                     "type": "content"
                 },
-                "count": 19,
-                "rank": 61
+                "count": 4,
+                "rank": 41
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": true,
+                    "id": 20,
+                    "integration": false,
+                    "label": "Photo Sharing",
+                    "type": "content"
+                },
+                "count": 4,
+                "rank": 42
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": true,
+                    "id": 21,
+                    "integration": false,
+                    "label": "Portals",
+                    "type": "content"
+                },
+                "count": 3,
+                "rank": 43
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": true,
+                    "id": 18,
+                    "integration": false,
+                    "label": "News/Media",
+                    "type": "content"
+                },
+                "count": 2,
+                "rank": 44
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": true,
+                    "id": 34,
+                    "integration": false,
+                    "label": "Financial Institutions",
+                    "type": "content"
+                },
+                "count": 2,
+                "rank": 45
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": false,
+                    "id": 134,
+                    "integration": false,
+                    "label": "Science and Technology",
+                    "type": "content"
+                },
+                "count": 2,
+                "rank": 46
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": false,
+                    "id": 168,
+                    "integration": false,
+                    "label": "Education",
+                    "type": "content"
+                },
+                "count": 2,
+                "rank": 47
             },
             {
                 "bandwidth": null,
@@ -988,20 +813,44 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Radio",
                     "type": "content"
                 },
-                "count": 12,
-                "rank": 62
+                "count": 2,
+                "rank": 48
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": true,
+                    "id": 33,
+                    "integration": false,
+                    "label": "Educational Institutions",
+                    "type": "content"
+                },
+                "count": 2,
+                "rank": 49
             },
             {
                 "bandwidth": null,
                 "category": {
                     "deprecated": false,
-                    "id": 11,
+                    "id": 172,
                     "integration": false,
-                    "label": "Games",
+                    "label": "Finance",
                     "type": "content"
                 },
-                "count": 7,
-                "rank": 63
+                "count": 2,
+                "rank": 50
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": false,
+                    "id": 71,
+                    "integration": false,
+                    "label": "Block List",
+                    "type": "customer"
+                },
+                "count": 1,
+                "rank": 51
             },
             {
                 "bandwidth": null,
@@ -1012,44 +861,8 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Web Page Translation",
                     "type": "content"
                 },
-                "count": 6,
-                "rank": 64
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 139,
-                    "integration": false,
-                    "label": "Web Hosting",
-                    "type": "content"
-                },
-                "count": 5,
-                "rank": 65
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 175,
-                    "integration": false,
-                    "label": "Health and Medicine",
-                    "type": "content"
-                },
-                "count": 5,
-                "rank": 66
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 126,
-                    "integration": false,
-                    "label": "Mobile Phones",
-                    "type": "content"
-                },
-                "count": 4,
-                "rank": 67
+                "count": 1,
+                "rank": 52
             },
             {
                 "bandwidth": null,
@@ -1060,200 +873,44 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Non-governmental Organizations",
                     "type": "content"
                 },
-                "count": 4,
-                "rank": 68
+                "count": 1,
+                "rank": 53
             },
             {
                 "bandwidth": null,
                 "category": {
                     "deprecated": false,
-                    "id": 118,
+                    "id": 129,
                     "integration": false,
-                    "label": "File Transfer Services",
+                    "label": "Personal Sites",
                     "type": "content"
                 },
-                "count": 4,
-                "rank": 69
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 55,
-                    "integration": false,
-                    "label": "Travel",
-                    "type": "content"
-                },
-                "count": 4,
-                "rank": 70
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 122,
-                    "integration": false,
-                    "label": "Illegal Downloads",
-                    "type": "content"
-                },
-                "count": 3,
-                "rank": 71
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 67,
-                    "integration": false,
-                    "label": "Malware",
-                    "type": "security"
-                },
-                "count": 2,
-                "rank": 72
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 10,
-                    "integration": false,
-                    "label": "Gambling",
-                    "type": "content"
-                },
-                "count": 2,
-                "rank": 73
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 207,
-                    "integration": false,
-                    "label": "Recipes and Food",
-                    "type": "content"
-                },
-                "count": 2,
-                "rank": 74
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 145,
-                    "integration": false,
-                    "label": "DIY Projects",
-                    "type": "content"
-                },
-                "count": 2,
-                "rank": 75
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 131,
-                    "integration": false,
-                    "label": "Real Estate",
-                    "type": "content"
-                },
-                "count": 2,
-                "rank": 76
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 195,
-                    "integration": false,
-                    "label": "Transportation",
-                    "type": "content"
-                },
-                "count": 2,
-                "rank": 77
+                "count": 1,
+                "rank": 54
             },
             {
                 "bandwidth": null,
                 "category": {
                     "deprecated": true,
-                    "id": 48,
+                    "id": 50,
                     "integration": false,
-                    "label": "Automotive",
-                    "type": "content"
-                },
-                "count": 2,
-                "rank": 78
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": true,
-                    "id": 58,
-                    "integration": false,
-                    "label": "Web Spam",
-                    "type": "content"
-                },
-                "count": 2,
-                "rank": 79
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": true,
-                    "id": 26,
-                    "integration": false,
-                    "label": "Television",
+                    "label": "Non-Profits",
                     "type": "content"
                 },
                 "count": 1,
-                "rank": 80
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": true,
-                    "id": 5,
-                    "integration": false,
-                    "label": "Classifieds",
-                    "type": "content"
-                },
-                "count": 1,
-                "rank": 81
+                "rank": 55
             },
             {
                 "bandwidth": null,
                 "category": {
                     "deprecated": false,
-                    "id": 115,
+                    "id": 188,
                     "integration": false,
-                    "label": "Dining and Drinking",
+                    "label": "Reference",
                     "type": "content"
                 },
                 "count": 1,
-                "rank": 82
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 144,
-                    "integration": false,
-                    "label": "Personal VPN",
-                    "type": "content"
-                },
-                "count": 1,
-                "rank": 83
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 128,
-                    "integration": false,
-                    "label": "Online Trading",
-                    "type": "content"
-                },
-                "count": 1,
-                "rank": 84
+                "rank": 56
             }
         ]
     }
@@ -1265,90 +922,62 @@ List of categories ordered by the number of requests made matching the categorie
 >### Category List
 >|Category|Type|Activity|
 >|---|---|---|
->| Application | application | 32446 |
->| Software/Technology | content | 26112 |
->| Infrastructure and Content Delivery Networks | content | 20351 |
->| Business Services | content | 19012 |
->| Computers and Internet | content | 18040 |
->| Business and Industry | content | 11251 |
->| Search Engines | content | 5931 |
->| Search Engines and Portals | content | 4714 |
->| Online Meetings | content | 3734 |
->| Advertisements | content | 3280 |
->| SaaS and B2B | content | 3164 |
->| Chat | content | 2444 |
->| Instant Messaging | content | 2376 |
->| Online Document Sharing and Collaboration | content | 2189 |
->| Webmail | content | 1994 |
->| Cloud and Data Centers | content | 1993 |
->| Web-based Email | content | 1831 |
->| Organizational Email | content | 1829 |
->| Chat and Instant Messaging | content | 1509 |
->| Ecommerce/Shopping | content | 1425 |
->| Video Sharing | content | 1013 |
->| Streaming Video | content | 924 |
->| Shopping | content | 922 |
->| Movies | content | 856 |
->| Software Updates | content | 795 |
->| Internet Telephony | content | 785 |
->| Computer Security | content | 691 |
->| Social Networking | content | 665 |
->| File Storage | content | 469 |
->| News/Media | content | 431 |
->| Music | content | 424 |
->| Podcasts | content | 364 |
->| Portals | content | 316 |
->| Blogs | content | 279 |
->| Research/Reference | content | 219 |
->| Forums/Message boards | content | 184 |
->| Online Storage and Backup | content | 183 |
->| Internet of Things | content | 181 |
->| Online Communities | content | 166 |
->| Professional Networking | content | 164 |
->| Block List | customer | 129 |
->| Jobs/Employment | content | 118 |
->| Reference | content | 116 |
->| News | content | 109 |
->| Not Actionable | content | 105 |
->| Education | content | 87 |
->| Educational Institutions | content | 87 |
->| DoH and DoT | content | 86 |
->| URL Shorteners | content | 84 |
->| Non-Profits | content | 75 |
->| Financial Institutions | content | 73 |
->| Proxy/Anonymizer | content | 67 |
->| Science and Technology | content | 63 |
->| Photo Sharing | content | 56 |
->| Finance | content | 51 |
->| Entertainment | content | 45 |
->| Freeware and Shareware | content | 42 |
->| Streaming Audio | content | 36 |
->| Job Search | content | 21 |
->| Visual Search Engines | content | 19 |
->| Photo Search and Images | content | 19 |
->| Radio | content | 12 |
->| Games | content | 7 |
->| Web Page Translation | content | 6 |
->| Web Hosting | content | 5 |
->| Health and Medicine | content | 5 |
->| Mobile Phones | content | 4 |
->| Non-governmental Organizations | content | 4 |
->| File Transfer Services | content | 4 |
->| Travel | content | 4 |
->| Illegal Downloads | content | 3 |
->| Malware | security | 2 |
->| Gambling | content | 2 |
->| Recipes and Food | content | 2 |
->| DIY Projects | content | 2 |
->| Real Estate | content | 2 |
->| Transportation | content | 2 |
->| Automotive | content | 2 |
->| Web Spam | content | 2 |
->| Television | content | 1 |
->| Classifieds | content | 1 |
->| Dining and Drinking | content | 1 |
->| Personal VPN | content | 1 |
->| Online Trading | content | 1 |
+>| Software/Technology | content | 3312 |
+>| Application | application | 3204 |
+>| Computers and Internet | content | 2755 |
+>| Infrastructure and Content Delivery Networks | content | 2311 |
+>| Business Services | content | 1759 |
+>| Business and Industry | content | 1170 |
+>| Online Meetings | content | 477 |
+>| Search Engines | content | 376 |
+>| Chat | content | 353 |
+>| Instant Messaging | content | 348 |
+>| Chat and Instant Messaging | content | 249 |
+>| Search Engines and Portals | content | 247 |
+>| Webmail | content | 223 |
+>| Advertisements | content | 196 |
+>| Online Document Sharing and Collaboration | content | 164 |
+>| Web-based Email | content | 163 |
+>| Organizational Email | content | 163 |
+>| Cloud and Data Centers | content | 134 |
+>| SaaS and B2B | content | 112 |
+>| Internet Telephony | content | 99 |
+>| File Storage | content | 72 |
+>| Online Storage and Backup | content | 72 |
+>| Movies | content | 50 |
+>| Music | content | 46 |
+>| Software Updates | content | 40 |
+>| Podcasts | content | 34 |
+>| Ecommerce/Shopping | content | 25 |
+>| Blogs | content | 25 |
+>| Video Sharing | content | 16 |
+>| Computer Security | content | 16 |
+>| Freeware and Shareware | content | 16 |
+>| Forums/Message boards | content | 15 |
+>| Streaming Video | content | 14 |
+>| Professional Networking | content | 13 |
+>| Research/Reference | content | 12 |
+>| Social Networking | content | 11 |
+>| Shopping | content | 9 |
+>| Jobs/Employment | content | 7 |
+>| Online Communities | content | 6 |
+>| Visual Search Engines | content | 4 |
+>| Photo Search and Images | content | 4 |
+>| Photo Sharing | content | 4 |
+>| Portals | content | 3 |
+>| News/Media | content | 2 |
+>| Financial Institutions | content | 2 |
+>| Science and Technology | content | 2 |
+>| Education | content | 2 |
+>| Radio | content | 2 |
+>| Educational Institutions | content | 2 |
+>| Finance | content | 2 |
+>| Block List | customer | 1 |
+>| Web Page Translation | content | 1 |
+>| Non-governmental Organizations | content | 1 |
+>| Personal Sites | content | 1 |
+>| Non-Profits | content | 1 |
+>| Reference | content | 1 |
 
 
 ### umbrella-reporting-identity-list
@@ -1399,38 +1028,18 @@ List of identities ordered by the number of requests made matching the categorie
 | UmbrellaReporting.Identity.identity.deleted | Boolean | Indicates whether the identity was deleted. | 
 
 #### Command example
-```!umbrella-reporting-identity-list limit=2 from=-30days to=now```
+```!umbrella-reporting-identity-list limit=2```
 #### Context Example
 ```json
 {
     "UmbrellaReporting": {
         "Identity": [
             {
-                "bandwidth": 7974662,
-                "counts": {
-                    "allowedrequests": 29540,
-                    "blockedrequests": 72,
-                    "requests": 29753
-                },
-                "identity": {
-                    "deleted": false,
-                    "id": 589064228,
-                    "label": "DESKTOP-IIQVPJ7",
-                    "type": {
-                        "id": 9,
-                        "label": "Roaming Computers",
-                        "type": "roaming"
-                    }
-                },
-                "rank": 1,
-                "requests": 29753
-            },
-            {
                 "bandwidth": null,
                 "counts": {
-                    "allowedrequests": 17950,
-                    "blockedrequests": 59,
-                    "requests": 18082
+                    "allowedrequests": 4947,
+                    "blockedrequests": 1,
+                    "requests": 4962
                 },
                 "identity": {
                     "deleted": false,
@@ -1442,8 +1051,8 @@ List of identities ordered by the number of requests made matching the categorie
                         "type": "roaming"
                     }
                 },
-                "rank": 2,
-                "requests": 18082
+                "rank": 1,
+                "requests": 4962
             }
         ]
     }
@@ -1455,8 +1064,7 @@ List of identities ordered by the number of requests made matching the categorie
 >### Identities List
 >|Identity|Requests|
 >|---|---|
->| DESKTOP-IIQVPJ7 | 29753 |
->| S’s MacBook Pro | 18082 |
+>| S’s MacBook Pro | 4962 |
 
 
 ### umbrella-reporting-event-type-list
@@ -1491,17 +1099,27 @@ List of event types ordered by the number of requests made for each type of even
 | --- | --- | --- |
 | UmbrellaReporting.Eventtype.eventtype | String | The event type. One of "domain_security", "domain_integration", "url_security", "url_integration", "cisco_amp" and "antivirus". | 
 | UmbrellaReporting.Eventtype.count | Number | Number of requests made that match this event type. | 
+| UmbrellaReporting.EventType.count | Number |  | 
+| UmbrellaReporting.EventType.eventtype | String |  | 
 
 #### Command example
-```!umbrella-reporting-event-type-list from=-30days to=now```
+```!umbrella-reporting-event-type-list```
 #### Context Example
 ```json
 {
     "UmbrellaReporting": {
         "EventType": [
             {
-                "count": 2,
-                "eventtype": "domain_security"
+                "count": 0,
+                "eventtype": "application"
+            },
+            {
+                "count": 0,
+                "eventtype": "antivirus"
+            },
+            {
+                "count": 0,
+                "eventtype": "cisco_amp"
             },
             {
                 "count": 0,
@@ -1513,19 +1131,11 @@ List of event types ordered by the number of requests made for each type of even
             },
             {
                 "count": 0,
-                "eventtype": "antivirus"
-            },
-            {
-                "count": 0,
-                "eventtype": "application"
-            },
-            {
-                "count": 0,
-                "eventtype": "cisco_amp"
-            },
-            {
-                "count": 0,
                 "eventtype": "domain_integration"
+            },
+            {
+                "count": 0,
+                "eventtype": "domain_security"
             }
         ]
     }
@@ -1537,13 +1147,13 @@ List of event types ordered by the number of requests made for each type of even
 >### Event Type List
 >|Event Type|Count|
 >|---|---|
->| domain_security | 2 |
+>| application | 0 |
+>| antivirus | 0 |
+>| cisco_amp | 0 |
 >| url_integration | 0 |
 >| url_security | 0 |
->| antivirus | 0 |
->| application | 0 |
->| cisco_amp | 0 |
 >| domain_integration | 0 |
+>| domain_security | 0 |
 
 
 ### umbrella-reporting-file-list
@@ -1588,48 +1198,10 @@ List of files within a time frame. Only returns proxy data.
 | UmbrellaReporting.File.categories.integration | Boolean | Whether the category is an integration. | 
 
 #### Command example
-```!umbrella-reporting-file-list limit=2 from=-30days to=now```
-#### Context Example
-```json
-{
-    "UmbrellaReporting": {
-        "File": [
-            {
-                "categories": [
-                    {
-                        "deprecated": false,
-                        "id": 142,
-                        "integration": false,
-                        "label": "Online Meetings",
-                        "type": "content"
-                    },
-                    {
-                        "deprecated": false,
-                        "id": 148,
-                        "integration": false,
-                        "label": "Application",
-                        "type": "application"
-                    }
-                ],
-                "filenames": [
-                    "AnyDesk.exe"
-                ],
-                "filetypes": [],
-                "identitycount": 1,
-                "requests": 2,
-                "sha256": "94fe42af4a67ed5be45bd7913d8a8aebc4e35afddd5675d01bd37df8e9b399ae"
-            }
-        ]
-    }
-}
-```
-
+```!umbrella-reporting-file-list limit=2```
 #### Human Readable Output
 
->### File List
->|Requests|Identity Count|SHA256|Category|Category Type|File Name|
->|---|---|---|---|---|---|
->| 2 | 1 | 94fe42af4a67ed5be45bd7913d8a8aebc4e35afddd5675d01bd37df8e9b399ae | Online Meetings, Application | content, application | AnyDesk.exe |
+>UmbrellaReporting does not have file to present. 
 
 
 ### umbrella-reporting-threat-list
@@ -1667,7 +1239,7 @@ List of top threats within a time frame. Returns both DNS and Proxy data.
 | UmbrellaReporting.Threat.count | Number | The number of requests for that threat name. | 
 
 #### Command example
-```!umbrella-reporting-threat-list limit=1 from=-30days to=now```
+```!umbrella-reporting-threat-list limit=1```
 #### Human Readable Output
 
 >UmbrellaReporting does not have threat to present. 
@@ -1749,9 +1321,10 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
 | UmbrellaReporting.Activity.blockedapplications.type | String | Type of the application, NBAR or AVC. | 
 | UmbrellaReporting.Activity.blockedapplications.category.label | String | Label of the application category. | 
 | UmbrellaReporting.Activity.blockedapplications.category.id | Number | ID of the application category. | 
+| UmbrellaReporting.Activity.device.id | Unknown |  | 
 
 #### Command example
-```!umbrella-reporting-activity-list limit=2 from=-30days to=now```
+```!umbrella-reporting-activity-list limit=2```
 #### Context Example
 ```json
 {
@@ -1761,21 +1334,28 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
                 "allapplications": [
                     {
                         "category": {
-                            "id": 46,
-                            "label": "Ad Publishing"
+                            "id": 7,
+                            "label": "Collaboration"
                         },
-                        "id": 46102,
-                        "label": "Google Marketing Platform"
+                        "id": 315463,
+                        "label": "Slack"
                     }
                 ],
                 "allowedapplications": [],
                 "blockedapplications": [],
                 "categories": [
                     {
-                        "deprecated": false,
-                        "id": 27,
+                        "deprecated": true,
+                        "id": 4,
                         "integration": false,
-                        "label": "Advertisements",
+                        "label": "Chat",
+                        "type": "content"
+                    },
+                    {
+                        "deprecated": true,
+                        "id": 15,
+                        "integration": false,
+                        "label": "Instant Messaging",
                         "type": "content"
                     },
                     {
@@ -1784,13 +1364,20 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
                         "integration": false,
                         "label": "Application",
                         "type": "application"
+                    },
+                    {
+                        "deprecated": false,
+                        "id": 164,
+                        "integration": false,
+                        "label": "Chat and Instant Messaging",
+                        "type": "content"
                     }
                 ],
-                "date": "2022-10-29",
+                "date": "2022-11-09",
                 "device": {
                     "id": null
                 },
-                "domain": "stats.g.doubleclick.net",
+                "domain": "slack.com",
                 "externalip": "182.76.175.118",
                 "identities": [
                     {
@@ -1809,8 +1396,8 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
                 "querytype": "A",
                 "returncode": 0,
                 "threats": [],
-                "time": "07:39:08",
-                "timestamp": 1667029148000,
+                "time": "06:38:37",
+                "timestamp": 1667975917000,
                 "type": "dns",
                 "verdict": "allowed"
             },
@@ -1818,11 +1405,11 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
                 "allapplications": [
                     {
                         "category": {
-                            "id": null,
-                            "label": "Sample Application Group"
+                            "id": 1,
+                            "label": "Application Development and Testing"
                         },
-                        "id": 28,
-                        "label": "Do Not Decrypt Application"
+                        "id": 288256,
+                        "label": "GitHub"
                     }
                 ],
                 "allowedapplications": [],
@@ -1836,10 +1423,10 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
                         "type": "content"
                     },
                     {
-                        "deprecated": false,
-                        "id": 123,
+                        "deprecated": true,
+                        "id": 32,
                         "integration": false,
-                        "label": "Infrastructure and Content Delivery Networks",
+                        "label": "Business Services",
                         "type": "content"
                     },
                     {
@@ -1848,13 +1435,20 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
                         "integration": false,
                         "label": "Application",
                         "type": "application"
+                    },
+                    {
+                        "deprecated": false,
+                        "id": 167,
+                        "integration": false,
+                        "label": "Computers and Internet",
+                        "type": "content"
                     }
                 ],
-                "date": "2022-10-29",
+                "date": "2022-11-09",
                 "device": {
                     "id": null
                 },
-                "domain": "ocsp2-lb.apple.com.akadns.net",
+                "domain": "alive.github.com",
                 "externalip": "182.76.175.118",
                 "identities": [
                     {
@@ -1870,11 +1464,11 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
                 ],
                 "internalip": "192.168.0.105",
                 "policycategories": [],
-                "querytype": "AAAA",
+                "querytype": "A",
                 "returncode": 0,
                 "threats": [],
-                "time": "07:38:57",
-                "timestamp": 1667029137000,
+                "time": "06:38:28",
+                "timestamp": 1667975908000,
                 "type": "dns",
                 "verdict": "allowed"
             }
@@ -1888,8 +1482,8 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
 >### Activity List
 >|Request|Identity|Policy or Ruleset Identity|Destination|Internal IP|External IP|DNS Type|Action|Categories|Public Application|Application Category|Date & Time|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| dns | S’s MacBook Pro | S’s MacBook Pro | stats.g.doubleclick.net | 192.168.0.105 | 182.76.175.118 | A | allowed | Advertisements, Application | Google Marketing Platform | Ad Publishing | 2022-10-29T07:39:08Z |
->| dns | S’s MacBook Pro | S’s MacBook Pro | ocsp2-lb.apple.com.akadns.net | 192.168.0.105 | 182.76.175.118 | AAAA | allowed | Software/Technology, Infrastructure and Content Delivery Networks, Application | Do Not Decrypt Application | Sample Application Group | 2022-10-29T07:38:57Z |
+>| dns | S’s MacBook Pro | S’s MacBook Pro | slack.com | 192.168.0.105 | 182.76.175.118 | A | allowed | Chat, Instant Messaging, Application, Chat and Instant Messaging | Slack | Collaboration | 2022-11-09T06:38:37Z |
+>| dns | S’s MacBook Pro | S’s MacBook Pro | alive.github.com | 192.168.0.105 | 182.76.175.118 | A | allowed | Software/Technology, Business Services, Application, Computers and Internet | GitHub | Application Development and Testing | 2022-11-09T06:38:28Z |
 
 
 ### umbrella-reporting-activity-get
@@ -1965,16 +1559,66 @@ Only one activity type can be selected at a time.
 | UmbrellaReporting.ActivityDns.allowedapplications.type | String | Type of the application, NBAR or AVC. | 
 | UmbrellaReporting.ActivityDns.allowedapplications.category.label | String | Label of the application category. | 
 | UmbrellaReporting.ActivityDns.allowedapplications.category.id | Number | ID of the application category. | 
-| UmbrellaReporting.ActivityDns.querytype | String | The type of DNS request that was made. For more information, see Common DNS Request Types. https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella- | 
+| UmbrellaReporting.ActivityDns.querytype | String | The type of DNS request that was made. For more information, see https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella- | 
 | UmbrellaReporting.ActivityDns.returncode | Number | The DNS return code for this request. For more information, see Common DNS return codes for any DNS service \(and Umbrella\). https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella- | 
 | UmbrellaReporting.ActivityDns.blockedapplications.id | Number | ID of the application. | 
 | UmbrellaReporting.ActivityDns.blockedapplications.label | String | Label of the application. | 
 | UmbrellaReporting.ActivityDns.blockedapplications.type | String | Type of the application, NBAR or AVC. | 
 | UmbrellaReporting.ActivityDns.blockedapplications.category.label | String | Label of the application category. | 
 | UmbrellaReporting.ActivityDns.blockedapplications.category.id | Number | ID of the application category. | 
+| UmbrellaReporting.ActivityDns.device.id | Unknown |  | 
+| UmbrellaReporting.ActivityProxy.amp.disposition | String |  | 
+| UmbrellaReporting.ActivityProxy.amp.malware | String |  | 
+| UmbrellaReporting.ActivityProxy.amp.score | Number |  | 
+| UmbrellaReporting.ActivityProxy.blockedfiletype | String |  | 
+| UmbrellaReporting.ActivityProxy.bundleid | Number |  | 
+| UmbrellaReporting.ActivityProxy.categories.deprecated | Boolean |  | 
+| UmbrellaReporting.ActivityProxy.categories.id | Number |  | 
+| UmbrellaReporting.ActivityProxy.categories.integration | Boolean |  | 
+| UmbrellaReporting.ActivityProxy.categories.label | String |  | 
+| UmbrellaReporting.ActivityProxy.categories.type | String |  | 
+| UmbrellaReporting.ActivityProxy.contenttype | String |  | 
+| UmbrellaReporting.ActivityProxy.datacenter.id | String |  | 
+| UmbrellaReporting.ActivityProxy.datacenter.label | String |  | 
+| UmbrellaReporting.ActivityProxy.datalossprevention.state | String |  | 
+| UmbrellaReporting.ActivityProxy.date | Date |  | 
+| UmbrellaReporting.ActivityProxy.destinationip | String |  | 
+| UmbrellaReporting.ActivityProxy.egress.ip | String |  | 
+| UmbrellaReporting.ActivityProxy.egress.type | String |  | 
+| UmbrellaReporting.ActivityProxy.externalip | String |  | 
+| UmbrellaReporting.ActivityProxy.forwardingmethod | String |  | 
+| UmbrellaReporting.ActivityProxy.identities.deleted | Boolean |  | 
+| UmbrellaReporting.ActivityProxy.identities.id | Number |  | 
+| UmbrellaReporting.ActivityProxy.identities.label | String |  | 
+| UmbrellaReporting.ActivityProxy.identities.type.id | Number |  | 
+| UmbrellaReporting.ActivityProxy.identities.type.label | String |  | 
+| UmbrellaReporting.ActivityProxy.identities.type.type | String |  | 
+| UmbrellaReporting.ActivityProxy.internalip | String |  | 
+| UmbrellaReporting.ActivityProxy.isolated.fileaction | String |  | 
+| UmbrellaReporting.ActivityProxy.isolated.state | String |  | 
+| UmbrellaReporting.ActivityProxy.policy.ruleid | Unknown |  | 
+| UmbrellaReporting.ActivityProxy.policy.rulesetid | Unknown |  | 
+| UmbrellaReporting.ActivityProxy.policy.timebasedrule | Boolean |  | 
+| UmbrellaReporting.ActivityProxy.port | Number |  | 
+| UmbrellaReporting.ActivityProxy.referer | String |  | 
+| UmbrellaReporting.ActivityProxy.requestmethod | String |  | 
+| UmbrellaReporting.ActivityProxy.requestsize | Number |  | 
+| UmbrellaReporting.ActivityProxy.responsefilename | String |  | 
+| UmbrellaReporting.ActivityProxy.responsesize | Number |  | 
+| UmbrellaReporting.ActivityProxy.securityoverridden | Boolean |  | 
+| UmbrellaReporting.ActivityProxy.sha256 | String |  | 
+| UmbrellaReporting.ActivityProxy.statuscode | Number |  | 
+| UmbrellaReporting.ActivityProxy.tenantcontrols | Boolean |  | 
+| UmbrellaReporting.ActivityProxy.time | String |  | 
+| UmbrellaReporting.ActivityProxy.timestamp | Date |  | 
+| UmbrellaReporting.ActivityProxy.type | String |  | 
+| UmbrellaReporting.ActivityProxy.url | String |  | 
+| UmbrellaReporting.ActivityProxy.useragent | String |  | 
+| UmbrellaReporting.ActivityProxy.verdict | String |  | 
+| UmbrellaReporting.ActivityProxy.warnstatus | String |  | 
 
 #### Command example
-```!umbrella-reporting-activity-get traffic_type=dns limit=2 from=-30days to=now```
+```!umbrella-reporting-activity-get traffic_type=dns limit=2```
 #### Context Example
 ```json
 {
@@ -1984,21 +1628,28 @@ Only one activity type can be selected at a time.
                 "allapplications": [
                     {
                         "category": {
-                            "id": 46,
-                            "label": "Ad Publishing"
+                            "id": 7,
+                            "label": "Collaboration"
                         },
-                        "id": 46102,
-                        "label": "Google Marketing Platform"
+                        "id": 315463,
+                        "label": "Slack"
                     }
                 ],
                 "allowedapplications": [],
                 "blockedapplications": [],
                 "categories": [
                     {
-                        "deprecated": false,
-                        "id": 27,
+                        "deprecated": true,
+                        "id": 4,
                         "integration": false,
-                        "label": "Advertisements",
+                        "label": "Chat",
+                        "type": "content"
+                    },
+                    {
+                        "deprecated": true,
+                        "id": 15,
+                        "integration": false,
+                        "label": "Instant Messaging",
                         "type": "content"
                     },
                     {
@@ -2007,13 +1658,20 @@ Only one activity type can be selected at a time.
                         "integration": false,
                         "label": "Application",
                         "type": "application"
+                    },
+                    {
+                        "deprecated": false,
+                        "id": 164,
+                        "integration": false,
+                        "label": "Chat and Instant Messaging",
+                        "type": "content"
                     }
                 ],
-                "date": "2022-10-29",
+                "date": "2022-11-09",
                 "device": {
                     "id": null
                 },
-                "domain": "stats.g.doubleclick.net",
+                "domain": "slack.com",
                 "externalip": "182.76.175.118",
                 "identities": [
                     {
@@ -2032,8 +1690,8 @@ Only one activity type can be selected at a time.
                 "querytype": "A",
                 "returncode": 0,
                 "threats": [],
-                "time": "07:39:08",
-                "timestamp": 1667029148000,
+                "time": "06:38:37",
+                "timestamp": 1667975917000,
                 "type": "dns",
                 "verdict": "allowed"
             },
@@ -2041,11 +1699,11 @@ Only one activity type can be selected at a time.
                 "allapplications": [
                     {
                         "category": {
-                            "id": null,
-                            "label": "Sample Application Group"
+                            "id": 1,
+                            "label": "Application Development and Testing"
                         },
-                        "id": 28,
-                        "label": "Do Not Decrypt Application"
+                        "id": 288256,
+                        "label": "GitHub"
                     }
                 ],
                 "allowedapplications": [],
@@ -2059,10 +1717,10 @@ Only one activity type can be selected at a time.
                         "type": "content"
                     },
                     {
-                        "deprecated": false,
-                        "id": 123,
+                        "deprecated": true,
+                        "id": 32,
                         "integration": false,
-                        "label": "Infrastructure and Content Delivery Networks",
+                        "label": "Business Services",
                         "type": "content"
                     },
                     {
@@ -2071,13 +1729,20 @@ Only one activity type can be selected at a time.
                         "integration": false,
                         "label": "Application",
                         "type": "application"
+                    },
+                    {
+                        "deprecated": false,
+                        "id": 167,
+                        "integration": false,
+                        "label": "Computers and Internet",
+                        "type": "content"
                     }
                 ],
-                "date": "2022-10-29",
+                "date": "2022-11-09",
                 "device": {
                     "id": null
                 },
-                "domain": "ocsp2-lb.apple.com.akadns.net",
+                "domain": "alive.github.com",
                 "externalip": "182.76.175.118",
                 "identities": [
                     {
@@ -2093,11 +1758,11 @@ Only one activity type can be selected at a time.
                 ],
                 "internalip": "192.168.0.105",
                 "policycategories": [],
-                "querytype": "AAAA",
+                "querytype": "A",
                 "returncode": 0,
                 "threats": [],
-                "time": "07:38:57",
-                "timestamp": 1667029137000,
+                "time": "06:38:28",
+                "timestamp": 1667975908000,
                 "type": "dns",
                 "verdict": "allowed"
             }
@@ -2111,12 +1776,12 @@ Only one activity type can be selected at a time.
 >### Dns Activity List
 >|Identity|Policy or Ruleset Identity|Destination|Internal IP|External IP|DNS Type|Action|Categories|Public Application|Application Category|Date & Time|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| S’s MacBook Pro | S’s MacBook Pro | stats.g.doubleclick.net | 192.168.0.105 | 182.76.175.118 | A | allowed | Advertisements, Application | Google Marketing Platform | Ad Publishing | 2022-10-29T07:39:08Z |
->| S’s MacBook Pro | S’s MacBook Pro | ocsp2-lb.apple.com.akadns.net | 192.168.0.105 | 182.76.175.118 | AAAA | allowed | Software/Technology, Infrastructure and Content Delivery Networks, Application | Do Not Decrypt Application | Sample Application Group | 2022-10-29T07:38:57Z |
+>| S’s MacBook Pro | S’s MacBook Pro | slack.com | 192.168.0.105 | 182.76.175.118 | A | allowed | Chat, Instant Messaging, Application, Chat and Instant Messaging | Slack | Collaboration | 2022-11-09T06:38:37Z |
+>| S’s MacBook Pro | S’s MacBook Pro | alive.github.com | 192.168.0.105 | 182.76.175.118 | A | allowed | Software/Technology, Business Services, Application, Computers and Internet | GitHub | Application Development and Testing | 2022-11-09T06:38:28Z |
 
 
 #### Command example
-```!umbrella-reporting-activity-get traffic_type=amp limit=2 from=-30days to=now```
+```!umbrella-reporting-activity-get traffic_type=amp limit=2```
 #### Human Readable Output
 
 >UmbrellaReporting does not have activity amp to present. 
@@ -2314,21 +1979,21 @@ Only one activity type can be selected at a time.
 
 
 #### Command example
-```!umbrella-reporting-activity-get traffic_type=firewall limit=2 from=-30days to=now```
+```!umbrella-reporting-activity-get traffic_type=firewall limit=2```
 #### Human Readable Output
 
 >UmbrellaReporting does not have activity firewall to present. 
 
 
 #### Command example
-```!umbrella-reporting-activity-get traffic_type=intrusion limit=2 from=-30days to=now```
+```!umbrella-reporting-activity-get traffic_type=intrusion limit=2```
 #### Human Readable Output
 
 >UmbrellaReporting does not have activity intrusion to present. 
 
 
 #### Command example
-```!umbrella-reporting-activity-get traffic_type=ip limit=2 from=-30days to=now```
+```!umbrella-reporting-activity-get traffic_type=ip limit=2```
 #### Human Readable Output
 
 >UmbrellaReporting does not have activity ip to present. 
@@ -2384,9 +2049,43 @@ Get the summary.
 | UmbrellaReporting.Summary.requests | Number | Total number of requests. | 
 | UmbrellaReporting.Summary.requestsallowed | Number | Total number of allowed requests. | 
 | UmbrellaReporting.Summary.requestsblocked | Number | Total number of blocked requests. | 
+| UmbrellaReporting.SummaryWithCategory.category.deprecated | Boolean |  | 
+| UmbrellaReporting.SummaryWithCategory.category.id | Number |  | 
+| UmbrellaReporting.SummaryWithCategory.category.integration | Boolean |  | 
+| UmbrellaReporting.SummaryWithCategory.category.label | String |  | 
+| UmbrellaReporting.SummaryWithCategory.category.type | String |  | 
+| UmbrellaReporting.SummaryWithCategory.summary.applications | Number |  | 
+| UmbrellaReporting.SummaryWithCategory.summary.applicationsallowed | Number |  | 
+| UmbrellaReporting.SummaryWithCategory.summary.applicationsblocked | Number |  | 
+| UmbrellaReporting.SummaryWithCategory.summary.categories | Number |  | 
+| UmbrellaReporting.SummaryWithCategory.summary.domains | Number |  | 
+| UmbrellaReporting.SummaryWithCategory.summary.files | Number |  | 
+| UmbrellaReporting.SummaryWithCategory.summary.filetypes | Number |  | 
+| UmbrellaReporting.SummaryWithCategory.summary.identities | Number |  | 
+| UmbrellaReporting.SummaryWithCategory.summary.identitytypes | Number |  | 
+| UmbrellaReporting.SummaryWithCategory.summary.policycategories | Number |  | 
+| UmbrellaReporting.SummaryWithCategory.summary.policyrequests | Number |  | 
+| UmbrellaReporting.SummaryWithCategory.summary.requests | Number |  | 
+| UmbrellaReporting.SummaryWithCategory.summary.requestsallowed | Number |  | 
+| UmbrellaReporting.SummaryWithCategory.summary.requestsblocked | Number |  | 
+| UmbrellaReporting.SummaryWithDestination.domain | String |  | 
+| UmbrellaReporting.SummaryWithDestination.summary.applications | Number |  | 
+| UmbrellaReporting.SummaryWithDestination.summary.applicationsallowed | Number |  | 
+| UmbrellaReporting.SummaryWithDestination.summary.applicationsblocked | Number |  | 
+| UmbrellaReporting.SummaryWithDestination.summary.categories | Number |  | 
+| UmbrellaReporting.SummaryWithDestination.summary.domains | Number |  | 
+| UmbrellaReporting.SummaryWithDestination.summary.files | Number |  | 
+| UmbrellaReporting.SummaryWithDestination.summary.filetypes | Number |  | 
+| UmbrellaReporting.SummaryWithDestination.summary.identities | Number |  | 
+| UmbrellaReporting.SummaryWithDestination.summary.identitytypes | Number |  | 
+| UmbrellaReporting.SummaryWithDestination.summary.policycategories | Number |  | 
+| UmbrellaReporting.SummaryWithDestination.summary.policyrequests | Number |  | 
+| UmbrellaReporting.SummaryWithDestination.summary.requests | Number |  | 
+| UmbrellaReporting.SummaryWithDestination.summary.requestsallowed | Number |  | 
+| UmbrellaReporting.SummaryWithDestination.summary.requestsblocked | Number |  | 
 
 #### Command example
-```!umbrella-reporting-summary-list domains=api.tunnels.cdfw.umbrella.com from=-30days to=now```
+```!umbrella-reporting-summary-list domains=api.tunnels.cdfw.umbrella.com```
 #### Context Example
 ```json
 {
@@ -2395,16 +2094,16 @@ Get the summary.
             "applications": 0,
             "applicationsallowed": 0,
             "applicationsblocked": 0,
-            "categories": 4,
-            "domains": 1,
+            "categories": 0,
+            "domains": 0,
             "files": 0,
             "filetypes": 0,
-            "identities": 3,
-            "identitytypes": 2,
+            "identities": 0,
+            "identitytypes": 0,
             "policycategories": 0,
             "policyrequests": 0,
-            "requests": 6,
-            "requestsallowed": 6,
+            "requests": 0,
+            "requestsallowed": 0,
             "requestsblocked": 0
         }
     }
@@ -2416,106 +2115,16 @@ Get the summary.
 >### Summary List
 >|Application|Allowed Application|Blocked Application|Category|Domain|File|File Type|Identity|Identity Type|Policy Category|Policy Request|Request|Allowed Request|Blocked Request|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 0 | 0 | 0 | 4 | 1 | 0 | 0 | 3 | 2 | 0 | 0 | 6 | 6 | 0 |
+>| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 
 #### Command example
-```!umbrella-reporting-summary-list summary_type=category limit=2 from=-30days to=now```
-#### Context Example
-```json
-{
-    "UmbrellaReporting": {
-        "SummaryWithCategory": [
-            {
-                "category": {
-                    "deprecated": false,
-                    "id": 148,
-                    "integration": false,
-                    "label": "Application",
-                    "type": "application"
-                },
-                "summary": {
-                    "applications": 0,
-                    "applicationsallowed": 0,
-                    "applicationsblocked": 0,
-                    "categories": 70,
-                    "domains": 2039,
-                    "files": 1,
-                    "filetypes": 0,
-                    "identities": 3,
-                    "identitytypes": 2,
-                    "policycategories": 1,
-                    "policyrequests": 0,
-                    "requests": 32446,
-                    "requestsallowed": 32280,
-                    "requestsblocked": 99
-                }
-            },
-            {
-                "category": {
-                    "deprecated": true,
-                    "id": 25,
-                    "integration": false,
-                    "label": "Software/Technology",
-                    "type": "content"
-                },
-                "summary": {
-                    "applications": 0,
-                    "applicationsallowed": 0,
-                    "applicationsblocked": 0,
-                    "categories": 58,
-                    "domains": 1414,
-                    "files": 0,
-                    "filetypes": 0,
-                    "identities": 3,
-                    "identitytypes": 2,
-                    "policycategories": 1,
-                    "policyrequests": 0,
-                    "requests": 26112,
-                    "requestsallowed": 26041,
-                    "requestsblocked": 30
-                }
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Summary with Category List
->|Category Type|Category Name|Application|Allowed Application|Blocked Application|Category|Domain|File|File Type|Identity|Identity Type|Policy Category|Policy Request|Request|Allowed Request|Blocked Request|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| application | Application | 0 | 0 | 0 | 70 | 2039 | 1 | 0 | 3 | 2 | 1 | 0 | 32446 | 32280 | 99 |
->| content | Software/Technology | 0 | 0 | 0 | 58 | 1414 | 0 | 0 | 3 | 2 | 1 | 0 | 26112 | 26041 | 30 |
-
-
-#### Command example
-```!umbrella-reporting-summary-list summary_type=destination limit=2 from=-30days to=now```
+```!umbrella-reporting-summary-list summary_type=destination limit=2```
 #### Context Example
 ```json
 {
     "UmbrellaReporting": {
         "SummaryWithDestination": [
-            {
-                "domain": "www.cisco.com",
-                "summary": {
-                    "applications": 0,
-                    "applicationsallowed": 0,
-                    "applicationsblocked": 0,
-                    "categories": 5,
-                    "domains": 1,
-                    "files": 0,
-                    "filetypes": 0,
-                    "identities": 3,
-                    "identitytypes": 2,
-                    "policycategories": 0,
-                    "policyrequests": 0,
-                    "requests": 1286,
-                    "requestsallowed": 1286,
-                    "requestsblocked": 0
-                }
-            },
             {
                 "domain": "presence.teams.microsoft.com",
                 "summary": {
@@ -2526,50 +2135,31 @@ Get the summary.
                     "domains": 1,
                     "files": 0,
                     "filetypes": 0,
-                    "identities": 3,
+                    "identities": 2,
                     "identitytypes": 2,
                     "policycategories": 0,
                     "policyrequests": 0,
-                    "requests": 1003,
-                    "requestsallowed": 1003,
+                    "requests": 119,
+                    "requestsallowed": 119,
                     "requestsblocked": 0
                 }
             },
             {
-                "domain": "x1.c.lencr.org",
+                "domain": "www.apple.com",
                 "summary": {
                     "applications": 0,
                     "applicationsallowed": 0,
                     "applicationsblocked": 0,
-                    "categories": 1,
+                    "categories": 4,
                     "domains": 1,
                     "files": 0,
                     "filetypes": 0,
-                    "identities": 1,
-                    "identitytypes": 1,
+                    "identities": 2,
+                    "identitytypes": 2,
                     "policycategories": 0,
                     "policyrequests": 0,
-                    "requests": 48,
-                    "requestsallowed": 48,
-                    "requestsblocked": 0
-                }
-            },
-            {
-                "domain": "download.anydesk.com",
-                "summary": {
-                    "applications": 0,
-                    "applicationsallowed": 0,
-                    "applicationsblocked": 0,
-                    "categories": 2,
-                    "domains": 1,
-                    "files": 1,
-                    "filetypes": 0,
-                    "identities": 1,
-                    "identitytypes": 1,
-                    "policycategories": 0,
-                    "policyrequests": 0,
-                    "requests": 2,
-                    "requestsallowed": 2,
+                    "requests": 110,
+                    "requestsallowed": 110,
                     "requestsblocked": 0
                 }
             }
@@ -2583,14 +2173,12 @@ Get the summary.
 >### Summary with Destination List
 >|Destination|Application|Allowed Application|Blocked Application|Category|Domain|File|File Type|Identity|Identity Type|Policy Category|Policy Request|Request|Allowed Request|Blocked Request|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| www.cisco.com | 0 | 0 | 0 | 5 | 1 | 0 | 0 | 3 | 2 | 0 | 0 | 1286 | 1286 | 0 |
->| presence.teams.microsoft.com | 0 | 0 | 0 | 6 | 1 | 0 | 0 | 3 | 2 | 0 | 0 | 1003 | 1003 | 0 |
->| x1.c.lencr.org | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 1 | 1 | 0 | 0 | 48 | 48 | 0 |
->| download.anydesk.com | 0 | 0 | 0 | 2 | 1 | 1 | 0 | 1 | 1 | 0 | 0 | 2 | 2 | 0 |
+>| presence.teams.microsoft.com | 0 | 0 | 0 | 6 | 1 | 0 | 0 | 2 | 2 | 0 | 0 | 119 | 119 | 0 |
+>| www.apple.com | 0 | 0 | 0 | 4 | 1 | 0 | 0 | 2 | 2 | 0 | 0 | 110 | 110 | 0 |
 
 
 #### Command example
-```!umbrella-reporting-summary-list summary_type=intrusion_rule limit=2 from=-30days to=now```
+```!umbrella-reporting-summary-list summary_type=intrusion_rule limit=2```
 #### Human Readable Output
 
 >UmbrellaReporting does not have intrusion_rule summary to present. 
