@@ -328,7 +328,13 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
      # (25) Deprecated integration changes - should not be collected
      (MockerCases.Q, (), (), None, XSOAR_BRANCH_ARGS,
       ('Packs/myPack/Integrations/myDeprecatedIntegration/myDeprecatedIntegration.yml',), ()),
+
+     # (26) Deprecated integration changes - should not be collected
+     (MockerCases.Q, ('myTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS,
+      ('Packs/myPack/Integrations/myDeprecatedIntegration/myDeprecatedIntegration.yml',
+       'Packs/myPack/Integrations/myIntegration/myIntegration.yml'), ()),
      ))
+
 def test_branch(
         monkeypatch,
         mocker,
