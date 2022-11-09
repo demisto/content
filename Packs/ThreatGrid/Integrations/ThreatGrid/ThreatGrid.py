@@ -1,9 +1,10 @@
 import requests
+import urllib3
 
 import demistomock as demisto
 from CommonServerPython import *
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 if not demisto.getParam('proxy'):
     del os.environ['HTTP_PROXY']
