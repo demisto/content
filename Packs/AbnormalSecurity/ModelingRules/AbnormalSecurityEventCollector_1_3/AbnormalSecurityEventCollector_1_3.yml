@@ -1,4 +1,4 @@
-fromversion: 3.3.0
+fromversion: 6.10.0
 name: Abnormal Security Event Collector
 id: ModelingAbnormalSecurityEventCollector
 tags:

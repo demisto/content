@@ -45,7 +45,7 @@
             "is_array": false
         },
         "summaryInsights": {
-            "type": "json",
+            "type": "string",
             "is_array": false
         },
         "abxPortalUrl": {
