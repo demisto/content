@@ -2335,10 +2335,6 @@
             "fromversion": "6.0.0"
         },
         {
-            "integrations": "duo",
-            "playbookID": "DUO Test Playbook"
-        },
-        {
             "playbookID": "SLA Scripts - Test",
             "fromversion": "4.1.0"
         },
