@@ -85,8 +85,9 @@ incident_table = make_incident_table()
 notes_table = make_notes_table() if include_notes else ''
 
 body = incident_table + notes_table + indicator_table
+params = {'body': body, 'header': incident.get('name'), 'banner': banner, 'custom_css': custom_css}
 email_html = demisto.executeCommand(
-    'fancy-email-make-email', {'body': body, 'header': incident.get('name'), 'banner': banner, 'custom_css': custom_css})[0]["Contents"]['html']
+    'fancy-email-make-email', params)[0]["Contents"]['html']
 
 args['htmlBody'] = email_html
 
