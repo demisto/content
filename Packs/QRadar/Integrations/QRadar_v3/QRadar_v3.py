@@ -3720,6 +3720,18 @@ def qradar_remote_network_cidr_create_command(client: Client, args) -> CommandRe
 
 
 def qradar_remote_network_cidr_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Args:
+    client (Client): The QRadar client to use.
+    args (dict): Demisto arguments.
+
+    Raises:
+        DemistoException: If given both filter and group, id or name arguments.
+
+    Returns:
+        CommandResults.
+
+    """
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
     group = args.get('group')
     id_ = args.get('id')
@@ -3757,6 +3769,14 @@ def qradar_remote_network_cidr_list_command(client: Client, args: Dict[str, Any]
 
 
 def qradar_remote_network_cidr_delete_command(client: Client, args) -> CommandResults:
+    """
+    Args:
+    client (Client): The QRadar client to use.
+    args (dict): Demisto arguments.
+
+    Returns:
+    Two CommandResults objects, one for the success and one for the failure.
+    """
     ids = argToList(args.get('id'))
     success_delete_ids = []
     unsuccessful_delete_ids = []
@@ -3780,6 +3800,17 @@ def qradar_remote_network_cidr_delete_command(client: Client, args) -> CommandRe
 
 
 def qradar_remote_network_cidr_update_command(client: Client, args):
+    """
+    Args:
+    client (Client): The QRadar client to use.
+    args (dict): Demisto arguments.
+
+    Raises:
+        DemistoException: If the args are not valid.
+
+    Returns:
+    CommandResults.
+    """
     id_ = arg_to_number(args.get('id'))
     name = args.get('name')
     cidrs_list = argToList(args.get('cidrs'))
@@ -3816,6 +3847,14 @@ def qradar_remote_network_cidr_update_command(client: Client, args):
 
 
 def qradar_remote_network_deploy_execution_command(client: Client, args):
+    """
+    Args:
+    client (Client): The QRadar client to use.
+    args (dict): Demisto arguments.
+
+    Returns:
+    CommandResults.
+    """
     host_ip = args.get('host_ip')
     status = args.get('status')
     deployment_type = args.get('deployment_type')
