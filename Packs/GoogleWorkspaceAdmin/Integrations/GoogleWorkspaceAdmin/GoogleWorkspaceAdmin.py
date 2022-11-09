@@ -12,16 +12,25 @@ BASE_URL = 'https://admin.googleapis.com/'
 
 requests.packages.urllib3.disable_warnings()
 
+""" OAuth tokens are correlated with the scopes """
+
 
 class Client(BaseClient):
     def __init__(self, base_url: str, verify: bool, proxy: bool, customer_id: str, service_account_json: Dict[str, str], auth: tuple = None):
         self._headers = {'Content-Type': 'application/json'}
         self._customer_id = customer_id
         self._service_account_json = service_account_json
-        self._credentials = service_account.Credentials.from_service_account_info(
-            self._service_account_json,
-        )
+        self._credentials = self._init_credentials()
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=self._headers, auth=auth)
+
+    def _init_credentials(self) -> service_account.Credentials:
+        try:
+            credentials = service_account.Credentials.from_service_account_info(
+                self._service_account_json,
+            )
+            return credentials
+        except Exception:
+            raise DemistoException('Please check the service account\'s json content')
 
     def http_request(self, url_suffix: str, method: str, ok_codes: tuple = (200, 204),
                      resp_type: str = 'json') -> dict:
@@ -32,25 +41,30 @@ class Client(BaseClient):
 
     def test_client_connection(self):
         try:
-            token = self.get_oauth_token(scopes=['https://www.googleapis.com/auth/admin.directory.device.mobile',
-                                                 'https://www.googleapis.com/auth/admin.directory.device.chromeos'])
-            self._headers['Authorization'] = f'Bearer {token}'
-            response = self._http_request('GET', f'admin/directory/v1/customer/{client._customer_id}/devices/mobile',
+            token = self.get_oauth_token(scopes=['https://www.googleapis.com/auth/admin.directory.device.mobile.readonly',
+                                                 ])
+            headers = self._headers | {'Authorization': f'Bearer {token}'}
+            _ = self._http_request('GET', f'admin/directory/v1/customer/{self._customer_id}/devices/mobile',
                                           headers=headers)
-            return_results('ok')
+            return 'ok'
         except DemistoException as e:
+            if 'Forbidden' in str(e) or 'Not Authorized' in str(e):
+                raise DemistoException('Please make sure the service account has the relevant authorizations')
+            else:
+                raise e
+        except Exception as e:
             raise e
 
     def get_oauth_token(self, scopes: List[str]):
         """ In charge or retrieving the OAuth token in order to make HTTP requests """
-        scoped_credentials: service_account.Credentials = self._credentials.with_scopes(scopes)
-        if(not scoped_credentials.valid):
+        self._credentials = self._credentials.with_scopes(scopes)
+        if(not self._credentials.valid):
             request = google.auth.transport.requests.Request()
-            scoped_credentials.refresh(request)
-            if(not scoped_credentials.valid):
+            self._credentials.refresh(request)
+            if(not self._credentials.valid):
                 raise DemistoException('Could not refresh token')
             request.session.close()
-        return scoped_credentials.token
+        return self._credentials.token
 
     def google_mobiledevice_action_request(self, customerid, resourceid, action):
         data = {"action": action}
@@ -124,9 +138,9 @@ def google_chromeosdevice_list_command():
     pass
 
 
-def test_module(client: Client) -> None:
+def test_module(client: Client) -> str:
     # Test functions here
-    return client.test_client_connection
+    return client.test_client_connection()
 
 
 def test_module_test(client: Client) -> None:
@@ -150,6 +164,12 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
+    commands: Dict[str, Callable] = {
+        'google-mobiledevice-action': google_mobiledevice_action_command,
+        'google-mobiledevice-list': google_mobiledevice_list_command,
+        'google-chromeosdevice-action': google_chromeosdevice_action_command,
+        'google_chromeosdevice_list': google_chromeosdevice_list_command
+    }
     demisto.debug(f'Command being called is {command}')
     try:
         customer_id = params.get('customer_id')
@@ -158,14 +178,8 @@ def main() -> None:
         proxy = params.get('proxy', False)
         client: Client = Client(base_url=BASE_URL, verify=verify_certificate, proxy=proxy,
                                 customer_id=customer_id, service_account_json=service_account_json, auth=None)
-        commands: Dict[str, Callable] = {
-            'google-mobiledevice-action': google_mobiledevice_action_command,
-            'google-mobiledevice-list': google_mobiledevice_list_command,
-            'google-chromeosdevice-action': google_chromeosdevice_action_command,
-            'google_chromeosdevice_list': google_chromeosdevice_list_command
-        }
         if command == 'test-module':
-            test_module(client)
+            return_results(test_module(client))
         elif command in commands:
             return_results(commands[command](client, args))
         else:
