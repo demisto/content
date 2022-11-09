@@ -498,7 +498,7 @@ class URLCheck(object):
                 if bracket_pairs[self.modified_url[beggining]] == self.modified_url[end]:
                     beggining += 1
                     end -= 1
-      
+
                 else:
                     in_brackets = False
 
@@ -510,7 +510,7 @@ class URLCheck(object):
 
         if end == -1:
             self.modified_url = self.modified_url[beggining:]
-     
+
         else:
             self.modified_url = self.modified_url[beggining:end + 1]
 
