@@ -2255,10 +2255,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: d7da6f5b-5e33-4e31-8cfe-12810e450eb0
+    taskid: c8f001d7-493f-47a4-8e3a-528d840131ad
     type: regular
     task:
-      id: d7da6f5b-5e33-4e31-8cfe-12810e450eb0
+      id: c8f001d7-493f-47a4-8e3a-528d840131ad
       version: -1
       name: create  forwarding address
       description: Creates a forwarding address. If ownership verification is required,
@@ -2275,7 +2275,7 @@ tasks:
       - "75"
     scriptarguments:
       forwarding_email:
-        simple: 'admin@demistodev.com '
+        simple: admin@demistodev.com
       user_id:
         simple: me
     separatecontext: false

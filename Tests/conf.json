@@ -1433,7 +1433,8 @@
         },
         {
             "playbookID": "Gmail Convert Html Test",
-            "integrations": "Gmail"
+            "integrations": "Gmail",
+            "memory_threshold": 100
         },
         {
             "playbookID": "reputations.json Test",
@@ -1490,7 +1491,8 @@
             "playbookID": "Mail Sender (New) Test",
             "instance_names": [
                 "Mail_Sender_(New)_STARTTLS"
-            ]
+            ],
+            "memory_threshold": 100
         },
         {
             "playbookID": "buildewsquery_test"
