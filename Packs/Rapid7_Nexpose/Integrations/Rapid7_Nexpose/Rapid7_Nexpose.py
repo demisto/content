@@ -2783,7 +2783,7 @@ def create_scan_report_command(client: Client, scan_id: str, template_id: Option
 
     Args:
         client (Client): Client to use for API requests.
-        scan_id (scan): ID of the scan to create a report on.
+        scan_id (str): ID of the scan to create a report on.
         template_id (str | None, optional): ID of report template to use.
             Defaults to None (will result in using the first available template)
         report_name (str | None, optional): Name for the report that will be generated. Uses "report {date}" by default.
@@ -2800,7 +2800,7 @@ def create_scan_report_command(client: Client, scan_id: str, template_id: Option
     if download_immediately is not None:
         download_immediately_bool = argToBoolean(download_immediately)
 
-    scope = {"scan": scan_id}
+    scope = {"scan": arg_to_number(scan_id, required=True)}
 
     return create_report(
         client=client,
@@ -5240,7 +5240,7 @@ def main():
         elif command == "nexpose-create-scan-report":
             results = create_scan_report_command(
                 client=client,
-                scan_id=args["scans"],
+                scan_id=args["scan"],
                 template_id=args.get("template"),
                 report_name=args.get("name"),
                 report_format=args.get("format"),
