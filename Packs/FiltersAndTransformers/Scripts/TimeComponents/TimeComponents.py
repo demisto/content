@@ -6,13 +6,15 @@ import pytz
 from CommonServerPython import *  # noqa: F401
 
 
-def timezone_abbreviations(utc_offset: timedelta) -> set[str]:
+def timezone_abbreviations(utc_offset: Optional[timedelta]) -> set[str]:
     tznames = set()
-    now = datetime.now(pytz.utc)
-    for tz in map(pytz.timezone, pytz.all_timezones_set):
-        if (d := now.astimezone(tz)).utcoffset() == utc_offset:
-            if (tzname := d.tzname())[0:1] not in ('+', '-'):
-                tznames.add(tzname)
+    if utc_offset is not None:
+        now = datetime.now(pytz.utc)
+        for tz in map(pytz.timezone, pytz.all_timezones_set):
+            if (d := now.astimezone(tz)).utcoffset() == utc_offset:
+                if tzname := d.tzname():
+                    if tzname[0:1] not in ('+', '-'):
+                        tznames.add(tzname)
     return tznames
 
 
