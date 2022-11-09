@@ -20,10 +20,6 @@
             "url": "http://3.23.155.57:8000/apiv2/tasks/view/404"
           },
           {
-            "source_name": "Internal_Gbox_Sandbox",
-            "url": "https://gbox-lis.gatewatcher.com"
-          },
-          {
             "source_name": "CAPEv23",
             "url": "https://143.215.130.170/api/tasks/view/315909"
           }
@@ -101,10 +97,6 @@
           {
             "source_name": "CapeSandbox:2022-03-12 04:00:37.779414",
             "url": "http://3.23.155.57:8000/apiv2/tasks/view/404"
-          },
-          {
-            "source_name": "Internal_Gbox_Sandbox",
-            "url": "https://gbox-lis.gatewatcher.com"
           },
           {
             "source_name": "CAPEv23",
