@@ -1,5 +1,5 @@
 Unified gateway to security insights - all from a unified Microsoft Graph Security API.
-This integration was integrated and tested with version xx of Microsoft Graph
+This integration was integrated and tested with version 1.0 of Microsoft Graph
 
 ## Configure Microsoft Graph Security on Cortex XSOAR
 
