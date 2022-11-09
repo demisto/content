@@ -78,7 +78,6 @@ configuration:
   required: false
   type: 0
   section: Collect
-  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false

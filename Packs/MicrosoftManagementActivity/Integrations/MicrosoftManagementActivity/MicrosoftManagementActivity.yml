@@ -108,6 +108,7 @@ configuration:
   required: false
   type: 0
   section: Collect
+  advanced: true
 - display: Workloads to fetch. (Comma-separated list of the workloads you wish to fetch. Content records with a workload that isn't specified will not be fetched. If this field is left empty, all workloads will be fetched.)
   name: workloads_filter
   required: false

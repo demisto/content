@@ -22,7 +22,6 @@ configuration:
   required: false
   type: 0
   section: Collect
-  advanced: true
 - defaultvalue: '1'
   display: How many days back to fetch incidents on the first run - maximum is 30
   name: first_fetch_days

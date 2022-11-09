@@ -56,7 +56,6 @@ configuration:
   required: false
   type: 0
   section: Collect
-  advanced: true
 - additionalinfo: Acknowledge fetched incidents. (When toggled off, will not acknowledge fetched messages).
   display: Acknowledge incidents.
   name: ack_incidents

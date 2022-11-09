@@ -64,7 +64,6 @@ configuration:
   required: false
   type: 0
   section: Collect
-  advanced: true
 - additionalinfo: Time to start fetching the first incidents. Default is to begin fetching 1 day ago. Max number of model breaches that will be populated upon first fetch is 20.
   defaultvalue: 1 day ago
   display: First fetch time
