@@ -4,12 +4,13 @@ from CommonServerUserPython import *
 # IMPORTS
 
 import json
+import urllib3
 import requests
 import dateparser
 import uuid
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 ''' CONSTANTS '''
 
