@@ -1993,6 +1993,11 @@ def fetch_incidents():
     incidents = []  # type:List
     current_fetch_info = demisto.getLastRun()
     fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections')
+    look_back = int(demisto.params().get('look_back', 0))
+    first_fetch = demisto.params().get('first_fetch')
+    limit = current_fetch_info.get('limit', 50)
+    start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch,
+                                                                look_back=look_back)
 
     if 'Detections' in fetch_incidents_or_detections:
         incident_type = 'detection'
@@ -2087,6 +2092,13 @@ def fetch_incidents():
                 current_fetch_info['incident_offset'] = 0
                 current_fetch_info['last_fetched_incident'] = new_last_incident_fetched
 
+    incidents = filter_incidents_by_duplicates_and_limit(incidents_res=incidents, last_run=current_fetch_info,
+                                                         fetch_limit=limit, id_field='incident_id')
+    last_run = update_last_run_object(last_run=current_fetch_info, incidents=incidents, fetch_limit=limit,
+                                      start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time, look_back=look_back,
+                                      created_time_field='created', id_field='incident_id')
+
+    current_fetch_info.update(last_run)
     demisto.setLastRun(current_fetch_info)
     return incidents
 
