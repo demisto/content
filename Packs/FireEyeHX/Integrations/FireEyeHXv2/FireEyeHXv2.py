@@ -1511,7 +1511,7 @@ def get_indicator_command_result(alert: Dict[str, Any]) -> CommandResults:
             readable_output=md_table
         )
 
-    else:
+    elif alert.get("event_type") == 'ipv4NetworkEvent':
         indicator = general_context_from_event(alert)
         event_values = alert.get('event_values', {})
         md_table = tableToMarkdown(

@@ -754,7 +754,7 @@ UPSERT_COMMAND_DATA_CASES_GET_INDICATOR_RESULT = [
         'File'
     ),
     (
-        {'event_type': 'test'},
+        {'event_type': 'ipv4NetworkEvent'},
         'Ip'
     )
 ]
