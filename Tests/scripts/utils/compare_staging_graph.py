@@ -173,9 +173,7 @@ def compare(
     shutil.make_archive(str(output_path / f"diff-{marketplace}"), "zip", output_path)
 
     if not diff_found:
-        message.insert(2, "No difference were found!")
-    else:
-        message.insert(2, f"Difference for {output_path}")
+        message.append("No difference were found!")
     return message
 
 
@@ -206,12 +204,11 @@ def main():
         f'Job URL: {os.getenv("CI_JOB_URL")}',
     ]
     if not (graph_exists := zip_graph.exists()) or not (id_set_exists := zip_id_set.exists()):
-        message.extend(
-            [
-                f"Graph exists: {graph_exists}",
-                f"id-set exists: {id_set_exists}",
-            ]
-        )
+        if not id_set_exists:
+            message.append("No packs were uploaded for id_set")
+        if not graph_exists:
+            message.append("No packs were uploaded for graph")
+
     else:
         message = compare(
             marketplace,
