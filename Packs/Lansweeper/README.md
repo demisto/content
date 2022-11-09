@@ -1,5 +1,3 @@
-TEST CHANGE 
-
 Lansweeper is an application that gathers information of computers and other devices on the network for management, compliance and audit purposes.
 
 
