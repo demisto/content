@@ -1,0 +1,950 @@
+id: Search in mailboxes Gmail (Loop)
+version: -1
+name: Search in mailboxes Gmail (Loop)
+description: This playbook is used as a subplaybook for the Playbook Search-all-mailboxes - Gmail, it should not be used.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6e543801-00e7-4ddf-8d14-9d7b6e2f91bf
+    type: start
+    task:
+      id: 6e543801-00e7-4ddf-8d14-9d7b6e2f91bf
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: a5f2bcfd-1b97-43ff-8ac6-0bebfc9bd9ba
+    type: regular
+    task:
+      id: a5f2bcfd-1b97-43ff-8ac6-0bebfc9bd9ba
+      version: -1
+      name: Get users
+      description: Lists all Google users in a domain.
+      script: '|||gmail-list-users'
+      type: regular
+      iscommand: true
+      brand: Gmail
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      for-searching-all-mailboxes:
+        simple: "true"
+      max-results:
+        complex:
+          root: inputs.max-results
+      page-token:
+        complex:
+          root: inputs.page-token
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 9a88cd46-cce4-412e-800a-bc7311fe2942
+    type: title
+    task:
+      id: 9a88cd46-cce4-412e-800a-bc7311fe2942
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 8b64c5b9-a159-472f-8b95-80a026287743
+    type: condition
+    task:
+      id: 8b64c5b9-a159-472f-8b95-80a026287743
+      version: -1
+      name: Is batching
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "22"
+      - "24"
+      - "25"
+      - "26"
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Account.Gmail.Address.[4]
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: Account.Gmail.Address
+                accessor: '[4]'
+            iscontext: true
+          right:
+            value:
+              simple: "null"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 63856c5a-066b-48b0-8209-3036ce533979
+    type: regular
+    task:
+      id: 63856c5a-066b-48b0-8209-3036ce533979
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: Gmail,NewPageToken,isLoop
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 06f36b6b-d411-4b17-8317-0504591e1259
+    type: regular
+    task:
+      id: 06f36b6b-d411-4b17-8317-0504591e1259
+      version: -1
+      name: Set isLoop = stop
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: isLoop
+      value:
+        simple: stop
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: dce3dddf-9c50-4cc8-89bd-9e8f9843f22f
+    type: regular
+    task:
+      id: dce3dddf-9c50-4cc8-89bd-9e8f9843f22f
+      version: -1
+      name: Set NewPageToken
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: NewPageToken
+      value:
+        complex:
+          root: PageToken
+          accessor: NextPageToken
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: a9eb9427-07eb-4078-8b3e-5cf9287cc714
+    type: condition
+    task:
+      id: a9eb9427-07eb-4078-8b3e-5cf9287cc714
+      version: -1
+      name: Is there NextPageToken
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PageToken
+                accessor: NextPageToken
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 4e0f0e86-c578-464e-8967-02e315e0df30
+    type: title
+    task:
+      id: 4e0f0e86-c578-464e-8967-02e315e0df30
+      version: -1
+      name: Starting search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 5c63aa8b-b7ac-4d89-8d9d-89293599618c
+    type: regular
+    task:
+      id: 5c63aa8b-b7ac-4d89-8d9d-89293599618c
+      version: -1
+      name: Search in mailboxes without batching
+      description: Searches the Gmail records for all Google users.
+      script: '|||gmail-search-all-mailboxes'
+      type: regular
+      iscommand: true
+      brand: Gmail
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      after:
+        complex:
+          root: inputs.after
+      before:
+        complex:
+          root: inputs.before
+      fields:
+        complex:
+          root: inputs.fields
+      filename:
+        complex:
+          root: inputs.filename
+      from:
+        complex:
+          root: inputs.from
+      has-attachments:
+        complex:
+          root: inputs.has-attachments
+      in:
+        complex:
+          root: inputs.in
+      include-spam-trash:
+        complex:
+          root: inputs.include-spam-trash
+      labels-ids:
+        complex:
+          root: inputs.labels-ids
+      list_accounts:
+        complex:
+          root: Account.Gmail.Address
+          accessor: '[0]'
+      query:
+        complex:
+          root: inputs.query
+      show-only-mailboxes:
+        complex:
+          root: inputs.show-only-mailboxes
+      subject:
+        complex:
+          root: inputs.subject
+      to:
+        complex:
+          root: inputs.to
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 50716249-0cdf-440b-824b-9c53cf59e8a7
+    type: regular
+    task:
+      id: 50716249-0cdf-440b-824b-9c53cf59e8a7
+      version: -1
+      name: Search in mailboxes from batch 1
+      description: Searches the Gmail records for all Google users.
+      script: '|||gmail-search-all-mailboxes'
+      type: regular
+      iscommand: true
+      brand: Gmail
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      after:
+        complex:
+          root: inputs.after
+      before:
+        complex:
+          root: inputs.before
+      fields:
+        complex:
+          root: inputs.fields
+      filename:
+        complex:
+          root: inputs.filename
+      from:
+        complex:
+          root: inputs.from
+      has-attachments:
+        complex:
+          root: inputs.has-attachments
+      in:
+        complex:
+          root: inputs.in
+      include-spam-trash:
+        complex:
+          root: inputs.include-spam-trash
+      labels-ids:
+        complex:
+          root: inputs.labels-ids
+      list_accounts:
+        complex:
+          root: Account.Gmail.Address
+          accessor: '[0]'
+      query:
+        complex:
+          root: inputs.query
+      show-only-mailboxes:
+        complex:
+          root: inputs.show-only-mailboxes
+      subject:
+        complex:
+          root: inputs.subject
+      to:
+        complex:
+          root: inputs.to
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 4552abd2-7f22-4fe6-801f-0f4d5d8062f5
+    type: regular
+    task:
+      id: 4552abd2-7f22-4fe6-801f-0f4d5d8062f5
+      version: -1
+      name: Search in mailboxes from batch 2
+      description: Searches the Gmail records for all Google users.
+      script: '|||gmail-search-all-mailboxes'
+      type: regular
+      iscommand: true
+      brand: Gmail
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      after:
+        complex:
+          root: inputs.after
+      before:
+        complex:
+          root: inputs.before
+      fields:
+        complex:
+          root: inputs.fields
+      filename:
+        complex:
+          root: inputs.filename
+      from:
+        complex:
+          root: inputs.from
+      has-attachments:
+        complex:
+          root: inputs.has-attachments
+      in:
+        complex:
+          root: inputs.in
+      include-spam-trash:
+        complex:
+          root: inputs.include-spam-trash
+      labels-ids:
+        complex:
+          root: inputs.labels-ids
+      list_accounts:
+        complex:
+          root: Account.Gmail.Address
+          accessor: '[1]'
+      query:
+        complex:
+          root: inputs.query
+      show-only-mailboxes:
+        complex:
+          root: inputs.show-only-mailboxes
+      subject:
+        complex:
+          root: inputs.subject
+      to:
+        complex:
+          root: inputs.to
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 3d84f98f-1129-4fa5-8719-8bfc71ee6486
+    type: regular
+    task:
+      id: 3d84f98f-1129-4fa5-8719-8bfc71ee6486
+      version: -1
+      name: Search in mailboxes from batch 3
+      description: Searches the Gmail records for all Google users.
+      script: '|||gmail-search-all-mailboxes'
+      type: regular
+      iscommand: true
+      brand: Gmail
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      after:
+        complex:
+          root: inputs.after
+      before:
+        complex:
+          root: inputs.before
+      fields:
+        complex:
+          root: inputs.fields
+      filename:
+        complex:
+          root: inputs.filename
+      from:
+        complex:
+          root: inputs.from
+      has-attachments:
+        complex:
+          root: inputs.has-attachments
+      in:
+        complex:
+          root: inputs.in
+      include-spam-trash:
+        complex:
+          root: inputs.include-spam-trash
+      labels-ids:
+        complex:
+          root: inputs.labels-ids
+      list_accounts:
+        complex:
+          root: Account.Gmail.Address
+          accessor: '[2]'
+      query:
+        complex:
+          root: inputs.query
+      show-only-mailboxes:
+        complex:
+          root: inputs.show-only-mailboxes
+      subject:
+        complex:
+          root: inputs.subject
+      to:
+        complex:
+          root: inputs.to
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 4f4137da-8836-475c-8fbc-5d2d4319e511
+    type: regular
+    task:
+      id: 4f4137da-8836-475c-8fbc-5d2d4319e511
+      version: -1
+      name: Search in mailboxes from batch 4
+      description: Searches the Gmail records for all Google users.
+      script: '|||gmail-search-all-mailboxes'
+      type: regular
+      iscommand: true
+      brand: Gmail
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      after:
+        complex:
+          root: inputs.after
+      before:
+        complex:
+          root: inputs.before
+      fields:
+        complex:
+          root: inputs.fields
+      filename:
+        complex:
+          root: inputs.filename
+      from:
+        complex:
+          root: inputs.from
+      has-attachments:
+        complex:
+          root: inputs.has-attachments
+      in:
+        complex:
+          root: inputs.in
+      include-spam-trash:
+        complex:
+          root: inputs.include-spam-trash
+      labels-ids:
+        complex:
+          root: inputs.labels-ids
+      list_accounts:
+        complex:
+          root: Account.Gmail.Address
+          accessor: '[3]'
+      query:
+        complex:
+          root: inputs.query
+      show-only-mailboxes:
+        complex:
+          root: inputs.show-only-mailboxes
+      subject:
+        complex:
+          root: inputs.subject
+      to:
+        complex:
+          root: inputs.to
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: cd997e7e-614f-404e-87a7-a0fe23aaeb13
+    type: regular
+    task:
+      id: cd997e7e-614f-404e-87a7-a0fe23aaeb13
+      version: -1
+      name: Search in mailboxes from batch 5
+      description: Searches the Gmail records for all Google users.
+      script: '|||gmail-search-all-mailboxes'
+      type: regular
+      iscommand: true
+      brand: Gmail
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      after:
+        complex:
+          root: inputs.after
+      before:
+        complex:
+          root: inputs.before
+      fields:
+        complex:
+          root: inputs.fields
+      filename:
+        complex:
+          root: inputs.filename
+      from:
+        complex:
+          root: inputs.from
+      has-attachments:
+        complex:
+          root: inputs.has-attachments
+      in:
+        complex:
+          root: inputs.in
+      include-spam-trash:
+        complex:
+          root: inputs.include-spam-trash
+      labels-ids:
+        complex:
+          root: inputs.labels-ids
+      list_accounts:
+        complex:
+          root: Account.Gmail.Address
+          accessor: '[4]'
+      query:
+        complex:
+          root: inputs.query
+      show-only-mailboxes:
+        complex:
+          root: inputs.show-only-mailboxes
+      subject:
+        complex:
+          root: inputs.subject
+      to:
+        complex:
+          root: inputs.to
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "19_17_#default#": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1405,
+        "width": 2530,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: after
+  value: {}
+  required: false
+  description: Search for messages sent after a certain time period. For example, 2018/05/06
+  playbookInputQuery:
+- key: before
+  value: {}
+  required: false
+  description: Search for messages sent before a certain time period. For example, 2018/05/09
+  playbookInputQuery:
+- key: fields
+  value: {}
+  required: false
+  description: Enables partial responses to be retrieved in a comma separated list. For more information, see https://developers.google.com/gdata/docs/2.0/basics#PartialResponse.
+  playbookInputQuery:
+- key: filename
+  value: {}
+  required: false
+  description: Attachments with a certain name or file type. For example, "pdf" or "report.pdf"
+  playbookInputQuery:
+- key: from
+  value: {}
+  required: false
+  description: Specifies the sender. For example, "john"
+  playbookInputQuery:
+- key: to
+  value: {}
+  required: false
+  description: Specifies the receiver. For example, "john"
+  playbookInputQuery:
+- key: has-attachments
+  value:
+    simple: "False"
+  required: false
+  description: Whether to search for messages sent with attachments.
+  playbookInputQuery:
+- key: in
+  value: {}
+  required: false
+  description: Messages in any folder, including Spam and Trash. For example, shopping
+  playbookInputQuery:
+- key: include-spam-trash
+  value:
+    simple: "False"
+  required: false
+  description: 'Includes messages from SPAM and TRASH in the results. (Default: false)'
+  playbookInputQuery:
+- key: labels-ids
+  value: {}
+  required: false
+  description: Only returns messages with labels that match all of the specified label IDs in a comma separated list.
+  playbookInputQuery:
+- key: max-results
+  value:
+    simple: "100"
+  required: false
+  description: |-
+    The number of accounts Playbook will search in every time it runs,
+    (Default is 100)
+  playbookInputQuery:
+- key: page-token
+  value: {}
+  required: false
+  description: This argument is not usable
+  playbookInputQuery:
+- key: query
+  value: {}
+  required: false
+  description: 'Returns messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". For more syntax information,see "https://support.google.com/mail/answer/7190?hl=en"'
+  playbookInputQuery:
+- key: show-only-mailboxes
+  value:
+    simple: "True"
+  required: false
+  description: Whether to return only mailboxes which contain the email. Default is "True".
+  playbookInputQuery:
+- key: subject
+  value: {}
+  required: false
+  description: Words in the subject line. For example, "alert"
+  playbookInputQuery:
+outputs:
+- contextPath: Gmail.Mailboxes
+  description: The Gmail Mailbox.
+- contextPath: Gmail.ID
+  description: Inner ID of the Gmail message.
+- contextPath: Gmail.ThreadId
+  description: The thread ID.
+- contextPath: Gmail.Format
+  description: MIME type of the email.
+- contextPath: Gmail.Labels
+  description: Labels of a specific email.
+- contextPath: Gmail.To
+  description: Email Address of the receiver.
+- contextPath: Gmail.From
+  description: Email Address of the sender.
+- contextPath: Gmail.Cc
+  description: Additional recipient email address (CC).
+- contextPath: Gmail.Bcc
+  description: Additional recipient email address (BCC).
+- contextPath: Gmail.Subject
+  description: Subject of the specific email.
+- contextPath: Gmail.Body
+  description: The content of the email.
+- contextPath: Gmail.Attachments
+  description: The attachments of the email. IDs are separated by ','.
+- contextPath: Gmail.Headers
+  description: All headers of specific mail (list).
+- contextPath: Email.Attachments.entryID
+  description: Email Attachments. IDs are separated by ','.
+- contextPath: NewPageToken
+  description: Needs rewrite.
+- contextPath: isLoop
+  description: test
+  type: unknown
+- contextPath: AccountsSearched
+  description: test
+  type: unknown
+tests:
+- Gmail Convert Html Test
+fromversion: 6.5.0

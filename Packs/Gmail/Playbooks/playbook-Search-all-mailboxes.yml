@@ -1,0 +1,183 @@
+id: Search all mailboxes - Gmail
+version: -1
+name: Search all mailboxes - Gmail
+description: This playbook searches Gmail records for all Google users, designed for large companies with over 500 Google users.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: cf6bc2b4-cafb-4eb8-8d70-93ccb3bf8f75
+    type: start
+    task:
+      id: cf6bc2b4-cafb-4eb8-8d70-93ccb3bf8f75
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 6aecaea9-b7a7-4f60-8125-5d9f00ad21e7
+    type: playbook
+    task:
+      id: 6aecaea9-b7a7-4f60-8125-5d9f00ad21e7
+      version: -1
+      name: Search in mailboxes Gmail (Loop)
+      playbookName: Search in mailboxes Gmail (Loop)
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      has-attachments:
+        simple: "False"
+      include-spam-trash:
+        simple: "false"
+      max-results:
+        simple: "100"
+      page-token:
+        complex:
+          root: NewPageToken
+      query:
+        simple: subject:Test search all mailboxes
+      show-only-mailboxes:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${isLoop}
+            iscontext: true
+          right:
+            value:
+              simple: stop
+      exitCondition: ""
+      wait: 5
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: d9b8ff21-a8ec-437b-8d5e-2af99e27d119
+    type: title
+    task:
+      id: d9b8ff21-a8ec-437b-8d5e-2af99e27d119
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: ddaba651-7bad-422f-8cee-daeac88d878b
+    type: regular
+    task:
+      id: ddaba651-7bad-422f-8cee-daeac88d878b
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: Gmail
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
