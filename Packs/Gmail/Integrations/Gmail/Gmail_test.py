@@ -1,5 +1,6 @@
 import pytest
 from test_data import input_data
+# import demistomock as demisto
 
 MOCK_MAIL_NO_LABELS = {
     u'internalDate': u'1572251535000',
@@ -467,3 +468,21 @@ def test_no_date_mail():
     assert occurred.timestamp() == parsedate_to_datetime('Mon, 21 Dec 2020 12:11:57 -0800').timestamp()
     assert is_valid
     assert context_gmail.get('Date') == 'Mon, 21 Dec 2020 12:11:57 -0800'
+
+
+# def test_fetch_incidents(mocker):
+#     """
+#     Tests emails_to_entry function.
+#         Given:
+#              - gmail get message list api response (from search_command function).
+#         When:
+#             - executing emails_to_entry function.
+#         Then:
+#             -the contents and human readable are valid.
+#     """
+
+#     from Gmail import fetch_incidents
+#     mocker.patch.object(demisto, 'params', return_value={'queryUserKey': '111111', 'query': None})
+#     mocker.patch.object(demisto, 'getLastRun', return_value={"lastRun": "2018-10-24T14:13:20+00:00"})
+#     result = fetch_incidents()
+#     assert result == []
