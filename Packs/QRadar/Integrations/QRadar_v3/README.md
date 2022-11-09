@@ -2740,3 +2740,64 @@ There is no context output for this command.
 | --- | --- |
 | 2 | Error in API call [404] - 404<br>Delete failed. Staged remote network with id=2 does not exist. |
 | 3 | Error in API call [404] - 404<br>Delete failed. Staged remote network with id=3 does not exist. |
+
+
+### qradar-remote-network-cidr-update
+***
+Updates an existing staged remote network.
+
+
+#### Base Command
+
+`qradar-remote-network-cidr-update`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The id that is associated with the CIDR object which needs to be modified. | Required |
+| name | The CIDR name in Qradar. If the CIDR name should be changed, it can be inserted here. | Required |
+| cidrs | An input list of CIDRs to add to Qradar (can be obtained from automatically from EDL integrations and playbook).<br>Multiple values in the same object are separated by commas.<br>One of the cidr or query is required. | Optional |
+| query | The query for getting indicators from Cortex XSOAR.<br>One of the cidr or query is required. | Optional |
+| description | CIDR associated description presented in Qradar.<br>If the CIDR description should be changed, it can be inserted here. | Required |
+| group | The remote network group that CIDRs should belong to.<br>If the CIDR-associated group should be changed, it can be inserted here. | Required |
+| fields | Use this parameter to specify which fields you would like to get back in the response.<br>Fields that are not named are excluded.<br>Specify subfields in brackets, and multiple fields in the same object are separated by commas.<br>The possible fields are id,group,name,cidr,description.  | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Qradar.RemoteNetworkCIDR | Number | Array of - A list of all the CIDR ranges that were changed. | 
+| Qradar.RemoteNetworkCIDR.id | Number |  The associated CIDR id. | 
+| Qradar.RemoteNetworkCIDR.name | String | The associated CIDR name. | 
+| Qradar.RemoteNetworkCIDR.group | String | The group to which the remote network belongs. | 
+
+
+#### Command example
+```!qradar-remote-network-cidr-update id=45  name="Malicious-IPs-for-blocking" description="Malicious-IPs-for-blocking" group=testenv cidrs=1.2.3.4/8,5.6.7.8/32```
+#### Human Readable Output
+
+### List of the staged remote networks
+
+<table>
+  <tr>
+    <th>cidrs</th>
+    <td>1.2.3.4/8,<br>5.6.7.8/32</td>
+  </tr>
+  <tr>
+    <th>description</th>
+    <td> Malicious-IPs-for-blocking</td>
+  </tr>
+  <tr>
+    <th>group</th>
+    <td>testenv</td>
+  </tr>
+  <tr>
+    <th>id</th>
+    <td>45</td>
+  </tr>
+  <tr>
+    <th>name</th>
+    <td>Malicious-IPs-for-blocking</td>
+  </tr>
+</table>
