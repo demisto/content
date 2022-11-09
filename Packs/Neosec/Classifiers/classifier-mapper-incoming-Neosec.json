@@ -1,0 +1,103 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "d1e240b5-84a5-4fb2-8b56-9aa714bdb1c9",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 1,
+	"mapping": {
+		"Neosec Incident": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Alert Category": {
+					"simple": "category"
+				},
+				"Alert ID": {
+					"simple": "id"
+				},
+				"Alert Name": {
+					"simple": "name"
+				},
+				"Alert Source": {
+					"simple": "source"
+				},
+				"Alert Type ID": {
+					"simple": "alert_type"
+				},
+				"Caller": {
+					"complex": {
+						"accessor": "[0]",
+						"filters": [],
+						"root": "caller_ips",
+						"transformers": []
+					}
+				},
+				"Description": {
+					"simple": "alert_info"
+				},
+				"Detected IPs": {
+					"simple": "caller_ips"
+				},
+				"Endpoint": {
+					"simple": "endpoint"
+				},
+				"Recommendations": {
+					"simple": "recommendations"
+				},
+				"category": {
+					"complex": {
+						"filters": [],
+						"root": "category",
+						"transformers": []
+					}
+				},
+				"details": {
+					"simple": "alert_info"
+				},
+				"name": {
+					"complex": {
+						"filters": [],
+						"root": "name",
+						"transformers": []
+					}
+				},
+				"occurred": {
+					"complex": {
+						"filters": [],
+						"root": "timestamp",
+						"transformers": []
+					}
+				},
+				"severity": {
+					"complex": {
+						"filters": [],
+						"root": "severity",
+						"transformers": []
+					}
+				}
+			}
+		}
+	},
+	"name": "Neosec - Incoming Mapper",
+	"nameRaw": "Neosec - Incoming Mapper",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}

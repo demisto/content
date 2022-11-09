@@ -1,0 +1,129 @@
+category: Utilities
+commonfields:
+  id: Neosec
+  version: -1
+configuration:
+  - name: credentials
+    display: null
+    required: true
+    defaultvalue: null
+    type: 9
+    additionalinfo: The API Key to use for connection
+    displaypassword: API Key
+    hiddenusername: true
+  - name: url
+    display: URL
+    required: false
+    defaultvalue: https://neograph.neosec.com
+    type: 0
+    additionalinfo: ""
+  - name: tenant_key
+    display: Tenant Key
+    required: false
+    defaultvalue: null
+    type: 0
+    additionalinfo: ""
+  - name: alert_status
+    display: Fetch alerts with status
+    required: false
+    defaultvalue: null
+    type: 15
+    additionalinfo: ""
+    options:
+      - Open
+      - Closed
+  - name: alert_type
+    display: Fetch alerts with type
+    required: false
+    defaultvalue: null
+    type: 16
+    additionalinfo: ""
+    options:
+      - Runtime
+      - Posture
+  - name: severities
+    display: Severity of alerts to fetch
+    required: false
+    defaultvalue: null
+    type: 16
+    additionalinfo: ""
+    options:
+      - Info
+      - Low
+      - Medium
+      - High
+  - name: max_fetch
+    display: Max incident to fetch
+    required: false
+    defaultvalue: "50"
+    type: 0
+    additionalinfo: ""
+  - name: incidentType
+    display: Incident type
+    required: false
+    defaultvalue: Neosec Incident
+    type: 13
+    additionalinfo: null
+  - name: isFetch
+    display: Fetch incidents
+    required: false
+    defaultvalue: "true"
+    type: 8
+    additionalinfo: null
+  - name: first_fetch
+    display: First fetch time
+    required: false
+    defaultvalue: 3 days
+    type: 0
+    additionalinfo: null
+  - name: is_tokenized
+    display: De-tokenize alerts
+    required: false
+    defaultvalue: "true"
+    type: 8
+    additionalinfo: ""
+  - name: neosec_node_url
+    display: Neosec Node URL
+    required: false
+    defaultvalue: null
+    type: 0
+    additionalinfo: ""
+description: "[Enter a comprehensive, yet concise, description of what the
+  integration does, what use cases it is designed for, etc.]"
+display: Neosec
+name: Neosec
+script:
+  commands:
+    - name: neosec-alert-status-set
+      description: Set alert status(Open, Closed)
+      deprecated: false
+      arguments:
+        - name: alert_id
+          description: The alert id(UUID) in the Neosec platform.
+          required: true
+          isArray: false
+          defaultValue: ""
+          predefined:
+            - ""
+        - name: alert_status
+          description: The alert status, the options are "Open" or "Closed".
+          required: true
+          isArray: false
+          defaultValue: ""
+          predefined:
+            - Open
+            - Closed
+      outputs: []
+  isfetch: true
+  runonce: false
+  script: "-"
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.8.36650
+  feed: false
+  longRunning: false
+  longRunningPort: false
+fromversion: 6.5.0
+defaultmapperin: Neosec - Incoming Mapper
+tests:
+  - No tests (auto formatted)
