@@ -299,7 +299,7 @@ def main():
         api_secret=api_secret,
         account_id=account_id,
         client_id=client_id,
-        client_secret=client_id,
+        client_secret=client_secret,
     )
     
     demisto.debug(f'Command being called is {command}')
