@@ -111,3 +111,17 @@ def test_create_analysis_json_human_readable(mocker, test_dict, expected_result)
     mocker.patch('ThreatGrid.tableToMarkdown', return_value='test')
     create_analysis_json_human_readable(test_dict)
     assert test_dict == expected_result
+
+
+def test_feed_helper_byte_response(mocker):
+    from ThreatGrid import feeds_helper
+    class MockResponse:
+        def __init__(self):
+            self.content = b'{"api_version":2,"id":1234,"request_id":"req-7","data":{"items":[{"path":"w.dll","sample_id":"123","severity":100,"aid":1}],"items_per_page":1000}}'
+
+    res = MockResponse()
+    mocker.patch('ThreatGrid.req', return_value=res)
+    demisto_results_mocker = mocker.patch.object(demisto, 'results')
+
+    feeds_helper('artifacts')
+    assert demisto_results_mocker.call_args[0][0][0]['Contents'][0]['id'] == 1234
