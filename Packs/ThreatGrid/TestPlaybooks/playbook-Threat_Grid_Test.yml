@@ -256,7 +256,7 @@ tasks:
       left:
         simple: ${ThreatGrid.User.Role}
       right:
-        simple: org-admin
+        simple: user
     results:
     - AreValuesEqual
     separatecontext: false

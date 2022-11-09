@@ -3260,7 +3260,7 @@ tasks:
       - - operator: in
           left:
             value:
-              simple: or fakename <foo@test.com>
+              simple: foo@test.com
           right:
             value:
               simple: ${MISP.Event.Object.Attribute.Value}
