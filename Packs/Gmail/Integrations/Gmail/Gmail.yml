@@ -43,6 +43,12 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+- display: Maximum number of emails to pull per fetch
+  name: fetch_limit
+  required: false
+  type: 0
+  defaultvalue: "50"
+  additionalinfo: A maximum of 200 emails per fetch (even if a higher number is configured). Default is 50.
 description: Gmail API and user management (This integration replaces the Gmail functionality in the GoogleApps API and G Suite integration).
 display: Gmail
 name: Gmail

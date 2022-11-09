@@ -29,6 +29,7 @@ from apiclient import discovery
 from oauth2client import service_account
 import itertools as it
 import concurrent.futures
+import pickle
 
 ''' GLOBAL VARS '''
 ADMIN_EMAIL = None
@@ -2124,40 +2125,63 @@ def send_as_add_command():
     )
 
 
+def parse_date_isoformat_server(dt: str) -> datetime:
+        """Get the datetime by parsing the format passed to the server. UTC basded with Z at the end
+        Args:
+            dt (str): datetime as string
+        Returns:
+            datetime: datetime representation
+        """
+        return datetime.strptime(dt, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
+
 '''FETCH INCIDENTS'''
 
 
 def fetch_incidents():
     params = demisto.params()
-    user_key = params.get('queryUserKey')
-    user_key = user_key if user_key else ADMIN_EMAIL
+    max_fetch = int(params.get('fetch_limit') or 50)
+    user_key = 'me'
     query = '' if params['query'] is None else params['query']
     last_run = demisto.getLastRun()
+    demisto.debug(f'last run: {last_run}')
     last_fetch = last_run.get('gmt_time')
+    next_last_fetch = last_run.get('next_gmt_time')
+    page_token = last_run.get('page_token') or None
     ignore_ids: List[str] = last_run.get('ignore_ids') or []
     ignore_list_used = last_run.get('ignore_list_used') or False  # can we reset the ignore list if we haven't used it
-
     # handle first time fetch - gets current GMT time -1 day
-    if last_fetch is None:
-        last_fetch = dateparser.parse(date_string=FETCH_TIME, settings={'TIMEZONE': 'UTC'})
-        last_fetch = str(last_fetch.isoformat()).split('.')[0] + 'Z'
-
-    last_fetch = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ')
+    if not last_fetch:
+        last_fetch, _ = parse_date_range(date_range=FETCH_TIME, utc=True, to_timestamp=False)
+        last_fetch = str(last_fetch.isoformat(timespec='seconds')) + 'Z'
+    # use replace(tzinfo) to  make the datetime aware of the timezone as all other dates we use are aware
+    last_fetch = parse_date_isoformat_server(last_fetch)
+    if next_last_fetch:
+        next_last_fetch = parse_date_isoformat_server(next_last_fetch)
+    else:
+        next_last_fetch = last_fetch + timedelta(seconds=1)
     service = get_service(
         'gmail',
         'v1',
         ['https://www.googleapis.com/auth/gmail.readonly'],
         user_key)
-
-    query += last_fetch.strftime(' after:%Y/%m/%d')
-    demisto.info(f'GMAIL: fetch parameters:\nuser: {user_key}\nquery={query}\nfetch time: {last_fetch}')
-
+    z  = pickle.dumps(service)
+    # y = json.dumps(service())
+    # use seconds for the filter (note that it is inclusive)
+    # see: https://developers.google.com/gmail/api/guides/filtering
+    query += f' after:{int(last_fetch.timestamp())}'
+    max_results = max_fetch
+    if max_fetch > 200:
+        max_results = 200
+    LOG(f'GMAIL: fetch parameters: user: {user_key} query={query}'
+        f' fetch time: {last_fetch} page_token: {page_token} max results: {max_results}')
+    result_messages = service.users()
     result = service.users().messages().list(
-        userId=user_key, maxResults=100, q=query).execute()
+        userId=user_key, maxResults=max_results, q=query).execute()
 
     incidents = []
     # so far, so good
-    demisto.info(f'GMAIL: possible new incidents are {result}')
+    LOG(f'GMAIL: possible new incidents are {result}')
+    re
     for msg in result.get('messages', []):
         msg_id = msg['id']
         if msg_id in ignore_ids:
@@ -2172,20 +2196,36 @@ def fetch_incidents():
             ignore_list_used = True
             ignore_ids.append(msg_id)
         # update last run only if we trust the occurred timestamp
-        # update last run
-        if is_valid_date and occurred > last_fetch:
-            last_fetch = occurred + timedelta(seconds=1)
+        if is_valid_date and occurred > next_last_fetch:
+            next_last_fetch = occurred + timedelta(seconds=1)
 
         # avoid duplication due to weak time query
         if (not is_valid_date) or (occurred >= last_fetch):
             incidents.append(incident)
         else:
-            demisto.info(f'skipped incident with lower date: {occurred} than fetch: {last_fetch} name: {incident.get("name")}')
+            demisto.info(
+                f'skipped incident with lower date: {occurred} than fetch: {last_fetch} name: {incident.get("name")}')
 
-    demisto.info(f'extract {len(incidents)} incidents')
-    demisto.setLastRun({'gmt_time': last_fetch.isoformat().split('.')[0] + 'Z',
-                        'ignore_list_used': ignore_list_used,
-                        'ignore_ids': ignore_ids})
+    demisto.info('extract {} incidents'.format(len(incidents)))
+    next_page_token = result.get('nextPageToken', '')
+    if next_page_token:
+        # we still have more results
+        demisto.info(f'keeping current last fetch: {last_fetch} as result has additional pages to fetch.'
+                     f' token: {next_page_token}. Ignoring incremented last_fatch: {next_last_fetch}')
+    else:
+        demisto.debug(f'will use new last fetch date (no next page token): {next_last_fetch}')
+        # if we are not in a tokenized search and we didn't use the ignore ids we can reset it
+        if (not page_token) and (not ignore_list_used) and (len(ignore_ids) > 0):
+            demisto.info(f'reseting igonre list of len: {len(ignore_ids)}')
+            ignore_ids = []
+        last_fetch = next_last_fetch
+    demisto.setLastRun({
+        'gmt_time': get_date_isoformat_server(last_fetch),
+        'next_gmt_time': get_date_isoformat_server(next_last_fetch),
+        'page_token': next_page_token,
+        'ignore_ids': ignore_ids,
+        'ignore_list_used': ignore_list_used,
+    })
     return incidents
 
 

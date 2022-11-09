@@ -437,3 +437,16 @@ email_without_date = {
     "historyId": "18559851",
     "internalDate": "0"
   }
+
+service_result = {'messages': [{'id': '1845ca435dc28d58', 'threadId': '1845ca435dc28d58'},
+                               {'id': '1845ca42a136cf05', 'threadId': '1845ca42a136cf05'},
+                               {'id': '1845ca411021cf87', 'threadId': '1845ca411021cf87'},
+                               {'id': '1845ca40b1972f8d', 'threadId': '1845b40976fe0465'},
+                               {'id': '1845ca409f885ad4', 'threadId': '1845b40976fe0465'},
+                               {'id': '1845ca4089b106f5', 'threadId': '1845b40976fe0465'},
+                               {'id': '1845ca406b9ccfa0', 'threadId': '1845b40976fe0465'},
+                               {'id': '1845ca4069c05543', 'threadId': '1845b40976fe0465'},
+                               {'id': '1845ca405917f05e', 'threadId': '1845b40976fe0465'},
+                               {'id': '1845ca4056693fec', 'threadId': '1845b40976fe0465'}],
+                  'nextPageToken': '02582292467408105606',
+                  'resultSizeEstimate': 104}
