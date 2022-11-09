@@ -8,7 +8,7 @@ graph-create-instances:
     - if: '$NIGHTLY'
     - if: '$INSTANCE_TESTS'
   cache:
-    policy: pull-push
+    policy: pull
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     KUBERNETES_CPU_REQUEST: 1000m
@@ -68,7 +68,7 @@ graph-prepare-testing-bucket-mpv2:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
   cache:
-    policy: pull-push
+    policy: pull
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     KUBERNETES_CPU_REQUEST: 1000m
@@ -130,6 +130,8 @@ compare_zips:
     - if: '$NIGHTLY'
   extends:
     - .default-job-settings
+  cache:
+    policy: pull
   allow_failure: true
   script:
     - echo "compare between graph and id_set"
