@@ -986,8 +986,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1790,
-          "y": 2140
+          "x": 1780,
+          "y": 2110
         }
       }
     note: false
@@ -1633,7 +1633,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "51"
+      - "100"
     scriptarguments:
       all:
         simple: "yes"
@@ -1758,7 +1758,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "55"
+      - "30"
     scriptarguments:
       min_digits:
         simple: "2"
@@ -1774,45 +1774,7 @@ tasks:
       {
         "position": {
           "x": 830,
-          "y": 2490
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "55":
-    id: "55"
-    taskid: ae8481a9-48af-423a-8582-f7dcacd93a5f
-    type: regular
-    task:
-      id: ae8481a9-48af-423a-8582-f7dcacd93a5f
-      version: -1
-      name: check for user's existence
-      description: Gets information for a specified user.
-      script: '|||gmail-get-user'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#error#':
-      - "30"
-      '#none#':
-      - "57"
-    scriptarguments:
-      user-id:
-        simple: user_to_delete@demistodev.com
-    separatecontext: false
-    continueonerror: true
-    continueonerrortype: errorPath
-    view: |-
-      {
-        "position": {
-          "x": 1380,
-          "y": 2500
+          "y": 2530
         }
       }
     note: false
@@ -1837,7 +1799,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "30"
+      - "101"
     scriptarguments:
       user-id:
         simple: user_to_delete@demistodev.com
@@ -1846,8 +1808,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1380,
-          "y": 2900
+          "x": 1690,
+          "y": 2855
         }
       }
     note: false
@@ -3198,9 +3160,123 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "99":
+    id: "99"
+    taskid: 2d448402-481c-4b2b-8398-3183d01f0c50
+    type: condition
+    task:
+      id: 2d448402-481c-4b2b-8398-3183d01f0c50
+      version: -1
+      name: Check user's existence
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "101"
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Account.Gmail.Address
+            iscontext: true
+          right:
+            value:
+              simple: user_to_delete@demistodev.com
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 2670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: 9c6a4dbc-638b-41e7-8671-0559e9daefd7
+    type: regular
+    task:
+      id: 9c6a4dbc-638b-41e7-8671-0559e9daefd7
+      version: -1
+      name: List all users
+      script: '|||gmail-list-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "99"
+    scriptarguments:
+      retry-count:
+        simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 2510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "101":
+    id: "101"
+    taskid: db1317c9-762c-4e57-8517-3d12ed24c628
+    type: regular
+    task:
+      id: db1317c9-762c-4e57-8517-3d12ed24c628
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 3010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "99_57_yes": 0.24
+    },
     "paper": {
       "dimensions": {
         "height": 8735,
