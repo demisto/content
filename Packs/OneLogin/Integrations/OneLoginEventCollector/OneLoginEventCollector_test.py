@@ -164,6 +164,30 @@ def test_fetch_events_with_iterations(requests_mock):
     assert mock_request.call_count == 3
 
 
+def test_fetch_events_with_last_event_ids(requests_mock):
+    """
+    Given:
+        - fetch-events call, where first_id = 2 in LastRun obj.
+    When:
+        - Four events with ids 1, 2, 3 and 4 are retrieved from the API.
+    Then:
+        - Make sure only events 2, 3 and 4 are returned (1 should not).
+    """
+    from OneLoginEventCollector import fetch_events_command
+
+    last_run = {'last_event_ids': [1, 2]}
+
+    requests_mock.post(f'{CORE_URL}/auth/oauth2/v2/token', json={"access_token": "token"})
+    requests_mock.get(f'{CORE_URL}/api/1/events/types', json=MOCK_EVENT_TYPES)
+    requests_mock.get(f'{CORE_URL}/api/1/events', json=MOCK_EVENTS)
+
+    events, _ = fetch_events_command(Client(base_url=CORE_URL, headers={}),
+                                     params={"limit": 2}, last_run=last_run)
+
+    assert len(events) == 2
+    assert events[0].get('id') == 3
+
+
 def test_get_events(mocker, requests_mock):
     """
     Given:

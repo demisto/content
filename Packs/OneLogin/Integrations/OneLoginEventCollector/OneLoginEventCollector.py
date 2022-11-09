@@ -23,20 +23,13 @@ def arg_to_strtime(value: Any) -> Optional[str]:
     return None
 
 
-def increase_time_with_second(timestamp):
-    date_time_timestamp = parse(timestamp)
-    if not date_time_timestamp:
-        return timestamp
-    return datetime.strftime(date_time_timestamp + timedelta(milliseconds=1), DATE_FORMAT)
-
-
 def prepare_query_params(params: dict, last_run: dict = {}) -> dict:
     """
     Parses the given inputs into OneLogin Events API expected format.
     """
     query_params = {
         'limit': arg_to_number(params.get('limit', DEFAULT_LIMIT)),
-        'since': arg_to_strtime(last_run.get('since') or params.get('since')),
+        'since': last_run.get('since') or arg_to_strtime(params.get('since')),
         'until': arg_to_strtime(params.get('until')),
         'event_type_id': params.get('event_type_id'),
         'after_cursor': last_run.get('after_cursor') or params.get('after_cursor')
@@ -54,6 +47,19 @@ def check_response(raw_response):
         demisto.error(f"Failed to get events from OneLogin API. Error message: {status.get('message')}")
         raise Exception(f"Error code: {status.get('code')}. Error type: {status.get('type')}.\n"
                         f"Error message: {status.get('message')}")
+
+
+def get_last_event_ids(events: List[dict]) -> list:
+    """
+    Gets the last event ids with the same created time from the last fetch to prevent duplications in the next fetches.
+    """
+    ids = []
+    last_time = events[-1].get('created_at', '').rsplit('.')[0]  # Compare the times by seconds and not milliseconds
+    for event in reversed(events):
+        if event.get('created_at', '').rsplit('.')[0] != last_time:
+            break
+        ids.append(event.get('id'))
+    return ids
 
 
 ''' CLIENT CLASS '''
@@ -159,19 +165,29 @@ class Client(BaseClient):
 
     def handle_pagination_first_batch(self, access_token: str, query_params: dict, last_run: dict) -> Tuple:
         """
-        Makes the first evets API call in the current fetch run.
-        If `first_id` exists in the lastRun obj, finds it in the response and
+        Makes the first events API call in the current fetch run.
+        If `first_id` or `last_event_ids` exists in the lastRun obj, finds it in the response and
         returns only the subsequent events (that weren't collected yet).
         """
         _, events, cursor = self.get_events_request(access_token, query_params)
 
         if last_run.get('first_id'):
-            for idx, event in enumerate(events):
 
+            for idx, event in enumerate(events):
                 if event.get('id') == last_run['first_id']:
                     events = events[idx:]
                     break
+
             last_run.pop('first_id', None)  # removing to make sure it won't be used in future runs
+
+        if event_ids := last_run.get('last_event_ids'):
+
+            events_from_index = 0
+            for idx, event in enumerate(events):
+                if event.get('id') in event_ids:
+                    events_from_index = idx + 1
+
+            events = events[events_from_index:]
 
         return events, cursor
 
@@ -227,11 +243,12 @@ class Client(BaseClient):
             demisto.debug('Reached API rate limit, storing last used cursor.')
             cursor = query_params['after_cursor']
 
-        since = query_params['since'] if cursor or not aggregated_events else increase_time_with_second(
-            aggregated_events[-1].get('created_at'))
+        since = query_params['since'] if cursor or not aggregated_events else aggregated_events[-1].get('created_at')
+        event_ids = last_run['last_event_ids'] if not aggregated_events else get_last_event_ids(aggregated_events)
         last_run.update({
             'after_cursor': cursor,
-            'since': since
+            'since': since,
+            'last_event_ids': event_ids
         })
 
         return aggregated_events
