@@ -9,17 +9,17 @@ configuration:
   required: true
   type: 0
 - display: Application ID or Client ID
-  additionalinfo: see Detailed Instructions
+  additionalinfo: See the Detailed Instructions section.
   name: auth_id
   required: true
   type: 4
 - display: Token or Tenant ID
-  additionalinfo: see Detailed Instructions
+  additionalinfo: See the Detailed Instructions section.
   name: tenant_id
   required: true
   type: 4
 - display: Key or Client Secret
-  additionalinfo: see Detailed Instructions
+  additionalinfo: See the Detailed Instructions section.
   name: enc_key
   required: false
   type: 4
