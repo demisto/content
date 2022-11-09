@@ -10,22 +10,8 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [
-        "Security",
-        "Compliance",
-        "GDPR",
-        "HIPAA",
-        "PII",
-        "IT",
-        "Machine Learning"
-    ],
-    "useCases": [
-        "Compliance",
-        "Employee Offboarding",
-        "GDPR Breach Notification",
-        "HIPAA Breach Notification",
-        "Hunting"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "Gamma",
         "DLP",

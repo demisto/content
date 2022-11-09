@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: mcafee_epo_modeling_rule
+name: Mcafee Epo Modeling Rule
+rules: ''
+schema: ''
+tags: McafeeEpoModelingRules
