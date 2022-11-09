@@ -2869,6 +2869,29 @@ script:
       description: The group to which the remote network belongs.
       type: String
     description: Updates an existing staged remote network.
+  - name: qradar-remote-network-deploy-execution
+    arguments:
+      - name: host_ip
+        description: The IP of qradar console host.
+        required: true
+      - name: status
+        description: Must be in capital letters (“INITIATING”).
+        auto: PREDEFINED
+        predefined:
+        - INITIATING
+        required: true
+      - name: deployment_type
+        auto: PREDEFINED
+        predefined:
+        - INCREMENTAL
+        - FULL
+        description: Must be in capital letters (“INCREMENTAL” or “FULL”).
+        required: true
+    outputs:
+    - contextPath: Qradar.deploy.status
+      description: The deployment status (INITIALIZING, IN_PROGRESS, COMPLETE).
+      type: String
+    description: Executes a deploy.
   runonce: false
   script: '-'
   type: python

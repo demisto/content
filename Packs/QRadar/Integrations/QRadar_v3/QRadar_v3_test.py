@@ -32,7 +32,7 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_ips_source_get_command, qradar_ips_local_destination_get_command, \
     qradar_remote_network_cidr_create_command, get_cidrs_indicators, verify_args_for_remote_network_cidr, \
     qradar_remote_network_cidr_list_command, qradar_remote_network_cidr_update_command, \
-    migrate_integration_ctx, enrich_offense_with_events, \
+    qradar_remote_network_deploy_execution_command, migrate_integration_ctx, enrich_offense_with_events, \
     perform_long_running_loop, validate_integration_context, FetchMode
 
 from CommonServerPython import DemistoException, set_integration_context, CommandResults, \
@@ -822,7 +822,8 @@ def test_outputs_enriches(mocker, enrich_func, mock_func_name, args, mock_respon
                              (qradar_log_sources_list_command, 'log_sources_list'),
                              (qradar_get_custom_properties_command, 'custom_properties'),
                              (qradar_remote_network_cidr_list_command, 'get_remote_network_cidr'),
-                             (qradar_remote_network_cidr_update_command, 'create_and_update_remote_network_cidr')
+                             (qradar_remote_network_cidr_update_command, 'create_and_update_remote_network_cidr'),
+                             (qradar_remote_network_deploy_execution_command, 'remote_network_deploy_execution'),
                          ])
 def test_commands(mocker, command_func: Callable[[Client, Dict], CommandResults], command_name: str):
     """

@@ -702,6 +702,13 @@ class Client(BaseClient):
             resp_type='response'
         )
 
+    def remote_network_deploy_execution(self, body):
+        return self.http_request(
+            method='POST',
+            url_suffix='/staged_config/deploy_status',
+            json_data=body
+        )
+
     def test_connection(self):
         """
         Test connection with databases (should always be up)
@@ -3808,8 +3815,29 @@ def qradar_remote_network_cidr_update_command(client: Client, args):
     )
 
 
-def qradar_remote_network_deploy_execution_command(client, args):
-    pass
+def qradar_remote_network_deploy_execution_command(client: Client, args):
+    host_ip = args.get('host_ip')
+    status = args.get('status')
+    deployment_type = args.get('deployment_type')
+
+    if not re.match(ipv4Regex, host_ip) and not re.match(ipv6Regex, host_ip):
+        raise DemistoException('The host_ip argument is not a valid ip address.')
+    if not status == 'INITIATING':
+        raise DemistoException('The status argument must be INITIATING.')
+    if deployment_type not in ['INCREMENTAL', 'FULL']:
+        raise DemistoException('The deployment_type argument must be INCREMENTAL or FULL.')
+
+    body = {"hosts": [{"ip": host_ip, "status": status}], "type": deployment_type}
+
+    response = client.remote_network_deploy_execution(body)
+    success_message = 'The remote network deploy execution was successfully created.'
+
+    return CommandResults(
+        outputs_prefix='Qradar.deploy',
+        outputs={'status': response['status']},
+        readable_output=success_message,
+        raw_response=response
+    )
 
 
 def migrate_integration_ctx(ctx: dict) -> dict:
