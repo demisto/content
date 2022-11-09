@@ -1,5 +1,24 @@
-The Microsoft Management Activity API integration enables you to subscribe or unsubscribe to different audits, receive their content, and fetch new content as incidents.
-This integration was integrated and tested with version xx of Microsoft Management Activity API (O365 Azure Events)
+The Microsoft Management Activity API integration enables you to subscribe or unsubscribe to different audits, receive their content, and fetch new content as incidents. Through the integration you can subscribe to new content types or stop your subscription, list the available content of each content type, and most importantly, fetch new content records from content types of your choice as Cortex XSOAR incidents.
+
+This integration was integrated and tested with version 1.0 of Microsoft Management Activity API (O365 Azure Events)
+
+## Grant Cortex XSOAR Authorization in Microsoft Management Activity API
+To allow Cortex XSOAR access to the Microsoft Management Activity API you will be required to give authorization to access it.
+
+1. To grant authorization, click [HERE](https://oproxy.demisto.ninja/ms-management-api).
+2. After you click the link, click the **Start Authorization Process** button.
+3. When prompted, accept the Microsoft authorization request for the required permissions.
+You will get an ID, Token, and Key, which you need to enter in the corresponding fields when configuring an integration instance.
+
+## Self-Deployed Configuration
+1. Enter the following URL
+(**Note**: CLIENT_ID and REDIRECT_URI should be replaced by your own client ID and redirect URI, accordingly):
+`https://login.windows.net/common/oauth2/authorize?response_type=code&resource=https://manage.office.com&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI`
+1. When prompted, accept the Microsoft authorization request for the required permissions.
+2. The URL will change and will have the following structure:
+SOME_PREFIX?code=AUTH_CODE&session_state=SESSION_STATE
+Take the AUTH_CODE (without the “code=” prefix) and enter it to the instance configuration under the “Authentication” code section.
+Moreover, enter your client secret as the “Key” parameter and your client ID as the “ID” parameter. 
 
 ## Configure Microsoft Management Activity API (O365 Azure Events) on Cortex XSOAR
 
@@ -51,6 +70,25 @@ Starts a subscription to a given content type.
 #### Context Output
 
 There is no context output for this command.
+
+##### Command Example
+```!ms-management-activity-start-subscription content_type=Audit.Exchange```
+
+##### Context Example
+```
+{
+    "MicrosoftManagement": {
+        "Subscription": {
+            "ContentType": "Audit.Exchange",
+            "Enabled": true
+        }
+    }
+}
+```
+
+##### Human Readable Output
+Successfully started subscription to content type: Audit.Exchange
+
 ### ms-management-activity-stop-subscription
 ***
 Stops a subscription to a given content type.
@@ -69,6 +107,25 @@ Stops a subscription to a given content type.
 #### Context Output
 
 There is no context output for this command.
+
+##### Command Example
+```!ms-management-activity-stop-subscription content_type=Audit.Exchange```
+
+##### Context Example
+```
+{
+    "MicrosoftManagement": {
+        "Subscription": {
+            "ContentType": "Audit.Exchange",
+            "Enabled": false
+        }
+    }
+}
+```
+
+##### Human Readable Output
+Successfully stopped subscription to content type: Audit.Exchange
+
 ### ms-management-activity-list-subscriptions
 ***
 List the content types you are currently subscribed to.
@@ -85,7 +142,47 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftManagement.Subscription | string | List of current subscriptions. | 
+| MicrosoftManagement.Subscription | string | List of current subscriptions | 
+
+
+##### Command Example
+```!ms-management-activity-list-subscriptions```
+
+##### Context Example
+```
+{
+    "MicrosoftManagement": {
+        "Subscription": [
+            {
+                "ContentType": "Audit.AzureActiveDirectory",
+                "Enabled": true
+            },
+            {
+                "ContentType": "Audit.Exchange",
+                "Enabled": true
+            },
+            {
+                "ContentType": "Audit.General",
+                "Enabled": true
+            },
+            {
+                "ContentType": "Audit.SharePoint",
+                "Enabled": true
+            }
+        ]
+    }
+}
+```
+
+##### Human Readable Output
+### Current Subscriptions
+|Current Subscriptions|
+|---|
+| Audit.AzureActiveDirectory |
+| Audit.Exchange |
+| Audit.General |
+| Audit.SharePoint |
+
 
 ### ms-management-activity-list-content
 ***
@@ -123,5 +220,53 @@ Returns all content of a specific content type.
 | MicrosoftManagement.ContentRecord.Scope | string | The scope of the record. | 
 | MicrosoftManagement.ContentRecord.Workload | string | The workload of the record. | 
 | MicrosoftManagement.ContentRecord.ResultsStatus | string | The results status of the record. | 
-| MicrosoftManagement.ContentRecord.ObjectID | string | The ID of the record's object. | 
-| MicrosoftManagement.ContentRecord.UserID | string | The ID of the record's user. | 
+| MicrosoftManagement.ContentRecord.ObjectID | string | The ID of the record&\#x27;s object. | 
+| MicrosoftManagement.ContentRecord.UserID | string | The ID of the record&\#x27;s user. | 
+
+
+##### Command Example
+```!ms-management-activity-list-content content_type=audit.general```
+
+##### Context Example
+```
+{
+    "MicrosoftManagement": {
+        "ContentRecord": [
+            {
+                "CreationTime": "2020-04-26T10:10:10",
+                "ID": "TEST ID",
+                "ObjectID": "test-id",
+                "Operation": "TeamsSessionStarted",
+                "OrganizationID": "test-organization",
+                "RecordType": 9,
+                "UserID": "test@mail.com",
+                "UserKey": "test-key",
+                "UserType": 12,
+                "Workload": "MicrosoftTeams"
+            },
+            {
+                "CreationTime": "2020-04-26T09:09:09",
+                "ID": "TEST ID",
+                "Operation": "MemberAdded",
+                "OrganizationID": "test-organization",
+                "RecordType": 8,
+                "UserID": "Application",
+                "UserKey": "test-key",
+                "UserType": 11,
+                "Workload": "MicrosoftTeams"
+            }
+        ]
+    }
+}
+```
+
+##### Human Readable Output
+### Content for content type audit.general
+|ID|CreationTime|Workload|Operation|
+|---|---|---|---|
+| 1111111-aaaa-bbbb | 2020-04-26T10:10:10 | MicrosoftTeams | TeamsSessionStarted |
+| 2222222-vvvv-gggg | 2020-04-26T09:09:09 | MicrosoftTeams | MemberAdded |
+
+
+## Additional Information
+Record types to fetch from should be set with numerical values from the [Microsoft documentation](https://docs.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-schema#auditlogrecordtype). For example, in order to fetch events of type **MailSubmission**, the value **29** should be set.
