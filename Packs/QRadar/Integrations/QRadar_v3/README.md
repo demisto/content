@@ -2771,6 +2771,7 @@ Updates an existing staged remote network.
 | Qradar.RemoteNetworkCIDR.id | Number |  The associated CIDR id. | 
 | Qradar.RemoteNetworkCIDR.name | String | The associated CIDR name. | 
 | Qradar.RemoteNetworkCIDR.group | String | The group to which the remote network belongs. | 
+| Qradar.RemoteNetworkCIDR.description | String | The associated CIDR description. |
 
 
 #### Command example

@@ -2868,6 +2868,9 @@ script:
     - contextPath: Qradar.RemoteNetworkCIDR.group
       description: The group to which the remote network belongs.
       type: String
+    - contextPath: Qradar.RemoteNetworkCIDR.description
+      description: The description of the remote network.
+      type: String
     description: Updates an existing staged remote network.
   - name: qradar-remote-network-deploy-execution
     arguments:

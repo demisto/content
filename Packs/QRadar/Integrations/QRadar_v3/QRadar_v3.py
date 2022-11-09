@@ -3835,7 +3835,8 @@ def qradar_remote_network_cidr_update_command(client: Client, args):
     success_message = 'The staged remote network was successfully updated'
     outputs = {'id': response.get('id'),
                'name': response.get('name'),
-               'group': response.get('group')}
+               'group': response.get('group'),
+               'description': response.get('description')}
 
     return CommandResults(
         outputs_prefix='Qradar.RemoteNetworkCIDR',
