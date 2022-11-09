@@ -68,6 +68,22 @@ def test_get_pdf_metadata_with_encrypted():
     assert expected.items() <= metadata.items()
 
 
+def test_get_pdf_metadata_with_encrypted_aes():
+    from ReadPDFFileV2 import get_pdf_metadata
+    file_path = f'{CWD}/Test_document_with_aes.pdf'
+    metadata = get_pdf_metadata(file_path, user_password='')
+    metadata['Author'] = 'Test User'
+    expected = {'Title': '', 'Subject': '', 'Keywords': '', 'Author': 'Test User',
+                'Creator': 'Acrobat PDFMaker 22 for Word', 'Producer': 'Adobe PDF Library 22.3.34',
+                'CreationDate': 'Wed Oct 19 13:43:18 2022 UTC', 'ModDate': 'Wed Oct 19 13:44:50 2022 UTC',
+                'Tagged': 'yes', 'UserProperties': 'no', 'Suspects': 'no', 'Form': 'none', 'JavaScript': 'no',
+                'Pages': '1', 'Encrypted': 'yes (print:no copy:no change:no addNotes:no algorithm:AES-256)',
+                'PageSize': '595.32 x 841.92 pts (A4)', 'PageRot': '0', 'FileSize': '101690 bytes',
+                'Optimized': 'yes', 'PDFVersion': '1.7'}
+
+    assert expected.items() <= metadata.items()
+
+
 def test_get_metadata_without_encrypted(tmp_path):
     from ReadPDFFileV2 import get_pdf_metadata
     try:
@@ -248,6 +264,41 @@ def test_get_urls_and_emails_from_pdf_annots_with_encrypt(file_path):
 
     assert urls == expected_urls
     assert emails == expected_emails
+
+
+# def test_get_urls_and_emails_from_pdf_annots_with_encrypt_aes():
+#     """
+#     This test verifies URL and Emails extraction from an encrypted PDF file.
+#
+#         Given:
+#         A path to an encrypted PDF file with AES encoding:
+#
+#         When:
+#             Running 'get_urls_and_emails_from_pdf_annots' function on the PDF file.
+#
+#         Then:
+#             Verify that PDF is parsed.
+#
+#     """
+#     from ReadPDFFileV2 import get_urls_and_emails_from_pdf_annots, decrypt_pdf_file
+#
+#     expected_urls = {}
+#     expected_emails = {}
+#
+#     # Decrypt the PDF:
+#     file_path = f'{CWD}/Test_document_with_aes.pdf'
+#     dec_file_path = f'{CWD}/decrypted.pdf'
+#     decrypt_pdf_file(file_path, '', dec_file_path)
+#
+#     # Extract URLs and Emails:
+#     urls, emails = get_urls_and_emails_from_pdf_annots(dec_file_path)
+#
+#     # Delete Decrypted file:
+#     if os.path.exists(dec_file_path):
+#         os.remove(dec_file_path)
+#
+#     assert urls == expected_urls
+#     assert emails == expected_emails
 
 
 @pytest.mark.parametrize('file_path', [
