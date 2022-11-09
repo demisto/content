@@ -226,7 +226,7 @@ def main():
         )
     if slack_token:
         slack_client = WebClient(token=slack_token)
-        slack_client.files_upload_v2(
+        slack_client.files_upload(
             file=str(output_path / f"diff-{marketplace}.zip"),
             channels="dmst-graph-tests",
             initial_comment="\n".join(message),
