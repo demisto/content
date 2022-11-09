@@ -1,6 +1,5 @@
 This pack includes XSIAM content.
 
-
 ## Collect Events from Vendor
 
 In order to use the collector, you will need to perform the following steps:
