@@ -5,9 +5,6 @@ sectionOrder:
 commonfields:
   id: DropboxEventsCollector
   version: -1
-sectionOrder:
-- Connect
-- Collect
 configuration:
 - defaultvalue: https://api.dropbox.com
   display: Server URL
