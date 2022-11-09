@@ -315,8 +315,7 @@ def response_according_pagination(client_function: Any, limit: int, page_number:
     output: list(representing the pages) of list of raw dictionary results.
     '''
     limit, per_page, page_number = validate_pagination_values(limit, page_number)
-    params.update({'per_page': per_page})
-    params.update({'page': page_number})
+    params.update({'per_page': per_page, 'page': page_number})
     items_count_total = 0
     response: List[Dict[str, Any]] = []
     while items_count_total < limit:
