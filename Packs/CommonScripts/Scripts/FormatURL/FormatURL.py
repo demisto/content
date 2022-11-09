@@ -241,7 +241,12 @@ class URLCheck(object):
             elif self.modified_url[index] == "]":
 
                 if not self.inside_brackets:
-                    raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
+                    if index == len(self.modified_url) - 1:
+                        # Special case where domain is valid with a trailing "]" the formatter will aloow it removing the last "]"
+                        index += 1
+
+                    else:
+                        raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
 
                 else:
                     try:
@@ -475,13 +480,39 @@ class URLCheck(object):
         Will remove all leading chars of the following ("\"", "'", "[", "]", "{", "}", "(", ")", ",")
         from the URL.
         """
+        bracket_pairs = {
+            '{': '}',
+            '(': ')',
+            '[': ']',
+            '"': '"',
+            '\'': '\'',
+        }
 
-        index = 0
+        beggining = 0
+        end = -1
 
-        while self.modified_url[index] in self.brackets:
-            index += 1
+        in_brackets = True
 
-        self.modified_url = self.modified_url[index:]
+        while in_brackets:
+            try:
+                if bracket_pairs[self.modified_url[beggining]] == self.modified_url[end]:
+                    beggining += 1
+                    end -= 1
+      
+                else:
+                    in_brackets = False
+
+            except KeyError:
+                in_brackets = False
+
+        while self.modified_url[beggining] in self.brackets:
+            beggining += 1
+
+        if end == -1:
+            self.modified_url = self.modified_url[beggining:]
+     
+        else:
+            self.modified_url = self.modified_url[beggining:end + 1]
 
 
 class URLFormatter(object):
@@ -599,7 +630,7 @@ class URLFormatter(object):
 
 
 def main():
-    raw_urls = argToList(demisto.args().get('input'))
+    raw_urls = demisto.args().get('input').split()
     formatted_urls: List[str] = []
 
     for url in raw_urls:
