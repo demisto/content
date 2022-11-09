@@ -1,4 +1,4 @@
-    [MODEL: dataset="abnormal_security_email_protection_raw"]
+[MODEL: dataset="abnormal_security_email_protection_raw"]
 alter
 	attachmentNames = arraystring(arraycreate(attachmentNames), ","),
 	ccEmails = arraycreate(ccEmails),
