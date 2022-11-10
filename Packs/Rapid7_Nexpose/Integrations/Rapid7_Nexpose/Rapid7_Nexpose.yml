@@ -1513,7 +1513,7 @@ script:
       predefined:
         - 'True'
         - 'False'
-      required: true
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
@@ -2543,7 +2543,7 @@ script:
         predefined:
           - 'True'
           - 'False'
-        required: true
+        required: false
         secret: false
       - auto: PREDEFINED
         default: false
