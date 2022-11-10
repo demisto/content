@@ -289,7 +289,7 @@ class TestCollector(ABC):
             case MarketplaceVersions.XSOAR:
                 return XSOAR_SANITY_TEST_NAMES
             case _:
-                # todo: no sanity tests for xpanse
+                # todo: no sanity tests for xpanse (tuple)
                 raise RuntimeError(f'unexpected marketplace value {self.marketplace.value}')
 
     @abstractmethod
@@ -508,15 +508,14 @@ class TestCollector(ABC):
 
         match self.marketplace:
             case MarketplaceVersions.MarketplaceV2:
-                # todo: will be packs that has mpv2 and xpanse
-                if content_item_marketplaces != (self.marketplace,):
+                # todo: will be packs that has mpv2 and xpanse -> want run on xsiam them
+                if content_item_marketplaces != (self.marketplace,):  # not in xsoar instead this
                     # marketplacev2 must be the only value in order to be collected
                     raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
 
-            case MarketplaceVersions.XSOAR:
+            case MarketplaceVersions.XSOAR | MarketplaceVersions.XPANSE:  # todo: case: XPANSE
                 if self.marketplace not in content_item_marketplaces:
                     raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
-
             case _:
                 raise RuntimeError(f'Unexpected self.marketplace value {self.marketplace}')
 
@@ -1069,7 +1068,7 @@ if __name__ == '__main__':
             case True, MarketplaceVersions.MarketplaceV2:
                 collector = XSIAMNightlyTestCollector(graph=graph)
             case _:
-                # todo: no nightly for xpanse
+                # todo: no nightly for xpanse (add class)
                 raise ValueError(f"unexpected values of {marketplace=} and/or {nightly=}")
 
     collected = collector.collect()
