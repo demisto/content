@@ -83,9 +83,7 @@ def checkKeyValue(config):
             AE = False
             continue
 
-        if key == "playbook.willnotexecute.eval.limit" and int(value) == 1:
-            EVAL = False
-            continue
+
 
 
 # v2 Update by JS (ver: 23/03/2021.1)
@@ -111,9 +109,7 @@ try:
         res.append({"category": "Configuration", "severity": "Medium",
                     "description": DESCRIPTION[4], "resolution": RESOLUTION[7]})
 
-    if EVAL:
-        res.append({"category": "Configuration", "severity": "Medium",
-                    "description": DESCRIPTION[5], "resolution": RESOLUTION[8]})
+
 
     results = CommandResults(
         readable_output="HealthCheckConfServer Done",

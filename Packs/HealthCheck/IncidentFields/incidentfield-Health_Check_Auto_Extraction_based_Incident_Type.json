@@ -1,34 +1,37 @@
 {
-    "associatedToAll": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "System Diagnostics and Health Check"
+    ],
     "caseInsensitive": true,
-    "cliName": "healthcheckriskyindexedfields",
+    "cliName": "healthcheckautoextractionbasedincidenttype",
     "closeForm": false,
     "columns": [
         {
-            "displayName": "Field Type",
+            "displayName": "Incident Type",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "fieldtype",
+            "key": "incidenttype",
+            "orgType": "shortText",
             "required": false,
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150,
-            "orgType": "shortText"
+            "width": 250
         },
         {
-            "displayName": "Field Name",
+            "displayName": "Detection",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "fieldname",
+            "key": "detection",
+            "orgType": "shortText",
             "required": false,
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150,
-            "orgType": "shortText"
+            "width": 150
         }
     ],
     "content": true,
@@ -40,10 +43,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_healthcheckriskyindexedfields",
+    "id": "incident_healthcheckautoextractionbasedincidenttype",
     "isReadOnly": false,
     "locked": false,
-    "name": "Health Check Risky Indexed Fields",
+    "name": "Health Check Auto Extraction based Incident Type",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
@@ -56,5 +59,5 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.5.0"
 }
