@@ -1,0 +1,65 @@
+{
+	"type": "file",
+	"id": "e7762f90024c5366807c7c145d3456f0ac3be086c0ec3557427d3c2c10a2052d",
+	"links": {
+		"self": "/api/v3/files/e7762f90024c5366807c7c145d3456f0ac3be086c0ec3557427d3c2c10a2052d"
+	},
+	"data": {
+		"attributes": {
+			"md5": "00ddbafe247c891eed36bd74f66f936b",
+			"sha1": "9fe1ac46f0cdebf03156a6232d771c14559f8daf",
+			"sha256": "e7762f90024c5366807c7c145d3456f0ac3be086c0ec3557427d3c2c10a2052d",
+			"size": 118024,
+			"creation_date": 1653722032,
+			"last_analysis_results": {
+				"ClamAV": {
+					"category": "undetected",
+					"engine_name": "ClamAV",
+					"result": "undetected"
+				},
+				"Engine2": {
+					"category": "malicious",
+					"engine_name": "Engine2",
+					"result": "Trojan/Win.Hermeticwiper"
+                }
+			},
+			"last_analysis_stats": {
+				"harmless": 1,
+				"malicious": 1
+			},
+			"names": [
+				"C:\\GimmeCreds.dll"
+			],
+			"meaningful_name": "C:\\GimmeCreds.dll",
+			"type_description": "EXE",
+			"crowdsourced_yara_results": [
+				{
+					"rule_name": "wiper_HermeticWiper"
+				},
+				{
+					"rule_name": "MAL_HERMETIC_WIPER"
+				}
+			],
+			"inception": {
+				"environments": [
+					{
+						"environment_id": {
+							"id": "AAAAAA-BBBBBB-CCCCCC-DDDDDDD"
+						}
+					}
+				],
+				"assets": [
+					{
+						"asset_id": {
+							"id": "DDDDDD-CCCCCC-BBBBBB-AAAAAAA"
+						},
+						"name": "WORKGROUP\\IDABEAR"
+					}
+				]
+			},
+			"magic": "EXE",
+			"imphash": "fe4a2284122da348258c83ef437fbd7b",
+			"ssdeep": "1536:WBOoa7Nn54urilmw9BgjKu1sPPxaS4NOyqC:WBOoa7P4xlPwV16PkS4NVqC"
+		}
+	}
+}
