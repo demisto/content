@@ -33,13 +33,12 @@ class Client(BaseClient):
         self.client_secret = client_secret
         self.access_token = get_jwt(api_key, api_secret)
 
-    """
+    def generate_token(self):
+        """
     Generate an OAuth Access token using the app credentials (AKA: client id and client secret) and the account id
-    
+
     :return: valid token
     """
-
-    def generate_token(self):
         token_res = self._http_request(method="POST", full_url=OAUTH_TOKEN_GENERATOR_URL,
                                        params={"account_id": self.account_id,
                                                "grant_type": "account_credentials"}, auth=(self.client_id, self.client_secret))
@@ -148,6 +147,19 @@ class Client(BaseClient):
         """
 
         user_data = {'action': 'deactivate'}
+        return self.update_user(user_id, user_data)
+
+    def enable_user(self, user_id: str) -> IAMUserAppData:
+        """ Enables a user in the application using REST API.
+
+        :type user_id: ``str``
+        :param user_id: ID of the user in the application
+
+        :return: An IAMUserAppData object that contains the data of the user in the application.
+        :rtype: ``IAMUserAppData``
+        """
+
+        user_data = {'action': 'activate'}
         return self.update_user(user_id, user_data)
 
     def get_app_fields(self):
@@ -279,10 +291,11 @@ def main():
     command = demisto.command()
     args = demisto.args()
 
-    is_disable_enabled = params.get('disable-user-enabled')
+    is_disable_enabled = argToBoolean(params.get('disable-user-enabled'))
+    is_enable_enabled = argToBoolean(params.get('enable-user-enabled'))
 
     iam_command = IAMCommand(is_create_enabled=False,
-                             is_enable_enabled=False,
+                             is_enable_enabled=is_enable_enabled,
                              is_disable_enabled=is_disable_enabled,
                              is_update_enabled=False,
                              create_if_not_exists=False,
@@ -301,12 +314,14 @@ def main():
         client_id=client_id,
         client_secret=client_secret,
     )
-    
+
     demisto.debug(f'Command being called is {command}')
 
     '''CRUD commands'''
     if command == 'iam-disable-user':
         user_profile = iam_command.disable_user(client, args)
+    elif command == 'iam-enable-user':
+        user_profile = iam_command.enable_user(client, args)
     elif command == 'iam-get-user':
         user_profile = iam_command.get_user(client, args)
 

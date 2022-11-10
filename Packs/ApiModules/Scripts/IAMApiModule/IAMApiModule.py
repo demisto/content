@@ -299,6 +299,14 @@ class IAMUserProfile:
             details=details
         )
 
+    def set_user_is_already_enabled(self, details):
+        self.set_result(
+            action=IAMActions.ENABLE_USER,
+            skip=True,
+            skip_reason='User is already enabled.',
+            details=details
+        )
+
 
 class IAMUserAppData:
     """ Holds user attributes retrieved from an application.
@@ -445,6 +453,49 @@ class IAMCommand:
 
             except Exception as e:
                 client.handle_exception(user_profile, e, IAMActions.DISABLE_USER)
+
+        return user_profile
+
+    def enable_user(self, client, args):
+        """ Enables a user in the application and updates the user profile object with the updated data.
+            If not found, the command will be skipped.
+
+        :param client: (Client) The integration Client object that implements get_user() and enable_user() methods
+        :param args: (dict) The `iam-enable-user` command arguments
+        :return: (IAMUserProfile) The user profile object.
+        """
+        user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=self.mapper_out,
+                                      incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
+        if not self.is_enable_enabled:
+            user_profile.set_result(action=IAMActions.ENABLE_USER,
+                                    skip=True,
+                                    skip_reason='Command is disabled.')
+        else:
+            try:
+                iam_attribute, iam_attribute_val = user_profile.get_first_available_iam_user_attr(
+                    self.get_user_iam_attrs)
+                user_app_data = client.get_user(iam_attribute, iam_attribute_val)
+                if not user_app_data:
+                    _, error_message = IAMErrors.USER_DOES_NOT_EXIST
+                    user_profile.set_result(action=IAMActions.ENABLE_USER,
+                                            skip=True,
+                                            skip_reason=error_message)
+                else:
+                    if user_app_data.is_active:
+                        enabled_user = client.enable_user(user_app_data.id)
+                        user_profile.set_result(
+                            action=IAMActions.ENABLE_USER,
+                            active=False,
+                            iden=enabled_user.id,
+                            email=user_profile.get_attribute('email') or user_app_data.email,
+                            username=enabled_user.username,
+                            details=enabled_user.full_data
+                        )
+                    else:
+                        user_profile.set_user_is_already_enabled(user_app_data.full_data)
+
+            except Exception as e:
+                client.handle_exception(user_profile, e, IAMActions.ENABLE_USER)
 
         return user_profile
 
