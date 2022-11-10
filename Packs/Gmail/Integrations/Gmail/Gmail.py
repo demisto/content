@@ -29,7 +29,6 @@ from apiclient import discovery
 from oauth2client import service_account
 import itertools as it
 import concurrent.futures
-import pickle
 
 ''' GLOBAL VARS '''
 ADMIN_EMAIL = None
@@ -2126,13 +2125,14 @@ def send_as_add_command():
 
 
 def parse_date_isoformat_server(dt: str) -> datetime:
-        """Get the datetime by parsing the format passed to the server. UTC basded with Z at the end
-        Args:
-            dt (str): datetime as string
-        Returns:
-            datetime: datetime representation
-        """
-        return datetime.strptime(dt, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
+    """Get the datetime by parsing the format passed to the server. UTC basded with Z at the end
+    Args:
+        dt (str): datetime as string
+    Returns:
+        datetime: datetime representation
+    """
+    return datetime.strptime(dt, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
+
 
 '''FETCH INCIDENTS'''
 
@@ -2178,12 +2178,13 @@ def fetch_incidents():
 
     incidents = []
     # so far, so good
-    LOG(f'GMAIL: possible new incidents are {result}')
+    demisto.info(f'GMAIL: possible new incidents are {result}')
     re
     for msg in result.get('messages', []):
         msg_id = msg['id']
         if msg_id in ignore_ids:
             demisto.info(f'Ignoring msg id: {msg_id} as it is in the ignore list')
+            demisto.debug(f'Ignoring msg id: {msg_id} as it is in the ignore list')
             ignore_list_used = True
             continue
         msg_result = service.users().messages().get(
@@ -2203,7 +2204,8 @@ def fetch_incidents():
         else:
             demisto.info(
                 f'skipped incident with lower date: {occurred} than fetch: {last_fetch} name: {incident.get("name")}')
-
+            demisto.debug(
+                f'skipped incident with lower date: {occurred} than fetch: {last_fetch} name: {incident.get("name")}')
     demisto.info('extract {} incidents'.format(len(incidents)))
     next_page_token = result.get('nextPageToken', '')
     if next_page_token:
