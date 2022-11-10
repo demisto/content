@@ -1461,6 +1461,8 @@ class Client(BaseClient):
         return self._http_request(method='Post',
                                   url_suffix=f'appsec/v1/configs/{config_id}/versions',
                                   json_data=body,
+                                  timeout=(60,180),
+                                  retries=0,
                                   )
 
     # created by D.S.
