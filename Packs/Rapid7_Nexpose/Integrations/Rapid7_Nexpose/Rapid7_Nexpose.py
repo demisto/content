@@ -1999,10 +1999,13 @@ def convert_asset_search_filters(search_filters: Union[str, list[str]]) -> list[
     Returns:
         list(dict): List of the same search filters in a dict-based format.
     """
+    range_operators = ["in-range", "is-between", "not-in-range"]
+    numeric_operators = ["is-earlier-than", "is-greater-than"]
+    numeric_operators.extend(range_operators)
+
     if isinstance(search_filters, str):
         search_filters = [search_filters]
 
-    range_operators = ["in-range", "is-between", "not-in-range"]
     normalized_filters = []
 
     for search_filter in search_filters:
@@ -2012,6 +2015,9 @@ def convert_asset_search_filters(search_filters: Union[str, list[str]]) -> list[
         #   _value = 5,10
         _field, _operator, _value = search_filter.split(" ")
         values = argToList(_value)
+
+        if _operator in numeric_operators:
+            values = [float(value) for value in values]
 
         filter_dict = {
             "field": _field,
