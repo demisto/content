@@ -524,7 +524,7 @@ script:
       type: string
     description: Lists the specified metric filters. You can list all the metric filters
       or filter the results by log name, prefix, metric name, or metric namespace.
-  dockerimage: devdemisto/py3-master:8.1.0.37377
+  dockerimage: devdemisto/py3-master:8.1.0.37383
   runonce: false
 tests:
 - No Tests

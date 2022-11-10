@@ -593,7 +593,7 @@ script:
   runonce: false
   script: ''
   type: powershell
-  dockerimage: devdemisto/py3-master:8.1.0.37377
+  dockerimage: devdemisto/py3-master:8.1.0.37383
 fromversion: 5.5.0
 tests:
 - 'EWS Extension: Powershell Online V2 Test'

@@ -514,6 +514,6 @@ script:
     - contextPath: MAR.HostInfo.Os
       description: Host operation system
     description: Gets host information from McAfee Active Response
-  dockerimage: devdemisto/py3-master:8.1.0.37377
+  dockerimage: devdemisto/py3-master:8.1.0.37383
   runonce: false
 fromversion: 5.0.0

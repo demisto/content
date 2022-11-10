@@ -22,7 +22,7 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: devdemisto/py3-master:8.1.0.37377
+dockerimage: devdemisto/py3-master:8.1.0.37383
 runas: DBotWeakRole
 tests:
 - No test - used in Prisma Cloud classifier.

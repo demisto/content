@@ -382,7 +382,7 @@ script:
       type: Unknown
     description: Permanently removes a group.
     execution: true
-  dockerimage: devdemisto/py3-master:8.1.0.37377
+  dockerimage: devdemisto/py3-master:8.1.0.37383
   isfetch: false
   longRunning: false
   longRunningPort: false

@@ -2122,7 +2122,7 @@ script:
     - contextPath: Endpoint.Processor
       description: The model of the processor.
       type: String
-  dockerimage: devdemisto/py3-master:8.1.0.37377
+  dockerimage: devdemisto/py3-master:8.1.0.37383
   feed: false
   isfetch: true
   longRunning: false

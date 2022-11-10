@@ -1294,7 +1294,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: devdemisto/py3-master:8.1.0.37377
+  dockerimage: devdemisto/py3-master:8.1.0.37383
 fromversion: 6.8.0
 tests:
 - testplaybook- JoeSecuirtyV2

@@ -99,7 +99,7 @@ outputs:
   description: The resultant AQL query based on the inputs.
   type: string
 subtype: python3
-dockerimage: devdemisto/py3-master:8.1.0.37377
+dockerimage: devdemisto/py3-master:8.1.0.37383
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:

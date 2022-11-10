@@ -20,7 +20,7 @@ outputs:
 - contextPath: langDetect.probability
   description: Probability of language detection
 scripttarget: 0
-dockerimage: devdemisto/py3-master:8.1.0.37377
+dockerimage: devdemisto/py3-master:8.1.0.37383
 fromversion: 5.0.0
 tests:
 - LanguageDetect-Test
