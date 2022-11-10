@@ -2255,10 +2255,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: c8f001d7-493f-47a4-8e3a-528d840131ad
+    taskid: 29010962-9a0f-443f-824c-39e06055f7e3
     type: regular
     task:
-      id: c8f001d7-493f-47a4-8e3a-528d840131ad
+      id: 29010962-9a0f-443f-824c-39e06055f7e3
       version: -1
       name: create  forwarding address
       description: Creates a forwarding address. If ownership verification is required,
@@ -2277,14 +2277,14 @@ tasks:
       forwarding_email:
         simple: admin@demistodev.com
       user_id:
-        simple: me
+        simple: ${Account.ID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 840,
-          "y": 5930
+          "y": 5910
         }
       }
     note: false
@@ -2296,10 +2296,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: 8820b987-53a8-4de5-89c3-4f946c2c3460
+    taskid: 497c33bb-ae18-4b0b-8e72-88ded2cfeb9c
     type: regular
     task:
-      id: 8820b987-53a8-4de5-89c3-4f946c2c3460
+      id: 497c33bb-ae18-4b0b-8e72-88ded2cfeb9c
       version: -1
       name: add forwarding address with disposition
       description: Creates a forwarding address. If ownership verification is required,
@@ -2339,10 +2339,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "72":
     id: "72"
-    taskid: 794abb83-6961-4cc8-8068-c8bca2df6bdc
+    taskid: c620ba9d-763a-4d1a-8f5b-6907e131d9dc
     type: regular
     task:
-      id: 794abb83-6961-4cc8-8068-c8bca2df6bdc
+      id: c620ba9d-763a-4d1a-8f5b-6907e131d9dc
       version: -1
       name: gmail-forwarding-address-remove
       description: Deletes the specified forwarding address and revokes any verification
@@ -2418,10 +2418,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "74":
     id: "74"
-    taskid: b8f6b377-eb14-4ec5-8e63-ca37c9432a8e
+    taskid: f4edf303-6456-4b6c-8dbc-11b6ebe5374d
     type: regular
     task:
-      id: b8f6b377-eb14-4ec5-8e63-ca37c9432a8e
+      id: f4edf303-6456-4b6c-8dbc-11b6ebe5374d
       version: -1
       name: gmail-forwarding-address-get (Gmail)
       description: Gets the specified forwarding address or a list of the forwarding
@@ -2914,8 +2914,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 370,
-          "y": 5745
+          "x": 360,
+          "y": 5735
         }
       }
     note: false
@@ -2927,10 +2927,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "91":
     id: "91"
-    taskid: 5e0b418d-fbc6-4196-80c4-1ff5afbe5147
+    taskid: 686791a7-767c-436f-8f15-5a84acb45efe
     type: condition
     task:
-      id: 5e0b418d-fbc6-4196-80c4-1ff5afbe5147
+      id: 686791a7-767c-436f-8f15-5a84acb45efe
       version: -1
       name: Check forwarding existence
       type: condition
@@ -2938,7 +2938,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "66"
+      - "102"
       "yes":
       - "73"
     separatecontext: false
@@ -2957,7 +2957,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 370,
+          "x": 360,
           "y": 5900
         }
       }
@@ -3119,10 +3119,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "98":
     id: "98"
-    taskid: b81a19ce-171c-4ff3-8e61-a7335e9e6190
+    taskid: 4e1d3a38-1507-4200-832c-78ff04e34836
     type: condition
     task:
-      id: b81a19ce-171c-4ff3-8e61-a7335e9e6190
+      id: 4e1d3a38-1507-4200-832c-78ff04e34836
       version: -1
       name: Check forwarding existence
       type: condition
@@ -3263,6 +3263,41 @@ tasks:
         "position": {
           "x": 1350,
           "y": 3010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "102":
+    id: "102"
+    taskid: 322f0c89-5b8d-426f-85ff-9118d9cd04ca
+    type: regular
+    task:
+      id: 322f0c89-5b8d-426f-85ff-9118d9cd04ca
+      version: -1
+      name: gmail get user
+      description: Gets information for a specified user.
+      script: Gmail|||gmail-get-user
+      type: regular
+      iscommand: true
+      brand: Gmail
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      user-id:
+        simple: me
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": 5755
         }
       }
     note: false
