@@ -1,4 +1,4 @@
-[MODEL: dataset="Ookta_oag_raw"]
+[MODEL: dataset="okta_oag_raw"]
 filter _raw_log  contains "monitor"
 |alter 
     event = arrayindex(regextract(_raw_log,"\s(\w+)\s"),2),
