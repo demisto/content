@@ -364,13 +364,13 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'False'
+      defaultValue: 'false'
       description: 'Include messages from SPAM and TRASH in the results. (Default: false)'
       isArray: false
       name: include-spam-trash
       predefined:
-      - 'False'
-      - 'True'
+      - 'false'
+      - 'true'
       required: false
       secret: false
     - default: false
@@ -421,8 +421,8 @@ script:
       isArray: false
       name: has-attachments
       predefined:
-      - 'True'
-      - 'False'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -536,13 +536,13 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'False'
+      defaultValue: 'false'
       description: 'Includes messages from SPAM and TRASH in the results. (Default: false)'
       isArray: false
       name: include-spam-trash
       predefined:
-      - 'False'
-      - 'True'
+      - 'false'
+      - 'true'
       required: false
       secret: false
     - default: false
@@ -593,13 +593,13 @@ script:
       isArray: false
       name: has-attachments
       predefined:
-      - 'False'
-      - 'True'
+      - 'false'
+      - 'true'
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to return only mailboxes which contain the email. Default is "False".
+      description: Whether to return only mailboxes which contain the email. Default is "false".
       name: show-only-mailboxes
       predefined:
       - "false"
@@ -736,8 +736,8 @@ script:
       isArray: false
       name: show-deleted
       predefined:
-      - 'False'
-      - 'True'
+      - 'false'
+      - 'true'
       required: false
       secret: false
     - auto: PREDEFINED
@@ -911,8 +911,8 @@ script:
       isArray: false
       name: permanent
       predefined:
-      - 'False'
-      - 'True'
+      - 'false'
+      - 'true'
       required: false
       secret: false
     deprecated: false
@@ -1388,7 +1388,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether to hide the user's visibility in the Global Directory. Can be False to hide the user, True to show the user in the directory (default).
+      description: Whether to hide the user's visibility in the Global Directory. Can be false to hide the user, true to show the user in the directory (default).
       isArray: false
       name: visible-globally
       predefined:

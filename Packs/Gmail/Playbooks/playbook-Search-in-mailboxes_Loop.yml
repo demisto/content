@@ -111,6 +111,7 @@ tasks:
       id: 8b64c5b9-a159-472f-8b95-80a026287743
       version: -1
       name: Is batching
+      description: Check if what received from the gmail-list-users function is batch or not
       type: condition
       iscommand: false
       brand: ""
@@ -289,6 +290,7 @@ tasks:
       id: a9eb9427-07eb-4078-8b3e-5cf9287cc714
       version: -1
       name: Is there NextPageToken
+      description: Check if a new NextPageToken was received for determine if the loop should ending
       type: condition
       iscommand: false
       brand: ""
