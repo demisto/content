@@ -10,26 +10,21 @@ This integration was integrated and tested with version xx of MicrosoftGraphMail
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Server URL |  | True |
-    | Application ID or Client ID | see the Detailed Instructions section. | False |
-    | Token or Tenant ID | see the Detailed Instructions section. | False |
-    | Key or Client Secret | see the Detailed Instructions section. | False |
-    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
+    | Application ID or Client ID | See the Detailed Instructions section. | False |
+    | Token or Tenant ID | See the Detailed Instructions section. | False |
+    | Key or Client Secret | See the Detailed Instructions section. | False |
+    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
     | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
     | Fetch incidents |  | False |
     | Email address from which to fetch incidents | For example, "example@demisto.com" | False |
     | Name of the folder or sub-folder from which to fetch incidents | Supports folder ID and sub-folders, for example Inbox/Phishing. | False |
-    | First fetch timestamp | &amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, for example 12 hours, 7 days. | False |
-    | HTTP Timeout | The timeout of the HTTP requests sent to Microsoft Graph API \(in seconds\). | False |
+    | First fetch timestamp | &lt;number&gt; &lt;time unit&gt;, for example 12 hours, 7 days. | False |
+    | HTTP Timeout | The timeout of the HTTP requests sent to Microsoft Graph API (in seconds). | False |
     | Maximum number of emails to pull per fetch |  | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Use a self deployed Azure application |  | False |
     | Incident type |  | False |
-    | ID or Client ID - see Detailed Instructions (?) |  | False |
-    | Token or Tenant ID - see Detailed Instructions (?) |  | False |
-    | Key or Client Secret (Deprecated) |  | False |
-    | ID or Client ID - see Detailed Instructions (?) (Deprecated) |  | False |
-    | Token or Tenant ID - see Detailed Instructions (?) (Deprecated) |  | False |
     | Display the entire email body | Whether to fetch incidents with the entire email body, or just an email body preview, mark if the full email body is required. |  |
     | Advanced: Time in minutes to look back when fetching emails | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
 
@@ -71,11 +66,11 @@ Gets the properties of returned emails. Typically shows partial results, use the
 | MSGraphMail.HasAttachments | Boolean | Whether the email has attachments. | 
 | MSGraphMail.Subject | String | The subject of email. | 
 | MSGraphMail.IsDraft | Boolean | Whether the email is a draft. | 
-| MSGraphMail.Body | String | The content \(body\) of the email. | 
+| MSGraphMail.Body | String | The content (body) of the email. | 
 | MSGraphMail.Sender.Name | String | The name of sender. | 
 | MSGraphMail.Sender.Address | String | The email address of the sender. | 
 | MSGraphMail.From.Name | String | The name of the user in the 'from' field of the email. | 
-| MSGraphMail.From.Address | String | The email address of the user in the 'from' field of the email | 
+| MSGraphMail.From.Address | String | The email address of the user in the 'from' field of the email. | 
 | MSGraphMail.CCRecipients.Name | String | The names of the CC recipients. | 
 | MSGraphMail.CCRecipients.Address | String | The email address of the user in the 'cc' field of the email. | 
 | MSGraphMail.BCCRecipients.Name | String | The names of the users in the 'bcc' field of the email. | 
@@ -84,7 +79,7 @@ Gets the properties of returned emails. Typically shows partial results, use the
 | MSGraphMail.ReplyTo.Address | String | The email address in the 'replyTo' field of the email. | 
 | MSGraphMail.UserID | String | The ID of the user. | 
 | MSGraphMail.ConversationID | String | The ID of the conversation. | 
-| MSGraphMail.InternetMessageID | String | Internet Message ID of the message | 
+| MSGraphMail.InternetMessageID | String | Internet Message ID of the message. | 
 | MSGraphMail.Recipients.Name | String | The name of the user in the 'toRecipients' field of the email. | 
 | MSGraphMail.Recipients.Address | String | The email address of the user in the 'toRecipients' field of the email. | 
 | MSGraphMail.NextPage | String | A token to pass to the next list command to retrieve additional results. | 
@@ -104,9 +99,9 @@ Returns the properties of an email.
 | user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required | 
 | message_id | The unique ID of the mail. You cannot use the the 'MessageID' key in the form '&lt;message-id&gt;'. | Required | 
 | folder_id | The folder ID. | Optional | 
-| odata | An OData query. See REDAME for OData usage examples. | Optional | 
-| get_body | Whether to return the message body. Can ge "true" or "false". Possible values are: true, false. | Optional | 
-| ran_once_flag | flag for rate limit retry. | Optional | 
+| odata | An OData query. See the README for OData usage examples. | Optional | 
+| get_body | Whether to return the message body. Possible values are: true, false. | Optional | 
+| ran_once_flag | Flag for rate limit retry. | Optional | 
 
 
 #### Context Output
@@ -122,7 +117,7 @@ Returns the properties of an email.
 | MSGraphMail.HasAttachments | Boolean | Whether the email has attachments. | 
 | MSGraphMail.Subject | String | The subject of email. | 
 | MSGraphMail.IsDraft | Boolean | Whether the email is a draft. | 
-| MSGraphMail.Body | String | The content \(body\) of the email. | 
+| MSGraphMail.Body | String | The content (body) of the email. | 
 | MSGraphMail.Sender.Name | String | The name of sender. | 
 | MSGraphMail.Sender.Address | String | The email address of the sender. | 
 | MSGraphMail.From.Name | String | The name of the user in the 'from' field of the email. | 
@@ -135,7 +130,7 @@ Returns the properties of an email.
 | MSGraphMail.ReplyTo.Address | String | The email address in the 'replyTo' field of the email. | 
 | MSGraphMail.UserID | String | The ID of the user. | 
 | MSGraphMail.ConversationID | String | The ID of the conversation. | 
-| MSGraphMail.InternetMessageID | String | Internet Message ID of the message | 
+| MSGraphMail.InternetMessageID | String | Internet Message ID of the message. | 
 | MSGraphMail.Recipients.Name | String | The name of the user in the 'toRecipients' field of the email. | 
 | MSGraphMail.Recipients.Address | String | The email address of the user in the 'toRecipients' field of the email. | 
 
@@ -154,7 +149,7 @@ Deletes an email.
 | user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required | 
 | message_id | The unique ID of the mail. This could be extracted from - msgraph-mail-list-emails command results. You cannot use the the 'MessageID' key in the form '&lt;message-id&gt;'. | Required | 
 | folder_id | A comma-separated list of folder IDs. For example, mailFolders,childFolders,childFolders. | Optional | 
-| ran_once_flag | flag for rate limit retry. | Optional | 
+| ran_once_flag | Flag for rate limit retry. | Optional | 
 
 
 #### Context Output
@@ -175,7 +170,7 @@ Lists all of the attachments of given email
 | user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required | 
 | message_id | The unique ID of the mail. You cannot use the the 'MessageID' key in the form '&lt;message-id&gt;'. | Required | 
 | folder_id |  A comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box). . | Optional | 
-| ran_once_flag | flag for rate limit retry. | Optional | 
+| ran_once_flag | Flag for rate limit retry. | Optional | 
 
 
 #### Context Output
@@ -204,7 +199,7 @@ Gets an attachment from the email.
 | message_id | The unique ID of the mail. You cannot use the the 'MessageID' key in the form '&lt;message-id&gt;'. | Required | 
 | folder_id | A comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box). | Optional | 
 | attachment_id | ID of the attachment. | Required | 
-| ran_once_flag | flag for rate limit retry. | Optional | 
+| ran_once_flag | Flag for rate limit retry. | Optional | 
 
 
 #### Context Output
@@ -235,7 +230,7 @@ Returns the mail folder list directly under the root folder.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required | 
-| limit | The maximum number of mail folder lists to return. Default is 20. Default is 20. | Optional | 
+| limit | The maximum number of mail folder lists to return. Default is 20. | Optional | 
 | ran_once_flag | flag for rate limit retry. | Optional | 
 
 
@@ -264,7 +259,7 @@ Returns the folder list under the specified folder.
 | --- | --- | --- |
 | user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required | 
 | parent_folder_id | The ID of the parent folder. | Required | 
-| limit | The maximum number of mail folder lists to return. Default is 20. Default is 20. | Optional | 
+| limit | The maximum number of mail folder lists to return. Default is 20. | Optional | 
 | ran_once_flag | flag for rate limit retry. | Optional | 
 
 
@@ -323,7 +318,7 @@ Updates the properties of the specified folder.
 | user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required | 
 | folder_id | The ID of the folder to update. | Required | 
 | new_display_name | The mail folder display name. | Required | 
-| ran_once_flag | flag for rate limit retry. | Optional | 
+| ran_once_flag | Flag for rate limit retry. | Optional | 
 
 
 #### Context Output
@@ -351,7 +346,7 @@ Deletes the specified mail folder.
 | --- | --- | --- |
 | user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required | 
 | folder_id | The ID of the folder to delete. | Required | 
-| ran_once_flag | flag for rate limit retry. | Optional | 
+| ran_once_flag | Flag for rate limit retry. | Optional | 
 
 
 #### Context Output
@@ -372,7 +367,7 @@ Moves a message to a different folder.
 | message_id | The unique ID of the mail. You cannot use the the 'MessageID' key in the form '&lt;message-id&gt;'. | Required | 
 | destination_folder_id | The ID of the destination folder. | Required | 
 | user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required | 
-| ran_once_flag | flag for rate limit retry. | Optional | 
+| ran_once_flag | Flag for rate limit retry. | Optional | 
 
 
 #### Context Output
@@ -397,7 +392,7 @@ Retrieves an email message by message ID and uploads the content as an EML file.
 | --- | --- | --- |
 | user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required | 
 | message_id | The unique ID of the mail. You cannot use the the 'MessageID' key in the form '&lt;message-id&gt;'. | Required | 
-| ran_once_flag | flag for rate limit retry. | Optional | 
+| ran_once_flag | Flag for rate limit retry. | Optional | 
 
 
 #### Context Output
@@ -532,7 +527,7 @@ The replies to the recipients of a message.
 | attachIDs | A comma-separated list of War Room entry IDs that contain files, which are used to attach files for the email to send. For example, attachIDs=15@8,19@8. | Optional | 
 | attachNames | A comma-separated list of names of attachments to display in the email to send. Must be the same number of elements as attachIDs. | Optional | 
 | attachCIDs | A CSV list of CIDs to embed attachments within the email itself. | Optional | 
-| ran_once_flag | flag for rate limit retry. | Optional | 
+| ran_once_flag | Flag for rate limit retry. | Optional | 
 
 
 #### Context Output
@@ -552,7 +547,7 @@ Sends a draft email using Microsoft Graph.
 | --- | --- | --- |
 | draft_id | The ID of the draft email. | Required | 
 | from | The email address from which to send the draft. | Required | 
-| ran_once_flag | flag for rate limit retry. | Optional | 
+| ran_once_flag | Flag for rate limit retry. | Optional | 
 
 
 #### Context Output
@@ -582,7 +577,7 @@ Replies to an email using Graph Mail.
 | attachCIDs | A CSV list of CIDs to embed attachments within the email itself. | Optional | 
 | from | Email address of the sender. | Optional | 
 | replyTo | Email addresses that need to be used to reply to the message. Supports comma-separated values. | Optional | 
-| ran_once_flag | flag for rate limit retry. | Optional | 
+| ran_once_flag | Flag for rate limit retry. | Optional | 
 
 
 #### Context Output
