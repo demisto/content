@@ -1,8 +1,8 @@
 [MODEL: dataset="linux_linux_raw"]
 filter _log_source_file_name in("auth*", "secure")
 | alter current_year = arrayindex(regextract(to_string(current_time()), "\d{4}"), 0),
-    timestamp = arrayindex(regextract(_raw_log, "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0),
-    timestamp = format_string("%s %s", current_year, timestamp),
+    //timestamp = arrayindex(regextract(_raw_log, "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0),
+    //timestamp = format_string("%s %s", current_year, timestamp),
     hostname = to_string(arrayindex(regextract(_raw_log, "\d{2}\S\d{2}\S\d{2}\s+([^\s]+)"), 0)),
     process_name = to_string(arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\s\S+\s([a-zA-Z]+)"), 0)),
     pid = to_integer(arrayindex(regextract(_raw_log, "\d{2}\S\d{2}\S\d{2}\s+[^\s]+\s[^\s]+\[(\d+)\]"),0)),
