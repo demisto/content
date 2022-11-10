@@ -169,7 +169,7 @@ def get_sapm_user_info_command(client: Client, device_ip: str) -> CommandResults
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions
 
     :return:

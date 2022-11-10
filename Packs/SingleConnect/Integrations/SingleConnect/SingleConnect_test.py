@@ -1,7 +1,7 @@
 import pytest
 from pytest import raises
 
-from CommonServerPython import CommandResults
+from CommonServerPython import CommandResults, DemistoException
 from SingleConnect import Client, list_all_sapm_accounts_command, search_sapm_with_secret_name_command, \
     get_sapm_user_info_command, show_password_command
 from test_data.http_responses import SEARCH_SAPM_ACCOUNTS_RESPONSE, EMPTY_SEARCH_SAPM_ACCOUNTS_RESPONSE, \
@@ -29,6 +29,12 @@ ARGS_SHOW_PASSWORD = {
 EMPTY_DICT = {}
 
 EMPTY_LIST = []
+
+AUTHENTICATION_ERROR_RESPONSE = "Error in API call [401]"
+
+AUTHENTICATION_ERROR_MESSAGE = "Authentication Error: Make sure username and password are correctly set"
+
+HEADER_XSRF_TOKEN = {"XSRF-TOKEN": "4b6794ebc982f8aa3786d745555d8dc3"}
 
 
 @pytest.mark.parametrize('search_command, args, invalid_response_type', [
@@ -80,3 +86,16 @@ def test_single_connect_commands(command, args, http_response, invalid_response_
         command(client, **args)
     with raises(Exception, match=ERROR_SINGLE_CONNECT):
         command(client, **args)
+
+
+def test_generate_token_authentication_fail(mocker):
+    mocker.patch.object(Client, '_http_request', side_effect=[DemistoException(AUTHENTICATION_ERROR_RESPONSE)])
+
+    with raises(DemistoException, match=AUTHENTICATION_ERROR_MESSAGE):
+        Client(base_url='https://localhost', username='admin', password='admin', use_ssl=False, proxy=False)
+
+
+def test_generate_token_success(requests_mock):
+    requests_mock.post("https://localhost/aioc-rest-web/rest/login", headers=HEADER_XSRF_TOKEN)
+    client = Client(base_url='https://localhost', username='admin', password='admin', use_ssl=False, proxy=False)
+    assert HEADER_XSRF_TOKEN.get("XSRF-TOKEN") == client._token
