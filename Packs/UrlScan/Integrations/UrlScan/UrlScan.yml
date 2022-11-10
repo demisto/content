@@ -16,7 +16,7 @@ configuration:
   - public
   - private
   - unlisted
-  required: false
+  required: true
   type: 15
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
