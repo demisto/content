@@ -8,9 +8,11 @@
     "email": "",
     "created": "2020-12-09T13:38:20Z",
     "categories": [
-        "Identity and Access Management"
+        "Utilities"
     ],
-    "tags": [],
+    "tags": [
+        "Getting Started"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

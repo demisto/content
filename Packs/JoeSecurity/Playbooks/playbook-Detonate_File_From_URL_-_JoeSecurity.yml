@@ -3,9 +3,7 @@ version: -1
 name: Detonate File From URL - JoeSecurity
 fromversion: 5.0.0
 description: |-
-  Detonates one or more remote files using the Joe Security sandbox integration.
-  Returns relevant reports to the War Room and file reputations to the context data.
-  This type of analysis is available for Windows only and works only for direct download links.
+  Deprecated. Use the joe-submit-sample command instead.
 starttaskid: "0"
 tasks:
   "0":
@@ -352,4 +350,5 @@ outputs:
   description: The actual score (only in case of report type=json).
   type: number
 tests:
-- JoeSecurityTestDetonation
+- No test
+deprecated: true
