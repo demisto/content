@@ -10269,7 +10269,7 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     :param last_run: The LastRun object
 
     :type first_fetch: ``str``
-    :param first_fetch: The first time to fetch, used in t he first fetch of an instance
+    :param first_fetch: The first time to fetch, used in the first fetch of an instance
 
     :type look_back: ``int``
     :param look_back: The time to look back in fetch in minutes
