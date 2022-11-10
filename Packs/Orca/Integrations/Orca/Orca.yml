@@ -41,7 +41,6 @@ configuration:
   type: 0
   additionalinfo: The number of objects to process. Maximum value is 500
   section: Collect
-  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
