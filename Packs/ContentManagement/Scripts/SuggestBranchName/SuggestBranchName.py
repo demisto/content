@@ -22,7 +22,7 @@ def main():
 
     try:
         pack_name = demisto.getArg('pack')
-        command_get_branch = demisto.getArg('command_get_branch')
+        command_get_branch = demisto.getArg('use_command')
         branch_name = find_available_branch(pack_name, command_get_branch)
 
         return_results(CommandResults(

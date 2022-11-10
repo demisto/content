@@ -11,16 +11,16 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 * SuggestBranchName
-* DeleteContext
+* CommitFiles
 * Set
-* CommitFilesBitbucket
+* DeleteContext
 
 ### Commands
 * bitbucket-pull-request-list
+* bitbucket-branch-get
 * bitbucket-pull-request-update
 * bitbucket-branch-create
 * bitbucket-pull-request-create
-* bitbucket-branch-get
 
 ## Playbook Inputs
 ---

@@ -3,8 +3,8 @@ args:
   name: pack
   required: true
 - auto: PREDEFINED
-  description: The command to perform.
-  name: command_get_branch
+  description: Which command to use.
+  name: use_command
   required: true
   predefined:
   - gitlab-branch-list

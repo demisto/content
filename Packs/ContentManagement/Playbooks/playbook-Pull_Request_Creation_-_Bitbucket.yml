@@ -2,7 +2,6 @@ id: Pull Request Creation - Bitbucket
 version: -1
 name: Pull Request Creation - Bitbucket
 description: This playbook creates a pull request using Bitbucket integration.
-fromversion: 6.5.0
 starttaskid: "0"
 tasks:
   "0":
@@ -208,7 +207,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: Add a reviewer?
+      description: Add reviewer?
     nexttasks:
       '#default#':
       - "36"
@@ -371,7 +370,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: Is CI/CD Branch field given
+      description: Is there a branch name in the update branch field in the incident.
     nexttasks:
       '#default#':
       - "27"
@@ -406,10 +405,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: a184877e-47c0-4756-8d8d-659b69c77f8a
+    taskid: d0e33d0c-e500-43b2-80fa-700ce7afa41b
     type: regular
     task:
-      id: a184877e-47c0-4756-8d8d-659b69c77f8a
+      id: d0e33d0c-e500-43b2-80fa-700ce7afa41b
       version: -1
       name: Suggest branch name
       description: |
@@ -428,6 +427,8 @@ tasks:
         simple: bitbucket-branch-get
       pack:
         simple: ${inputs.PackName}
+      use_command:
+        simple: bitbucket-branch-get
     separatecontext: false
     continueonerror: true
     continueonerrortype: errorPath
@@ -494,7 +495,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: Is CI/CD Pull Request Branch field given
+      description: Is there a branch name in the matching field in the CI/CD incident.
     nexttasks:
       '#default#':
       - "26"
@@ -882,7 +883,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: Is Pull Request title empty?
+      description: Is the field of the pull request title in the incident empty?
     nexttasks:
       '#default#':
       - "7"
@@ -1123,10 +1124,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 4445ebe7-4674-44d4-8774-e347a2aade3c
+    taskid: acaa4412-efd4-4a50-8287-84300b7faf7c
     type: regular
     task:
-      id: 4445ebe7-4674-44d4-8774-e347a2aade3c
+      id: acaa4412-efd4-4a50-8287-84300b7faf7c
       version: -1
       name: Commit files
       description: This script gets content files as input from the context, commits the files in the correct folder and creates the pull request text.
@@ -1145,8 +1146,6 @@ tasks:
         complex:
           root: incident
           accessor: cicdpullrequestcomment
-      email:
-        simple: ${inputs.Email}
       files:
         simple: ${inputs.File}
       pack:
@@ -1298,3 +1297,4 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
+fromversion: 6.5.0

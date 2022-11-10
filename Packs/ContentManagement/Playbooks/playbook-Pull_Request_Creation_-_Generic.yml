@@ -445,7 +445,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: Is channel given in order to send the message?
     nexttasks:
       '#default#':
       - "43"
@@ -787,7 +787,7 @@ inputs:
   playbookInputQuery:
 - key: GitIntegration
   value:
-    simple: bitbucket
+    simple: github
   required: true
   description: Which version control integration to use.
   playbookInputQuery:

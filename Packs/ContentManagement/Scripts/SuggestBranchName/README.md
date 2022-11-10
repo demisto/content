@@ -22,7 +22,7 @@ Pull Request Creation - Generic
 | **Argument Name** | **Description** |
 | --- | --- |
 | pack | The name of the pack. |
-| command_get_branch | The name of the pack. |
+| use_command | Which command to use. |
 
 ## Outputs
 ---
