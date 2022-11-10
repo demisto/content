@@ -1,8 +1,17 @@
-## BaseIntegration Help
+## Neosec Help
 
-Markdown file for integration configuration  help snippet. In this file add:
+### API Key 
 
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+Please contact support@neosec.com to receive an API key for this integration.
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+### Tenant Key
+
+Use your tenant name from the Neosec UI.
+
+### Detokenization
+
+Neosec stores PII in its data lake tokenized. 
+If you wish to perform auto detokenization when fetching Neosec alerts into XSOAR:
+
+1. Check the Detokenize checkbox.
+2. Fill in the hostname of the Neosec Node inside your network. for example http://[neosec node ip]:8080

@@ -1,5 +1,9 @@
-[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]
-This integration was integrated and tested with version xx of Neosec
+Neosec is an API security platform that applies behavioral analytics to identify vulnerabilities on endpoints and user malicious and suspicious activity.
+
+##### What does this pack do?
+- Provides real time threat detection; alerts from Neosec are pushed in real time.
+    - Neosec Posture Alerts covers OWASP top 10 and other vulnerabilities in API endpoints and handled by developers and architects.
+    - Neosec Runtime Alerts are on suspicious or malicuous user behavior and handled by SOC analysts.
 
 ## Configure Neosec on Cortex XSOAR
 
@@ -9,23 +13,25 @@ This integration was integrated and tested with version xx of Neosec
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | API Key | The API Key to use for connection | True |
-    | URL |  | False |
-    | Tenant Key |  | False |
-    | Fetch alerts with status |  | False |
-    | Fetch alerts with type |  | False |
-    | Severity of alerts to fetch |  | False |
+    | API Key | The API Key to use to connect to Neograph API | True |
+    | URL | Neograph API URL  | False |
+    | Tenant Key | Tenant identifer (Tenant name) | False |
+    | Fetch alerts with status | Select the statuses of the alerts you wish to fetch (Open/Closed). | False |
+    | Fetch alerts with type | Select the types of the alerts you wish to fetch (Posture/Runtime). | False |
+    | Severity of alerts to fetch | Select the severities of the alerts you wish to fetch.  | False |
     | Max incident to fetch |  | False |
     | Incident type |  | False |
     | Fetch incidents |  | False |
     | First fetch time |  | False |
-    | De-tokenize alerts |  | False |
-    | Neosec Node URL |  | False |
+    | De-tokenize alerts | Select this if you use tokenization on PII data and wish to ingest Neosec alerts to XSOAR with detokenized data.  | False |
+    | Neosec Node URL | If the 'De-tokenize alets' is selected, provide the url of the Neosec Node. for example http://[neosec node ip]:8080   | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### neosec-alert-status-set
 ***
 Set alert status(Open, Closed)
@@ -38,8 +44,8 @@ Set alert status(Open, Closed)
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | The alert id(UUID) in the Neosec platform. Possible values are: . | Required | 
-| alert_status | The alert status, the options are "Open" or "Closed". Possible values are: Open, Closed. | Required | 
+| alert_id | The alert id(UUID) in the Neosec platform. . | Required | 
+| alert_status | The alert status. Possible values are: Open, Closed. | Required | 
 
 
 #### Context Output
