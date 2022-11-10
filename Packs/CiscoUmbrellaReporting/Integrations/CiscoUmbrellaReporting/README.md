@@ -118,11 +118,11 @@ List of destinations ordered by the number of requests made in descending order.
                         "type": "content"
                     }
                 ],
-                "count": 1286,
+                "count": 1098,
                 "counts": {
-                    "allowedrequests": 1286,
+                    "allowedrequests": 1098,
                     "blockedrequests": 0,
-                    "requests": 1286
+                    "requests": 1098
                 },
                 "domain": "www.cisco.com",
                 "policycategories": [],
@@ -174,11 +174,11 @@ List of destinations ordered by the number of requests made in descending order.
                         "type": "content"
                     }
                 ],
-                "count": 1003,
+                "count": 1035,
                 "counts": {
-                    "allowedrequests": 1003,
+                    "allowedrequests": 1035,
                     "blockedrequests": 0,
-                    "requests": 1003
+                    "requests": 1035
                 },
                 "domain": "presence.teams.microsoft.com",
                 "policycategories": [],
@@ -194,8 +194,8 @@ List of destinations ordered by the number of requests made in descending order.
 >### Destination List
 >|Destination|Category|Allowed|Blocked|Requests|
 >|---|---|---|---|---|
->| www.cisco.com | Computers and Internet, Infrastructure and Content Delivery Networks, Application, Software/Technology, Business Services | 1286 | 0 | 1286 |
->| presence.teams.microsoft.com | Business and Industry, Computers and Internet, Online Meetings, Application, Software/Technology, Business Services | 1003 | 0 | 1003 |
+>| www.cisco.com | Computers and Internet, Infrastructure and Content Delivery Networks, Application, Software/Technology, Business Services | 1098 | 0 | 1098 |
+>| presence.teams.microsoft.com | Business and Industry, Computers and Internet, Online Meetings, Application, Software/Technology, Business Services | 1035 | 0 | 1035 |
 
 
 ### umbrella-reporting-category-list
@@ -256,7 +256,7 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Application",
                     "type": "application"
                 },
-                "count": 32446,
+                "count": 30588,
                 "rank": 1
             },
             {
@@ -268,7 +268,7 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Software/Technology",
                     "type": "content"
                 },
-                "count": 26112,
+                "count": 26718,
                 "rank": 2
             },
             {
@@ -280,20 +280,8 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Infrastructure and Content Delivery Networks",
                     "type": "content"
                 },
-                "count": 20351,
+                "count": 20181,
                 "rank": 3
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": true,
-                    "id": 32,
-                    "integration": false,
-                    "label": "Business Services",
-                    "type": "content"
-                },
-                "count": 19012,
-                "rank": 4
             },
             {
                 "bandwidth": null,
@@ -304,7 +292,19 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Computers and Internet",
                     "type": "content"
                 },
-                "count": 18040,
+                "count": 19095,
+                "rank": 4
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": true,
+                    "id": 32,
+                    "integration": false,
+                    "label": "Business Services",
+                    "type": "content"
+                },
+                "count": 17574,
                 "rank": 5
             },
             {
@@ -316,7 +316,7 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Business and Industry",
                     "type": "content"
                 },
-                "count": 11251,
+                "count": 10290,
                 "rank": 6
             },
             {
@@ -328,7 +328,7 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Search Engines",
                     "type": "content"
                 },
-                "count": 5931,
+                "count": 5167,
                 "rank": 7
             },
             {
@@ -340,7 +340,7 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Search Engines and Portals",
                     "type": "content"
                 },
-                "count": 4714,
+                "count": 4085,
                 "rank": 8
             },
             {
@@ -352,20 +352,8 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Online Meetings",
                     "type": "content"
                 },
-                "count": 3734,
+                "count": 3918,
                 "rank": 9
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 27,
-                    "integration": false,
-                    "label": "Advertisements",
-                    "type": "content"
-                },
-                "count": 3280,
-                "rank": 10
             },
             {
                 "bandwidth": null,
@@ -376,8 +364,8 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "SaaS and B2B",
                     "type": "content"
                 },
-                "count": 3164,
-                "rank": 11
+                "count": 3131,
+                "rank": 10
             },
             {
                 "bandwidth": null,
@@ -388,8 +376,8 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Chat",
                     "type": "content"
                 },
-                "count": 2444,
-                "rank": 12
+                "count": 2550,
+                "rank": 11
             },
             {
                 "bandwidth": null,
@@ -400,7 +388,19 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Instant Messaging",
                     "type": "content"
                 },
-                "count": 2376,
+                "count": 2487,
+                "rank": 12
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": false,
+                    "id": 27,
+                    "integration": false,
+                    "label": "Advertisements",
+                    "type": "content"
+                },
+                "count": 2412,
                 "rank": 13
             },
             {
@@ -412,7 +412,7 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Online Document Sharing and Collaboration",
                     "type": "content"
                 },
-                "count": 2189,
+                "count": 2051,
                 "rank": 14
             },
             {
@@ -424,7 +424,7 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Webmail",
                     "type": "content"
                 },
-                "count": 1994,
+                "count": 2005,
                 "rank": 15
             },
             {
@@ -436,7 +436,7 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Cloud and Data Centers",
                     "type": "content"
                 },
-                "count": 1993,
+                "count": 1874,
                 "rank": 16
             },
             {
@@ -448,7 +448,7 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Web-based Email",
                     "type": "content"
                 },
-                "count": 1831,
+                "count": 1770,
                 "rank": 17
             },
             {
@@ -460,7 +460,7 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Organizational Email",
                     "type": "content"
                 },
-                "count": 1829,
+                "count": 1768,
                 "rank": 18
             },
             {
@@ -472,7 +472,7 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Chat and Instant Messaging",
                     "type": "content"
                 },
-                "count": 1509,
+                "count": 1648,
                 "rank": 19
             },
             {
@@ -484,32 +484,8 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Ecommerce/Shopping",
                     "type": "content"
                 },
-                "count": 1425,
+                "count": 1379,
                 "rank": 20
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": true,
-                    "id": 28,
-                    "integration": false,
-                    "label": "Video Sharing",
-                    "type": "content"
-                },
-                "count": 1013,
-                "rank": 21
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 194,
-                    "integration": false,
-                    "label": "Streaming Video",
-                    "type": "content"
-                },
-                "count": 924,
-                "rank": 22
             },
             {
                 "bandwidth": null,
@@ -520,8 +496,20 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Shopping",
                     "type": "content"
                 },
-                "count": 922,
-                "rank": 23
+                "count": 907,
+                "rank": 21
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": true,
+                    "id": 28,
+                    "integration": false,
+                    "label": "Video Sharing",
+                    "type": "content"
+                },
+                "count": 870,
+                "rank": 22
             },
             {
                 "bandwidth": null,
@@ -532,20 +520,20 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Movies",
                     "type": "content"
                 },
-                "count": 856,
-                "rank": 24
+                "count": 841,
+                "rank": 23
             },
             {
                 "bandwidth": null,
                 "category": {
                     "deprecated": false,
-                    "id": 138,
+                    "id": 194,
                     "integration": false,
-                    "label": "Software Updates",
+                    "label": "Streaming Video",
                     "type": "content"
                 },
-                "count": 795,
-                "rank": 25
+                "count": 786,
+                "rank": 24
             },
             {
                 "bandwidth": null,
@@ -557,19 +545,19 @@ List of categories ordered by the number of requests made matching the categorie
                     "type": "content"
                 },
                 "count": 785,
-                "rank": 26
+                "rank": 25
             },
             {
                 "bandwidth": null,
                 "category": {
                     "deprecated": false,
-                    "id": 113,
+                    "id": 138,
                     "integration": false,
-                    "label": "Computer Security",
+                    "label": "Software Updates",
                     "type": "content"
                 },
-                "count": 691,
-                "rank": 27
+                "count": 772,
+                "rank": 26
             },
             {
                 "bandwidth": null,
@@ -580,7 +568,19 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Social Networking",
                     "type": "content"
                 },
-                "count": 665,
+                "count": 544,
+                "rank": 27
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": false,
+                    "id": 113,
+                    "integration": false,
+                    "label": "Computer Security",
+                    "type": "content"
+                },
+                "count": 497,
                 "rank": 28
             },
             {
@@ -592,20 +592,8 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "File Storage",
                     "type": "content"
                 },
-                "count": 469,
+                "count": 485,
                 "rank": 29
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": true,
-                    "id": 18,
-                    "integration": false,
-                    "label": "News/Media",
-                    "type": "content"
-                },
-                "count": 431,
-                "rank": 30
             },
             {
                 "bandwidth": null,
@@ -616,8 +604,8 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Music",
                     "type": "content"
                 },
-                "count": 424,
-                "rank": 31
+                "count": 448,
+                "rank": 30
             },
             {
                 "bandwidth": null,
@@ -628,56 +616,20 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Podcasts",
                     "type": "content"
                 },
-                "count": 364,
+                "count": 370,
+                "rank": 31
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": true,
+                    "id": 18,
+                    "integration": false,
+                    "label": "News/Media",
+                    "type": "content"
+                },
+                "count": 327,
                 "rank": 32
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": true,
-                    "id": 21,
-                    "integration": false,
-                    "label": "Portals",
-                    "type": "content"
-                },
-                "count": 316,
-                "rank": 33
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": true,
-                    "id": 3,
-                    "integration": false,
-                    "label": "Blogs",
-                    "type": "content"
-                },
-                "count": 279,
-                "rank": 34
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": true,
-                    "id": 54,
-                    "integration": false,
-                    "label": "Research/Reference",
-                    "type": "content"
-                },
-                "count": 219,
-                "rank": 35
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": true,
-                    "id": 49,
-                    "integration": false,
-                    "label": "Forums/Message boards",
-                    "type": "content"
-                },
-                "count": 184,
-                "rank": 36
             },
             {
                 "bandwidth": null,
@@ -688,8 +640,32 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Online Storage and Backup",
                     "type": "content"
                 },
-                "count": 183,
-                "rank": 37
+                "count": 265,
+                "rank": 33
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": true,
+                    "id": 21,
+                    "integration": false,
+                    "label": "Portals",
+                    "type": "content"
+                },
+                "count": 246,
+                "rank": 34
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": true,
+                    "id": 3,
+                    "integration": false,
+                    "label": "Blogs",
+                    "type": "content"
+                },
+                "count": 199,
+                "rank": 35
             },
             {
                 "bandwidth": null,
@@ -701,19 +677,19 @@ List of categories ordered by the number of requests made matching the categorie
                     "type": "content"
                 },
                 "count": 181,
-                "rank": 38
+                "rank": 36
             },
             {
                 "bandwidth": null,
                 "category": {
-                    "deprecated": false,
-                    "id": 183,
+                    "deprecated": true,
+                    "id": 54,
                     "integration": false,
-                    "label": "Online Communities",
+                    "label": "Research/Reference",
                     "type": "content"
                 },
-                "count": 166,
-                "rank": 39
+                "count": 175,
+                "rank": 37
             },
             {
                 "bandwidth": null,
@@ -724,7 +700,31 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Professional Networking",
                     "type": "content"
                 },
-                "count": 164,
+                "count": 150,
+                "rank": 38
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": true,
+                    "id": 16,
+                    "integration": false,
+                    "label": "Jobs/Employment",
+                    "type": "content"
+                },
+                "count": 109,
+                "rank": 39
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": true,
+                    "id": 49,
+                    "integration": false,
+                    "label": "Forums/Message boards",
+                    "type": "content"
+                },
+                "count": 104,
                 "rank": 40
             },
             {
@@ -736,20 +736,8 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Block List",
                     "type": "customer"
                 },
-                "count": 129,
+                "count": 96,
                 "rank": 41
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": true,
-                    "id": 16,
-                    "integration": false,
-                    "label": "Jobs/Employment",
-                    "type": "content"
-                },
-                "count": 118,
-                "rank": 42
             },
             {
                 "bandwidth": null,
@@ -760,20 +748,20 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Reference",
                     "type": "content"
                 },
-                "count": 116,
-                "rank": 43
+                "count": 84,
+                "rank": 42
             },
             {
                 "bandwidth": null,
                 "category": {
                     "deprecated": false,
-                    "id": 179,
+                    "id": 183,
                     "integration": false,
-                    "label": "News",
+                    "label": "Online Communities",
                     "type": "content"
                 },
-                "count": 109,
-                "rank": 44
+                "count": 81,
+                "rank": 43
             },
             {
                 "bandwidth": null,
@@ -784,7 +772,19 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Not Actionable",
                     "type": "content"
                 },
-                "count": 105,
+                "count": 79,
+                "rank": 44
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": false,
+                    "id": 201,
+                    "integration": false,
+                    "label": "DoH and DoT",
+                    "type": "content"
+                },
+                "count": 78,
                 "rank": 45
             },
             {
@@ -796,7 +796,7 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Education",
                     "type": "content"
                 },
-                "count": 87,
+                "count": 78,
                 "rank": 46
             },
             {
@@ -808,44 +808,20 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Educational Institutions",
                     "type": "content"
                 },
-                "count": 87,
+                "count": 78,
                 "rank": 47
             },
             {
                 "bandwidth": null,
                 "category": {
                     "deprecated": false,
-                    "id": 201,
+                    "id": 179,
                     "integration": false,
-                    "label": "DoH and DoT",
+                    "label": "News",
                     "type": "content"
                 },
-                "count": 86,
+                "count": 76,
                 "rank": 48
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 107,
-                    "integration": false,
-                    "label": "URL Shorteners",
-                    "type": "content"
-                },
-                "count": 84,
-                "rank": 49
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": true,
-                    "id": 50,
-                    "integration": false,
-                    "label": "Non-Profits",
-                    "type": "content"
-                },
-                "count": 75,
-                "rank": 50
             },
             {
                 "bandwidth": null,
@@ -857,19 +833,31 @@ List of categories ordered by the number of requests made matching the categorie
                     "type": "content"
                 },
                 "count": 73,
-                "rank": 51
+                "rank": 49
             },
             {
                 "bandwidth": null,
                 "category": {
-                    "deprecated": true,
-                    "id": 43,
+                    "deprecated": false,
+                    "id": 107,
                     "integration": false,
-                    "label": "Proxy/Anonymizer",
+                    "label": "URL Shorteners",
                     "type": "content"
                 },
-                "count": 67,
-                "rank": 52
+                "count": 70,
+                "rank": 50
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": false,
+                    "id": 119,
+                    "integration": false,
+                    "label": "Freeware and Shareware",
+                    "type": "content"
+                },
+                "count": 64,
+                "rank": 51
             },
             {
                 "bandwidth": null,
@@ -880,19 +868,31 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Science and Technology",
                     "type": "content"
                 },
-                "count": 63,
+                "count": 61,
+                "rank": 52
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": true,
+                    "id": 43,
+                    "integration": false,
+                    "label": "Proxy/Anonymizer",
+                    "type": "content"
+                },
+                "count": 59,
                 "rank": 53
             },
             {
                 "bandwidth": null,
                 "category": {
                     "deprecated": true,
-                    "id": 20,
+                    "id": 50,
                     "integration": false,
-                    "label": "Photo Sharing",
+                    "label": "Non-Profits",
                     "type": "content"
                 },
-                "count": 56,
+                "count": 53,
                 "rank": 54
             },
             {
@@ -916,19 +916,19 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Entertainment",
                     "type": "content"
                 },
-                "count": 45,
+                "count": 39,
                 "rank": 56
             },
             {
                 "bandwidth": null,
                 "category": {
-                    "deprecated": false,
-                    "id": 119,
+                    "deprecated": true,
+                    "id": 20,
                     "integration": false,
-                    "label": "Freeware and Shareware",
+                    "label": "Photo Sharing",
                     "type": "content"
                 },
-                "count": 42,
+                "count": 29,
                 "rank": 57
             },
             {
@@ -940,7 +940,7 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Streaming Audio",
                     "type": "content"
                 },
-                "count": 36,
+                "count": 26,
                 "rank": 58
             },
             {
@@ -959,13 +959,25 @@ List of categories ordered by the number of requests made matching the categorie
                 "bandwidth": null,
                 "category": {
                     "deprecated": true,
+                    "id": 22,
+                    "integration": false,
+                    "label": "Radio",
+                    "type": "content"
+                },
+                "count": 14,
+                "rank": 60
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": true,
                     "id": 29,
                     "integration": false,
                     "label": "Visual Search Engines",
                     "type": "content"
                 },
-                "count": 19,
-                "rank": 60
+                "count": 13,
+                "rank": 61
             },
             {
                 "bandwidth": null,
@@ -976,44 +988,20 @@ List of categories ordered by the number of requests made matching the categorie
                     "label": "Photo Search and Images",
                     "type": "content"
                 },
-                "count": 19,
-                "rank": 61
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": true,
-                    "id": 22,
-                    "integration": false,
-                    "label": "Radio",
-                    "type": "content"
-                },
-                "count": 12,
+                "count": 13,
                 "rank": 62
             },
             {
                 "bandwidth": null,
                 "category": {
                     "deprecated": false,
-                    "id": 11,
+                    "id": 180,
                     "integration": false,
-                    "label": "Games",
+                    "label": "Non-governmental Organizations",
                     "type": "content"
                 },
-                "count": 7,
+                "count": 5,
                 "rank": 63
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 140,
-                    "integration": false,
-                    "label": "Web Page Translation",
-                    "type": "content"
-                },
-                "count": 6,
-                "rank": 64
             },
             {
                 "bandwidth": null,
@@ -1025,55 +1013,19 @@ List of categories ordered by the number of requests made matching the categorie
                     "type": "content"
                 },
                 "count": 5,
+                "rank": 64
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": false,
+                    "id": 11,
+                    "integration": false,
+                    "label": "Games",
+                    "type": "content"
+                },
+                "count": 4,
                 "rank": 65
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 175,
-                    "integration": false,
-                    "label": "Health and Medicine",
-                    "type": "content"
-                },
-                "count": 5,
-                "rank": 66
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 126,
-                    "integration": false,
-                    "label": "Mobile Phones",
-                    "type": "content"
-                },
-                "count": 4,
-                "rank": 67
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 180,
-                    "integration": false,
-                    "label": "Non-governmental Organizations",
-                    "type": "content"
-                },
-                "count": 4,
-                "rank": 68
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 118,
-                    "integration": false,
-                    "label": "File Transfer Services",
-                    "type": "content"
-                },
-                "count": 4,
-                "rank": 69
             },
             {
                 "bandwidth": null,
@@ -1085,31 +1037,7 @@ List of categories ordered by the number of requests made matching the categorie
                     "type": "content"
                 },
                 "count": 4,
-                "rank": 70
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 122,
-                    "integration": false,
-                    "label": "Illegal Downloads",
-                    "type": "content"
-                },
-                "count": 3,
-                "rank": 71
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 67,
-                    "integration": false,
-                    "label": "Malware",
-                    "type": "security"
-                },
-                "count": 2,
-                "rank": 72
+                "rank": 66
             },
             {
                 "bandwidth": null,
@@ -1121,7 +1049,7 @@ List of categories ordered by the number of requests made matching the categorie
                     "type": "content"
                 },
                 "count": 2,
-                "rank": 73
+                "rank": 67
             },
             {
                 "bandwidth": null,
@@ -1133,31 +1061,19 @@ List of categories ordered by the number of requests made matching the categorie
                     "type": "content"
                 },
                 "count": 2,
-                "rank": 74
+                "rank": 68
             },
             {
                 "bandwidth": null,
                 "category": {
                     "deprecated": false,
-                    "id": 145,
+                    "id": 126,
                     "integration": false,
-                    "label": "DIY Projects",
+                    "label": "Mobile Phones",
                     "type": "content"
                 },
                 "count": 2,
-                "rank": 75
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": false,
-                    "id": 131,
-                    "integration": false,
-                    "label": "Real Estate",
-                    "type": "content"
-                },
-                "count": 2,
-                "rank": 76
+                "rank": 69
             },
             {
                 "bandwidth": null,
@@ -1169,7 +1085,7 @@ List of categories ordered by the number of requests made matching the categorie
                     "type": "content"
                 },
                 "count": 2,
-                "rank": 77
+                "rank": 70
             },
             {
                 "bandwidth": null,
@@ -1181,19 +1097,19 @@ List of categories ordered by the number of requests made matching the categorie
                     "type": "content"
                 },
                 "count": 2,
-                "rank": 78
+                "rank": 71
             },
             {
                 "bandwidth": null,
                 "category": {
-                    "deprecated": true,
-                    "id": 58,
+                    "deprecated": false,
+                    "id": 140,
                     "integration": false,
-                    "label": "Web Spam",
+                    "label": "Web Page Translation",
                     "type": "content"
                 },
-                "count": 2,
-                "rank": 79
+                "count": 1,
+                "rank": 72
             },
             {
                 "bandwidth": null,
@@ -1205,19 +1121,7 @@ List of categories ordered by the number of requests made matching the categorie
                     "type": "content"
                 },
                 "count": 1,
-                "rank": 80
-            },
-            {
-                "bandwidth": null,
-                "category": {
-                    "deprecated": true,
-                    "id": 5,
-                    "integration": false,
-                    "label": "Classifieds",
-                    "type": "content"
-                },
-                "count": 1,
-                "rank": 81
+                "rank": 73
             },
             {
                 "bandwidth": null,
@@ -1229,7 +1133,31 @@ List of categories ordered by the number of requests made matching the categorie
                     "type": "content"
                 },
                 "count": 1,
-                "rank": 82
+                "rank": 74
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": false,
+                    "id": 131,
+                    "integration": false,
+                    "label": "Real Estate",
+                    "type": "content"
+                },
+                "count": 1,
+                "rank": 75
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": false,
+                    "id": 129,
+                    "integration": false,
+                    "label": "Personal Sites",
+                    "type": "content"
+                },
+                "count": 1,
+                "rank": 76
             },
             {
                 "bandwidth": null,
@@ -1241,7 +1169,31 @@ List of categories ordered by the number of requests made matching the categorie
                     "type": "content"
                 },
                 "count": 1,
-                "rank": 83
+                "rank": 77
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": false,
+                    "id": 175,
+                    "integration": false,
+                    "label": "Health and Medicine",
+                    "type": "content"
+                },
+                "count": 1,
+                "rank": 78
+            },
+            {
+                "bandwidth": null,
+                "category": {
+                    "deprecated": true,
+                    "id": 58,
+                    "integration": false,
+                    "label": "Web Spam",
+                    "type": "content"
+                },
+                "count": 1,
+                "rank": 79
             },
             {
                 "bandwidth": null,
@@ -1253,7 +1205,7 @@ List of categories ordered by the number of requests made matching the categorie
                     "type": "content"
                 },
                 "count": 1,
-                "rank": 84
+                "rank": 80
             }
         ]
     }
@@ -1265,89 +1217,85 @@ List of categories ordered by the number of requests made matching the categorie
 >### Category List
 >|Category|Type|Activity|
 >|---|---|---|
->| Application | application | 32446 |
->| Software/Technology | content | 26112 |
->| Infrastructure and Content Delivery Networks | content | 20351 |
->| Business Services | content | 19012 |
->| Computers and Internet | content | 18040 |
->| Business and Industry | content | 11251 |
->| Search Engines | content | 5931 |
->| Search Engines and Portals | content | 4714 |
->| Online Meetings | content | 3734 |
->| Advertisements | content | 3280 |
->| SaaS and B2B | content | 3164 |
->| Chat | content | 2444 |
->| Instant Messaging | content | 2376 |
->| Online Document Sharing and Collaboration | content | 2189 |
->| Webmail | content | 1994 |
->| Cloud and Data Centers | content | 1993 |
->| Web-based Email | content | 1831 |
->| Organizational Email | content | 1829 |
->| Chat and Instant Messaging | content | 1509 |
->| Ecommerce/Shopping | content | 1425 |
->| Video Sharing | content | 1013 |
->| Streaming Video | content | 924 |
->| Shopping | content | 922 |
->| Movies | content | 856 |
->| Software Updates | content | 795 |
+>| Application | application | 30588 |
+>| Software/Technology | content | 26718 |
+>| Infrastructure and Content Delivery Networks | content | 20181 |
+>| Computers and Internet | content | 19095 |
+>| Business Services | content | 17574 |
+>| Business and Industry | content | 10290 |
+>| Search Engines | content | 5167 |
+>| Search Engines and Portals | content | 4085 |
+>| Online Meetings | content | 3918 |
+>| SaaS and B2B | content | 3131 |
+>| Chat | content | 2550 |
+>| Instant Messaging | content | 2487 |
+>| Advertisements | content | 2412 |
+>| Online Document Sharing and Collaboration | content | 2051 |
+>| Webmail | content | 2005 |
+>| Cloud and Data Centers | content | 1874 |
+>| Web-based Email | content | 1770 |
+>| Organizational Email | content | 1768 |
+>| Chat and Instant Messaging | content | 1648 |
+>| Ecommerce/Shopping | content | 1379 |
+>| Shopping | content | 907 |
+>| Video Sharing | content | 870 |
+>| Movies | content | 841 |
+>| Streaming Video | content | 786 |
 >| Internet Telephony | content | 785 |
->| Computer Security | content | 691 |
->| Social Networking | content | 665 |
->| File Storage | content | 469 |
->| News/Media | content | 431 |
->| Music | content | 424 |
->| Podcasts | content | 364 |
->| Portals | content | 316 |
->| Blogs | content | 279 |
->| Research/Reference | content | 219 |
->| Forums/Message boards | content | 184 |
->| Online Storage and Backup | content | 183 |
+>| Software Updates | content | 772 |
+>| Social Networking | content | 544 |
+>| Computer Security | content | 497 |
+>| File Storage | content | 485 |
+>| Music | content | 448 |
+>| Podcasts | content | 370 |
+>| News/Media | content | 327 |
+>| Online Storage and Backup | content | 265 |
+>| Portals | content | 246 |
+>| Blogs | content | 199 |
 >| Internet of Things | content | 181 |
->| Online Communities | content | 166 |
->| Professional Networking | content | 164 |
->| Block List | customer | 129 |
->| Jobs/Employment | content | 118 |
->| Reference | content | 116 |
->| News | content | 109 |
->| Not Actionable | content | 105 |
->| Education | content | 87 |
->| Educational Institutions | content | 87 |
->| DoH and DoT | content | 86 |
->| URL Shorteners | content | 84 |
->| Non-Profits | content | 75 |
+>| Research/Reference | content | 175 |
+>| Professional Networking | content | 150 |
+>| Jobs/Employment | content | 109 |
+>| Forums/Message boards | content | 104 |
+>| Block List | customer | 96 |
+>| Reference | content | 84 |
+>| Online Communities | content | 81 |
+>| Not Actionable | content | 79 |
+>| DoH and DoT | content | 78 |
+>| Education | content | 78 |
+>| Educational Institutions | content | 78 |
+>| News | content | 76 |
 >| Financial Institutions | content | 73 |
->| Proxy/Anonymizer | content | 67 |
->| Science and Technology | content | 63 |
->| Photo Sharing | content | 56 |
+>| URL Shorteners | content | 70 |
+>| Freeware and Shareware | content | 64 |
+>| Science and Technology | content | 61 |
+>| Proxy/Anonymizer | content | 59 |
+>| Non-Profits | content | 53 |
 >| Finance | content | 51 |
->| Entertainment | content | 45 |
->| Freeware and Shareware | content | 42 |
->| Streaming Audio | content | 36 |
+>| Entertainment | content | 39 |
+>| Photo Sharing | content | 29 |
+>| Streaming Audio | content | 26 |
 >| Job Search | content | 21 |
->| Visual Search Engines | content | 19 |
->| Photo Search and Images | content | 19 |
->| Radio | content | 12 |
->| Games | content | 7 |
->| Web Page Translation | content | 6 |
+>| Radio | content | 14 |
+>| Visual Search Engines | content | 13 |
+>| Photo Search and Images | content | 13 |
+>| Non-governmental Organizations | content | 5 |
 >| Web Hosting | content | 5 |
->| Health and Medicine | content | 5 |
->| Mobile Phones | content | 4 |
->| Non-governmental Organizations | content | 4 |
->| File Transfer Services | content | 4 |
+>| Games | content | 4 |
 >| Travel | content | 4 |
->| Illegal Downloads | content | 3 |
->| Malware | security | 2 |
 >| Gambling | content | 2 |
 >| Recipes and Food | content | 2 |
->| DIY Projects | content | 2 |
->| Real Estate | content | 2 |
+>| Mobile Phones | content | 2 |
 >| Transportation | content | 2 |
 >| Automotive | content | 2 |
->| Web Spam | content | 2 |
+>| Web Page Translation | content | 1 |
 >| Television | content | 1 |
->| Classifieds | content | 1 |
 >| Dining and Drinking | content | 1 |
+>| Real Estate | content | 1 |
+>| Personal Sites | content | 1 |
 >| Personal VPN | content | 1 |
+>| Health and Medicine | content | 1 |
+>| Web Spam | content | 1 |
 >| Online Trading | content | 1 |
 
 
@@ -1406,31 +1354,11 @@ List of identities ordered by the number of requests made matching the categorie
     "UmbrellaReporting": {
         "Identity": [
             {
-                "bandwidth": 7974662,
-                "counts": {
-                    "allowedrequests": 29540,
-                    "blockedrequests": 72,
-                    "requests": 29753
-                },
-                "identity": {
-                    "deleted": false,
-                    "id": 589064228,
-                    "label": "DESKTOP-IIQVPJ7",
-                    "type": {
-                        "id": 9,
-                        "label": "Roaming Computers",
-                        "type": "roaming"
-                    }
-                },
-                "rank": 1,
-                "requests": 29753
-            },
-            {
                 "bandwidth": null,
                 "counts": {
-                    "allowedrequests": 17950,
-                    "blockedrequests": 59,
-                    "requests": 18082
+                    "allowedrequests": 22984,
+                    "blockedrequests": 43,
+                    "requests": 23118
                 },
                 "identity": {
                     "deleted": false,
@@ -1442,8 +1370,28 @@ List of identities ordered by the number of requests made matching the categorie
                         "type": "roaming"
                     }
                 },
+                "rank": 1,
+                "requests": 23118
+            },
+            {
+                "bandwidth": 7974662,
+                "counts": {
+                    "allowedrequests": 22755,
+                    "blockedrequests": 53,
+                    "requests": 22906
+                },
+                "identity": {
+                    "deleted": false,
+                    "id": 589064228,
+                    "label": "DESKTOP-IIQVPJ7",
+                    "type": {
+                        "id": 9,
+                        "label": "Roaming Computers",
+                        "type": "roaming"
+                    }
+                },
                 "rank": 2,
-                "requests": 18082
+                "requests": 22906
             }
         ]
     }
@@ -1455,8 +1403,8 @@ List of identities ordered by the number of requests made matching the categorie
 >### Identities List
 >|Identity|Requests|
 >|---|---|
->| DESKTOP-IIQVPJ7 | 29753 |
->| S’s MacBook Pro | 18082 |
+>| S’s MacBook Pro | 23118 |
+>| DESKTOP-IIQVPJ7 | 22906 |
 
 
 ### umbrella-reporting-event-type-list
@@ -1489,8 +1437,8 @@ List of event types ordered by the number of requests made for each type of even
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| UmbrellaReporting.Eventtype.eventtype | String | The event type. One of "domain_security", "domain_integration", "url_security", "url_integration", "cisco_amp" and "antivirus". | 
-| UmbrellaReporting.Eventtype.count | Number | Number of requests made that match this event type. | 
+| UmbrellaReporting.EventType.eventtype | String | The event type. One of "domain_security", "domain_integration", "url_security", "url_integration", "cisco_amp" and "antivirus". | 
+| UmbrellaReporting.EventType.count | Number | Number of requests made that match this event type. | 
 
 #### Command example
 ```!umbrella-reporting-event-type-list from=-30days to=now```
@@ -1499,10 +1447,6 @@ List of event types ordered by the number of requests made for each type of even
 {
     "UmbrellaReporting": {
         "EventType": [
-            {
-                "count": 2,
-                "eventtype": "domain_security"
-            },
             {
                 "count": 0,
                 "eventtype": "url_integration"
@@ -1526,6 +1470,10 @@ List of event types ordered by the number of requests made for each type of even
             {
                 "count": 0,
                 "eventtype": "domain_integration"
+            },
+            {
+                "count": 0,
+                "eventtype": "domain_security"
             }
         ]
     }
@@ -1537,13 +1485,13 @@ List of event types ordered by the number of requests made for each type of even
 >### Event Type List
 >|Event Type|Count|
 >|---|---|
->| domain_security | 2 |
 >| url_integration | 0 |
 >| url_security | 0 |
 >| antivirus | 0 |
 >| application | 0 |
 >| cisco_amp | 0 |
 >| domain_integration | 0 |
+>| domain_security | 0 |
 
 
 ### umbrella-reporting-file-list
@@ -1758,39 +1706,30 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
     "UmbrellaReporting": {
         "Activity": [
             {
-                "allapplications": [
-                    {
-                        "category": {
-                            "id": 46,
-                            "label": "Ad Publishing"
-                        },
-                        "id": 46102,
-                        "label": "Google Marketing Platform"
-                    }
-                ],
+                "allapplications": [],
                 "allowedapplications": [],
                 "blockedapplications": [],
                 "categories": [
                     {
-                        "deprecated": false,
-                        "id": 27,
+                        "deprecated": true,
+                        "id": 23,
                         "integration": false,
-                        "label": "Advertisements",
+                        "label": "Search Engines",
                         "type": "content"
                     },
                     {
                         "deprecated": false,
-                        "id": 148,
+                        "id": 190,
                         "integration": false,
-                        "label": "Application",
-                        "type": "application"
+                        "label": "Search Engines and Portals",
+                        "type": "content"
                     }
                 ],
-                "date": "2022-10-29",
+                "date": "2022-11-09",
                 "device": {
                     "id": null
                 },
-                "domain": "stats.g.doubleclick.net",
+                "domain": "clientservices.googleapis.com",
                 "externalip": "182.76.175.118",
                 "identities": [
                     {
@@ -1809,8 +1748,8 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
                 "querytype": "A",
                 "returncode": 0,
                 "threats": [],
-                "time": "07:39:08",
-                "timestamp": 1667029148000,
+                "time": "17:19:07",
+                "timestamp": 1668014347000,
                 "type": "dns",
                 "verdict": "allowed"
             },
@@ -1830,16 +1769,9 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
                 "categories": [
                     {
                         "deprecated": true,
-                        "id": 25,
+                        "id": 23,
                         "integration": false,
-                        "label": "Software/Technology",
-                        "type": "content"
-                    },
-                    {
-                        "deprecated": false,
-                        "id": 123,
-                        "integration": false,
-                        "label": "Infrastructure and Content Delivery Networks",
+                        "label": "Search Engines",
                         "type": "content"
                     },
                     {
@@ -1848,13 +1780,20 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
                         "integration": false,
                         "label": "Application",
                         "type": "application"
+                    },
+                    {
+                        "deprecated": false,
+                        "id": 190,
+                        "integration": false,
+                        "label": "Search Engines and Portals",
+                        "type": "content"
                     }
                 ],
-                "date": "2022-10-29",
+                "date": "2022-11-09",
                 "device": {
                     "id": null
                 },
-                "domain": "ocsp2-lb.apple.com.akadns.net",
+                "domain": "safebrowsing.googleapis.com",
                 "externalip": "182.76.175.118",
                 "identities": [
                     {
@@ -1870,11 +1809,11 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
                 ],
                 "internalip": "192.168.0.105",
                 "policycategories": [],
-                "querytype": "AAAA",
+                "querytype": "A",
                 "returncode": 0,
                 "threats": [],
-                "time": "07:38:57",
-                "timestamp": 1667029137000,
+                "time": "17:19:02",
+                "timestamp": 1668014342000,
                 "type": "dns",
                 "verdict": "allowed"
             }
@@ -1888,8 +1827,8 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
 >### Activity List
 >|Request|Identity|Policy or Ruleset Identity|Destination|Internal IP|External IP|DNS Type|Action|Categories|Public Application|Application Category|Date & Time|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| dns | S’s MacBook Pro | S’s MacBook Pro | stats.g.doubleclick.net | 192.168.0.105 | 182.76.175.118 | A | allowed | Advertisements, Application | Google Marketing Platform | Ad Publishing | 2022-10-29T07:39:08Z |
->| dns | S’s MacBook Pro | S’s MacBook Pro | ocsp2-lb.apple.com.akadns.net | 192.168.0.105 | 182.76.175.118 | AAAA | allowed | Software/Technology, Infrastructure and Content Delivery Networks, Application | Do Not Decrypt Application | Sample Application Group | 2022-10-29T07:38:57Z |
+>| dns | S’s MacBook Pro | S’s MacBook Pro | clientservices.googleapis.com | 192.168.0.105 | 182.76.175.118 | A | allowed | Search Engines, Search Engines and Portals |  |  | 2022-11-09T17:19:07Z |
+>| dns | S’s MacBook Pro | S’s MacBook Pro | safebrowsing.googleapis.com | 192.168.0.105 | 182.76.175.118 | A | allowed | Search Engines, Application, Search Engines and Portals | Do Not Decrypt Application | Sample Application Group | 2022-11-09T17:19:02Z |
 
 
 ### umbrella-reporting-activity-get
@@ -1965,13 +1904,173 @@ Only one activity type can be selected at a time.
 | UmbrellaReporting.ActivityDns.allowedapplications.type | String | Type of the application, NBAR or AVC. | 
 | UmbrellaReporting.ActivityDns.allowedapplications.category.label | String | Label of the application category. | 
 | UmbrellaReporting.ActivityDns.allowedapplications.category.id | Number | ID of the application category. | 
-| UmbrellaReporting.ActivityDns.querytype | String | The type of DNS request that was made. For more information, see Common DNS Request Types. https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella- | 
+| UmbrellaReporting.ActivityDns.querytype | String | The type of DNS request that was made. For more information, see https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella- | 
 | UmbrellaReporting.ActivityDns.returncode | Number | The DNS return code for this request. For more information, see Common DNS return codes for any DNS service \(and Umbrella\). https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella- | 
 | UmbrellaReporting.ActivityDns.blockedapplications.id | Number | ID of the application. | 
 | UmbrellaReporting.ActivityDns.blockedapplications.label | String | Label of the application. | 
 | UmbrellaReporting.ActivityDns.blockedapplications.type | String | Type of the application, NBAR or AVC. | 
 | UmbrellaReporting.ActivityDns.blockedapplications.category.label | String | Label of the application category. | 
 | UmbrellaReporting.ActivityDns.blockedapplications.category.id | Number | ID of the application category. | 
+| UmbrellaReporting.ActivityProxy.amp.disposition | String | Advanced Malware Protection \(AMP\) disposition. | 
+| UmbrellaReporting.ActivityProxy.amp.malware | String | Advanced Malware Protection \(AMP\) malware. | 
+| UmbrellaReporting.ActivityProxy.amp.score | Number | Advanced Malware Protection \(AMP\) score. | 
+| UmbrellaReporting.ActivityProxy.blockedfiletype | String | Locked file type for entry. | 
+| UmbrellaReporting.ActivityProxy.bundleid | Number | Bundleid. | 
+| UmbrellaReporting.ActivityProxy.categories.deprecated | Boolean | If the category is a legacy category. | 
+| UmbrellaReporting.ActivityProxy.categories.id | Number | ID of category. | 
+| UmbrellaReporting.ActivityProxy.categories.integration | Boolean | If the category is an integration. | 
+| UmbrellaReporting.ActivityProxy.categories.label | String | The human readable label of the category. | 
+| UmbrellaReporting.ActivityProxy.categories.type | String | The type of category. | 
+| UmbrellaReporting.ActivityProxy.contenttype | String | The type of web content, typically text/html. | 
+| UmbrellaReporting.ActivityProxy.datacenter.id | String | Unique ID for the data center. | 
+| UmbrellaReporting.ActivityProxy.datacenter.label | String | Name of the data center. | 
+| UmbrellaReporting.ActivityProxy.datalossprevention.state | String | If the request was Blocked for DLP. Either 'blocked' or ''. | 
+| UmbrellaReporting.ActivityProxy.date | Date | The date from the timestamp based on the timezone parameter. | 
+| UmbrellaReporting.ActivityProxy.destinationip | String | Destination IP for entry. | 
+| UmbrellaReporting.ActivityProxy.egress.ip | String | Egress IP. | 
+| UmbrellaReporting.ActivityProxy.egress.type | String | Egress Type. | 
+| UmbrellaReporting.ActivityProxy.externalip | String | External IP for entry. | 
+| UmbrellaReporting.ActivityProxy.forwardingmethod | String | The request method \(GET, POST, HEAD, etc.\) | 
+| UmbrellaReporting.ActivityProxy.identities.deleted | Boolean | Indicates whether the identity was deleted or not. | 
+| UmbrellaReporting.ActivityProxy.identities.id | Number | ID of identity. | 
+| UmbrellaReporting.ActivityProxy.identities.label | String | Label for identity. | 
+| UmbrellaReporting.ActivityProxy.identities.type.id | Number | Origin type for identity. | 
+| UmbrellaReporting.ActivityProxy.identities.type.label | String | Origin type label for identity. | 
+| UmbrellaReporting.ActivityProxy.identities.type.type | String | Origin type name for identity. | 
+| UmbrellaReporting.ActivityProxy.internalip | String | Internal IP for entry. | 
+| UmbrellaReporting.ActivityProxy.isolated.fileaction | String | Isolated Fileaction. | 
+| UmbrellaReporting.ActivityProxy.isolated.state | String | Isolated State. | 
+| UmbrellaReporting.ActivityProxy.policy.ruleid | Number | The rule ID for the policy. | 
+| UmbrellaReporting.ActivityProxy.policy.rulesetid | Number | The rule set ID for the policy. | 
+| UmbrellaReporting.ActivityProxy.policy.timebasedrule | Boolean | Whether the policy triggered a time-of-day rule. | 
+| UmbrellaReporting.ActivityProxy.policy.destinationlistids | Unknown | The destination lists that the policy triggered. | 
+| UmbrellaReporting.ActivityProxy.port | Number | Request Port. | 
+| UmbrellaReporting.ActivityProxy.referer | String | The referring domain or URL. | 
+| UmbrellaReporting.ActivityProxy.requestmethod | String | The HTTP request method that was made. | 
+| UmbrellaReporting.ActivityProxy.requestsize | Number | Request size in bytes. | 
+| UmbrellaReporting.ActivityProxy.responsefilename | String | Response filename for entry. | 
+| UmbrellaReporting.ActivityProxy.responsesize | Number | Response size in bytes. | 
+| UmbrellaReporting.ActivityProxy.securityoverridden | Boolean | Security Overridden. | 
+| UmbrellaReporting.ActivityProxy.sha256 | String | The hex digest of the response content. | 
+| UmbrellaReporting.ActivityProxy.statuscode | Number | The HTTP status code; should always be 200 or 201. | 
+| UmbrellaReporting.ActivityProxy.tenantcontrols | Boolean | If the request was part of a tenant control policy. | 
+| UmbrellaReporting.ActivityProxy.time | String | The time in 24 hour format based on the timezone parameter. | 
+| UmbrellaReporting.ActivityProxy.timestamp | Date | Timestamp in ms. | 
+| UmbrellaReporting.ActivityProxy.type | String | Type of the request. A Proxy request always has type Proxy. | 
+| UmbrellaReporting.ActivityProxy.url | String | The URL requested. | 
+| UmbrellaReporting.ActivityProxy.useragent | String | The browser agent that made the request. | 
+| UmbrellaReporting.ActivityProxy.verdict | String | Verdict for entry. | 
+| UmbrellaReporting.ActivityProxy.warnstatus | String | Warn Status. | 
+| UmbrellaReporting.ActivityProxy.policycategories.id | Number | ID of category. | 
+| UmbrellaReporting.ActivityProxy.policycategories.label | String | The human readable label of the category. | 
+| UmbrellaReporting.ActivityProxy.policycategories.type | String | Type of the request. A dns request always has type dns. | 
+| UmbrellaReporting.ActivityProxy.policycategories.deprecated | Boolean | If the category is a legacy category. | 
+| UmbrellaReporting.ActivityProxy.policycategories.integration | Boolean | If the category is an integration. | 
+| UmbrellaReporting.ActivityProxy.antivirusthreats.others | Unknown | Other antivirus threats. | 
+| UmbrellaReporting.ActivityProxy.antivirusthreats.puas | Unknown | Potentially unwanted applications. | 
+| UmbrellaReporting.ActivityProxy.antivirusthreats.viruses | Unknown | Viruses. | 
+| UmbrellaReporting.ActivityProxy.threats.label | String | The threat name or label. | 
+| UmbrellaReporting.ActivityProxy.threats.type | String | The type of threat. | 
+| UmbrellaReporting.ActivityProxy.allapplications.id | Number | ID of the application. | 
+| UmbrellaReporting.ActivityProxy.allapplications.type | String | Type of the application, NBAR or AVC. | 
+| UmbrellaReporting.ActivityProxy.allapplications.label | String | Label of the application. | 
+| UmbrellaReporting.ActivityProxy.allapplications.category.label | String | Label of the application category. | 
+| UmbrellaReporting.ActivityProxy.allapplications.category.id | Number | ID of the application category. | 
+| UmbrellaReporting.ActivityProxy.allowedapplications.id | Number | ID of the application. | 
+| UmbrellaReporting.ActivityProxy.allowedapplications.type | String | Type of the application, NBAR or AVC. | 
+| UmbrellaReporting.ActivityProxy.allowedapplications.label | String | Label of the application. | 
+| UmbrellaReporting.ActivityProxy.allowedapplications.category.label | String | Label of the application category. | 
+| UmbrellaReporting.ActivityProxy.allowedapplications.category.id | Number | ID of the application category. | 
+| UmbrellaReporting.ActivityProxy.blockedapplications.id | Number | ID of the application. | 
+| UmbrellaReporting.ActivityProxy.blockedapplications.type | String | Type of the application, NBAR or AVC. | 
+| UmbrellaReporting.ActivityProxy.blockedapplications.label | String | Label of the application. | 
+| UmbrellaReporting.ActivityProxy.blockedapplications.category.label | String | Label of the application category. | 
+| UmbrellaReporting.ActivityProxy.blockedapplications.category.id | Number | ID of the application category. | 
+| UmbrellaReporting.ActivityProxy.httperrors.reason | String | The name of the error. | 
+| UmbrellaReporting.ActivityProxy.httperrors.type | String | Type of the error CertificateError or TLSError.. | 
+| UmbrellaReporting.ActivityProxy.httperrors.attributes | Unknown | Map of additional information about the error. | 
+| UmbrellaReporting.ActivityProxy.httperrors.code | String | The http error code. | 
+| UmbrellaReporting.ActivityAMPRetro.timestamp | Number | Timestamp in ms. | 
+| UmbrellaReporting.ActivityAMPRetro.firstseenat | Number | First seen Timestamp. | 
+| UmbrellaReporting.ActivityAMPRetro.disposition | String | Disposition for entry. | 
+| UmbrellaReporting.ActivityAMPRetro.score | Number | Score for entry. | 
+| UmbrellaReporting.ActivityAMPRetro.hostname | String | Hostname for entry. | 
+| UmbrellaReporting.ActivityAMPRetro.malwarename | String | Malware name for entry. | 
+| UmbrellaReporting.ActivityAMPRetro.sha256 | String | SHA256 for entry. | 
+| UmbrellaReporting.ActivityFirewall.date | String | The date from the timestamp based on the timezone parameter. | 
+| UmbrellaReporting.ActivityFirewall.destinationip | String | Destination IP for entry. | 
+| UmbrellaReporting.ActivityFirewall.sourceip | String | Source IP for entry. | 
+| UmbrellaReporting.ActivityFirewall.sourceport | Number | Source port for entry. | 
+| UmbrellaReporting.ActivityFirewall.destinationport | Number | Destination port for entry. | 
+| UmbrellaReporting.ActivityFirewall.verdict | String | Verdict for entry. | 
+| UmbrellaReporting.ActivityFirewall.time | String | The time in 24 hour format based on the timezone parameter. | 
+| UmbrellaReporting.ActivityFirewall.timestamp | Number | Timestamp in ms. | 
+| UmbrellaReporting.ActivityFirewall.identities.id | Number | ID of identity. | 
+| UmbrellaReporting.ActivityFirewall.identities.label | String | Label for identity. | 
+| UmbrellaReporting.ActivityFirewall.identities.type.id | Number | Origin type for identity. | 
+| UmbrellaReporting.ActivityFirewall.identities.type.label | String | Origin type label for identity. | 
+| UmbrellaReporting.ActivityFirewall.identities.type.type | String | Origin type name for identity. | 
+| UmbrellaReporting.ActivityFirewall.identities.deleted | Boolean | Indicates whether the identity was deleted or not. | 
+| UmbrellaReporting.ActivityFirewall.protocol.id | Number | ID of protocol. | 
+| UmbrellaReporting.ActivityFirewall.protocol.label | String | Name of the protocol. | 
+| UmbrellaReporting.ActivityFirewall.rule.id | Number | ID of rule. | 
+| UmbrellaReporting.ActivityFirewall.rule.label | String | Name of the rule. | 
+| UmbrellaReporting.ActivityFirewall.rule.privateapplicationgroup.id | Number | ID of application group. | 
+| UmbrellaReporting.ActivityFirewall.rule.privateapplicationgroup.label | String | Name of application group. | 
+| UmbrellaReporting.ActivityFirewall.type | String | Type of the request. A Firewall request always has type Firewall. | 
+| UmbrellaReporting.ActivityFirewall.allapplications.id | Number | ID of the application. | 
+| UmbrellaReporting.ActivityFirewall.allapplications.label | String | Label of the application. | 
+| UmbrellaReporting.ActivityFirewall.allapplications.app | String | Type: "IT Service Management" \(string\) - application/protocol type. | 
+| UmbrellaReporting.ActivityFirewall.applicationprotocols.id | Number | ID of the application. | 
+| UmbrellaReporting.ActivityFirewall.applicationprotocols.label | String | Application/Protocol label. | 
+| UmbrellaReporting.ActivityFirewall.applicationprotocols.app | String | Type: "IT Service Management" \(string\) - application/protocol type. | 
+| UmbrellaReporting.ActivityFirewall.packetsize | Number | The size of the packet that Umbrella CDFW received. | 
+| UmbrellaReporting.ActivityFirewall.direction | String | The direction of the packet. It is destined either towards the internet or to the customer's network. | 
+| UmbrellaReporting.ActivityIntrusion.type | String | Type of the request. A Intrusion request always has type Intrusion. | 
+| UmbrellaReporting.ActivityIntrusion.date | String | The date from the timestamp based on the timezone parameter. | 
+| UmbrellaReporting.ActivityIntrusion.destinationip | String | Destination IP for entry. | 
+| UmbrellaReporting.ActivityIntrusion.protocol.id | Number | ID of protocol. | 
+| UmbrellaReporting.ActivityIntrusion.protocol.label | String | Name of the protocol. | 
+| UmbrellaReporting.ActivityIntrusion.sourceip | String | Source IP for entry. | 
+| UmbrellaReporting.ActivityIntrusion.signaturelist.id | Number | Unique id assigned to a Default or Custom Signature List. | 
+| UmbrellaReporting.ActivityIntrusion.classification | String | The category of attack detected by a rule that is part of a more general type of attack class, such as trojan-activity, attempted-user, and unknown. | 
+| UmbrellaReporting.ActivityIntrusion.sourceport | Number | Source port for entry. | 
+| UmbrellaReporting.ActivityIntrusion.sessionid | Number | The unique identifier of a session, which is used to group the correlated events between various services. | 
+| UmbrellaReporting.ActivityIntrusion.verdict | String | Verdict for entry. | 
+| UmbrellaReporting.ActivityIntrusion.destinationport | Number | Destination port for entry. | 
+| UmbrellaReporting.ActivityIntrusion.timestamp | Date | Timestamp in ms. | 
+| UmbrellaReporting.ActivityIntrusion.time | String | The time in 24 hour format based on the timezone parameter. | 
+| UmbrellaReporting.ActivityIntrusion.identities.id | Number | ID of identity. | 
+| UmbrellaReporting.ActivityIntrusion.identities.type.id | Number | Origin type for identity. | 
+| UmbrellaReporting.ActivityIntrusion.identities.type.type | String | Origin type name for identity. | 
+| UmbrellaReporting.ActivityIntrusion.identities.type.label | String | Origin type label for identity. | 
+| UmbrellaReporting.ActivityIntrusion.identities.label | String | Label for identity. | 
+| UmbrellaReporting.ActivityIntrusion.identities.deleted | Boolean | Indicates whether the identity was deleted or not. | 
+| UmbrellaReporting.ActivityIntrusion.severity | String | The severity level of the rule, such as High, Medium, Low, and Very Low. | 
+| UmbrellaReporting.ActivityIntrusion.signature.generatorid | Number | Unique id assigned to the part of the IPS which generated the event. | 
+| UmbrellaReporting.ActivityIntrusion.signature.id | Number | ID of the application. | 
+| UmbrellaReporting.ActivityIntrusion.signature.label | String | A brief description of the signature. | 
+| UmbrellaReporting.ActivityIntrusion.signature.cves | String | An identifier for a known security vulnerability/exposure. | 
+| UmbrellaReporting.ActivityIP.destinationip | String | Destination IP for entry. | 
+| UmbrellaReporting.ActivityIP.sourceip | String | Source IP for entry. | 
+| UmbrellaReporting.ActivityIP.date | String | The date from the timestamp based on the timezone parameter. | 
+| UmbrellaReporting.ActivityIP.sourceport | Number | Source port for entry. | 
+| UmbrellaReporting.ActivityIP.destinationport | Number | Destination port for entry. | 
+| UmbrellaReporting.ActivityIP.verdict | String | Verdict for entry. | 
+| UmbrellaReporting.ActivityIP.timestamp | Number | Timestamp in ms. | 
+| UmbrellaReporting.ActivityIP.time | String | The time in 24 hour format based on the timezone parameter. | 
+| UmbrellaReporting.ActivityIP.identities.id | Number | ID of identity. | 
+| UmbrellaReporting.ActivityIP.identities.label | String | Label for identity | 
+| UmbrellaReporting.ActivityIP.identities.type.id | Number | Origin type for identity. | 
+| UmbrellaReporting.ActivityIP.identities.type.label | String | Origin type label for identity | 
+| UmbrellaReporting.ActivityIP.identities.type.type | String | Origin type name for identity. | 
+| UmbrellaReporting.ActivityIP.identities.deleted | Boolean | Indicates whether the identity was deleted or not. | 
+| UmbrellaReporting.ActivityIP.categories.id | Number | ID of category. | 
+| UmbrellaReporting.ActivityIP.categories.label | String | The human readable label of the category. | 
+| UmbrellaReporting.ActivityIP.categories.type | String | The type of category. | 
+| UmbrellaReporting.ActivityIP.categories.integration | Boolean | If the category is an integration | 
+| UmbrellaReporting.ActivityIP.categories.deprecated | Boolean | If the category is a legacy category. | 
+| UmbrellaReporting.ActivityIP.type | String | Type of the request. A IP request always has type IP. | 
 
 #### Command example
 ```!umbrella-reporting-activity-get traffic_type=dns limit=2 from=-30days to=now```
@@ -1981,39 +2080,30 @@ Only one activity type can be selected at a time.
     "UmbrellaReporting": {
         "ActivityDns": [
             {
-                "allapplications": [
-                    {
-                        "category": {
-                            "id": 46,
-                            "label": "Ad Publishing"
-                        },
-                        "id": 46102,
-                        "label": "Google Marketing Platform"
-                    }
-                ],
+                "allapplications": [],
                 "allowedapplications": [],
                 "blockedapplications": [],
                 "categories": [
                     {
-                        "deprecated": false,
-                        "id": 27,
+                        "deprecated": true,
+                        "id": 23,
                         "integration": false,
-                        "label": "Advertisements",
+                        "label": "Search Engines",
                         "type": "content"
                     },
                     {
                         "deprecated": false,
-                        "id": 148,
+                        "id": 190,
                         "integration": false,
-                        "label": "Application",
-                        "type": "application"
+                        "label": "Search Engines and Portals",
+                        "type": "content"
                     }
                 ],
-                "date": "2022-10-29",
+                "date": "2022-11-09",
                 "device": {
                     "id": null
                 },
-                "domain": "stats.g.doubleclick.net",
+                "domain": "clientservices.googleapis.com",
                 "externalip": "182.76.175.118",
                 "identities": [
                     {
@@ -2032,8 +2122,8 @@ Only one activity type can be selected at a time.
                 "querytype": "A",
                 "returncode": 0,
                 "threats": [],
-                "time": "07:39:08",
-                "timestamp": 1667029148000,
+                "time": "17:19:07",
+                "timestamp": 1668014347000,
                 "type": "dns",
                 "verdict": "allowed"
             },
@@ -2053,16 +2143,9 @@ Only one activity type can be selected at a time.
                 "categories": [
                     {
                         "deprecated": true,
-                        "id": 25,
+                        "id": 23,
                         "integration": false,
-                        "label": "Software/Technology",
-                        "type": "content"
-                    },
-                    {
-                        "deprecated": false,
-                        "id": 123,
-                        "integration": false,
-                        "label": "Infrastructure and Content Delivery Networks",
+                        "label": "Search Engines",
                         "type": "content"
                     },
                     {
@@ -2071,13 +2154,20 @@ Only one activity type can be selected at a time.
                         "integration": false,
                         "label": "Application",
                         "type": "application"
+                    },
+                    {
+                        "deprecated": false,
+                        "id": 190,
+                        "integration": false,
+                        "label": "Search Engines and Portals",
+                        "type": "content"
                     }
                 ],
-                "date": "2022-10-29",
+                "date": "2022-11-09",
                 "device": {
                     "id": null
                 },
-                "domain": "ocsp2-lb.apple.com.akadns.net",
+                "domain": "safebrowsing.googleapis.com",
                 "externalip": "182.76.175.118",
                 "identities": [
                     {
@@ -2093,11 +2183,11 @@ Only one activity type can be selected at a time.
                 ],
                 "internalip": "192.168.0.105",
                 "policycategories": [],
-                "querytype": "AAAA",
+                "querytype": "A",
                 "returncode": 0,
                 "threats": [],
-                "time": "07:38:57",
-                "timestamp": 1667029137000,
+                "time": "17:19:02",
+                "timestamp": 1668014342000,
                 "type": "dns",
                 "verdict": "allowed"
             }
@@ -2111,8 +2201,8 @@ Only one activity type can be selected at a time.
 >### Dns Activity List
 >|Identity|Policy or Ruleset Identity|Destination|Internal IP|External IP|DNS Type|Action|Categories|Public Application|Application Category|Date & Time|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| S’s MacBook Pro | S’s MacBook Pro | stats.g.doubleclick.net | 192.168.0.105 | 182.76.175.118 | A | allowed | Advertisements, Application | Google Marketing Platform | Ad Publishing | 2022-10-29T07:39:08Z |
->| S’s MacBook Pro | S’s MacBook Pro | ocsp2-lb.apple.com.akadns.net | 192.168.0.105 | 182.76.175.118 | AAAA | allowed | Software/Technology, Infrastructure and Content Delivery Networks, Application | Do Not Decrypt Application | Sample Application Group | 2022-10-29T07:38:57Z |
+>| S’s MacBook Pro | S’s MacBook Pro | clientservices.googleapis.com | 192.168.0.105 | 182.76.175.118 | A | allowed | Search Engines, Search Engines and Portals |  |  | 2022-11-09T17:19:07Z |
+>| S’s MacBook Pro | S’s MacBook Pro | safebrowsing.googleapis.com | 192.168.0.105 | 182.76.175.118 | A | allowed | Search Engines, Application, Search Engines and Portals | Do Not Decrypt Application | Sample Application Group | 2022-11-09T17:19:02Z |
 
 
 #### Command example
@@ -2384,6 +2474,47 @@ Get the summary.
 | UmbrellaReporting.Summary.requests | Number | Total number of requests. | 
 | UmbrellaReporting.Summary.requestsallowed | Number | Total number of allowed requests. | 
 | UmbrellaReporting.Summary.requestsblocked | Number | Total number of blocked requests. | 
+| UmbrellaReporting.SummaryWithCategory.category.deprecated | Boolean | If the category is a legacy category. | 
+| UmbrellaReporting.SummaryWithCategory.category.id | Number | ID of category. | 
+| UmbrellaReporting.SummaryWithCategory.category.integration | Boolean | If the category is an integration. | 
+| UmbrellaReporting.SummaryWithCategory.category.label | String | The human readable label of the category. | 
+| UmbrellaReporting.SummaryWithCategory.category.type | String | The type of category. | 
+| UmbrellaReporting.SummaryWithCategory.summary.applications | Number | Total number of applications \(avc or total\). | 
+| UmbrellaReporting.SummaryWithCategory.summary.applicationsallowed | Number | Total number of allowed applications. | 
+| UmbrellaReporting.SummaryWithCategory.summary.applicationsblocked | Number | Total number of blocked applications. | 
+| UmbrellaReporting.SummaryWithCategory.summary.categories | Number | Total number of categories. | 
+| UmbrellaReporting.SummaryWithCategory.summary.domains | Number | Total number of domains. | 
+| UmbrellaReporting.SummaryWithCategory.summary.files | Number | Total number of files. | 
+| UmbrellaReporting.SummaryWithCategory.summary.filetypes | Number | Total number of file types. | 
+| UmbrellaReporting.SummaryWithCategory.summary.identities | Number | Total number of identities. | 
+| UmbrellaReporting.SummaryWithCategory.summary.identitytypes | Number | Total number of identity types. | 
+| UmbrellaReporting.SummaryWithCategory.summary.policycategories | Number | Total number of blocked categories. | 
+| UmbrellaReporting.SummaryWithCategory.summary.policyrequests | Number | Total number of policy requests. | 
+| UmbrellaReporting.SummaryWithCategory.summary.requests | Number | Total number of requests. | 
+| UmbrellaReporting.SummaryWithCategory.summary.requestsallowed | Number | Total number of allowed requests. | 
+| UmbrellaReporting.SummaryWithCategory.summary.requestsblocked | Number | Total number of blocked requests. | 
+| UmbrellaReporting.SummaryWithDestination.domain | String | Destination domain. | 
+| UmbrellaReporting.SummaryWithDestination.summary.applications | Number | Total number of applications \(avc or total\). | 
+| UmbrellaReporting.SummaryWithDestination.summary.applicationsallowed | Number | Total number of allowed applications. | 
+| UmbrellaReporting.SummaryWithDestination.summary.applicationsblocked | Number | Total number of blocked applications. | 
+| UmbrellaReporting.SummaryWithDestination.summary.categories | Number | Total number of categories. | 
+| UmbrellaReporting.SummaryWithDestination.summary.domains | Number | Total number of domains. | 
+| UmbrellaReporting.SummaryWithDestination.summary.files | Number | Total number of files. | 
+| UmbrellaReporting.SummaryWithDestination.summary.filetypes | Number | Total number of file types. | 
+| UmbrellaReporting.SummaryWithDestination.summary.identities | Number | Total number of identities. | 
+| UmbrellaReporting.SummaryWithDestination.summary.identitytypes | Number | Total number of identity types. | 
+| UmbrellaReporting.SummaryWithDestination.summary.policycategories | Number | Total number of blocked categories. | 
+| UmbrellaReporting.SummaryWithDestination.summary.policyrequests | Number | Total number of policy requests. | 
+| UmbrellaReporting.SummaryWithDestination.summary.requests | Number | Total number of requests. | 
+| UmbrellaReporting.SummaryWithDestination.summary.requestsallowed | Number | Total number of allowed requests. | 
+| UmbrellaReporting.SummaryWithDestination.summary.requestsblocked | Number | Total number of blocked requests. | 
+| UmbrellaReporting.SignatureListSummary.signaturelist.id | Number | Unique id assigned to a Default or Custom Signature List. | 
+| UmbrellaReporting.SignatureListSummary.signatures.counts.blocked | Number | Blocked. | 
+| UmbrellaReporting.SignatureListSummary.signatures.counts.detected | Number | Detected. | 
+| UmbrellaReporting.SignatureListSummary.signatures.counts.wouldblock | Number | Would Block. | 
+| UmbrellaReporting.SignatureListSummary.signatures.generatorid | Number | Generator id. | 
+| UmbrellaReporting.SignatureListSummary.signatures.lasteventat | Date | Last Eevent At. | 
+| UmbrellaReporting.SignatureListSummary.signatures.id | Number | Signature ID. | 
 
 #### Command example
 ```!umbrella-reporting-summary-list domains=api.tunnels.cdfw.umbrella.com from=-30days to=now```
@@ -2399,12 +2530,12 @@ Get the summary.
             "domains": 1,
             "files": 0,
             "filetypes": 0,
-            "identities": 3,
-            "identitytypes": 2,
+            "identities": 1,
+            "identitytypes": 1,
             "policycategories": 0,
             "policyrequests": 0,
-            "requests": 6,
-            "requestsallowed": 6,
+            "requests": 2,
+            "requestsallowed": 2,
             "requestsblocked": 0
         }
     }
@@ -2416,7 +2547,7 @@ Get the summary.
 >### Summary List
 >|Application|Allowed Application|Blocked Application|Category|Domain|File|File Type|Identity|Identity Type|Policy Category|Policy Request|Request|Allowed Request|Blocked Request|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 0 | 0 | 0 | 4 | 1 | 0 | 0 | 3 | 2 | 0 | 0 | 6 | 6 | 0 |
+>| 0 | 0 | 0 | 4 | 1 | 0 | 0 | 1 | 1 | 0 | 0 | 2 | 2 | 0 |
 
 
 #### Command example
@@ -2439,16 +2570,16 @@ Get the summary.
                     "applicationsallowed": 0,
                     "applicationsblocked": 0,
                     "categories": 70,
-                    "domains": 2039,
+                    "domains": 1940,
                     "files": 1,
                     "filetypes": 0,
                     "identities": 3,
                     "identitytypes": 2,
                     "policycategories": 1,
                     "policyrequests": 0,
-                    "requests": 32446,
-                    "requestsallowed": 32280,
-                    "requestsblocked": 99
+                    "requests": 30589,
+                    "requestsallowed": 30453,
+                    "requestsblocked": 80
                 }
             },
             {
@@ -2464,16 +2595,16 @@ Get the summary.
                     "applicationsallowed": 0,
                     "applicationsblocked": 0,
                     "categories": 58,
-                    "domains": 1414,
+                    "domains": 1375,
                     "files": 0,
                     "filetypes": 0,
                     "identities": 3,
                     "identitytypes": 2,
                     "policycategories": 1,
                     "policyrequests": 0,
-                    "requests": 26112,
-                    "requestsallowed": 26041,
-                    "requestsblocked": 30
+                    "requests": 26719,
+                    "requestsallowed": 26675,
+                    "requestsblocked": 16
                 }
             }
         ]
@@ -2486,8 +2617,8 @@ Get the summary.
 >### Summary with Category List
 >|Category Type|Category Name|Application|Allowed Application|Blocked Application|Category|Domain|File|File Type|Identity|Identity Type|Policy Category|Policy Request|Request|Allowed Request|Blocked Request|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| application | Application | 0 | 0 | 0 | 70 | 2039 | 1 | 0 | 3 | 2 | 1 | 0 | 32446 | 32280 | 99 |
->| content | Software/Technology | 0 | 0 | 0 | 58 | 1414 | 0 | 0 | 3 | 2 | 1 | 0 | 26112 | 26041 | 30 |
+>| application | Application | 0 | 0 | 0 | 70 | 1940 | 1 | 0 | 3 | 2 | 1 | 0 | 30589 | 30453 | 80 |
+>| content | Software/Technology | 0 | 0 | 0 | 58 | 1375 | 0 | 0 | 3 | 2 | 1 | 0 | 26719 | 26675 | 16 |
 
 
 #### Command example
@@ -2511,8 +2642,8 @@ Get the summary.
                     "identitytypes": 2,
                     "policycategories": 0,
                     "policyrequests": 0,
-                    "requests": 1286,
-                    "requestsallowed": 1286,
+                    "requests": 1098,
+                    "requestsallowed": 1098,
                     "requestsblocked": 0
                 }
             },
@@ -2530,8 +2661,8 @@ Get the summary.
                     "identitytypes": 2,
                     "policycategories": 0,
                     "policyrequests": 0,
-                    "requests": 1003,
-                    "requestsallowed": 1003,
+                    "requests": 1034,
+                    "requestsallowed": 1034,
                     "requestsblocked": 0
                 }
             },
@@ -2549,8 +2680,8 @@ Get the summary.
                     "identitytypes": 1,
                     "policycategories": 0,
                     "policyrequests": 0,
-                    "requests": 48,
-                    "requestsallowed": 48,
+                    "requests": 39,
+                    "requestsallowed": 39,
                     "requestsblocked": 0
                 }
             },
@@ -2583,9 +2714,9 @@ Get the summary.
 >### Summary with Destination List
 >|Destination|Application|Allowed Application|Blocked Application|Category|Domain|File|File Type|Identity|Identity Type|Policy Category|Policy Request|Request|Allowed Request|Blocked Request|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| www.cisco.com | 0 | 0 | 0 | 5 | 1 | 0 | 0 | 3 | 2 | 0 | 0 | 1286 | 1286 | 0 |
->| presence.teams.microsoft.com | 0 | 0 | 0 | 6 | 1 | 0 | 0 | 3 | 2 | 0 | 0 | 1003 | 1003 | 0 |
->| x1.c.lencr.org | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 1 | 1 | 0 | 0 | 48 | 48 | 0 |
+>| www.cisco.com | 0 | 0 | 0 | 5 | 1 | 0 | 0 | 3 | 2 | 0 | 0 | 1098 | 1098 | 0 |
+>| presence.teams.microsoft.com | 0 | 0 | 0 | 6 | 1 | 0 | 0 | 3 | 2 | 0 | 0 | 1034 | 1034 | 0 |
+>| x1.c.lencr.org | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 1 | 1 | 0 | 0 | 39 | 39 | 0 |
 >| download.anydesk.com | 0 | 0 | 0 | 2 | 1 | 1 | 0 | 1 | 1 | 0 | 0 | 2 | 2 | 0 |
 
 
