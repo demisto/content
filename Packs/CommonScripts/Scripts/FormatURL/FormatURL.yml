@@ -5,8 +5,7 @@ args:
   name: input
   required: true
   secret: false
-comment: Strips, unquotes and unescapes URLs. If the URL is a Proofpoint or ATP URL,
-  extracts its redirect URL.
+comment: "Strips, unquotes and unescapes URLs. If the URL is a Proofpoint or ATP URL, extracts its redirect URL."
 commonfields:
   id: FormatURL
   version: -1
