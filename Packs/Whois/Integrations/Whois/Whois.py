@@ -7679,6 +7679,23 @@ else:
         return isinstance(data, str)
 
 
+class InvalidDateHandler:
+    """
+        A class to represent an anparseble date by the datetime module.
+        mainly for dates containing day, year, or month with an unvalid value of 0.
+        """
+
+    def __init__(self, year, month, day):
+        self.year = year
+        self.month = month 
+        self.day = day
+
+    def strftime(self, *args):
+        if self.year == 2000:
+            return f'{self.day}-{self.month}-{0}'
+        return f'{self.day}-{self.month}-{self.year}'
+
+
 def parse_raw_whois(raw_data, normalized=None, never_query_handles=True, handle_server=""):
     normalized = normalized or []
     data = {}  # type: dict
@@ -8000,7 +8017,7 @@ def normalize_name(value, abbreviation_threshold=4, length_threshold=8, lowercas
 
 def parse_dates(dates):
     global grammar
-    parsed_dates = []
+    parsed_dates: List[datetime | InvalidDateHandler] = []
 
     for date in dates:
         for rule in grammar['_dateformats']:  # type: ignore
@@ -8062,12 +8079,13 @@ def parse_dates(dates):
                     demisto.debug(e)
         try:
             if year > 0:
-                try:
+                if month > 12:
+                    # We might have gotten the day and month the wrong way around, let's try it the other way around.
+                    month, day = day, month
+                if 0 in [year, month, day]:
+                    parsed_dates.append(InvalidDateHandler(year=year, month=month, day=day))
+                else:
                     parsed_dates.append(datetime(year, month, day, hour, minute, second))
-                except ValueError as e:
-                    # We might have gotten the day and month the wrong way around, let's try it the other way around
-                    # If you're not using an ISO-standard date format, you're an evil registrar!
-                    parsed_dates.append(datetime(year, day, month, hour, minute, second))
         except UnboundLocalError as e:
             pass
 
