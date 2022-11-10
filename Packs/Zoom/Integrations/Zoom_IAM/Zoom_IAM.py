@@ -292,8 +292,8 @@ def get_mapping_fields(client: Client):
 def main():
     user_profile = None
     params = demisto.params()
-    api_key = params.get('api_key', {}).get('password')
-    api_secret = params.get('api_secret', {}).get('password')
+    api_key = params.get('api_key')
+    api_secret = params.get('api_secret')
     account_id = params.get('account_id')
     client_id = params.get('client_id', {}).get('password')
     client_secret = params.get('client_secret', {}).get('password')
