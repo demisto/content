@@ -1144,8 +1144,8 @@ def search_all_mailboxes():
 
     args = demisto.args()
     receive_only_accounts = argToBoolean(args.get('show-only-mailboxes', 'true'))
-    max_results = arg_to_number(args.get('max-results', 100))
-    writing_to_logs = arg_to_number(args.get('writing-to-logs', 100))
+    max_results = arg_to_number(args.get('max-results', 100)) or 100
+    writing_to_logs = arg_to_number(args.get('writing-to-logs', 100)) or 100
     list_accounts = argToList(args.get('list_accounts', ''))  # yml file
 
     if list_accounts:
@@ -1233,7 +1233,7 @@ def search_command(mailbox=None, receive_only_accounts=False):
         )
     except Exception as err:
         if 'HttpError 429 when requesting' in str(err):
-            return {'Mailbox': mailbox, 'q': q, 'Error': err}, 0
+            return {'Mailbox': mailbox, 'Error': err}, 0
         else:
             raise ValueError(err)
     # In case the user wants only account list without content.
@@ -2245,7 +2245,7 @@ def main():
 
         else:
             if command == 'gmail-search':
-                demisto.results(cmd_func()[0])
+                return_results(cmd_func()[0])  # type: ignore
             elif command == 'gmail-search-all-mailboxes':
                 search_all_mailboxes()
             else:
