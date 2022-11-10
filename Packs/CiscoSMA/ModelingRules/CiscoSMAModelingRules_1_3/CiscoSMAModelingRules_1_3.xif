@@ -119,7 +119,6 @@ filter
 		http_status_code = arrayindex(regextract(_raw_log,"id\:\S+\s(\d+)"),0),
 		http_method = arrayindex(regextract(_raw_log,"id\:\S+\s\d+\s(\w+)"),0),
 		URI = arrayindex(regextract(_raw_log,"id\:\S+\s\d+\s\w+\s(\S+)"),0),
-		http_version = arrayindex(regextract(_raw_log,"id\:\S+\s\d+\s\w+\s\S+\s([^\s]+)"),0),
 		user_agent = arrayindex(regextract(_raw_log,"id\:\S+\s\d+\s\w+\s\S+\s[^\s]+\s([^\!]+)"),0)
 | alter
     xdm.event.description = Message,
@@ -130,5 +129,4 @@ filter
     xdm.network.http.response_code = http_status_code,
     xdm.network.http.method = http_method,
     xdm.network.http.url = URI,
-    xdm.observer.version = http_version,
     xdm.source.user_agent = user_agent;
