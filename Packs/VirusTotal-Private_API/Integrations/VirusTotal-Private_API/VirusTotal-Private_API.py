@@ -22,7 +22,7 @@ API_KEY = demisto.params().get('APIKey', '')
 USE_SSL = False if demisto.params().get('insecure') else True
 PREFERRED_VENDORS = demisto.params().get("preferredVendors", None)
 PREFERRED_VENDORS_THRESHOLD = demisto.params().get("preferredVendorsThreshold", None)
-
+print("hello")
 FULL_RESPONSE = demisto.params().get("fullResponseGlobal", False)
 
 DEFAULT_HEADERS = {
