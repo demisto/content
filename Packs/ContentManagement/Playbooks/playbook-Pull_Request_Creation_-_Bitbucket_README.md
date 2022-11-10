@@ -10,17 +10,17 @@ This playbook does not use any sub-playbooks.
 * Bitbucket
 
 ### Scripts
-* CommitFilesBitbucket
-* Set
 * SuggestBranchName
 * DeleteContext
+* Set
+* CommitFilesBitbucket
 
 ### Commands
 * bitbucket-pull-request-list
-* bitbucket-branch-create
-* bitbucket-branch-get
 * bitbucket-pull-request-update
+* bitbucket-branch-create
 * bitbucket-pull-request-create
+* bitbucket-branch-get
 
 ## Playbook Inputs
 ---
@@ -37,7 +37,3 @@ This playbook does not use any sub-playbooks.
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
----
-![Pull Request Creation - Bitbucket](../doc_files/Pull_Request_Creation_-_Bitbucket.png)

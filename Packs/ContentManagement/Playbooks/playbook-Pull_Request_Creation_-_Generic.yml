@@ -1,33 +1,24 @@
-id: 132de7e8-3c58-4017-86cd-5bc820449a6c
-version: 9
-contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: XSOAR CI/CD
-    itemVersion: 1.1.3
-    fromServerVersion: 6.0.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
+id: Pull Request Creation - Generic
+version: -1
 name: Pull Request Creation - Generic
 description: This playbook creates a pull request from the content zip file.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 312af2ee-8c97-4019-8530-0730b4f1c57c
+    taskid: 235d4f1f-490b-4885-8d96-51ff9fef2dff
     type: start
     task:
-      id: 312af2ee-8c97-4019-8530-0730b4f1c57c
+      id: 235d4f1f-490b-4885-8d96-51ff9fef2dff
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "23"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -42,16 +33,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
-    taskid: 01a392bd-9c8d-4335-8805-52b503eda373
+    taskid: 15ffc64d-0ab8-4836-82f6-076c16759769
     type: regular
     task:
-      id: 01a392bd-9c8d-4335-8805-52b503eda373
+      id: 15ffc64d-0ab8-4836-82f6-076c16759769
       version: -1
       name: Unzip pack
-      description: Unzip a file using fileName or entryID to specify a file. Unzipped
-        files will be loaded to the War Room and names will be put into the context.
+      description: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
       scriptName: UnzipFile
       type: regular
       iscommand: false
@@ -65,7 +56,6 @@ tasks:
           root: File
           accessor: EntryID
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -80,12 +70,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "11":
     id: "11"
-    taskid: c9a2ae21-c014-47f7-8499-924a665baa42
+    taskid: 32ceacf6-4a23-41a7-8ed7-5ea275fcfe34
     type: regular
     task:
-      id: c9a2ae21-c014-47f7-8499-924a665baa42
+      id: 32ceacf6-4a23-41a7-8ed7-5ea275fcfe34
       version: -1
       name: Read metadata.json file
       description: Load the contents of a file into context.
@@ -111,7 +102,6 @@ tasks:
                   simple: metadata.json
           accessor: EntryID
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -126,12 +116,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "12":
     id: "12"
-    taskid: 1a4d0604-bba6-4776-83cd-81fd3da1654c
+    taskid: eb82dbd0-6591-4b1f-83db-404497e50cd8
     type: regular
     task:
-      id: 1a4d0604-bba6-4776-83cd-81fd3da1654c
+      id: eb82dbd0-6591-4b1f-83db-404497e50cd8
       version: -1
       name: Set pack name
       description: Set a pack name in context under the key PackName.
@@ -163,7 +154,6 @@ tasks:
                 value:
                   simple: ' '
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -178,12 +168,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "22":
     id: "22"
-    taskid: 9f55462a-275c-42c6-8b59-0addba140215
+    taskid: 3644c7a9-269e-4f00-83ad-f64523176434
     type: regular
     task:
-      id: 9f55462a-275c-42c6-8b59-0addba140215
+      id: 3644c7a9-269e-4f00-83ad-f64523176434
       version: -1
       name: Send notification
       description: Sends a message to a user, group, or channel.
@@ -204,7 +195,6 @@ tasks:
         complex:
           root: MessageText
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -219,12 +209,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "23":
     id: "23"
-    taskid: da64f313-52b7-4b37-84e2-c6753a61af28
+    taskid: 86b53518-6f73-4716-835c-97f57a417ca8
     type: regular
     task:
-      id: da64f313-52b7-4b37-84e2-c6753a61af28
+      id: 86b53518-6f73-4716-835c-97f57a417ca8
       version: -1
       name: Get username
       description: commands.local.cmd.get.users
@@ -241,7 +232,6 @@ tasks:
           root: incident
           accessor: id
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -256,12 +246,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "32":
     id: "32"
-    taskid: 8a94a790-2d13-4435-83a2-e38a80531524
+    taskid: a979f769-d17b-4817-884a-c533a556c4c4
     type: regular
     task:
-      id: 8a94a790-2d13-4435-83a2-e38a80531524
+      id: a979f769-d17b-4817-884a-c533a556c4c4
       version: -1
       name: Set incident fields values
       description: |-
@@ -291,7 +282,6 @@ tasks:
           root: GitHub.PR.RequestedReviewer
           accessor: Login
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -306,16 +296,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "33":
     id: "33"
-    taskid: 7e1e4378-1787-4ba0-8eab-f4b1c1197aad
+    taskid: c17af818-1b69-4a1c-8e46-b10c58f11430
     type: condition
     task:
-      id: 7e1e4378-1787-4ba0-8eab-f4b1c1197aad
+      id: c17af818-1b69-4a1c-8e46-b10c58f11430
       version: -1
       name: Is Slack v2 enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -331,7 +321,6 @@ tasks:
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -346,16 +335,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "34":
     id: "34"
-    taskid: 97dbb179-3232-41c7-87ed-cb867511f99e
+    taskid: 99c15f43-eea5-48af-8576-c1434229f937
     type: condition
     task:
-      id: 97dbb179-3232-41c7-87ed-cb867511f99e
+      id: 99c15f43-eea5-48af-8576-c1434229f937
       version: -1
       name: Is Microsoft Teams enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -371,7 +360,6 @@ tasks:
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -386,22 +374,23 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "42":
     id: "42"
-    taskid: 5bbe7d23-0eb1-4c98-8fc3-878795659306
+    taskid: f201d067-53ac-48b4-8926-a7eef801bafe
     type: title
     task:
-      id: 5bbe7d23-0eb1-4c98-8fc3-878795659306
+      id: f201d067-53ac-48b4-8926-a7eef801bafe
       version: -1
       name: Send notification
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "44"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -416,19 +405,20 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "43":
     id: "43"
-    taskid: c49038f4-783b-48c0-8c00-564dc0fa175c
+    taskid: e964d19f-6760-4ead-836b-9e9495a7c349
     type: title
     task:
-      id: c49038f4-783b-48c0-8c00-564dc0fa175c
+      id: e964d19f-6760-4ead-836b-9e9495a7c349
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -443,17 +433,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "44":
     id: "44"
-    taskid: d6008218-0ec6-4f9d-8f3e-6571908daba6
+    taskid: 45959dca-48b2-41a6-87e7-db5e9e39d206
     type: condition
     task:
-      id: d6008218-0ec6-4f9d-8f3e-6571908daba6
+      id: 45959dca-48b2-41a6-87e7-db5e9e39d206
       version: -1
       name: Is channel given?
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "43"
@@ -471,7 +463,6 @@ tasks:
           right:
             value: {}
           ignorecase: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -486,12 +477,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "45":
     id: "45"
-    taskid: 975720cc-752a-498d-8e50-f2eb502d64d7
+    taskid: 40898dbb-39bf-42ef-8981-c8e37e9ba4a8
     type: playbook
     task:
-      id: 975720cc-752a-498d-8e50-f2eb502d64d7
+      id: 40898dbb-39bf-42ef-8981-c8e37e9ba4a8
       version: -1
       name: Pull Request Creation - Github
       description: This playbook creates a pull request using Github integration.
@@ -508,15 +500,14 @@ tasks:
           root: inputs.MainBranch
       PullRequestCreatedMessageTemplate:
         complex:
-          root: inputs.PullRequestCreatedMessageTemplate
+          root: inputs.PullRequestTemplate
       PullRequestTemplate:
         complex:
           root: inputs.PullRequestTemplate
       PullRequestUpdateddMessageTemplate:
         complex:
-          root: inputs.PullRequestUpdateddMessageTemplate
+          root: inputs.PullRequestTemplate
     separatecontext: false
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -536,22 +527,23 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "46":
     id: "46"
-    taskid: 6d84ae01-f0a9-49eb-8768-e377ad7c3c0e
+    taskid: 49cc5d40-6c4f-4cd9-8052-f5c390f3b801
     type: title
     task:
-      id: 6d84ae01-f0a9-49eb-8768-e377ad7c3c0e
+      id: 49cc5d40-6c4f-4cd9-8052-f5c390f3b801
       version: -1
       name: Create the pull request
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "47"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -566,26 +558,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "47":
     id: "47"
-    taskid: 2c69f3fc-f800-4455-8011-4d401e5953f9
+    taskid: 279c30f3-1970-4cd9-8275-1f6aea84b175
     type: condition
     task:
-      id: 2c69f3fc-f800-4455-8011-4d401e5953f9
+      id: 279c30f3-1970-4cd9-8275-1f6aea84b175
       version: -1
       name: What integration to use for create the pull request
-      description: Check the GitIntegration input to know which git integration we
-        want to use to create the pull request.
+      description: Check the GitIntegration input to know which git integration we want to use to create the pull request.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
       - "48"
-      bitbucket:
-      - "49"
       github:
       - "45"
+      bitbucket:
+      - "49"
     separatecontext: false
     conditions:
     - label: github
@@ -611,7 +603,6 @@ tasks:
           right:
             value:
               simple: bitbucket
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -626,12 +617,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "48":
     id: "48"
-    taskid: cce483a1-79fa-4d6d-8002-8d2df94bf8da
+    taskid: 24dfbac3-fe79-4a09-880b-6cc67b28473a
     type: regular
     task:
-      id: cce483a1-79fa-4d6d-8002-8d2df94bf8da
+      id: 24dfbac3-fe79-4a09-880b-6cc67b28473a
       version: -1
       name: Print error
       description: Prints an error entry with a given message
@@ -651,7 +643,6 @@ tasks:
                 value:
                   simple: ' integration is not supported.'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -666,12 +657,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "49":
     id: "49"
-    taskid: 606b5f74-58e6-4690-8a7c-c65d97b674cd
+    taskid: 17ca51a0-19aa-4280-881d-2b40667c3abf
     type: playbook
     task:
-      id: 606b5f74-58e6-4690-8a7c-c65d97b674cd
+      id: 17ca51a0-19aa-4280-881d-2b40667c3abf
       version: -1
       name: Pull Request Creation - Bitbucket
       description: This playbook creates a pull request using Github integration.
@@ -681,7 +673,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "50"
+      - "51"
     scriptarguments:
       File:
         simple: ${File}
@@ -713,53 +705,14 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "50":
-    id: "50"
-    taskid: 2318e242-fbe3-4f3a-88eb-4367bdb190f5
-    type: regular
-    task:
-      id: 2318e242-fbe3-4f3a-88eb-4367bdb190f5
-      version: -1
-      name: Get PR information
-      description: Returns a list of the pull requests. If a state is provided than
-        the list will contain only PRs with the wanted status. If a state is not provided,
-        by default a list of the open pull requests will return.
-      script: Bitbucket|||bitbucket-pull-request-list
-      type: regular
-      iscommand: true
-      brand: Bitbucket
-    nexttasks:
-      '#none#':
-      - "51"
-    scriptarguments:
-      partial_response:
-        simple: "false"
-      pull_request_id:
-        simple: ${pr_id}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 720,
-          "y": 1380
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: c198bb3b-f98e-4577-82a4-ad5176790401
+    taskid: 76da55ce-d100-4731-8756-fdf64c71674b
     type: regular
     task:
-      id: c198bb3b-f98e-4577-82a4-ad5176790401
+      id: 76da55ce-d100-4731-8756-fdf64c71674b
       version: -1
-      name: Set incident fields values - UPDATE reviewer
+      name: Set incident fields values
       description: |-
         Update the following incident fields with the relevant data:
         - cicdreviewer
@@ -776,8 +729,7 @@ tasks:
     scriptarguments:
       cicdbranch:
         complex:
-          root: ${subplaybook-49
-          accessor: BranchName}
+          root: ${BranchName}
       cicdpackname:
         complex:
           root: PackName
@@ -793,7 +745,7 @@ tasks:
       {
         "position": {
           "x": 720,
-          "y": 1550
+          "y": 1390
         }
       }
     note: false
@@ -820,26 +772,28 @@ inputs:
   value: {}
   required: false
   description: The channel to which to send notifications.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: PullRequestTemplate
   value:
-    simple: "### Pull Request created in Cortex XSOAR\n**Created by:** {}\n**Pack:**
-      {}\n**Branch:** {}\n**Link to incident in Cortex XSOAR:** {}\n{} \n---"
+    simple: "### Pull Request created in Cortex XSOAR\n**Created by:** {}\n**Pack:** {}\n**Branch:** {}\n**Link to incident in Cortex XSOAR:** {}\n{} \n---"
   required: true
   description: Pull request description template.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: MainBranch
   value:
     simple: master
   required: true
-  description: The name of the branch you want the changes pulled into, which must
-    be an existing branch on the current repository.
-  playbookInputQuery: null
+  description: The name of the branch you want the changes pulled into, which must be an existing branch on the current repository.
+  playbookInputQuery:
 - key: GitIntegration
   value:
     simple: bitbucket
   required: true
   description: Which version control integration to use.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
-sourceplaybookid: Pull Request Creation - Generic
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+contentitemexportablefields:
+  contentitemfields: {}

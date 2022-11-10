@@ -8,20 +8,19 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Pull Request Creation - Bitbucket
 
 ### Integrations
-* Bitbucket
+This playbook does not use any integrations.
 
 ### Scripts
-* Set
-* UnzipFile
-* ReadFile
-* IsIntegrationAvailable
 * PrintErrorEntry
+* UnzipFile
+* Set
+* IsIntegrationAvailable
+* ReadFile
 
 ### Commands
 * send-notification
-* setIncident
-* bitbucket-pull-request-list
 * getUsers
+* setIncident
 
 ## Playbook Inputs
 ---
@@ -36,7 +35,3 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
----
-![Pull Request Creation - Generic](../doc_files/Pull_Request_Creation_-_Generic.png)
