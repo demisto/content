@@ -357,7 +357,7 @@ tasks:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: incident.malwarefamily
+                  simple: ${incident.malwarefamily}
               right:
                 value: { }
     view: |-
