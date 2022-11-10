@@ -1,0 +1,21 @@
+{
+    "name": "kololo",
+    "description": "hold me closer",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Mai Morag",
+    "url": "",
+    "email": "",
+    "created": "2022-11-10T06:25:38Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "maimorag"
+    ]
+}
