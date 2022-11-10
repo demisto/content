@@ -7,6 +7,7 @@ import json as JSON
 import time
 from urllib.parse import urlparse
 
+import urllib3
 import requests
 from requests.utils import quote  # type: ignore
 
@@ -17,7 +18,7 @@ except ImportError:
     from queue import Queue  # type: ignore
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 '''GLOBAL VARS'''
 BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist. ' \
