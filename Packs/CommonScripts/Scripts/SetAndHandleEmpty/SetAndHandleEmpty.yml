@@ -49,6 +49,6 @@ scripttarget: 0
 script: '-'
 subtype: python3
 runonce: false
-dockerimage: devdemisto/py3-master:8.1.0.37383
+dockerimage: devdemisto/py3-master:8.1.0.37385
 tests:
 - SetAndHandleEmpty test

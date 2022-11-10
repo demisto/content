@@ -129,7 +129,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: autofocus-tags-feed-get-indicators
-  dockerimage: devdemisto/py3-master:8.1.0.37383
+  dockerimage: devdemisto/py3-master:8.1.0.37385
   feed: true
   isfetch: false
   longRunning: false

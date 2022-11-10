@@ -126,6 +126,6 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score (only in case of report type=json)
 fromversion: 5.0.0
-dockerimage: devdemisto/py3-master:8.1.0.37383
+dockerimage: devdemisto/py3-master:8.1.0.37385
 tests:
 - No tests (auto formatted)

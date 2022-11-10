@@ -22,6 +22,6 @@ dependson:
   - cbp-fileCatalog-search
 timeout: 0s
 fromversion: 5.0.0
-dockerimage: devdemisto/py3-master:8.1.0.37383
+dockerimage: devdemisto/py3-master:8.1.0.37385
 tests:
 - No test

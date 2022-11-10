@@ -3,7 +3,7 @@ comment: This display the amount of fetched events vs the total amount of events
 commonfields:
   id: QRadarFetchedEventsSum
   version: -1
-dockerimage: devdemisto/py3-master:8.1.0.37383
+dockerimage: devdemisto/py3-master:8.1.0.37385
 enabled: true
 name: QRadarFetchedEventsSum
 runas: DBotWeakRole

@@ -20,7 +20,7 @@ comment: This script checks that a context key exists (and contains data), and o
 commonfields:
   id: CheckContextValue
   version: -1
-dockerimage: devdemisto/py3-master:8.1.0.37383
+dockerimage: devdemisto/py3-master:8.1.0.37385
 enabled: true
 name: CheckContextValue
 outputs:

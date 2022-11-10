@@ -207,7 +207,7 @@ script:
     description: The push hash to the DXL fabric.
     execution: false
     name: dxl-push-hash
-  dockerimage: devdemisto/py3-master:8.1.0.37383
+  dockerimage: devdemisto/py3-master:8.1.0.37385
   isfetch: false
   longRunning: false
   longRunningPort: false

@@ -216,7 +216,7 @@ script:
       will be done by the given object_id.
     execution: false
     name: f5-silverline-ip-object-delete
-  dockerimage: devdemisto/py3-master:8.1.0.37383
+  dockerimage: devdemisto/py3-master:8.1.0.37385
   isfetch: false
   runonce: false
   script: '-'

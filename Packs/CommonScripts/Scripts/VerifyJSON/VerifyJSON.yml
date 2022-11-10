@@ -28,7 +28,7 @@ tags:
 - JSON
 - Utility
 type: powershell
-dockerimage: devdemisto/py3-master:8.1.0.37383
+dockerimage: devdemisto/py3-master:8.1.0.37385
 fromversion: 5.5.0
 tests:
 - VerifyJSON - Test

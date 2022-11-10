@@ -24,6 +24,6 @@ args:
   defaultValue: '100'
 scripttarget: 0
 runonce: false
-dockerimage: devdemisto/py3-master:8.1.0.37383
+dockerimage: devdemisto/py3-master:8.1.0.37385
 tests:
 - No tests (auto formatted)

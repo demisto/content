@@ -20,7 +20,7 @@ dependson:
   must:
   - '|||pt-get-host-pairs'
 runonce: false
-dockerimage: devdemisto/py3-master:8.1.0.37383
+dockerimage: devdemisto/py3-master:8.1.0.37385
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

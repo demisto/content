@@ -1277,7 +1277,7 @@ script:
       type: string
     description: Removes a named rule from the source subnet logic block, disabling
       the alerts.
-  dockerimage: devdemisto/py3-master:8.1.0.37383
+  dockerimage: devdemisto/py3-master:8.1.0.37385
   runonce: false
 tests:
 - No test
