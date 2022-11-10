@@ -2790,21 +2790,18 @@ script:
     description: Create remote network cidrs
   - name: qradar-remote-network-cidr-list
     arguments:
-      - name: range
-        description: Limit argument - Range of results to return. The default is 0-49.
-          (e.g., 0-20, 3-5, 3-3).
-      - name: group
-        description: The name of the remote network group that CIDRs associated with, as it appears in Qradar.
-      - name: id
-        description: Id of CIDR (remote network).
-      - name: name
-        description: The name of CIDRs (remote network) appears in Qradar.
-      - name: filter
-        description: Additional options to filter results using a query_expression.
-      - name: fields
-        description: Use this parameter to specify which fields you would like to get back in the response.
-          Fields that are not named are excluded.
-          By default, set this argument to return all fields (id, name, cidrs, group, description).
+    - name: range
+      description: Limit argument - Range of results to return. The default is 0-49. (e.g., 0-20, 3-5, 3-3).
+    - name: group
+      description: The name of the remote network group that CIDRs associated with, as it appears in Qradar.
+    - name: id
+      description: Id of CIDR (remote network).
+    - name: name
+      description: The name of CIDRs (remote network) appears in Qradar.
+    - name: filter
+      description: Additional options to filter results using a query_expression.
+    - name: fields
+      description: Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. By default, set this argument to return all fields (id, name, cidrs, group, description).
     outputs:
     - contextPath: QRadar.RemoteNetworkCIDR
       description: Array of - A list of all the retrieved CIDRs.
@@ -2821,40 +2818,32 @@ script:
     description: Retrieves the list of staged remote networks.
   - name: qradar-remote-network-cidr-delete
     arguments:
-      - name: id
-        type: number
-        isArray: true
-        required: true
-        description: ID that is used to locate the staged remote network that users want to remove from Qradar.
+    - name: id
+      type: number
+      isArray: true
+      required: true
+      description: ID that is used to locate the staged remote network that users want to remove from Qradar.
     description: Deletes an existing staged remote network.
   - name: qradar-remote-network-cidr-update
     arguments:
-      - name: id
-        description: The id that is associated with the CIDR object which needs to be modified.
-        required: true
-      - name: name
-        description: The CIDR name in Qradar. If the CIDR name should be changed, it can be inserted here.
-        required: true
-      - name: cidrs
-        description: An input list of CIDRs to add to Qradar (can be obtained from automatically from EDL integrations and playbook).
-          Multiple values in the same object are separated by commas.
-          One of the cidr or query is required.
-        isArray: true
-      - name: query
-        description: The query for getting indicators from Cortex XSOAR.
-          One of the cidr or query is required.
-      - name: description
-        description: CIDR associated description presented in Qradar.
-          If the CIDR description should be changed, it can be inserted here.
-        required: true
-      - name: group
-        description: The remote network group that CIDRs should belong to.
-          If the CIDR-associated group should be changed, it can be inserted here.
-      - name: fields
-        description: Use this parameter to specify which fields you would like to get back in the response.
-          Fields that are not named are excluded.
-          Specify subfields in brackets, and multiple fields in the same object are separated by commas.
-          The possible fields are id,group,name,cidr,description. 
+    - name: id
+      description: The id that is associated with the CIDR object which needs to be modified.
+      required: true
+    - name: name
+      description: The CIDR name in Qradar. If the CIDR name should be changed, it can be inserted here.
+      required: true
+    - name: cidrs
+      description: An input list of CIDRs to add to Qradar (can be obtained from automatically from EDL integrations and playbook). Multiple values in the same object are separated by commas. One of the cidr or query is required.
+      isArray: true
+    - name: query
+      description: The query for getting indicators from Cortex XSOAR. One of the cidr or query is required.
+    - name: description
+      description: CIDR associated description presented in Qradar. If the CIDR description should be changed, it can be inserted here.
+      required: true
+    - name: group
+      description: The remote network group that CIDRs should belong to. If the CIDR-associated group should be changed, it can be inserted here.
+    - name: fields
+      description: Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets, and multiple fields in the same object are separated by commas. The possible fields are id,group,name,cidr,description.
     outputs:
     - contextPath: QRadar.RemoteNetworkCIDR
       description: Array of - A list of all the CIDR ranges that were changed.
@@ -2874,22 +2863,22 @@ script:
     description: Updates an existing staged remote network.
   - name: qradar-remote-network-deploy-execution
     arguments:
-      - name: host_ip
-        description: The IP of qradar console host.
-        required: true
-      - name: status
-        description: Must be in capital letters (“INITIATING”).
-        auto: PREDEFINED
-        predefined:
-        - INITIATING
-        required: true
-      - name: deployment_type
-        auto: PREDEFINED
-        predefined:
-        - INCREMENTAL
-        - FULL
-        description: Must be in capital letters (“INCREMENTAL” or “FULL”).
-        required: true
+    - name: host_ip
+      description: The IP of qradar console host.
+      required: true
+    - name: status
+      description: Must be in capital letters (“INITIATING”).
+      auto: PREDEFINED
+      predefined:
+      - INITIATING
+      required: true
+    - name: deployment_type
+      auto: PREDEFINED
+      predefined:
+      - INCREMENTAL
+      - FULL
+      description: Must be in capital letters (“INCREMENTAL” or “FULL”).
+      required: true
     outputs:
     - contextPath: QRadar.deploy.status
       description: The deployment status (INITIALIZING, IN_PROGRESS, COMPLETE).
@@ -2899,7 +2888,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.8.36650
+  dockerimage: demisto/python3:3.10.8.37233
   feed: false
   isfetch: false
   isremotesyncin: true
