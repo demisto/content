@@ -22,9 +22,45 @@ file_path_to_sha: Dict[str, str] = {}
 
 new_files = []
 modified_files = []
+files_path = []
 
 
-def get_file_sha(branch_name, content_file):
+class ContentFile:
+    path_to_file: str = ''
+    file_name: str = ''
+    content_type: str = ''
+    file_text: str = ''
+    entry_id: str = ''
+
+    def __init__(self, pack_name=None, file=None):
+        if not pack_name and not file:
+            return
+
+        # read the file from entry id
+        file_object = demisto.getFilePath(file['EntryID'])
+        with open(file_object['path'], 'r') as f:
+            file_contents = f.read()
+
+        self.file_text = file_contents
+        self.file_name = file['Name']
+        self.entry_id = file['EntryID']
+
+        if self.file_name == 'metadata.json':
+            self.file_name = 'pack_metadata.json'
+            self.path_to_file = os.path.join('Packs', pack_name)
+            self.content_type = 'metadata'
+        else:
+            with open(file_object['name'], "w") as f:
+                f.write(file_contents)
+
+            file_type = find_type(file_object['name'])
+            os.remove(file_object['name'])
+            self.content_type = file_type.value if file_type else file_type
+            folder = ENTITY_TYPE_TO_DIR.get(self.content_type, '')
+            self.path_to_file = os.path.join('Packs', pack_name, folder)
+
+
+def get_file_sha(branch_name: str, content_file: ContentFile):
     full_path = os.path.join(content_file.path_to_file, content_file.file_name)
 
     sha = file_path_to_sha.get(full_path)
@@ -43,7 +79,7 @@ def get_file_sha(branch_name, content_file):
     return file_path_to_sha.get(full_path)
 
 
-def commit_content_item(branch_name, content_file):
+def commit_content_item(branch_name: str, content_file: ContentFile):
     commit_args = {'commit_message': f'Added {content_file.file_name}',
                    'path_to_file': f'{content_file.path_to_file}/{content_file.file_name}',
                    'branch_name': branch_name, 'file_text': content_file.file_text}
@@ -67,7 +103,69 @@ def commit_content_item(branch_name, content_file):
         raise DemistoException(commit_res)
 
 
-def split_yml_file(content_file):
+def commit_content_item_gitlab(branch_name: str, content_file: ContentFile):
+    commit_args = {'commit_message': f'Added {content_file.file_name}',
+                   'file_path': f'{content_file.path_to_file}/{content_file.file_name}',
+                   'branch': branch_name, 'file_content': content_file.file_text}
+
+    file_sha = get_file_sha(branch_name, content_file)
+
+    # dont commit pack_metadata.json if already exists in the branch
+    if file_sha and content_file.file_name == 'pack_metadata.json':
+        return
+    elif file_sha:
+        # update existing file
+        commit_args['file_content'] = file_sha
+        commit_args['commit_message'] = f'Updated {content_file.file_name}'
+        modified_files.append(content_file.file_name)
+    else:
+        # new file added
+        new_files.append(content_file.file_name)
+#  gitlab-file-create
+    status, commit_res = execute_command('gitlab-file-create', commit_args, fail_on_error=False)
+    if not status:
+        raise DemistoException(commit_res)
+
+
+def does_file_exist(branch_name: str, content_file: ContentFile) -> bool:
+    full_path = os.path.join(content_file.path_to_file, content_file.file_name)
+
+    if full_path in files_path:
+        return True
+    # try to get the file from branch
+    status, list_commit_res = execute_command('bitbucket-commit-list', {'included_branches': branch_name,
+                                                                        'file_path': full_path},
+                                              fail_on_error=False)
+    if list_commit_res and len(list_commit_res) > 0:
+        files_path.append(full_path)
+        return True
+    return False
+
+
+def commit_content_item_bitbucket(branch_name: str, content_file: ContentFile):
+    commit_args = {"message": f"Added {content_file.file_name}",
+                   "file_name": f"{content_file.path_to_file}/{content_file.file_name}",
+                   "branch": f"{branch_name}",
+                   "file_content": f"{content_file.file_text}"}
+    file_status = does_file_exist(branch_name, content_file)
+    # dont commit pack_metadata.json if already exists in the branch
+    if file_status and content_file.file_name == 'pack_metadata.json':
+        return
+    elif file_status:
+        # update existing file
+        commit_args['message'] = f'Updated {content_file.file_name}'
+        modified_files.append(content_file.file_name)
+    else:
+        # new file added
+        new_files.append(content_file.file_name)
+    try:
+        demisto.executeCommand('bitbucket-commit-create', args=commit_args)
+    except DemistoException as e:
+        raise DemistoException(f'Failed to execute bitbucket-commit-create command. Error: {e}, '
+                               f'{traceback.format_exc()}')
+
+
+def split_yml_file(content_file: ContentFile):
     content_files = []
 
     if content_file.content_type == 'script':
@@ -141,39 +239,13 @@ def split_yml_file(content_file):
     return content_files
 
 
-class ContentFile:
-    path_to_file: str = ''
-    file_name: str = ''
-    content_type: str = ''
-    file_text: str = ''
-    entry_id: str = ''
-
-    def __init__(self, pack_name=None, file=None):
-        if not pack_name and not file:
-            return
-
-        # read the file from entry id
-        file_object = demisto.getFilePath(file['EntryID'])
-        with open(file_object['path'], 'r') as f:
-            file_contents = f.read()
-
-        self.file_text = file_contents
-        self.file_name = file['Name']
-        self.entry_id = file['EntryID']
-
-        if self.file_name == 'metadata.json':
-            self.file_name = 'pack_metadata.json'
-            self.path_to_file = os.path.join('Packs', pack_name)
-            self.content_type = 'metadata'
-        else:
-            with open(file_object['name'], "w") as f:
-                f.write(file_contents)
-
-            file_type = find_type(file_object['name'])
-            os.remove(file_object['name'])
-            self.content_type = file_type.value if file_type else file_type
-            folder = ENTITY_TYPE_TO_DIR.get(self.content_type, '')
-            self.path_to_file = os.path.join('Packs', pack_name, folder)
+def commit_git(git_integration: str, branch_name: str, content_file: ContentFile):
+    if git_integration == 'Gitlab':
+        commit_content_item_gitlab(branch_name, content_file)
+    elif git_integration == 'GitHub':
+        commit_content_item(branch_name, content_file)
+    else:
+        commit_content_item_bitbucket(branch_name, content_file)
 
 
 ''' MAIN FUNCTION '''
@@ -187,6 +259,7 @@ def main():
         user = demisto.getArg('user')
         comment = demisto.getArg('comment')
         template = demisto.getArg('template')
+        git_integration = demisto.getArg('git_integration')
 
         if not template:
             template = PR_TEMPLATE
@@ -210,10 +283,10 @@ def main():
                 # split automation file to yml and script files
                 content_files = split_yml_file(content_file)
                 for file_to_commit in content_files:
-                    commit_content_item(branch_name, file_to_commit)
+                    commit_git(git_integration, branch_name, file_to_commit)
 
             else:
-                commit_content_item(branch_name, content_file)
+                commit_git(git_integration, branch_name, content_file)
 
         incident_url = demisto.demistoUrls().get('investigation')
 

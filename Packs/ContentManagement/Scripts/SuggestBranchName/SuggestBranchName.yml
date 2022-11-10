@@ -3,7 +3,7 @@ args:
   name: pack
   required: true
 - auto: PREDEFINED
-  description: The name of the pack.
+  description: The command to perform.
   name: command_get_branch
   required: true
   predefined:
