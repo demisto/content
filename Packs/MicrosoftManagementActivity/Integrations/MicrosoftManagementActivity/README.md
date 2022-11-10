@@ -1,6 +1,6 @@
 The Microsoft Management Activity API integration enables you to subscribe or unsubscribe to different audits, receive their content, and fetch new content as incidents. Through the integration you can subscribe to new content types or stop your subscription, list the available content of each content type, and most importantly, fetch new content records from content types of your choice as Cortex XSOAR incidents.
 
-This integration was integrated and tested with version 1.0 of Microsoft Management Activity API (O365 Azure Events)
+This integration was integrated and tested with version 1.0 of Microsoft Management Activity API (O365 Azure Events).
 
 ## Grant Cortex XSOAR Authorization in Microsoft Management Activity API
 To allow Cortex XSOAR access to the Microsoft Management Activity API you will be required to give authorization to access it.
@@ -32,15 +32,15 @@ Moreover, enter your client secret as the “Key” parameter and your client ID
     | Application ID or Client ID | See the Detailed Instructions section. | False |
     | Key or Client Secret | See the Detailed Instructions section. | False |
     | Token or Tenant ID | See the Detailed Instructions section. | False |
-    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
+    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
     | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
     | Use a self-deployed Azure application |  | False |
     | Application redirect URI (for self-deployed mode) |  | False |
     | The authentication code you got for the service | For instructions on how to receive it, see the Detailed Instructions section. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | First fetch time range | &amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, for example 1 hour, 30 minutes | False |
-    | Timeout | The default timeout \(in seconds\) for API calls. Default is 15 seconds. | False |
+    | First fetch time range | &lt;number&gt; &lt;time unit&gt;, for example 1 hour, 30 minutes | False |
+    | Timeout | The default timeout (in seconds) for API calls. Default is 15 seconds. | False |
     | Content types to fetch |  | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
@@ -220,8 +220,8 @@ Returns all content of a specific content type.
 | MicrosoftManagement.ContentRecord.Scope | string | The scope of the record. | 
 | MicrosoftManagement.ContentRecord.Workload | string | The workload of the record. | 
 | MicrosoftManagement.ContentRecord.ResultsStatus | string | The results status of the record. | 
-| MicrosoftManagement.ContentRecord.ObjectID | string | The ID of the record&\#x27;s object. | 
-| MicrosoftManagement.ContentRecord.UserID | string | The ID of the record&\#x27;s user. | 
+| MicrosoftManagement.ContentRecord.ObjectID | string | The ID of the record's object. | 
+| MicrosoftManagement.ContentRecord.UserID | string | The ID of the record's user. | 
 
 
 ##### Command Example
