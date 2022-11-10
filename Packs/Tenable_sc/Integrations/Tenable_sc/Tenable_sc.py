@@ -78,11 +78,9 @@ def send_request(path, method='get', body=None, params=None, headers=None, try_n
         try:
             error = res.json()
         except Exception:
-            return_error('Error: Got status code {} with url {} with body {} with headers {}'.format(
-                str(res.status_code), url, res.content, str(res.headers)))
+            return_error(f'Error: Got status code {str(res.status_code)} with {url=} with body {res.content} with headers {str(res.headers)}')
 
-        return_error('Error: Got an error from TenableSC, code: {}, details: {}'.format(error['error_code'],
-                                                                                        error['error_msg']))
+        return_error(f"Error: Got an error from TenableSC, code: {error['error_code']}, details: {error['error_msg']}")
     return res.json()
 
 
