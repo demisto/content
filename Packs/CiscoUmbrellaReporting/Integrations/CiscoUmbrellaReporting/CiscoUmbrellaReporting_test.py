@@ -4,7 +4,7 @@ import io
 from CommonServerPython import DemistoException
 from CiscoUmbrellaReporting import Client, get_destinations_list_command, \
     get_categories_list_command, get_identities_list_command, get_file_list_command, \
-    get_threat_list_command,\
+    get_threat_list_command, test_module,\
     get_event_types_list_command, get_activity_list_command, \
     get_activity_by_traffic_type_command,\
     get_summary_list_command, pagination
@@ -302,23 +302,16 @@ def test_get_activity_by_dns_traffic_type_command(mocker, raw_response, expected
         "offset": 0,
         "traffic_type": "dns"
     }
-    args_1 = {
-        "limit": 5,
-        "from": 1662015255000,
-        "to": 1662447255000,
-        "offset": 0,
-        "traffic_type": "dns",
-        "domains": "1234"
-    }
     command_results = get_activity_by_traffic_type_command(client, args)
     # results is CommandResults list
     context_detail = command_results.to_context()['Contents']
     assert context_detail == expected.get("data")
     with pytest.raises(ValueError):
-        get_activity_by_traffic_type_command(client, args_1)
+        args["domains"] = "1234"
+        get_activity_by_traffic_type_command(client, args)
     with pytest.raises(DemistoException):
-        args_1["ports"] = "443"
-        get_activity_by_traffic_type_command(client, args_1)
+        args["ports"] = "443"
+        get_activity_by_traffic_type_command(client, args)
 
 
 @pytest.mark.parametrize('raw_response, expected', [(ACTIVITY_DNS_LIST_RESPONSE,
@@ -346,23 +339,16 @@ def test_get_activity_proxy_by_traffic_type(mocker, raw_response, expected):
         "offset": 0,
         "traffic_type": "proxy"
     }
-    args_1 = {
-        "limit": 5,
-        "from": 1662015255000,
-        "to": 1662447255000,
-        "offset": 0,
-        "traffic_type": "proxy",
-        "ip": "1234"
-    }
     command_results = get_activity_by_traffic_type_command(client, args)
     # results is CommandResults list
     context_detail = command_results.to_context()['Contents']
     assert context_detail == expected.get("data")
     with pytest.raises(ValueError):
-        get_activity_by_traffic_type_command(client, args_1)
+        args["ip"] = "1234"
+        get_activity_by_traffic_type_command(client, args)
     with pytest.raises(DemistoException):
-        args_1["signatures"] = "1-2,1-4"
-        get_activity_by_traffic_type_command(client, args_1)
+        args["signatures"] = "1-2,1-4"
+        get_activity_by_traffic_type_command(client, args)
 
 
 @pytest.mark.parametrize('raw_response, expected', [(ACTIVITY_DNS_LIST_RESPONSE,
@@ -689,10 +675,10 @@ def test_pagination_record_first_page(mocker, raw_response):
     """
     mocker.patch.object(client, 'query', side_effect=[raw_response])
     args = {
-        "limit": 5,
+        "page_size": 5,
         "from": 1662422400000,
         "to": 1662768000000,
-        "offset": 0,
+        "page": 1,
     }
     page_1 = PAGE_1_PAGE_SIZE_5_LIST
     first_page = get_activity_list_command(client, args)
@@ -720,10 +706,10 @@ def test_pagination_record_new_page(mocker, raw_response):
     """
     mocker.patch.object(client, 'query', side_effect=[raw_response])
     args = {
-        "limit": 5,
+        "page_size": 5,
         "from": 1662422400000,
         "to": 1662768000000,
-        "offset": 5,
+        "page": 2,
     }
     page_2 = PAGE_2_PAGE_SIZE_5_LIST
     command_results_new = get_activity_list_command(client, args)
@@ -752,3 +738,64 @@ def test_pagination():
 
     context_detail = pagination(page, page_size)
     assert context_detail == expected_response
+
+
+@pytest.mark.parametrize('raw_response', [DESTINATION_LIST_RESPONSE])
+def test_test_module(requests_mock, raw_response):
+    """
+        Tests the test_module function.
+
+            Given:
+                no argument required
+
+            When:
+                - Running the 'test_module function'.
+
+            Then:
+                -  Check weather the given credentials are correct or not
+    """
+    post_req_url = client.token_url
+    requests_mock.post(post_req_url, json={'access_token': '12345'})
+    access_token = client.access_token()
+    get_req_url = f'{client._base_url}/v2/organizations' \
+                  f'/{client.organisation_id}/activity'
+    headers = {'Authorization': f'Bearer {access_token}'}
+    requests_mock.get(get_req_url, headers=headers, json=raw_response)
+    output = test_module(client)
+    assert output == 'ok'
+    with pytest.raises(DemistoException):
+        error_output = {
+            "meta": {},
+            "data": {
+                "error": "unauthorized"
+            }
+        }
+        requests_mock.get(get_req_url, headers=headers, status_code=401, json=error_output)
+        test_module(client)
+
+
+def test_access_token(requests_mock):
+    """
+        Tests the access_token function.
+
+            Given:
+                - requests_mock object.
+
+            When:
+                - Running the 'get_activity_list_command function'.
+
+            Then:
+                -  Checks the output of the command function with the
+                expected output.
+        """
+    req_url = client.token_url
+
+    requests_mock.post(req_url, json={'access_token': '12345'})
+
+    response = client.access_token()
+    assert response == "12345"
+    with pytest.raises(DemistoException):
+        requests_mock.post(req_url, status_code=401)
+        client.access_token()
+        requests_mock.post(req_url, status_code=400)
+        client.access_token()

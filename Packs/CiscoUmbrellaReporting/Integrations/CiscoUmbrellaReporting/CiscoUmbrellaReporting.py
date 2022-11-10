@@ -838,7 +838,9 @@ def create_cisco_umbrella_args(limit: Optional[int], offset: Optional[int], args
     if intrusion_action := args.get("intrusion_action"):
         check_valid_indicator_value("intrusion_action", intrusion_action)
 
-    cisco_umbrella_args["limit"] = limit if limit != 50 else args.get('limit', DEFAULT_PAGE_SIZE)
+    max_limit = args.get('limit', DEFAULT_PAGE_SIZE)
+
+    cisco_umbrella_args["limit"] = limit if limit != DEFAULT_PAGE_SIZE else max_limit
     cisco_umbrella_args["offset"] = offset
     cisco_umbrella_args["from"] = args.get('from', FROM_DATE)
     cisco_umbrella_args["to"] = args.get('to', TO_DATE)
@@ -1232,14 +1234,6 @@ def get_summary_list_command(client: Client, args: Dict[str, Any]):
     if not set(args.keys()).issubset(category_type_param_list):
         raise DemistoException(
             f"Invalid optional parameter is selected for {summary_type}")
-    # if ip := args.get('ip'):
-    #     check_valid_indicator_value("ip", ip)
-    # if domains := args.get("domains"):
-    #     check_valid_indicator_value('domains', domains)
-    # if urls := args.get("urls"):
-    #     check_valid_indicator_value('urls', urls)
-    # if intrusion_action := args.get("intrusion_action"):
-    #     check_valid_indicator_value("intrusion_action", intrusion_action)
     page = arg_to_number(args.get('page'), arg_name='page')
     page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE),
                               arg_name='page_size')
