@@ -5,7 +5,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.5.31928
+dockerimage: devdemisto/py3-master:8.1.0.37158
 enabled: true
 name: SalesforceCaseStatusPicklist
 runas: DBotWeakRole

@@ -585,7 +585,7 @@ script:
     - contextPath: SandBlast.Quota.Action
       description: The quota action.
       type: String
-  dockerimage: demisto/python3:3.10.7.35188
+  dockerimage: devdemisto/py3-master:8.1.0.37158
   feed: false
   isfetch: false
   longRunning: false
