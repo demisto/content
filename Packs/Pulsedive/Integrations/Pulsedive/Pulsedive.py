@@ -433,7 +433,7 @@ def scan_result_command(client: Client, args: Dict[str, Any], api_key) -> List[C
                         ip=qid_data['data']['indicator'],
                         asn=qid_data['data']['properties']['geo'].get('asn'),
                         geo_country=qid_data['data']['properties']['geo'].get('country'),
-                        port=qid_data.get('data', {}).get('attributes', {}).get('port')
+                        port=qid_data.get('data', {}).get('attributes', {}).get('port'),
                         dbot_score=dbot_score
                     )
 
