@@ -334,7 +334,6 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
       ('Packs/myPack/Integrations/myDeprecatedIntegration/myDeprecatedIntegration.yml',
        'Packs/myPack/Integrations/myIntegration/myIntegration.yml'), ()),
      ))
-
 def test_branch(
         monkeypatch,
         mocker,
