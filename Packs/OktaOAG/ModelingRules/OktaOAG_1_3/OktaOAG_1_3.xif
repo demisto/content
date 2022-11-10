@@ -74,7 +74,7 @@ xdm.alert.severity = logLevel,
 xdm.source.user.username=username,
 xdm.event.description = description;
 
-filter _raw_log contains "GET" or _raw_log contains "POST"
+filter (_raw_log contains "GET" or _raw_log contains "POST") and _raw_log NOT contains "ACCESS"
 |alter url=arrayindex(regextract(_raw_log,"\s([\w\/.]+)\sHTTP"),0),
 httpMethod=arrayindex(regextract(_raw_log,"\s\"([\"\w]+)\s\/"),0),
 statusCode=arrayindex(regextract(_raw_log,"\"\s(\w+)\s"),0),
