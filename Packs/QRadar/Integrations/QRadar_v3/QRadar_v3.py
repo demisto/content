@@ -3751,12 +3751,12 @@ def qradar_remote_network_cidr_list_command(client: Client, args: Dict[str, Any]
             filter_ += f' AND name={name}' if (group or id_) else f'name={name}'
 
     response = client.get_remote_network_cidr(range_, filter_, fields)
-    success_message = 'List of the staged remote networks'
     outputs = [{'id': res.get('id'),
                 'name': res.get('name'),
                 'description': res.get('description')}
                for res in response]
     headers = ['id', 'name', 'group', 'cidrs', 'description']
+    success_message = 'List of the staged remote networks'
     readable_output = tableToMarkdown(success_message, response, headers=headers) if response else 'No results found.'
 
     return CommandResults(
@@ -3788,9 +3788,9 @@ def qradar_remote_network_cidr_delete_command(client: Client, args) -> CommandRe
         except DemistoException as e:
             unsuccessful_delete_ids.append(assign_params(ID=id_, Error=e.message))
 
-    success_human_readable = tableToMarkdown('Successfully deleted the following remote network',
+    success_human_readable = tableToMarkdown('Successfully deleted the following remote network(s)',
                                              success_delete_ids, headers=['ID'])
-    unsuccessful_human_readable = tableToMarkdown('Failed to delete the following remote network',
+    unsuccessful_human_readable = tableToMarkdown('Failed to delete the following remote network(s)',
                                                   unsuccessful_delete_ids, headers=['ID', 'Error'])
 
     return CommandResults(
