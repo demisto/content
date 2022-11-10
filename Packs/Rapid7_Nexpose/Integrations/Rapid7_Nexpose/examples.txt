@@ -1,10 +1,18 @@
-!nexpose-create-sites-report sites=1 name="XSOAR Report"
-!nexpose-create-sites-report sites=1 name="XSOAR Test Report" download_immediately=false
-!nexpose-get-report-status instance_id=1974 report_id=1981
-!nexpose-download-report instance_id=1974 report_id=1981
+!nexpose-create-assets-report assets=38 download_immediately=false
+!nexpose-create-scan-report scan=1 download_immediately=false
+!nexpose-create-site
+!nexpose-create-sites-report sites=724 name="Example Report" download_immediately=false
+!nexpose-delete-site
+!nexpose-download-report report_id=1 instance_id=latest
 !nexpose-get-asset id=2
-!nexpose-get-assets
-!nexpose-search-assets ipAddressIs=192.168.1.144
-!nexpose-get-sites
+!nexpose-get-asset-vulnerability id=2 vulnerabilityId=ssh-cve-2016-2183-sweet32
+!nexpose-get-assets limit=3
+!nexpose-get-report-status report_id=1 instance_id=latest
 !nexpose-get-report-templates
-!nexpose-get-scans active=false
+!nexpose-get-scan id=1
+!nexpose-get-scans active=false limit=3
+!nexpose-get-sites limit=10
+!nexpose-search-assets match=all riskScoreHigherThan=1000 limit=3
+!nexpose-start-assets-scan
+!nexpose-start-site-scan
+!nexpose-stop-scan
