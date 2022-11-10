@@ -479,8 +479,7 @@ class TestCollector(ABC):
     @staticmethod
     def __validate_deprecated_integration(path: Path):
         if path.suffix == '.yml':
-            yml_dict = get_yaml(path)
-            if yml_dict.get('deprecated'):
+            if get_yaml(path).get('deprecated'):
                 raise NothingToCollectException(path, 'integration is deprecated')
 
     def __validate_triggering_sanity_test(self, path: Path):
