@@ -3142,7 +3142,6 @@ class Pack(object):
             A list of dicts of all the image urls found in the README.md file with all related data
             (original_url, new_gcs_path, image_name)
         """
-        logging.info(f'{marketplace=}')
         if marketplace == 'xsoar':
             marketplace_bucket = "marketplace-dist"
         else:
@@ -3214,7 +3213,6 @@ class Pack(object):
                 # load the file from local memo to the gcs
                 with open(image_name, "rb") as image_file:
                     readme_image.upload_from_file(image_file)
-                    logging.info('Uploaded the image to gcs')
 
                 # remove local saved image
                 os.remove(image_name)
