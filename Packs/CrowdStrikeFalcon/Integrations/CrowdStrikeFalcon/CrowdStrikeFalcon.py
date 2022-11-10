@@ -1995,7 +1995,7 @@ def fetch_incidents():
     fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections')
     look_back = int(demisto.params().get('look_back', 0))
     first_fetch = demisto.params().get('first_fetch')
-    fetch_limit = INCIDENTS_PER_FETCH * 2
+    fetch_limit = INCIDENTS_PER_FETCH * 2  # The actual limit is the limit for detections + the limit for incidents
 
     start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch,
                                                                 look_back=look_back)
