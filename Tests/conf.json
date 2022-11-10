@@ -5321,8 +5321,7 @@
         "Process Email - Generic - Test - Incident Starter": "Issue CIAC-4161",
         "AD v2 - debug-mode": "No credentials",
         "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
-        "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407",
-        "O365-SecurityAndCompliance-Test": "Failing in nightly, being handled"
+        "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407"
     },
     "skipped_integrations": {
         "AbuseIPDB": "License expired",
