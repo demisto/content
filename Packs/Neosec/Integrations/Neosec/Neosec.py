@@ -392,7 +392,8 @@ def main() -> None:
             not is_tokenized and neosec_node_url
         ):
             return_error(
-                f"Invalid input: De-Tokenized Alerts(is_tokenized={is_tokenized}) and Neosec Node URL({neosec_node_url}) is not matched"
+                f"Invalid input: De-Tokenized Alerts(is_tokenized={is_tokenized}) "
+                f"and Neosec Node URL({neosec_node_url}) is not matched"
             )
 
         neosec_node_client = (
