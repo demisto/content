@@ -27,13 +27,6 @@ configuration:
   options:
   - lastDay
   - last3Days
-  - last5Days
-  - last7Days
-  - lastMonth
-  - last3Months
-  - lastYear
-  - last2Years
-  - allTime
   required: false
   type: 15
 - defaultvalue: "1"

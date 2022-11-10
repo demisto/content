@@ -1,17 +1,17 @@
-from typing import Any
+import collections
+import json
+from datetime import timedelta
+
+import requests
+from CommonServerPython import *  # noqa: F401
+from armorblox.client import Client as AbxBaseClient
 
 import demistomock as demisto  # noqa: F401
-from armorblox.client import Client as AbxBaseClient
-from CommonServerPython import *  # noqa: F401
-import dateparser
-import requests
-import json
-import collections
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+ARMORBLOX_INCIDENT_API_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 MAX_INCIDENTS_TO_FETCH = demisto.params().get('max_fetch')
 FIRST_FETCH = demisto.params().get('first_fetch')
 TENANT_NAME = demisto.params().get('tenantName')
@@ -28,7 +28,9 @@ class Client(AbxBaseClient):
     Should only do requests and return data.
     """
 
-    def get_incidents(self, orderBy='ASC', pageSize=None, pageToken=None, first_fetch=None):
+    def get_incidents(self, orderBy='ASC', pageSize=None, pageToken=None, first_fetch=None,
+                      from_date=None,
+                      to_date=None):
         request_params = {'orderBy': orderBy}
 
         if pageToken == -1 and first_fetch:
@@ -39,6 +41,12 @@ class Client(AbxBaseClient):
 
         if pageSize:
             request_params['pageSize'] = pageSize
+
+        if from_date:
+            request_params['from_date'] = from_date
+
+        if to_date:
+            request_params['to_date'] = to_date
 
         response_json, next_page_token, total_count = self.incidents.list(params=request_params)
         return response_json, next_page_token
@@ -74,12 +82,15 @@ def test_module(client: Client) -> str:  # pragma: no coverage
     return 'ok'
 
 
-def get_incidents_list(client, pageToken, first_fetch):
+def get_incidents_list(client, pageToken, first_fetch, from_date=None, to_date=None):
     """
     Hits the Armorblox API and returns the list of fetched incidents.
     """
-    results, next_page_token = client.get_incidents(pageSize=MAX_INCIDENTS_TO_FETCH, pageToken=pageToken,
-                                                    first_fetch=first_fetch)
+    results, next_page_token = client.get_incidents(pageSize=MAX_INCIDENTS_TO_FETCH,
+                                                    pageToken=pageToken,
+                                                    first_fetch=first_fetch,
+                                                    from_date=from_date,
+                                                    to_date=to_date)
     # For each incident, get the details and extract the message_id
     for result in results:
         result['message_ids'] = get_incident_message_ids(client, result["id"])
@@ -124,52 +135,40 @@ def get_remediation_action(client, incident_id):
     return CommandResults(outputs_prefix='Armorblox.Threat', outputs=contxt)
 
 
-def fetch_incidents_command(client):
+def fetch_incidents_command(client):  # pragma: no coverage
     last_run = demisto.getLastRun()
-    start_time: Any
-    # pageToken fetched from demisto lastRun
-    pageToken = int()
+    demisto.debug(str(last_run))
+    current_time = datetime.utcnow().replace(second=0)
+    last_fetch_time = last_run.get("last_fetch_time", None)
     incidents = []
-    if 'start_time' not in last_run.keys():
-        pageToken = -1
-        response, next_page_token = client.get_incidents(pageSize=1, pageToken=pageToken, first_fetch=FIRST_FETCH)
-        if response:
-            response = response[0]
-            start_time = response.get('date')
-            start_time = dateparser.parse(start_time)
-            message_ids = get_incident_message_ids(client, response.get('id'))
-            response['message_ids'] = message_ids
-            curr_incident = {'rawJSON': json.dumps(response), 'details': json.dumps(response)}
-            incidents.append(curr_incident)
+    incidents_data = []
+    mapping = {
+        "lastDay": 1,
+        "last3Days": 3
+    }
+    if last_fetch_time is None:
+        last_fetch_time = (current_time - timedelta(days=mapping[FIRST_FETCH])).strftime(
+            ARMORBLOX_INCIDENT_API_TIME_FORMAT)
 
-    if last_run and 'pageToken' in last_run.keys():
-        pageToken = last_run.get('pageToken')
-
-    if last_run and 'start_time' in last_run.keys():
-        start_time = dateparser.parse(last_run.get('start_time'))
-
-    start_time = start_time.timestamp()
-    incidents_data, pageToken = get_incidents_list(client, pageToken=pageToken, first_fetch=FIRST_FETCH)
-    last_time = start_time
+    current_time = current_time.strftime(ARMORBLOX_INCIDENT_API_TIME_FORMAT)
+    next_page_token = None
+    while True:
+        response, next_page_token = get_incidents_list(client, pageToken=next_page_token,
+                                                       from_date=last_fetch_time,
+                                                       to_date=current_time,
+                                                       first_fetch=FIRST_FETCH)
+        incidents_data.extend(response)
+        if not next_page_token:
+            break
+    last_fetch_time = current_time
 
     for incident in incidents_data:
-        dt = incident.get('date')
-        parsed_date = dateparser.parse(dt)
-        assert parsed_date is not None, f'failed parsing {dt}'
-        dt = int(parsed_date.timestamp())
-        # Update last run and add incident if the incident is newer than last fetch
-        if dt > int(start_time):
-            curr_incident = {'rawJSON': json.dumps(incident), 'details': json.dumps(incident)}
-            last_time = dt
-            incidents.append(curr_incident)
+        curr_incident = {'rawJSON': json.dumps(incident), 'details': json.dumps(incident)}
+        incidents.append(curr_incident)
     # Save the next_run as a dict with the start_time key to be stored
-    demisto.setLastRun({'start_time': str(last_time), 'pageToken': pageToken})
+    demisto.setLastRun({'last_fetch_time': last_fetch_time})
+    demisto.debug(str(len(incidents)))
     return incidents
-
-
-def get_incident_by_id(client, incident_id):
-    incident_response = client.incidents.get(incident_id)
-    return incident_response
 
 
 def get_threat_incidents(client, params):
@@ -200,13 +199,11 @@ def main():  # pragma: no coverage
             incident_results = fetch_incidents_command(client)
             demisto.incidents(incident_results)
             return_results("Incidents fetched successfully!!")
-            # return_results(fetch_incidents_command(client))
         if demisto.command() == "armorblox-check-remediation-action":
             incident_id = demisto.args().get('incident_id')
             return_results(get_remediation_action(client, incident_id))
         if demisto.command() == "armorblox-get-incident":
             incident_id = demisto.args().get('incident_id')
-            # return_results(get_incident_by_id(client, incident_id))
             return_results(client.get_incident_details(incident_id))
         if demisto.command() == "armorblox-get-threats-incidents":
             return_results(get_threat_incidents(client, demisto.args()))
