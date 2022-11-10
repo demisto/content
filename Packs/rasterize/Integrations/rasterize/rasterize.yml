@@ -421,6 +421,16 @@ script:
       name: file_name
       required: false
       secret: false
+    - auto: PREDEFINED
+      defaultValue: 'False'
+      description: Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
+      isArray: false
+      name: full_screen
+      predefined:
+        - 'True'
+        - 'False'
+      required: false
+      secret: false
     deprecated: false
     description: Converts an html file to an image file or a PDF file.
     execution: false
