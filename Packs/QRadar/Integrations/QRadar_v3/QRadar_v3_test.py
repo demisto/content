@@ -31,7 +31,8 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     flatten_nested_geolocation_values, get_modified_remote_data_command, get_remote_data_command, is_valid_ip, \
     qradar_ips_source_get_command, qradar_ips_local_destination_get_command, \
     qradar_remote_network_cidr_create_command, get_cidrs_indicators, verify_args_for_remote_network_cidr, \
-    qradar_remote_network_cidr_list_command, qradar_remote_network_cidr_update_command, \
+    qradar_remote_network_cidr_list_command, qradar_remote_network_cidr_delete_command, \
+    qradar_remote_network_cidr_update_command, \
     qradar_remote_network_deploy_execution_command, migrate_integration_ctx, enrich_offense_with_events, \
     perform_long_running_loop, validate_integration_context, FetchMode
 
@@ -1216,6 +1217,15 @@ def test_qradar_remote_network_cidr_create_command(mocker):
 
     assert expected_response_from_api == res.raw_response
     assert '| description | test_group | 12 | test_name |' in res.readable_output
+
+
+def test_qradar_remote_network_cidr_delete_command(mocker):
+    expected_command_result = command_test_data['remote_network_cidr_delete']['readable_output']
+
+    mocker.patch.object(client, 'delete_remote_network_cidr', return_value=b'')
+    result = qradar_remote_network_cidr_delete_command(client, {'id': '46'})
+
+    assert result.readable_output == expected_command_result
 
 
 @pytest.mark.parametrize('test_case_data',
