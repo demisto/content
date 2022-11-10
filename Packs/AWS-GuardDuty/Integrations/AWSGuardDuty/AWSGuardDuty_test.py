@@ -10,11 +10,11 @@ from test_data.api_responses_for_test import GET_MEMBERS_RESPONSE, FINDING, LIST
     THREAT_INTEL_SET_RESPONSE, IP_SET_RESPONSE, DETECTOR_RESPONSE, RESPONSE_METADATA
 
 import pytest
-from datetime import date
 
 
 class MockedBoto3Client:
     """Mocked AWSClient session for easier expectation settings."""
+
     def list_detectors(self, **kwargs):
         pass
 
@@ -165,12 +165,14 @@ def test_list_members(mocker):
         assert api calls are called exactly once.
     """
     mocked_client = MockedBoto3Client()
-    list_members_mock = mocker.patch.object(MockedBoto3Client, 'list_members', side_effect=[LIST_MEMBERS_RESPONSE])
+    get_paginator_mock = mocker.patch.object(MockedBoto3Client, 'get_paginator', side_effect=[MockedPaginator()])
+    paginate_mock = mocker.patch.object(MockedPaginator, 'paginate', side_effect=[[LIST_MEMBERS_RESPONSE]])
 
     command_results = list_members(mocked_client, {'detectorId': 'some_id'})
 
-    assert list_members_mock.is_called_once_with({'DetectorId': 'some_id'})
-    assert command_results.outputs == LIST_MEMBERS_RESPONSE.get('Members')
+    assert get_paginator_mock.is_called_once_with('list_members')
+    assert paginate_mock.is_called_once_with({'DetectorId': 'some_id'})
+    assert command_results.outputs == [{'Member': LIST_MEMBERS_RESPONSE.get('Members')[0]}]
 
 
 @pytest.mark.parametrize('response, raises', [pytest.param({}, does_not_raise(),
@@ -193,7 +195,8 @@ def test_update_findings_feedback(mocker, response, raises):
         assert api calls are called exactly once.
     """
     mocked_client = MockedBoto3Client()
-    update_findings_feedback_mock = mocker.patch.object(MockedBoto3Client, 'update_findings_feedback', side_effect=[response])
+    update_findings_feedback_mock = mocker.patch.object(MockedBoto3Client, 'update_findings_feedback',
+                                                        side_effect=[response])
 
     with raises:
         update_findings_feedback(mocked_client, {'detectorId': 'some_id',
@@ -322,20 +325,20 @@ def test_get_findings(mocker):
     Then:
         assert api calls are called exactly once and as expected.
     """
+    from test_data.get_findings_expected_outputs import EXPECTED_FINDING_OUTPUTS
     mocked_client = MockedBoto3Client()
     get_findings_mock = mocker.patch.object(MockedBoto3Client, 'get_findings',
                                             side_effect=[{'Findings': [FINDING,
                                                                        update_finding_id(FINDING.copy(),
                                                                                          'finding2',
-                                                                                         date(2015, 1, 1))]}])
+                                                                                         '2022-09-07T13:48:00.814Z')]}])
 
     command_results = get_findings(mocked_client, {'detectorId': 'some_id',
                                                    'findingIds': 'finding_id1, finding_id2'})
 
     assert get_findings_mock.is_called_once_with({'DetectorId': 'some_id',
                                                   'FindingIds': ['finding_id1', 'finding_id2']})
-    assert command_results.outputs == [EXPECTED_FINDING_RESULT,
-                                       update_finding_id(EXPECTED_FINDING_RESULT.copy(), 'finding2')]
+    assert command_results.outputs == EXPECTED_FINDING_OUTPUTS
 
 
 class MockedPaginator:
@@ -450,12 +453,14 @@ def test_list_threat_intel_sets(mocker):
         assert api calls are called exactly once and as expected.
     """
     mocked_client = MockedBoto3Client()
-    list_threat_intel_sets_mock = mocker.patch.object(MockedBoto3Client, 'list_threat_intel_sets',
-                                                      side_effect=[{'ThreatIntelSetIds': ['threat1', 'threat2']}])
+    get_paginator_mock = mocker.patch.object(MockedBoto3Client, 'get_paginator', side_effect=[MockedPaginator()])
+    paginate_mock = mocker.patch.object(MockedPaginator, 'paginate',
+                                        side_effect=[[{'ThreatIntelSetIds': ['threat1', 'threat2']}]])
 
     command_results = list_threat_intel_sets(mocked_client, {'detectorId': 'some_id'})
 
-    assert list_threat_intel_sets_mock.is_called_once_with({'DetectorId': 'some_id'})
+    assert get_paginator_mock.is_called_once_with('list_threat_intel_set')
+    assert paginate_mock.is_called_once_with({'DetectorId': 'some_id'})
     assert command_results.outputs == [{'DetectorId': 'some_id'},
                                        {'ThreatIntelSetId': 'threat1'},
                                        {'ThreatIntelSetId': 'threat2'}]
@@ -568,12 +573,13 @@ def test_list_ip_sets(mocker):
         assert api calls are called exactly once and as expected.
     """
     mocked_client = MockedBoto3Client()
-    list_ip_sets_mock = mocker.patch.object(MockedBoto3Client, 'list_ip_sets',
-                                            side_effect=[{'IpSetIds': ['ipset1', 'ipset2']}])
+    get_paginator_mock = mocker.patch.object(MockedBoto3Client, 'get_paginator', side_effect=[MockedPaginator()])
+    paginate_mock = mocker.patch.object(MockedPaginator, 'paginate', side_effect=[[{'IpSetIds': ['ipset1', 'ipset2']}]])
 
     command_results = list_ip_sets(mocked_client, {'detectorId': 'some_id'})
 
-    assert list_ip_sets_mock.is_called_once_with({'DetectorId': 'some_id'})
+    assert get_paginator_mock.is_called_once_with('list_ip_sets')
+    assert paginate_mock.is_called_once_with({'DetectorId': 'some_id'})
     assert command_results.outputs == [{'DetectorId': 'some_id'},
                                        {'IpSetId': 'ipset1'},
                                        {'IpSetId': 'ipset2'}]
@@ -676,26 +682,33 @@ def test_delete_ip_set(mocker, response, raises):
                                                    'IpSetId': 'IpSetId1'})
 
 
-def test_list_detectors(mocker):
+@pytest.mark.parametrize('args, response_iterator, expected_pagination_config, expected_results', [
+    ({'limit': '1'}, [{'DetectorIds': ['detector1']}],
+     {'MaxItems': 1, 'PageSize': 1}, [{'DetectorId': 'detector1'}]),
+    ({'page_size': '2', 'page': '2'}, [{'DetectorIds': ['detector1', 'detector2']},
+                                       {'DetectorIds': ['detector3', 'detector4']}],
+     {'MaxItems': 4, 'PageSize': 2}, [{'DetectorId': 'detector3'}, {'DetectorId': 'detector4'}])])
+def test_list_detectors(mocker, args, response_iterator, expected_pagination_config, expected_results):
     """
     Given:
         AWSClient session
         list_detectors valid response
 
     When:
-        Running list_detectors command
-
+        Running list_detectors command with: 1. limit = 1 (Automatic Pagination)
+                                             2. page_size = 2, page = 2 (Manual Pagination)
     Then:
         assert api calls are called exactly once and as expected.
     """
     mocked_client = MockedBoto3Client()
-    list_detectors_mock = mocker.patch.object(MockedBoto3Client, 'list_detectors',
-                                              side_effect=[{'DetectorIds': ['some_id']}])
+    get_paginator_mock = mocker.patch.object(MockedBoto3Client, 'get_paginator', side_effect=[MockedPaginator()])
+    paginate_mock = mocker.patch.object(MockedPaginator, 'paginate', side_effect=[response_iterator])
 
-    command_results = list_detectors(mocked_client, {})
+    command_results = list_detectors(mocked_client, args)
 
-    assert list_detectors_mock.is_called_once_with({})
-    assert command_results.outputs == {'DetectorId': 'some_id'}
+    assert get_paginator_mock.is_called_once_with('list_detectors')
+    assert paginate_mock.is_called_once_with({'PaginationConfig': expected_pagination_config})
+    assert command_results.outputs == expected_results
 
 
 @pytest.mark.parametrize('response, raises', [pytest.param({}, does_not_raise(),
@@ -757,11 +770,19 @@ def test_delete_detector(mocker, response, raises):
 
 
 EXPECTED_DETECTOR_RESPONSE = {
+    'CloudTrailStatus': 'ENABLED',
     'CreatedAt': 'string',
+    'DNSLogsStatus': 'ENABLED',
     'DetectorId': 'some_id',
+    'FlowLogsStatus': 'ENABLED',
+    'KubernetesAuditLogsStatus': 'ENABLED',
+    'MalwareProtectionReason': None,
+    'MalwareProtectionStatus': 'ENABLED',
+    'S3LogsStatus': 'ENABLED',
     'ServiceRole': 'string',
     'Status': 'ENABLED',
-    'UpdatedAt': 'string',
+    'Tags': {'string': 'string'},
+    'UpdatedAt': 'string'
 }
 
 
@@ -839,7 +860,8 @@ def test_fetch_events(mocker, xsoar_severity, gd_severity):
                                              side_effect=[{"FindingIds": ["finding_id1", "finding_id2"]}])
     get_findings_mock = mocker.patch.object(MockedBoto3Client, 'get_findings',
                                             side_effect=[{'Findings': [update_finding_id(FINDING.copy(), "finding_id1"),
-                                                                       update_finding_id(FINDING.copy(), "finding_id2")]}])
+                                                                       update_finding_id(FINDING.copy(),
+                                                                                         "finding_id2")]}])
     archive_findings_mock = mocker.patch.object(MockedBoto3Client, 'archive_findings', side_effect=[{}])
     incidents_mock = mocker.patch.object(demisto, 'incidents', side_effect=[{}])
 
@@ -855,3 +877,23 @@ def test_fetch_events(mocker, xsoar_severity, gd_severity):
     archive_findings_mock.is_called_once_with({'DetectorId': 'detector_id1',
                                                'FindingIds': ["finding_id1", "finding_id2"]})
     incidents_mock.is_called_once_with([])
+
+
+@pytest.mark.parametrize('args, expected_results', [
+    ({}, (50, 50, None)),
+    ({'limit': "3"}, (3, 50, None)),
+    ({'page_size': "5", "page": "2"}, (10, 5, 2))])
+def test_get_pagination_args(args, expected_results):
+    """
+       Given:
+           - pagination arguments.
+
+       When:
+           - Running a list command.
+
+       Then:
+           - Make sure that the correct amount of results to display is returned.
+            expected_results = (limit, page_size, page) == get_pagination_args(args)
+   """
+    from AWSGuardDuty import get_pagination_args
+    assert expected_results == get_pagination_args(args)

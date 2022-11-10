@@ -16,11 +16,27 @@ configuration:
   required: false
   type: 0
   section: Connect
+- name: incidentFetchInterval
+  display: Incidents Fetch Interval
+  required: false
+  defaultvalue: '1'
+  type: 19
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
   section: Collect
+- defaultvalue: '10'  #TODO
+  display: How many incidents to fetch each time
+  name: fetch_limit
+  required: false
+  type: 0
+- defaultvalue: 10 minutes #TODO
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
+  name: first_fetch_time
+  required: false
+  type: 0
 - display: Incident type
   name: incidentType
   required: false
@@ -107,6 +123,39 @@ script:
       - 'False'
       required: true
       secret: false
+    - auto: PREDEFINED
+      name: enableS3_logs
+      description: The status of S3 data event logs as a data source.
+      isArray: false
+      required: false
+      predefined:
+        - 'True'
+        - 'False'
+    - auto: PREDEFINED
+      name: enableKubernetesLogs
+      description: The status of Kubernetes audit logs as a data source.
+      isArray: false
+      required: false
+      predefined:
+        - 'True'
+        - 'False'
+    - auto: PREDEFINED
+      name: ebsVolumesMalwareProtection   # TODO
+      description: Describes the configuration for scanning EBS volumes as data source.
+      isArray: false
+      required: false
+      predefined:
+        - 'True'
+        - 'False'
+    - auto: PREDEFINED
+      name: findingFrequency
+      description: A value that specifies how frequently updated findings are exported.
+      isArray: false
+      required: false
+      predefined:
+        - 'Fifteen Minutes'
+        - 'One Hour'
+        - 'Six Hours'
     - default: false
       description: The AWS Region, if not specified the default region will be used.
       isArray: false
@@ -232,6 +281,30 @@ script:
     - contextPath: AWS.GuardDuty.Detectors.UpdatedAt
       description: The time a resource was last updated.
       type: string
+    - contextPath: AWS.GuardDuty.Detectors.CloudTrailStatus   # TODO
+      description: Describes whether CloudTrail is enabled as a data source for the detector.
+      type: string
+    - contextPath: AWS.GuardDuty.Detectors.DNSLogsStatus
+      description: Denotes whether DNS logs is enabled as a data source.
+      type: string
+    - contextPath: AWS.GuardDuty.Detectors.FlowLogsStatus
+      description: Denotes whether VPC flow logs is enabled as a data source.
+      type: string
+    - contextPath: AWS.GuardDuty.Detectors.S3LogsStatus
+      description: A value that describes whether S3 data event logs are automatically enabled for new members of the organization.
+      type: string
+    - contextPath: AWS.GuardDuty.Detectors.KubernetesAuditLogsStatus
+      description: A value that describes whether Kubernetes audit logs are enabled as a data source.
+      type: string
+    - contextPath: AWS.GuardDuty.Detectors.MalwareProtectionStatus
+      description: Describes whether scanning EBS volumes is enabled as a data source.
+      type: string
+    - contextPath: AWS.GuardDuty.Detectors.MalwareProtectionReason
+      description: Specifies the reason why scanning EBS volumes (Malware Protection) was not enabled as a data source.
+      type: string
+    - contextPath: AWS.GuardDuty.Detectors.Tags
+      description: The tags of the detector resource.
+      type: string
   - arguments:
     - default: false
       description: The unique ID of the detector that you want to update.
@@ -251,6 +324,39 @@ script:
       - 'False'
       required: true
       secret: false
+    - auto: PREDEFINED
+      name: enableS3_logs
+      description: The status of S3 data event logs as a data source.
+      isArray: false
+      required: false
+      predefined:
+        - 'True'
+        - 'False'
+    - auto: PREDEFINED
+      name: enableKubernetesLogs
+      description: The status of Kubernetes audit logs as a data source.
+      isArray: false
+      required: false
+      predefined:
+        - 'True'
+        - 'False'
+    - auto: PREDEFINED
+      name: ebsVolumesMalwareProtection   # TODO
+      description: Describes the configuration for scanning EBS volumes as data source.
+      isArray: false
+      required: false
+      predefined:
+        - 'True'
+        - 'False'
+    - auto: PREDEFINED
+      name: findingFrequency
+      description: A value that specifies how frequently updated findings are exported.
+      isArray: false
+      required: false
+      predefined:
+        - 'Fifteen Minutes'
+        - 'One Hour'
+        - 'Six Hours'
     - default: false
       description: The AWS Region, if not specified the default region will be used.
       isArray: false
@@ -408,6 +514,26 @@ script:
     execution: false
     name: aws-gd-delete-ip-set
   - arguments:
+    - default: false
+      defaultValue: '50'
+      description: Number of total results to query. Default is "50".
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Specific page to query.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of total results in each page.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
     - default: false
       description: The AWS Region, if not specified the default region will be used.
       isArray: false
@@ -601,6 +727,26 @@ script:
         the role.
       isArray: false
       name: roleSessionDuration
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of total results to query. Default is "50".
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Specific page to query.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of total results in each page.
+      isArray: false
+      name: page_size
       required: false
       secret: false
     deprecated: false
@@ -835,6 +981,26 @@ script:
       name: roleSessionDuration
       required: false
       secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of total results to query. Default is "50".
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Specific page to query.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of total results in each page.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
     deprecated: false
     description: Lists the ThreatIntelSets of the GuardDuty service specified by the
       detector ID.
@@ -947,6 +1113,26 @@ script:
       name: roleSessionDuration
       required: false
       secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of total results to query. Default is "50".
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Specific page to query.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of total results in each page.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
     deprecated: false
     description: Lists Amazon GuardDuty findings for the specified detector ID.
     execution: false
@@ -999,6 +1185,10 @@ script:
     description: Describes Amazon GuardDuty findings specified by finding IDs.
     execution: false
     name: aws-gd-get-findings
+#    outputs: TODO
+#      - contextPath: AWS.GuardDuty.Findings.FindingId
+#        description: The unique identifier for the Finding
+#        type: string
   - arguments:
     - default: false
       description: The ID of the detector to create sample findings for.
@@ -1057,7 +1247,7 @@ script:
       description: IDs of the findings that you want to archive. Separated by comma.
       isArray: false
       name: findingIds
-      required: false
+      required: true
       secret: false
     - default: false
       description: The AWS Region, if not specified the default region will be used.
@@ -1102,7 +1292,7 @@ script:
       description: IDs of the findings that you want to unarchive.
       isArray: false
       name: findingIds
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Unarchives Amazon GuardDuty findings specified by the list of finding
@@ -1201,6 +1391,26 @@ script:
         the role.
       isArray: false
       name: roleSessionDuration
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of total results to query. Default is "50".
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Specific page to query.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of total results in each page.
+      isArray: false
+      name: page_size
       required: false
       secret: false
     deprecated: false
@@ -1309,3 +1519,5 @@ script:
 tests:
 - No tests
 fromversion: 5.0.0
+defaultmapperin: AWSGuardDuty Mapper (incoming)
+defaultclassifier: AWSGuardDuty classifier
