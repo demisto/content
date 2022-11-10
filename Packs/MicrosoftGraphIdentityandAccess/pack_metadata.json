@@ -10,8 +10,7 @@
         "Authentication"
     ],
     "tags": [],
-    "useCases": [
-    ],
+    "useCases": [],
     "keywords": [],
     "marketplaces": [
         "xsoar",
