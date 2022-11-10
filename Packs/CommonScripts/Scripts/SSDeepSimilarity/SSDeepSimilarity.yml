@@ -24,16 +24,17 @@ args:
     In order to get results, replace the SSDeepSimilarity in default outputs with the output_key provided.
   defaultValue: SSDeepSimilarity
 outputs:
-  - contextPath: SSDeepSimilarity.compared_hashes.similarityValue
-    description: The difference calculation score between the ssdeep_hash and the compared hash.
-    type: number
-  - contextPath: SSDeepSimilarity.compared_hashes.hash
-    description: The hash compared to the ssdeep_hash.
-    type: string
+- contextPath: SSDeepSimilarity.compared_hashes.similarityValue
+  description: The difference calculation score between the ssdeep_hash and the compared
+    hash.
+  type: number
+- contextPath: SSDeepSimilarity.compared_hashes.hash
+  description: The hash compared to the ssdeep_hash.
+  type: string
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/ssdeep:1.0.0.23743
+dockerimage: devdemisto/py3-master:8.1.0.37377
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:

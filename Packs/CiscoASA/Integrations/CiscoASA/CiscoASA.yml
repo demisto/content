@@ -25,7 +25,8 @@ configuration:
   name: isASAv
   required: false
   type: 8
-description: Use the Cisco Adaptive Security Appliance Software integration to manage interfaces, rules, and network objects.
+description: Use the Cisco Adaptive Security Appliance Software integration to manage
+  interfaces, rules, and network objects.
 display: Cisco ASA
 name: Cisco ASA
 script:
@@ -151,7 +152,7 @@ script:
       description: The position of the rule.
       type: Number
     - contextPath: CiscoASA.Rules.ID
-      description: "The rule ID."
+      description: The rule ID.
       type: String
     - contextPath: CiscoASA.Rules.Remarks
       description: A list of all rule remarks.
@@ -167,13 +168,15 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The source. Can be the value of an IPv4, an address block, or the name of a network object.
+      description: The source. Can be the value of an IPv4, an address block, or the
+        name of a network object.
       isArray: false
       name: source
       required: true
       secret: false
     - default: false
-      description: The destination. Can be the value of an IPv4, an address block, or the name of a network object.
+      description: The destination. Can be the value of an IPv4, an address block,
+        or the name of a network object.
       isArray: false
       name: destination
       required: true
@@ -202,7 +205,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The log level of the rule. Can be "Default", "Emergencies", "Alerts", "Critical", "Errors", "Warnings", "Notifications", "Informational", or "Debugging".
+      description: The log level of the rule. Can be "Default", "Emergencies", "Alerts",
+        "Critical", "Errors", "Warnings", "Notifications", "Informational", or "Debugging".
       isArray: false
       name: log_level
       predefined:
@@ -379,13 +383,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The destination. Can be the value of an IPv4, an address block, or the name of a network object.
+      description: The destination. Can be the value of an IPv4, an address block,
+        or the name of a network object.
       isArray: false
       name: destination
       required: false
       secret: false
     - default: false
-      description: The source. Can be the value of an IPv4, an address block, or the name of a network object.
+      description: The source. Can be the value of an IPv4, an address block, or the
+        name of a network object.
       isArray: false
       name: source
       required: false
@@ -436,13 +442,15 @@ script:
       type: String
   - arguments:
     - default: false
-      description: A comma-separated list of network object names for which to get the network.
+      description: A comma-separated list of network object names for which to get
+        the network.
       isArray: true
       name: object_name
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of object IDs for which to get the network object.
+      description: A comma-separated list of object IDs for which to get the network
+        object.
       isArray: true
       name: object_id
       required: false
@@ -518,7 +526,7 @@ script:
     - contextPath: CiscoASA.Interface.Type
       description: The type of interface.
       type: String
-  dockerimage: demisto/python3:3.10.7.35188
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   isfetch: false
   runonce: false
   script: '-'

@@ -38,7 +38,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Integrate with SAP's services to execute CRUD operations for employee lifecycle processes.
+description: Integrate with SAP's services to execute CRUD operations for employee
+  lifecycle processes.
 display: SAP - IAM
 name: SAP-IAM
 script:
@@ -100,7 +101,7 @@ script:
     outputs:
     - contextPath: IAM.Vendor.active
       description: When true, indicates that the employee's status is active in the
-       third party integration.
+        third party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -134,7 +135,7 @@ script:
       within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   isfetch: false
   longRunning: false
   longRunningPort: false

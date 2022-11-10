@@ -6,7 +6,8 @@ script: ''
 type: python
 subtype: python3
 tags: []
-comment: Input Text Data to Encode as ASCII (Ignores any chars that aren't interpreted as ASCII)
+comment: Input Text Data to Encode as ASCII (Ignores any chars that aren't interpreted
+  as ASCII)
 enabled: true
 args:
 - name: data
@@ -19,6 +20,6 @@ outputs:
 scripttarget: 0
 runonce: false
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: devdemisto/py3-master:8.1.0.37377
 tests:
 - No tests (auto formatted)

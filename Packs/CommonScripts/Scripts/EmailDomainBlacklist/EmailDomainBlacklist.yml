@@ -9,7 +9,9 @@ tags:
 - transformer
 - general
 - entirelist
-comment: Accepts an array of domains as a block list, and a list of email addresses. The script then filters out any email address whose domain is in the block list.  The filtered list will be returned as an array.
+comment: Accepts an array of domains as a block list, and a list of email addresses.
+  The script then filters out any email address whose domain is in the block list.  The
+  filtered list will be returned as an array.
 enabled: true
 args:
 - name: value
@@ -22,7 +24,7 @@ args:
   isArray: true
 scripttarget: 0
 runonce: false
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: devdemisto/py3-master:8.1.0.37377
 runas: DBotWeakRole
 tests:
 - No test - unit test

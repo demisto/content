@@ -6,7 +6,8 @@ args:
   required: true
   secret: false
 - default: false
-  description: Whether to run the command. This is used to prevent unwanted calls to the command.
+  description: Whether to run the command. This is used to prevent unwanted calls
+    to the command.
   isArray: false
   name: approve_action
   required: false
@@ -15,7 +16,9 @@ args:
   predefined:
   - Yes
   - No
-comment: "This script allows disabling a specified user using one or more of the following integrations: SailPointIdentityIQ, ActiveDirectoryQuery, Okta, MicrosoftGraphUser, and IAM."
+comment: 'This script allows disabling a specified user using one or more of the following
+  integrations: SailPointIdentityIQ, ActiveDirectoryQuery, Okta, MicrosoftGraphUser,
+  and IAM.'
 commonfields:
   id: DisableUserWrapper
   version: -1
@@ -25,8 +28,8 @@ outputs:
 
   # IdentityIQ outputs
 - contextPath: IdentityIQ.AccountDisable.active
-  description: Indicates the status of account (should be false after request
-        is successfully completed).
+  description: Indicates the status of account (should be false after request is successfully
+    completed).
   type: Boolean
 
   # IAM outputs
@@ -40,7 +43,8 @@ outputs:
   description: The integration name.
   type: String
 - contextPath: IAM.Vendor.details
-  description: Tells the user if the API was successful, otherwise provides error information.
+  description: Tells the user if the API was successful, otherwise provides error
+    information.
   type: Unknown
 - contextPath: IAM.Vendor.email
   description: The employee email address.
@@ -74,7 +78,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.7.33922
+dockerimage: devdemisto/py3-master:8.1.0.37377
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

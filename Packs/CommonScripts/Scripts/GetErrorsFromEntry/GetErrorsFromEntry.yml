@@ -6,7 +6,9 @@ script: ''
 type: python
 tags:
 - Utility
-comment: Get the error(s) associated with a given entry/entries. Use ${lastCompletedTaskEntries} to check the previous task entries. The automation will return an array of the error contents from those entries.
+comment: Get the error(s) associated with a given entry/entries. Use ${lastCompletedTaskEntries}
+  to check the previous task entries. The automation will return an array of the error
+  contents from those entries.
 enabled: true
 args:
 - name: entry_id
@@ -20,7 +22,7 @@ outputs:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.4.29342
+dockerimage: devdemisto/py3-master:8.1.0.37377
 runas: DBotWeakRole
 fromversion: 6.2.0
 tests:

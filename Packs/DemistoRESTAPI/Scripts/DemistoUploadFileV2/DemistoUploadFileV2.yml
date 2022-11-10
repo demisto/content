@@ -30,7 +30,7 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  defaultValue: 'war room entry'
+  defaultValue: war room entry
   description: |-
     Where to upload the file
     - Available options are:
@@ -40,13 +40,14 @@ args:
   isArray: false
   name: target
   predefined:
-  - 'war room entry'
-  - 'incident attachment'
+  - war room entry
+  - incident attachment
   required: false
   secret: false
-comment: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
+comment: Copies a file from this incident to the specified incident. The file is recorded
+  as an entry in the specified incident’s War Room.
 subtype: python3
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: devdemisto/py3-master:8.1.0.37377
 system: false
 tags:
 - DemistoAPI

@@ -6,7 +6,8 @@ script: ''
 type: python
 tags:
 - Utility
-comment: After running DeleteContext, this script can repopulate all the file entries in the ${File} context key
+comment: After running DeleteContext, this script can repopulate all the file entries
+  in the ${File} context key
 enabled: true
 outputs:
 - contextPath: File.Name
@@ -68,6 +69,6 @@ subtype: python3
 runonce: false
 runas: DBotWeakRole
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.5.31928
+dockerimage: devdemisto/py3-master:8.1.0.37377
 tests:
 - No tests (auto formatted)

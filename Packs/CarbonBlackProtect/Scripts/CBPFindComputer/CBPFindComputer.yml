@@ -13,13 +13,15 @@ system: true
 args:
 - name: query
   default: true
-  description: Only show computers matching this query. If omitted, displays all computers. Query is in CBEP/Bit9 syntax documented in https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#query-condition - e.g. "name:*srv*"
+  description: Only show computers matching this query. If omitted, displays all computers.
+    Query is in CBEP/Bit9 syntax documented in https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#query-condition
+    - e.g. "name:*srv*"
 scripttarget: 0
 dependson:
   must:
   - cbp-computer-search
 timeout: 0s
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: devdemisto/py3-master:8.1.0.37377
 tests:
 - No test

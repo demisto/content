@@ -2320,8 +2320,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Starting item of the next page to view. Retrieved from a previous run of the command
-        (InlinePoliciesMarker).
+      description: Starting item of the next page to view. Retrieved from a previous
+        run of the command (InlinePoliciesMarker).
       isArray: false
       name: marker
       required: false
@@ -2470,7 +2470,7 @@ script:
       description: Specifies whether the user is required to set a new password on
         next sign-in.
       type: Boolean
-  dockerimage: demisto/boto3py3:1.0.0.37317
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   feed: false
   isfetch: false
   longRunning: false

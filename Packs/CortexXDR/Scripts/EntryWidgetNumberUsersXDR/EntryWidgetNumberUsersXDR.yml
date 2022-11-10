@@ -10,9 +10,10 @@ enabled: true
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: devdemisto/py3-master:8.1.0.37377
 runas: DBotWeakRole
 fromversion: 5.0.0
-comment: Entry widget that returns the number of users that participated in a specified Cortex XDR incident.
+comment: Entry widget that returns the number of users that participated in a specified
+  Cortex XDR incident.
 tests:
 - No test - no need to test widget

@@ -67,26 +67,30 @@ script:
       required: true
       secret: false
     - default: false
-      description: Specifies the name of the Amazon S3 bucket designated for publishing log files.
+      description: Specifies the name of the Amazon S3 bucket designated for publishing
+        log files.
       isArray: false
       name: s3BucketName
       required: true
       secret: false
     - default: false
-      description: Specifies the Amazon S3 key prefix that comes after the name of the bucket you have designated for log file delivery.
+      description: Specifies the Amazon S3 key prefix that comes after the name of
+        the bucket you have designated for log file delivery.
       isArray: false
       name: s3KeyPrefix
       required: false
       secret: false
     - default: false
-      description: Specifies the name of the Amazon SNS topic defined for notification of log file delivery.
+      description: Specifies the name of the Amazon SNS topic defined for notification
+        of log file delivery.
       isArray: false
       name: snsTopicName
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specifies whether the trail is publishing events from global services such as IAM to the log files.
+      description: Specifies whether the trail is publishing events from global services
+        such as IAM to the log files.
       isArray: false
       name: includeGlobalServiceEvents
       predefined:
@@ -96,7 +100,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specifies whether the trail is created in the current region or in all regions. The default is false.
+      description: Specifies whether the trail is created in the current region or
+        in all regions. The default is false.
       isArray: false
       name: isMultiRegionTrail
       predefined:
@@ -106,7 +111,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specifies whether log file integrity validation is enabled. The default is false.
+      description: Specifies whether log file integrity validation is enabled. The
+        default is false.
       isArray: false
       name: enableLogFileValidation
       predefined:
@@ -115,19 +121,24 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specifies a log group name using an Amazon Resource Name (ARN), a unique identifier that represents the log group to which CloudTrail logs will be delivered. Not required unless you specify CloudWatchLogsRoleArn.
+      description: Specifies a log group name using an Amazon Resource Name (ARN),
+        a unique identifier that represents the log group to which CloudTrail logs
+        will be delivered. Not required unless you specify CloudWatchLogsRoleArn.
       isArray: false
       name: cloudWatchLogsLogGroupArn
       required: false
       secret: false
     - default: false
-      description: Specifies the role for the CloudWatch Logs endpoint to assume to write to a user's log group.
+      description: Specifies the role for the CloudWatch Logs endpoint to assume to
+        write to a user's log group.
       isArray: false
       name: cloudWatchLogsRoleArn
       required: false
       secret: false
     - default: false
-      description: Specifies the KMS key ID to use to encrypt the logs delivered by CloudTrail. The value can be an alias name prefixed by "alias/", a fully specified ARN to an alias, a fully specified ARN to a key, or a globally unique identifier.
+      description: Specifies the KMS key ID to use to encrypt the logs delivered by
+        CloudTrail. The value can be an alias name prefixed by "alias/", a fully specified
+        ARN to an alias, a fully specified ARN to a key, or a globally unique identifier.
       isArray: false
       name: kmsKeyId
       required: false
@@ -151,13 +162,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Creates a trail that specifies the settings for delivery of log data to an Amazon S3 bucket. A maximum of five trails can exist in a region, irrespective of the region in which they were created.
+    description: Creates a trail that specifies the settings for delivery of log data
+      to an Amazon S3 bucket. A maximum of five trails can exist in a region, irrespective
+      of the region in which they were created.
     execution: true
     name: aws-cloudtrail-create-trail
     outputs:
@@ -165,10 +180,12 @@ script:
       description: Specifies the name of the trail.
       type: string
     - contextPath: AWS.CloudTrail.Trails.S3BucketName
-      description: Specifies the name of the Amazon S3 bucket designated for publishing log files.
+      description: Specifies the name of the Amazon S3 bucket designated for publishing
+        log files.
       type: string
     - contextPath: AWS.CloudTrail.Trails.IncludeGlobalServiceEvents
-      description: Specifies whether the trail is publishing events from global services such as IAM to the log files.
+      description: Specifies whether the trail is publishing events from global services
+        such as IAM to the log files.
       type: boolean
     - contextPath: AWS.CloudTrail.Trails.IsMultiRegionTrail
       description: Specifies whether the trail exists in one region or in all regions.
@@ -180,16 +197,20 @@ script:
       description: Specifies whether log file integrity validation is enabled.
       type: boolean
     - contextPath: AWS.CloudTrail.Trails.SnsTopicARN
-      description: Specifies the ARN of the Amazon SNS topic that CloudTrail uses to send notifications when log files are delivered.
+      description: Specifies the ARN of the Amazon SNS topic that CloudTrail uses
+        to send notifications when log files are delivered.
       type: string
     - contextPath: AWS.CloudTrail.Trails.S3KeyPrefix
-      description: pecifies the Amazon S3 key prefix that comes after the name of the bucket you have designated for log file delivery.
+      description: pecifies the Amazon S3 key prefix that comes after the name of
+        the bucket you have designated for log file delivery.
       type: string
     - contextPath: AWS.CloudTrail.Trails.CloudWatchLogsLogGroupArn
-      description: Specifies the Amazon Resource Name (ARN) of the log group to which CloudTrail logs will be delivered.
+      description: Specifies the Amazon Resource Name (ARN) of the log group to which
+        CloudTrail logs will be delivered.
       type: string
     - contextPath: AWS.CloudTrail.Trails.CloudWatchLogsRoleArn
-      description: Specifies the role for the CloudWatch Logs endpoint to assume to write to a user's log group.
+      description: Specifies the role for the CloudWatch Logs endpoint to assume to
+        write to a user's log group.
       type: string
     - contextPath: AWS.CloudTrail.Trails.KmsKeyId
       description: Specifies the KMS key ID that encrypts the logs delivered by CloudTrail.
@@ -199,25 +220,32 @@ script:
       type: string
   - arguments:
     - default: false
-      description: 'Specifies the name or the CloudTrail ARN of the trail to be deleted. The format of a trail ARN is: arn:aws:cloudtrail:us-east-1:123456789012:trail/MyTrail'
+      description: 'Specifies the name or the CloudTrail ARN of the trail to be deleted.
+        The format of a trail ARN is: arn:aws:cloudtrail:us-east-1:123456789012:trail/MyTrail'
       isArray: false
       name: name
       required: true
       secret: false
     deprecated: false
-    description: Deletes a trail. This operation must be called from the region in which the trail was created. DeleteTrail cannot be called on the shadow trails (replicated trails in other regions) of a trail that is enabled in all regions.
+    description: Deletes a trail. This operation must be called from the region in
+      which the trail was created. DeleteTrail cannot be called on the shadow trails
+      (replicated trails in other regions) of a trail that is enabled in all regions.
     execution: true
     name: aws-cloudtrail-delete-trail
   - arguments:
     - default: false
-      description: Specifies a list of trail names, trail ARNs, or both, of the trails to describe. If an empty list is specified, information for the trail in the current region is returned.
+      description: Specifies a list of trail names, trail ARNs, or both, of the trails
+        to describe. If an empty list is specified, information for the trail in the
+        current region is returned.
       isArray: false
       name: trailNameList
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specifies whether to include shadow trails in the response. A shadow trail is the replication in a region of a trail that was created in a different region. The default is true.
+      description: Specifies whether to include shadow trails in the response. A shadow
+        trail is the replication in a region of a trail that was created in a different
+        region. The default is true.
       isArray: false
       name: includeShadowTrails
       predefined:
@@ -244,13 +272,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Retrieves settings for the trail associated with the current region for your account.
+    description: Retrieves settings for the trail associated with the current region
+      for your account.
     execution: false
     name: aws-cloudtrail-describe-trails
     outputs:
@@ -258,19 +289,24 @@ script:
       description: Name of the trail set by calling CreateTrail.
       type: string
     - contextPath: AWS.CloudTrail.Trails.S3BucketName
-      description: Name of the Amazon S3 bucket into which CloudTrail delivers your trail files.
+      description: Name of the Amazon S3 bucket into which CloudTrail delivers your
+        trail files.
       type: string
     - contextPath: AWS.CloudTrail.Trails.S3KeyPrefix
-      description: Specifies the Amazon S3 key prefix that comes after the name of the bucket you have designated for log file delivery.
+      description: Specifies the Amazon S3 key prefix that comes after the name of
+        the bucket you have designated for log file delivery.
       type: string
     - contextPath: AWS.CloudTrail.Trails.SnsTopicARN
-      description: Specifies the ARN of the Amazon SNS topic that CloudTrail uses to send notifications when log files are delivered.
+      description: Specifies the ARN of the Amazon SNS topic that CloudTrail uses
+        to send notifications when log files are delivered.
       type: string
     - contextPath: AWS.CloudTrail.Trails.IncludeGlobalServiceEvents
-      description: Set to True to include AWS API calls from AWS global services such as IAM. Otherwise, False.
+      description: Set to True to include AWS API calls from AWS global services such
+        as IAM. Otherwise, False.
       type: boolean
     - contextPath: AWS.CloudTrail.Trails.IsMultiRegionTrail
-      description: Specifies whether the trail belongs only to one region or exists in all regions.
+      description: Specifies whether the trail belongs only to one region or exists
+        in all regions.
       type: boolean
     - contextPath: AWS.CloudTrail.Trails.HomeRegion
       description: The region in which the trail was created.
@@ -282,10 +318,12 @@ script:
       description: Specifies whether log file validation is enabled.
       type: boolean
     - contextPath: AWS.CloudTrail.Trails.CloudWatchLogsLogGroupArn
-      description: Specifies an Amazon Resource Name (ARN), a unique identifier that represents the log group to which CloudTrail logs will be delivered.
+      description: Specifies an Amazon Resource Name (ARN), a unique identifier that
+        represents the log group to which CloudTrail logs will be delivered.
       type: string
     - contextPath: AWS.CloudTrail.Trails.CloudWatchLogsRoleArn
-      description: Specifies the role for the CloudWatch Logs endpoint to assume to write to a user's log group.
+      description: Specifies the role for the CloudWatch Logs endpoint to assume to
+        write to a user's log group.
       type: string
     - contextPath: AWS.CloudTrail.KmsKeyId
       description: Specifies the KMS key ID that encrypts the logs delivered by CloudTrail.
@@ -301,55 +339,69 @@ script:
       required: true
       secret: false
     - default: false
-      description: Specifies the name of the Amazon S3 bucket designated for publishing log files.
+      description: Specifies the name of the Amazon S3 bucket designated for publishing
+        log files.
       isArray: false
       name: s3BucketName
       required: false
       secret: false
     - default: false
-      description: Specifies the Amazon S3 key prefix that comes after the name of the bucket you have designated for log file delivery.
+      description: Specifies the Amazon S3 key prefix that comes after the name of
+        the bucket you have designated for log file delivery.
       isArray: false
       name: s3KeyPrefix
       required: false
       secret: false
     - default: false
-      description: Specifies the name of the Amazon SNS topic defined for notification of log file delivery.
+      description: Specifies the name of the Amazon SNS topic defined for notification
+        of log file delivery.
       isArray: false
       name: snsTopicName
       required: false
       secret: false
     - default: false
-      description: Specifies whether the trail is publishing events from global services such as IAM to the log files.
+      description: Specifies whether the trail is publishing events from global services
+        such as IAM to the log files.
       isArray: false
       name: includeGlobalServiceEvents
       required: false
       secret: false
     - default: false
-      description: Specifies whether the trail applies only to the current region or to all regions. The default is false. If the trail exists only in the current region and this value is set to true, shadow trails (replications of the trail) will be created in the other regions. If the trail exists in all regions and this value is set to false, the trail will remain in the region where it was created, and its shadow trails in other regions will be deleted.
+      description: Specifies whether the trail applies only to the current region
+        or to all regions. The default is false. If the trail exists only in the current
+        region and this value is set to true, shadow trails (replications of the trail)
+        will be created in the other regions. If the trail exists in all regions and
+        this value is set to false, the trail will remain in the region where it was
+        created, and its shadow trails in other regions will be deleted.
       isArray: false
       name: isMultiRegionTrail
       required: false
       secret: false
     - default: false
-      description: Specifies whether log file validation is enabled. The default is false.
+      description: Specifies whether log file validation is enabled. The default is
+        false.
       isArray: false
       name: enableLogFileValidation
       required: false
       secret: false
     - default: false
-      description: Specifies a log group name using an Amazon Resource Name (ARN), a unique identifier that represents the log group to which CloudTrail logs will be delivered. Not required unless you specify CloudWatchLogsRoleArn.
+      description: Specifies a log group name using an Amazon Resource Name (ARN),
+        a unique identifier that represents the log group to which CloudTrail logs
+        will be delivered. Not required unless you specify CloudWatchLogsRoleArn.
       isArray: false
       name: cloudWatchLogsLogGroupArn
       required: false
       secret: false
     - default: false
-      description: Specifies the role for the CloudWatch Logs endpoint to assume to write to a user's log group.
+      description: Specifies the role for the CloudWatch Logs endpoint to assume to
+        write to a user's log group.
       isArray: false
       name: cloudWatchLogsRoleArn
       required: false
       secret: false
     - default: false
-      description: Specifies the KMS key ID to use to encrypt the logs delivered by CloudTrail.
+      description: Specifies the KMS key ID to use to encrypt the logs delivered by
+        CloudTrail.
       isArray: false
       name: kmsKeyId
       required: false
@@ -373,13 +425,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Updates the settings that specify delivery of log files. Changes to a trail do not require stopping the CloudTrail service.
+    description: Updates the settings that specify delivery of log files. Changes
+      to a trail do not require stopping the CloudTrail service.
     execution: true
     name: aws-cloudtrail-update-trail
     outputs:
@@ -387,10 +442,12 @@ script:
       description: Specifies the name of the trail.
       type: string
     - contextPath: AWS.CloudTrail.Trails.S3BucketName
-      description: Specifies the name of the Amazon S3 bucket designated for publishing log files.
+      description: Specifies the name of the Amazon S3 bucket designated for publishing
+        log files.
       type: string
     - contextPath: AWS.CloudTrail.Trails.IncludeGlobalServiceEvents
-      description: Specifies whether the trail is publishing events from global services such as IAM to the log files.
+      description: Specifies whether the trail is publishing events from global services
+        such as IAM to the log files.
       type: boolean
     - contextPath: AWS.CloudTrail.Trails.IsMultiRegionTrail
       description: Specifies whether the trail exists in one region or in all regions.
@@ -402,16 +459,20 @@ script:
       description: Specifies whether log file integrity validation is enabled.
       type: boolean
     - contextPath: AWS.CloudTrail.Trails.SnsTopicARN
-      description: Specifies the ARN of the Amazon SNS topic that CloudTrail uses to send notifications when log files are delivered.
+      description: Specifies the ARN of the Amazon SNS topic that CloudTrail uses
+        to send notifications when log files are delivered.
       type: string
     - contextPath: AWS.CloudTrail.Trails.S3KeyPrefix
-      description: pecifies the Amazon S3 key prefix that comes after the name of the bucket you have designated for log file delivery.
+      description: pecifies the Amazon S3 key prefix that comes after the name of
+        the bucket you have designated for log file delivery.
       type: string
     - contextPath: AWS.CloudTrail.Trails.CloudWatchLogsLogGroupArn
-      description: Specifies the Amazon Resource Name (ARN) of the log group to which CloudTrail logs will be delivered.
+      description: Specifies the Amazon Resource Name (ARN) of the log group to which
+        CloudTrail logs will be delivered.
       type: string
     - contextPath: AWS.CloudTrail.Trails.CloudWatchLogsRoleArn
-      description: Specifies the role for the CloudWatch Logs endpoint to assume to write to a user's log group.
+      description: Specifies the role for the CloudWatch Logs endpoint to assume to
+        write to a user's log group.
       type: string
     - contextPath: AWS.CloudTrail.Trails.KmsKeyId
       description: Specifies the KMS key ID that encrypts the logs delivered by CloudTrail.
@@ -421,7 +482,8 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Specifies the name or the CloudTrail ARN of the trail for which CloudTrail logs AWS API calls.
+      description: Specifies the name or the CloudTrail ARN of the trail for which
+        CloudTrail logs AWS API calls.
       isArray: false
       name: name
       required: true
@@ -445,18 +507,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Starts the recording of AWS API calls and log file delivery for a trail. For a trail that is enabled in all regions, this operation must be called from the region in which the trail was created. This operation cannot be called on the shadow trails (replicated trails in other regions) of a trail that is enabled in all regions.
+    description: Starts the recording of AWS API calls and log file delivery for a
+      trail. For a trail that is enabled in all regions, this operation must be called
+      from the region in which the trail was created. This operation cannot be called
+      on the shadow trails (replicated trails in other regions) of a trail that is
+      enabled in all regions.
     execution: true
     name: aws-cloudtrail-start-logging
   - arguments:
     - default: false
-      description: Specifies the name or the CloudTrail ARN of the trail for which CloudTrail logs AWS API calls.
+      description: Specifies the name or the CloudTrail ARN of the trail for which
+        CloudTrail logs AWS API calls.
       isArray: false
       name: name
       required: true
@@ -480,13 +549,21 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Suspends the recording of AWS API calls and log file delivery for the specified trail. Under most circumstances, there is no need to use this action. You can update a trail without stopping it first. This action is the only way to stop recording. For a trail enabled in all regions, this operation must be called from the region in which the trail was created, or an InvalidHomeRegionException will occur. This operation cannot be called on the shadow trails (replicated trails in other regions) of a trail enabled in all regions.
+    description: Suspends the recording of AWS API calls and log file delivery for
+      the specified trail. Under most circumstances, there is no need to use this
+      action. You can update a trail without stopping it first. This action is the
+      only way to stop recording. For a trail enabled in all regions, this operation
+      must be called from the region in which the trail was created, or an InvalidHomeRegionException
+      will occur. This operation cannot be called on the shadow trails (replicated
+      trails in other regions) of a trail enabled in all regions.
     execution: true
     name: aws-cloudtrail-stop-logging
   - arguments:
@@ -511,13 +588,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: Specifies that only events that occur after or at the specified time are returned.
+      description: Specifies that only events that occur after or at the specified
+        time are returned.
       isArray: false
       name: startTime
       required: false
       secret: false
     - default: false
-      description: Specifies that only events that occur before or at the specified time are returned.
+      description: Specifies that only events that occur before or at the specified
+        time are returned.
       isArray: false
       name: endTime
       required: false
@@ -541,13 +620,18 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Looks up API activity events captured by CloudTrail that create, update, or delete resources in your account. Events for a region can be looked up for the times in which you had CloudTrail turned on in that region during the last seven days.
+    description: Looks up API activity events captured by CloudTrail that create,
+      update, or delete resources in your account. Events for a region can be looked
+      up for the times in which you had CloudTrail turned on in that region during
+      the last seven days.
     execution: false
     name: aws-cloudtrail-lookup-events
     outputs:
@@ -564,18 +648,25 @@ script:
       description: The AWS service that the request was made to.
       type: string
     - contextPath: AWS.CloudTrail.Events.Username
-      description: A user name or role name of the requester that called the API in the event returned.
+      description: A user name or role name of the requester that called the API in
+        the event returned.
       type: string
     - contextPath: AWS.CloudTrail.Events.ResourceName
-      description: 'The type of a resource referenced by the event returned. When the resource type cannot be determined, null is returned. Some examples of resource types are: Instance for EC2, Trail for CloudTrail, DBInstance for RDS, and AccessKey for IAM. '
+      description: 'The type of a resource referenced by the event returned. When
+        the resource type cannot be determined, null is returned. Some examples of
+        resource types are: Instance for EC2, Trail for CloudTrail, DBInstance for
+        RDS, and AccessKey for IAM. '
       type: string
     - contextPath: AWS.CloudTrail.Events.ResourceType
-      description: The name of the resource referenced by the event returned. These are user-created names whose values will depend on the environment. For example, the resource name might be "auto-scaling-test-group" for an Auto Scaling Group or "i-1234567" for an EC2 Instance.
+      description: The name of the resource referenced by the event returned. These
+        are user-created names whose values will depend on the environment. For example,
+        the resource name might be "auto-scaling-test-group" for an Auto Scaling Group
+        or "i-1234567" for an EC2 Instance.
       type: string
     - contextPath: AWS.CloudTrail.Events.CloudTrailEvent
       description: A JSON string that contains a representation of the event returned.
       type: string
-  dockerimage: demisto/boto3:2.0.0.24033
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   feed: false
   isfetch: false
   longRunning: false

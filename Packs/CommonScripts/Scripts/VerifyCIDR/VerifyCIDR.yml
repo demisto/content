@@ -20,7 +20,7 @@ type: python
 subtype: python3
 runas: DBotWeakRole
 runonce: false
-dockerimage: demisto/python3:3.10.7.35188
+dockerimage: devdemisto/py3-master:8.1.0.37377
 fromversion: 6.5.0
 tests:
 - VerifyCIDR-Test

@@ -30,8 +30,8 @@ outputs:
 - contextPath: CompareEnvPredictionsToExpectedPredictions .allPredictionsMatched
 scripttarget: 0
 subtype: python3
-pswd: ""
+pswd: ''
 runonce: false
-dockerimage: demisto/ml:1.0.0.20606
+dockerimage: devdemisto/py3-master:8.1.0.37377
 runas: DBotWeakRole
 fromversion: 5.5.0

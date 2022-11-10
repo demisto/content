@@ -19,10 +19,10 @@ args:
 - name: isZipFile
   auto: PREDEFINED
   predefined:
-  - "yes"
-  - "no"
+  - yes
+  - no
   description: Is data compressed (zip format)?
-  defaultValue: "no"
+  defaultValue: no
 outputs:
 - contextPath: File.Name
   description: Filename (only in case of report type=json)
@@ -41,6 +41,6 @@ outputs:
 scripttarget: 0
 runonce: false
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: devdemisto/py3-master:8.1.0.37377
 tests:
 - Base64 File in List Test

@@ -15,14 +15,14 @@ args:
 - name: markAsNote
   auto: PREDEFINED
   predefined:
-  - "true"
-  - "false"
+  - 'true'
+  - 'false'
   description: Should the entry be marked as a note?
 - name: header
   description: Add a header text to the output
 scripttarget: 0
 runonce: false
 fromversion: 6.5.0
-dockerimage: demisto/python3:3.10.7.33922
+dockerimage: devdemisto/py3-master:8.1.0.37377
 tests:
 - No tests (auto formatted)

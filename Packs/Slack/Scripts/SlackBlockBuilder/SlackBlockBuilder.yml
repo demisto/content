@@ -7,7 +7,8 @@ type: python
 tags:
 - slack
 enabled: true
-comment: SlackBlockBuilder will format a given Slack block into a format readable by the SlackV3 integration. The script will also send the block to the given destination.
+comment: SlackBlockBuilder will format a given Slack block into a format readable
+  by the SlackV3 integration. The script will also send the block to the given destination.
 args:
 - default: false
   description: The URL copied from Slack's Block Builder.
@@ -22,7 +23,8 @@ args:
   required: false
   secret: false
 - default: false
-  description: The Slack user to send the message to. Can be either an email address or a Slack user name.
+  description: The Slack user to send the message to. Can be either an email address
+    or a Slack user name.
   isArray: false
   name: user
   required: false
@@ -40,7 +42,8 @@ args:
   required: false
   secret: false
 - default: false
-  description: The task to close with the reply. If empty, then no playbook tasks will be closed.
+  description: The task to close with the reply. If empty, then no playbook tasks
+    will be closed.
   isArray: false
   name: task
   required: false
@@ -64,14 +67,17 @@ args:
   secret: false
 - default: false
   defaultValue: Thank you for your response.
-  description: The reply to send to the user. Use the templates {user} and {response} to incorporate these in the reply. (i.e., "Thank you {user}. You have answered {response}.")
+  description: The reply to send to the user. Use the templates {user} and {response}
+    to incorporate these in the reply. (i.e., "Thank you {user}. You have answered
+    {response}.")
   isArray: false
   name: reply
   required: false
   secret: false
 - default: false
   defaultValue: 1 day
-  description: Time until the question expires. For example - 1 day. When it expires, a default response is sent.
+  description: Time until the question expires. For example - 1 day. When it expires,
+    a default response is sent.
   isArray: false
   name: lifetime
   required: false
@@ -92,11 +98,12 @@ args:
 outputs:
 - contextPath: SlackBlockState
   type: unknown
-  description: The state of the response from the user will be stored under this context path.
+  description: The state of the response from the user will be stored under this context
+    path.
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.8.36650
+dockerimage: devdemisto/py3-master:8.1.0.37377
 runas: DBotWeakRole
 dependson:
   must:

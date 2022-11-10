@@ -3,7 +3,8 @@ commonfields:
   id: GoogleKubernetesEngine
   version: -1
 configuration:
-- additionalinfo: The content of the generated `credentials.json` file. (Read the docs for further information)
+- additionalinfo: The content of the generated `credentials.json` file. (Read the
+    docs for further information)
   display: JSON credentials
   name: credentials_json
   required: true
@@ -36,13 +37,15 @@ script:
       secret: false
     - default: false
       defaultValue: '-'
-      description: The name of the Google Compute Engine zone in which the cluster resides, leave empty for all zones.
+      description: The name of the Google Compute Engine zone in which the cluster
+        resides, leave empty for all zones.
       isArray: false
       name: zone
       required: false
       secret: false
     deprecated: false
-    description: Lists all clusters owned by a project in either the specified zone or all zones.
+    description: Lists all clusters owned by a project in either the specified zone
+      or all zones.
     execution: false
     name: gcloud-clusters-list
     outputs:
@@ -50,7 +53,8 @@ script:
       description: Cluster name.
       type: String
     - contextPath: GKE.Cluster.MasterAuth.ClusterCaCertificate
-      description: Base64-encoded public certificate that is the root of trust for the cluster.
+      description: Base64-encoded public certificate that is the root of trust for
+        the cluster.
       type: String
     - contextPath: GKE.Cluster.LoggingService
       description: The logging service the cluster should use to write metrics.
@@ -59,10 +63,12 @@ script:
       description: The monitoring service the cluster should use to write metrics.
       type: String
     - contextPath: GKE.Cluster.Network
-      description: The name of the Google Compute Engine network to which the cluster is connected. If left unspecified, the default network will be used.
+      description: The name of the Google Compute Engine network to which the cluster
+        is connected. If left unspecified, the default network will be used.
       type: String
     - contextPath: GKE.Cluster.ClusterIpv4Cidr
-      description: The IP address range of the container pods in this cluster, in CIDR notation (e.g. 10.0.0.24).
+      description: The IP address range of the container pods in this cluster, in
+        CIDR notation (e.g. 10.0.0.24).
       type: String
     - contextPath: GKE.Cluster.AddonsConfig.HttpLoadBalancing.Disabled
       description: Configuration for the http load balancing addon.
@@ -80,7 +86,8 @@ script:
       description: Configuration for the Legacy ABAC.
       type: Boolean
     - contextPath: GKE.Cluster.SubNetwork
-      description: The name of the Google Compute Engine subnetwork to which the cluster is connected.
+      description: The name of the Google Compute Engine subnetwork to which the cluster
+        is connected.
       type: String
     - contextPath: GKE.Cluster.NodePool.Name
       description: Node pool name.
@@ -92,7 +99,8 @@ script:
       description: Size of the disk attached to each node, specified in GB.
       type: Number
     - contextPath: GKE.Cluster.NodePool.Config.OauthScopes
-      description: The set of Google API scopes to be made available on all of the node VMs under the “default” service account.
+      description: The set of Google API scopes to be made available on all of the
+        node VMs under the “default” service account.
       type: String
     - contextPath: GKE.Cluster.NodePool.Config.Metadata.disable-legacy-endpoints
       description: legacy abac Status.
@@ -101,10 +109,13 @@ script:
       description: The desired image type for the node pool.
       type: String
     - contextPath: GKE.Cluster.NodePool.Config.ServiceAccount
-      description: The Google Cloud Platform Service Account to be used by the node VMs. If no Service Account is specified, the “default” service account is used.
+      description: The Google Cloud Platform Service Account to be used by the node
+        VMs. If no Service Account is specified, the “default” service account is
+        used.
       type: String
     - contextPath: GKE.Cluster.NodePool.Config.DiskType
-      description: Type of the disk attached to each node (e.g. ‘pd-standard’ or ‘pd-ssd’) If unspecified, the default disk type is ‘pd- standard’.
+      description: Type of the disk attached to each node (e.g. ‘pd-standard’ or ‘pd-ssd’)
+        If unspecified, the default disk type is ‘pd- standard’.
       type: String
     - contextPath: GKE.Cluster.NodePool.Config.ShieldedInstanceConfig.EnableIntegrityMonitoring
       description: Defines whether the instance has integrity monitoring enabled.
@@ -119,13 +130,16 @@ script:
       description: Minimum number of nodes in the NodePool. Must be >= 1 and <= max_node_count.
       type: Number
     - contextPath: GKE.Cluster.NodePool.Autoscaling.MaxNodeCount
-      description: Maximum number of nodes in the NodePool. Must be >= min_node_count. There has to enough quota to scale up the cluster.
+      description: Maximum number of nodes in the NodePool. Must be >= min_node_count.
+        There has to enough quota to scale up the cluster.
       type: Number
     - contextPath: GKE.Cluster.NodePool.Management.AutoRepair
-      description: A flag that specifies whether the node auto-repair is enabled for the node pool.
+      description: A flag that specifies whether the node auto-repair is enabled for
+        the node pool.
       type: Number
     - contextPath: GKE.Cluster.NodePool.MaxPodsConstraint.MaxPodsPerNode
-      description: The constraint on the maximum number of pods that can be run simultaneously on a node in the node pool.
+      description: The constraint on the maximum number of pods that can be run simultaneously
+        on a node in the node pool.
       type: String
     - contextPath: GKE.Cluster.NodePool.PodIpv4CidrSize
       description: The pod CIDR block size per node in this node pool.
@@ -137,13 +151,15 @@ script:
       description: The version of the Kubernetes of this node.
       type: String
     - contextPath: GKE.Cluster.NodePool.InstanceGroupUrls
-      description: The resource URLs of the managed instance groups associated with this node pool.
+      description: The resource URLs of the managed instance groups associated with
+        this node pool.
       type: String
     - contextPath: GKE.Cluster.NodePool.Status
       description: The status of the nodes in this pool instance.
       type: String
     - contextPath: GKE.Cluster.Locations
-      description: The desired list of Google Compute Engine zones in which the cluster’s nodes should be located.
+      description: The desired list of Google Compute Engine zones in which the cluster’s
+        nodes should be located.
       type: String
     - contextPath: GKE.Cluster.LabelFingerprint
       description: The fingerprint of the set of labels for this cluster.
@@ -152,16 +168,20 @@ script:
       description: Whether alias IPs will be used for pod IPs in the cluster.
       type: Number
     - contextPath: GKE.Cluster.IpAllocationPolicy.ClusterIpv4Cidr
-      description: The IP address range of the container pods in this cluster, in CIDR notation (e.g. 10.0.0.0/24).
+      description: The IP address range of the container pods in this cluster, in
+        CIDR notation (e.g. 10.0.0.0/24).
       type: String
     - contextPath: GKE.Cluster.IpAllocationPolicy.ServicesIpv4Cidr
-      description: The IP address range of the Kubernetes services in this cluster, in CIDR notation (e.g. 10.0.0.0/24).
+      description: The IP address range of the Kubernetes services in this cluster,
+        in CIDR notation (e.g. 10.0.0.0/24).
       type: String
     - contextPath: GKE.Cluster.IpAllocationPolicy.ClusterSecondaryRangeName
-      description: The name of the secondary range to be used for the cluster CIDR block. The secondary range will be used for pod IP addresses.
+      description: The name of the secondary range to be used for the cluster CIDR
+        block. The secondary range will be used for pod IP addresses.
       type: String
     - contextPath: GKE.Cluster.IpAllocationPolicy.ServicesSecondaryRangeName
-      description: The name of the secondary range to be used as for the services CIDR block. The secondary range will be used for service ClusterIPs.
+      description: The name of the secondary range to be used as for the services
+        CIDR block. The secondary range will be used for service ClusterIPs.
       type: String
     - contextPath: GKE.Cluster.IpAllocationPolicy.ClusterIpv4CidrBlock
       description: The IP address range for the cluster pod IPs.
@@ -182,7 +202,8 @@ script:
       description: The relative name of the Google Compute Engine.
       type: String
     - contextPath: GKE.Cluster.NetworkConfig.Subnetwork
-      description: The relative name of the Google Compute Engine subnetwork to which the cluster is connected.
+      description: The relative name of the Google Compute Engine subnetwork to which
+        the cluster is connected.
       type: String
     - contextPath: GKE.Cluster.DefaultMaxPodsConstraint.MaxPodsPerNode
       description: Constraint enforced on the max num of pods per node.
@@ -209,10 +230,12 @@ script:
       description: The current status of this cluster.
       type: String
     - contextPath: GKE.Cluster.ServicesIpv4Cidr
-      description: The IP address range of the Kubernetes services in this cluster, in CIDR notation (e.g. 10.0.0.0/24).'
+      description: The IP address range of the Kubernetes services in this cluster,
+        in CIDR notation (e.g. 10.0.0.0/24).'
       type: String
     - contextPath: GKE.Cluster.Location
-      description: The name of the Google Compute Engine zone or region in which the cluster resides.
+      description: The name of the Google Compute Engine zone or region in which the
+        cluster resides.
       type: String
   - arguments:
     - default: false
@@ -222,13 +245,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the cluster to retrieve. The name of the cluster to retrieve.
+      description: The name of the cluster to retrieve. The name of the cluster to
+        retrieve.
       isArray: false
       name: cluster
       required: true
       secret: false
     - default: false
-      description: The name of the Google Compute Engine zone in which the cluster resides.
+      description: The name of the Google Compute Engine zone in which the cluster
+        resides.
       isArray: false
       name: zone
       required: false
@@ -242,7 +267,8 @@ script:
       description: Cluster name.
       type: String
     - contextPath: GKE.Cluster.MasterAuth.ClusterCaCertificate
-      description: Base64-encoded public certificate that is the root of trust for the cluster.
+      description: Base64-encoded public certificate that is the root of trust for
+        the cluster.
       type: String
     - contextPath: GKE.Cluster.LoggingService
       description: The logging service the cluster should use to write metrics.
@@ -251,10 +277,12 @@ script:
       description: The monitoring service the cluster should use to write metrics.
       type: String
     - contextPath: GKE.Cluster.Network
-      description: The name of the Google Compute Engine network to which the cluster is connected. If left unspecified, the default network will be used.
+      description: The name of the Google Compute Engine network to which the cluster
+        is connected. If left unspecified, the default network will be used.
       type: String
     - contextPath: GKE.Cluster.ClusterIpv4Cidr
-      description: The IP address range of the container pods in this cluster, in CIDR notation (e.g. 10.0.0.0/24).
+      description: The IP address range of the container pods in this cluster, in
+        CIDR notation (e.g. 10.0.0.0/24).
       type: String
     - contextPath: GKE.Cluster.AddonsConfig.HttpLoadBalancing.Disabled
       description: Configuration for the http load balancing addon.
@@ -272,7 +300,8 @@ script:
       description: Configuration for the Legacy ABAC.
       type: Boolean
     - contextPath: GKE.Cluster.SubNetwork
-      description: The name of the Google Compute Engine subnetwork to which the cluster is connected.
+      description: The name of the Google Compute Engine subnetwork to which the cluster
+        is connected.
       type: String
     - contextPath: GKE.Cluster.NodePool.Name
       description: Node pool name.
@@ -284,7 +313,8 @@ script:
       description: Size of the disk attached to each node, specified in GB.
       type: Number
     - contextPath: GKE.Cluster.NodePool.Config.OauthScopes
-      description: The set of Google API scopes to be made available on all of the node VMs under the “default” service account.
+      description: The set of Google API scopes to be made available on all of the
+        node VMs under the “default” service account.
       type: String
     - contextPath: GKE.Cluster.NodePool.Config.Metadata.disable-legacy-endpoints
       description: legacy abac Status.
@@ -293,10 +323,13 @@ script:
       description: The desired image type for the node pool.
       type: String
     - contextPath: GKE.Cluster.NodePool.Config.ServiceAccount
-      description: The Google Cloud Platform Service Account to be used by the node VMs. If no Service Account is specified, the “default” service account is used.
+      description: The Google Cloud Platform Service Account to be used by the node
+        VMs. If no Service Account is specified, the “default” service account is
+        used.
       type: String
     - contextPath: GKE.Cluster.NodePool.Config.DiskType
-      description: Type of the disk attached to each node (e.g. ‘pd-standard’ or ‘pd-ssd’) If unspecified, the default disk type is ‘pd- standard’.
+      description: Type of the disk attached to each node (e.g. ‘pd-standard’ or ‘pd-ssd’)
+        If unspecified, the default disk type is ‘pd- standard’.
       type: String
     - contextPath: GKE.Cluster.NodePool.Config.ShieldedInstanceConfig.EnableIntegrityMonitoring
       description: Defines whether the instance has integrity monitoring enabled.
@@ -311,13 +344,16 @@ script:
       description: Minimum number of nodes in the NodePool. Must be >= 1 and <= max_node_count.
       type: Number
     - contextPath: GKE.Cluster.NodePool.Autoscaling.MaxNodeCount
-      description: Maximum number of nodes in the NodePool. Must be >= min_node_count. There has to enough quota to scale up the cluster.
+      description: Maximum number of nodes in the NodePool. Must be >= min_node_count.
+        There has to enough quota to scale up the cluster.
       type: Number
     - contextPath: GKE.Cluster.NodePool.Management.AutoRepair
-      description: A flag that specifies whether the node auto-repair is enabled for the node pool.
+      description: A flag that specifies whether the node auto-repair is enabled for
+        the node pool.
       type: Number
     - contextPath: GKE.Cluster.NodePool.MaxPodsConstraint.MaxPodsPerNode
-      description: The constraint on the maximum number of pods that can be run simultaneously on a node in the node pool.
+      description: The constraint on the maximum number of pods that can be run simultaneously
+        on a node in the node pool.
       type: String
     - contextPath: GKE.Cluster.NodePool.PodIpv4CidrSize
       description: The pod CIDR block size per node in this node pool.
@@ -329,13 +365,15 @@ script:
       description: The version of the Kubernetes of this node.
       type: String
     - contextPath: GKE.Cluster.NodePool.InstanceGroupUrls
-      description: The resource URLs of the managed instance groups associated with this node pool.
+      description: The resource URLs of the managed instance groups associated with
+        this node pool.
       type: String
     - contextPath: GKE.Cluster.NodePool.Status
       description: The status of the nodes in this pool instance.
       type: String
     - contextPath: GKE.Cluster.Locations
-      description: The desired list of Google Compute Engine zones in which the cluster’s nodes should be located.
+      description: The desired list of Google Compute Engine zones in which the cluster’s
+        nodes should be located.
       type: String
     - contextPath: GKE.Cluster.LabelFingerprint
       description: The fingerprint of the set of labels for this cluster.
@@ -344,16 +382,20 @@ script:
       description: Whether alias IPs will be used for pod IPs in the cluster.
       type: Number
     - contextPath: GKE.Cluster.IpAllocationPolicy.ClusterIpv4Cidr
-      description: The IP address range of the container pods in this cluster, in CIDR notation (e.g. 10.0.0.0/24).
+      description: The IP address range of the container pods in this cluster, in
+        CIDR notation (e.g. 10.0.0.0/24).
       type: String
     - contextPath: GKE.Cluster.IpAllocationPolicy.ServicesIpv4Cidr
-      description: The IP address range of the Kubernetes services in this cluster, in CIDR notation (e.g. 10.0.0.0/24).
+      description: The IP address range of the Kubernetes services in this cluster,
+        in CIDR notation (e.g. 10.0.0.0/24).
       type: String
     - contextPath: GKE.Cluster.IpAllocationPolicy.ClusterSecondaryRangeName
-      description: The name of the secondary range to be used for the cluster CIDR block. The secondary range will be used for pod IP addresses.
+      description: The name of the secondary range to be used for the cluster CIDR
+        block. The secondary range will be used for pod IP addresses.
       type: String
     - contextPath: GKE.Cluster.IpAllocationPolicy.ServicesSecondaryRangeName
-      description: The name of the secondary range to be used as for the services CIDR block. The secondary range will be used for service ClusterIPs.
+      description: The name of the secondary range to be used as for the services
+        CIDR block. The secondary range will be used for service ClusterIPs.
       type: String
     - contextPath: GKE.Cluster.IpAllocationPolicy.ClusterIpv4CidrBlock
       description: The IP address range for the cluster pod IPs.
@@ -374,7 +416,8 @@ script:
       description: The relative name of the Google Compute Engine.
       type: String
     - contextPath: GKE.Cluster.NetworkConfig.Subnetwork
-      description: The relative name of the Google Compute Engine subnetwork to which the cluster is connected.
+      description: The relative name of the Google Compute Engine subnetwork to which
+        the cluster is connected.
       type: String
     - contextPath: GKE.Cluster.DefaultMaxPodsConstraint.MaxPodsPerNode
       description: Constraint enforced on the max num of pods per node.
@@ -401,10 +444,12 @@ script:
       description: The current status of this cluster.
       type: String
     - contextPath: GKE.Cluster.ServicesIpv4Cidr
-      description: The IP address range of the Kubernetes services in this cluster, in CIDR notation (e.g. 10.0.0.0/24).'
+      description: The IP address range of the Kubernetes services in this cluster,
+        in CIDR notation (e.g. 10.0.0.0/24).'
       type: String
     - contextPath: GKE.Cluster.Location
-      description: The name of the Google Compute Engine zone or region in which the cluster resides.
+      description: The name of the Google Compute Engine zone or region in which the
+        cluster resides.
       type: String
   - arguments:
     - default: false
@@ -420,7 +465,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name of the Google Compute Engine zone in which the cluster resides.
+      description: The name of the Google Compute Engine zone in which the cluster
+        resides.
       isArray: false
       name: zone
       required: false
@@ -436,7 +482,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Enable basic (username/password) auth for the cluster. Enable will create user admin with generated password.
+    description: Enable basic (username/password) auth for the cluster. Enable will
+      create user admin with generated password.
     execution: false
     name: gcloud-clusters-set-muster-auth
     outputs:
@@ -444,7 +491,8 @@ script:
       description: The server-assigned ID for the operation
       type: String
     - contextPath: GKE.Operation.Zone
-      description: The name of the Google Compute Engine zone in which the operation is taking place. This field is deprecated, use location instead.
+      description: The name of the Google Compute Engine zone in which the operation
+        is taking place. This field is deprecated, use location instead.
       type: String
     - contextPath: GKE.Operation.OperationType
       description: Operaion type. (update, etc.)
@@ -469,20 +517,23 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the cluster to retrieve. The name of the cluster to retrieve.
+      description: The name of the cluster to retrieve. The name of the cluster to
+        retrieve.
       isArray: false
       name: cluster
       required: true
       secret: false
     - default: false
-      description: The name of the Google Compute Engine zone in which the cluster resides.
+      description: The name of the Google Compute Engine zone in which the cluster
+        resides.
       isArray: false
       name: zone
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Configuration for the HTTP (L7) load balancing controller addon, which makes it easy to set up HTTP load balancers for services in a cluster.
+      description: Configuration for the HTTP (L7) load balancing controller addon,
+        which makes it easy to set up HTTP load balancers for services in a cluster.
       isArray: false
       name: http_load_balancing
       predefined:
@@ -521,7 +572,8 @@ script:
       description: The server-assigned ID for the operation
       type: String
     - contextPath: GKE.Operation.Zone
-      description: The name of the Google Compute Engine zone in which the operation is taking place. This field is deprecated, use location instead.
+      description: The name of the Google Compute Engine zone in which the operation
+        is taking place. This field is deprecated, use location instead.
       type: String
     - contextPath: GKE.Operation.OperationType
       description: Operaion type. (update, etc.)
@@ -546,20 +598,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the cluster to retrieve. The name of the cluster to retrieve.
+      description: The name of the cluster to retrieve. The name of the cluster to
+        retrieve.
       isArray: false
       name: cluster
       required: true
       secret: false
     - default: false
-      description: The name of the Google Compute Engine zone in which the cluster resides.
+      description: The name of the Google Compute Engine zone in which the cluster
+        resides.
       isArray: false
       name: zone
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether the ABAC authorizer is enabled for this cluster. When enabled, identities in the system, including service accounts, nodes, and controllers, will have statically granted permissions beyond those provided by the RBAC configuration or IAM.
+      description: Whether the ABAC authorizer is enabled for this cluster. When enabled,
+        identities in the system, including service accounts, nodes, and controllers,
+        will have statically granted permissions beyond those provided by the RBAC
+        configuration or IAM.
       isArray: false
       name: enable
       predefined:
@@ -568,7 +625,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Configuration for the legacy Attribute Based Access Control authorization mode.
+    description: Configuration for the legacy Attribute Based Access Control authorization
+      mode.
     execution: false
     name: gcloud-clusters-set-legacy-auth
     outputs:
@@ -576,7 +634,8 @@ script:
       description: The server-assigned ID for the operation
       type: String
     - contextPath: GKE.Operation.Zone
-      description: The name of the Google Compute Engine zone in which the operation is taking place. This field is deprecated, use location instead.
+      description: The name of the Google Compute Engine zone in which the operation
+        is taking place. This field is deprecated, use location instead.
       type: String
     - contextPath: GKE.Operation.OperationType
       description: Operaion type. (update, etc.)
@@ -601,13 +660,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the cluster to retrieve. The name of the cluster to retrieve.
+      description: The name of the cluster to retrieve. The name of the cluster to
+        retrieve.
       isArray: false
       name: cluster
       required: true
       secret: false
     - default: false
-      description: The name of the Google Compute Engine zone in which the cluster resides.
+      description: The name of the Google Compute Engine zone in which the cluster
+        resides.
       isArray: false
       name: zone
       required: false
@@ -623,7 +684,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Cidrs define up to 50 external networks that could access Kubernetes master through HTTPS. Comma-seprated e.g. "192.168.0.0/24,10.0.0.0/32"
+      description: Cidrs define up to 50 external networks that could access Kubernetes
+        master through HTTPS. Comma-seprated e.g. "192.168.0.0/24,10.0.0.0/32"
       isArray: true
       name: cidrs
       required: false
@@ -639,7 +701,8 @@ script:
       description: The server-assigned ID for the operation
       type: String
     - contextPath: GKE.Operation.Zone
-      description: The name of the Google Compute Engine zone in which the operation is taking place. This field is deprecated, use location instead.
+      description: The name of the Google Compute Engine zone in which the operation
+        is taking place. This field is deprecated, use location instead.
       type: String
     - contextPath: GKE.Operation.OperationType
       description: Operaion type. (update, etc.)
@@ -664,13 +727,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the cluster to retrieve. The name of the cluster to retrieve.
+      description: The name of the cluster to retrieve. The name of the cluster to
+        retrieve.
       isArray: false
       name: cluster
       required: true
       secret: false
     - default: false
-      description: The name of the Google Compute Engine zone in which the cluster resides.
+      description: The name of the Google Compute Engine zone in which the cluster
+        resides.
       isArray: false
       name: zone
       required: true
@@ -686,7 +751,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Enable or Disable k8s stackdriver. Important - To use this functinality the user should enable manually logging to "monitoring.googleapis.com/kubernetes" manulally via the GCP console.
+    description: Enable or Disable k8s stackdriver. Important - To use this functinality
+      the user should enable manually logging to "monitoring.googleapis.com/kubernetes"
+      manulally via the GCP console.
     execution: false
     name: gcloud-clusters-set-k8s-stackdriver
     outputs:
@@ -694,7 +761,8 @@ script:
       description: The server-assigned ID for the operation
       type: String
     - contextPath: GKE.Operation.Zone
-      description: The name of the Google Compute Engine zone in which the operation is taking place. This field is deprecated, use location instead.
+      description: The name of the Google Compute Engine zone in which the operation
+        is taking place. This field is deprecated, use location instead.
       type: String
     - contextPath: GKE.Operation.OperationType
       description: Operaion type. (update, etc.)
@@ -719,13 +787,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the cluster to retrieve. The name of the cluster to retrieve.
+      description: The name of the cluster to retrieve. The name of the cluster to
+        retrieve.
       isArray: false
       name: cluster
       required: true
       secret: false
     - default: false
-      description: The name of the Google Compute Engine zone in which the cluster resides.
+      description: The name of the Google Compute Engine zone in which the cluster
+        resides.
       isArray: false
       name: zone
       required: false
@@ -749,7 +819,8 @@ script:
       description: The server-assigned ID for the operation
       type: String
     - contextPath: GKE.Operation.Zone
-      description: The name of the Google Compute Engine zone in which the operation is taking place. This field is deprecated, use location instead.
+      description: The name of the Google Compute Engine zone in which the operation
+        is taking place. This field is deprecated, use location instead.
       type: String
     - contextPath: GKE.Operation.OperationType
       description: Operaion type. (update, etc.)
@@ -774,13 +845,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the cluster to retrieve. The name of the cluster to retrieve.
+      description: The name of the cluster to retrieve. The name of the cluster to
+        retrieve.
       isArray: false
       name: cluster
       required: true
       secret: false
     - default: false
-      description: The name of the Google Compute Engine zone in which the cluster resides.
+      description: The name of the Google Compute Engine zone in which the cluster
+        resides.
       isArray: false
       name: zone
       required: false
@@ -804,7 +877,8 @@ script:
       description: The server-assigned ID for the operation
       type: String
     - contextPath: GKE.Operation.Zone
-      description: The name of the Google Compute Engine zone in which the operation is taking place. This field is deprecated, use location instead.
+      description: The name of the Google Compute Engine zone in which the operation
+        is taking place. This field is deprecated, use location instead.
       type: String
     - contextPath: GKE.Operation.OperationType
       description: Operaion type. (update, etc.)
@@ -829,13 +903,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the cluster to retrieve. The name of the cluster to retrieve.
+      description: The name of the cluster to retrieve. The name of the cluster to
+        retrieve.
       isArray: false
       name: cluster
       required: true
       secret: false
     - default: false
-      description: The name of the Google Compute Engine zone in which the cluster resides.
+      description: The name of the Google Compute Engine zone in which the cluster
+        resides.
       isArray: false
       name: zone
       required: false
@@ -855,7 +931,8 @@ script:
       description: Size of the disk attached to each node, specified in GB.
       type: Number
     - contextPath: GKE.NodePool.Config.OauthScopes
-      description: The set of Google API scopes to be made available on all of the node VMs under the “default” service account.
+      description: The set of Google API scopes to be made available on all of the
+        node VMs under the “default” service account.
       type: String
     - contextPath: GKE.NodePool.Config.Metadata.disable-legacy-endpoints
       description: legacy abac Status.
@@ -864,10 +941,13 @@ script:
       description: The desired image type for the node pool.
       type: String
     - contextPath: GKE.NodePool.Config.ServiceAccount
-      description: The Google Cloud Platform Service Account to be used by the node VMs. If no Service Account is specified, the “default” service account is used.
+      description: The Google Cloud Platform Service Account to be used by the node
+        VMs. If no Service Account is specified, the “default” service account is
+        used.
       type: String
     - contextPath: GKE.NodePool.Config.DiskType
-      description: Type of the disk attached to each node (e.g. ‘pd-standard’ or ‘pd-ssd’) If unspecified, the default disk type is ‘pd- standard’.
+      description: Type of the disk attached to each node (e.g. ‘pd-standard’ or ‘pd-ssd’)
+        If unspecified, the default disk type is ‘pd- standard’.
       type: String
     - contextPath: GKE.NodePool.Config.ShieldedInstanceConfig.EnableIntegrityMonitoring
       description: Defines whether the instance has integrity monitoring enabled.
@@ -882,13 +962,16 @@ script:
       description: Minimum number of nodes in the NodePool. Must be >= 1 and <= max_node_count.
       type: Number
     - contextPath: GKE.NodePool.Autoscaling.MaxNodeCount
-      description: Maximum number of nodes in the NodePool. Must be >= min_node_count. There has to enough quota to scale up the cluster.
+      description: Maximum number of nodes in the NodePool. Must be >= min_node_count.
+        There has to enough quota to scale up the cluster.
       type: Number
     - contextPath: GKE.NodePool.Management.AutoRepair
-      description: A flag that specifies whether the node auto-repair is enabled for the node pool.
+      description: A flag that specifies whether the node auto-repair is enabled for
+        the node pool.
       type: Number
     - contextPath: GKE.NodePool.MaxPodsConstraint.MaxPodsPerNode
-      description: The constraint on the maximum number of pods that can be run simultaneously on a node in the node pool.
+      description: The constraint on the maximum number of pods that can be run simultaneously
+        on a node in the node pool.
       type: String
     - contextPath: GKE.NodePool.PodIpv4CidrSize
       description: The pod CIDR block size per node in this node pool.
@@ -900,7 +983,8 @@ script:
       description: The version of the Kubernetes of this node.
       type: String
     - contextPath: GKE.NodePool.InstanceGroupUrls
-      description: The resource URLs of the managed instance groups associated with this node pool.
+      description: The resource URLs of the managed instance groups associated with
+        this node pool.
       type: String
     - contextPath: GKE.NodePool.Status
       description: The status of the nodes in this pool instance.
@@ -913,13 +997,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the cluster to retrieve. The name of the cluster to retrieve.
+      description: The name of the cluster to retrieve. The name of the cluster to
+        retrieve.
       isArray: false
       name: cluster
       required: true
       secret: false
     - default: false
-      description: The name of the Google Compute Engine zone in which the cluster resides.
+      description: The name of the Google Compute Engine zone in which the cluster
+        resides.
       isArray: false
       name: zone
       required: false
@@ -945,7 +1031,8 @@ script:
       description: Size of the disk attached to each node, specified in GB.
       type: Number
     - contextPath: GKE.NodePool.Config.OauthScopes
-      description: The set of Google API scopes to be made available on all of the node VMs under the “default” service account.
+      description: The set of Google API scopes to be made available on all of the
+        node VMs under the “default” service account.
       type: String
     - contextPath: GKE.NodePool.Config.Metadata.disable-legacy-endpoints
       description: legacy abac Status.
@@ -954,10 +1041,13 @@ script:
       description: The desired image type for the node pool.
       type: String
     - contextPath: GKE.NodePool.Config.ServiceAccount
-      description: The Google Cloud Platform Service Account to be used by the node VMs. If no Service Account is specified, the “default” service account is used.
+      description: The Google Cloud Platform Service Account to be used by the node
+        VMs. If no Service Account is specified, the “default” service account is
+        used.
       type: String
     - contextPath: GKE.NodePool.Config.DiskType
-      description: Type of the disk attached to each node (e.g. ‘pd-standard’ or ‘pd-ssd’) If unspecified, the default disk type is ‘pd- standard’.
+      description: Type of the disk attached to each node (e.g. ‘pd-standard’ or ‘pd-ssd’)
+        If unspecified, the default disk type is ‘pd- standard’.
       type: String
     - contextPath: GKE.NodePool.Config.ShieldedInstanceConfig.EnableIntegrityMonitoring
       description: Defines whether the instance has integrity monitoring enabled.
@@ -972,13 +1062,16 @@ script:
       description: Minimum number of nodes in the NodePool. Must be >= 1 and <= max_node_count.
       type: Number
     - contextPath: GKE.NodePool.Autoscaling.MaxNodeCount
-      description: Maximum number of nodes in the NodePool. Must be >= min_node_count. There has to enough quota to scale up the cluster.
+      description: Maximum number of nodes in the NodePool. Must be >= min_node_count.
+        There has to enough quota to scale up the cluster.
       type: Number
     - contextPath: GKE.NodePool.Management.AutoRepair
-      description: A flag that specifies whether the node auto-repair is enabled for the node pool.
+      description: A flag that specifies whether the node auto-repair is enabled for
+        the node pool.
       type: Number
     - contextPath: GKE.NodePool.MaxPodsConstraint.MaxPodsPerNode
-      description: The constraint on the maximum number of pods that can be run simultaneously on a node in the node pool.
+      description: The constraint on the maximum number of pods that can be run simultaneously
+        on a node in the node pool.
       type: String
     - contextPath: GKE.NodePool.PodIpv4CidrSize
       description: The pod CIDR block size per node in this node pool.
@@ -990,7 +1083,8 @@ script:
       description: The version of the Kubernetes of this node.
       type: String
     - contextPath: GKE.NodePool.InstanceGroupUrls
-      description: The resource URLs of the managed instance groups associated with this node pool.
+      description: The resource URLs of the managed instance groups associated with
+        this node pool.
       type: String
     - contextPath: GKE.NodePool.Status
       description: The status of the nodes in this pool instance.
@@ -1003,13 +1097,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the cluster to retrieve. The name of the cluster to retrieve.
+      description: The name of the cluster to retrieve. The name of the cluster to
+        retrieve.
       isArray: false
       name: cluster
       required: true
       secret: false
     - default: false
-      description: The name of the Google Compute Engine zone in which the cluster resides.
+      description: The name of the Google Compute Engine zone in which the cluster
+        resides.
       isArray: false
       name: zone
       required: false
@@ -1022,7 +1118,10 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: A flag that specifies whether the node auto-repair is enabled for the node pool. If enabled, the nodes in this node pool will be monitored and, if they fail health checks too many times, an automatic repair action will be triggered.
+      description: A flag that specifies whether the node auto-repair is enabled for
+        the node pool. If enabled, the nodes in this node pool will be monitored and,
+        if they fail health checks too many times, an automatic repair action will
+        be triggered.
       isArray: false
       name: auto_repair
       predefined:
@@ -1032,7 +1131,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: A flag that specifies whether node auto-upgrade is enabled for the node pool. If enabled, node auto-upgrade helps keep the nodes in your node pool up to date with the latest release version of Kubernetes.
+      description: A flag that specifies whether node auto-upgrade is enabled for
+        the node pool. If enabled, node auto-upgrade helps keep the nodes in your
+        node pool up to date with the latest release version of Kubernetes.
       isArray: false
       name: auto_upgrade
       predefined:
@@ -1049,7 +1150,8 @@ script:
       description: The server-assigned ID for the operation
       type: String
     - contextPath: GKE.Operation.Zone
-      description: The name of the Google Compute Engine zone in which the operation is taking place. This field is deprecated, use location instead.
+      description: The name of the Google Compute Engine zone in which the operation
+        is taking place. This field is deprecated, use location instead.
       type: String
     - contextPath: GKE.Operation.OperationType
       description: Operaion type. (update, etc.)
@@ -1074,7 +1176,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the Google Compute Engine zone in which the cluster resides.
+      description: The name of the Google Compute Engine zone in which the cluster
+        resides.
       isArray: false
       name: zone
       required: false
@@ -1088,7 +1191,8 @@ script:
       description: The server-assigned ID for the operation
       type: String
     - contextPath: GKE.Operation.Zone
-      description: The name of the Google Compute Engine zone in which the operation is taking place. This field is deprecated, use location instead.
+      description: The name of the Google Compute Engine zone in which the operation
+        is taking place. This field is deprecated, use location instead.
       type: String
     - contextPath: GKE.Operation.OperationType
       description: Operaion type. (update, etc.)
@@ -1113,7 +1217,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the Google Compute Engine zone in which the cluster resides.
+      description: The name of the Google Compute Engine zone in which the cluster
+        resides.
       isArray: false
       name: zone
       required: false
@@ -1133,7 +1238,8 @@ script:
       description: The server-assigned ID for the operation
       type: String
     - contextPath: GKE.Operation.Zone
-      description: The name of the Google Compute Engine zone in which the operation is taking place. This field is deprecated, use location instead.
+      description: The name of the Google Compute Engine zone in which the operation
+        is taking place. This field is deprecated, use location instead.
       type: String
     - contextPath: GKE.Operation.OperationType
       description: Operaion type. (update, etc.)
@@ -1158,13 +1264,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the cluster to retrieve. The name of the cluster to retrieve.
+      description: The name of the cluster to retrieve. The name of the cluster to
+        retrieve.
       isArray: false
       name: cluster
       required: true
       secret: false
     - default: false
-      description: The name of the Google Compute Engine zone in which the cluster resides.
+      description: The name of the Google Compute Engine zone in which the cluster
+        resides.
       isArray: false
       name: zone
       required: false
@@ -1179,7 +1287,7 @@ script:
     description: Cancel operation by operation name.
     execution: false
     name: gcloud-operations-cancel
-  dockerimage: demisto/google-k8s-engine:1.0.0.9467
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   feed: false
   isfetch: false
   longRunning: false

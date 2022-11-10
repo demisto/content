@@ -55,7 +55,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Integrate with Oracle's services to execute CRUD and Group operations for employee lifecycle processes.
+description: Integrate with Oracle's services to execute CRUD and Group operations
+  for employee lifecycle processes.
 display: Oracle IAM
 name: OracleIAM
 script:
@@ -406,7 +407,7 @@ script:
       within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   feed: false
   isfetch: false
   longRunning: false

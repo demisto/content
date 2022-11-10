@@ -22,7 +22,8 @@ args:
   - 'true'
   - 'false'
   - n/a
-  description: Specify whether to reply to an existing thread or start a new one.  Default value of 'n/a' is for 'Email Communication' type incidents only
+  description: Specify whether to reply to an existing thread or start a new one.  Default
+    value of 'n/a' is for 'Email Communication' type incidents only
   defaultValue: n/a
 comment: |-
   Send email reply
@@ -39,7 +40,7 @@ subtype: python3
 system: true
 type: python
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.5.31928
+dockerimage: devdemisto/py3-master:8.1.0.37377
 tests:
 - No tests (auto formatted)
 contentitemexportablefields:

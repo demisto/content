@@ -12,24 +12,26 @@ args:
   default: true
   auto: PREDEFINED
   predefined:
-  - "true"
-  - "false"
-  description: Whether to only return non-system fields. If "true", will only output non-system fields. The default value is "false".
-  defaultValue: "false"
+  - 'true'
+  - 'false'
+  description: Whether to only return non-system fields. If "true", will only output
+    non-system fields. The default value is "false".
+  defaultValue: 'false'
 - name: short_names
   auto: PREDEFINED
   predefined:
-  - "true"
-  - "false"
-  description: Whether to shorten the incident field names. If "true", will cause output to use shortened field names. The default value is "true".
-  defaultValue: "true"
+  - 'true'
+  - 'false'
+  description: Whether to shorten the incident field names. If "true", will cause
+    output to use shortened field names. The default value is "true".
+  defaultValue: 'true'
 scripttarget: 0
 subtype: python3
 dependson:
   must:
   - '|||demisto-api-get'
 runonce: false
-dockerimage: demisto/python3:3.10.4.27798
+dockerimage: devdemisto/py3-master:8.1.0.37377
 runas: DBotWeakRole
 tests:
 - No test - unit test

@@ -2,8 +2,10 @@ commonfields:
   id: ExtractAttackPattern
   version: -1
 name: ExtractAttackPattern
-comment: Extract Attack Pattern Threat Intel Object. After auto extract extracts the Attack Pattern IDs, this script is executed and extracts the value (name) of the Attack Pattern.
-script: |2
+comment: Extract Attack Pattern Threat Intel Object. After auto extract extracts the
+  Attack Pattern IDs, this script is executed and extracts the value (name) of the
+  Attack Pattern.
+script: |
 type: python
 tags:
 - indicator-format
@@ -16,7 +18,7 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: devdemisto/py3-master:8.1.0.37377
 runas: DBotWeakRole
 tests:
 - ExtractAttackPattern-Test

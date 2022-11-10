@@ -17,7 +17,7 @@ enabled: true
 args:
 - name: similarity_threshold
   required: true
-  defaultValue: "0.8"
+  defaultValue: '0.8'
   description: The similarity value on which to split the context campaign data.
 outputs:
 - contextPath: EmailCampaign.incidents.id
@@ -65,7 +65,7 @@ outputs:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: devdemisto/py3-master:8.1.0.37377
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)

@@ -7,7 +7,8 @@ script: >
 
   duplicate_id = demisto.args()['duplicateId']
 
-  res = demisto.executeCommand("linkIncidents", {"incidentId":duplicate_id, "linkedIncidentIDs": current_incident_id, "action":"duplicate"})
+  res = demisto.executeCommand("linkIncidents", {"incidentId":duplicate_id, "linkedIncidentIDs":
+  current_incident_id, "action":"duplicate"})
 
   demisto.results(res)
 type: python
@@ -23,6 +24,6 @@ args:
 scripttarget: 0
 runonce: false
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.4.29342
+dockerimage: devdemisto/py3-master:8.1.0.37377
 tests:
 - No tests (auto formatted)

@@ -3,7 +3,8 @@ commonfields:
   id: RemoteAccess v2
   version: -1
 configuration:
-- additionalinfo: If not provided, "host" or "system" should be provided in the command's arguments.
+- additionalinfo: If not provided, "host" or "system" should be provided in the command's
+    arguments.
   display: Default Hostname or IP Address
   name: hostname
   required: false
@@ -34,7 +35,8 @@ configuration:
   name: key_algorithms
   required: false
   type: 0
-description: This integration transfers files between Cortex XSOAR and a remote machine and executes commands on the remote machine.
+description: This integration transfers files between Cortex XSOAR and a remote machine
+  and executes commands on the remote machine.
 display: RemoteAccess v2
 name: RemoteAccess v2
 script:
@@ -244,7 +246,7 @@ script:
       description: The file type, as determined by libmagic (same as displayed in
         file entries).
       type: String
-  dockerimage: demisto/netmiko:1.0.0.36109
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   feed: false
   isfetch: false
   longRunning: false

@@ -6,7 +6,10 @@ args:
   required: true
   secret: false
 - default: false
-  description: JSON string of the ipPermissions. IpPermissions should have one or more rules which are composed of IpProtocol, FromPort, ToPort, or IpRanges. Refer to aws-ec2-describe-security-groups (https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-security-groups.html) for example/reference.
+  description: JSON string of the ipPermissions. IpPermissions should have one or
+    more rules which are composed of IpProtocol, FromPort, ToPort, or IpRanges. Refer
+    to aws-ec2-describe-security-groups (https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-security-groups.html)
+    for example/reference.
   isArray: true
   name: ipPermissions
   required: true
@@ -23,13 +26,15 @@ args:
   required: true
   secret: false
 - default: false
-  description: Lower bound port range to be checked. If fromPort and toPort are not specified, all ports will be included.
+  description: Lower bound port range to be checked. If fromPort and toPort are not
+    specified, all ports will be included.
   isArray: false
   name: fromPort
   required: false
   secret: false
 - default: false
-  description: Upper bound port range to be checked. If fromPort and toPort are not specified, all ports will be included.
+  description: Upper bound port range to be checked. If fromPort and toPort are not
+    specified, all ports will be included.
   isArray: false
   name: toPort
   required: false
@@ -42,13 +47,13 @@ args:
   secret: false
 - auto: PREDEFINED
   default: true
-  defaultValue: 'no'
+  defaultValue: no
   description: Include IPv6 in the result. By default, IPv6 is not included
   isArray: false
   name: includeIPv6
   predefined:
-  - 'yes'
-  - 'no'
+  - yes
+  - no
   required: false
   secret: false
 comment: Find Security Group rules which allows ::/0 (IPv4) or 0.0.0.0/0.
@@ -86,7 +91,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: devdemisto/py3-master:8.1.0.37377
 runas: DBotWeakRole
 runonce: false
 fromversion: 5.0.0

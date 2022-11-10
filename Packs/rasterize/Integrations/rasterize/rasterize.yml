@@ -23,7 +23,8 @@ configuration:
   name: chrome_options
   required: false
   type: 0
-  additionalinfo: Add or remove Chrome options used to rasterize. Use for advanced troubleshooting. See Help.
+  additionalinfo: Add or remove Chrome options used to rasterize. Use for advanced
+    troubleshooting. See Help.
 - display: Rasterize Mode
   name: rasterize_mode
   required: false
@@ -34,7 +35,9 @@ configuration:
   - WebDriver - Only
   - Headless CLI - Preferred
   - Headless CLI - Only
-  additionalinfo: It is possible to rasterize either via Chrome WebDriver or Chrome Headless CLI. A "Preferred" rasterizing mode will fall back to the other rasterizing mode if it fails.
+  additionalinfo: It is possible to rasterize either via Chrome WebDriver or Chrome
+    Headless CLI. A "Preferred" rasterizing mode will fall back to the other rasterizing
+    mode if it fails.
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -58,27 +61,31 @@ script:
       required: false
       secret: false
     - default: true
-      description: The URL to rasterize. Must be the full URL, including the http prefix.
+      description: The URL to rasterize. Must be the full URL, including the http
+        prefix.
       isArray: false
       name: url
       required: true
       secret: false
     - default: false
       defaultValue: 1024px
-      description: The page width, for example, 1024px. Specify with or without the px suffix.
+      description: The page width, for example, 1024px. Specify with or without the
+        px suffix.
       isArray: false
       name: width
       required: false
       secret: false
     - default: false
       defaultValue: 800px
-      description: The page height, for example, 800px. Specify with or without the px suffix.
+      description: The page height, for example, 800px. Specify with or without the
+        px suffix.
       isArray: false
       name: height
       required: false
       secret: false
     - default: false
-      description: The file type to which to convert the contents of the URL. Can be "pdf","png" or "json" (for use with raw-response). Default is "png".
+      description: The file type to which to convert the contents of the URL. Can
+        be "pdf","png" or "json" (for use with raw-response). Default is "png".
       isArray: false
       name: type
       predefined:
@@ -89,7 +96,8 @@ script:
       secret: false
       auto: PREDEFINED
     - default: false
-      description: Rasterize mode to use (WebDriver or Headless CLI). Optional. If not specified, will use according to the integration instance settings.
+      description: Rasterize mode to use (WebDriver or Headless CLI). Optional. If
+        not specified, will use according to the integration instance settings.
       isArray: false
       name: mode
       required: false
@@ -109,7 +117,9 @@ script:
       default: false
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
+      description: Get the full page. The actual page width and height will be auto
+        calculated up to a max value of 8000px. (Marking full_screen as true means
+        that the values for width and height arguments might not be respected).
       isArray: false
       name: full_screen
       predefined:
@@ -119,7 +129,8 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Whether to include the URL bar in the returned screenshot. (Only for WebDriver mode. Ignored in Headless CLI mode)
+      description: Whether to include the URL bar in the returned screenshot. (Only
+        for WebDriver mode. Ignored in Headless CLI mode)
       isArray: false
       name: include_url
       predefined:
@@ -132,24 +143,24 @@ script:
     execution: false
     name: rasterize
     outputs:
-      - contextPath: InfoFile.EntryID
-        description: The EntryID of the image/pdf file
-        type: string
-      - contextPath: InfoFile.Extension
-        description: The extension of the image/pdf file
-        type: string
-      - contextPath: InfoFile.Name
-        description: The name of the image/pdf file
-        type: string
-      - contextPath: InfoFile.Info
-        description: The info of the image/pdf file
-        type: string
-      - contextPath: InfoFile.Size
-        description: The size of the image/pdf file
-        type: number
-      - contextPath: InfoFile.Type
-        description: The type of the image/pdf file
-        type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the image/pdf file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The extension of the image/pdf file
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the image/pdf file
+      type: string
+    - contextPath: InfoFile.Info
+      description: The info of the image/pdf file
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the image/pdf file
+      type: number
+    - contextPath: InfoFile.Type
+      description: The type of the image/pdf file
+      type: string
   - arguments:
     - default: true
       description: The HTML body of the email.
@@ -180,7 +191,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The file type to which to convert the email body. Can be "pdf" or "png". Default is "png".
+      description: The file type to which to convert the email body. Can be "pdf"
+        or "png". Default is "png".
       isArray: false
       name: type
       required: false
@@ -200,7 +212,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Rasterize mode to use (WebDriver or Headless CLI). Optional. If not specified, will use according to the integration instance settings.
+      description: Rasterize mode to use (WebDriver or Headless CLI). Optional. If
+        not specified, will use according to the integration instance settings.
       isArray: false
       name: mode
       required: false
@@ -220,7 +233,9 @@ script:
       default: false
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
+      description: Get the full page. The actual page width and height will be auto
+        calculated up to a max value of 8000px. (Marking full_screen as true means
+        that the values for width and height arguments might not be respected).
       isArray: false
       name: full_screen
       predefined:
@@ -233,24 +248,24 @@ script:
     execution: false
     name: rasterize-email
     outputs:
-      - contextPath: InfoFile.EntryID
-        description: The EntryID of the image/pdf file
-        type: string
-      - contextPath: InfoFile.Extension
-        description: The extension of the image/pdf file
-        type: string
-      - contextPath: InfoFile.Name
-        description: The name of the image/pdf file
-        type: string
-      - contextPath: InfoFile.Info
-        description: The info of the image/pdf file
-        type: string
-      - contextPath: InfoFile.Size
-        description: The size of the image/pdf file
-        type: number
-      - contextPath: InfoFile.Type
-        description: The type of the image/pdf file
-        type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the image/pdf file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The extension of the image/pdf file
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the image/pdf file
+      type: string
+    - contextPath: InfoFile.Info
+      description: The info of the image/pdf file
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the image/pdf file
+      type: number
+    - contextPath: InfoFile.Type
+      description: The type of the image/pdf file
+      type: string
   - arguments:
     - default: true
       description: The entry ID of the image file.
@@ -260,14 +275,16 @@ script:
       secret: false
     - default: false
       defaultValue: 600px
-      description: The image width, for example, 600px. Specify with or without the px suffix.
+      description: The image width, for example, 600px. Specify with or without the
+        px suffix.
       isArray: false
       name: width
       required: false
       secret: false
     - default: false
       defaultValue: 800px
-      description: The image height, for example, 800px. If empty, the height is the entire image.
+      description: The image height, for example, 800px. If empty, the height is the
+        entire image.
       isArray: false
       name: height
       required: false
@@ -279,7 +296,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Rasterize mode to use (WebDriver or Headless CLI). Optional. If not specified, will use according to the integration instance settings.
+      description: Rasterize mode to use (WebDriver or Headless CLI). Optional. If
+        not specified, will use according to the integration instance settings.
       isArray: false
       name: mode
       required: false
@@ -292,7 +310,9 @@ script:
       - Headless CLI - Only
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
+      description: Get the full page. The actual page width and height will be auto
+        calculated up to a max value of 8000px. (Marking full_screen as true means
+        that the values for width and height arguments might not be respected).
       isArray: false
       name: full_screen
       predefined:
@@ -305,24 +325,24 @@ script:
     execution: false
     name: rasterize-image
     outputs:
-      - contextPath: InfoFile.EntryID
-        description: The EntryID of the pdf file
-        type: string
-      - contextPath: InfoFile.Extension
-        description: The extension of the pdf file
-        type: string
-      - contextPath: InfoFile.Name
-        description: The name of the pdf file
-        type: string
-      - contextPath: InfoFile.Info
-        description: The info of the pdf file
-        type: string
-      - contextPath: InfoFile.Size
-        description: The size of the pdf file
-        type: number
-      - contextPath: InfoFile.Type
-        description: The type of the pdf file
-        type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the pdf file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The extension of the pdf file
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the pdf file
+      type: string
+    - contextPath: InfoFile.Info
+      description: The info of the pdf file
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the pdf file
+      type: number
+    - contextPath: InfoFile.Type
+      description: The type of the pdf file
+      type: string
   - arguments:
     - default: true
       description: The entry ID of PDF file.
@@ -332,7 +352,8 @@ script:
       secret: false
     - default: false
       defaultValue: '3'
-      description: The maximum number of pages to render. Default is "3". Use "*" to render all pages.
+      description: The maximum number of pages to render. Default is "3". Use "*"
+        to render all pages.
       isArray: false
       name: maxPages
       required: false
@@ -346,7 +367,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to stack the pages horizontally. If "true", will stack the pages horizontally. If "false", will stack the pages vertically. Default is "false".
+      description: Whether to stack the pages horizontally. If "true", will stack
+        the pages horizontally. If "false", will stack the pages vertically. Default
+        is "false".
       isArray: false
       name: horizontal
       predefined:
@@ -366,24 +389,24 @@ script:
     execution: false
     name: rasterize-pdf
     outputs:
-      - contextPath: InfoFile.EntryID
-        description: The EntryID of the image file
-        type: string
-      - contextPath: InfoFile.Extension
-        description: The extension of the image file
-        type: string
-      - contextPath: InfoFile.Name
-        description: The name of the image file
-        type: string
-      - contextPath: InfoFile.Info
-        description: The info of the image file
-        type: string
-      - contextPath: InfoFile.Size
-        description: The size of the image file
-        type: number
-      - contextPath: InfoFile.Type
-        description: The type of the image file
-        type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the image file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The extension of the image file
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the image file
+      type: string
+    - contextPath: InfoFile.Info
+      description: The info of the image file
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the image file
+      type: number
+    - contextPath: InfoFile.Type
+      description: The type of the image file
+      type: string
   - arguments:
     - default: true
       description: The entry ID of the html file.
@@ -426,25 +449,25 @@ script:
     execution: false
     name: rasterize-html
     outputs:
-      - contextPath: InfoFile.EntryID
-        description: The EntryID of the image/pdf file
-        type: string
-      - contextPath: InfoFile.Extension
-        description: The extension of the image/pdf file
-        type: string
-      - contextPath: InfoFile.Name
-        description: The name of the image/pdf file
-        type: string
-      - contextPath: InfoFile.Info
-        description: The info of the image/pdf file
-        type: string
-      - contextPath: InfoFile.Size
-        description: The size of the image/pdf file
-        type: number
-      - contextPath: InfoFile.Type
-        description: The type of the image/pdf file
-        type: string
-  dockerimage: demisto/chromium:1.0.0.36415
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the image/pdf file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The extension of the image/pdf file
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the image/pdf file
+      type: string
+    - contextPath: InfoFile.Info
+      description: The info of the image/pdf file
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the image/pdf file
+      type: number
+    - contextPath: InfoFile.Type
+      description: The type of the image/pdf file
+      type: string
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   feed: false
   isfetch: false
   longRunning: false

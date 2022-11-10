@@ -13,7 +13,9 @@ configuration:
   required: false
   type: 9
   hiddenusername: true
-- additionalinfo: Source of WildFire API Key - other = NGFW, WildFire API - pcc = Prisma Cloud Compute - prismaaccessapi = Prisma Access - xsoartim = XSOAR TIM API Key
+- additionalinfo: Source of WildFire API Key - other = NGFW, WildFire API - pcc =
+    Prisma Cloud Compute - prismaaccessapi = Prisma Access - xsoartim = XSOAR TIM
+    API Key
   defaultvalue: other
   display: API Key Type
   name: credentials_source
@@ -174,7 +176,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result, when ready.
+      description: Whether to use Cortex XSOAR's built-in polling to retrieve the
+        result, when ready.
       isArray: false
       name: polling
       predefined:
@@ -190,7 +193,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Used for the inner polling flow. For uploading a file, use the 'upload' argument instead.
+      description: Used for the inner polling flow. For uploading a file, use the
+        'upload' argument instead.
       isArray: true
       name: md5
       required: false
@@ -198,7 +202,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: pdf
-      description: The type of structured report (XML or PDF) to request. Only relevant when polling=true.
+      description: The type of structured report (XML or PDF) to request. Only relevant
+        when polling=true.
       isArray: false
       name: format
       predefined:
@@ -209,7 +214,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to receive extended information from WildFire. Only relevant when polling=true.
+      description: Whether to receive extended information from WildFire. Only relevant
+        when polling=true.
       isArray: false
       name: verbose
       predefined:
@@ -219,7 +225,8 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: false
-      description: If set to “true”, the report returns extended data, which includes additional outputs.
+      description: If set to “true”, the report returns extended data, which includes
+        additional outputs.
       isArray: false
       name: extended_data
       predefined:
@@ -398,7 +405,8 @@ script:
       description: The process pid.
       type: string
     - contextPath: WildFire.Report.ProcessList.ProcessFile
-      description: Lists files that started a child processes, including the process name and the action the process performed.
+      description: Lists files that started a child processes, including the process
+        name and the action the process performed.
       type: string
     - contextPath: WildFire.Report.ProcessTree.ProcessName
       description: The process name.
@@ -445,14 +453,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: Used for the inner polling flow. For uploading a URL, use the 'upload' argument instead.
+      description: Used for the inner polling flow. For uploading a URL, use the 'upload'
+        argument instead.
       isArray: false
       name: url
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result, when ready.
+      description: Whether to use Cortex XSOAR's built-in polling to retrieve the
+        result, when ready.
       isArray: false
       name: polling
       predefined:
@@ -470,7 +480,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: pdf
-      description: The type of structured report (XML or PDF) to request. Only relevant when polling=true.
+      description: The type of structured report (XML or PDF) to request. Only relevant
+        when polling=true.
       isArray: false
       name: format
       predefined:
@@ -481,7 +492,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to receive extended information from WildFire. Only relevant when polling=true.
+      description: Whether to receive extended information from WildFire. Only relevant
+        when polling=true.
       isArray: false
       name: verbose
       predefined:
@@ -491,7 +503,8 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: false
-      description: If set to “true”, the report returns extended data, which includes additional outputs.
+      description: If set to “true”, the report returns extended data, which includes
+        additional outputs.
       isArray: false
       name: extended_data
       predefined:
@@ -667,7 +680,8 @@ script:
       description: The process pid.
       type: string
     - contextPath: WildFire.Report.ProcessList.ProcessFile
-      description: Lists files that started a child processes, including the process name and the action the process performed.
+      description: Lists files that started a child processes, including the process
+        name and the action the process performed.
       type: string
     - contextPath: WildFire.Report.ProcessTree.ProcessName
       description: The process name.
@@ -749,14 +763,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: Retrieves results for a URL using WildFire. The report format is in JSON.
+      description: Retrieves results for a URL using WildFire. The report format is
+        in JSON.
       isArray: true
       name: url
       required: false
       secret: false
     - auto: PREDEFINED
       defaultValue: false
-      description: If set to “true”, the report returns extended data, which includes additional outputs.
+      description: If set to “true”, the report returns extended data, which includes
+        additional outputs.
       isArray: false
       name: extended_data
       predefined:
@@ -926,7 +942,8 @@ script:
       description: The process pid.
       type: string
     - contextPath: WildFire.Report.ProcessList.ProcessFile
-      description: Lists files that started a child processes, including the process name and the action the process performed.
+      description: Lists files that started a child processes, including the process
+        name and the action the process performed.
       type: string
     - contextPath: WildFire.Report.ProcessTree.ProcessName
       description: The process name.
@@ -1020,7 +1037,8 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: EntryID of the text file that contains multiple hashes. Limit is 500 hashes.
+      description: EntryID of the text file that contains multiple hashes. Limit is
+        500 hashes.
       isArray: true
       name: EntryID
       required: false
@@ -1032,7 +1050,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns a verdict regarding multiple hashes, stored in a TXT file or given as a list.
+    description: Returns a verdict regarding multiple hashes, stored in a TXT file
+      or given as a list.
     execution: false
     name: wildfire-get-verdicts
     outputs:
@@ -1068,14 +1087,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: Used for the inner polling flow. For uploading a URL, use the 'upload' argument instead.
+      description: Used for the inner polling flow. For uploading a URL, use the 'upload'
+        argument instead.
       isArray: true
       name: url
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result, when ready.
+      description: Whether to use Cortex XSOAR's built-in polling to retrieve the
+        result, when ready.
       isArray: false
       name: polling
       predefined:
@@ -1093,7 +1114,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: pdf
-      description: The type of structured report (XML or PDF) to request. Only relevant when polling=true.
+      description: The type of structured report (XML or PDF) to request. Only relevant
+        when polling=true.
       isArray: false
       name: format
       predefined:
@@ -1104,7 +1126,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to receive extended information from WildFire. Only relevant when polling=true.
+      description: Whether to receive extended information from WildFire. Only relevant
+        when polling=true.
       isArray: false
       name: verbose
       predefined:
@@ -1114,7 +1137,8 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: false
-      description: If set to “true”, the report returns extended data, which includes additional outputs.
+      description: If set to “true”, the report returns extended data, which includes
+        additional outputs.
       isArray: false
       name: extended_data
       predefined:
@@ -1290,7 +1314,8 @@ script:
       description: The process pid.
       type: string
     - contextPath: WildFire.Report.ProcessList.ProcessFile
-      description: Lists files that started a child processes, including the process name and the action the process performed.
+      description: Lists files that started a child processes, including the process
+        name and the action the process performed.
       type: string
     - contextPath: WildFire.Report.ProcessTree.ProcessName
       description: The process name.
@@ -1355,7 +1380,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to download as screenshots or as downloadable files. if not specified, both will be downloaded.
+      description: Whether to download as screenshots or as downloadable files. if
+        not specified, both will be downloaded.
       isArray: false
       name: types
       predefined:
@@ -1364,7 +1390,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get web artifacts for a URL webpage. An empty tgz will be returned, no matter what the verdict is, or even if the URL is malformed.
+    description: Get web artifacts for a URL webpage. An empty tgz will be returned,
+      no matter what the verdict is, or even if the URL is malformed.
     execution: false
     name: wildfire-get-url-webartifacts
     outputs:
@@ -1386,7 +1413,7 @@ script:
     - contextPath: InfoFile.Type
       description: The web artifacts file type.
       type: string
-  dockerimage: demisto/python3:3.10.8.35482
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   feed: false
   isfetch: false
   longRunning: false

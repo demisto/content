@@ -9,7 +9,8 @@ configuration:
   name: app_id
   required: true
   type: 0
-- additionalinfo: Type of authentication - could be Authorization Code Flow (recommended) or Device Code Flow.
+- additionalinfo: Type of authentication - could be Authorization Code Flow (recommended)
+    or Device Code Flow.
   display: Authentication Type
   name: auth_type
   required: true
@@ -153,7 +154,8 @@ script:
       description: The current deployment or provisioning state.
       type: String
     - contextPath: AzureKS.ManagedCluster.properties.agentPoolProfiles.orchestratorVersion
-      description: Version of the orchestrator specified when creating the managed cluster.
+      description: Version of the orchestrator specified when creating the managed
+        cluster.
       type: String
     - contextPath: AzureKS.ManagedCluster.properties.linuxProfile.adminUsername
       description: The name of the administrator account.
@@ -214,8 +216,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Resource location, Can be retrieved using
-        the azure-ks-clusters-list command.
+      description: Resource location, Can be retrieved using the azure-ks-clusters-list
+        command.
       isArray: false
       name: location
       predefined:
@@ -268,7 +270,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to configure ingress with automatic public DNS name creation. Possible values: "true" and "false".'
+      description: 'Whether to configure ingress with automatic public DNS name creation.
+        Possible values: "true" and "false".'
       isArray: false
       name: http_application_routing_enabled
       predefined:
@@ -279,7 +282,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'Whether to turn on Log Analytics monitoring. If enabled and monitoring_resource_id
-        is not specified, will use the current configured workspace resource ID. Possible values: "true" and "false".'
+        is not specified, will use the current configured workspace resource ID. Possible
+        values: "true" and "false".'
       isArray: false
       name: monitoring_agent_enabled
       predefined:
@@ -289,8 +293,8 @@ script:
       secret: false
     - default: false
       description: The name of an existing Log Analytics workspace to use for storing
-        monitoring data. Can be retrieved in the Log Analytics workspace from the Azure
-        portal.
+        monitoring data. Can be retrieved in the Log Analytics workspace from the
+        Azure portal.
       isArray: false
       name: monitoring_resource_name
       required: false
@@ -299,7 +303,7 @@ script:
     description: Updates a managed cluster with the specified configuration.
     execution: false
     name: azure-ks-cluster-addon-update
-  dockerimage: demisto/crypto:1.0.0.34720
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   feed: false
   isfetch: false
   longRunning: false

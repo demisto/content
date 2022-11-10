@@ -3,7 +3,9 @@ commonfields:
   id: AutoFocus V2
   version: -1
 configuration:
-- additionalinfo: TIM customers that upgraded to version 6.2 or above, can have this value pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
+- additionalinfo: TIM customers that upgraded to version 6.2 or above, can have this
+    value pre-configured in their main account so no additional input is needed. To
+    use this feature, upgrade your license so it includes the license key.
   display: API Key
   name: api_key
   required: false
@@ -58,8 +60,8 @@ script:
       isArray: false
       name: polling
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - default: false
       description: The query for which to retrieve samples. For additional information
         on how to build your query using the AF GUI, see the detailed description
@@ -117,9 +119,9 @@ script:
       isArray: false
       name: scope
       predefined:
-        - Private
-        - Public
-        - Global
+      - Private
+      - Public
+      - Global
       required: true
       secret: false
     - default: false
@@ -177,7 +179,7 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: 'Whether to return artifacts of samples.'
+      description: Whether to return artifacts of samples.
       isArray: false
       name: artifact
       predefined:
@@ -288,8 +290,8 @@ script:
       isArray: false
       name: polling
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - default: false
       description: Interval in seconds between each poll.
       isArray: false
@@ -352,8 +354,8 @@ script:
       isArray: false
       name: order
       predefined:
-        - Ascending
-        - Descending
+      - Ascending
+      - Descending
       required: false
       secret: false
     - default: false
@@ -382,24 +384,24 @@ script:
       secret: false
     - default: false
       description: 'The date range in which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS
-          where the first date is the beginning and the second is the end. Example:
-          2019-09-09T00:00:00,2019-09-09T23:01:59'
+        where the first date is the beginning and the second is the end. Example:
+        2019-09-09T00:00:00,2019-09-09T23:01:59'
       isArray: false
       name: time_range
       predefined:
-        - ''
+      - ''
       required: false
       secret: false
     - default: false
       description: 'The date after which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS
-          Example: 2019-09-09T23:01:59'
+        Example: 2019-09-09T23:01:59'
       isArray: false
       name: time_after
       required: false
       secret: false
     - default: false
       description: 'The date before which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS
-          Example: 2019-09-09T23:01:59'
+        Example: 2019-09-09T23:01:59'
       isArray: false
       name: time_before
       required: false
@@ -407,8 +409,9 @@ script:
     deprecated: false
     description: Searches for sessions in AutoFocus. To view results, run the autofocus-sessions-search-results
       command with the returned AF Cookie. The AF Cookie expires 120 seconds after
-      the search completes. The `polling` argument was added in XSOAR 6.2.0. It enables handling the search in a single command,
-      rather than using the `Autofocus Query Samples, Sessions and Tags` Playbook.
+      the search completes. The `polling` argument was added in XSOAR 6.2.0. It enables
+      handling the search in a single command, rather than using the `Autofocus Query
+      Samples, Sessions and Tags` Playbook.
     execution: false
     polling: true
     name: autofocus-search-sessions
@@ -784,8 +787,8 @@ script:
       isArray: false
       name: polling
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - default: false
       description: The AF Cookie for retrieving results of previous searches. The
         AF Cookie expires 120 seconds after the search completes.
@@ -1162,7 +1165,8 @@ script:
       description: Aliases of the tags.
       type: String
     - contextPath: File.Tags.PublicTagName
-      description: The public name of the tag. This is usually used as the ID of the tag.
+      description: The public name of the tag. This is usually used as the ID of the
+        tag.
       type: String
     - contextPath: File.Tags.TagName
       description: The simple name of the tag.
@@ -1227,8 +1231,7 @@ script:
       description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description:
-        The actual score.
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
       description: The indicator type.
@@ -1385,7 +1388,7 @@ script:
     - contextPath: Domain.Name
       description: The domain name.
       type: String
-  dockerimage: demisto/python3:3.10.8.36650
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   isfetch: false
   longRunning: false
   longRunningPort: false

@@ -9,7 +9,8 @@ tags:
 - entirelist
 - transformer
 - general
-comment: Return the single element in case the array has only 1 element in it, otherwise return the whole array
+comment: Return the single element in case the array has only 1 element in it, otherwise
+  return the whole array
 enabled: true
 args:
 - name: value
@@ -19,6 +20,6 @@ args:
   isArray: true
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: devdemisto/py3-master:8.1.0.37377
 tests:
 - No tests (auto formatted)

@@ -28,10 +28,10 @@ args:
 - name: stringify
   auto: PREDEFINED
   predefined:
-  - "true"
-  - "false"
+  - 'true'
+  - 'false'
   description: Whether the argument should be saved as a string (Optional).
-  defaultValue: "true"
+  defaultValue: 'true'
   required: false
   secret: false
 comment: "Return all items from the list where their given 'field' attribute is equal\
@@ -55,7 +55,7 @@ tags:
 - entirelist
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: devdemisto/py3-master:8.1.0.37377
 runonce: false
 tests:
 - Email Address Enrichment - Generic v2.1 - Test

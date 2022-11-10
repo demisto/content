@@ -6,13 +6,13 @@ args:
   required: true
   secret: false
 - default: false
-  description: "IP of the DNS Server to use (default: system settings)"
+  description: 'IP of the DNS Server to use (default: system settings)'
   isArray: false
   name: server
   required: false
   secret: false
 - default: false
-  description: "Use TCP for the query (default: false)"
+  description: 'Use TCP for the query (default: false)'
   isArray: false
   name: use_tcp
   secret: false
@@ -22,7 +22,7 @@ args:
   - 'false'
   defaultValue: 'false'
 - default: false
-  description: "Comma separated list of query types (default: CNAME,NS,A,AAAA)"
+  description: 'Comma separated list of query types (default: CNAME,NS,A,AAAA)'
   isArray: false
   name: qtype
   secret: false
@@ -58,5 +58,5 @@ tags: []
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/dnspython:1.0.0.12410
+dockerimage: devdemisto/py3-master:8.1.0.37377
 fromversion: 5.0.0

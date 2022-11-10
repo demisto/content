@@ -4,7 +4,8 @@ args:
   description: The base context path under which to find the fields. For example Demisto.Results.
 - name: list
   required: true
-  description: The list of fields to retrieve from context. The list can contain comma seperated values. For example key1,key1
+  description: The list of fields to retrieve from context. The list can contain comma
+    seperated values. For example key1,key1
   isArray: true
 - name: value
   required: false
@@ -16,7 +17,7 @@ name: GetValuesOfMultipleFields
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: devdemisto/py3-master:8.1.0.37377
 runas: DBotWeakRole
 script: '-'
 system: false

@@ -45,8 +45,8 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: 'Added by ThreatX Demisto Integration'
-      description: 'The description of the IP record in the block list.'
+      defaultValue: Added by ThreatX Demisto Integration
+      description: The description of the IP record in the block list.
       isArray: false
       name: description
       required: false
@@ -82,8 +82,8 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: 'Added by ThreatX Demisto Integration'
-      description: 'The description of the IP record in the block list.'
+      defaultValue: Added by ThreatX Demisto Integration
+      description: The description of the IP record in the block list.
       isArray: false
       name: description
       required: false
@@ -119,8 +119,8 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: 'Added by ThreatX Demisto Integration'
-      description: 'The description of the IP record in the allow list.'
+      defaultValue: Added by ThreatX Demisto Integration
+      description: The description of the IP record in the allow list.
       isArray: false
       name: description
       required: false
@@ -233,8 +233,8 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: 'ID hash of the Entity. To retrieve this value, run the "!threatx-get-entities"
-        command.'
+      description: ID hash of the Entity. To retrieve this value, run the "!threatx-get-entities"
+        command.
       isArray: false
       name: entity_id
       required: true
@@ -255,7 +255,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: devdemisto/py3-master:8.1.0.37377
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

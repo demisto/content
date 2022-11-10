@@ -135,8 +135,8 @@ configuration:
   name: close_incident
   required: false
   type: 8
-- additionalinfo: Define how to close the mirrored tickets,
-    choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
+- additionalinfo: Define how to close the mirrored tickets, choose 'resolved' to enable
+    reopening from the UI. Otherwise, choose 'closed'.
   defaultvalue: None
   display: Mirrored ServiceNow Ticket closure method
   name: close_ticket_multiple_options
@@ -170,8 +170,9 @@ configuration:
   type: 19
 - defaultvalue: 0
   display: 'Advanced: Minutes to look back when fetching'
-  additionalinfo: Use this parameter to determine how long backward to look in the search for incidents
-    that were created before the last run time and did not match the query when they were created.
+  additionalinfo: Use this parameter to determine how long backward to look in the
+    search for incidents that were created before the last run time and did not match
+    the query when they were created.
   name: look_back
   required: false
   type: 0
@@ -800,9 +801,9 @@ script:
       isArray: false
       name: business_criticality
       predefined:
-        - 3 - Non-Critical
-        - 2 - High
-        - 1 - Critical
+      - 3 - Non-Critical
+      - 2 - High
+      - 1 - Critical
       required: false
       secret: false
     - default: false
@@ -1315,7 +1316,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'State of the ticket, for example: "Closed" or "7" or "7 - Closed", or "Resolved" or "6" or "6 - Resolved".'
+      description: 'State of the ticket, for example: "Closed" or "7" or "7 - Closed",
+        or "Resolved" or "6" or "6 - Resolved".'
       isArray: false
       name: state
       required: false
@@ -1371,9 +1373,9 @@ script:
       isArray: false
       name: business_criticality
       predefined:
-        - 3 - Non-Critical
-        - 2 - High
-        - 1 - Critical
+      - 3 - Non-Critical
+      - 2 - High
+      - 1 - Critical
       required: false
       secret: false
     - default: false
@@ -2203,7 +2205,7 @@ script:
     - contextPath: ServiceNow.Generic.Response
       description: Generic response to servicenow api
       type: string
-  dockerimage: demisto/python3:3.10.8.36650
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   isfetch: true
   ismappable: true
   isremotesyncin: true

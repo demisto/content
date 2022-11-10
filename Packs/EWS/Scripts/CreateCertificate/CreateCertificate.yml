@@ -54,7 +54,7 @@ tags:
 - basescript
 timeout: '0'
 type: powershell
-dockerimage: demisto/pwsh-exchange:1.0.0.22307
+dockerimage: devdemisto/py3-master:8.1.0.37377
 fromversion: 5.5.0
 tests:
 - CreateCertificate-Test

@@ -5,8 +5,8 @@ args:
   name: value
   required: true
   secret: false
-comment: 'Encodes a URL string by replacing special characters in the string using the %xx
-  escape. For example: https://example.com converts to https:%2F%2Fexample.com.'
+comment: 'Encodes a URL string by replacing special characters in the string using
+  the %xx escape. For example: https://example.com converts to https:%2F%2Fexample.com.'
 commonfields:
   id: URLEncode
   version: -1
@@ -19,7 +19,7 @@ tags:
 - transformer
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: devdemisto/py3-master:8.1.0.37377
 tests:
 - URLEncode-Test
 fromversion: 5.0.0

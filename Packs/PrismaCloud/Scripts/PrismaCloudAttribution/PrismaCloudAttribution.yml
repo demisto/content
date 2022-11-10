@@ -6,11 +6,12 @@ args:
   description: Fields to be returned (comma separated string).
   name: fields
   isArray: true
-comment: Recursively extracts specified fields from provided list of assets for Prisma Cloud attribution use case.
+comment: Recursively extracts specified fields from provided list of assets for Prisma
+  Cloud attribution use case.
 commonfields:
   id: PrismaCloudAttribution
   version: -1
-dockerimage: demisto/python3:3.10.4.30607
+dockerimage: devdemisto/py3-master:8.1.0.37377
 enabled: true
 name: PrismaCloudAttribution
 outputs:

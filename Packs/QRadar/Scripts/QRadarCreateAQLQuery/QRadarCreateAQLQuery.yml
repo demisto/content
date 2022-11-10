@@ -24,8 +24,8 @@ args:
   - include
   - exclude
   defaultValue: include
-  description: The state of the first field to search, meaning whether the values in
-    the field should be included or excluded. 
+  description: The state of the first field to search, meaning whether the values
+    in the field should be included or excluded.
 - name: base_field_match
   required: true
   auto: PREDEFINED
@@ -33,8 +33,8 @@ args:
   - exact
   - partial
   defaultValue: exact
-  description: Whether the values of the second field should be an exact match or a partial
-    match. 
+  description: Whether the values of the second field should be an exact match or
+    a partial match.
 - name: select_fields
   required: true
   description: The list of fields to select within the AQL query.
@@ -58,8 +58,8 @@ args:
   predefined:
   - include
   - exclude
-  description: The state of the second field to search, meaning whether the values in
-    the field should be included or excluded. 
+  description: The state of the second field to search, meaning whether the values
+    in the field should be included or excluded.
   defaultValue: include
 - name: first_additional_field_match
   required: true
@@ -67,8 +67,8 @@ args:
   predefined:
   - exact
   - partial
-  description: Whether the values of the second field should be an exact match or a partial
-    match. 
+  description: Whether the values of the second field should be an exact match or
+    a partial match.
   defaultValue: exact
 - name: second_additional_values
   description: The values of the third field to search. This can be a single value
@@ -82,25 +82,24 @@ args:
   predefined:
   - include
   - exclude
-  description: The state of the third field to search, meaning whether the values in the
-    field should be included or excluded. 
+  description: The state of the third field to search, meaning whether the values
+    in the field should be included or excluded.
   defaultValue: include
 - name: second_additional_field_match
   auto: PREDEFINED
   predefined:
   - exact
   - partial
-  description: Whether the values of the third field should be an exact match or a partial
-    match. When choosing exact, the AQL query
-    will use the = operator. When choosing partial, the AQL query will use ILIKE and add '%%'
-    to the values.
+  description: Whether the values of the third field should be an exact match or a
+    partial match. When choosing exact, the AQL query will use the = operator. When
+    choosing partial, the AQL query will use ILIKE and add '%%' to the values.
   defaultValue: exact
 outputs:
 - contextPath: QRadarQuery
   description: The resultant AQL query based on the inputs.
   type: string
 subtype: python3
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: devdemisto/py3-master:8.1.0.37377
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:

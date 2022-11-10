@@ -1,11 +1,13 @@
 args:
 - default: true
-  description: The indicator to get the reputation of. Only system indicator types are supported.
+  description: The indicator to get the reputation of. Only system indicator types
+    are supported.
   isArray: true
   name: indicator
   required: true
   secret: false
-comment: Add into the incident's context the system internal DBot score for the input indicator.
+comment: Add into the incident's context the system internal DBot score for the input
+  indicator.
 commonfields:
   id: GetIndicatorDBotScore
   version: -1
@@ -36,4 +38,4 @@ runonce: false
 fromversion: 5.0.0
 tests:
 - GetIndicatorDBotScore Test
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: devdemisto/py3-master:8.1.0.37377

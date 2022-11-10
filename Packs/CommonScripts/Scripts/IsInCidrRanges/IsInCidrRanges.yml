@@ -7,7 +7,9 @@ type: python
 subtype: python3
 tags:
 - filter
-comment: Determines whether an IPv4 address is contained in at least one of the comma-delimited CIDR ranges. Multiple IPv4 addresses can be passed comma-delimited and each will be tested.
+comment: Determines whether an IPv4 address is contained in at least one of the comma-delimited
+  CIDR ranges. Multiple IPv4 addresses can be passed comma-delimited and each will
+  be tested.
 enabled: true
 args:
 - name: left
@@ -21,11 +23,11 @@ args:
     to match.
 scripttarget: 0
 runonce: false
-dockerimage: demisto/python3:3.10.4.28442
+dockerimage: devdemisto/py3-master:8.1.0.37377
 runas: DBotWeakRole
 tests:
 - No test - unit test
 fromversion: 5.0.0
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
+    fromServerVersion: ''

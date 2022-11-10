@@ -17,29 +17,30 @@ args:
 - name: useHead
   auto: PREDEFINED
   predefined:
-  - "true"
-  - "false"
-  defaultValue: "true"
-  description: Should we use HEAD instead of GET. Safer but might not be the same response.
+  - 'true'
+  - 'false'
+  defaultValue: 'true'
+  description: Should we use HEAD instead of GET. Safer but might not be the same
+    response.
 - name: use_system_proxy
   auto: PREDEFINED
   predefined:
-  - "true"
-  - "false"
+  - 'true'
+  - 'false'
   description: Use system proxy settings
-  defaultValue: "false"
+  defaultValue: 'false'
 - name: trust_any_certificate
   auto: PREDEFINED
   predefined:
-  - "true"
-  - "false"
+  - 'true'
+  - 'false'
   description: Trust any certificate (not secure)
-  defaultValue: "false"
+  defaultValue: 'false'
 outputs:
 - contextPath: URL.Data
   description: The URL redirects from the given URL
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.7.33922
+dockerimage: devdemisto/py3-master:8.1.0.37377
 tests:
 - No tests (auto formatted)

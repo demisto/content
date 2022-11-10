@@ -7,7 +7,8 @@ type: python
 subtype: python3
 tags:
 - Utility
-comment: Take a list of devices and pull a specific file (given by path) from each using SCP
+comment: Take a list of devices and pull a specific file (given by path) from each
+  using SCP
 system: true
 args:
 - name: systems2files
@@ -20,6 +21,6 @@ dependson:
   - copy-from
 timeout: 0s
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: devdemisto/py3-master:8.1.0.37377
 tests:
 - No tests (auto formatted)

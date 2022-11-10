@@ -58,9 +58,10 @@ configuration:
 - display: Retries
   name: retries
   defaultvalue: 5
-  additionalinfo: "The maximum number of retry attempts when connection or throttling errors
-    are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10.
-    Note: Increasing the number of retries will increase the execution time."
+  additionalinfo: 'The maximum number of retry attempts when connection or throttling
+    errors are encountered. Set to 0 to disable retries. The default value is 5 and
+    the limit is 10. Note: Increasing the number of retries will increase the execution
+    time.'
   required: false
   type: 0
 - display: Use system proxy settings
@@ -4617,10 +4618,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: '[EC2-VPC] Changes the security groups of the instance. You must
-        specify at least one security group, even if it''s just the default security
-        group for the VPC. You must specify the security group ID, not the security
-        group name.'
+      description: "[EC2-VPC] Changes the security groups of the instance. You must\
+        \ specify at least one security group, even if it's just the default security\
+        \ group for the VPC. You must specify the security group ID, not the security\
+        \ group name."
       isArray: false
       name: groups
       required: false
@@ -6822,8 +6823,8 @@ script:
       isArray: false
       name: auto_placement
       predefined:
-      - 'on'
-      - 'off'
+      - on
+      - off
       required: false
       secret: false
     - default: false
@@ -6862,8 +6863,8 @@ script:
       isArray: false
       name: host_recovery
       predefined:
-      - 'on'
-      - 'off'
+      - on
+      - off
       required: false
       secret: false
     - default: false
@@ -6938,7 +6939,7 @@ script:
     description: Release on demand dedicated host.
     execution: false
     name: aws-ec2-release-hosts
-  dockerimage: demisto/boto3py3:1.0.0.37234
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   feed: false
   isfetch: false
   longRunning: false

@@ -27,7 +27,9 @@ configuration:
   name: app_id
   required: true
   type: 0
-description: Use the EWS Extension Online Powershell v2 integration to get information about mailboxes and users in your organization.  This integration can also retrieve and modify Tenant Allow/Block Lists.
+description: Use the EWS Extension Online Powershell v2 integration to get information
+  about mailboxes and users in your organization.  This integration can also retrieve
+  and modify Tenant Allow/Block Lists.
 display: EWS Extension Online Powershell v2
 name: EWS Extension Online Powershell v2
 script:
@@ -37,13 +39,21 @@ script:
       description: The identity of the mailbox you want to view.
     - isArray: true
       name: property_sets
-      description: 'A comma-separated list of property sets to fetch. These property sets will supplement the outputs of this integration.  Available properties are: "All", "Minimum", "AddressList", "Archive", "Audit", "Delivery", "Hold", "Moderation", "Move", "Policy", "PublicFolder", "Quota", "Resource", "Retention", "SCL", "SoftDelete", "StatisticsSeed".'
+      description: 'A comma-separated list of property sets to fetch. These property
+        sets will supplement the outputs of this integration.  Available properties
+        are: "All", "Minimum", "AddressList", "Archive", "Audit", "Delivery", "Hold",
+        "Moderation", "Move", "Policy", "PublicFolder", "Quota", "Resource", "Retention",
+        "SCL", "SoftDelete", "StatisticsSeed".'
       defaultValue: Minimum
-    - description: The object's location in Active Directory by which to filter the results.
+    - description: The object's location in Active Directory by which to filter the
+        results.
       name: organizational_unit
-    - description: The primary SMTP email address of the mailbox you want to view. Cannot be used with the user_principal_name argument. Can be retrieved using the ews-user-list command.
+    - description: The primary SMTP email address of the mailbox you want to view.
+        Cannot be used with the user_principal_name argument. Can be retrieved using
+        the ews-user-list command.
       name: primary_smtp_address
-    - description: The UPN of the mailbox you want to view. Cannot be used with the primary_smtp_address argument. Can be retrieved using the ews-user-list command.
+    - description: The UPN of the mailbox you want to view. Cannot be used with the
+        primary_smtp_address argument. Can be retrieved using the ews-user-list command.
       name: user_principal_name
     - description: The maximum number of results to retrieve. Default is 10.
       name: limit
@@ -118,16 +128,21 @@ script:
     - contextPath: EWS.Mailbox.WhenCreatedUTC
       description: UTC time of when the mailbox was created.
       type: Date
-    description: Displays mailbox objects and attributes, populate property pages, or supplies mailbox information to other tasks.
+    description: Displays mailbox objects and attributes, populate property pages,
+      or supplies mailbox information to other tasks.
     name: ews-mailbox-list
   - arguments:
     - name: identity
       description: The identity of the mailbox you want to view.
-    - description: The object's location in Active Directory by which to filter the results.
+    - description: The object's location in Active Directory by which to filter the
+        results.
       name: organizational_unit
-    - description: The primary SMTP email address of the mailbox you want to view. Cannot be used with the user_principal_name argument. Can be retrieved using the ews-user-list command.
+    - description: The primary SMTP email address of the mailbox you want to view.
+        Cannot be used with the user_principal_name argument. Can be retrieved using
+        the ews-user-list command.
       name: primary_smtp_address
-    - description: The UPN of the mailbox you want to view. Cannot be used with the primary_smtp_address argument. Can be retrieved using the ews-user-list command.
+    - description: The UPN of the mailbox you want to view. Cannot be used with the
+        primary_smtp_address argument. Can be retrieved using the ews-user-list command.
       name: user_principal_name
     - description: The maximum number of results to retrieve. Default is 10.
       name: limit
@@ -239,7 +254,8 @@ script:
     - contextPath: EWS.RecipientPermission.Trustee
       description: Trustee of the recipient permission.
       type: String
-    description: Displays information about SendAs permissions that are configured for users.
+    description: Displays information about SendAs permissions that are configured
+      for users.
     name: ews-recipient-permission-list
   - arguments:
     - description: The identity of the mailbox you want to view.
@@ -284,7 +300,9 @@ script:
     - contextPath: EWS.Recipient.RecipientTypeDetails
       description: Recipient type details.
       type: String
-    description: Displays existing recipient objects in your organization. This command returns all mail-enabled objects (for example, mailboxes, mail users, mail contacts, and distribution groups).
+    description: Displays existing recipient objects in your organization. This command
+      returns all mail-enabled objects (for example, mailboxes, mail users, mail contacts,
+      and distribution groups).
     name: ews-recipient-list
   - name: ews-new-tenant-allow-block-list-items
     arguments:
@@ -317,13 +335,17 @@ script:
     - name: notes
       description: Notes to include on new list entries
     - name: expiration_date
-      description: Enter a specific date and time for the new entries to expire using ISO format "YYYY-MM-DDTHH:MM:SSZ" for UTC time.  Alternately, a PowerShell **GetDate** statement can be used.
+      description: Enter a specific date and time for the new entries to expire using
+        ISO format "YYYY-MM-DDTHH:MM:SSZ" for UTC time.  Alternately, a PowerShell
+        **GetDate** statement can be used.
     - name: no_expiration
       auto: PREDEFINED
       predefined:
       - 'false'
       - 'true'
-      description: Specify whether to create list entries with no expiration date.  Cannot be used with "expiration_date".  If left false and no expiration date is set, default of 30 days will be used.
+      description: Specify whether to create list entries with no expiration date.  Cannot
+        be used with "expiration_date".  If left false and no expiration date is set,
+        default of 30 days will be used.
       defaultValue: 'false'
     outputs:
     - contextPath: EWS.NewTenantBlocks.Action
@@ -373,7 +395,8 @@ script:
     - contextPath: EWS.NewTenantBlocks.Value
       description: The value of the new entry created
       type: string
-    description: Add new items to the Tenant Allow/Block Lists.  Uses PowerShell New-TenantAllowBlockListItems cmdlet.
+    description: Add new items to the Tenant Allow/Block Lists.  Uses PowerShell New-TenantAllowBlockListItems
+      cmdlet.
     execution: true
   - name: ews-get-tenant-allow-block-list-items
     arguments:
@@ -400,7 +423,9 @@ script:
       - Allow
       description: Action to filter entries by.
     - name: expiration_date
-      description: Enter a specific date and time to filter entries by using ISO format "YYYY-MM-DDTHH:MM:SSZ" for UTC time.  Alternately, a PowerShell **GetDate** statement can be used.
+      description: Enter a specific date and time to filter entries by using ISO format
+        "YYYY-MM-DDTHH:MM:SSZ" for UTC time.  Alternately, a PowerShell **GetDate**
+        statement can be used.
     - name: no_expiration
       auto: PREDEFINED
       predefined:
@@ -458,7 +483,8 @@ script:
     - contextPath: EWS.CurrentTenantBlocks.Value
       description: The value of the new entry created
       type: string
-    description: Retrieve current Tenant Allow/Block List items.  Uses Get-TenantAllowBlockListItems cmdlet.
+    description: Retrieve current Tenant Allow/Block List items.  Uses Get-TenantAllowBlockListItems
+      cmdlet.
   - name: ews-get-tenant-allow-block-list-count
     arguments:
     - name: list_type
@@ -485,14 +511,18 @@ script:
     - contextPath: EWS.CurrentListCount.ListType
       description: List type
       type: string
-    description: Retrieve current count of defined Tenant Allow/Block List items.  Uses Get-TenantAllowBlockListItems cmdlet.
+    description: Retrieve current count of defined Tenant Allow/Block List items.  Uses
+      Get-TenantAllowBlockListItems cmdlet.
   - name: ews-remove-tenant-allow-block-list-items
     arguments:
     - name: entries
-      description: Entries to remove from the list.  Either use this OR 'ids' to specify items to remove.  Separate multiple entries with a comma (e.g. "Item1,Item2").
+      description: Entries to remove from the list.  Either use this OR 'ids' to specify
+        items to remove.  Separate multiple entries with a comma (e.g. "Item1,Item2").
       isArray: true
     - name: ids
-      description: Entry IDs to remove from the list.  Either use this OR 'entries' to specify items to remove.  Separate multiple entries with a comma (e.g. "Item1,Item2").
+      description: Entry IDs to remove from the list.  Either use this OR 'entries'
+        to specify items to remove.  Separate multiple entries with a comma (e.g.
+        "Item1,Item2").
     - name: list_type
       required: true
       auto: PREDEFINED
@@ -557,11 +587,13 @@ script:
     - contextPath: EWS.RemovedTenantBlocks.Value
       description: The value of the entry that was removed
       type: string
-    description: Remove items from the Tenant Allow/Block Lists.   You can delete items by their value or by unique ID.  Uses PowerShell cmdlet Remove-TenantAllowBlockListItems cmdlet.
+    description: Remove items from the Tenant Allow/Block Lists.   You can delete
+      items by their value or by unique ID.  Uses PowerShell cmdlet Remove-TenantAllowBlockListItems
+      cmdlet.
   runonce: false
   script: ''
   type: powershell
-  dockerimage: demisto/pwsh-exchange:1.0.0.22307
+  dockerimage: devdemisto/py3-master:8.1.0.37377
 fromversion: 5.5.0
 tests:
 - 'EWS Extension: Powershell Online V2 Test'

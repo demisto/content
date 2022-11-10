@@ -20,13 +20,14 @@ args:
   predefined:
   - 'true'
   - 'false'
-  description: If false then the context key will be overwritten. If set to true then the script will append to existing context key.
+  description: If false then the context key will be overwritten. If set to true then
+    the script will append to existing context key.
   defaultValue: 'false'
 outputs: []
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.5.31928
+dockerimage: devdemisto/py3-master:8.1.0.37377
 runas: DBotRole
 fromversion: 6.0.0
 tests:

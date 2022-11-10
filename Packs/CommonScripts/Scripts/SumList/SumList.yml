@@ -5,7 +5,8 @@ args:
   name: value
   required: true
   secret: false
-comment: "Sums a List\ne.g. [\"25\", \"10\", \"25\"] =>  \"60\"\n\nThis is an example for number transformer.\n "
+comment: "Sums a List\ne.g. [\"25\", \"10\", \"25\"] =>  \"60\"\n\nThis is an example\
+  \ for number transformer.\n "
 commonfields:
   id: SumList
   version: -1
@@ -22,7 +23,7 @@ type: python
 runas: DBotWeakRole
 runonce: false
 subtype: python3
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: devdemisto/py3-master:8.1.0.37377
 tests:
 - sumList - Test
 fromversion: 5.0.0

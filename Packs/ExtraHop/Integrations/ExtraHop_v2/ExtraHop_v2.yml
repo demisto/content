@@ -4,26 +4,28 @@ commonfields:
 name: ExtraHop v2
 display: ExtraHop Reveal(x) v2
 category: Network Security
-description: Network detection and response. Complete visibility of network communications at enterprise scale, real-time threat detections backed by machine learning, and guided investigation workflows that simplify response.
+description: Network detection and response. Complete visibility of network communications
+  at enterprise scale, real-time threat detections backed by machine learning, and
+  guided investigation workflows that simplify response.
 configuration:
 - display: URL
   name: url
-  defaultvalue: ""
+  defaultvalue: ''
   type: 0
   required: true
 - display: API Key
   name: apikey
-  defaultvalue: ""
+  defaultvalue: ''
   type: 4
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "false"
+  defaultvalue: 'false'
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
+  defaultvalue: 'false'
   type: 8
   required: false
 script:
@@ -36,7 +38,8 @@ script:
     arguments: []
     outputs:
     - contextPath: Extrahop.Alert.Operator
-      description: The logical operator applied when comparing the value of the operand field to alert conditions.
+      description: The logical operator applied when comparing the value of the operand
+        field to alert conditions.
       type: String
     - contextPath: Extrahop.Alert.FieldName
       description: The name of the monitored metric.
@@ -60,10 +63,12 @@ script:
       description: The second monitored metric when applying a ratio.
       type: String
     - contextPath: Extrahop.Alert.RefireInterval
-      description: The time interval in which alert conditions are monitored, expressed in seconds.
+      description: The time interval in which alert conditions are monitored, expressed
+        in seconds.
       type: Number
     - contextPath: Extrahop.Alert.ModTime
-      description: 'The time of the most recent update, expressed in milliseconds since the epoch. '
+      description: 'The time of the most recent update, expressed in milliseconds
+        since the epoch. '
       type: Number
     - contextPath: Extrahop.Alert.Units
       description: The interval in which to evaluate the alert condition.
@@ -75,7 +80,8 @@ script:
       description: The type of alert.
       type: String
     - contextPath: Extrahop.Alert.FieldOp
-      description: The type of comparison between the "field_name" and "field_name2" fields when applying a ratio.
+      description: The type of comparison between the "field_name" and "field_name2"
+        fields when applying a ratio.
       type: String
     - contextPath: Extrahop.Alert.Id
       description: The unique identifier for the alert.
@@ -97,7 +103,8 @@ script:
     arguments: []
     outputs:
     - contextPath: Extrahop.Alert.Operator
-      description: The logical operator applied when comparing the value of the operand field to alert conditions.
+      description: The logical operator applied when comparing the value of the operand
+        field to alert conditions.
       type: String
     - contextPath: Extrahop.Alert.FieldName
       description: The name of the monitored metric.
@@ -121,10 +128,12 @@ script:
       description: The second monitored metric when applying a ratio.
       type: String
     - contextPath: Extrahop.Alert.RefireInterval
-      description: The time interval in which alert conditions are monitored, expressed in seconds.
+      description: The time interval in which alert conditions are monitored, expressed
+        in seconds.
       type: Number
     - contextPath: Extrahop.Alert.ModTime
-      description: 'The time of the most recent update, expressed in milliseconds since the epoch. '
+      description: 'The time of the most recent update, expressed in milliseconds
+        since the epoch. '
       type: Number
     - contextPath: Extrahop.Alert.Units
       description: The interval in which to evaluate the alert condition.
@@ -136,7 +145,8 @@ script:
       description: The type of alert.
       type: String
     - contextPath: Extrahop.Alert.FieldOp
-      description: The type of comparison between the "field_name" and "field_name2" fields when applying a ratio.
+      description: The type of comparison between the "field_name" and "field_name2"
+        fields when applying a ratio.
       type: String
     - contextPath: Extrahop.Alert.Id
       description: The unique identifier for the alert.
@@ -158,13 +168,28 @@ script:
     arguments:
     - name: query_from
       required: true
-      description: 'The beginning timestamp of the time range the query will search, expressed in milliseconds since the epoch. A negative value specifies that the search will begin with records created at a time in the past relative to the current time. For example, specify -10m to begin the search with records created 10 minutes before the time of the request. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes.'
+      description: 'The beginning timestamp of the time range the query will search,
+        expressed in milliseconds since the epoch. A negative value specifies that
+        the search will begin with records created at a time in the past relative
+        to the current time. For example, specify -10m to begin the search with records
+        created 10 minutes before the time of the request. The default unit for a
+        negative value is milliseconds, but other units can be specified with one
+        of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
       defaultValue: -30m
     - name: query_until
-      description: 'The ending timestamp of the time range the query will search, expressed in milliseconds since the epoch. A 0 value specifies that the search will end with records created at the time of the request. A negative value specifies that the search will end with records created at a time in the past relative to the current time. For example, specify -5m to end the search with records created 5 minutes before the time of the request. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes.'
+      description: 'The ending timestamp of the time range the query will search,
+        expressed in milliseconds since the epoch. A 0 value specifies that the search
+        will end with records created at the time of the request. A negative value
+        specifies that the search will end with records created at a time in the past
+        relative to the current time. For example, specify -5m to end the search with
+        records created 5 minutes before the time of the request. The default unit
+        for a negative value is milliseconds, but other units can be specified with
+        one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
     - name: limit
       description: The maximum number of entries to return.
-      defaultValue: "20"
+      defaultValue: '20'
     - name: offset
       description: The number of records to skip in the query results.
     - name: field1
@@ -485,7 +510,11 @@ script:
       - vxlanVNI
       - warning
       - xss
-      description: The name of the field in the record to be filtered. The query compares field1 to value1 and applies the compare method specified by the operator1 parameter. If the specified field name is ".any", the union of all field values will be searched. If the specified field name is ".ipaddr" or ".port", the client, server, sender, and receiver roles are included in the search.
+      description: The name of the field in the record to be filtered. The query compares
+        field1 to value1 and applies the compare method specified by the operator1
+        parameter. If the specified field name is ".any", the union of all field values
+        will be searched. If the specified field name is ".ipaddr" or ".port", the
+        client, server, sender, and receiver roles are included in the search.
     - name: operator1
       auto: PREDEFINED
       predefined:
@@ -498,10 +527,13 @@ script:
       - startswith
       - exists
       - not_exists
-      description: The compare method applied when matching value1 against the field1 contents.
+      description: The compare method applied when matching value1 against the field1
+        contents.
       defaultValue: '='
     - name: value1
-      description: The value that the query attempts to match. The query compares this value to the contents of the field1 parameter and applies the compare method specified by the operator1 parameter.
+      description: The value that the query attempts to match. The query compares
+        this value to the contents of the field1 parameter and applies the compare
+        method specified by the operator1 parameter.
     - name: field2
       auto: PREDEFINED
       predefined:
@@ -820,7 +852,11 @@ script:
       - vxlanVNI
       - warning
       - xss
-      description: The name of the field in the record to be filtered. The query compares field2 to value2 and applies the compare method specified by the operator2 parameter. If the specified field name is ".any", the union of all field values will be searched. If the specified field name is ".ipaddr" or ".port", the client, server, sender, and receiver roles are included in the search.
+      description: The name of the field in the record to be filtered. The query compares
+        field2 to value2 and applies the compare method specified by the operator2
+        parameter. If the specified field name is ".any", the union of all field values
+        will be searched. If the specified field name is ".ipaddr" or ".port", the
+        client, server, sender, and receiver roles are included in the search.
     - name: operator2
       auto: PREDEFINED
       predefined:
@@ -833,17 +869,23 @@ script:
       - startswith
       - exists
       - not_exists
-      description: The compare method applied when matching value2 against the field2 contents.
+      description: The compare method applied when matching value2 against the field2
+        contents.
       defaultValue: '='
     - name: value2
-      description: The value that the query attempts to match. The query compares this value to the contents of the field2 parameter and applies the compare method specified by the operator2 parameter.
+      description: The value that the query attempts to match. The query compares
+        this value to the contents of the field2 parameter and applies the compare
+        method specified by the operator2 parameter.
     - name: match_type
       auto: PREDEFINED
       predefined:
       - and
       - or
       - not
-      description: The match operator to use when chaining the search fields of 1 and 2 together. For example, to find HTTP records with status code 500 or a processing time greater than 100ms (set match_type=or, field1=statusCode, operator1==, value1=500, field2=processingTime, operator2=> value2=100, types=http).
+      description: The match operator to use when chaining the search fields of 1
+        and 2 together. For example, to find HTTP records with status code 500 or
+        a processing time greater than 100ms (set match_type=or, field1=statusCode,
+        operator1==, value1=500, field2=processingTime, operator2=> value2=100, types=http).
       defaultValue: and
     - name: types
       auto: PREDEFINED
@@ -911,7 +953,8 @@ script:
       - ssl_heartbeat
       - ssl_open
       - telnet
-      description: A list of one or more record formats for the query to filter on, comma separated. The query returns only records that match the specified formats.
+      description: A list of one or more record formats for the query to filter on,
+        comma separated. The query returns only records that match the specified formats.
       isArray: true
     outputs:
     - contextPath: ExtraHop.Record.Type
@@ -1902,7 +1945,8 @@ script:
   - name: extrahop-device-search
     arguments:
     - name: name
-      description: The name of the device. This searches for matches on all ExtraHop name fields (DHCP, DNS, NetBIOS, Cisco Discovery Protocol, etc).
+      description: The name of the device. This searches for matches on all ExtraHop
+        name fields (DHCP, DNS, NetBIOS, Cisco Discovery Protocol, etc).
     - name: ip
       description: The IP address of the device.
     - name: mac
@@ -1994,7 +2038,12 @@ script:
       - zte
       description: The vendor of the device, based on MAC address via OUI lookup.
     - name: discover_time
-      description: 'The time that device was first seen by ExtraHop, expressed in milliseconds since the epoch. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with the following unit suffixes: ms, s, m, h, d, w, M, y. For example, to look one day back enter -1d or -24h. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes.'
+      description: 'The time that device was first seen by ExtraHop, expressed in
+        milliseconds since the epoch. A negative value is evaluated relative to the
+        current time. The default unit for a negative value is milliseconds, but other
+        units can be specified with the following unit suffixes: ms, s, m, h, d, w,
+        M, y. For example, to look one day back enter -1d or -24h. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
     - name: vlan
       description: The VLAN ID of the Virtual LAN that the device is on.
     - name: activity
@@ -2094,9 +2143,11 @@ script:
       - startswith
       - exists
       - not_exists
-      - "~"
+      - '~'
       - '!~'
-      description: The compare method applied when matching the fields against their values. For example, to find devices with names that begin with 'SEA1' (set name=SEA1, operator=startswith)
+      description: The compare method applied when matching the fields against their
+        values. For example, to find devices with names that begin with 'SEA1' (set
+        name=SEA1, operator=startswith)
       defaultValue: '='
     - name: match_type
       auto: PREDEFINED
@@ -2104,22 +2155,37 @@ script:
       - and
       - or
       - not
-      description: The match operator to use when chaining the search fields together. For example, to find all HTTP servers running Windows on the network (set match_type=and, role=http_server, software=windows).
+      description: The match operator to use when chaining the search fields together.
+        For example, to find all HTTP servers running Windows on the network (set
+        match_type=and, role=http_server, software=windows).
       defaultValue: and
     - name: active_from
-      description: 'The beginning timestamp for the request. Return only devices active after this time. Time is expressed in milliseconds since the epoch. 0 indicates the time of the request. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes.'
+      description: 'The beginning timestamp for the request. Return only devices active
+        after this time. Time is expressed in milliseconds since the epoch. 0 indicates
+        the time of the request. A negative value is evaluated relative to the current
+        time. The default unit for a negative value is milliseconds, but other units
+        can be specified with one of the following unit suffixes: ms, s, m, h, d,
+        w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
     - name: active_until
-      description: 'The ending timestamp for the request. Return only devices active before this time. Time is expressed in milliseconds since the epoch. 0 indicates the time of the request. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes.'
+      description: 'The ending timestamp for the request. Return only devices active
+        before this time. Time is expressed in milliseconds since the epoch. 0 indicates
+        the time of the request. A negative value is evaluated relative to the current
+        time. The default unit for a negative value is milliseconds, but other units
+        can be specified with one of the following unit suffixes: ms, s, m, h, d,
+        w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
     - name: limit
       description: The maximum number of devices to return.
-      defaultValue: "10"
+      defaultValue: '10'
     - name: l3_only
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
-      description: Only returns layer 3 devices by filtering out any layer 2 parent devices.
-      defaultValue: "true"
+      - 'true'
+      - 'false'
+      description: Only returns layer 3 devices by filtering out any layer 2 parent
+        devices.
+      defaultValue: 'true'
     outputs:
     - contextPath: ExtraHop.Device.Macaddr
       description: The MAC Address of the device.
@@ -2128,7 +2194,8 @@ script:
       description: The class of the device.
       type: String
     - contextPath: ExtraHop.Device.UserModTime
-      description: The time of the most recent update, expressed in milliseconds since the epoch.
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
       type: Number
     - contextPath: ExtraHop.Device.AutoRole
       description: The role automatically detected by the ExtraHop.
@@ -2155,7 +2222,8 @@ script:
       description: Whether the device is on the advanced analysis allow list.
       type: Boolean
     - contextPath: ExtraHop.Device.ModTime
-      description: The time of the most recent update, expressed in milliseconds since the epoch.
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
       type: Number
     - contextPath: ExtraHop.Device.IsL3
       description: Indicates whether the device is a Layer 3 device.
@@ -2203,10 +2271,12 @@ script:
   - name: extrahop-edit-watchlist
     arguments:
     - name: add
-      description: The list of IP Addresses or ExtraHop API IDs of the devices to add, comma separated.
+      description: The list of IP Addresses or ExtraHop API IDs of the devices to
+        add, comma separated.
       isArray: true
     - name: remove
-      description: The list of IP Addresses or ExtraHop API IDs of the devices to remove, comma separated.
+      description: The list of IP Addresses or ExtraHop API IDs of the devices to
+        remove, comma separated.
       isArray: true
     description: Add or remove devices from the watchlist in Reveal(x).
   - name: extrahop-get-watchlist
@@ -2219,7 +2289,8 @@ script:
       description: 'The class of this device. '
       type: String
     - contextPath: Extrahop.Device.UserModTime
-      description: The time of the most recent update, expressed in milliseconds since the epoch.
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
       type: Number
     - contextPath: Extrahop.Device.AutoRole
       description: 'The role automatically detected by the ExtraHop. '
@@ -2246,7 +2317,8 @@ script:
       description: Whether the device is on the advanced analysis allow list.
       type: Boolean
     - contextPath: Extrahop.Device.ModTime
-      description: The time of the most recent update, expressed in milliseconds since the epoch.
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
       type: Number
     - contextPath: Extrahop.Device.IsL3
       description: Indicates whether the device is a Layer 3 device.
@@ -2298,15 +2370,15 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       description: Indicates whether the alert is assigned to all available data sources.
     - name: disabled
       required: true
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       description: Indicates whether the alert is disabled.
     - name: name
       required: true
@@ -2315,24 +2387,27 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       description: Indicates whether to send an SNMP trap when an alert is generated.
     - name: refire_interval
       required: true
       auto: PREDEFINED
       predefined:
-      - "300"
-      - "600"
-      - "900"
-      - "1800"
-      - "3600"
-      - "7200"
-      - "14400"
-      description: 'The time interval in which alert conditions are monitored, expressed in seconds. '
+      - '300'
+      - '600'
+      - '900'
+      - '1800'
+      - '3600'
+      - '7200'
+      - '14400'
+      description: 'The time interval in which alert conditions are monitored, expressed
+        in seconds. '
     - name: severity
       required: true
-      description: 'The severity level of the alert, which is displayed in the Alert History, email notifications, and SNMP traps. Supported values: 0, 1, 2, 3, 4, 5, 6, 7'
+      description: 'The severity level of the alert, which is displayed in the Alert
+        History, email notifications, and SNMP traps. Supported values: 0, 1, 2, 3,
+        4, 5, 6, 7'
     - name: type
       required: true
       auto: PREDEFINED
@@ -2345,15 +2420,19 @@ script:
       predefined:
       - application
       - device
-      description: 'The type of metric source monitored by the alert configuration. Only applicable to detection alerts. '
+      description: 'The type of metric source monitored by the alert configuration.
+        Only applicable to detection alerts. '
     - name: protocols
       description: The list of monitored protocols. Only applicable to detection alerts.
     - name: field_name
-      description: The name of the monitored metric. Only applicable to threshold alerts.
+      description: The name of the monitored metric. Only applicable to threshold
+        alerts.
     - name: field_name2
-      description: The second monitored metric when applying a ratio. Only applicable to threshold alerts.
+      description: The second monitored metric when applying a ratio. Only applicable
+        to threshold alerts.
     - name: stat_name
-      description: The statistic name for the alert. Only applicable to threshold alerts.
+      description: The statistic name for the alert. Only applicable to threshold
+        alerts.
     - name: units
       auto: PREDEFINED
       predefined:
@@ -2362,22 +2441,28 @@ script:
       - 1 sec
       - 1 min
       - 1 hr
-      description: "The interval in which to evaluate the alert condition. Only applicable to threshold alerts. \nSupported values: \"none\", \"period\", \"1 sec\", \"1 min\", \"1 hr\""
+      description: "The interval in which to evaluate the alert condition. Only applicable\
+        \ to threshold alerts. \nSupported values: \"none\", \"period\", \"1 sec\"\
+        , \"1 min\", \"1 hr\""
     - name: interval_length
       auto: PREDEFINED
       predefined:
-      - "30"
-      - "60"
-      - "120"
-      - "300"
-      - "600"
-      - "900"
-      - "1200"
-      - "1800"
-      description: "The length of the alert interval, expressed in seconds. Only applicable to threshold alerts. \nSupported values: 30, 60, 120, 300, 600, 900, 1200, 1800"
-      defaultValue: "30"
+      - '30'
+      - '60'
+      - '120'
+      - '300'
+      - '600'
+      - '900'
+      - '1200'
+      - '1800'
+      description: "The length of the alert interval, expressed in seconds. Only applicable\
+        \ to threshold alerts. \nSupported values: 30, 60, 120, 300, 600, 900, 1200,\
+        \ 1800"
+      defaultValue: '30'
     - name: operand
-      description: The value to compare against alert conditions. The compare method is specified by the value of the operator field. Only applicable to threshold alerts.
+      description: The value to compare against alert conditions. The compare method
+        is specified by the value of the operator field. Only applicable to threshold
+        alerts.
     - name: operator
       auto: PREDEFINED
       predefined:
@@ -2386,17 +2471,21 @@ script:
       - <
       - '>='
       - <=
-      description: The logical operator applied when comparing the value of the operand field to alert conditions. Only applicable to threshold alerts.
+      description: The logical operator applied when comparing the value of the operand
+        field to alert conditions. Only applicable to threshold alerts.
     - name: field_op
       auto: PREDEFINED
       predefined:
       - /
-      - "null"
-      description: The type of comparison between the field_name and field_name2 fields when applying a ratio. Only applicable to threshold alerts.
+      - 'null'
+      description: The type of comparison between the field_name and field_name2 fields
+        when applying a ratio. Only applicable to threshold alerts.
     - name: param
-      description: The first alert parameter, which is either a key pattern or a data point. Only applicable to threshold alerts.
+      description: The first alert parameter, which is either a key pattern or a data
+        point. Only applicable to threshold alerts.
     - name: param2
-      description: The second alert parameter, which is either a key pattern or a data point. Only applicable to threshold alerts.
+      description: The second alert parameter, which is either a key pattern or a
+        data point. Only applicable to threshold alerts.
     description: Create a new alert rule in Reveal(x).
   - name: extrahop-create-alert-rule
     arguments:
@@ -2404,15 +2493,15 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       description: Indicates whether the alert is assigned to all available data sources.
     - name: disabled
       required: true
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       description: Indicates whether the alert is disabled.
     - name: name
       required: true
@@ -2421,24 +2510,27 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       description: Indicates whether to send an SNMP trap when an alert is generated.
     - name: refire_interval
       required: true
       auto: PREDEFINED
       predefined:
-      - "300"
-      - "600"
-      - "900"
-      - "1800"
-      - "3600"
-      - "7200"
-      - "14400"
-      description: 'The time interval in which alert conditions are monitored, expressed in seconds. '
+      - '300'
+      - '600'
+      - '900'
+      - '1800'
+      - '3600'
+      - '7200'
+      - '14400'
+      description: 'The time interval in which alert conditions are monitored, expressed
+        in seconds. '
     - name: severity
       required: true
-      description: 'The severity level of the alert, which is displayed in the Alert History, email notifications, and SNMP traps. Supported values: 0, 1, 2, 3, 4, 5, 6, 7'
+      description: 'The severity level of the alert, which is displayed in the Alert
+        History, email notifications, and SNMP traps. Supported values: 0, 1, 2, 3,
+        4, 5, 6, 7'
     - name: type
       required: true
       auto: PREDEFINED
@@ -2451,15 +2543,19 @@ script:
       predefined:
       - application
       - device
-      description: 'The type of metric source monitored by the alert configuration. Only applicable to detection alerts. '
+      description: 'The type of metric source monitored by the alert configuration.
+        Only applicable to detection alerts. '
     - name: protocols
       description: The list of monitored protocols. Only applicable to detection alerts.
     - name: field_name
-      description: The name of the monitored metric. Only applicable to threshold alerts.
+      description: The name of the monitored metric. Only applicable to threshold
+        alerts.
     - name: field_name2
-      description: The second monitored metric when applying a ratio. Only applicable to threshold alerts.
+      description: The second monitored metric when applying a ratio. Only applicable
+        to threshold alerts.
     - name: stat_name
-      description: The statistic name for the alert. Only applicable to threshold alerts.
+      description: The statistic name for the alert. Only applicable to threshold
+        alerts.
     - name: units
       auto: PREDEFINED
       predefined:
@@ -2468,22 +2564,28 @@ script:
       - 1 sec
       - 1 min
       - 1 hr
-      description: "The interval in which to evaluate the alert condition. Only applicable to threshold alerts. \nSupported values: \"none\", \"period\", \"1 sec\", \"1 min\", \"1 hr\""
+      description: "The interval in which to evaluate the alert condition. Only applicable\
+        \ to threshold alerts. \nSupported values: \"none\", \"period\", \"1 sec\"\
+        , \"1 min\", \"1 hr\""
     - name: interval_length
       auto: PREDEFINED
       predefined:
-      - "30"
-      - "60"
-      - "120"
-      - "300"
-      - "600"
-      - "900"
-      - "1200"
-      - "1800"
-      description: "The length of the alert interval, expressed in seconds. Only applicable to threshold alerts. \nSupported values: 30, 60, 120, 300, 600, 900, 1200, 1800"
-      defaultValue: "30"
+      - '30'
+      - '60'
+      - '120'
+      - '300'
+      - '600'
+      - '900'
+      - '1200'
+      - '1800'
+      description: "The length of the alert interval, expressed in seconds. Only applicable\
+        \ to threshold alerts. \nSupported values: 30, 60, 120, 300, 600, 900, 1200,\
+        \ 1800"
+      defaultValue: '30'
     - name: operand
-      description: The value to compare against alert conditions. The compare method is specified by the value of the operator field. Only applicable to threshold alerts.
+      description: The value to compare against alert conditions. The compare method
+        is specified by the value of the operator field. Only applicable to threshold
+        alerts.
     - name: operator
       auto: PREDEFINED
       predefined:
@@ -2492,17 +2594,21 @@ script:
       - <
       - '>='
       - <=
-      description: The logical operator applied when comparing the value of the operand field to alert conditions. Only applicable to threshold alerts.
+      description: The logical operator applied when comparing the value of the operand
+        field to alert conditions. Only applicable to threshold alerts.
     - name: field_op
       auto: PREDEFINED
       predefined:
       - /
-      - "null"
-      description: The type of comparison between the field_name and field_name2 fields when applying a ratio. Only applicable to threshold alerts.
+      - 'null'
+      description: The type of comparison between the field_name and field_name2 fields
+        when applying a ratio. Only applicable to threshold alerts.
     - name: param
-      description: The first alert parameter, which is either a key pattern or a data point. Only applicable to threshold alerts.
+      description: The first alert parameter, which is either a key pattern or a data
+        point. Only applicable to threshold alerts.
     - name: param2
-      description: The second alert parameter, which is either a key pattern or a data point. Only applicable to threshold alerts.
+      description: The second alert parameter, which is either a key pattern or a
+        data point. Only applicable to threshold alerts.
     description: Create a new alert rule in Reveal(x).
   - name: extrahop-edit-alert
     deprecated: true
@@ -2514,15 +2620,15 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       description: Indicates whether the alert is assigned to all available data sources.
     - name: disabled
       required: true
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       description: Indicates whether the alert is disabled.
     - name: name
       required: true
@@ -2531,13 +2637,15 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       description: Indicates whether to send an SNMP trap when an alert is generated.
     - name: field_name
-      description: The name of the monitored metric. Only applicable to threshold alerts.
+      description: The name of the monitored metric. Only applicable to threshold
+        alerts.
     - name: stat_name
-      description: The statistic name for the alert. Only applicable to threshold alerts.
+      description: The statistic name for the alert. Only applicable to threshold
+        alerts.
     - name: units
       auto: PREDEFINED
       predefined:
@@ -2546,46 +2654,52 @@ script:
       - 1 sec
       - 1 min
       - 1 hr
-      description: The interval in which to evaluate the alert condition. Only applicable to threshold alerts.
+      description: The interval in which to evaluate the alert condition. Only applicable
+        to threshold alerts.
     - name: interval_length
       auto: PREDEFINED
       predefined:
-      - "30"
-      - "60"
-      - "120"
-      - "300"
-      - "600"
-      - "900"
-      - "1200"
-      - "1800"
-      description: The length of the alert interval, expressed in seconds. Only applicable to threshold alerts.
+      - '30'
+      - '60'
+      - '120'
+      - '300'
+      - '600'
+      - '900'
+      - '1200'
+      - '1800'
+      description: The length of the alert interval, expressed in seconds. Only applicable
+        to threshold alerts.
     - name: operand
-      description: The value to compare against alert conditions. The compare method is specified by the value of the operator field. Only applicable to threshold alerts.
+      description: The value to compare against alert conditions. The compare method
+        is specified by the value of the operator field. Only applicable to threshold
+        alerts.
     - name: refire_interval
       required: true
       auto: PREDEFINED
       predefined:
-      - "300"
-      - "600"
-      - "900"
-      - "1800"
-      - "3600"
-      - "7200"
-      - "14400"
-      description: The time interval in which alert conditions are monitored, expressed in seconds.
+      - '300'
+      - '600'
+      - '900'
+      - '1800'
+      - '3600'
+      - '7200'
+      - '14400'
+      description: The time interval in which alert conditions are monitored, expressed
+        in seconds.
     - name: severity
       required: true
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
-      - "2"
-      - "3"
-      - "4"
-      - "5"
-      - "6"
-      - "7"
-      description: The severity level of the alert, which is displayed in the Alert History, email notifications, and SNMP traps.
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+      - '7'
+      description: The severity level of the alert, which is displayed in the Alert
+        History, email notifications, and SNMP traps.
     - name: type
       required: true
       auto: PREDEFINED
@@ -2598,7 +2712,8 @@ script:
       predefined:
       - application
       - device
-      description: The type of metric source monitored by the alert configuration. Only applicable to detection alerts.
+      description: The type of metric source monitored by the alert configuration.
+        Only applicable to detection alerts.
     - name: protocols
       description: The list of monitored protocols. Only applicable to detection alerts.
     - name: operator
@@ -2609,19 +2724,24 @@ script:
       - <
       - '>='
       - <=
-      description: The logical operator applied when comparing the value of the operand field to alert conditions. Only applicable to threshold alerts.
+      description: The logical operator applied when comparing the value of the operand
+        field to alert conditions. Only applicable to threshold alerts.
     - name: field_name2
-      description: The second monitored metric when applying a ratio. Only applicable to threshold alerts.
+      description: The second monitored metric when applying a ratio. Only applicable
+        to threshold alerts.
     - name: field_op
       auto: PREDEFINED
       predefined:
       - /
-      - "null"
-      description: The type of comparison between the field_name and field_name2 fields when applying a ratio. Only applicable to threshold alerts.
+      - 'null'
+      description: The type of comparison between the field_name and field_name2 fields
+        when applying a ratio. Only applicable to threshold alerts.
     - name: param
-      description: The first alert parameter, which is either a key pattern or a data point. Only applicable to threshold alerts.
+      description: The first alert parameter, which is either a key pattern or a data
+        point. Only applicable to threshold alerts.
     - name: param2
-      description: The second alert parameter, which is either a key pattern or a data point. Only applicable to threshold alerts.
+      description: The second alert parameter, which is either a key pattern or a
+        data point. Only applicable to threshold alerts.
     description: Modify an alert rule in Reveal(x).
   - name: extrahop-edit-alert-rule
     arguments:
@@ -2632,15 +2752,15 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       description: Indicates whether the alert is assigned to all available data sources.
     - name: disabled
       required: true
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       description: Indicates whether the alert is disabled.
     - name: name
       required: true
@@ -2649,13 +2769,15 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       description: Indicates whether to send an SNMP trap when an alert is generated.
     - name: field_name
-      description: The name of the monitored metric. Only applicable to threshold alerts.
+      description: The name of the monitored metric. Only applicable to threshold
+        alerts.
     - name: stat_name
-      description: The statistic name for the alert. Only applicable to threshold alerts.
+      description: The statistic name for the alert. Only applicable to threshold
+        alerts.
     - name: units
       auto: PREDEFINED
       predefined:
@@ -2664,46 +2786,52 @@ script:
       - 1 sec
       - 1 min
       - 1 hr
-      description: The interval in which to evaluate the alert condition. Only applicable to threshold alerts.
+      description: The interval in which to evaluate the alert condition. Only applicable
+        to threshold alerts.
     - name: interval_length
       auto: PREDEFINED
       predefined:
-      - "30"
-      - "60"
-      - "120"
-      - "300"
-      - "600"
-      - "900"
-      - "1200"
-      - "1800"
-      description: The length of the alert interval, expressed in seconds. Only applicable to threshold alerts.
+      - '30'
+      - '60'
+      - '120'
+      - '300'
+      - '600'
+      - '900'
+      - '1200'
+      - '1800'
+      description: The length of the alert interval, expressed in seconds. Only applicable
+        to threshold alerts.
     - name: operand
-      description: The value to compare against alert conditions. The compare method is specified by the value of the operator field. Only applicable to threshold alerts.
+      description: The value to compare against alert conditions. The compare method
+        is specified by the value of the operator field. Only applicable to threshold
+        alerts.
     - name: refire_interval
       required: true
       auto: PREDEFINED
       predefined:
-      - "300"
-      - "600"
-      - "900"
-      - "1800"
-      - "3600"
-      - "7200"
-      - "14400"
-      description: The time interval in which alert conditions are monitored, expressed in seconds.
+      - '300'
+      - '600'
+      - '900'
+      - '1800'
+      - '3600'
+      - '7200'
+      - '14400'
+      description: The time interval in which alert conditions are monitored, expressed
+        in seconds.
     - name: severity
       required: true
       auto: PREDEFINED
       predefined:
-      - "0"
-      - "1"
-      - "2"
-      - "3"
-      - "4"
-      - "5"
-      - "6"
-      - "7"
-      description: The severity level of the alert, which is displayed in the Alert History, email notifications, and SNMP traps.
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+      - '7'
+      description: The severity level of the alert, which is displayed in the Alert
+        History, email notifications, and SNMP traps.
     - name: type
       required: true
       auto: PREDEFINED
@@ -2716,7 +2844,8 @@ script:
       predefined:
       - application
       - device
-      description: The type of metric source monitored by the alert configuration. Only applicable to detection alerts.
+      description: The type of metric source monitored by the alert configuration.
+        Only applicable to detection alerts.
     - name: protocols
       description: The list of monitored protocols. Only applicable to detection alerts.
     - name: operator
@@ -2727,19 +2856,24 @@ script:
       - <
       - '>='
       - <=
-      description: The logical operator applied when comparing the value of the operand field to alert conditions. Only applicable to threshold alerts.
+      description: The logical operator applied when comparing the value of the operand
+        field to alert conditions. Only applicable to threshold alerts.
     - name: field_name2
-      description: The second monitored metric when applying a ratio. Only applicable to threshold alerts.
+      description: The second monitored metric when applying a ratio. Only applicable
+        to threshold alerts.
     - name: field_op
       auto: PREDEFINED
       predefined:
       - /
-      - "null"
-      description: The type of comparison between the field_name and field_name2 fields when applying a ratio. Only applicable to threshold alerts.
+      - 'null'
+      description: The type of comparison between the field_name and field_name2 fields
+        when applying a ratio. Only applicable to threshold alerts.
     - name: param
-      description: The first alert parameter, which is either a key pattern or a data point. Only applicable to threshold alerts.
+      description: The first alert parameter, which is either a key pattern or a data
+        point. Only applicable to threshold alerts.
     - name: param2
-      description: The second alert parameter, which is either a key pattern or a data point. Only applicable to threshold alerts.
+      description: The second alert parameter, which is either a key pattern or a
+        data point. Only applicable to threshold alerts.
     description: Modify an alert rule in Reveal(x).
   - name: extrahop-track-ticket
     arguments:
@@ -2764,12 +2898,23 @@ script:
     arguments:
     - name: ip_or_id
       required: true
-      description: The IP Address or ExtraHop API ID of the source device to get peer devices.
+      description: The IP Address or ExtraHop API ID of the source device to get peer
+        devices.
     - name: query_from
-      description: 'The beginning timestamp of the time range the query will search, expressed in milliseconds since the epoch. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes.'
+      description: 'The beginning timestamp of the time range the query will search,
+        expressed in milliseconds since the epoch. A negative value is evaluated relative
+        to the current time. The default unit for a negative value is milliseconds,
+        but other units can be specified with one of the following unit suffixes:
+        ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
       defaultValue: -30m
     - name: query_until
-      description: 'The ending timestamp of the time range the query will search, expressed in milliseconds since the epoch. 0 indicates the time of the request. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes.'
+      description: 'The ending timestamp of the time range the query will search,
+        expressed in milliseconds since the epoch. 0 indicates the time of the request.
+        A negative value is evaluated relative to the current time. The default unit
+        for a negative value is milliseconds, but other units can be specified with
+        one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
     - name: peer_role
       auto: PREDEFINED
       predefined:
@@ -2837,7 +2982,8 @@ script:
       - telnet
       - UDP
       - WebSocket
-      description: A filter to only return peers that the source device has communicated with over this protocol. If no value is set, the object includes any protocol.
+      description: A filter to only return peers that the source device has communicated
+        with over this protocol. If no value is set, the object includes any protocol.
       defaultValue: any
     outputs:
     - contextPath: ExtraHop.Device.Macaddr
@@ -2847,7 +2993,8 @@ script:
       description: The class of the device.
       type: string
     - contextPath: ExtraHop.Device.UserModTime
-      description: The time of the most recent update, expressed in milliseconds since the epoch.
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
       type: number
     - contextPath: ExtraHop.Device.AutoRole
       description: The role automatically detected by the ExtraHop.
@@ -2874,7 +3021,8 @@ script:
       description: Whether the device is on the advanced analysis allow list.
       type: boolean
     - contextPath: ExtraHop.Device.ModTime
-      description: The time of the most recent update, expressed in milliseconds since the epoch.
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
       type: number
     - contextPath: ExtraHop.Device.IsL3
       description: Indicates whether the device is a Layer 3 device.
@@ -2929,12 +3077,23 @@ script:
     arguments:
     - name: ip_or_id
       required: true
-      description: The IP Address or ExtraHop API ID of the device to get all active network protocols.
+      description: The IP Address or ExtraHop API ID of the device to get all active
+        network protocols.
     - name: query_from
-      description: 'The beginning timestamp of the time range the query will search, expressed in milliseconds since the epoch. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes.'
+      description: 'The beginning timestamp of the time range the query will search,
+        expressed in milliseconds since the epoch. A negative value is evaluated relative
+        to the current time. The default unit for a negative value is milliseconds,
+        but other units can be specified with one of the following unit suffixes:
+        ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
       defaultValue: -30m
     - name: query_until
-      description: 'The ending timestamp of the time range the query will search, expressed in milliseconds since the epoch. 0 indicates the time of the request. A negative value is evaluated relative to the current time. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes.'
+      description: 'The ending timestamp of the time range the query will search,
+        expressed in milliseconds since the epoch. 0 indicates the time of the request.
+        A negative value is evaluated relative to the current time. The default unit
+        for a negative value is milliseconds, but other units can be specified with
+        one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
     outputs:
     - contextPath: ExtraHop.Device.Macaddr
       description: The MAC Address of the device.
@@ -2943,7 +3102,8 @@ script:
       description: The class of the device.
       type: string
     - contextPath: ExtraHop.Device.UserModTime
-      description: The time of the most recent update, expressed in milliseconds since the epoch.
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
       type: number
     - contextPath: ExtraHop.Device.AutoRole
       description: The role automatically detected by the ExtraHop.
@@ -2970,7 +3130,8 @@ script:
       description: Whether the device is on the advanced analysis allow list.
       type: boolean
     - contextPath: ExtraHop.Device.ModTime
-      description: The time of the most recent update, expressed in milliseconds since the epoch.
+      description: The time of the most recent update, expressed in milliseconds since
+        the epoch.
       type: number
     - contextPath: ExtraHop.Device.IsL3
       description: Indicates whether the device is a Layer 3 device.
@@ -3026,17 +3187,20 @@ script:
     - name: tag
       description: The case-sensitive value of the tag.
     - name: add
-      description: The list of IP Addresses or ExtraHop API IDs of the devices to tag, comma separated.
+      description: The list of IP Addresses or ExtraHop API IDs of the devices to
+        tag, comma separated.
       isArray: true
     - name: remove
-      description: The list of IP Addresses or ExtraHop API IDs of the devices to remove the tag from, comma separated.
+      description: The list of IP Addresses or ExtraHop API IDs of the devices to
+        remove the tag from, comma separated.
       isArray: true
     description: Add or remove a tag from devices in Reveal(x).
   - name: extrahop-get-activity-map
     arguments:
     - name: ip_or_id
       required: true
-      description: The IP Address or ExtraHop API ID of the source device to get an activity map.
+      description: The IP Address or ExtraHop API ID of the source device to get an
+        activity map.
     - name: time_interval
       auto: PREDEFINED
       predefined:
@@ -3044,19 +3208,28 @@ script:
       - 6 hours
       - 1 day
       - 1 week
-      description: The time interval of the live activity map, expressed as the "Last" 30 minutes. For example, specify a value of 30 minutes to get an activity map showing the time range of the last 30 minutes. This field is ignored if from_time and until_time are provided.
+      description: The time interval of the live activity map, expressed as the "Last"
+        30 minutes. For example, specify a value of 30 minutes to get an activity
+        map showing the time range of the last 30 minutes. This field is ignored if
+        from_time and until_time are provided.
       defaultValue: 30 minutes
     - name: from_time
-      description: The beginning timestamp of a fixed time range the activity map will display, expressed in seconds since the epoch.
+      description: The beginning timestamp of a fixed time range the activity map
+        will display, expressed in seconds since the epoch.
     - name: until_time
-      description: The ending timestamp of a fixed time range the activity map will display, expressed in seconds since the epoch.
+      description: The ending timestamp of a fixed time range the activity map will
+        display, expressed in seconds since the epoch.
     - name: peer_role
       auto: PREDEFINED
       predefined:
       - any
       - client
       - server
-      description: The role of the peer devices in relation to the source device. For example, specifying a peer_role of client will show All Clients communicating with the source device. Additionally specifying a protocol of HTTP will result in further filtering and only showing HTTP Clients communicating with the source device.
+      description: The role of the peer devices in relation to the source device.
+        For example, specifying a peer_role of client will show All Clients communicating
+        with the source device. Additionally specifying a protocol of HTTP will result
+        in further filtering and only showing HTTP Clients communicating with the
+        source device.
       defaultValue: any
     - name: protocol
       auto: PREDEFINED
@@ -3117,7 +3290,11 @@ script:
       - telnet
       - UDP
       - WebSocket
-      description: The protocol over which the source device is communicating. For example, specifying a protocol of HTTP show only HTTP Clients and HTTP Servers communicating with the source device. Additionally specifying a peer_role of client will result in further filtering and only showing HTTP Clients communicating with the source device.
+      description: The protocol over which the source device is communicating. For
+        example, specifying a protocol of HTTP show only HTTP Clients and HTTP Servers
+        communicating with the source device. Additionally specifying a peer_role
+        of client will result in further filtering and only showing HTTP Clients communicating
+        with the source device.
       defaultValue: any
     outputs:
     - contextPath: ExtraHop.ActivityMap
@@ -3132,20 +3309,38 @@ script:
       - pcap
       - keylog_txt
       - zip
-      description: The output format. A pcap file, A keylog.txt file that can be loaded in wireshark to decode ssl packets, or a zip file containing both a packets.pcap and keylog.txt.
+      description: The output format. A pcap file, A keylog.txt file that can be loaded
+        in wireshark to decode ssl packets, or a zip file containing both a packets.pcap
+        and keylog.txt.
       defaultValue: pcap
     - name: limit_bytes
       description: The maximum number of bytes to return.
       defaultValue: 10MB
     - name: limit_search_duration
-      description: The maximum amount of time to run the packet search. The default unit is milliseconds, but other units can be specified with a unit suffix.
+      description: The maximum amount of time to run the packet search. The default
+        unit is milliseconds, but other units can be specified with a unit suffix.
       defaultValue: 5m
     - name: query_from
       required: true
-      description: 'The beginning timestamp of the time range the search will include, expressed in milliseconds since the epoch. A negative value specifies that the search will begin with packets captured at a time in the past relative to the current time. For example, specify -10m to begin the search with packets captured 10 minutes before the time of the request. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes.'
+      description: 'The beginning timestamp of the time range the search will include,
+        expressed in milliseconds since the epoch. A negative value specifies that
+        the search will begin with packets captured at a time in the past relative
+        to the current time. For example, specify -10m to begin the search with packets
+        captured 10 minutes before the time of the request. The default unit for a
+        negative value is milliseconds, but other units can be specified with one
+        of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
       defaultValue: -10m
     - name: query_until
-      description: 'The ending timestamp of the time range the search will include, expressed in milliseconds since the epoch. A 0 value specifies that the search will end with packets captured at the time of the search. A negative value specifies that the search will end with packets captured at a time in the past relative to the current time. For example, specify -5m to end the search with packets captured 5 minutes before the time of the request. The default unit for a negative value is milliseconds, but other units can be specified with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units- for more details on supported time units and suffixes.'
+      description: 'The ending timestamp of the time range the search will include,
+        expressed in milliseconds since the epoch. A 0 value specifies that the search
+        will end with packets captured at the time of the search. A negative value
+        specifies that the search will end with packets captured at a time in the
+        past relative to the current time. For example, specify -5m to end the search
+        with packets captured 5 minutes before the time of the request. The default
+        unit for a negative value is milliseconds, but other units can be specified
+        with one of the following unit suffixes: ms, s, m, h, d, w, M, y. See https://docs.extrahop.com/current/rest-api-guide/#supported-time-units-
+        for more details on supported time units and suffixes.'
     - name: bpf
       description: The Berkeley Packet Filter (BPF) syntax for the packet search.
     - name: ip1
@@ -3157,7 +3352,7 @@ script:
     - name: port2
       description: Returns packets sent from or received on the specified port.
     description: Search for specific packets in Reveal(x).
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   runonce: false
 tests:
 - ExtraHop_v2-Test

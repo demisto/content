@@ -13,11 +13,11 @@ args:
   description: A CSV list of related incident IDs.
 - name: retryLimit
   description: Number of retries to perform after a failure.
-  defaultValue: "5"
+  defaultValue: '5'
 scripttarget: 0
 comment: |-
   Use this script to avoid DB version errors when simultaneously running multiple linked incidents.
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: devdemisto/py3-master:8.1.0.37377
 tests:
 - No tests (auto formatted)

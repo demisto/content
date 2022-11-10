@@ -31,13 +31,13 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: 'concise'
+- defaultvalue: concise
   display: Info level for fetched alerts
   name: info_level
   options:
-  - 'concise'
-  - 'normal'
-  - 'extended'
+  - concise
+  - normal
+  - extended
   required: false
   type: 15
 - display: Trust any certificate (not secure)
@@ -48,8 +48,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: "FireEye Email Security (EX) series protects against breaches caused\
-  \ by advanced email attacks."
+description: FireEye Email Security (EX) series protects against breaches caused by
+  advanced email attacks.
 display: FireEye Email Security
 name: FireEye Email Security
 script:
@@ -70,12 +70,12 @@ script:
         \ and '48_hours'."
       auto: PREDEFINED
       predefined:
-      - '1_hour'
-      - '2_hours'
-      - '6_hours'
-      - '12_hours'
-      - '24_hours'
-      - '48_hours'
+      - 1_hour
+      - 2_hours
+      - 6_hours
+      - 12_hours
+      - 24_hours
+      - 48_hours
       isArray: false
       name: duration
       required: false
@@ -87,9 +87,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: "The end time of the search. This filter is used with the duration\
-        \ filter. If the end_time is specified but not the duration, the system defaults\
-        \ to duration=12_hours, ending at the specified end_time. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om."
+      description: 'The end time of the search. This filter is used with the duration
+        filter. If the end_time is specified but not the duration, the system defaults
+        to duration=12_hours, ending at the specified end_time. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om.'
       isArray: false
       name: end_time
       required: false
@@ -122,14 +122,14 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: 'concise'
+      defaultValue: concise
       description: 'The level of information to be returned. Possible values: "concise",
         "normal", and "extended".'
       auto: PREDEFINED
       predefined:
-      - 'concise'
-      - 'normal'
-      - 'extended'
+      - concise
+      - normal
+      - extended
       isArray: false
       name: info_level
       required: false
@@ -145,14 +145,14 @@ script:
         \ 'malware_callback', 'malware_object', 'web_infection', 'infection_match',\
         \ 'riskware-infection', 'riskware-callback', and 'riskware-object'."
       predefined:
-      - 'domain_match'
-      - 'malware_callback'
-      - 'malware_object'
-      - 'web_infection'
-      - 'infection_match'
-      - 'riskware-infection'
-      - 'riskware-callback'
-      - 'riskware-object'
+      - domain_match
+      - malware_callback
+      - malware_object
+      - web_infection
+      - infection_match
+      - riskware-infection
+      - riskware-callback
+      - riskware-object
       isArray: false
       name: malware_type
       required: false
@@ -370,7 +370,7 @@ script:
       type: string
   - arguments:
     - default: false
-      defaultValue: '1 day'
+      defaultValue: 1 day
       description: "Specifies the start time of the search. This filter is optional.\
         \ Default is last day. Syntax: start_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or\
         \ '1 day/month/year'."
@@ -511,22 +511,22 @@ script:
         \ and 'alertDetailsReport'."
       auto: PREDEFINED
       predefined:
-      - 'empsEmailAVReport'
-      - 'empsEmailActivity'
-      - 'empsEmailExecutiveSummary'
-      - 'empsEmailHourlyStat'
-      - 'mpsCallBackServer'
-      - 'mpsExecutiveSummary'
-      - 'mpsInfectedHostsTrend'
-      - 'mpsMalwareActivity'
-      - 'mpsWebAVReport'
-      - 'alertDetailsReport'
+      - empsEmailAVReport
+      - empsEmailActivity
+      - empsEmailExecutiveSummary
+      - empsEmailHourlyStat
+      - mpsCallBackServer
+      - mpsExecutiveSummary
+      - mpsInfectedHostsTrend
+      - mpsMalwareActivity
+      - mpsWebAVReport
+      - alertDetailsReport
       isArray: false
       name: report_type
       required: true
       secret: false
     - default: false
-      defaultValue: '1 week'
+      defaultValue: 1 week
       description: "Specifies the start time of the search. This filter is optional.\
         \ Syntax: start_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'"
       isArray: false
@@ -551,9 +551,9 @@ script:
     - default: false
       auto: PREDEFINED
       predefined:
-      - 'A'
-      - 'B'
-      - 'AB'
+      - A
+      - B
+      - AB
       description: Sets the internet interface. Possible values are 'A', 'B', and
         'AB'. This option is required only for IPS reports.
       isArray: false
@@ -581,11 +581,11 @@ script:
         \ 'domain-match', and 'web-infection'."
       auto: PREDEFINED
       predefined:
-      - 'malware-object'
-      - 'malware-callback'
-      - 'infection-match'
-      - 'domain-match'
-      - 'web-infection'
+      - malware-object
+      - malware-callback
+      - infection-match
+      - domain-match
+      - web-infection
       name: infection_type
       required: false
       secret: false
@@ -625,12 +625,12 @@ script:
         \ 'sender_domain', 'sender_ip', 'recipient_email_address', 'url', and 'md5sum'."
       auto: PREDEFINED
       predefined:
-      - 'sender_email_address'
-      - 'sender_domain'
-      - 'sender_ip'
-      - 'recipient_email_address'
-      - 'url'
-      - 'md5sum'
+      - sender_email_address
+      - sender_domain
+      - sender_ip
+      - recipient_email_address
+      - url
+      - md5sum
       isArray: false
       name: type
       required: true
@@ -663,12 +663,12 @@ script:
         \ 'sender_domain', 'sender_ip', 'recipient_email_address', 'url', and 'md5sum'."
       auto: PREDEFINED
       predefined:
-      - 'sender_email_address'
-      - 'sender_domain'
-      - 'sender_ip'
-      - 'recipient_email_address'
-      - 'url'
-      - 'md5sum'
+      - sender_email_address
+      - sender_domain
+      - sender_ip
+      - recipient_email_address
+      - url
+      - md5sum
       isArray: false
       name: type
       required: true
@@ -708,12 +708,12 @@ script:
         \ 'sender_domain', 'sender_ip', 'recipient_email_address', 'url', and 'md5sum'."
       auto: PREDEFINED
       predefined:
-      - 'sender_email_address'
-      - 'sender_domain'
-      - 'sender_ip'
-      - 'recipient_email_address'
-      - 'url'
-      - 'md5sum'
+      - sender_email_address
+      - sender_domain
+      - sender_ip
+      - recipient_email_address
+      - url
+      - md5sum
       isArray: false
       name: type
       required: true
@@ -753,12 +753,12 @@ script:
         \ 'sender_ip', 'recipient_email_address', 'url', and 'md5sum'."
       auto: PREDEFINED
       predefined:
-      - 'sender_email_address'
-      - 'sender_domain'
-      - 'sender_ip'
-      - 'recipient_email_address'
-      - 'url'
-      - 'md5sum'
+      - sender_email_address
+      - sender_domain
+      - sender_ip
+      - recipient_email_address
+      - url
+      - md5sum
       isArray: false
       name: type
       required: true
@@ -790,12 +790,12 @@ script:
         \ 'sender_domain', 'sender_ip', 'recipient_email_address', 'url', and 'md5sum'."
       auto: PREDEFINED
       predefined:
-      - 'sender_email_address'
-      - 'sender_domain'
-      - 'sender_ip'
-      - 'recipient_email_address'
-      - 'url'
-      - 'md5sum'
+      - sender_email_address
+      - sender_domain
+      - sender_ip
+      - recipient_email_address
+      - url
+      - md5sum
       isArray: false
       name: type
       required: true
@@ -828,12 +828,12 @@ script:
         \ 'sender_domain', 'sender_ip', 'recipient_email_address', 'url', and 'md5sum'."
       auto: PREDEFINED
       predefined:
-      - 'sender_email_address'
-      - 'sender_domain'
-      - 'sender_ip'
-      - 'recipient_email_address'
-      - 'url'
-      - 'md5sum'
+      - sender_email_address
+      - sender_domain
+      - sender_ip
+      - recipient_email_address
+      - url
+      - md5sum
       isArray: false
       name: type
       required: true
@@ -873,12 +873,12 @@ script:
         \ 'sender_domain', 'sender_ip', 'recipient_email_address', 'url', and 'md5sum'."
       auto: PREDEFINED
       predefined:
-      - 'sender_email_address'
-      - 'sender_domain'
-      - 'sender_ip'
-      - 'recipient_email_address'
-      - 'url'
-      - 'md5sum'
+      - sender_email_address
+      - sender_domain
+      - sender_ip
+      - recipient_email_address
+      - url
+      - md5sum
       isArray: false
       name: type
       required: true
@@ -918,12 +918,12 @@ script:
         \ 'sender_domain', 'sender_ip', 'recipient_email_address', 'url', and 'md5sum'."
       auto: PREDEFINED
       predefined:
-      - 'sender_email_address'
-      - 'sender_domain'
-      - 'sender_ip'
-      - 'recipient_email_address'
-      - 'url'
-      - 'md5sum'
+      - sender_email_address
+      - sender_domain
+      - sender_ip
+      - recipient_email_address
+      - url
+      - md5sum
       isArray: false
       name: type
       required: true
@@ -954,7 +954,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.8.35482
+  dockerimage: devdemisto/py3-master:8.1.0.37377
 fromversion: 6.0.0
 tests:
 - No tests

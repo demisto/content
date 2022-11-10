@@ -8,22 +8,24 @@ description: Connect to MAR using its DXL client
 configuration:
 - display: Broker CA certificates content (see `brokercerts.crt` in instructions)
   name: broker_ca_bundle
-  defaultvalue: ""
+  defaultvalue: ''
   type: 12
   required: true
 - display: Client certificates content (see `client.crt` in instructions)
   name: cert_file
-  defaultvalue: ""
+  defaultvalue: ''
   type: 12
   required: true
 - display: Client private key content (see `client.key` in instructions)
   name: private_key
-  defaultvalue: ""
+  defaultvalue: ''
   type: 14
   required: true
-- display: Brokers urls (comma separated list in the form of - [ssl://]<hostname>[:port]) - get hostname & port from `brokerlist.properties` file in instructions. Note that the broker should be reachable from demisto server
+- display: Brokers urls (comma separated list in the form of - [ssl://]<hostname>[:port])
+    - get hostname & port from `brokerlist.properties` file in instructions. Note
+    that the broker should be reachable from demisto server
   name: broker_urls
-  defaultvalue: ""
+  defaultvalue: ''
   type: 0
   required: true
 script:
@@ -91,11 +93,15 @@ script:
       - UsbConnectedStorageDevices
       - UserProfiles
       - WinRegistry
-      description: Projection collector that we want to return. By default prejection collector will be equal to the collector
+      description: Projection collector that we want to return. By default prejection
+        collector will be equal to the collector
     - name: outputs
-      description: Comma separated fields (outputs). Run `mar-collectors-list` to view all collectors & fields command for all collectors outputs, shows all outputs if not supplied
+      description: Comma separated fields (outputs). Run `mar-collectors-list` to
+        view all collectors & fields command for all collectors outputs, shows all
+        outputs if not supplied
     - name: filter-by
-      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list` to view all collectors & fields command for all collectors outputs
+      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list`
+        to view all collectors & fields command for all collectors outputs
     - name: filter-operator
       auto: PREDEFINED
       predefined:
@@ -114,9 +120,11 @@ script:
       description: Filtering value of the `filter-by` field
     outputs:
     - contextPath: MAR
-      description: 'MAR Results in given collector(e.g. ''MAR.HostInfo`, For information about possible output paths, run the command: ‘mar-collectors-list’'
+      description: "MAR Results in given collector(e.g. 'MAR.HostInfo`, For information\
+        \ about possible output paths, run the command: ‘mar-collectors-list’"
     - contextPath: MAR
-      description: 'MAR Results in given collector(e.g. ''MAR.HostInfo`, For information about possible output paths, run the command: ‘mar-collectors-list’'
+      description: "MAR Results in given collector(e.g. 'MAR.HostInfo`, For information\
+        \ about possible output paths, run the command: ‘mar-collectors-list’"
     description: Search endpoint data
   - name: mar-collectors-list
     arguments: []
@@ -185,7 +193,8 @@ script:
       - WinRegistry
       description: The collector to filter by (e.g. HostInfo)
     - name: filter-by
-      description: Field name (output) of `filter_collector` to filter by (e.g. ip_address) . Run `mar-collectors-list` to view all collectors & fields
+      description: Field name (output) of `filter_collector` to filter by (e.g. ip_address)
+        . Run `mar-collectors-list` to view all collectors & fields
     - name: filter-operator
       auto: PREDEFINED
       predefined:
@@ -204,12 +213,14 @@ script:
       description: Filtering value of the `filter-by` field
     outputs:
     - contextPath: Mar.SearchMultiple
-      description: 'The result of the search query, For information about possible output paths, run the command: ‘mar-collectors-list’'
+      description: 'The result of the search query, For information about possible
+        output paths, run the command: ‘mar-collectors-list’'
     description: Search endpoint data crossed by multiple collectors
   - name: mar-search-services
     arguments:
     - name: filter-by
-      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list` to view all collectors & fields command for all collectors outputs
+      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list`
+        to view all collectors & fields command for all collectors outputs
     - name: filter-operator
       auto: PREDEFINED
       predefined:
@@ -241,7 +252,8 @@ script:
   - name: mar-search-processes
     arguments:
     - name: filter-by
-      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list` to view all collectors & fields command for all collectors outputs
+      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list`
+        to view all collectors & fields command for all collectors outputs
     - name: filter-operator
       auto: PREDEFINED
       predefined:
@@ -289,7 +301,8 @@ script:
   - name: mar-search-win-registry
     arguments:
     - name: filter-by
-      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list` to view all collectors & fields command for all collectors outputs
+      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list`
+        to view all collectors & fields command for all collectors outputs
     - name: filter-operator
       auto: PREDEFINED
       predefined:
@@ -319,7 +332,8 @@ script:
   - name: mar-search-files
     arguments:
     - name: filter-by
-      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list` to view all collectors & fields command for all collectors outputs
+      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list`
+        to view all collectors & fields command for all collectors outputs
     - name: filter-operator
       auto: PREDEFINED
       predefined:
@@ -359,7 +373,8 @@ script:
   - name: mar-search-usb-connected-storage-devices
     arguments:
     - name: filter-by
-      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list` to view all collectors & fields command for all collectors outputs
+      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list`
+        to view all collectors & fields command for all collectors outputs
     - name: filter-operator
       auto: PREDEFINED
       predefined:
@@ -397,7 +412,8 @@ script:
   - name: mar-search-user-profiles
     arguments:
     - name: filter-by
-      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list` to view all collectors & fields command for all collectors outputs
+      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list`
+        to view all collectors & fields command for all collectors outputs
     - name: filter-operator
       auto: PREDEFINED
       predefined:
@@ -437,7 +453,8 @@ script:
   - name: mar-search-scheduled-tasks
     arguments:
     - name: filter-by
-      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list` to view all collectors & fields command for all collectors outputs
+      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list`
+        to view all collectors & fields command for all collectors outputs
     - name: filter-operator
       auto: PREDEFINED
       predefined:
@@ -471,7 +488,8 @@ script:
   - name: mar-search-host-info
     arguments:
     - name: filter-by
-      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list` to view all collectors & fields command for all collectors outputs
+      description: Field name (output) to filter by (e.g. ip_address).  Run `mar-collectors-list`
+        to view all collectors & fields command for all collectors outputs
     - name: filter-operator
       auto: PREDEFINED
       predefined:
@@ -496,6 +514,6 @@ script:
     - contextPath: MAR.HostInfo.Os
       description: Host operation system
     description: Gets host information from McAfee Active Response
-  dockerimage: demisto/dxl:1.0.0.24037
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   runonce: false
 fromversion: 5.0.0

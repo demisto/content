@@ -231,7 +231,7 @@ script:
       type: Date
   - arguments:
     - default: false
-      defaultValue: '''1970-01-01 00:00:00'''
+      defaultValue: "'1970-01-01 00:00:00'"
       description: The query start time. For example, start_time="2018-04-26 00:00:00".
         Default is 1970-01-01 00:00:00.
       isArray: false
@@ -422,7 +422,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      defaultValue: '''1970-01-01 00:00:00'''
+      defaultValue: "'1970-01-01 00:00:00'"
       description: Query start time. For example, start_time="2018-04-26 00:00:00".
         Default is 1970-01-01 00:00:00.
       isArray: false
@@ -581,7 +581,7 @@ script:
       type: String
   - arguments:
     - default: false
-      defaultValue: '''1970-01-01 00:00:00'''
+      defaultValue: "'1970-01-01 00:00:00'"
       description: The query start time. For example, start_time="2018-04-26 00:00:00".
         Default is 1970-01-01 00:00:00.
       isArray: false
@@ -963,7 +963,7 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '''1970-01-01 00:00:00'''
+      defaultValue: "'1970-01-01 00:00:00'"
       description: The query start time. For example, start_time="2018-04-26 00:00:00".
         Default is 1970-01-01 00:00:00.
       isArray: false
@@ -1397,7 +1397,7 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '''1970-01-01 00:00:00'''
+      defaultValue: "'1970-01-01 00:00:00'"
       description: The query start time. For example, start_time="2018-04-26 00:00:00".
         Default is 1970-01-01 00:00:00.
       isArray: false
@@ -1819,7 +1819,7 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '''1970-01-01 00:00:00'''
+      defaultValue: "'1970-01-01 00:00:00'"
       description: The query start time. For example, start_time="2018-04-26 00:00:00".
         Default is 1970-01-01 00:00:00.
       isArray: false
@@ -2301,7 +2301,7 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '''1970-01-01 00:00:00'''
+      defaultValue: "'1970-01-01 00:00:00'"
       description: The query start time. For example, start_time="2018-04-26 00:00:00".
         Default is 1970-01-01 00:00:00.
       isArray: false
@@ -2608,7 +2608,7 @@ script:
       call-limit, the command will reset the limit cache.
     execution: false
     name: cdl-reset-authentication-timeout
-  dockerimage: demisto/python_pancloud_v2:1.0.0.23674
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   feed: false
   isfetch: true
   longRunning: false

@@ -44,7 +44,8 @@ configuration:
   required: true
   defaultvalue: Device Code
   type: 15
-  additionalinfo: Type of authentication - could be Authorization Code flow (recommended) or Device Code flow.
+  additionalinfo: Type of authentication - could be Authorization Code flow (recommended)
+    or Device Code flow.
   options:
   - Authorization Code
   - Device Code
@@ -53,13 +54,13 @@ configuration:
   required: false
   defaultvalue:
   type: 0
-  additionalinfo: ""
+  additionalinfo: ''
 - name: credentials
   display: Client Secret (for user-auth mode)
   required: false
   defaultvalue:
   type: 9
-  additionalinfo: ""
+  additionalinfo: ''
   displaypassword: Client Secret (for user-auth mode)
   hiddenusername: true
 - name: redirect_uri
@@ -67,13 +68,14 @@ configuration:
   required: false
   defaultvalue:
   type: 0
-  additionalinfo: ""
+  additionalinfo: ''
 - name: auth_code
   display: Authorization code
   required: false
   defaultvalue:
   type: 9
-  additionalinfo: For user-auth mode - received from the authorization step. See Detailed Instructions (?) section.
+  additionalinfo: For user-auth mode - received from the authorization step. See Detailed
+    Instructions (?) section.
   displaypassword: Authorization code
   hiddenusername: true
 description: Azure network security groups are used to filter network traffic to and
@@ -584,7 +586,7 @@ script:
       process.
     execution: false
     name: azure-nsg-auth-reset
-  dockerimage: demisto/crypto:1.0.0.34720
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   feed: false
   isfetch: false
   longRunning: false

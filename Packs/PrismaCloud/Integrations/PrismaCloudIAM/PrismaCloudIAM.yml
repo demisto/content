@@ -60,8 +60,8 @@ configuration:
   name: mapper_out
   required: true
   type: 0
-description: 'The Prisma Cloud IAM API consists of a set of API endpoints that allow
-  customers to perform CRUD operation on their user profiles.'
+description: The Prisma Cloud IAM API consists of a set of API endpoints that allow
+  customers to perform CRUD operation on their user profiles.
 display: PrismaCloud IAM
 name: PrismaCloud IAM
 script:
@@ -268,7 +268,7 @@ script:
       within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   isfetch: false
   longRunning: false
   longRunningPort: false

@@ -2,7 +2,7 @@ commonfields:
   id: TopMaliciousRatioIndicators
   version: -1
 name: TopMaliciousRatioIndicators
-fromversion: "5.0.0"
+fromversion: 5.0.0
 script: ''
 type: python
 subtype: python3
@@ -15,15 +15,15 @@ enabled: true
 args:
 - name: maxNumberOfIndicators
   description: Maximum number of indicators for malicious ratio calculation.
-  defaultValue: "10000"
+  defaultValue: '10000'
 - name: minimumNumberOfInvs
   description: Minimum number of investigation the indicator has to appear in.
-  defaultValue: "3"
+  defaultValue: '3'
 - name: maximumNumberOfResults
   description: Maximum number of results to display.
-  defaultValue: "100"
+  defaultValue: '100'
 scripttarget: 0
 runonce: false
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: devdemisto/py3-master:8.1.0.37377
 tests:
 - No tests (auto formatted)

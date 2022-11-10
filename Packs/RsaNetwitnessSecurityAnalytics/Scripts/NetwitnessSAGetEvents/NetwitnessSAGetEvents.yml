@@ -38,7 +38,8 @@ args:
   description: Filter of time range in which events occured
 - name: deviceId
   required: true
-  description: '[number] Id of the device where the events stored/occurred. In order to get list of available devices/components run command nw-get-components'
+  description: '[number] Id of the device where the events stored/occurred. In order
+    to get list of available devices/components run command nw-get-components'
 - name: collectionName
   description: '[optional]'
 - name: predicateIds
@@ -58,15 +59,17 @@ args:
 - name: page
   description: '[optional number] Default set to 1. The page number'
 - name: start
-  description: '[optional number] Default set to 0. The starting index of event in page.'
+  description: '[optional number] Default set to 0. The starting index of event in
+    page.'
 - name: limit
-  description: '[optional number] Default set to 25. Limits the number of events per page'
+  description: '[optional number] Default set to 25. Limits the number of events per
+    page'
 scripttarget: 0
 dependson:
   must:
   - netwitness-im-get-events
 timeout: 0s
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: devdemisto/py3-master:8.1.0.37377
 tests:
 - No tests (auto formatted)

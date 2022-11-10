@@ -4,7 +4,9 @@ commonfields:
 name: CrowdStrike Falcon Intel v2
 display: CrowdStrike Falcon Intel v2
 category: Data Enrichment & Threat Intelligence
-description: CrowdStrike Threat intelligence service integration helps organizations defend themselves against adversary activity by investigating incidents, and accelerating alert triage and response.
+description: CrowdStrike Threat intelligence service integration helps organizations
+  defend themselves against adversary activity by investigating incidents, and accelerating
+  alert triage and response.
 configuration:
 - defaultvalue: https://api.crowdstrike.com/
   display: Server URL (e.g., https://example.net)
@@ -64,7 +66,7 @@ configuration:
   type: 8
   required: false
 script:
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   type: python
   subtype: python3
   script: '-'
@@ -124,7 +126,8 @@ script:
       description: The time the indicator was published.
       type: Date
     - contextPath: FalconIntel.Indicator.MaliciousConfidence
-      description: The confidence level by which an indicator is considered to be malicious.
+      description: The confidence level by which an indicator is considered to be
+        malicious.
       type: String
     - contextPath: FalconIntel.Indicator.Reports
       description: The report ID for which the indicator is associated.
@@ -133,7 +136,8 @@ script:
       description: Actors for which the indicator is associated.
       type: String
     - contextPath: FalconIntel.Indicator.MalwareFamilies
-      description: A list of malware families that an indicator has been associated. An indicator may be associated with more than one malware family.
+      description: A list of malware families that an indicator has been associated.
+        An indicator may be associated with more than one malware family.
       type: String
     - contextPath: FalconIntel.Indicator.KillChains
       description: The point in the kill chain at which an indicator is associated.
@@ -199,7 +203,8 @@ script:
       description: The time the indicator was published.
       type: Date
     - contextPath: FalconIntel.Indicator.MaliciousConfidence
-      description: The confidence level by which an indicator is considered to be malicious.
+      description: The confidence level by which an indicator is considered to be
+        malicious.
       type: String
     - contextPath: FalconIntel.Indicator.Reports
       description: The report ID for which the indicator is associated.
@@ -208,7 +213,8 @@ script:
       description: Actors for which the indicator is associated.
       type: String
     - contextPath: FalconIntel.Indicator.MalwareFamilies
-      description: A list of malware families that an indicator has been associated. An indicator may be associated with more than one malware family.
+      description: A list of malware families that an indicator has been associated.
+        An indicator may be associated with more than one malware family.
       type: String
     - contextPath: FalconIntel.Indicator.KillChains
       description: The point in the kill chain at which an indicator is associated.
@@ -238,7 +244,7 @@ script:
       isArray: true
     outputs:
     - contextPath: Domain.Name
-      description: 'The domain name. For example, "google.com".'
+      description: The domain name. For example, "google.com".
       type: String
     - contextPath: Domain.Malicious.Vendor
       description: The vendor reporting the domain as malicious.
@@ -274,7 +280,8 @@ script:
       description: The time the indicator was published.
       type: Date
     - contextPath: FalconIntel.Indicator.MaliciousConfidence
-      description: The confidence level by which an indicator is considered to be malicious.
+      description: The confidence level by which an indicator is considered to be
+        malicious.
       type: String
     - contextPath: FalconIntel.Indicator.Reports
       description: The report ID for which the indicator is associated.
@@ -283,7 +290,8 @@ script:
       description: Actors for which the indicator is associated.
       type: String
     - contextPath: FalconIntel.Indicator.MalwareFamilies
-      description: A list of malware families that an indicator has been associated. An indicator may be associated with more than one malware family.
+      description: A list of malware families that an indicator has been associated.
+        An indicator may be associated with more than one malware family.
       type: String
     - contextPath: FalconIntel.Indicator.KillChains
       description: The point in the kill chain at which an indicator is associated.
@@ -349,7 +357,8 @@ script:
       description: The time the indicator was published.
       type: Date
     - contextPath: FalconIntel.Indicator.MaliciousConfidence
-      description: The confidence level by which an indicator is considered to be malicious.
+      description: The confidence level by which an indicator is considered to be
+        malicious.
       type: String
     - contextPath: FalconIntel.Indicator.Reports
       description: The report ID for which the indicator is associated.
@@ -358,7 +367,8 @@ script:
       description: Actors for which the indicator is associated.
       type: String
     - contextPath: FalconIntel.Indicator.MalwareFamilies
-      description: A list of malware families that an indicator has been associated. An indicator may be associated with more than one malware family.
+      description: A list of malware families that an indicator has been associated.
+        An indicator may be associated with more than one malware family.
       type: String
     - contextPath: FalconIntel.Indicator.KillChains
       description: The point in the kill chain at which an indicator is associated.
@@ -382,7 +392,9 @@ script:
   - name: cs-actors
     arguments:
     - name: query
-      description: Search based on a query written in FQL (Falcon Query Language, See https://falcon.crowdstrike.com/support/documentation/45/falcon-query-language-fql for more information)..
+      description: Search based on a query written in FQL (Falcon Query Language,
+        See https://falcon.crowdstrike.com/support/documentation/45/falcon-query-language-fql
+        for more information)..
     - name: free_search
       description: Search across all fields in an actor object.
     - name: name
@@ -390,17 +402,17 @@ script:
     - name: description
       description: Search based on a description.
     - name: created_date
-      description: 'Search from the created date. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z)
-       and time period (for example, 24 hours).'
+      description: 'Search from the created date. Supported formats: ISO 8601 (for
+        example, 2020-07-28T10:00:00Z) and time period (for example, 24 hours).'
     - name: max_last_modified_date
-      description: 'Search up to the last modified date. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z)
-                     and time period (for example, 24 hours).'
+      description: 'Search up to the last modified date. Supported formats: ISO 8601
+        (for example, 2020-07-28T10:00:00Z) and time period (for example, 24 hours).'
     - name: min_last_activity_date
-      description: 'Search from the last activity date. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z)
-                     and time period (for example, 24 hours).'
+      description: 'Search from the last activity date. Supported formats: ISO 8601
+        (for example, 2020-07-28T10:00:00Z) and time period (for example, 24 hours).'
     - name: max_last_activity_date
-      description: 'Search up to the last activity date. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z)
-                     and time period (for example, 24 hours).'
+      description: 'Search up to the last activity date. Supported formats: ISO 8601
+        (for example, 2020-07-28T10:00:00Z) and time period (for example, 24 hours).'
     - name: origins
       description: Search by origins, separated by ",".
       isArray: true
@@ -420,8 +432,9 @@ script:
       default: true
       defaultValue: '10'
     - name: sort
-      description: Sort by field and direction. Select a pre-defined value and direction. For example, for ascending list of names, "name|asc",
-       for descending list of names, "name|desc".
+      description: Sort by field and direction. Select a pre-defined value and direction.
+        For example, for ascending list of names, "name|asc", for descending list
+        of names, "name|desc".
       auto: PREDEFINED
       predefined:
       - name|asc
@@ -439,7 +452,7 @@ script:
       - last_modified_date|asc
       - last_modified_date|desc
     - name: slug
-      description: 'Search by ''slug'' or short descriptive name. For example, "anchor-panda"'
+      description: Search by 'slug' or short descriptive name. For example, "anchor-panda"
     outputs:
     - contextPath: FalconIntel.Actor.ImageURL
       description: The URL of the actor image.
@@ -478,19 +491,19 @@ script:
       description: A list of targeted countries associated with this actor.
       type: String
     - contextPath: FalconIntel.Actor.Origins
-      description: "The actor's country of origin. For example, Afghanistan."
+      description: The actor's country of origin. For example, Afghanistan.
       type: String
     - contextPath: FalconIntel.Actor.Motivations
-      description: "The actor's motivations. For example, Criminal."
+      description: The actor's motivations. For example, Criminal.
       type: String
     - contextPath: FalconIntel.Actor.Capability
-      description: "The actor's capability. For example, Average."
+      description: The actor's capability. For example, Average.
       type: String
     - contextPath: FalconIntel.Actor.Group
-      description: "The the group of the actor. For example, panda gang."
+      description: The the group of the actor. For example, panda gang.
       type: String
     - contextPath: FalconIntel.Actor.Region
-      description: "The region of the actor. For example, Eastern Europe."
+      description: The region of the actor. For example, Eastern Europe.
       type: String
     - contextPath: FalconIntel.Actor.KillChains
       description: Kill chain fields.
@@ -499,10 +512,13 @@ script:
   - name: cs-indicators
     arguments:
     - name: query
-      description: Search based on a query written in FQL (Falcon Query Language, See https://falcon.crowdstrike.com/support/documentation/45/falcon-query-language-fql for more information)..
+      description: Search based on a query written in FQL (Falcon Query Language,
+        See https://falcon.crowdstrike.com/support/documentation/45/falcon-query-language-fql
+        for more information)..
     - name: type
       required: false
-      description: The indicator type. Add a pre-defined value, such as email_address, hash_ion, password, etc.
+      description: The indicator type. Add a pre-defined value, such as email_address,
+        hash_ion, password, etc.
       auto: PREDEFINED
       predefined:
       - binary_string
@@ -548,14 +564,16 @@ script:
       description: Used to paginate the response. You can then use limit to set the
         number of results for the next page.
     - name: last_updated_date
-      description: 'The date the indicator was last updated. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z)
-                     and time period (for example, 24 hours).'
+      description: 'The date the indicator was last updated. Supported formats: ISO
+        8601 (for example, 2020-07-28T10:00:00Z) and time period (for example, 24
+        hours).'
     - name: indicator
       required: false
       description: The value for the given indicator type.
     - name: sort
-      description: Sort by field and direction. Select a pre-defined value and direction. For example, for ascending list of IDs, "id|asc",
-       for descending list of IDs, "id|desc".
+      description: Sort by field and direction. Select a pre-defined value and direction.
+        For example, for ascending list of IDs, "id|asc", for descending list of IDs,
+        "id|desc".
       auto: PREDEFINED
       predefined:
       - id|asc
@@ -628,7 +646,7 @@ script:
       description: For malicious URL, the associated kill chain.
       type: String
     - contextPath: Domain.Name
-      description: 'The domain name. For example, "google.com".'
+      description: The domain name. For example, "google.com".
       type: String
     - contextPath: Domain.Malicious.Vendor
       description: The vendor reporting the domain as malicious.
@@ -658,7 +676,8 @@ script:
       description: A description explaining why the IP address was reported as malicious.
       type: String
     - contextPath: IP.Reports
-      description: For a malicious IP address, the associated reports describing the IP address.
+      description: For a malicious IP address, the associated reports describing the
+        IP address.
       type: String
     - contextPath: IP.Actors
       description: For a malicious IP address, the associated actors.
@@ -697,7 +716,8 @@ script:
       description: The time the indicator was published.
       type: Date
     - contextPath: FalconIntel.Indicator.MaliciousConfidence
-      description: The confidence level by which an indicator is considered to be malicious.
+      description: The confidence level by which an indicator is considered to be
+        malicious.
       type: String
     - contextPath: FalconIntel.Indicator.Reports
       description: The report ID for which the indicator is associated.
@@ -706,7 +726,8 @@ script:
       description: Actors for which the indicator is associated.
       type: String
     - contextPath: FalconIntel.Indicator.MalwareFamilies
-      description: A list of malware families that an indicator has been associated. An indicator may be associated with more than one malware family.
+      description: A list of malware families that an indicator has been associated.
+        An indicator may be associated with more than one malware family.
       type: String
     - contextPath: FalconIntel.Indicator.KillChains
       description: The point in the kill chain at which an indicator is associated.
@@ -730,11 +751,14 @@ script:
   - name: cs-reports
     arguments:
     - name: query
-      description: Search based on a query written in FQL (Falcon Query Language, See https://falcon.crowdstrike.com/support/documentation/45/falcon-query-language-fql for more information).
+      description: Search based on a query written in FQL (Falcon Query Language,
+        See https://falcon.crowdstrike.com/support/documentation/45/falcon-query-language-fql
+        for more information).
     - name: free_search
       description: Search across all fields in a report object.
     - name: name
-      description: Search for keywords across report names (for example, the report’s title).
+      description: Search for keywords across report names (for example, the report’s
+        title).
     - name: actors
       description: Search for a report related to particular actors. Actors should
         be comma separated. For example, actor1,actor2, etc.
@@ -759,7 +783,8 @@ script:
       - alert
       - periodic report
       - tipper
-      description: The type of object for which to search. Can be "intelligence report", "alert", "periodic report", or "tipper".
+      description: The type of object for which to search. Can be "intelligence report",
+        "alert", "periodic report", or "tipper".
     - name: sub_type
       auto: PREDEFINED
       predefined:
@@ -767,15 +792,18 @@ script:
       - monthly
       - quarterly
       - annual
-      description: The report sub-type to search. Can be "weekly", "monthly", "quarterly", or "annual".
+      description: The report sub-type to search. Can be "weekly", "monthly", "quarterly",
+        or "annual".
     - name: tags
       description: Tags associated with a report (managed internally by CrowdStrike).
     - name: created_date
-      description: 'Search for reports created on a certain date. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z)
-                     and time period (for example, 24 hours).'
+      description: 'Search for reports created on a certain date. Supported formats:
+        ISO 8601 (for example, 2020-07-28T10:00:00Z) and time period (for example,
+        24 hours).'
     - name: max_last_modified_date
-      description: 'Search for reports modified on or before a certain date. Supported formats: ISO 8601 (for example, 2020-07-28T10:00:00Z)
-                     and time period (for example, 24 hours).'
+      description: 'Search for reports modified on or before a certain date. Supported
+        formats: ISO 8601 (for example, 2020-07-28T10:00:00Z) and time period (for
+        example, 24 hours).'
     - name: offset
       description: Used to paginate the response. You can then use limit to set the
         number of results for the next page.
@@ -784,8 +812,9 @@ script:
       default: true
       defaultValue: '10'
     - name: sort
-      description: Sort by field and direction. Select a pre-defined value and direction. For example, for ascending list of types, "type|asc",
-       for descending list of types, "types|desc".
+      description: Sort by field and direction. Select a pre-defined value and direction.
+        For example, for ascending list of types, "type|asc", for descending list
+        of types, "types|desc".
       auto: PREDEFINED
       predefined:
       - id|asc
@@ -831,19 +860,18 @@ script:
       description: The short description of the report.
       type: String
     - contextPath: FalconIntel.Report.TargetIndustries
-      description: "Targeted industries included in the report. For example, aerospace."
+      description: Targeted industries included in the report. For example, aerospace.
       type: String
     - contextPath: FalconIntel.Report.TargetCountries
-      description: "Targeted countries included in the report. For example, afghanistan."
+      description: Targeted countries included in the report. For example, afghanistan.
       type: String
     - contextPath: FalconIntel.Report.Motivations
-      description: "Motivations included in the report. For example, criminal."
+      description: Motivations included in the report. For example, criminal.
       type: String
     - contextPath: FalconIntel.Report.Tags
-      description: "The report's tags. For example, intel_feed."
+      description: The report's tags. For example, intel_feed.
       type: String
-    description: Queries CrowdStrike intelligence
-      publications.
+    description: Queries CrowdStrike intelligence publications.
   runonce: false
 tests:
 - CrowdStrike Falcon Intel v2 - Test

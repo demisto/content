@@ -15,7 +15,9 @@ configuration:
   name: private_key
   required: true
   type: 14
-- display: Brokers URLs (comma separated list in the form of [ssl://]<hostname>[:port]). Get the hostname & port from the `brokerlist.properties` file in the instructions. Note that the broker should be reachable from the Demisto server.
+- display: Brokers URLs (comma separated list in the form of [ssl://]<hostname>[:port]).
+    Get the hostname & port from the `brokerlist.properties` file in the instructions.
+    Note that the broker should be reachable from the Demisto server.
   name: broker_urls
   required: true
   type: 0
@@ -70,7 +72,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The new trust level for the IP address. Can be: "NOT_SET", "KNOWN_MALICIOUS", "MOST_LIKELY_MALICIOUS", "UNKNOWN", "MIGHT_BE_TRUSTED", "MOST_LIKELY_TRUSTED", "KNOWN_TRUSTED", or "KNOWN_TRUSTED_INSTALLER".'
+      description: 'The new trust level for the IP address. Can be: "NOT_SET", "KNOWN_MALICIOUS",
+        "MOST_LIKELY_MALICIOUS", "UNKNOWN", "MIGHT_BE_TRUSTED", "MOST_LIKELY_TRUSTED",
+        "KNOWN_TRUSTED", or "KNOWN_TRUSTED_INSTALLER".'
       isArray: false
       name: trust_level
       predefined:
@@ -104,7 +108,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The new trust level for the URL. Can be: "NOT_SET", "KNOWN_MALICIOUS", "MOST_LIKELY_MALICIOUS", "UNKNOWN", "MIGHT_BE_TRUSTED", "MOST_LIKELY_TRUSTED", "KNOWN_TRUSTED", or "KNOWN_TRUSTED_INSTALLER".'
+      description: 'The new trust level for the URL. Can be: "NOT_SET", "KNOWN_MALICIOUS",
+        "MOST_LIKELY_MALICIOUS", "UNKNOWN", "MIGHT_BE_TRUSTED", "MOST_LIKELY_TRUSTED",
+        "KNOWN_TRUSTED", or "KNOWN_TRUSTED_INSTALLER".'
       isArray: false
       name: trust_level
       predefined:
@@ -138,7 +144,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The new trust level for the domain. Can be: "NOT_SET", "KNOWN_MALICIOUS", "MOST_LIKELY_MALICIOUS", "UNKNOWN", "MIGHT_BE_TRUSTED", "MOST_LIKELY_TRUSTED", "KNOWN_TRUSTED", or "KNOWN_TRUSTED_INSTALLER".'
+      description: 'The new trust level for the domain. Can be: "NOT_SET", "KNOWN_MALICIOUS",
+        "MOST_LIKELY_MALICIOUS", "UNKNOWN", "MIGHT_BE_TRUSTED", "MOST_LIKELY_TRUSTED",
+        "KNOWN_TRUSTED", or "KNOWN_TRUSTED_INSTALLER".'
       isArray: false
       name: trust_level
       predefined:
@@ -172,7 +180,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The new trust level for the domain. Can be: "NOT_SET", "KNOWN_MALICIOUS", "MOST_LIKELY_MALICIOUS", "UNKNOWN", "MIGHT_BE_TRUSTED", "MOST_LIKELY_TRUSTED", "KNOWN_TRUSTED", or "KNOWN_TRUSTED_INSTALLER".'
+      description: 'The new trust level for the domain. Can be: "NOT_SET", "KNOWN_MALICIOUS",
+        "MOST_LIKELY_MALICIOUS", "UNKNOWN", "MIGHT_BE_TRUSTED", "MOST_LIKELY_TRUSTED",
+        "KNOWN_TRUSTED", or "KNOWN_TRUSTED_INSTALLER".'
       isArray: false
       name: trust_level
       predefined:
@@ -197,7 +207,7 @@ script:
     description: The push hash to the DXL fabric.
     execution: false
     name: dxl-push-hash
-  dockerimage: demisto/dxl:1.0.0.24037
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   isfetch: false
   longRunning: false
   longRunningPort: false

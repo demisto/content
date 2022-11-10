@@ -13,7 +13,8 @@ args:
   secret: false
   deprecated: true
 - default: false
-  description: The column number that contains IP Addresses. (First column is column 0)
+  description: The column number that contains IP Addresses. (First column is column
+    0)
   isArray: false
   name: ips
   required: false
@@ -25,30 +26,34 @@ args:
   required: false
   secret: false
 - default: false
-  description: The column number that contains file hashes. (First column is column 0)
+  description: The column number that contains file hashes. (First column is column
+    0)
   isArray: false
   name: hashes
   required: false
   secret: false
 - auto: PREDEFINED
   default: false
-  defaultValue: 'yes'
-  description: Parses and converts all of the rows in the CSV into JSON and puts them into the context.
+  defaultValue: yes
+  description: Parses and converts all of the rows in the CSV into JSON and puts them
+    into the context.
   isArray: false
   name: parseAll
   predefined:
-  - 'yes'
-  - 'no'
+  - yes
+  - no
   required: false
   secret: false
 - default: false
   defaultValue: utf-8
-  description: The codec type used to parse the file. (some character sets are not UTF-8 supported)
+  description: The codec type used to parse the file. (some character sets are not
+    UTF-8 supported)
   isArray: false
   name: codec
   required: false
   secret: false
-comment: This script will parse a CSV file and place the unique IPs, Domains and Hashes into the context.
+comment: This script will parse a CSV file and place the unique IPs, Domains and Hashes
+  into the context.
 commonfields:
   id: ParseCSV
   version: -1
@@ -87,4 +92,4 @@ runonce: false
 tests:
 - No tests
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: devdemisto/py3-master:8.1.0.37377

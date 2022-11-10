@@ -3,7 +3,8 @@ commonfields:
   id: sophos_firewall
   version: -1
 configuration:
-- additionalinfo: 'Server URL used to enter the Sophos XG Firewall web console. e.g., https://ip:port/'
+- additionalinfo: Server URL used to enter the Sophos XG Firewall web console. e.g.,
+    https://ip:port/
   display: Server URL
   name: server_url
   required: true
@@ -20,7 +21,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: On-premise firewall by Sophos enables you to manage your firewall, respond to threats, and monitor what’s happening on your network.
+description: On-premise firewall by Sophos enables you to manage your firewall, respond
+  to threats, and monitor what’s happening on your network.
 display: Sophos Firewall
 name: sophos_firewall
 script:
@@ -121,7 +123,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Enable
-      description: 'Whether to enable the new rule. Possible values: "Enable" and "Disable". Default is "Enable".'
+      description: 'Whether to enable the new rule. Possible values: "Enable" and
+        "Disable". Default is "Enable".'
       isArray: false
       name: status
       predefined:
@@ -132,7 +135,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: IPv4
-      description: 'The IP family. Possible values: "IPv4" and "IPv6". Default is "IPv4".'
+      description: 'The IP family. Possible values: "IPv4" and "IPv6". Default is
+        "IPv4".'
       isArray: false
       name: ip_family
       predefined:
@@ -142,7 +146,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The position of the new rule in the list. Possible values: "top", "bottom", "before", and "after". If "before" or "after" is selected, you must provide a value for the position_policy_name argument.'
+      description: 'The position of the new rule in the list. Possible values: "top",
+        "bottom", "before", and "after". If "before" or "after" is selected, you must
+        provide a value for the position_policy_name argument.'
       isArray: false
       name: position
       predefined:
@@ -153,7 +159,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The name of the policy that the rule should be created before or after. This argument is required when the value of the position argument is "before" or "after".'
+      description: The name of the policy that the rule should be created before or
+        after. This argument is required when the value of the position argument is
+        "before" or "after".
       isArray: false
       name: position_policy_name
       required: false
@@ -170,7 +178,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Source zones to add to the rule. Possible values: "Any", "LAN". "WAN", "VPN", "DMZ", and "WiFi".'
+      description: 'Source zones to add to the rule. Possible values: "Any", "LAN".
+        "WAN", "VPN", "DMZ", and "WiFi".'
       isArray: true
       name: source_zones
       predefined:
@@ -190,7 +199,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Destination zones to add to the rule. Possible values: "Any", "LAN". "WAN", "VPN", "DMZ", and "WiFi".'
+      description: 'Destination zones to add to the rule. Possible values: "Any",
+        "LAN". "WAN", "VPN", "DMZ", and "WiFi".'
       isArray: true
       name: destination_zones
       predefined:
@@ -216,7 +226,10 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The schedule for the rule. Possible values: "All the time", "Work hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT: Creating a new schedule is available from the web console.'
+      description: 'The schedule for the rule. Possible values: "All the time", "Work
+        hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All
+        Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT:
+        Creating a new schedule is available from the web console.'
       isArray: false
       name: schedule
       predefined:
@@ -232,7 +245,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to enable traffic logging for the policy. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: 'Whether to enable traffic logging for the policy. Possible values:
+        "Enable" and "Disable". Default is "Disable".'
       isArray: false
       name: log_traffic
       predefined:
@@ -243,8 +257,10 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to check if the specified user/user group from the\
-        \ selected zone is allowed to access the selected service. Possible values: "Enable" and "Disable". Default is "Disable". When enabling match_identity, the members argument is required.'
+      description: 'Whether to check if the specified user/user group from the\ \
+        selected zone is allowed to access the selected service. Possible values:
+        "Enable" and "Disable". Default is "Disable". When enabling match_identity,
+        the members argument is required.'
       isArray: false
       name: match_identity
       predefined:
@@ -255,9 +271,11 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to accept traffic from unknown users. The captive portal page\
-        \ is displayed to the user where the user can log in to access the Internet.\
-        \ Possible values: "Enable" and "Disable". Default is "Disable". To enable this argument, the match_identity argument must be enabled and the value of the policy_type is "User".'
+      description: 'Whether to accept traffic from unknown users. The captive portal
+        page\ \ is displayed to the user where the user can log in to access the Internet.\
+        \ Possible values: "Enable" and "Disable". Default is "Disable". To enable
+        this argument, the match_identity argument must be enabled and the value of
+        the policy_type is "User".'
       isArray: false
       name: show_captive_portal
       predefined:
@@ -266,7 +284,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: An existing user(s) or group(s) to add to the rule. This argument is required when match_identity is enabled.
+      description: An existing user(s) or group(s) to add to the rule. This argument
+        is required when match_identity is enabled.
       isArray: true
       name: members
       required: false
@@ -274,7 +293,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Drop
-      description: 'Action for the rule traffic. Possible values: "Accept", "Reject", and "Drop". Default is "Drop".'
+      description: 'Action for the rule traffic. Possible values: "Accept", "Reject",
+        and "Drop". Default is "Drop".'
       isArray: false
       name: action
       predefined:
@@ -284,7 +304,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The DSCP marking level to classify the flow of packets based on the Traffic Shaping policy.
+      description: The DSCP marking level to classify the flow of packets based on
+        the Traffic Shaping policy.
       isArray: false
       name: dscp_marking
       required: false
@@ -312,8 +333,8 @@ script:
       default: false
       defaultValue: Revoke
       description: 'Whether to limit the bandwidth for the applications categorized\
-        \ under the Application category. This tag is only applicable when\
-        \ an application_control is selected. Possible values: "Apply" and "Revoke". Default is "Revoke".'
+        \ under the Application category. This tag is only applicable when\ \ an application_control
+        is selected. Possible values: "Apply" and "Revoke". Default is "Revoke".'
       isArray: false
       name: application_based_qos_policy
       predefined:
@@ -331,8 +352,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Revoke
-      description: 'Whether to limit the bandwidth for the URLs categorized under the Web\
-        \ category. This tag is only applicable when a web_filter is defined." Possible values: "Apply" and "Revoke". Default is "Revoke".'
+      description: 'Whether to limit the bandwidth for the URLs categorized under
+        the Web\ \ category. This tag is only applicable when a web_filter is defined."
+        Possible values: "Apply" and "Revoke". Default is "Revoke".'
       isArray: false
       name: web_category_base_qos_policy
       predefined:
@@ -350,7 +372,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to enable virus and spam scanning for the HTTP protocol. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: 'Whether to enable virus and spam scanning for the HTTP protocol.
+        Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
       name: scan_http
       predefined:
@@ -361,7 +384,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to enable virus and spam scanning for the HTTPS protocol. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: 'Whether to enable virus and spam scanning for the HTTPS protocol.
+        Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
       name: scan_https
       predefined:
@@ -372,7 +396,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to enable sandstorm analysis. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: 'Whether to enable sandstorm analysis. Possible values: "Enable"
+        and "Disable". Default is "Disable".'
       isArray: false
       name: sandstorm
       predefined:
@@ -383,7 +408,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to enable Google websites to use HTTP/s instead of QUICK QUIC. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: 'Whether to enable Google websites to use HTTP/s instead of QUICK
+        QUIC. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
       name: block_quick_quic
       predefined:
@@ -394,7 +420,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to enable scanning of FTP traffic. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: 'Whether to enable scanning of FTP traffic. Possible values: "Enable"
+        and "Disable". Default is "Disable".'
       isArray: false
       name: scan_ftp
       predefined:
@@ -405,8 +432,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to exclude a user''s network traffic from data accounting.
-        This option is available only if the match_identity argument is enabled. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: "Whether to exclude a user's network traffic from data accounting.\
+        \ This option is available only if the match_identity argument is enabled.\
+        \ Possible values: \"Enable\" and \"Disable\". Default is \"Disable\"."
       isArray: false
       name: data_accounting
       predefined:
@@ -417,7 +445,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Enable
-      description: 'Whether to enable the NAT policy. Possible values: "Enable" and "Disable". Default is "Enable".'
+      description: 'Whether to enable the NAT policy. Possible values: "Enable" and
+        "Disable". Default is "Enable".'
       isArray: false
       name: rewrite_source_address
       predefined:
@@ -428,7 +457,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to enable the Internet scheme to apply the user-based Web Filter policy for the rule. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: 'Whether to enable the Internet scheme to apply the user-based
+        Web Filter policy for the rule. Possible values: "Enable" and "Disable". Default
+        is "Disable".'
       isArray: false
       name: web_filter_internet_scheme
       predefined:
@@ -439,7 +470,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to enable the Internet scheme to apply user-based Application Filter policy for the rule. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: 'Whether to enable the Internet scheme to apply user-based Application
+        Filter policy for the rule. Possible values: "Enable" and "Disable". Default
+        is "Disable".'
       isArray: false
       name: application_control_internet_scheme
       predefined:
@@ -450,7 +483,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to override the gateway of the default NAT policy. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: 'Whether to override the gateway of the default NAT policy. Possible
+        values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
       name: override_gateway_default_nat_policy
       predefined:
@@ -461,7 +495,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to enable the source security heartbeat. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: 'Whether to enable the source security heartbeat. Possible values:
+        "Enable" and "Disable". Default is "Disable".'
       isArray: false
       name: source_security_heartbeat
       predefined:
@@ -472,7 +507,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to enable the destination security heartbeat. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: 'Whether to enable the destination security heartbeat. Possible
+        values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
       name: destination_security_heartbeat
       predefined:
@@ -496,7 +532,8 @@ script:
       secret: false
     - default: false
       defaultValue: No Restriction
-      description: The minimum destination health status permitted. Default is "No Restriction".
+      description: The minimum destination health status permitted. Default is "No
+        Restriction".
       isArray: false
       name: minimum_destination_hb_permitted
       required: false
@@ -553,7 +590,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Enable
-      description: 'Whether the rule is enabled. Possible values: "Enable" and "Disable". Default is "Enable".'
+      description: 'Whether the rule is enabled. Possible values: "Enable" and "Disable".
+        Default is "Enable".'
       isArray: false
       name: status
       predefined:
@@ -564,7 +602,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: IPv4
-      description: 'The IP family. Possible values: "IPv4" and "IPv6". Default is "IPv4".'
+      description: 'The IP family. Possible values: "IPv4" and "IPv6". Default is
+        "IPv4".'
       isArray: false
       name: ip_family
       predefined:
@@ -574,7 +613,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The position of the new rule in the list. Possible values: "top", "bottom", "before", and "after". If "before" or "after" is selected, you must provide a value for the position_policy_name argument.'
+      description: 'The position of the new rule in the list. Possible values: "top",
+        "bottom", "before", and "after". If "before" or "after" is selected, you must
+        provide a value for the position_policy_name argument.'
       isArray: false
       name: position
       predefined:
@@ -585,7 +626,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The name of the policy that the rule should be created before or after. This argument is required when the value of the position argument is "before" or "after".'
+      description: The name of the policy that the rule should be created before or
+        after. This argument is required when the value of the position argument is
+        "before" or "after".
       isArray: false
       name: position_policy_name
       required: false
@@ -602,7 +645,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Source zones to add to the rule. Possible values: "Any", "LAN". "WAN", "VPN", "DMZ", and "WiFi".'
+      description: 'Source zones to add to the rule. Possible values: "Any", "LAN".
+        "WAN", "VPN", "DMZ", and "WiFi".'
       isArray: true
       name: source_zones
       predefined:
@@ -622,7 +666,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Destination zones to add to the rule. Possible values: "Any", "LAN". "WAN", "VPN", "DMZ", and "WiFi".'
+      description: 'Destination zones to add to the rule. Possible values: "Any",
+        "LAN". "WAN", "VPN", "DMZ", and "WiFi".'
       isArray: true
       name: destination_zones
       predefined:
@@ -648,7 +693,10 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The schedule for the rule. Possible values: "All the time", "Work hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT: Creating a new schedule is available in the web console.'
+      description: 'The schedule for the rule. Possible values: "All the time", "Work
+        hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All
+        Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT:
+        Creating a new schedule is available in the web console.'
       isArray: false
       name: schedule
       predefined:
@@ -664,7 +712,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to enable traffic logging for the policy. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: 'Whether to enable traffic logging for the policy. Possible values:
+        "Enable" and "Disable". Default is "Disable".'
       isArray: false
       name: log_traffic
       predefined:
@@ -675,8 +724,10 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to check if the specified user/user group from the\
-        \ selected zone is allowed to access the selected service. Possible values: "Enable" and "Disable". Default is "Disable". IMPORTANT: When enabling match_identity, the members argument is required.'
+      description: 'Whether to check if the specified user/user group from the\ \
+        selected zone is allowed to access the selected service. Possible values:
+        "Enable" and "Disable". Default is "Disable". IMPORTANT: When enabling match_identity,
+        the members argument is required.'
       isArray: false
       name: match_identity
       predefined:
@@ -687,9 +738,11 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to accept traffic from unknown users. The captive portal page\
-        \ is displayed to the user where the user can log in to access the Internet.\
-        \ Possible values: "Enable" and "Disable". Default is "Disable". To enable this argument, the match_identity argument must be enabled and the value of the policy_type is "User".'
+      description: 'Whether to accept traffic from unknown users. The captive portal
+        page\ \ is displayed to the user where the user can log in to access the Internet.\
+        \ Possible values: "Enable" and "Disable". Default is "Disable". To enable
+        this argument, the match_identity argument must be enabled and the value of
+        the policy_type is "User".'
       isArray: false
       name: show_captive_portal
       predefined:
@@ -698,7 +751,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: An existing user(s) or group(s) to add to the rule. This argument is required  when match_identity is enabled.
+      description: An existing user(s) or group(s) to add to the rule. This argument
+        is required  when match_identity is enabled.
       isArray: true
       name: members
       required: false
@@ -706,7 +760,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Drop
-      description: 'Action for the rule traffic. Possible values: "Accept", "Reject", and "Drop". Default is "Drop".'
+      description: 'Action for the rule traffic. Possible values: "Accept", "Reject",
+        and "Drop". Default is "Drop".'
       isArray: false
       name: action
       predefined:
@@ -716,7 +771,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The DSCP marking level to classify the flow of packets based on the Traffic Shaping policy.
+      description: The DSCP marking level to classify the flow of packets based on
+        the Traffic Shaping policy.
       isArray: false
       name: dscp_marking
       required: false
@@ -744,8 +800,8 @@ script:
       default: false
       defaultValue: Revoke
       description: 'Whether to limit the bandwidth for the applications categorized\
-        \ under the Application category. This tag is only applicable when\
-        \ an application_control is selected. Possible values: "Apply" and "Revoke". Default is "Revoke".'
+        \ under the Application category. This tag is only applicable when\ \ an application_control
+        is selected. Possible values: "Apply" and "Revoke". Default is "Revoke".'
       isArray: false
       name: application_based_qos_policy
       predefined:
@@ -763,8 +819,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Revoke
-      description: 'Whether to limit the bandwidth for the URLs categorized under the Web\
-        \ category. This tag is only applicable when a web_filter is defined." Possible values: "Apply" and "Revoke". Default is "Revoke".'
+      description: 'Whether to limit the bandwidth for the URLs categorized under
+        the Web\ \ category. This tag is only applicable when a web_filter is defined."
+        Possible values: "Apply" and "Revoke". Default is "Revoke".'
       isArray: false
       name: web_category_base_qos_policy
       predefined:
@@ -782,7 +839,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to enable virus and spam scanning for HTTP protocol. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: 'Whether to enable virus and spam scanning for HTTP protocol. Possible
+        values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
       name: scan_http
       predefined:
@@ -793,7 +851,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to enable virus and spam scanning for HTTPS protocol. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: 'Whether to enable virus and spam scanning for HTTPS protocol.
+        Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
       name: scan_https
       predefined:
@@ -804,7 +863,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to enable sandstorm analysis. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: 'Whether to enable sandstorm analysis. Possible values: "Enable"
+        and "Disable". Default is "Disable".'
       isArray: false
       name: sandstorm
       predefined:
@@ -815,7 +875,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to enable Google websites to use HTTP/s instead of QUICK QUIC. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: 'Whether to enable Google websites to use HTTP/s instead of QUICK
+        QUIC. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
       name: block_quick_quic
       predefined:
@@ -826,7 +887,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to enable scanning of FTP traffic. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: 'Whether to enable scanning of FTP traffic. Possible values: "Enable"
+        and "Disable". Default is "Disable".'
       isArray: false
       name: scan_ftp
       predefined:
@@ -837,8 +899,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to exclude a user''s network traffic from data accounting.
-        This option is available only if the match_identity argument is enabled. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: "Whether to exclude a user's network traffic from data accounting.\
+        \ This option is available only if the match_identity argument is enabled.\
+        \ Possible values: \"Enable\" and \"Disable\". Default is \"Disable\"."
       isArray: false
       name: data_accounting
       predefined:
@@ -849,7 +912,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Enable
-      description: 'Whether to enable the NAT policy. Possible values: "Enable" and "Disable". Default is "Enable".'
+      description: 'Whether to enable the NAT policy. Possible values: "Enable" and
+        "Disable". Default is "Enable".'
       isArray: false
       name: rewrite_source_address
       predefined:
@@ -860,7 +924,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to enable the Internet scheme to apply the user-based Web Filter policy for the rule. Possible values: "Enable" and "Disable". Default is "Disable".' 
+      description: 'Whether to enable the Internet scheme to apply the user-based
+        Web Filter policy for the rule. Possible values: "Enable" and "Disable". Default
+        is "Disable".'
       isArray: false
       name: web_filter_internet_scheme
       predefined:
@@ -871,7 +937,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to enable the Internet scheme to apply user-based Application Filter Policy for the rule. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: 'Whether to enable the Internet scheme to apply user-based Application
+        Filter Policy for the rule. Possible values: "Enable" and "Disable". Default
+        is "Disable".'
       isArray: false
       name: application_control_internet_scheme
       predefined:
@@ -882,7 +950,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to override the gateway of the default NAT policy. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: 'Whether to override the gateway of the default NAT policy. Possible
+        values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
       name: override_gateway_default_nat_policy
       predefined:
@@ -893,7 +962,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to enable the source security heartbeat. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: 'Whether to enable the source security heartbeat. Possible values:
+        "Enable" and "Disable". Default is "Disable".'
       isArray: false
       name: source_security_heartbeat
       predefined:
@@ -904,7 +974,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Disable
-      description: 'Whether to enable the destination security heartbeat. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: 'Whether to enable the destination security heartbeat. Possible
+        values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
       name: destination_security_heartbeat
       predefined:
@@ -928,7 +999,8 @@ script:
       secret: false
     - default: false
       defaultValue: No Restriction
-      description: The minimum destination health status permitted. Default is "No Restriction".
+      description: The minimum destination health status permitted. Default is "No
+        Restriction".
       isArray: false
       name: minimum_destination_hb_permitted
       required: false
@@ -1003,7 +1075,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Lists all firewall rule groups. IMPORTANT: The list starts at 0 (not 1)!'
+    description: 'Lists all firewall rule groups. IMPORTANT: The list starts at 0
+      (not 1)!'
     execution: false
     name: sophos-firewall-rule-group-list
     outputs:
@@ -1070,7 +1143,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Type of the rules (policies) inside the group. Possible values: "Any", "User/network rule", "User rule", and "Business application rule".'
+      description: 'Type of the rules (policies) inside the group. Possible values:
+        "Any", "User/network rule", "User rule", and "Business application rule".'
       isArray: false
       name: policy_type
       predefined:
@@ -1089,7 +1163,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Source zones contained in the group. Possible values: "Any", "LAN", "WAN", "VPN", "DMZ", and "WiFi.'
+      description: 'Source zones contained in the group. Possible values: "Any", "LAN",
+        "WAN", "VPN", "DMZ", and "WiFi.'
       isArray: true
       name: source_zones
       predefined:
@@ -1103,7 +1178,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Destination zones contained in the group. Possible values: "Any", "LAN", "WAN", "VPN", "DMZ", and "WiFi.'
+      description: 'Destination zones contained in the group. Possible values: "Any",
+        "LAN", "WAN", "VPN", "DMZ", and "WiFi.'
       isArray: true
       name: destination_zones
       predefined:
@@ -1153,7 +1229,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Type of the rules (policies) inside the group. Possible values: "Any", "User/network rule", "User rule", and "Business application rule".'
+      description: 'Type of the rules (policies) inside the group. Possible values:
+        "Any", "User/network rule", "User rule", and "Business application rule".'
       isArray: false
       name: policy_type
       predefined:
@@ -1172,7 +1249,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Source zones contained in the group. Possible values: "Any", "LAN", "WAN", "VPN", "DMZ", and "WiFi.'
+      description: 'Source zones contained in the group. Possible values: "Any", "LAN",
+        "WAN", "VPN", "DMZ", and "WiFi.'
       isArray: true
       name: source_zones
       predefined:
@@ -1186,7 +1264,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Destination zones contained in the group. Possible values: "Any", "LAN", "WAN", "VPN", "DMZ", and "WiFi.'
+      description: 'Destination zones contained in the group. Possible values: "Any",
+        "LAN", "WAN", "VPN", "DMZ", and "WiFi.'
       isArray: true
       name: destination_zones
       predefined:
@@ -1432,7 +1511,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Type of the host. Possible values: "IP", "Network", "IPRange", and "IPList".'
+      description: 'Type of the host. Possible values: "IP", "Network", "IPRange",
+        and "IPList".'
       isArray: false
       name: host_type
       predefined:
@@ -1445,7 +1525,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: IPv4
-      description: 'The IP family. Possible values: "IPv4" and "IPv6". Default is "IPv4".'
+      description: 'The IP family. Possible values: "IPv4" and "IPv6". Default is
+        "IPv4".'
       isArray: false
       name: ip_family
       predefined:
@@ -1512,7 +1593,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Type of the host. Possible values: "IP", "Network", "IPRange", and "IPList".'
+      description: 'Type of the host. Possible values: "IP", "Network", "IPRange",
+        and "IPList".'
       isArray: false
       name: host_type
       predefined:
@@ -1525,7 +1607,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: IPv4
-      description: 'The IP family. Possible values: "IPv4" and "IPv6". Default is "IPv4".'
+      description: 'The IP family. Possible values: "IPv4" and "IPv6". Default is
+        "IPv4".'
       isArray: false
       name: ip_family
       predefined:
@@ -1681,7 +1764,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: IP hosts contained in the group. Must be hosts that exist in the system.
+      description: IP hosts contained in the group. Must be hosts that exist in the
+        system.
       isArray: true
       name: hosts
       required: false
@@ -1727,7 +1811,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: IP hosts contained in the group. Must be hosts that exist in the system.
+      description: IP hosts contained in the group. Must be hosts that exist in the
+        system.
       isArray: true
       name: hosts
       required: false
@@ -1783,7 +1868,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Lists all firewall services. IMPORTANT: The list starts at 0 (not 1)!'
+    description: 'Lists all firewall services. IMPORTANT: The list starts at 0 (not
+      1)!'
     execution: false
     name: sophos-firewall-services-list
     outputs:
@@ -1826,7 +1912,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Type of service. Possible values: "TCPorUDP", "IP", "ICMP", and "ICMPv6".'
+      description: 'Type of service. Possible values: "TCPorUDP", "IP", "ICMP", and
+        "ICMPv6".'
       isArray: false
       name: service_type
       predefined:
@@ -1838,7 +1925,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The protocol for the service if service_type is TCPorUDP. Possible values: "TCP" and "UDP".'
+      description: 'The protocol for the service if service_type is TCPorUDP. Possible
+        values: "TCP" and "UDP".'
       isArray: false
       name: protocol
       predefined:
@@ -1847,13 +1935,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Source port if service_type is TCPorUDP.'
+      description: Source port if service_type is TCPorUDP.
       isArray: false
       name: source_port
       required: false
       secret: false
     - default: false
-      description: 'Destination port if service_type is TCPorUDP.'
+      description: Destination port if service_type is TCPorUDP.
       isArray: false
       name: destination_port
       required: false
@@ -2278,7 +2366,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Type of service. Possible values: "TCPorUDP", "IP", "ICMP", and "ICMPv6".'
+      description: 'Type of service. Possible values: "TCPorUDP", "IP", "ICMP", and
+        "ICMPv6".'
       isArray: false
       name: service_type
       predefined:
@@ -2290,7 +2379,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The protocol for the service if service_type is TCPorUDP. Possible values: "TCP" and "UDP".'
+      description: 'The protocol for the service if service_type is TCPorUDP. Possible
+        values: "TCP" and "UDP".'
       isArray: false
       name: protocol
       predefined:
@@ -2299,13 +2389,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Source port if service_type is TCPorUDP.'
+      description: Source port if service_type is TCPorUDP.
       isArray: false
       name: source_port
       required: false
       secret: false
     - default: false
-      description: 'Destination port if service_type is TCPorUDP.'
+      description: Destination port if service_type is TCPorUDP.
       isArray: false
       name: destination_port
       required: false
@@ -2854,7 +2944,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: User
-      description: 'The type of the user. Possible values: "Administrator" and "User". Default is "User".' 
+      description: 'The type of the user. Possible values: "Administrator" and "User".
+        Default is "User".'
       isArray: false
       name: user_type
       predefined:
@@ -2864,8 +2955,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Profile of the administrator if user_type is Administrator. Possible values: "Administrator", "Crypto Admin", "Security Admin", "Audit Admin", and "HAProfile". IMPORTANT: You can
-        add more types in the web console.'
+      description: 'Profile of the administrator if user_type is Administrator. Possible
+        values: "Administrator", "Crypto Admin", "Security Admin", "Audit Admin",
+        and "HAProfile". IMPORTANT: You can add more types in the web console.'
       isArray: false
       name: profile
       predefined:
@@ -2906,7 +2998,8 @@ script:
       secret: false
     - default: false
       defaultValue: 100 MB Total Data Transfer policy
-      description: 'The Data Transfer policy. Default is: "100 MB Total Data Transfer policy".'
+      description: 'The Data Transfer policy. Default is: "100 MB Total Data Transfer
+        policy".'
       isArray: false
       name: data_transfer_policy
       required: false
@@ -2914,7 +3007,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Enable
-      description: 'Whether to enable simultaneous logins global. Possible values: "Enable" and "Disable". Default is "Enable".'
+      description: 'Whether to enable simultaneous logins global. Possible values:
+        "Enable" and "Disable". Default is "Enable".'
       isArray: false
       name: simultaneous_logins_global
       predefined:
@@ -2924,8 +3018,8 @@ script:
       secret: false
     - default: false
       defaultValue: All The Time
-      description: 'The schedule for appliance access. Default is "All The Time". IMPORTANT: This option\
-        \ is available only for Administrators.'
+      description: 'The schedule for appliance access. Default is "All The Time".
+        IMPORTANT: This option\ \ is available only for Administrators.'
       isArray: false
       name: schedule_for_appliance_access
       required: false
@@ -2940,7 +3034,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: UserGroupNode
-      description: 'The login restriction option. Possible values: "AnyNode" and "UserGroupNode". Default is "UserGroupNode".'
+      description: 'The login restriction option. Possible values: "AnyNode" and "UserGroupNode".
+        Default is "UserGroupNode".'
       isArray: false
       name: login_restriction
       predefined:
@@ -3015,7 +3110,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: User
-      description: 'The type of the user. Possible values: "Administrator" and "User". Default is "User".' 
+      description: 'The type of the user. Possible values: "Administrator" and "User".
+        Default is "User".'
       isArray: false
       name: user_type
       predefined:
@@ -3025,8 +3121,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Profile of the administrator if user_type is Administrator. Possible values: "Administrator", "Crypto Admin", "Security Admin", "Audit Admin", and "HAProfile". IMPORTANT: You can
-        add more types in the web console.'
+      description: 'Profile of the administrator if user_type is Administrator. Possible
+        values: "Administrator", "Crypto Admin", "Security Admin", "Audit Admin",
+        and "HAProfile". IMPORTANT: You can add more types in the web console.'
       isArray: false
       name: profile
       predefined:
@@ -3067,7 +3164,8 @@ script:
       secret: false
     - default: false
       defaultValue: 100 MB Total Data Transfer policy
-      description: 'The Data Transfer policy. Default is: "100 MB Total Data Transfer policy".'
+      description: 'The Data Transfer policy. Default is: "100 MB Total Data Transfer
+        policy".'
       isArray: false
       name: data_transfer_policy
       required: false
@@ -3075,7 +3173,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Enable
-      description: 'Whether to enable simultaneous logins global. Possible values: "Enable" and "Disable". Default is "Enable".'
+      description: 'Whether to enable simultaneous logins global. Possible values:
+        "Enable" and "Disable". Default is "Enable".'
       isArray: false
       name: simultaneous_logins_global
       predefined:
@@ -3085,8 +3184,8 @@ script:
       secret: false
     - default: false
       defaultValue: All The Time
-      description: 'The schedule for appliance access. Default is "All The Time".IMPORTANT: This option\
-        \ is available only for Administrators.'
+      description: 'The schedule for appliance access. Default is "All The Time".IMPORTANT:
+        This option\ \ is available only for Administrators.'
       isArray: false
       name: schedule_for_appliance_access
       required: false
@@ -3101,7 +3200,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: UserGroupNode
-      description: 'The login restriction option. Possible values: "AnyNode" and "UserGroupNode". Default is "UserGroupNode".'
+      description: 'The login restriction option. Possible values: "AnyNode" and "UserGroupNode".
+        Default is "UserGroupNode".'
       isArray: false
       name: login_restriction
       predefined:
@@ -3230,7 +3330,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether microapp support is enabled. Possible values: "true" and "false".'
+      description: 'Whether microapp support is enabled. Possible values: "true" and
+        "false".'
       isArray: false
       name: micro_app_support
       predefined:
@@ -3250,7 +3351,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to enable the select all rule. Possible values: "Enable" and "Disable".'
+      description: 'Whether to enable the select all rule. Possible values: "Enable"
+        and "Disable".'
       isArray: false
       name: select_all
       predefined:
@@ -3306,7 +3408,10 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The schedule for the rule. Possible values: "All the time", "Work hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT: Creating a new schedule is available in the web console.'
+      description: 'The schedule for the rule. Possible values: "All the time", "Work
+        hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All
+        Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT:
+        Creating a new schedule is available in the web console.'
       isArray: false
       name: schedule
       predefined:
@@ -3354,7 +3459,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether microapp support is enabled. Possible values: "true" and "false".'
+      description: 'Whether microapp support is enabled. Possible values: "true" and
+        "false".'
       isArray: false
       name: micro_app_support
       predefined:
@@ -3374,7 +3480,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to enable the select all rule. Possible values: "Enable" and "Disable".'
+      description: 'Whether to enable the select all rule. Possible values: "Enable"
+        and "Disable".'
       isArray: false
       name: select_all
       predefined:
@@ -3430,7 +3537,10 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The schedule for the rule. Possible values: "All the time", "Work hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT: Creating a new schedule is available in the web console.'
+      description: 'The schedule for the rule. Possible values: "All the time", "Work
+        hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All
+        Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT:
+        Creating a new schedule is available in the web console.'
       isArray: false
       name: schedule
       predefined:
@@ -3497,7 +3607,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Lists all app filter categories. IMPORTANT: The list starts at 0 (not 1)!'
+    description: 'Lists all app filter categories. IMPORTANT: The list starts at 0
+      (not 1)!'
     execution: false
     name: sophos-firewall-app-category-list
     outputs:
@@ -3589,7 +3700,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Lists all web filter policies. IMPORTANT: The list starts at 0 (not 1)!'
+    description: 'Lists all web filter policies. IMPORTANT: The list starts at 0 (not
+      1)!'
     execution: false
     name: sophos-firewall-web-filter-list
     outputs:
@@ -3672,7 +3784,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the max download file size is enabled. Possible values: "0" and "1".'
+      description: 'Whether the max download file size is enabled. Possible values:
+        "0" and "1".'
       isArray: false
       name: download_file_size_restriction_enabled
       predefined:
@@ -3688,7 +3801,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Enable to specify domains allowed to access the Google service. Possible values: "0" and "1".'
+      description: 'Enable to specify domains allowed to access the Google service.
+        Possible values: "0" and "1".'
       isArray: false
       name: goog_app_domain_list_enabled
       predefined:
@@ -3704,7 +3818,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to enable YouTube Restricted Mode to restrict the content that is accessible. Possible values: "0" and "1".'
+      description: 'Whether to enable YouTube Restricted Mode to restrict the content
+        that is accessible. Possible values: "0" and "1".'
       isArray: false
       name: youtube_filter_enabled
       predefined:
@@ -3714,7 +3829,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to adjust the policy used for YouTube Restricted Mode. Possible values: "0" and "1".'
+      description: 'Whether to adjust the policy used for YouTube Restricted Mode.
+        Possible values: "0" and "1".'
       isArray: false
       name: youtube_filter_is_strict
       predefined:
@@ -3736,7 +3852,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to further limit inappropriate content by enforcing search engine filters for Creative Commons licensed images. Possible values: "0" and "1".'
+      description: 'Whether to further limit inappropriate content by enforcing search
+        engine filters for Creative Commons licensed images. Possible values: "0"
+        and "1".'
       isArray: false
       name: enforce_image_licensing
       predefined:
@@ -3752,7 +3870,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The HTTP action. Possible values: "Deny", "Allow", "Warn", and "Log".'
+      description: 'The HTTP action. Possible values: "Deny", "Allow", "Warn", and
+        "Log".'
       isArray: false
       name: http_action
       predefined:
@@ -3764,7 +3883,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The HTTPs action. Possible values: "Deny", "Allow", "Warn", and "Log".'
+      description: 'The HTTPs action. Possible values: "Deny", "Allow", "Warn", and
+        "Log".'
       isArray: false
       name: https_action
       predefined:
@@ -3776,7 +3896,10 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The schedule for the rule. Possible values: "All the time", "Work hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT: Creating a new schedule is available in the web console.'
+      description: 'The schedule for the rule. Possible values: "All the time", "Work
+        hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All
+        Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT:
+        Creating a new schedule is available in the web console.'
       isArray: false
       name: schedule
       predefined:
@@ -3803,13 +3926,15 @@ script:
       name: user_names
       required: false
       secret: false
-    - description: 'A comma-separated list of CCL names. This argument is required When ccl_rule_enabled is ON.'
+    - description: A comma-separated list of CCL names. This argument is required
+        When ccl_rule_enabled is ON.
       isArray: false
       name: ccl_names
       required: false
       secret: false
     - auto: PREDEFINED
-      description: 'Whether to enable the CCL rule. Possible values: "0" and "1". If enabled, ccl_name is required.'
+      description: 'Whether to enable the CCL rule. Possible values: "0" and "1".
+        If enabled, ccl_name is required.'
       isArray: false
       name: ccl_rule_enabled
       predefined:
@@ -3829,7 +3954,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Enable
-      description: 'Whether to enable reporting of the policy. Possible values: "Enable" and "Disable". Default is "Enable".'
+      description: 'Whether to enable reporting of the policy. Possible values: "Enable"
+        and "Disable". Default is "Enable".'
       isArray: false
       name: enable_reporting
       predefined:
@@ -3888,7 +4014,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the maximum download file size is enabled. Possible values: "0" and "1".'
+      description: 'Whether the maximum download file size is enabled. Possible values:
+        "0" and "1".'
       isArray: false
       name: download_file_size_restriction_enabled
       predefined:
@@ -3904,7 +4031,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to enable specifying domains allowed to access the Google service. Possible values: "0" and "1".'
+      description: 'Whether to enable specifying domains allowed to access the Google
+        service. Possible values: "0" and "1".'
       isArray: false
       name: goog_app_domain_list_enabled
       predefined:
@@ -3920,8 +4048,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to enable YouTube Restricted Mode to restrict the content that is
-        accessible. Possible values: "0" and "1".'
+      description: 'Whether to enable YouTube Restricted Mode to restrict the content
+        that is accessible. Possible values: "0" and "1".'
       isArray: false
       name: youtube_filter_enabled
       predefined:
@@ -3931,7 +4059,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to adjust the policy used for YouTube Restricted Mode. Possible values: "0" and "1".'
+      description: 'Whether to adjust the policy used for YouTube Restricted Mode.
+        Possible values: "0" and "1".'
       isArray: false
       name: youtube_filter_is_strict
       predefined:
@@ -3941,9 +4070,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to enable blocking websites containing pornography and explicit sexual
-        content from appearing in the search results of Google, Yahoo, and Bing search
-        results. Possible values: "0" and "1".'
+      description: 'Whether to enable blocking websites containing pornography and
+        explicit sexual content from appearing in the search results of Google, Yahoo,
+        and Bing search results. Possible values: "0" and "1".'
       isArray: false
       name: enforce_safe_search
       predefined:
@@ -3953,8 +4082,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to further limit inappropriate content by enforcing search engine
-        filters for Creative Commons licensed images. Possible values: "0" and "1".'
+      description: 'Whether to further limit inappropriate content by enforcing search
+        engine filters for Creative Commons licensed images. Possible values: "0"
+        and "1".'
       isArray: false
       name: enforce_image_licensing
       predefined:
@@ -3970,7 +4100,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The HTTP action. Possible values: "Deny", "Allow", "Warn", and "Log".'
+      description: 'The HTTP action. Possible values: "Deny", "Allow", "Warn", and
+        "Log".'
       isArray: false
       name: http_action
       predefined:
@@ -3982,7 +4113,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The HTTPs action. Possible values: "Deny", "Allow", "Warn", and "Log".'
+      description: 'The HTTPs action. Possible values: "Deny", "Allow", "Warn", and
+        "Log".'
       isArray: false
       name: https_action
       predefined:
@@ -3994,7 +4126,10 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The schedule for the rule. Possible values: "All the time", "Work hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT: Creating a new schedule is available in the web console.'
+      description: 'The schedule for the rule. Possible values: "All the time", "Work
+        hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All
+        Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT:
+        Creating a new schedule is available in the web console.'
       isArray: false
       name: schedule
       predefined:
@@ -4021,13 +4156,15 @@ script:
       name: user_names
       required: false
       secret: false
-    - description: 'A comma-separated list of CCL names. REQUIRED: when ccl_rule_enabled is ON'
+    - description: 'A comma-separated list of CCL names. REQUIRED: when ccl_rule_enabled
+        is ON'
       isArray: false
       name: ccl_names
       required: false
       secret: false
     - auto: PREDEFINED
-      description: 'Whether to enable the CCL rule. Possible values: "0" and "1". IMPORTANT: If enabled, ccl_name is required.'
+      description: 'Whether to enable the CCL rule. Possible values: "0" and "1".
+        IMPORTANT: If enabled, ccl_name is required.'
       isArray: false
       name: ccl_rule_enabled
       predefined:
@@ -4047,7 +4184,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Enable
-      description: 'Whether to enable reporting of the policy. Possible values: "Enable" and "Disable". Default is "Enable".'
+      description: 'Whether to enable reporting of the policy. Possible values: "Enable"
+        and "Disable". Default is "Enable".'
       isArray: false
       name: enable_reporting
       predefined:
@@ -4099,7 +4237,7 @@ script:
     - contextPath: SophosFirewall.WebFilterPolicy.IsDeleted
       description: Whether the policy is deleted.
       type: Bool
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   feed: false
   isfetch: false
   longRunning: false

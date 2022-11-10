@@ -8,7 +8,8 @@ subtype: python3
 tags:
 - server
 - phishing
-comment: Get the string distance between inputString and compareString (compareString can be a comma-separated list) based on Levenshtein Distance algorithm.
+comment: Get the string distance between inputString and compareString (compareString
+  can be a comma-separated list) based on Levenshtein Distance algorithm.
 system: true
 args:
 - name: compareString
@@ -21,13 +22,13 @@ args:
   description: The input string(s) to compare.
 - name: distance
   description: Distance that is considered close.
-  defaultValue: "3"
+  defaultValue: '3'
 outputs:
 - contextPath: LevenshteinDistance
   description: The closeness of the sender domain to our configured domains.
 scripttarget: 0
 runonce: false
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.7.33922
+dockerimage: devdemisto/py3-master:8.1.0.37377
 tests:
 - GetStringsDistance - Test

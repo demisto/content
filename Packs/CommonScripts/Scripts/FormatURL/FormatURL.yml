@@ -5,7 +5,8 @@ args:
   name: input
   required: true
   secret: false
-comment: "Strips, unquotes and unescapes URLs. If the URL is a Proofpoint or ATP URL, extracts its redirect URL."
+comment: Strips, unquotes and unescapes URLs. If the URL is a Proofpoint or ATP URL,
+  extracts its redirect URL.
 commonfields:
   id: FormatURL
   version: -1
@@ -22,7 +23,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.8.36650
+dockerimage: devdemisto/py3-master:8.1.0.37377
 fromversion: 5.5.0
 tests:
 - FormatURL-Test

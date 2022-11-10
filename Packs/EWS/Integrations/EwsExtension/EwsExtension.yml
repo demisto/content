@@ -330,15 +330,13 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Searches message data for the last 10 days. If you run this command
-      without any arguments, only data from the last 48 hours is returned.
-
-      If you enter a start date that is older than 10 days, you will receive an error
-      and the command will return no results.
-
-      This command returns a maximum of 1,000,000 results, and will timeout on very
-      large queries. If your query returns too many results, consider splitting it
-      up using shorter start_date and end_date intervals.'
+    description: "Searches message data for the last 10 days. If you run this command\
+      \ without any arguments, only data from the last 48 hours is returned.\nIf you\
+      \ enter a start date that is older than 10 days, you will receive an error and\
+      \ the command will return no results.\nThis command returns a maximum of 1,000,000\
+      \ results, and will timeout on very large queries. If your query returns too\
+      \ many results, consider splitting it up using shorter start_date and end_date\
+      \ intervals."
     execution: false
     name: ews-message-trace-get
     outputs:
@@ -1107,9 +1105,9 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: 'The fully qualified domain name (FQDN) of the domain controller.
+      description: The fully qualified domain name (FQDN) of the domain controller.
         For example, dc01.contoso.com. This argument is available only in on-premises
-        Exchange.'
+        Exchange.
       isArray: false
       name: domain_controller
       required: false
@@ -1124,10 +1122,10 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'The IncludeExtendedDomainInfo switch specifies that the command
-        query Microsoft Federation Gateway for the status of each accepted domain
-        that''s federated. The status is returned with each domain in the Domains
-        property. Possible values: "true" and "false".'
+      description: "The IncludeExtendedDomainInfo switch specifies that the command\
+        \ query Microsoft Federation Gateway for the status of each accepted domain\
+        \ that's federated. The status is returned with each domain in the Domains\
+        \ property. Possible values: \"true\" and \"false\"."
       isArray: false
       name: include_extended_domain_info
       predefined:
@@ -1828,7 +1826,7 @@ script:
       description: The date in UTC format of when the mailbox audit bypass association
         was created.
       type: Date
-  dockerimage: demisto/powershell-ubuntu:7.1.4.24032
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   feed: false
   isfetch: false
   longRunning: false

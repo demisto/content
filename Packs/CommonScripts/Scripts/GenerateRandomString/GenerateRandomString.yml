@@ -50,4 +50,4 @@ runonce: false
 tests:
 - RandomStringGenerateTest
 fromversion: 6.2.0
-dockerimage: demisto/python3:3.10.4.30607
+dockerimage: devdemisto/py3-master:8.1.0.37377

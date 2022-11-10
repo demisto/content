@@ -20,10 +20,10 @@ args:
 - name: include_subdomains
   auto: PREDEFINED
   predefined:
-  - "yes"
-  - "no"
+  - yes
+  - no
   description: Include subdomains of the domain list?
-  defaultValue: "no"
+  defaultValue: no
 outputs:
 - contextPath: Account.Email.Address
   description: The Email account full address
@@ -40,6 +40,6 @@ outputs:
 scripttarget: 0
 runonce: false
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: devdemisto/py3-master:8.1.0.37377
 tests:
 - No tests (auto formatted)

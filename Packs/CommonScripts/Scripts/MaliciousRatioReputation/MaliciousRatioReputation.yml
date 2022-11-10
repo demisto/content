@@ -2,7 +2,7 @@ commonfields:
   id: MaliciousRatioReputation
   version: -1
 name: MaliciousRatioReputation
-fromversion: "6.5.0"
+fromversion: 6.5.0
 script: ''
 type: python
 subtype: python3
@@ -17,9 +17,9 @@ args:
   description: Value of the indicator.
 - name: threshold
   description: 'Malicious ratio threshold to set indicator as suspicious. '
-  defaultValue: "0.3"
+  defaultValue: '0.3'
 scripttarget: 0
 runonce: false
-dockerimage: demisto/python3:3.10.7.33922
+dockerimage: devdemisto/py3-master:8.1.0.37377
 tests:
 - No tests (auto formatted)

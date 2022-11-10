@@ -102,9 +102,9 @@ tags: []
 enabled: true
 scripttarget: 0
 subtype: python3
-pswd: ""
+pswd: ''
 runonce: false
-dockerimage: demisto/python3:3.9.5.20070
+dockerimage: devdemisto/py3-master:8.1.0.37377
 runas: DBotWeakRole
 fromversion: 5.5.0
 

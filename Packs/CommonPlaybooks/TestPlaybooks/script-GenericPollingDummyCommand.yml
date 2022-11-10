@@ -68,8 +68,8 @@ args:
 - name: arg2
 scripttarget: 0
 subtype: python3
-pswd: ""
+pswd: ''
 runonce: false
-dockerimage: demisto/python3:3.8.6.13358
+dockerimage: devdemisto/py3-master:8.1.0.37377
 runas: DBotWeakRole
 fromversion: 5.0.0

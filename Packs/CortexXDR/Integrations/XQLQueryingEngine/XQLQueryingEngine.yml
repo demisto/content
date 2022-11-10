@@ -35,7 +35,8 @@ script:
   commands:
   - arguments:
     - default: false
-      description: String of the XQL query. By default up to 100 results are returned. To retrieve more results, enter a custom limit in the query.
+      description: String of the XQL query. By default up to 100 results are returned.
+        To retrieve more results, enter a custom limit in the query.
       isArray: false
       name: query
       required: true
@@ -77,16 +78,17 @@ script:
       required: true
       secret: false
     - default: false
-      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
-        instead of being returned as a .gz file.
-        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      description: If set to 'true' and the query returns more than 1000 results,
+        it will be extracted as JSON data to context instead of being returned as
+        a .gz file. If set to 'false' and the query returns more than 1000 results,
+        it will return the .gz file without extracting the results to context.
       isArray: false
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-        - "true"
-        - "false"
-      defaultValue: "false"
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
       required: false
       secret: false
     deprecated: false
@@ -119,8 +121,8 @@ script:
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.GenericQuery.remaining_quota
-      description: Floating number representing the number of query units available for you
-        to use.
+      description: Floating number representing the number of query units available
+        for you to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results._time
       description: Result time.
@@ -156,7 +158,8 @@ script:
       description: Initiator signer.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_status
-      description: 'Signing status of the initiator. Possible values: Unsigned, Signed, Invalid Signature, and Unknown.'
+      description: 'Signing status of the initiator. Possible values: Unsigned, Signed,
+        Invalid Signature, and Unknown.'
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_name
       description: The name of the process that initiated the causality chain.
@@ -171,13 +174,14 @@ script:
       description: Causality group owner process ID.
       type: Number
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_sha256
-      description: The SHA256 value of the causality group owner. 
+      description: The SHA256 value of the causality group owner.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_vendor
       description: Causality group owner signer.
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_status
-      description: 'Signing status of the causality group owner. Possible values: Unsigned, Signed, Invalid Signature, and Unknown.'
+      description: 'Signing status of the causality group owner. Possible values:
+        Unsigned, Signed, Invalid Signature, and Unknown.'
       type: String
     - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_type
       description: The type of the causality group owner.
@@ -238,16 +242,17 @@ script:
       secret: false
       defaultValue: 20
     - default: false
-      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
-        instead of being returned as a .gz file.
-        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      description: If set to 'true' and the query returns more than 1000 results,
+        it will be extracted as JSON data to context instead of being returned as
+        a .gz file. If set to 'false' and the query returns more than 1000 results,
+        it will return the .gz file without extracting the results to context.
       isArray: false
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-        - "true"
-        - "false"
-      defaultValue: "false"
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
       required: false
       secret: false
     deprecated: false
@@ -260,114 +265,116 @@ script:
     polling: true
     name: xdr-xql-get-query-results
     outputs:
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.execution_id
-        description: An integer representing a unique ID of a successful XQL query execution.
-          The execution_id value can be passed to the xdr-xql-get-query-results command.
-        type: String
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.query_name
-        description: The given name of the query.
-        type: String
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.status
-        description: |-
-          String representing the status of the API call; SUCCESS, FAIL, or PENDING.
-          For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
-        type: String
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.number_of_results
-        description: Integer representing the number of results returned.
-        type: Number
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.query_cost
-        description: |-
-          Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
-          For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
-        type: Unknown
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.remaining_quota
-        description: Floating number representing the number of query units available for you
-          to use.
-        type: Number
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results._time
-        description: Result time.
-        type: Date
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_hostname
-        description: The agent host name.
-        type: String
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_ip_addresses
-        description: The agent IP addresses.
-        type: String
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.mac
-        description: Host MAC address.
-        type: Unknown
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_effective_username
-        description: Parent user name.
-        type: String
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_name
-        description: The name of the process that initiated the activity.
-        type: String
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_path
-        description: Path of the initiating process.
-        type: String
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_command_line
-        description: Command line arguments of the initiator.
-        type: String
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_os_pid
-        description: Initiator process ID.
-        type: Number
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_sha256
-        description: The SHA256 value of the initiator.
-        type: String
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_vendor
-        description: Initiator signer.
-        type: String
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_status
-        description: 'Signing status of the initiator. Possible values: Unsigned, Signed, Invalid Signature, and Unknown.'
-        type: String
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_name
-        description: The name of the process that initiated the causality chain.
-        type: String
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_path
-        description: Causality group owner path of the initiating process.
-        type: String
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_command_line
-        description: Command line arguments of the causality group owner.
-        type: String
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_os_pid
-        description: Causality group owner process ID.
-        type: Number
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_sha256
-        description: The SHA256 value of the causality group owner.
-        type: String
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_vendor
-        description: Causality group owner signer.
-        type: String
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_status
-        description: 'Signing status of the causality group owner. Possible values: Unsigned, Signed, Invalid Signature, and Unknown.'
-        type: String
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_type
-        description: The type of the causality group owner.
-        type: String
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_name
-        description: The name of the operating system that initiated the activity.
-        type: String
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_path
-        description: Operating system parent path.
-        type: String
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_command_line
-        description: Command line arguments of the operating system parent.
-        type: String
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_os_pid
-        description: Operating system parent process ID.
-        type: Number
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.action_remote_process_image_sha256
-        description: The SHA256 value of the operating system parent.
-        type: Unknown
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results._vendor
-        description: The result vendor.
-        type: String
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results._product
-        description: The result product.
-        type: String
-      - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_install_type
-        description: Initiator install type.
-        type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.execution_id
+      description: An integer representing a unique ID of a successful XQL query execution.
+        The execution_id value can be passed to the xdr-xql-get-query-results command.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.query_name
+      description: The given name of the query.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.status
+      description: |-
+        String representing the status of the API call; SUCCESS, FAIL, or PENDING.
+        For multi-tenant queries, PARTIAL_SUCCESS means that at least one tenant failed to execute the query. Only partial results are available.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.number_of_results
+      description: Integer representing the number of results returned.
+      type: Number
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.query_cost
+      description: |-
+        Floating number representing the number of query units collected for this API. For example, {"local_tenant_id": 0.01}.
+        For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.remaining_quota
+      description: Floating number representing the number of query units available
+        for you to use.
+      type: Number
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results._time
+      description: Result time.
+      type: Date
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_hostname
+      description: The agent host name.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_ip_addresses
+      description: The agent IP addresses.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.mac
+      description: Host MAC address.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_effective_username
+      description: Parent user name.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_name
+      description: The name of the process that initiated the activity.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_path
+      description: Path of the initiating process.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_command_line
+      description: Command line arguments of the initiator.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_os_pid
+      description: Initiator process ID.
+      type: Number
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_image_sha256
+      description: The SHA256 value of the initiator.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_vendor
+      description: Initiator signer.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.actor_process_signature_status
+      description: 'Signing status of the initiator. Possible values: Unsigned, Signed,
+        Invalid Signature, and Unknown.'
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_name
+      description: The name of the process that initiated the causality chain.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_path
+      description: Causality group owner path of the initiating process.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_command_line
+      description: Command line arguments of the causality group owner.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_os_pid
+      description: Causality group owner process ID.
+      type: Number
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_image_sha256
+      description: The SHA256 value of the causality group owner.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_vendor
+      description: Causality group owner signer.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_process_signature_status
+      description: 'Signing status of the causality group owner. Possible values:
+        Unsigned, Signed, Invalid Signature, and Unknown.'
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.causality_actor_type
+      description: The type of the causality group owner.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_name
+      description: The name of the operating system that initiated the activity.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_image_path
+      description: Operating system parent path.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_command_line
+      description: Command line arguments of the operating system parent.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.os_actor_process_os_pid
+      description: Operating system parent process ID.
+      type: Number
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.action_remote_process_image_sha256
+      description: The SHA256 value of the operating system parent.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results._vendor
+      description: The result vendor.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results._product
+      description: The result product.
+      type: String
+    - contextPath: PaloAltoNetworksXQL.GenericQuery.results.agent_install_type
+      description: Initiator install type.
+      type: String
   - arguments:
     - default: false
       description: XDR endpoint ID to run the query on.
@@ -425,16 +432,17 @@ script:
       required: true
       secret: false
     - default: false
-      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
-        instead of being returned as a .gz file.
-        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      description: If set to 'true' and the query returns more than 1000 results,
+        it will be extracted as JSON data to context instead of being returned as
+        a .gz file. If set to 'false' and the query returns more than 1000 results,
+        it will return the .gz file without extracting the results to context.
       isArray: false
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-        - "true"
-        - "false"
-      defaultValue: "false"
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
       required: false
       secret: false
     deprecated: false
@@ -465,8 +473,8 @@ script:
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.FileEvent.remaining_quota
-      description: Floating number representing the number of query units available for you
-        to use.
+      description: Floating number representing the number of query units available
+        for you to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.FileEvent.results.agent_hostname
       description: The agent host name.
@@ -506,7 +514,8 @@ script:
       required: false
       secret: false
     - default: false
-      description:  The SHA256 hash of the primary involved process to search on the XDR dataset.
+      description: The SHA256 hash of the primary involved process to search on the
+        XDR dataset.
       isArray: true
       name: process_sha256
       required: true
@@ -555,16 +564,17 @@ script:
       required: true
       secret: false
     - default: false
-      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
-        instead of being returned as a .gz file.
-        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      description: If set to 'true' and the query returns more than 1000 results,
+        it will be extracted as JSON data to context instead of being returned as
+        a .gz file. If set to 'false' and the query returns more than 1000 results,
+        it will return the .gz file without extracting the results to context.
       isArray: false
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-        - "true"
-        - "false"
-      defaultValue: "false"
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
       required: false
       secret: false
     deprecated: false
@@ -595,8 +605,8 @@ script:
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.remaining_quota
-      description: Floating number representing the number of query units available for you
-        to use.
+      description: Floating number representing the number of query units available
+        for you to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.ProcessEvent.results.agent_hostname
       description: The agent host name.
@@ -712,16 +722,17 @@ script:
       required: true
       secret: false
     - default: false
-      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
-        instead of being returned as a .gz file.
-        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      description: If set to 'true' and the query returns more than 1000 results,
+        it will be extracted as JSON data to context instead of being returned as
+        a .gz file. If set to 'false' and the query returns more than 1000 results,
+        it will return the .gz file without extracting the results to context.
       isArray: false
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-        - "true"
-        - "false"
-      defaultValue: "false"
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
       required: false
       secret: false
     deprecated: false
@@ -752,8 +763,8 @@ script:
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.DllModule.remaining_quota
-      description: Floating number representing the number of query units available for you
-        to use.
+      description: Floating number representing the number of query units available
+        for you to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.DllModule.results.agent_hostname
       description: The agent host name.
@@ -878,16 +889,17 @@ script:
       required: true
       secret: false
     - default: false
-      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
-        instead of being returned as a .gz file.
-        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      description: If set to 'true' and the query returns more than 1000 results,
+        it will be extracted as JSON data to context instead of being returned as
+        a .gz file. If set to 'false' and the query returns more than 1000 results,
+        it will return the .gz file without extracting the results to context.
       isArray: false
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-        - "true"
-        - "false"
-      defaultValue: "false"
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
       required: false
       secret: false
     deprecated: false
@@ -919,8 +931,8 @@ script:
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.remaining_quota
-      description: Floating number representing the number of query units available for you
-        to use.
+      description: Floating number representing the number of query units available
+        for you to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.NetworkConnection.results.agent_hostname
       description: The agent host name.
@@ -1037,16 +1049,17 @@ script:
       required: true
       secret: false
     - default: false
-      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
-        instead of being returned as a .gz file.
-        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      description: If set to 'true' and the query returns more than 1000 results,
+        it will be extracted as JSON data to context instead of being returned as
+        a .gz file. If set to 'false' and the query returns more than 1000 results,
+        it will return the .gz file without extracting the results to context.
       isArray: false
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-        - "true"
-        - "false"
-      defaultValue: "false"
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
       required: false
       secret: false
     deprecated: false
@@ -1077,8 +1090,8 @@ script:
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.Registry.remaining_quota
-      description: Floating number representing the number of query units available for you
-        to use.
+      description: Floating number representing the number of query units available
+        for you to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.Registry.results.agent_hostname
       description: The agent host name.
@@ -1130,15 +1143,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'event log ID to search. 
-        - Windows: Event ID of the event-log 
-        - Linux: For action_evtlog_source = AuthLog, one of the following: 
-        0 = Unknown
-        1 = Successful Login 
-        2 = Failed Login 
-        3 = Failed Password (Same as failed
-        login, but should include a username) 
-        4 = Logout'
+      description: 'event log ID to search. - Windows: Event ID of the event-log -
+        Linux: For action_evtlog_source = AuthLog, one of the following: 0 = Unknown
+        1 = Successful Login 2 = Failed Login 3 = Failed Password (Same as failed
+        login, but should include a username) 4 = Logout'
       isArray: true
       name: event_id
       required: true
@@ -1187,16 +1195,17 @@ script:
       required: true
       secret: false
     - default: false
-      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
-        instead of being returned as a .gz file.
-        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      description: If set to 'true' and the query returns more than 1000 results,
+        it will be extracted as JSON data to context instead of being returned as
+        a .gz file. If set to 'false' and the query returns more than 1000 results,
+        it will return the .gz file without extracting the results to context.
       isArray: false
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-        - "true"
-        - "false"
-      defaultValue: "false"
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
       required: false
       secret: false
     deprecated: false
@@ -1227,8 +1236,8 @@ script:
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.EventLog.remaining_quota
-      description: Floating number representing the number of query units available for you
-        to use.
+      description: Floating number representing the number of query units available
+        for you to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.EventLog.results.agent_hostname
       description: The agent host name.
@@ -1335,16 +1344,17 @@ script:
       required: true
       secret: false
     - default: false
-      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
-        instead of being returned as a .gz file.
-        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      description: If set to 'true' and the query returns more than 1000 results,
+        it will be extracted as JSON data to context instead of being returned as
+        a .gz file. If set to 'false' and the query returns more than 1000 results,
+        it will return the .gz file without extracting the results to context.
       isArray: false
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-        - "true"
-        - "false"
-      defaultValue: "false"
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
       required: false
       secret: false
     deprecated: false
@@ -1375,8 +1385,8 @@ script:
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.DNS.remaining_quota
-      description: Floating number representing the number of query units available for you
-        to use.
+      description: Floating number representing the number of query units available
+        for you to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.DNS.results.agent_hostname
       description: The agent host name.
@@ -1409,7 +1419,8 @@ script:
       description: DNS query name.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.action_app_id_transitions
-      description: List of application IDs action, actual activities that took place and recorded by the agent
+      description: List of application IDs action, actual activities that took place
+        and recorded by the agent
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.action_total_download
       description: Total downloads.
@@ -1510,16 +1521,17 @@ script:
       required: true
       secret: false
     - default: false
-      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
-        instead of being returned as a .gz file.
-        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      description: If set to 'true' and the query returns more than 1000 results,
+        it will be extracted as JSON data to context instead of being returned as
+        a .gz file. If set to 'false' and the query returns more than 1000 results,
+        it will return the .gz file without extracting the results to context.
       isArray: false
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-        - "true"
-        - "false"
-      defaultValue: "false"
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
       required: false
       secret: false
     deprecated: false
@@ -1551,8 +1563,8 @@ script:
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.FileDropper.remaining_quota
-      description: Floating number representing the number of query units available for you
-        to use.
+      description: Floating number representing the number of query units available
+        for you to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.FileDropper.results.agent_hostname
       description: The agent host name.
@@ -1683,16 +1695,17 @@ script:
       required: true
       secret: false
     - default: false
-      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
-        instead of being returned as a .gz file.
-        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      description: If set to 'true' and the query returns more than 1000 results,
+        it will be extracted as JSON data to context instead of being returned as
+        a .gz file. If set to 'false' and the query returns more than 1000 results,
+        it will return the .gz file without extracting the results to context.
       isArray: false
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-        - "true"
-        - "false"
-      defaultValue: "false"
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
       required: false
       secret: false
     deprecated: false
@@ -1724,8 +1737,8 @@ script:
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.remaining_quota
-      description: Floating number representing the number of query units available for you
-        to use.
+      description: Floating number representing the number of query units available
+        for you to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.agent_hostname
       description: The agent host name.
@@ -1752,7 +1765,8 @@ script:
       description: DNS query name.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_app_id_transitions
-      description: List of application IDs action, actual activities that took place and recorded by the agent.
+      description: List of application IDs action, actual activities that took place
+        and recorded by the agent.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessInstanceNetworkActivity.results.action_total_download
       description: Total downloads.
@@ -1859,16 +1873,17 @@ script:
       required: true
       secret: false
     - default: false
-      description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context
-        instead of being returned as a .gz file.
-        If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+      description: If set to 'true' and the query returns more than 1000 results,
+        it will be extracted as JSON data to context instead of being returned as
+        a .gz file. If set to 'false' and the query returns more than 1000 results,
+        it will return the .gz file without extracting the results to context.
       isArray: false
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
-        - "true"
-        - "false"
-      defaultValue: "false"
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
       required: false
       secret: false
     deprecated: false
@@ -1900,8 +1915,8 @@ script:
         For multi-tenant queries, the field displays a value per child tenant. For example, {"tenant_id_1": 0.01, "tenant_id_2": 2.3}.
       type: Unknown
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.remaining_quota
-      description: Floating number representing the number of query units available for you
-        to use.
+      description: Floating number representing the number of query units available
+        for you to use.
       type: Number
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.agent_hostname
       description: The agent host name.
@@ -1928,7 +1943,8 @@ script:
       description: DNS query name.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_app_id_transitions
-      description: List of application IDs action, actual activities that took place and recorded by the agent.
+      description: List of application IDs action, actual activities that took place
+        and recorded by the agent.
       type: String
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results.action_total_download
       description: Total downloads.
@@ -1978,7 +1994,7 @@ script:
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results._product
       description: The result product.
       type: String
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   feed: false
   isfetch: false
   longRunning: false

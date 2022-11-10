@@ -8,7 +8,9 @@ subtype: python3
 tags:
 - transformer
 - entirelist
-comment: Transformer that returns a filtered list of IPv4 addresses, based on whether they do not match a comma-separated list of IPv4 ranges.  Useful for filtering out internal IP address space.
+comment: Transformer that returns a filtered list of IPv4 addresses, based on whether
+  they do not match a comma-separated list of IPv4 ranges.  Useful for filtering out
+  internal IP address space.
 enabled: true
 args:
 - name: value
@@ -18,11 +20,12 @@ args:
   isArray: true
 - name: cidr_ranges
   required: true
-  description: Array or comma-separated list of IPv4 ranges, in CIDR notation, against which to match the IPv4 addresses.
+  description: Array or comma-separated list of IPv4 ranges, in CIDR notation, against
+    which to match the IPv4 addresses.
   isArray: true
 scripttarget: 0
 runonce: false
-dockerimage: demisto/netutils:1.0.0.24101
+dockerimage: devdemisto/py3-master:8.1.0.37377
 runas: DBotWeakRole
 tests:
 - No test - unit test

@@ -33,12 +33,14 @@ args:
   required: false
   secret: false
 - default: false
-  description: The allowed content types to display, separated with comma, uses startswith to find a match (ie text,image will display text\html, and image\png).
+  description: The allowed content types to display, separated with comma, uses startswith
+    to find a match (ie text,image will display text\html, and image\png).
   isArray: false
   name: allowedContentTypes
   required: false
   secret: false
-comment: Allows to parse and extract http flows (requests & responses) from a pcap/pcapng file.
+comment: Allows to parse and extract http flows (requests & responses) from a pcap/pcapng
+  file.
 commonfields:
   id: PcapHTTPExtractor
   version: -1
@@ -91,7 +93,7 @@ tags:
 - http
 timeout: '0'
 type: python
-dockerimage: demisto/pcap-http-extractor:1.0.0.32113
+dockerimage: devdemisto/py3-master:8.1.0.37377
 tests:
 - PcapHTTPExtractor-Test
 subtype: python3

@@ -8,7 +8,8 @@ subtype: python3
 tags:
 - server
 - file
-comment: Extract strings from a file with optional filter - similar to binutils strings command
+comment: Extract strings from a file with optional filter - similar to binutils strings
+  command
 system: true
 args:
 - name: entry
@@ -16,7 +17,8 @@ args:
   default: true
   description: Entry ID of a file entry to retrieve strings from
 - name: chars
-  description: Number of consecutive characters to be considered a string - default is 4
+  description: Number of consecutive characters to be considered a string - default
+    is 4
 - name: size
   description: Display first 'size' results - default is 1024
 - name: filter
@@ -25,6 +27,6 @@ scripttarget: 0
 dependson: {}
 timeout: 0s
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: devdemisto/py3-master:8.1.0.37377
 tests:
 - No tests (auto formatted)

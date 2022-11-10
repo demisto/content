@@ -7,7 +7,8 @@ type: python
 subtype: python3
 tags:
 - carbon-black
-comment: Get the list of Alerts from Carbon Black Enterprise Response. Supports the same arguments as the cb-alerts command.
+comment: Get the list of Alerts from Carbon Black Enterprise Response. Supports the
+  same arguments as the cb-alerts command.
 system: true
 scripttarget: 0
 dependson:
@@ -15,7 +16,7 @@ dependson:
   - cb-alert
 timeout: 0s
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: devdemisto/py3-master:8.1.0.37377
 tests:
 - No tests (auto formatted)
 

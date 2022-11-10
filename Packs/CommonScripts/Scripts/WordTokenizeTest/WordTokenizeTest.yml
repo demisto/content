@@ -25,17 +25,17 @@ args:
 - name: cleanHtml
   auto: PREDEFINED
   predefined:
-  - "yes"
-  - "no"
+  - yes
+  - no
   description: Clean html from text value?
-  defaultValue: "yes"
+  defaultValue: yes
 - name: removeLineBreaks
   auto: PREDEFINED
   predefined:
-  - "yes"
-  - "no"
+  - yes
+  - no
   description: Remove line breaks?
-  defaultValue: "yes"
+  defaultValue: yes
 - name: encoding
   description: Text encoding
   defaultValue: utf-8
@@ -47,7 +47,7 @@ outputs:
   type: string
 scripttarget: 0
 runonce: true
-dockerimage: demisto/nltk:2.0.0.19143
+dockerimage: devdemisto/py3-master:8.1.0.37377
 fromversion: 5.0.0
 tests:
 - No tests

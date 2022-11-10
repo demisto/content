@@ -8,22 +8,22 @@ description: Amazon Web Services CloudWatch Logs (logs).
 configuration:
 - display: Default Region
   name: defaultRegion
-  defaultvalue: ""
+  defaultvalue: ''
   type: 0
   required: true
 - display: Role Arn
   name: roleArn
-  defaultvalue: ""
+  defaultvalue: ''
   type: 0
   required: false
 - display: Role Session Name
   name: roleSessionName
-  defaultvalue: ""
+  defaultvalue: ''
   type: 0
   required: false
 - display: Role Session Duration
   name: sessionDuration
-  defaultvalue: ""
+  defaultvalue: ''
   type: 0
   required: false
 - display: Access Key
@@ -46,9 +46,10 @@ configuration:
 - display: Retries
   name: retries
   defaultvalue: 5
-  additionalinfo: "The maximum number of retry attempts when connection or throttling errors
-  are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10.
-  Note: Increasing the number of retries will increase the execution time."
+  additionalinfo: 'The maximum number of retry attempts when connection or throttling
+    errors are encountered. Set to 0 to disable retries. The default value is 5 and
+    the limit is 10. Note: Increasing the number of retries will increase the execution
+    time.'
   required: false
   type: 0
 script:
@@ -158,8 +159,8 @@ script:
     - name: interleaved
       auto: PREDEFINED
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
       description: If the value is true, the operation makes a best effort to provide
         responses that contain events from multiple log streams within the log group,
         interleaved in a single response. If the value is false, all the matched log
@@ -317,23 +318,23 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - "1"
-      - "3"
-      - "5"
-      - "7"
-      - "14"
-      - "30"
-      - "60"
-      - "90"
-      - "120"
-      - "150"
-      - "180"
-      - "365"
-      - "400"
-      - "545"
-      - "731"
-      - "1827"
-      - "3653"
+      - '1'
+      - '3'
+      - '5'
+      - '7'
+      - '14'
+      - '30'
+      - '60'
+      - '90'
+      - '120'
+      - '150'
+      - '180'
+      - '365'
+      - '400'
+      - '545'
+      - '731'
+      - '1827'
+      - '3653'
       description: The number of days to retain the log events in the specified log
         group.
     - name: region
@@ -523,7 +524,7 @@ script:
       type: string
     description: Lists the specified metric filters. You can list all the metric filters
       or filter the results by log name, prefix, metric name, or metric namespace.
-  dockerimage: demisto/boto3py3:1.0.0.37317
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   runonce: false
 tests:
 - No Tests

@@ -3,7 +3,7 @@ commonfields:
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
+    fromServerVersion: ''
 name: RegexExtractAll
 script: ''
 type: python
@@ -28,44 +28,45 @@ args:
 - name: multi_line
   auto: PREDEFINED
   predefined:
-  - "false"
-  - "true"
+  - 'false'
+  - 'true'
   description: Process value in multiline mode.  See more information on re.MULTILINE,
     see https://docs.python.org/3/library/re.html.
-  defaultValue: "false"
+  defaultValue: 'false'
 - name: ignore_case
   auto: PREDEFINED
   predefined:
-  - "false"
-  - "true"
+  - 'false'
+  - 'true'
   description: Whether character matching will be case-insensitive. Default is "false".
-  defaultValue: "false"
+  defaultValue: 'false'
 - name: period_matches_newline
   auto: PREDEFINED
   predefined:
-  - "false"
-  - "true"
+  - 'false'
+  - 'true'
   description: Whether to make the '.' character also match a new line. Default is
     "false".
-  defaultValue: "false"
+  defaultValue: 'false'
 - name: error_if_no_match
   auto: PREDEFINED
   predefined:
-  - "false"
-  - "true"
-  description: Only set to 'true' if used in a playbook task and you want that failure will return an error.
-  defaultValue: "false"
+  - 'false'
+  - 'true'
+  description: Only set to 'true' if used in a playbook task and you want that failure
+    will return an error.
+  defaultValue: 'false'
 - name: unpack_matches
   auto: PREDEFINED
   predefined:
-  - "false"
-  - "true"
+  - 'false'
+  - 'true'
   description: Whether to unpack the tuple values of results. Default is "false".
-  defaultValue: "false"
+  defaultValue: 'false'
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: devdemisto/py3-master:8.1.0.37377
 runas: DBotWeakRole
 tests:
 - No test - unit test

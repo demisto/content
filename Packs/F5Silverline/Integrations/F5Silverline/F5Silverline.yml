@@ -151,9 +151,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The CIDR range of a potentially threatening IP address.
-        object (i.e IP address/ mask) in CSV format. For example, "1.2.3.4/32,2.3.4.5". In case only IP
-        address is given, the default mask is 32.
+      description: The CIDR range of a potentially threatening IP address. object
+        (i.e IP address/ mask) in CSV format. For example, "1.2.3.4/32,2.3.4.5". In
+        case only IP address is given, the default mask is 32.
       isArray: true
       name: cidr_range
       required: true
@@ -212,10 +212,11 @@ script:
       secret: false
     deprecated: false
     description: Delete an existing particular threatening IP address object by its
-      object ID or by its IP address. If both id and ip are given, delete operation will be done by the given object_id.
+      object ID or by its IP address. If both id and ip are given, delete operation
+      will be done by the given object_id.
     execution: false
     name: f5-silverline-ip-object-delete
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   isfetch: false
   runonce: false
   script: '-'

@@ -10,7 +10,8 @@ comment: Collect entries matching to the conditions in the war room
 enabled: true
 args:
 - name: id
-  description: Optional incident ID to fetch entries from. If not specified, current incident is used.
+  description: Optional incident ID to fetch entries from. If not specified, current
+    incident is used.
 - name: tags
   description: The list of tags
   isArray: true
@@ -33,7 +34,7 @@ outputs:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.7.33922
+dockerimage: devdemisto/py3-master:8.1.0.37377
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:

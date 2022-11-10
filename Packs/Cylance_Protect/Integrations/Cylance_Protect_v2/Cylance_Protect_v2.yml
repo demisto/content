@@ -36,12 +36,12 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: "-59"
+- defaultvalue: '-59'
   display: File Threshold
   name: file_threshold
   required: false
   type: 0
-- defaultvalue: "1"
+- defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
@@ -738,12 +738,12 @@ script:
     - description: File threshold to determine the file reputation.
       name: threshold
     - auto: PREDEFINED
-      defaultValue: "no"
+      defaultValue: no
       description: If "yes" the file is unzipped and returned to the War Room.
       name: unzip
       predefined:
-      - "yes"
-      - "no"
+      - yes
+      - no
     description: Downloads the threat (file) attached to a specific SHA256 hash.
     name: cylance-protect-download-threat
     outputs:
@@ -877,7 +877,7 @@ script:
       isArray: true
       name: deviceIds
       required: true
-    - defaultValue: "20"
+    - defaultValue: '20'
       description: The number of devices to delete per batch. The default is 20, which
         is also the maximum number of devices that can be deleted per request.
       name: batch_size
@@ -975,16 +975,16 @@ script:
     arguments:
     - name: page_number
       description: The page number to collect. If not specified, the default is 1.
-      defaultValue: "1"
+      defaultValue: '1'
     - name: page_size
       description: The page size. If not specified, the default is 20.
-      defaultValue: "20"
+      defaultValue: '20'
     description: Get a list of all current InstaQueries.
     outputs:
     - contextPath: InstaQuery.List
       description: The list of InstaQuery
       type: string
-  dockerimage: demisto/pyjwt3:1.0.0.36533
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   isfetch: true
   runonce: false
   script: ''

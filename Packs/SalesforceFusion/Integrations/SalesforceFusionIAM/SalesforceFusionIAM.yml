@@ -66,8 +66,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Integrate with Salesforce Fusion Identity Access Management service to execute CRUD 
-  (create, read, update, and delete) operations for employee lifecycle processes.
+description: Integrate with Salesforce Fusion Identity Access Management service to
+  execute CRUD (create, read, update, and delete) operations for employee lifecycle
+  processes.
 display: Salesforce Fusion IAM
 name: Salesforce Fusion IAM
 script:
@@ -83,7 +84,8 @@ script:
       default: false
       defaultValue: 'true'
       description: 'When set to true, after the command executes the status of the
-        user in the 3rd-party integration will be active. Possible values: "true" and "false".'
+        user in the 3rd-party integration will be active. Possible values: "true"
+        and "false".'
       isArray: false
       name: allow-enable
       predefined:
@@ -138,7 +140,8 @@ script:
       default: false
       defaultValue: 'true'
       description: 'When set to true, after the command executes the status of the
-        user in the 3rd-party integration will be active. Possible values: "true" and "false".'
+        user in the 3rd-party integration will be active. Possible values: "true"
+        and "false".'
       isArray: false
       name: allow-enable
       predefined:
@@ -274,7 +277,7 @@ script:
       within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.10.5.31797
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   isfetch: false
   longRunning: false
   longRunningPort: false

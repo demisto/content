@@ -70,7 +70,7 @@ script:
       description: Alert's last modification
       type: date
     - contextPath: Stealthwatch.Alert.resolved
-      description: 'Alert''s state '
+      description: "Alert's state "
       type: boolean
     - contextPath: Stealthwatch.Alert.source_info.ips
       description: IP of the alert's source
@@ -87,7 +87,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Set the resolved field to true and set the merit field to close an alert. merit can be 8 ("helpful") or 9 ("not helpful").
+      description: Set the resolved field to true and set the merit field to close
+        an alert. merit can be 8 ("helpful") or 9 ("not helpful").
       isArray: false
       name: resolved
       predefined:
@@ -97,7 +98,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Set the resolved field to true and set the merit field to close an alert. merit can be 8 ("helpful") or 9 ("not helpful").
+      description: Set the resolved field to true and set the merit field to close
+        an alert. merit can be 8 ("helpful") or 9 ("not helpful").
       isArray: false
       name: merit
       predefined:
@@ -166,7 +168,7 @@ script:
       description: Alert's last modification
       type: date
     - contextPath: Stealthwatch.Alert.resolved
-      description: 'Alert''s state '
+      description: "Alert's state "
       type: boolean
     - contextPath: Stealthwatch.Alert.source_info.ips
       description: IP of the alert's source
@@ -177,7 +179,9 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'status filters alerts by status: open, closed, or all. Default is open. all allows you to see an individual alert regardless of whether it''s open or closed.'
+      description: "status filters alerts by status: open, closed, or all. Default\
+        \ is open. all allows you to see an individual alert regardless of whether\
+        \ it's open or closed."
       isArray: false
       name: status
       predefined:
@@ -187,7 +191,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: search finds a particular string amongst the alerts. For example, a particular IP address, hostname, or alert type.
+      description: search finds a particular string amongst the alerts. For example,
+        a particular IP address, hostname, or alert type.
       isArray: false
       name: search
       required: false
@@ -240,7 +245,7 @@ script:
       description: Alert's last modification
       type: date
     - contextPath: Stealthwatch.Alert.resolved
-      description: 'Alert''s state '
+      description: "Alert's state "
       type: boolean
     - contextPath: Stealthwatch.Alert.source_info.ips
       description: IP of the alert's source
@@ -286,7 +291,8 @@ script:
       type: string
   - arguments:
     - default: false
-      description: ID of the domain to remove from the block list. You can find the id using 'sw-list-blocked-domains'
+      description: ID of the domain to remove from the block list. You can find the
+        id using 'sw-list-blocked-domains'
       isArray: false
       name: id
       required: true
@@ -297,7 +303,8 @@ script:
     name: sw-unblock-domain
   - arguments:
     - default: false
-      description: search finds a particular string amongst the alerts. For example, a particular IP address, hostname, or alert type.
+      description: search finds a particular string amongst the alerts. For example,
+        a particular IP address, hostname, or alert type.
       isArray: false
       name: search
       required: false
@@ -331,13 +338,15 @@ script:
       type: number
   - arguments:
     - default: false
-      description: search finds a particular string amongst the alerts. For example, a particular IP address, hostname, or alert type.
+      description: search finds a particular string amongst the alerts. For example,
+        a particular IP address, hostname, or alert type.
       isArray: false
       name: search
       required: false
       secret: false
     - default: false
-      description: Use the alert query parameter with an alert id to only show observations referenced by the alert.
+      description: Use the alert query parameter with an alert id to only show observations
+        referenced by the alert.
       isArray: false
       name: alert
       required: false
@@ -422,7 +431,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: all
-      description: Select type of session - external/internal to receive data only about this kind of session
+      description: Select type of session - external/internal to receive data only
+        about this kind of session
       isArray: false
       name: sessionType
       predefined:
@@ -432,7 +442,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Get sessions by the session''s occurrence time ( Time format: YYYY-MM-DDTHH:MM:SSZ)'
+    description: "Get sessions by the session's occurrence time ( Time format: YYYY-MM-DDTHH:MM:SSZ)"
     execution: false
     name: sw-list-sessions
     outputs:
@@ -465,7 +475,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage:  demisto/python3:3.10.6.33415
+  dockerimage: devdemisto/py3-master:8.1.0.37377
 tests:
 - No test
 fromversion: 5.0.0

@@ -106,7 +106,7 @@ subtype: python3
 system: false
 timeout: 60µs
 type: python
-dockerimage: demisto/ml:1.0.0.32340
+dockerimage: devdemisto/py3-master:8.1.0.37377
 runonce: true
 tests:
 - DbotPredictOufOfTheBoxTestV2

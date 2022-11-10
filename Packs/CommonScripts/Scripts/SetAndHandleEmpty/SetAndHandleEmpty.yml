@@ -19,32 +19,36 @@ args:
   default: true
   description: The key to set in context.
 - name: value
-  description: The value of the key to set in context. The value is usually a DQ expression. Can be an array.
+  description: The value of the key to set in context. The value is usually a DQ expression.
+    Can be an array.
   isArray: true
 - name: append
   auto: PREDEFINED
   predefined:
-  - "true"
-  - "false"
-  description: Whether to append the new context key to the existing context key. If "false", then the existing context key will be overwritten with the new context key.
+  - 'true'
+  - 'false'
+  description: Whether to append the new context key to the existing context key.
+    If "false", then the existing context key will be overwritten with the new context
+    key.
 - name: stringify
   auto: PREDEFINED
   predefined:
-  - "true"
-  - "false"
+  - 'true'
+  - 'false'
   description: Whether to save the argument as a string. The default value is "false".
-  defaultValue: "false"
+  defaultValue: 'false'
 - name: force
   auto: PREDEFINED
   predefined:
-  - "true"
-  - "false"
-  description: Whether to force the creation of the context. The default value is "false".
-  defaultValue: "false"
+  - 'true'
+  - 'false'
+  description: Whether to force the creation of the context. The default value is
+    "false".
+  defaultValue: 'false'
 scripttarget: 0
 script: '-'
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.7.33922
+dockerimage: devdemisto/py3-master:8.1.0.37377
 tests:
 - SetAndHandleEmpty test

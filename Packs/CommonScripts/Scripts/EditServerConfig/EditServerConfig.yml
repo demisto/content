@@ -1,7 +1,7 @@
 args:
 - default: false
-  description: The action to make. If update is chosen and the key does not exist, a
-    new key will be added.
+  description: The action to make. If update is chosen and the key does not exist,
+    a new key will be added.
   isArray: false
   name: action
   required: true
@@ -34,7 +34,7 @@ system: false
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: devdemisto/py3-master:8.1.0.37377
 fromversion: 6.0.0
 tests:
 - TestEditServerConfig

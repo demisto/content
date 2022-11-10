@@ -47,19 +47,25 @@ script:
       name: search
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: When enabled, provides additional response data identifying who created and updated the list and when, and the network list’s deployment status in both STAGING and PRODUCTION environments. This data takes longer to provide.
+      description: When enabled, provides additional response data identifying who
+        created and updated the list and when, and the network list’s deployment status
+        in both STAGING and PRODUCTION environments. This data takes longer to provide.
       name: extended
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: If enabled, the response list includes all items. For large network lists, this may slow responses and yield large response objects. The default false value when listing more than one network list omits the network list’s elements and only provides higher-level metadata.
+      description: If enabled, the response list includes all items. For large network
+        lists, this may slow responses and yield large response objects. The default
+        false value when listing more than one network list omits the network list’s
+        elements and only provides higher-level metadata.
       name: include_elements
       predefined:
       - 'true'
       - 'false'
-    description: Returns a list of all network lists available for an authenticated user who belongs to a group.
+    description: Returns a list of all network lists available for an authenticated
+      user who belongs to a group.
     name: akamai-get-network-lists
     outputs:
     - contextPath: Akamai.NetworkLists.Lists.Name
@@ -190,7 +196,8 @@ script:
     description: Deletes the specified network list.
     name: akamai-delete-network-list
   - arguments:
-    - description: 'A comma-separated list of network list IDs to activate. For example: list (list1,list2).'
+    - description: 'A comma-separated list of network list IDs to activate. For example:
+        list (list1,list2).'
       isArray: true
       name: network_list_ids
       required: true
@@ -229,7 +236,8 @@ script:
     description: Removes elements from the specified network list.
     name: akamai-remove-element-from-network-list
   - arguments:
-    - description: 'A comma-separated list of network list IDs for which to get the activation status. For example: (support list - list1,list2).'
+    - description: 'A comma-separated list of network list IDs for which to get the
+        activation status. For example: (support list - list1,list2).'
       isArray: true
       name: network_list_ids
       required: true
@@ -412,7 +420,7 @@ script:
     - description: Property type.
       name: property_type
       required: true
-    - description: 'Static type - "CNAME" or "A".'
+    - description: Static type - "CNAME" or "A".
       name: static_type
     - description: Static server.
       name: static_server
@@ -536,7 +544,8 @@ script:
       required: true
       type: textArea
     - defaultValue: yes
-      description: Whether to continue execution if an existing record is found without creating a new record.
+      description: Whether to continue execution if an existing record is found without
+        creating a new record.
       name: check_existence_before_create
       required: true
     description: Clone a new PAPI property.
@@ -602,7 +611,8 @@ script:
       name: group_id
       required: true
       type: textArea
-    - description: Comma-separated list of options to enable. mapDetails enables extra mapping-related information.
+    - description: Comma-separated list of options to enable. mapDetails enables extra
+        mapping-related information.
       name: options
       type: textArea
     - description: URL of domain name.
@@ -627,7 +637,8 @@ script:
       name: cert_enrollment_id
       type: textArea
     - defaultValue: yes
-      description: Whether to continue execution if an existing record is found without creating a new record.
+      description: Whether to continue execution if an existing record is found without
+        creating a new record.
       name: check_existence_before_create
       required: true
     description: Add a PAPI edge hostname.
@@ -670,7 +681,8 @@ script:
       required: true
       type: textArea
     - defaultValue: yes
-      description: Whether to continue execution if an existing record is found without creating a new record.
+      description: Whether to continue execution if an existing record is found without
+        creating a new record.
       name: check_existence_before_create
       required: true
     description: Create a new PAPI CP code.
@@ -805,7 +817,8 @@ script:
     - description: Security policy ID prefix.
       name: policy_prefix
     - defaultValue: yes
-      description: Whether to continue execution if an existing record is found without creating a new record.
+      description: Whether to continue execution if an existing record is found without
+        creating a new record.
       name: check_existence_before_create
       required: true
     description: AppSec clone security policy.
@@ -912,7 +925,8 @@ script:
       name: retries
       required: true
       type: textArea
-    - description: Do not perform LatestVersion, Staging Version, Production Version consistency check.
+    - description: Do not perform LatestVersion, Staging Version, Production Version
+        consistency check.
       name: skip_consistency_check
       required: true
     description: AppSec get appsec config latest version.
@@ -1037,8 +1051,9 @@ script:
       name: change_path
       required: true
       type: textArea
-    description: Acknowledge the warning message for uploading the certs and trust chains of enrollments.
-  dockerimage: demisto/akamai:1.0.0.34769
+    description: Acknowledge the warning message for uploading the certs and trust
+      chains of enrollments.
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   runonce: false
   script: ''
   subtype: python3

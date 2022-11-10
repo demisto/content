@@ -54,7 +54,8 @@ configuration:
   name: mapper_out
   required: true
   type: 0
-description: Integrate with Envoy Identity Access Management services to execute CRUD operations to employee lifecycle processes.
+description: Integrate with Envoy Identity Access Management services to execute CRUD
+  operations to employee lifecycle processes.
 display: Envoy IAM
 name: Envoy IAM
 script:
@@ -69,7 +70,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: When set to true, after the command execution the status of the user in the 3rd-party integration will be active.
+      description: When set to true, after the command execution the status of the
+        user in the 3rd-party integration will be active.
       isArray: false
       name: allow-enable
       predefined:
@@ -83,7 +85,8 @@ script:
     name: iam-create-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the 3rd-party integration.
+      description: When true, indicates that the employee's status is active in the
+        3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -122,7 +125,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: When set to true, after the command execution the status of the user in the 3rd-party integration will be active.
+      description: When set to true, after the command execution the status of the
+        user in the 3rd-party integration will be active.
       isArray: false
       name: allow-enable
       predefined:
@@ -131,12 +135,14 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Updates an existing user with the data passed in the user-profile argument.
+    description: Updates an existing user with the data passed in the user-profile
+      argument.
     execution: true
     name: iam-update-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the 3rd-party integration.
+      description: When true, indicates that the employee's status is active in the
+        3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -178,7 +184,8 @@ script:
     name: iam-get-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the 3rd-party integration.
+      description: When true, indicates that the employee's status is active in the
+        3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -220,7 +227,8 @@ script:
     name: iam-disable-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the 3rd-party integration.
+      description: When true, indicates that the employee's status is active in the
+        3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -250,10 +258,11 @@ script:
       description: The employee's username in the app.
       type: String
   - deprecated: false
-    description: Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
+    description: Retrieves a User Profile schema, which holds all of the user fields
+      within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   isfetch: false
   longRunning: false
   longRunningPort: false

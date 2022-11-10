@@ -3,7 +3,7 @@ commonfields:
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
+    fromServerVersion: ''
 name: ParseHTMLIndicators
 script: ''
 type: python
@@ -26,11 +26,11 @@ args:
 - name: unescape_domain
   auto: PREDEFINED
   predefined:
-  - "False"
-  - "True"
+  - 'False'
+  - 'True'
   description: Whether to remove brackets [] from the domain regex extraction. Can
     result in higher false positives for file extensions.
-  defaultValue: "False"
+  defaultValue: 'False'
 outputs:
 - contextPath: http.parsedBlog.indicators
   description: The extracted indicators
@@ -39,7 +39,7 @@ outputs:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/bs4-tld:1.0.0.21999
+dockerimage: devdemisto/py3-master:8.1.0.37377
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:

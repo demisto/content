@@ -15,7 +15,9 @@ configuration:
   - Samples Feed
   required: true
   type: 16
-- additionalinfo: TIM customers that upgraded to version 6.2 or above, can have this value pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
+- additionalinfo: TIM customers that upgraded to version 6.2 or above, can have this
+    value pre-configured in their main account so no additional input is needed. To
+    use this feature, upgrade your license so it includes the license key.
   display: API Key
   name: api_key
   required: false
@@ -35,20 +37,22 @@ configuration:
   - global
   required: false
   type: 15
-- additionalinfo: JSON styled AutoFocus query, an example can be found in the description (?) section. Only necessary in case a Samples Feed is fetched.
+- additionalinfo: JSON styled AutoFocus query, an example can be found in the description
+    (?) section. Only necessary in case a Samples Feed is fetched.
   display: Samples Feed Query
   name: sample_query
   required: false
   type: 0
-- additionalinfo: Indicators from this integration instance will be marked with this reputation
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
   defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
   options:
-    - None
-    - Good
-    - Suspicious
-    - Bad
+  - None
+  - Good
+  - Suspicious
+  - Bad
   required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
@@ -64,7 +68,8 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -76,16 +81,16 @@ configuration:
   type: 15
 - defaultvalue: suddenDeath
   name: feedExpirationPolicy
-  display: ""
+  display: ''
   options:
-    - never
-    - interval
-    - indicatorType
-    - suddenDeath
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
   required: false
   type: 17
 - defaultvalue: '20160'
-  display: ""
+  display: ''
   name: feedExpirationInterval
   required: false
   type: 1
@@ -139,7 +144,7 @@ script:
     description: Gets the indicators from AutoFocus.
     execution: false
     name: autofocus-get-indicators
-  dockerimage: demisto/python3:3.10.8.36650
+  dockerimage: devdemisto/py3-master:8.1.0.37377
   feed: true
   isfetch: false
   longRunning: false

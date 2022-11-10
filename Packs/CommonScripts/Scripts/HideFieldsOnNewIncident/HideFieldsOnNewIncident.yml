@@ -8,7 +8,8 @@ type: python
 subtype: python3
 tags:
 - field-display
-comment: When you apply this script to an incident field, that incident field is hidden for new incidents, and it displays in edit mode.
+comment: When you apply this script to an incident field, that incident field is hidden
+  for new incidents, and it displays in edit mode.
 enabled: true
 args:
 - name: incident
@@ -17,6 +18,6 @@ args:
   description: Field definition object
 scripttarget: 0
 runonce: false
-dockerimage: demisto/python3:3.10.7.33922
+dockerimage: devdemisto/py3-master:8.1.0.37377
 tests:
 - No tests (auto formatted)
