@@ -31,16 +31,16 @@ def countUniqueLogs(table):
         commonTable.append(panic1)
     return commonTable
 
-def findLatestTimestamp(table,commonTable):
 
-
+def findLatestTimestamp(table, commonTable):
     for entry in commonTable:
         for log in reversed(table):
-            if entry['panicvalue'] == "{} {}".format(log['panic'],log['value']):
+            if entry['panicvalue'] == "{} {}".format(log['panic'], log['value']):
                 entry['latestpanictime'] = log['time']
                 break
 
     return commonTable
+
 
 DESCRIPTION = ['Panic logs were found, it typically means something went unexpectedly wrong']
 RESOLUTION = ['Please contact customer support']
@@ -57,7 +57,7 @@ lines = re.findall(
 
 table = formatToTableStructure(lines)
 commonTable = countUniqueLogs(table)
-findLatestTimestamp(table,commonTable)
+findLatestTimestamp(table, commonTable)
 demisto.executeCommand("setIncident", {"healthcheckpanics": commonTable})
 
 action_items = []

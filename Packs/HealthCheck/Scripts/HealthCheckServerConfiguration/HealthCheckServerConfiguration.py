@@ -84,8 +84,6 @@ def checkKeyValue(config):
             continue
 
 
-
-
 # v2 Update by JS (ver: 23/03/2021.1)
 
 
@@ -108,8 +106,6 @@ try:
     if AE:
         res.append({"category": "Configuration", "severity": "Medium",
                     "description": DESCRIPTION[4], "resolution": RESOLUTION[7]})
-
-
 
     results = CommandResults(
         readable_output="HealthCheckConfServer Done",
