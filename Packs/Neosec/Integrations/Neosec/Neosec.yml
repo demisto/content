@@ -88,8 +88,7 @@ configuration:
     defaultvalue: null
     type: 0
     additionalinfo: ""
-description: "[Enter a comprehensive, yet concise, description of what the
-  integration does, what use cases it is designed for, etc.]"
+description: "Neosec is an API security platform that applies behavioral analytics to identify vulnerabilities on endpoints and user malicious and suspicious activity."
 display: Neosec
 name: Neosec
 script:
