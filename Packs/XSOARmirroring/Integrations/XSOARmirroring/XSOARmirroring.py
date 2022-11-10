@@ -5,9 +5,10 @@ import requests
 import dateparser
 from datetime import timedelta
 from typing import Any, Dict, Tuple, List, Optional, Set
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
@@ -703,6 +704,8 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_ta
             old_incident = client.get_incident(incident_id=parsed_args.remote_incident_id)
             for changed_key in parsed_args.delta.keys():
                 old_incident[changed_key] = parsed_args.delta[changed_key]  # type: ignore
+                if changed_key in old_incident.get('CustomFields', {}).keys():
+                    old_incident['CustomFields'][changed_key] = parsed_args.delta[changed_key]
 
             parsed_args.data = old_incident
 

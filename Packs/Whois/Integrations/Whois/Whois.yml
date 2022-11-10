@@ -47,6 +47,14 @@ script:
     - name: recursive
       description: Whether to get the raw response from the whois servers recursively. Default value is True.
       defaultValue: true
+    - name: verbose
+      description: Whether to add the raw response as a dictionary to the context. Default value is False.
+      required: False
+      defaultValue: false 
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     deprecated: false
     description: Provides data enrichment for domains.
     execution: false
@@ -541,7 +549,7 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  dockerimage: demisto/ippysocks-py3:1.0.0.34106
+  dockerimage: demisto/ippysocks-py3:1.0.0.35881
   feed: false
   isfetch: false
   longRunning: false
