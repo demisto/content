@@ -1,7 +1,7 @@
 {
   "tenable_io_raw": {
     "xsiam_type": {
-      "type": "sting",
+      "type": "string",
       "is_array": false
     },
     "id": {
