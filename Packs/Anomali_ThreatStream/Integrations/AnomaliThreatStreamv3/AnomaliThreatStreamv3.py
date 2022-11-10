@@ -3,12 +3,13 @@ import emoji
 import demistomock as demisto
 from CommonServerPython import *
 import traceback
+import urllib3
 
 REPUTATION_COMMANDS = ['ip', 'domain', 'file', 'url', 'threatstream-email-reputation']
 
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
@@ -515,7 +516,7 @@ def get_ip_reputation(client: Client, score_calc: DBotScoreCalculator, ip, statu
         reliability=client.reliability,
     )
 
-    if threat_model_association:  # pragma: no cover
+    if threat_model_association:
         intelligence_relationships, outputs = get_intelligence(client,
                                                                indicator,
                                                                FeedIndicatorType.IP
@@ -563,21 +564,23 @@ def get_intelligence_information(client: Client, indicator, ioc_type, intelligen
 
     value = indicator.get('value')
     url = f"v1/{intelligence_type}/associated_with_intelligence/"
-    intelligences = client.http_request('GET', url, params={'value': value}).get('objects', None)
+    intelligences = client.http_request('GET', url, params={'value': value}).get('objects', [])
     relationships: List[EntityRelationship] = []
+    entity_b_type = INTELLIGENCE_TYPE_TO_ENTITY_TYPE[intelligence_type]
 
     for intelligence in intelligences:
-        intelligence_name = intelligence.get('name')
-        if intelligence_name:
-            intelligence_type = INTELLIGENCE_TYPE_TO_ENTITY_TYPE[intelligence_type]
+        entity_b_name = intelligence.get('name')
+
+        if entity_b_name:
             relationship = create_intelligence_relationship(
                 client,
                 indicator,
                 ioc_type,
-                intelligence_name,
-                intelligence_type)
+                entity_b_name,
+                entity_b_type)
 
-        relationships.append(relationship)
+            if relationship:
+                relationships.append(relationship)
 
     return relationships, intelligences
 
@@ -641,13 +644,13 @@ def get_domain_reputation(client: Client, score_calc: DBotScoreCalculator, domai
         score=score_calc.calculate_score(DBotScoreType.DOMAIN, indicator, threshold),
     )
 
-    if threat_model_association:  # pragma: no cover
+    if threat_model_association:
         intelligence_relationships, outputs = get_intelligence(client,
                                                                indicator,
                                                                FeedIndicatorType.Domain
                                                                )
         if intelligence_relationships:
-            relationships.append(intelligence_relationships)
+            relationships.extend(intelligence_relationships)
         threat_context.update(outputs)
         human_readable += create_human_readable(outputs)
 
@@ -729,7 +732,7 @@ def get_file_reputation(client: Client, score_calc: DBotScoreCalculator, file, s
         score=score_calc.calculate_score(DBotScoreType.FILE, indicator, threshold),
     )
 
-    if threat_model_association:  # pragma: no cover
+    if threat_model_association:
         intelligence_relationships, outputs = get_intelligence(client,
                                                                indicator,
                                                                FeedIndicatorType.File
@@ -810,7 +813,7 @@ def get_url_reputation(client: Client, score_calc: DBotScoreCalculator, url, sta
         score=score_calc.calculate_score(DBotScoreType.URL, indicator, threshold),
     )
 
-    if threat_model_association:  # pragma: no cover
+    if threat_model_association:
         intelligence_relationships, outputs = get_intelligence(client,
                                                                indicator,
                                                                FeedIndicatorType.URL

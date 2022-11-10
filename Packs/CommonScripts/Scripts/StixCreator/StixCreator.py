@@ -58,6 +58,16 @@ def hash_type(value: str) -> str:  # pragma: no cover
     return ''
 
 
+def guess_indicator_type(type_: str, val: str) -> str:
+    # try to guess by key
+    for sco in SCOs:
+        if sco in type_:
+            return sco
+
+    # try to auto_detect by value
+    return (auto_detect_indicator_type(val) or type_).lower()
+
+
 def main():
 
     user_args = demisto.args().get('indicators', 'Unknown')
@@ -111,6 +121,8 @@ def main():
             indicator_type = demisto_indicator_type.lower().replace("-", "")
             if indicator_type == 'file':
                 indicator_type = hash_type(value)
+            if indicator_type not in SCOs and indicator_type not in SDOs:
+                indicator_type = guess_indicator_type(indicator_type, value)
             indicator = Indicator(pattern=f"[{SCOs[indicator_type]} = '{value}']",
                                   pattern_type='stix',
                                   **kwargs)

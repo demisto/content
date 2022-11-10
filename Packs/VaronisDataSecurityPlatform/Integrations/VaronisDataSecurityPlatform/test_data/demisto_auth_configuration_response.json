@@ -1,0 +1,10 @@
+{
+    "authProvider": 0,
+    "oidcClientID": "",
+    "authEndpoint": "https://test.com/DatAdvantage/api/authentication/win",
+    "signinAsEndpoint": "https://test.com/DatAdvantage/api/authentication/signinas",
+    "externalAuthorizer": "",
+    "limitedAuthEndpoint": "https://test.com/DatAdvantage/api/authentication/limited",
+    "oidcRedirectEndpoint": "https://test.com/DatAdvantage/api/authentication/win/request",
+    "silentOidcRedirectEndpoint": "https://test.com/DatAdvantage/api/authentication/win/request/silent"
+}

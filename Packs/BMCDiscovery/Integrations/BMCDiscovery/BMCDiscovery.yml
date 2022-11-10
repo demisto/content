@@ -303,7 +303,7 @@ script:
       type: Unknown
     description: Get detailed scan (run) results
 
-  dockerimage: demisto/python3:3.10.4.28442
+  dockerimage: demisto/python3:3.10.5.31928
   feed: false
   isfetch: false
   longRunning: false

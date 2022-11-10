@@ -1,8 +1,8 @@
 {
-    "name": "Demisto REST API",
+    "name": "Cortex REST API",
     "description": "Use Demisto REST APIs",
     "support": "xsoar",
-    "currentVersion": "1.3.0",
+    "currentVersion": "1.3.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,7 +12,10 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Demisto REST API",
+        "Core REST API"
+    ],
     "dependencies": {},
     "marketplaces": [
         "xsoar",

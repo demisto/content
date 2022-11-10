@@ -17,6 +17,11 @@ def load_test_data_txt(file_path):
         return f.read()
 
 
+def load_test_data(json_path):
+    with open(json_path) as f:
+        return json.load(f)
+
+
 def test_error_message(requests_mock):
     """
     Testing the error message generated
@@ -140,7 +145,7 @@ def test_epo_command_command(requests_mock):
 
     result = epo_command_command(client, args)
 
-    epo_command_command_result = load_test_data_txt('test_data/epo_command_command_results.txt')
+    epo_command_command_result = load_test_data('test_data/epo_command_command_results.json')
 
     assert result.outputs is None
     assert result.raw_response == epo_command_command_result

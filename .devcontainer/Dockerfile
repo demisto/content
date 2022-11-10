@@ -1,73 +1,43 @@
-FROM python:3.10.6-bullseye
+FROM python:3.10-slim-bullseye
 
-ADD create_certs.sh .
+ADD createCerts.sh .
 RUN apt-get update && apt-get install dos2unix -y \
-    && dos2unix /create_certs.sh \
-    && chmod +x /create_certs.sh \ 
-    && /create_certs.sh /usr/local/share/ca-certificates/certs.crt \
-    && update-ca-certificates
+    && dos2unix /createCerts.sh \
+    && chmod +x /createCerts.sh \ 
+    && /createCerts.sh /usr/local/share/ca-certificates/certs.crt \
+    && update-ca-certificates \
+    && apt-get install python2 -y
 
+ENV USERNAME demisto
+ENV HOME /home/$USERNAME
 ENV NODE_EXTRA_CA_CERTS /usr/local/share/ca-certificates/certs.crt
-ENV PATH /root/.local/bin:$PATH
+ENV PATH $PATH:$HOME/.local/bin:/root/.local/bin:/usr/local/share/nvm/current/bin
 
-# install zsh first
-RUN apt-get update && apt-get install -y zsh wget \
-    && sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.2/zsh-in-docker.sh)" -- \
-    -p https://github.com/zsh-users/zsh-autosuggestions \
-    -p https://github.com/zsh-users/zsh-completions \
-    -p https://github.com/zsh-users/zsh-syntax-highlighting
+# This is a workaround for VSCode devcontainer features in self signed certificate
 
-ADD .p10k.zsh /root/.p10k.zsh
-ADD .zshrc /root/.zshrc
+ADD https://raw.githubusercontent.com/devcontainers/features/main/src/common-utils/install.sh /install-common.sh
+ADD https://raw.githubusercontent.com/devcontainers/features/main/src/git/install.sh /install-git.sh
+ADD https://raw.githubusercontent.com/devcontainers/features/main/src/docker-in-docker/install.sh /install-dind.sh
+ADD https://raw.githubusercontent.com/devcontainers/features/main/src/node/install.sh /install-node.sh
 
-SHELL [ "/bin/zsh", "-c" ]
+RUN UID="1000" GID="1000" bash install-common.sh 
+RUN VERSION="os-provided" bash install-git.sh
+RUN VERSION="latest" bash install-dind.sh
+RUN VERSION="lts" bash install-node.sh
 
-RUN apt-get update && apt-get -y --no-install-recommends upgrade && apt-get install \
-    git \ 
-    gcc \
-    nodejs \
-    npm \
-    ca-certificates \
-    curl \
-    gnupg \
-    lsb-release \
-    make \
-    build-essential \
-    python3-dev \
-    python2-dev \
-    python-dev \
-    libffi-dev \
-    libssl-dev \
-    software-properties-common \
-    apt-transport-https \
-    dpkg-dev \
-    libbz2-dev \
-    libc6-dev \
-    libdb-dev \
-    libgdbm-dev \
-    libncursesw5-dev \
-    libreadline-dev \
-    libsqlite3-dev \
-    tk-dev \
-    xz-utils \
-    zlib1g-dev \
-    libpq-dev \
-    libxml2-dev \
-    libxslt1-dev \
-    libldap2-dev \ 
-    libsasl2-dev \
-    -y \
-    # poetry, pyenv tools installation
-    && curl -fsSL https://install.python-poetry.org | python3 - \
-    && curl -fSSL https://pyenv.run | bash \
-    && pip install pipx \
-    && pipx ensurepath \
-    && source ~/.zshrc \
-    && python --version \
-    && poetry --version \
-    && pyenv --version \
-    && source ~/.zshrc \
-    && npm install -g jsdoc-to-markdown@5.0.3 \
-    # install poetry plugin for oh my zsh 
-    && poetry completions zsh > $HOME/.oh-my-zsh/custom/plugins/poetry \
-    && apt-get autoclean && apt-get clean
+# install poetry, configure certificate for git and tools for oh my zsh
+RUN curl -sSL https://install.python-poetry.org | python3 - \
+    && python -m pip install --user pipx \
+    && python -m pipx ensurepath \
+    && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $HOME/.zsh/zsh-syntax-highlighting \
+    && echo "source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> $HOME/.zshrc \
+    && git clone https://github.com/zsh-users/zsh-autosuggestions $HOME/.zsh/zsh-autosuggestions \
+    && echo "source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh" >> $HOME/.zshrc 
+
+VOLUME [ "/var/lib/docker" ]
+
+# Setting the ENTRYPOINT to docker-init.sh will start up the Docker Engine 
+# inside the container "overrideCommand": false is set in devcontainer.json. 
+# The script will also execute CMD if you need to alter startup behaviors.
+ENTRYPOINT [ "/usr/local/share/docker-init.sh" ]
+CMD [ "sleep", "infinity" ]

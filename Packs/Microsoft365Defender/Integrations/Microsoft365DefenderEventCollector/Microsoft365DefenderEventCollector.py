@@ -1,4 +1,3 @@
-
 # pylint: disable=no-name-in-module
 # pylint: disable=no-self-argument
 
@@ -15,9 +14,9 @@ from requests.auth import HTTPBasicAuth
 import requests
 
 from MicrosoftApiModule import *
+
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
-
 
 ''' CONSTANTS '''
 MAX_ALERTS_PAGE_SIZE = 1000
@@ -25,8 +24,11 @@ ALERT_CREATION_TIME = 'alertCreationTime'
 DEFNDER_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 SECURITY_SCOPE = 'https://securitycenter.onmicrosoft.com/windowsatpservice/.default'
 AUTH_ERROR_MSG = 'Authorization Error: make sure tenant id, client id and client secret is correctly set'
+VENDOR = 'Microsoft 365'
+PRODUCT = 'Defender'
 
 ''' HELPER CLASSES '''
+
 
 # COPY OF SiemApiModule
 
@@ -99,10 +101,10 @@ class IntegrationOptions(BaseModel):
 
 class IntegrationEventsClient(ABC):
     def __init__(
-        self,
-        request: IntegrationHTTPRequest,
-        options: IntegrationOptions,
-        session=requests.Session(),
+            self,
+            request: IntegrationHTTPRequest,
+            options: IntegrationOptions,
+            session=requests.Session(),
     ):
         self.request = request
         self.options = options
@@ -136,7 +138,7 @@ class IntegrationEventsClient(ABC):
             raise DemistoException(msg) from exc
 
     def _skip_cert_verification(
-        self, skip_cert_verification: Callable = skip_cert_verification
+            self, skip_cert_verification: Callable = skip_cert_verification
     ):
         if not self.request.verify:
             skip_cert_verification()
@@ -150,7 +152,7 @@ class IntegrationEventsClient(ABC):
 
 class IntegrationGetEvents(ABC):
     def __init__(
-        self, client: IntegrationEventsClient, options: IntegrationOptions
+            self, client: IntegrationEventsClient, options: IntegrationOptions
     ) -> None:
         self.client = client
         self.options = options
@@ -178,6 +180,7 @@ class IntegrationGetEvents(ABC):
     def _iter_events(self):
         """Create iterators with Yield"""
         pass
+
 
 # END COPY OF SiemApiModule
 
@@ -235,7 +238,6 @@ class DefenderHTTPRequest(IntegrationHTTPRequest):
 
 
 class DefenderClient(IntegrationEventsClient):
-
     authenticator: DefenderAuthenticator
     request: DefenderHTTPRequest
     options: DefenderIntegrationOptions
@@ -308,7 +310,6 @@ class DefenderGetEvents(IntegrationGetEvents):
 
 ''' HELPER FUNCTIONS '''
 
-
 ''' COMMAND FUNCTIONS '''
 
 
@@ -340,7 +341,6 @@ def test_module(get_events: DefenderGetEvents) -> str:
 
 
 def main(command: str, demisto_params: dict):
-
     demisto.debug(f'Command being called is {command}')
     try:
 
@@ -359,18 +359,16 @@ def main(command: str, demisto_params: dict):
             if command == 'microsoft-365-defender-get-events':
                 demisto.debug(f'{command=}, publishing events to the context')
                 human_readable = tableToMarkdown(name="Alerts:", t=events)
-                return_results(CommandResults('Microsoft365Defender.alerts', 'id', events, readable_output=human_readable))
+                return_results(
+                    CommandResults('Microsoft365Defender.alerts', 'id', events, readable_output=human_readable))
             elif events:
                 demisto.setLastRun(get_events.get_last_run(events))
                 demisto.debug(f'Last run set to {demisto.getLastRun()}')
 
             if command == 'fetch-events' or argToBoolean(demisto_params.get('push_to_xsiam', False)):
                 # publishing events to XSIAM
-                vendor = demisto_params.get('vendor')
-                product = demisto_params.get('product')
-
                 demisto.debug(f'{command=}, publishing events to XSIAM')
-                send_events_to_xsiam(events, vendor=vendor, product=product)
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
     # Log exceptions and return errors
     except Exception as e:

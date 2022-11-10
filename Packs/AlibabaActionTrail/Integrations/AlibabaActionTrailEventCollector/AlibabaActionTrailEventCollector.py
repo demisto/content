@@ -10,7 +10,8 @@ import base64
 import urllib3
 
 API_VERSION = '0.6.0'
-
+VENDOR = "alibaba"
+PRODUCT = "action-trail"
 urllib3.disable_warnings()
 
 
@@ -178,7 +179,7 @@ def main():
     demisto_params['headers'] = headers
 
     request = IntegrationHTTPRequest(**demisto_params)
-    request.params = AlibabaParams.parse_obj(params)
+    request.params = AlibabaParams.parse_obj(params)  # type: ignore
 
     options = IntegrationOptions.parse_obj(demisto_params)
 
@@ -197,8 +198,9 @@ def main():
             events = get_events.run()
 
             if command == 'fetch-events':
-                send_events_to_xsiam(events, 'alibaba', demisto_params.get('product'))
-                demisto.setLastRun(AlibabaGetEvents.get_last_run(events))
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                if events:
+                    demisto.setLastRun(AlibabaGetEvents.get_last_run(events))
 
             elif command == 'alibaba-get-events':
                 command_results = CommandResults(
@@ -211,7 +213,7 @@ def main():
                 return_results(command_results)
 
                 if should_push_events:
-                    send_events_to_xsiam(events, 'alibaba', demisto_params.get('product'))
+                    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
     except Exception as e:
         return_error(str(e))

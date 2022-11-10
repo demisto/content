@@ -10,3 +10,10 @@ ignore=IM111
 
 [file:TaegisXDR_image.png]
 ignore=IM111
+
+[known_words]
+CQL
+Taegis
+assignee
+taegis-xdr
+namespace

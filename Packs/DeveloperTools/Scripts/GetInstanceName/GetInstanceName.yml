@@ -5,6 +5,12 @@ args:
   name: integration_name
   required: true
   secret: false
+- auto: PREDEFINED
+  description: Whether to return a full list of instance names related to the given integation name.
+  name: return_all_instances
+  predefined:
+  - 'false'
+  - 'true'
 comment: Given an integration name, returns the instance name.
 commonfields:
   id: GetInstanceName
@@ -25,7 +31,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.4.30607
+dockerimage: demisto/python3:3.10.5.31928
 fromversion: 6.0.0
 tests:
 - No test

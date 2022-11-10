@@ -22,6 +22,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 - Detonate URL - ThreatGrid
 - Detonate URL - Group-IB TDS Polygon
 - Detonate URL - Hybrid Analysis
+- Detonate URL - SecneurX Analysis
 
 ### Integrations
 
@@ -162,6 +163,11 @@ This playbook does not use any commands.
 | URL.Malicious.Vendor                    | The vendor that decides the URL is malicious.                           | String   |
 | URL.Malicious.Description               | The reason the vendor decides the URL is malicious.                     | String   |
 | ANYRUN.Task.Status                      | The task analysis status.                                               | String   |
+| SecneurXAnalysis.Report.SHA256          | SHA256 value of the analyzed sample                                     | String   |
+| SecneurXAnalysis.Report.Verdict         | Summary result of the analyzed sample                                   | String   |
+| SecneurXAnalysis.Report.Tags            | More details of the analyzed sample                                     | String   |
+| SecneurXAnalysis.Report.IOC             | List of IOC's observed in the analyzed sample                           | String   |
+| SecneurXAnalysis.Report.Status          | Analysis queued sample state                                            | String   |
 
 ## Playbook Image
 

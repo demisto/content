@@ -1,0 +1,228 @@
+{
+    "meta": {
+        "status": 200
+    },
+    "data": [
+        {
+            "recipientInfo": {
+                "messageInfo": {
+                    "fromHeader": "test@gmail.com",
+                    "fromEnvelope": "test@gmail.com",
+                    "to": [
+                        "test@test.com"
+                    ],
+                    "cc": [],
+                    "subject": "Demand Ken Lay Donate Proceeds from Enron Stock Sales",
+                    "sent": "2022-07-18T13:25:21+0000",
+                    "processed": "2022-07-18T13:25:21+0000",
+                    "transmissionInfo": "test"
+                    },
+                "recipientMetaInfo": {
+                    "receiptEvent": "Email Received - SPF check failed",
+                    "spamEvent": "na",
+                    "messageExpiresIn": 7,
+                    "processingServer": "test",
+                    "transmissionSize": 5211,
+                    "binaryEmailSize": 5271,
+                    "remoteIp": "1.2.3.4",
+                    "remoteHost": "test",
+                    "remoteServerGreeting": "test",
+                    "receiptAcknowledgement": "testK",
+                    "transmissionStart": "2022-07-18T13:25:19+0000",
+                    "transmissionEnd": "2022-07-18T13:25:22+0000",
+                    "encryptionInfo": "TLS",
+                    "components": [
+                        {
+                            "type": "Email Transmission File",
+                            "name": "transmission.eml",
+                            "extension": "eml",
+                            "mimeType": "message/rfc822-stubbed",
+                            "size": 1435,
+                            "hash": "123"
+                        },
+                        {
+                            "type": "Email Primary Body HTML",
+                            "name": "body.htm",
+                            "extension": "htm",
+                            "mimeType": "text/html",
+                            "size": 1918,
+                            "hash": "f6121296fe2f"
+                        },
+                        {
+                            "type": "Email Primary Body Plain Text",
+                            "name": "body.txt",
+                            "extension": "htm",
+                            "mimeType": "text/html",
+                            "size": 1918,
+                            "hash": "f123f"
+                        }
+                    ]
+                }
+            },
+            "deliveredMessage": {
+                "test@test.com": {
+                    "messageInfo": {
+                        "fromHeader": "test@gmail.com",
+                        "fromEnvelope": "test@gmail.com",
+                        "to": [
+                            "test@test.com"
+                        ],
+                        "cc": [],
+                        "subject": "Dek Sales",
+                        "sent": "2022-07-18T13:25:21+0000",
+                        "processed": "2022-07-18T13:25:21+0000",
+                        "transmissionInfo": "test",
+                        "route": "inbound"
+                    },
+                    "policyInfo": [
+                        {
+                            "policyType": "Auto Allow",
+                            "policyName": "Apply Auto Allow",
+                            "inherited": false
+                        },
+                        {
+                            "policyType": "Secure Receipt",
+                            "policyName": "Opportunistic TLS",
+                            "inherited": false
+                        },
+                        {
+                            "policyType": "AV Scan On Release",
+                            "policyName": "Enable AV scan on release",
+                            "inherited": false
+                        },
+                        {
+                            "policyType": "Secure Delivery",
+                            "policyName": "Opportunistic TLS",
+                            "inherited": false
+                        },
+                        {
+                            "policyType": "Suspected Malware",
+                            "policyName": "Default Suspected Malware Definition",
+                            "inherited": false
+                        },
+                        {
+                            "policyType": "URL Protection",
+                            "policyName": "Default Inbound URL Protect Definition",
+                            "inherited": false
+                        },
+                        {
+                            "policyType": "Attachment Protection",
+                            "policyName": "Default Inbound Attachment Protect Definition",
+                            "inherited": false
+                        },
+                        {
+                            "policyType": "DNS Authentication - Inbound Checks",
+                            "policyName": "Default DNS Authentication Inbound Definition",
+                            "inherited": false
+                        },
+                        {
+                            "policyType": "Attachment Management",
+                            "policyName": "Default Attachment Management Definition - Block Dangerous File Types",
+                            "inherited": false
+                        },
+                        {
+                            "policyType": "Spam Scanning",
+                            "policyName": "Relaxed Spam Detection",
+                            "inherited": false
+                        },
+                        {
+                            "policyType": "Impersonation Protection",
+                            "policyName": "Default Impersonation Protect Definition",
+                            "inherited": false
+                        },
+                        {
+                            "policyType": "Delivery Routing",
+                            "policyName": "Accept and drop messages",
+                            "inherited": false
+                        }
+                    ],
+                    "deliveryMetaInfo": {
+                        "deliveryEvent": "Email Delivered via Routing Rule",
+                        "emailAddress": "test@test.com",
+                        "messageExpiresIn": 7,
+                        "processingServer": "testn",
+                        "transmissionSize": 5754,
+                        "remoteIp": "1.2.3.5",
+                        "remoteHost": "testt",
+                        "remoteServerGreeting": "test",
+                        "receiptAcknowledgement": "250 OK: message queued",
+                        "transmissionStart": "2022-07-18T13:25:24+0000",
+                        "transmissionEnd": "2022-07-18T13:25:35+0000",
+                        "encryptionInfo": "",
+                        "components": [
+                            {
+                                "type": "Email Transmission File",
+                                "name": "transmission.eml",
+                                "extension": "eml",
+                                "mimeType": "message/rfc822-stubbed",
+                                "size": 1861,
+                                "hash": "1234"
+                            },
+                            {
+                                "type": "Email Primary Body HTML",
+                                "name": "body.htm",
+                                "extension": "htm",
+                                "mimeType": "text/html",
+                                "size": 2013,
+                                "hash": "1234"
+                            },
+                            {
+                                "type": "Email Primary Body Plain Text",
+                                "name": "body.txt",
+                                "extension": "htm",
+                                "mimeType": "text/html",
+                                "size": 1940,
+                                "hash": "1234"
+                            }
+                        ]
+                    }
+                }
+            },
+            "retentionInfo": {
+                "currentPurgeDate": "2022-08-17T13:25:21+0000",
+                "purgeBasedOn": "original",
+                "originalPurgeDate": "2022-08-17T13:25:21+0000",
+                "retentionAdjustmentDays": -1,
+                "litigationHoldInfo": [],
+                "fbrStamps": [],
+                "smartTags": [],
+                "fbrExpireCheck": [],
+                "audits": []
+            },
+            "status": "archived",
+            "spamInfo": {
+                "spamScore": 2,
+                "detectionLevel": "relaxed",
+                "spamProcessingDetail": {
+                    "rbl": {
+                        "allow": true,
+                        "info": ""
+                    },
+                    "greyEmail": true,
+                    "spf": {
+                        "allow": true,
+                        "info": "fail"
+                    },
+                    "dkim": {
+                        "allow": true,
+                        "info": "unknown"
+                    },
+                    "dmarc": {
+                        "allow": true,
+                        "info": "unknown"
+                    },
+                    "permittedSender": {
+                        "allow": true,
+                        "info": "none"
+                    },
+                    "managedSender": {
+                        "allow": true,
+                        "info": "unknown"
+                    }
+                }
+            },
+            "id": "1234test"
+        }
+    ],
+    "fail": []
+}

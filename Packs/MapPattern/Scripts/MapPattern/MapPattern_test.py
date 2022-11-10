@@ -78,6 +78,7 @@ def test_main(mocker):
                 'compare_fields': t['compare_fields'],
                 'wildcards': t['wildcards'],
                 'mappings': t['mappings'],
+                'default_value': t.get('default_value'),
             })
             mocker.patch.object(demisto, 'results')
             main()

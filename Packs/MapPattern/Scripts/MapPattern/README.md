@@ -41,6 +41,7 @@ When unmatched or the input value is structured (dict or list), it will simply r
 | flags | The comma separated flags for pattern matching in regex. `dotall` (s), `multiline` (m), `ignorecase` (i) and `unicode` (u) are supported. This will apply to all the algorithms. |
 | compare_fields | Set to true if you want pattern matching for each field, otherwise false. |
 | wildcards | The list of the special patterns which match to any values regardless of algorithm. |
+| default_value | The value to return when all the patterns are not satisfied. |
 
 ## Outputs
 ---

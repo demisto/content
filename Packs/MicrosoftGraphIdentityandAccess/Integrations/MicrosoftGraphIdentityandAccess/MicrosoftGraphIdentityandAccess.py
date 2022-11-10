@@ -212,7 +212,7 @@ class Client:  # pragma: no cover
         if odata:
             odata_query += odata
         if odata_filter:
-            odata_query += f'filter={odata_filter}'
+            odata_query += f'$filter={odata_filter}'
         return self.ms_client.http_request(
             'GET', f'v1.0/identityProtection/riskDetections{odata_query}')['value']
 

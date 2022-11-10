@@ -4,6 +4,9 @@ import duo_client
 from pydantic import BaseModel  # pylint: disable=E0611
 from CommonServerPython import *
 
+VENDOR = "duo"
+PRODUCT = "duo"
+
 
 class LogType(str, Enum):
     """
@@ -188,7 +191,7 @@ def main():  # pragma: no cover
                 demisto.setLastRun(get_events.get_last_run())
                 demisto_params['push_events'] = True
             if demisto_params.get('push_events'):
-                send_events_to_xsiam(events, demisto_params.get('vendor', 'duo'), demisto_params.get('product', 'duo'))
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 

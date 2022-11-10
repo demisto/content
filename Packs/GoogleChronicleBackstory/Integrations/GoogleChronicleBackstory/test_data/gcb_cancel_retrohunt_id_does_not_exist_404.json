@@ -1,0 +1,7 @@
+{
+    "error": {
+        "code": 404,
+        "message": "generic::not_found: retrohunt with ID oh_bd93f3a6-e832-48df-a343-59dd7231273b does not belong to rule ID ru_f04b9ef9-bd49-4431-ae07-eb77bd3d00c7. Provide the correct rule ID",
+        "status": "NOT_FOUND"
+    }
+}
