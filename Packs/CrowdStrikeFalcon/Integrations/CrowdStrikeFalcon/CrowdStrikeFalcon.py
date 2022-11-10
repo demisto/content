@@ -1979,11 +1979,13 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
 
 
 def get_fetch_times_and_offset(incident_type):
+    look_back = int(demisto.params().get('look_back', 0))
     last_run = demisto.getLastRun()
     last_fetch_time = last_run.get(f'first_behavior_{incident_type}_time')
     offset = last_run.get(f'{incident_type}_offset', 0)
     if not last_fetch_time:
         last_fetch_time, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
+        last_fetch_time -= timedelta(minutes=look_back)
     prev_fetch = last_fetch_time
     last_fetch_timestamp = int(parse(last_fetch_time).timestamp() * 1000)
     return last_fetch_time, offset, prev_fetch, last_fetch_timestamp
@@ -1994,11 +1996,8 @@ def fetch_incidents():
     current_fetch_info = demisto.getLastRun()
     fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections')
     look_back = int(demisto.params().get('look_back', 0))
-    fetch_time = demisto.params().get('fetch_time')
     fetch_limit = INCIDENTS_PER_FETCH * 2  # Limit is limit for detections and limit for incidents
 
-    start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info, first_fetch=fetch_time,
-                                                                look_back=look_back)
     demisto.debug("CrowdstrikeFalconMsg: Starting fetch incidents")
     if 'Detections' in fetch_incidents_or_detections:
         incident_type = 'detection'
@@ -2092,16 +2091,16 @@ def fetch_incidents():
                 current_fetch_info['first_behavior_incident_time'] = last_fetch_time
                 current_fetch_info['incident_offset'] = 0
                 current_fetch_info['last_fetched_incident'] = new_last_incident_fetched
-                
-    demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch incidents. Fetched {len(incidents)}")
 
     incidents = filter_incidents_by_duplicates_and_limit(incidents_res=incidents, last_run=current_fetch_info,
                                                          fetch_limit=fetch_limit, id_field='incident_id')
-    last_run = update_last_run_object(last_run=current_fetch_info, incidents=incidents, fetch_limit=fetch_limit,
-                                      start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time, look_back=look_back,
-                                      created_time_field='created', id_field='incident_id')
+    demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch incidents. Fetched {len(incidents)}ץ")
 
-    current_fetch_info.update(last_run)
+    found_incidents = get_found_incident_ids(last_run, incidents, look_back, id_field='incident_id')
+
+    if found_incidents:
+        current_fetch_info.update({'found_incident_ids': found_incidents})
+
     demisto.setLastRun(current_fetch_info)
     return incidents
 
