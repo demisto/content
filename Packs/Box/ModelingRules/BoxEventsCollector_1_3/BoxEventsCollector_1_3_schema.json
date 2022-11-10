@@ -23,10 +23,6 @@
     "ip_address": {
       "type": "string",
       "is_array": false
-    },
-    "created_at": {
-      "type": "datetime",
-      "is_array": false
     }
   }
 }
