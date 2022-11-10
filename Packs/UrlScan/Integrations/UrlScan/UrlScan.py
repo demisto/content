@@ -247,6 +247,9 @@ def urlscan_submit_url(client, url):
         if demisto.args().get('public') == 'public':
             submission_dict['visibility'] = 'public'
     elif demisto.params().get('is_public') is True:
+        # this parameter is now hidden and it is default value is false.
+        # Hence, we do not expect to be entering this code block,
+        # and it is merely here for Backward Compatibility reasons.
         submission_dict['visibility'] = 'public'
 
     submission_dict['url'] = url
@@ -774,7 +777,9 @@ def main():
     params = demisto.params()
 
     api_key = params.get('apikey') or (params.get('creds_apikey') or {}).get('password', '')
-    scan_visibility = params.get('scan_visibility')
+    # to safeguard the visibility of the scan,
+    # if the customer did not choose a visibility, we will set it to private by default.
+    scan_visibility = params.get('scan_visibility', 'private')
     threshold = int(params.get('url_threshold', '1'))
     use_ssl = not params.get('insecure', False)
     reliability = params.get('integrationReliability')
