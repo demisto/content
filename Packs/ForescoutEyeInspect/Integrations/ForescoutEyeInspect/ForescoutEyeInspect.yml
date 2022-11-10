@@ -40,7 +40,6 @@ configuration:
   required: false
   type: 0
   section: Collect
-  advanced: true
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, like 12 hours, 7 days).
   hidden: false

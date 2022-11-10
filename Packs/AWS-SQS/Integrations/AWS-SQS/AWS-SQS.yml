@@ -60,7 +60,7 @@ configuration:
   defaultvalue: ''
   required: false
   type: 0
-  section: Collect
+  section: Connect
   advanced: true
 - display: Retries
   name: retries

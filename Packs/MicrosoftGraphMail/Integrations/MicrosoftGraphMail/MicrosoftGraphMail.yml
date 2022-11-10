@@ -119,18 +119,21 @@ configuration:
   required: false
   type: 4
   section: Connect
+  advanced: true
 - display: ID or Client ID - see Detailed Instructions (?) (Deprecated)
   hidden: true
   name: auth_id
   required: false
   type: 4
   section: Connect
+  advanced: true
 - display: Token or Tenant ID - see Detailed Instructions (?) (Deprecated)
   hidden: true
   name: tenant_id
   required: false
   type: 4
   section: Connect
+  advanced: true
 - additionalinfo: Whether to fetch incidents with the entire email body, or just an email body preview, mark if the full email body is required.
   defaultvalue: 'false'
   display: Display the entire email body
@@ -145,6 +148,7 @@ configuration:
   required: false
   type: 0
   section: Collect
+  advanced: true
 description: Microsoft Graph lets your app get authorized access to a user's Outlook mail data in a personal or organization account.
 display: O365 Outlook Mail (Using Graph API)
 fromversion: 5.0.0

@@ -39,12 +39,12 @@ configuration:
   required: false
   type: 0
   section: Collect
-  advanced: true
 - display: Fetch query
   name: fetch_filter_expression
   required: false
   type: 0
   section: Collect
+  advanced: true
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   hidden: false
