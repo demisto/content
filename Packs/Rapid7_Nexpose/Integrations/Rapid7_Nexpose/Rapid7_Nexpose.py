@@ -2818,14 +2818,13 @@ def create_scan_report_command(client: Client, scan_id: str, template_id: Option
     )
 
 
-def create_scan_schedule_command(client: Client, site: Site, repeat_behaviour: str,
-                                 start_date: str, excluded_asset_groups: Optional[str] = None,
-                                 excluded_targets: Optional[str] = None, included_asset_groups: Optional[str] = None,
-                                 included_targets: Optional[str] = None, duration_days: Optional[str] = None,
-                                 duration_hours: Optional[str] = None, duration_minutes: Optional[str] = None,
-                                 enabled: Optional[str] = None, frequency: Optional[str] = None,
-                                 interval: Optional[str] = None, scan_name: Optional[str] = None,
-                                 date_of_month: Optional[int] = None,
+def create_scan_schedule_command(client: Client, site: Site, repeat_behaviour: str,  start_date: str,
+                                 excluded_asset_groups: Optional[str] = None, excluded_targets: Optional[str] = None,
+                                 included_asset_groups: Optional[str] = None, included_targets: Optional[str] = None,
+                                 duration_days: Optional[str] = None, duration_hours: Optional[str] = None,
+                                 duration_minutes: Optional[str] = None, enabled: Optional[str] = None,
+                                 frequency: Optional[str] = None, interval: Optional[str] = None,
+                                 scan_name: Optional[str] = None, date_of_month: Optional[int] = None,
                                  scan_template_id: Optional[str] = None) -> CommandResults:
     """
     Create a new site scan schedule.
@@ -5181,18 +5180,20 @@ def update_vulnerability_exception_expiration_command(client: Client, vulnerabil
 
 
 def update_vulnerability_exception_status_command(client: Client, vulnerability_exception_id: str,
-                                                  status: VulnerabilityExceptionStatus) -> CommandResults:
+                                                  status: str) -> CommandResults:
     """
     Update the status of a vulnerability exception.
 
     Args:
         client (Client): Client to use for API requests.
         vulnerability_exception_id (str): ID of the vulnerability exception to update.
-        status (VulnerabilityExceptionStatus): Status to set for the vulnerability exception.
+        status (str): Status to set for the vulnerability exception.
     """
+    status_enum = VulnerabilityExceptionStatus[status]
+
     response = client.update_vulnerability_exception_status(
         vulnerability_exception_id=vulnerability_exception_id,
-        status=status,
+        status=status_enum,
     )
 
     return CommandResults(
@@ -5670,7 +5671,7 @@ def main():
             results = update_vulnerability_exception_status_command(
                 client=client,
                 vulnerability_exception_id=args["id"],
-                status=VulnerabilityExceptionStatus[args["status"]],
+                status=args["status"],
             )
         elif command == "nexpose-search-assets":
             results = search_assets_command(
