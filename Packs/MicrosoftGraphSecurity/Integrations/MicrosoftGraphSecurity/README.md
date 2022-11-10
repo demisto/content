@@ -28,7 +28,7 @@ For more details about the authentication used in this integration, see [Microso
     | Use a self-deployed Azure application |  | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
-    | First fetch time range | '&lt;number&gt;' '&lt;time unit&gt;', for example 1 hour, 30 minutes | False |
+    | First fetch time range | &lt;number&gt; &lt;time unit&gt;, for example 1 hour, 30 minutes | False |
     | How many incidents to fetch each time |  | False |
     | Fetch incidents of the given providers only. | Multiple providers can be inserted separated by a comma, for example "\{first_provider\},\{second_provider\}". If empty, incidents of all providers will be fetched. | False |
     | Fetched incidents filter | Use this field to filter fetched incidents according to any of the alert properties. Overrides the providers list, if given. Filter should be in the format "{property} eq '{property-value}'". Multiple filters can be applied separated with " and ", for example "createdDateTime eq YYYY-MM-DD and severity eq 'high'". | False |
