@@ -2485,6 +2485,7 @@ def mock_topology(mock_panorama, mock_firewall):
         MOCK_FIREWALL_1_SERIAL: mock_firewall
     }
     topology.ha_pair_serials = {
+        MOCK_PANORAMA_SERIAL: "1.1.1.1",
         MOCK_FIREWALL_1_SERIAL: MOCK_FIREWALL_2_SERIAL,
     }
     return topology
@@ -2506,6 +2507,7 @@ def mock_single_device_topology(mock_panorama):
 class TestTopology:
     """Tests the Topology class and all of it's methods"""
     SHOW_HA_STATE_ENABLED_XML = "test_data/show_ha_state_enabled.xml"
+    SHOW_HA_STATE_PANORAMA_ENABLED = "test_data/show_ha_state_panorama_enabled.xml"
     SHOW_HA_STATE_DISABLED_XML = "test_data/show_ha_state_disabled.xml"
     SHOW_DEVICES_ALL_XML = "test_data/panorama_show_devices_all.xml"
 
@@ -2536,6 +2538,22 @@ class TestTopology:
 
         assert MOCK_PANORAMA_SERIAL in topology.panorama_objects
         assert MOCK_PANORAMA_SERIAL in topology.ha_active_devices
+        assert MOCK_PANORAMA_SERIAL not in topology.firewall_objects
+
+    @patch("Panorama.Topology.get_all_child_firewalls")
+    @patch("Panorama.run_op_command")
+    def test_add_panorama_device_object_with_ha(self, patched_run_op_command, _, mock_panorama):
+        """
+        Given a Panorama where High availability is active, test that it is correctly added to the topology.
+        """
+        from Panorama import Topology
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestTopology.SHOW_HA_STATE_PANORAMA_ENABLED)
+        topology = Topology()
+        topology.add_device_object(mock_panorama)
+
+        assert MOCK_PANORAMA_SERIAL in topology.panorama_objects
+        assert MOCK_PANORAMA_SERIAL in topology.ha_active_devices
+        assert MOCK_PANORAMA_SERIAL in topology.ha_pair_serials
         assert MOCK_PANORAMA_SERIAL not in topology.firewall_objects
 
     @patch("Panorama.run_op_command")
@@ -2700,12 +2718,14 @@ class TestPanoramaCommand:
         patched_run_op_command.return_value = load_xml_root_from_test_file(TestPanoramaCommand.SHOW_DEVICEGROUPS_XML)
 
         result = PanoramaCommand.get_device_groups(mock_topology)
-        assert len(result) == 2
+        assert len(result) == 3
         assert result[0].name
         assert result[0].hostid
         assert result[0].connected
         assert result[0].serial
         assert result[0].last_commit_all_state_sp
+        # Support for missing hostname
+        assert not result[2].hostname
 
     @patch("Panorama.run_op_command")
     def test_get_template_stacks(self, patched_run_op_command, mock_topology):
@@ -2843,6 +2863,7 @@ class TestFirewallCommand:
     SHOW_GLOBAL_COUNTERS_XML = "test_data/show_counter_global.xml"
     SHOW_BGP_PEERS_XML = "test_data/show_routing_protocol_bgp_peer.xml"
     SHOW_HA_STATE_XML = "test_data/show_ha_state_enabled.xml"
+    SHOW_HA_PANORAMA_STATE_XML = "test_data/show_ha_state_panorama_enabled.xml"
 
     @patch("Panorama.run_op_command")
     def test_get_arp_table(self, patched_run_op_command, mock_topology):
@@ -2932,10 +2953,22 @@ class TestFirewallCommand:
                 assert value is not None
 
     @patch("Panorama.run_op_command")
-    def test_get_ha_status(self, patched_run_op_command, mock_topology):
+    def test_get_ha_status_firewall(self, patched_run_op_command, mock_topology):
         """Given the XML output for a HA firewall, ensure the dataclasses are parsed correctly"""
         from Panorama import FirewallCommand
         patched_run_op_command.return_value = load_xml_root_from_test_file(TestFirewallCommand.SHOW_HA_STATE_XML)
+        result = FirewallCommand.get_ha_status(mock_topology)
+        # Check all attributes of result data have values
+        for result_dataclass in result:
+            for value in result_dataclass.__dict__.values():
+                # Attribute may be int 0
+                assert value is not None
+
+    @patch("Panorama.run_op_command")
+    def test_get_ha_status_panorama(self, patched_run_op_command, mock_topology):
+        """Given the XML output for a HA firewall, ensure the dataclasses are parsed correctly"""
+        from Panorama import FirewallCommand
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestFirewallCommand.SHOW_HA_PANORAMA_STATE_XML)
         result = FirewallCommand.get_ha_status(mock_topology)
         # Check all attributes of result data have values
         for result_dataclass in result:
