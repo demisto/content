@@ -32,7 +32,7 @@ configuration:
   required: false
   type: 8
 description: Automate your AppID Adoption by using this integration together with your Palo Alto Networks Next-Generation Firewall or Panorama.
-display: PAN-OS Policy Optimizer
+display: PAN-OS Policy Optimizer (beta)
 name: PAN-OS Policy Optimizer
 script:
   commands:
@@ -178,6 +178,7 @@ script:
   script: '-'
   subtype: python3
   type: python
+beta: True
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0

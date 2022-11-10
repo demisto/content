@@ -1,5 +1,5 @@
 {
-    "name": "PAN-OS Policy Optimizer",
+    "name": "PAN-OS Policy Optimizer (beta)",
     "description": "This integration introduces Policy Optimizer and DAG features that are not available through the regular PAN API",
     "support": "xsoar",
     "currentVersion": "1.1.1",
