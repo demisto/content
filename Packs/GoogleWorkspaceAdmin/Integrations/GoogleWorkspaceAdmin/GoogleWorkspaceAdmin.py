@@ -3,20 +3,22 @@ import demistomock as demisto
 
 ''' IMPORTS '''
 from typing import Callable
+import requests
 from google.oauth2 import service_account
 import google.auth.transport.requests
 
 ''' CONSTANTS '''
 BASE_URL = 'https://admin.googleapis.com/'
-
+OUTPUT_PREFIX = 'Google'
 
 requests.packages.urllib3.disable_warnings()
 
-""" OAuth tokens are correlated with the scopes """
+""" OAuth tokens are correlated with scopes, so if a new HTTP request requires different scopes, a new token is required """
 
 
 class Client(BaseClient):
-    def __init__(self, base_url: str, verify: bool, proxy: bool, customer_id: str, service_account_json: Dict[str, str], auth: tuple = None):
+    def __init__(self, base_url: str, verify: bool, proxy: bool, customer_id: str, service_account_json: Dict[str, str],
+                 auth: tuple = None):
         self._headers = {'Content-Type': 'application/json'}
         self._customer_id = customer_id
         self._service_account_json = service_account_json
@@ -32,17 +34,19 @@ class Client(BaseClient):
         except Exception:
             raise DemistoException('Please check the service account\'s json content')
 
-    def http_request(self, url_suffix: str, method: str, ok_codes: tuple = (200, 204),
-                     resp_type: str = 'json') -> dict:
+    def http_request(self, method: str, url_suffix: str, headers: Dict[str, str], ok_codes: tuple = (200, 204),
+                     resp_type: str = 'json', json_data: dict = None) -> Any:
         return self._http_request(method=method,
                                   url_suffix=url_suffix,
                                   resp_type=resp_type,
-                                  ok_codes=ok_codes)
+                                  ok_codes=ok_codes,
+                                  json_data=json_data,
+                                  headers=headers)
 
     def test_client_connection(self):
         try:
-            token = self.get_oauth_token(scopes=['https://www.googleapis.com/auth/admin.directory.device.mobile.readonly',
-                                                 ])
+            token = self._get_oauth_token(scopes=['https://www.googleapis.com/auth/admin.directory.device.mobile.readonly',
+                                                  ])
             headers = self._headers | {'Authorization': f'Bearer {token}'}
             _ = self._http_request('GET', f'admin/directory/v1/customer/{self._customer_id}/devices/mobile',
                                           headers=headers)
@@ -55,25 +59,37 @@ class Client(BaseClient):
         except Exception as e:
             raise e
 
-    def get_oauth_token(self, scopes: List[str]):
+    def _get_oauth_token(self, scopes: List[str]):
         """ In charge or retrieving the OAuth token in order to make HTTP requests """
-        self._credentials = self._credentials.with_scopes(scopes)
+
+        #  It is enough to check the scopes' list using == operator since each HTTP request requires at most
+        #  one level of scope
+        if(scopes != self._credentials.scopes):
+            self._credentials = self._credentials.with_scopes(scopes)
+
         if(not self._credentials.valid):
-            request = google.auth.transport.requests.Request()
+            try:
+                request = google.auth.transport.requests.Request()
+            except google.auth.exceptions.TransportError:
+                raise DemistoException('An error has occurred while requesting a request adapter')
+
             self._credentials.refresh(request)
             if(not self._credentials.valid):
                 raise DemistoException('Could not refresh token')
             request.session.close()
         return self._credentials.token
 
-    def google_mobiledevice_action_request(self, customerid, resourceid, action):
-        data = {"action": action}
-        headers = self._headers
-        response = self._http_request(
-            'POST', f'admin/directory/v1/customer/{customerid}/devices/mobile/{resourceid}/action', json_data=data, headers=headers)
+    def google_mobile_device_action_request(self, resource_id: str, action: str):
+        json_body = {'action': action}
+        scopes = ['https://www.googleapis.com/auth/admin.directory.device.mobile.action']
+        token = self._get_oauth_token(scopes=scopes)
+        headers = self._headers | {'Authorization': f'Bearer {token}'}
+        response = self.http_request(
+            method='POST', url_suffix=f'admin/directory/v1/customer/{self._customer_id}/devices/mobile/{resource_id}/action',
+            json_data=json_body, headers=headers, resp_type='response')
         return response
 
-    def google_mobiledevice_list_request(self, customerid, projection, query, orderby, sortorder, pagetoken, maxresults):
+    def google_mobile_device_list_request(self, customerid, projection, query, orderby, sortorder, pagetoken, maxresults):
         params = assign_params(projection=projection, query=query, orderBy=orderby,
                                sortOrder=sortorder, pageToken=pagetoken, maxResults=maxresults)
         headers = self._headers
@@ -81,28 +97,40 @@ class Client(BaseClient):
             'GET', f'admin/directory/v1/customer/{customerid}/devices/mobile', params=params, headers=headers)
         return response
 
-    def google_chromeosdevice_action_request(self, customerid, resourceid):
-        headers = self._headers
-        response = self._http_request(
-            'POST', f'admin/directory/v1/customer/{customerid}/devices/chromeos/{resourceid}/action', headers=headers)
+    def google_chromeos_device_action_request(self, resource_id: str, action: str, deprovision_reason: str = ''):
+        json_body = {'action': action}
+        if not deprovision_reason:
+            json_body['deprovisionReason'] = deprovision_reason
+        scopes = ['https://www.googleapis.com/auth/admin.directory.device.chromeos']
+        token = self._get_oauth_token(scopes=scopes)
+        headers = self._headers | {'Authorization': f'Bearer {token}'}
+        response = self.http_request(
+            method='POST', url_suffix=f'admin/directory/v1/customer/{self._customer_id}/devices/chromeos/{resource_id}/action',
+            json_data=json_body, headers=headers, resp_type='response')
         return response
 
 
-def google_mobiledevice_action_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    customerid = args.get('customerid')
-    resourceid = args.get('resourceid')
-    action = args.get('action')
-    response = client.google_mobiledevice_action_request(customerid, resourceid, action)
+def google_mobile_device_action_command(client: Client, resource_id: str, action: str) -> CommandResults:
+    readable_output = 'Success'
+    try:
+        # We want to catch the exception that is thrown from a bad API call, so we can mark this
+        # request as failure
+        client.google_mobile_device_action_request(resource_id, action)
+    except DemistoException as e:
+        demisto.debug(str(e))
+        if 'Error in API call' in str(e):
+            readable_output = 'Failure'
+        else:
+            raise e
     command_results = CommandResults(
-        outputs_prefix='GoogleWorkspaceAdmin.GoogleMobiledeviceAction',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
+        outputs_prefix=f'{OUTPUT_PREFIX}.MobileDeviceAction',
+        readable_output=readable_output,
+        outputs={'Response': readable_output},
     )
     return command_results
 
 
-def google_mobiledevice_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def google_mobile_device_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     customerid = args.get('customerid')
     projection = args.get('projection')
     query = args.get('query')
@@ -110,7 +138,7 @@ def google_mobiledevice_list_command(client: Client, args: Dict[str, Any]) -> Co
     sortorder = args.get('sortorder')
     pagetoken = args.get('pagetoken')
     maxresults = args.get('maxresults')
-    response = client.google_mobiledevice_list_request(
+    response = client.google_mobile_device_list_request(
         customerid, projection, query, orderby, sortorder, pagetoken, maxresults)
     command_results = CommandResults(
         outputs_prefix='GoogleWorkspaceAdmin.GoogleMobiledeviceList',
@@ -121,20 +149,29 @@ def google_mobiledevice_list_command(client: Client, args: Dict[str, Any]) -> Co
     return command_results
 
 
-def google_chromeosdevice_action_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    customerid = args.get('customerid')
-    resourceid = args.get('resourceid')
-    response = client.google_chromeosdevice_action_request(customerid, resourceid)
+def google_chromeos_device_action_command(client: Client, resource_id: str, action: str,
+                                          deprovision_reason: str) -> CommandResults:
+    readable_output = 'Success'
+    try:
+        # We want to catch the exception that is thrown from a bad API call, so we can mark this
+        # request as failure
+        client.google_chromeos_device_action_request(
+            resource_id=resource_id, action=action, deprovision_reason=deprovision_reason)
+    except DemistoException as e:
+        demisto.debug(str(e))
+        if 'Error in API call' in str(e):
+            readable_output = 'Failure'
+        else:
+            raise e
     command_results = CommandResults(
-        outputs_prefix='GoogleWorkspaceAdmin.GoogleChromeosdeviceAction',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
+        outputs_prefix=f'{OUTPUT_PREFIX}.ChromeOSAction',
+        readable_output=readable_output,
+        outputs={'Response': readable_output},
     )
     return command_results
 
 
-def google_chromeosdevice_list_command():
+def google_chromeos_device_list_command():
     pass
 
 
@@ -143,32 +180,15 @@ def test_module(client: Client) -> str:
     return client.test_client_connection()
 
 
-def test_module_test(client: Client) -> None:
-    # Test functions here
-    from google.oauth2 import service_account
-
-    credentials = service_account.Credentials.from_service_account_file(
-        'Integrations/GoogleWorkspaceAdmin/delta-heading-367810-a433b2f4eaad.json', scopes=['https://www.googleapis.com/auth/admin.directory.device.mobile '])
-    request = google.auth.transport.requests.Request()
-    credentials.refresh(request)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {credentials.token}'
-    }
-    response = client._http_request(
-        'GET', f'admin/directory/v1/customer/{customer_id}/devices/mobile', headers=headers)
-    return_results('ok')
-
-
 def main() -> None:
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
     commands: Dict[str, Callable] = {
-        'google-mobiledevice-action': google_mobiledevice_action_command,
-        'google-mobiledevice-list': google_mobiledevice_list_command,
-        'google-chromeosdevice-action': google_chromeosdevice_action_command,
-        'google_chromeosdevice_list': google_chromeosdevice_list_command
+        'google-mobiledevice-action': google_mobile_device_action_command,
+        'google-mobiledevice-list': google_mobile_device_list_command,
+        'google-chromeosdevice-action': google_chromeos_device_action_command,
+        'google_chromeosdevice_list': google_chromeos_device_list_command
     }
     demisto.debug(f'Command being called is {command}')
     try:
@@ -178,10 +198,11 @@ def main() -> None:
         proxy = params.get('proxy', False)
         client: Client = Client(base_url=BASE_URL, verify=verify_certificate, proxy=proxy,
                                 customer_id=customer_id, service_account_json=service_account_json, auth=None)
+
         if command == 'test-module':
             return_results(test_module(client))
         elif command in commands:
-            return_results(commands[command](client, args))
+            return_results(commands[command](client, **args))
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
     except Exception as e:
