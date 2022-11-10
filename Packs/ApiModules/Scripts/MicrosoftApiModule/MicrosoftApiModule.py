@@ -537,7 +537,7 @@ class MicrosoftClient(BaseClient):
         execution_metrics = ExecutionMetrics()
         ok_codes = (200, 201, 202, 204, 206)
 
-        if not execution_metrics.is_supported():
+        if not execution_metrics.is_supported() or demisto.command() in ['test-module', 'fetch-incidents']:
             return
         if status_code == 429:
             execution_metrics.quota_error += 1
