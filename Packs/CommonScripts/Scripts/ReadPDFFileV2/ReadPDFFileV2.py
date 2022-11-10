@@ -526,12 +526,12 @@ def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str) ->
     return urls_ec, emails_ec
 
 
-def handling_pdf_credentials(cpy_file_path: str, dec_file_path: str, user_password: str = '') -> str:
+def handling_pdf_credentials(cpy_file_path: str, dec_file_path: str, encrypted: str, user_password: str = '') -> str:
     """
     This function decrypts the pdf if needed.
     """
     try:
-        if user_password:
+        if user_password or 'yes' in encrypted:
             with Pdf.open(cpy_file_path, allow_overwriting_input=True, password=user_password) as pdf:
                 pdf.save(dec_file_path)
                 return dec_file_path
@@ -546,9 +546,11 @@ def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_imag
         cpy_file_path = f'{working_dir}/WorkingReadPDF.pdf'
         shutil.copy(path, cpy_file_path)
         metadata = get_pdf_metadata(path, user_password)
+        encrypted = metadata.get('Encrypted')
 
         cpy_file_path = handling_pdf_credentials(cpy_file_path=cpy_file_path,
                                                  dec_file_path=f'{working_dir}/DecWorkingReadPDF.pdf',
+                                                 encrypted=encrypted,
                                                  user_password=user_password)
 
         # Get text:
