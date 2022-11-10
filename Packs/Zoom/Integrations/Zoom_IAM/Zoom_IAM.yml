@@ -5,12 +5,30 @@ commonfields:
 configuration:
 - display: API Key
   name: api_key
-  required: true
-  type: 4
+  required: false
+  type: 9
+  hiddenusername: true
+  additionalinfo: This authentication method is deprecated
 - display: API Secret
   name: api_secret
-  required: true
-  type: 4
+  required: false
+  type: 9
+  hiddenusername: true
+  additionalinfo: This authentication method is deprecated
+- display: Account ID
+  name: account_id
+  required: False
+  type: 0
+- display: Client ID
+  name: client_id
+  required: false
+  type: 9
+  hiddenusername: true
+- display: Client secret
+  name: client_secret
+  required: false
+  type: 9
+  hiddenusername: true
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -49,6 +67,49 @@ script:
     description: Disable an active user.
     execution: true
     name: iam-disable-user
+    outputs:
+    - contextPath: IAM.Vendor.active
+      description: When true, indicates that the employee's status is active in the
+        3rd-party integration.
+      type: Boolean
+    - contextPath: IAM.Vendor.brand
+      description: Name of the integration.
+      type: String
+    - contextPath: IAM.Vendor.details
+      description: Provides the raw data from the 3rd-party integration.
+      type: string
+    - contextPath: IAM.Vendor.email
+      description: The employee's email address.
+      type: String
+    - contextPath: IAM.Vendor.errorCode
+      description: HTTP error response code.
+      type: Number
+    - contextPath: IAM.Vendor.errorMessage
+      description: Reason why the API failed.
+      type: String
+    - contextPath: IAM.Vendor.id
+      description: The employee's user ID in the app.
+      type: String
+    - contextPath: IAM.Vendor.instanceName
+      description: Name of the integration instance.
+      type: string
+    - contextPath: IAM.Vendor.success
+      description: When true, indicates that the command was executed successfully.
+      type: Boolean
+    - contextPath: IAM.Vendor.username
+      description: The employee's username in the app.
+      type: String
+  - arguments:
+    - default: false
+      description: A User Profile indicator.
+      isArray: false
+      name: user-profile
+      required: true
+      secret: false
+    deprecated: false
+    description: Anable a deactivated user.
+    execution: true
+    name: iam-enable-user
     outputs:
     - contextPath: IAM.Vendor.active
       description: When true, indicates that the employee's status is active in the

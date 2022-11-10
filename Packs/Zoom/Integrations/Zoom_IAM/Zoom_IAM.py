@@ -24,14 +24,28 @@ OAUTH_TOKEN_GENERATOR_URL = 'https://zoom.us/oauth/token'
 class Client(BaseClient):
     """ A client class that implements logic to authenticate with Zoom application. """
 
-    def __init__(self, base_url, api_key, api_secret, account_id, client_id, client_secret, verify=True, proxy=False):
+    def __init__(
+        self,
+        base_url,
+        api_key,
+        api_secret,
+        account_id,
+        client_id,
+        client_secret,
+        verify=True,
+        proxy=False,
+        is_jwt=False
+    ):
         super().__init__(base_url, verify, proxy)
         self.api_key = api_key
         self.api_secret = api_secret
         self.account_id = account_id
         self.client_id = client_id
         self.client_secret = client_secret
-        self.access_token = get_jwt(api_key, api_secret)
+        if is_jwt:
+            self.access_token = get_jwt(api_key, api_secret)
+        else:
+            self.access_token = self.get_token()
 
     def generate_token(self):
         """
@@ -278,12 +292,12 @@ def get_mapping_fields(client: Client):
 def main():
     user_profile = None
     params = demisto.params()
-    api_key = params.get('api_key')
-    api_secret = params.get('api_secret')
+    api_key = params.get('api_key', {}).get('password')
+    api_secret = params.get('api_secret', {}).get('password')
     account_id = params.get('account_id')
-    client_id = params.get('client_id')
-    client_secret = params.get('client_secret')
-
+    client_id = params.get('client_id', {}).get('password')
+    client_secret = params.get('client_secret', {}).get('password')
+    is_jwt = argToBoolean(params.get('is_jwt', False))
     mapper_in = params.get('mapper_in', DEFAULT_INCOMING_MAPPER)
     # mapper_out = params.get('mapper_out', DEFAULT_OUTGOING_MAPPER)
     verify_certificate = not params.get('insecure', False)
@@ -313,6 +327,7 @@ def main():
         account_id=account_id,
         client_id=client_id,
         client_secret=client_secret,
+        is_jwt=is_jwt,
     )
 
     demisto.debug(f'Command being called is {command}')
