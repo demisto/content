@@ -10,7 +10,9 @@
     "categories": [
         "Deception"
     ],
-    "tags": [],
+    "tags": [
+        "Data Source"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
