@@ -50,10 +50,10 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
    * [pan-os-get-logs](#pan-os-get-logs)
 * The target argument is supported only in operational type commands. Meaning, you cannot use it with commit, logs, or PCAP commands.
 
-## Configure Panorama on Cortex XSOAR
+## Configure Panorama on Cortex XSOAR (beta)
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Panorama.
+2. Search for Panorama (beta).
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |

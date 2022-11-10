@@ -88,7 +88,7 @@ configuration:
   required: false
   type: 1
 description: Manage Palo Alto Networks Firewall and Panorama. For more information see Panorama documentation.
-display: Palo Alto Networks PAN-OS
+display: Palo Alto Networks PAN-OS (beta)
 name: Panorama
 script:
   commands:
@@ -9093,6 +9093,7 @@ script:
   script: ''
   subtype: python3
   type: python
+  beta: True
 fromversion: 5.0.0
 tests:
 - palo_alto_firewall_test_pb

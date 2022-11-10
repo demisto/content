@@ -1,4 +1,4 @@
-PAN‑OS is the software that runs all Palo Alto Networks next-generation firewalls. 
+PAN‑OS (beta) is the software that runs all Palo Alto Networks next-generation firewalls. 
 Using this pack, you can monitor and prevent phishing attacks by controlling the sites to which users can submit valid corporate credentials, and to enforce safe search for search engines like Google and Bing.
 
 ## What does this pack do?
