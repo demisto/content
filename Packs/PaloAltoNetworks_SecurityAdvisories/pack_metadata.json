@@ -8,9 +8,9 @@
     "email": "",
     "created": "2022-04-03T00:00:00Z",
     "categories": [
-        "Vulnerability Management"
+        "Network Security"
     ],
-    "tags": [],
+    "tags": ["Palo Alto Networks Products"],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
