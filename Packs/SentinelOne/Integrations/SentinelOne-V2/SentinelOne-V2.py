@@ -14,7 +14,7 @@ from dateutil.parser import parse
 
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+# requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS '''
 
