@@ -484,7 +484,7 @@ def test_fetch_incidents_changed_folder(mocker, client, emails_data_as_html, ema
     mocker.patch.object(demisto, "info")
     client.fetch_incidents(last_run_data)
 
-    mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', changed_folder)
+    mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', changed_folder, overwrite_rate_limit_retry=True)
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
@@ -498,7 +498,8 @@ def test_fetch_incidents_changed_account(mocker, client, emails_data_as_html, em
     mocker.patch.object(demisto, "info")
     client.fetch_incidents(last_run_data)
 
-    mocker_folder_by_path.assert_called_once_with(changed_account, last_run_data['LAST_RUN_FOLDER_PATH'])
+    mocker_folder_by_path.assert_called_once_with(changed_account, last_run_data['LAST_RUN_FOLDER_PATH'],
+                                                  overwrite_rate_limit_retry=True)
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
@@ -510,7 +511,7 @@ def test_fetch_incidents_detect_initial(mocker, client, emails_data_as_html, ema
     mocker.patch.object(demisto, "info")
     client.fetch_incidents({})
 
-    mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', "Phishing")
+    mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', "Phishing", overwrite_rate_limit_retry=True)
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])

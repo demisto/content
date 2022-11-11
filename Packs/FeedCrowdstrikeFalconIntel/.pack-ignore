@@ -6,3 +6,4 @@ ignore=IN122
 
 [known_words]
 CrowdStrike
+CrowdStrikeApiModule

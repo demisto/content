@@ -119,15 +119,15 @@ script:
       isArray: false
       name: environment_id
       predefined:
-        - '300: Linux Ubuntu 16.04'
-        - 64-bit
-        - '200: Android (static analysis)'
-        - '160: Windows 10'
-        - 64-bit
-        - '110: Windows 7'
-        - 64-bit
-        - '100: Windows 7'
-        - 32-bit
+      - '300: Linux Ubuntu 16.04'
+      - 64-bit
+      - '200: Android (static analysis)'
+      - '160: Windows 10'
+      - 64-bit
+      - '110: Windows 7'
+      - 64-bit
+      - '100: Windows 7'
+      - 32-bit
       required: false
       secret: false
     - auto: PREDEFINED
@@ -136,11 +136,11 @@ script:
       isArray: false
       name: action_script
       predefined:
-        - default
-        - default_maxantievasion
-        - default_randomfiles
-        - default_randomtheme
-        - default_openie
+      - default
+      - default_maxantievasion
+      - default_randomfiles
+      - default_randomtheme
+      - default_openie
       required: false
       secret: false
     - default: false
@@ -161,8 +161,8 @@ script:
       isArray: false
       name: enable_tor
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -1956,7 +1956,7 @@ script:
     description: Downloads IOC packs, PCAP files, and other analysis artifacts.
     execution: false
     name: cs-fx-download-ioc
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.7.33922
   feed: false
   isfetch: false
   longRunning: false
