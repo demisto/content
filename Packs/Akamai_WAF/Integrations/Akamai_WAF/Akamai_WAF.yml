@@ -444,7 +444,7 @@ script:
       required: true
     - description: Property type.
       name: property_type
-      required: true
+      required: true	   
     - description: 'Static type - "CNAME" or "A".'
       name: static_type
     - description: Static server.
@@ -460,6 +460,12 @@ script:
     - name: property_comments
       required: true
       type: textArea
+    - description: Data center ID 1
+      name: dc1_id
+      required: true
+    - description: Data center ID 2
+      name: dc2_id
+      required: true	
     description: Update a property for a specific domain.
     name: akamai-update-property
   - arguments:
