@@ -2521,7 +2521,7 @@ script:
       description: A comma-separated list of Threat IDs.
     description: Get SentinelOne threats information.
 
-  dockerimage: demisto/python3:3.10.8.36650
+  dockerimage: demisto/python3:3.10.8.37233
   isfetch: true
   longRunning: false
   longRunningPort: false
