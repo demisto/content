@@ -1,7 +1,7 @@
 {
     "OneModel_raw": {
-      "summary": {
-        "type": "act",
+      "act": {
+        "type": "string",
         "is_array": false
       }
     }
