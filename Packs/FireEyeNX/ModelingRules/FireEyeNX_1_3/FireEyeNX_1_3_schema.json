@@ -1,5 +1,5 @@
 {
-    "msft_radius_raw": {
+    "fireeye_mps_raw": {
       "rt": {
         "type": "number",
         "is_array": false
