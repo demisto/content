@@ -6,7 +6,7 @@ import zipfile
 from typing import Callable, List, Optional, Tuple
 
 import demistomock as demisto  # noqa: F401
-# import requests
+import requests
 from CommonServerPython import *  # noqa: F401
 from dateutil.parser import parse
 
@@ -14,7 +14,7 @@ from dateutil.parser import parse
 
 
 # Disable insecure warnings
-# requests.packages.urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS '''
 
