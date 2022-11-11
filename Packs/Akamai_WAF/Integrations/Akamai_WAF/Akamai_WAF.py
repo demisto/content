@@ -456,7 +456,7 @@ class Client(BaseClient):
 
     def update_property(self, property_type: str, domain_name: str, property_name: str,
                         static_type: str = "", property_comments: str = "", static_server: str = "", server_1: str = "",
-                        server_2: str = "", weight_1: int = 50, weight_2: int = 50):
+                        server_2: str = "", weight_1: int = 50, weight_2: int = 50, dc1_id: int = 3131, dc2_id: int = 3132):
         """
         Updating or adding properties to existing GTM domain
 
@@ -491,7 +491,7 @@ class Client(BaseClient):
             if server_1 != "":
                 trafficTargets.append(
                     {
-                        "datacenterId": 3131,  # static number
+                        "datacenterId": dc1_id,  # static number
                         "enabled": True,
                         "weight": 1,              # 50 if type== round robin, 1 is primary if type==failover
                         "servers": [
@@ -501,7 +501,7 @@ class Client(BaseClient):
             if server_2 != "":
                 trafficTargets.append(
                     {
-                        "datacenterId": 3132,  # static number
+                        "datacenterId": dc2_id,  # static number
                         "enabled": True,
                         "weight": 0,              # 50 if type== round robin, 1 is primary if type==failover
                         "servers": [
@@ -516,7 +516,7 @@ class Client(BaseClient):
                 trafficTargets.append(
 
                     {
-                        "datacenterId": 3131,  # static number
+                        "datacenterId": dc1_id,  # static number
                         "enabled": True,
                         "weight": weight_1,              # 50 if type== round robin, 1 is primary if type==failover
                         "servers": [
@@ -529,7 +529,7 @@ class Client(BaseClient):
             if server_2 != "":
                 trafficTargets.append(
                     {
-                        "datacenterId": 3132,
+                        "datacenterId": dc2_id,
                         "enabled": True,
                         "weight": weight_2,                 # 50 if type== round robin, 0 is secondary if type==failover
                         "servers": [
@@ -2866,7 +2866,7 @@ def create_datacenter_command(client: Client, domain_name: str, dc_name: str = "
 @logger
 def update_property_command(client: Client, property_type: str, domain_name: str, property_name: str,
                             static_type: str = "", property_comments: str = "", static_server: str = "", server_1: str = "",
-                            server_2: str = "", weight_1: int = 50, weight_2: int = 50
+                            server_2: str = "", weight_1: int = 50, weight_2: int = 50, dc1_id: int = 3131, dc2_id: int = 3132
                             ) -> Tuple[object, dict, Union[List, Dict]]:
     """
     Updating or adding properties to existing GTM domain
@@ -2888,7 +2888,8 @@ def update_property_command(client: Client, property_type: str, domain_name: str
     raw_response: Dict = client.update_property(property_type, domain_name=domain_name,
                                                 property_name=property_name, static_type=static_type,
                                                 static_server=static_server, property_comments=property_comments,
-                                                server_1=server_1, server_2=server_2, weight_1=weight_1, weight_2=weight_2)
+                                                server_1=server_1, server_2=server_2, weight_1=weight_1, weight_2=weight_2,
+                                                dc1_id=dc1_id, dc2_id=dc2_id)
     if raw_response:
         human_readable = f'{INTEGRATION_NAME} - Property is created successfully'
 
