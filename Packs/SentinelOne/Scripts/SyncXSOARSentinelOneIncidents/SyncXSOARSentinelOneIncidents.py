@@ -168,7 +168,6 @@ def sync_s1_xsoar_incidents():
                     # Getting the last modified time for S1 incident and XSOAR Incident's Label
                     s1_inc_modified_time = s1_inc_threat_info.get("updatedAt")
                     xsoar_s1_inc_modified_time = incident_info.get("updatedAt")
-                    xsoar_job_updated_inc = incident_info.get("XSOARJobUpdated", None)
 
                     s1_xsoar_threat_id = incident_info.get("threatId")
                     if latest_s1_threat_contents.get("id") == s1_xsoar_threat_id and \
@@ -200,9 +199,9 @@ def sync_s1_xsoar_incidents():
 
     output_res = {"Total Incidents": total_incidents, "Synced Incidents(from sentinelone to xsoar)": updated_incidents}
     return CommandResults(readable_output=tableToMarkdown(
-            "Results- \nSynced Incidents will show how many incidents changed per run of playbook.",
-            output_res, headers=("Total Incidents", "Synced Incidents(from sentinelone to xsoar)"),
-            headerTransform=string_to_table_header))
+        "Results- \nSynced Incidents will show how many incidents changed per run of playbook.",
+        output_res, headers=("Total Incidents", "Synced Incidents(from sentinelone to xsoar)"),
+        headerTransform=string_to_table_header))
 
 
 def sync_xsoar_s1_incidents():
@@ -254,10 +253,9 @@ def sync_xsoar_s1_incidents():
 
     output_res = {"Total Incidents": total_incidents, "Synced Incidents(from xsoar to sentinelone)": updated_incidents}
     return CommandResults(readable_output=tableToMarkdown(
-            "Results- \nSynced Incidents will show how many incidents changed per run of playbook.",
-            output_res, headers=("Total Incidents", "Synced Incidents(from xsoar to sentinelone)"),
-            headerTransform=string_to_table_header))
-
+        "Results- \nSynced Incidents will show how many incidents changed per run of playbook.",
+        output_res, headers=("Total Incidents", "Synced Incidents(from xsoar to sentinelone)"),
+        headerTransform=string_to_table_header))
 
 
 def update_s1_threat_incident(threatId, status):
