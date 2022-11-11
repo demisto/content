@@ -4109,6 +4109,12 @@ def sophos_central_usergroups_list_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
+    allowed_search_fields = ["name", "description"]
+    search_fields = argToList(args.get("searchFields"))
+    for field in search_fields:
+        if field not in allowed_search_fields:
+            raise DemistoException(
+                "Invalid value for searchFields provided. Allowed values are " + ", ".join(allowed_search_fields) + ".")
     try:
         page = arg_to_number(args.get("page", "1"))
         page_size = arg_to_number(args.get("pageSize", "50"))
@@ -4243,7 +4249,7 @@ def sophos_central_usergroups_membership_get(client: Client, args: dict) -> Comm
     """
     group_id = args.get("groupId", "")
     search = args.get("search")
-    search_field = args.get("searchField")
+    search_field = args.get("searchFields")
     domain = args.get("domain")
     source_type = args.get("sourceType")
     page = arg_to_number(args.get("page", "1"))
@@ -4254,6 +4260,13 @@ def sophos_central_usergroups_membership_get(client: Client, args: dict) -> Comm
 
     if page_size is None or page_size < 1 or page_size > 100:
         raise ValueError("pageSize must be between 1 and 100.")
+
+    allowed_search_fields = ["name", "firstName", "lastName", "email", "exchangeLogin"]
+    search_fields = argToList(search_field)
+    for field in search_fields:
+        if field not in allowed_search_fields:
+            raise DemistoException(
+                "Invalid value for searchFields provided. Allowed values are " + ", ".join(allowed_search_fields) + ".")
 
     try:
         result = client.get_users_in_usergroup(group_id, search, search_field, domain, source_type, page, page_size)
@@ -4371,6 +4384,12 @@ def sophos_central_users_list_command(
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
+    allowed_search_fields = ["name", "firstName", "lastName", "email", "exchangeLogin"]
+    search_fields = argToList(args.get("searchFields"))
+    for field in search_fields:
+        if field not in allowed_search_fields:
+            raise DemistoException(
+                "Invalid value for searchFields provided. Allowed values are " + ", ".join(allowed_search_fields) + ".")
     try:
         page = arg_to_number(args.get("page", "1"))
         page_size = arg_to_number(args.get("pageSize", "50"))

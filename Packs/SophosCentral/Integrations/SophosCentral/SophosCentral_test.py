@@ -3159,7 +3159,8 @@ def test_sophos_central_endpoint_policy_search_list_not_found(requests_mock) -> 
 
 
 @pytest.mark.parametrize(('page_size', 'page'), [["-1", "1"], ["201", "1"], ["200", "-1"]])
-def test_sophos_central_endpoint_policy_search_with_page_size_or_page_negative_value(page_size, page, requests_mock) -> None:
+def test_sophos_central_endpoint_policy_search_with_page_size_or_page_negative_value(page_size, page,
+                                                                                     requests_mock) -> None:
     """
         Scenario: Page not found for endpoint policy
         Given:
@@ -3461,6 +3462,35 @@ def test_usergroups_list_command_invalid_page_parameter(requests_mock) -> None:
     result = sophos_central_usergroups_list_command(client, args)
 
     assert result.readable_output == "No page found."
+
+
+def test_usergroups_list_command_invalid_search_fields(requests_mock) -> None:
+    """
+    Scenario: Usergroups List Command.
+    Given:
+     - User has provided valid credentials.
+     - Headers and JWT token have been set.
+    When:
+     - sophos-central-usergroups-list is called.
+    Then:
+     - Ensure the response is correct, when request body is incorrect.
+    """
+    from SophosCentral import sophos_central_usergroups_list_command
+
+    group_ids = "1cce37cb-99c0-4ab1-be75-60c4331ffb4c,04824701-52cc-4c1b-b7e2-445fad9bdd42"
+    args = {
+        "groupsIds": group_ids,
+        "searchFields": "names",
+        "sourceType": "custom",
+        "userId": "25de27bc-b07a-4728-b7b2-a021365ebbc",
+        "page": "1",
+        "pageSize": "1"
+    }
+    client = init_mock_client(requests_mock)
+
+    with pytest.raises(DemistoException) as e:
+        sophos_central_usergroups_list_command(client, args)
+    assert str(e.value) == "Invalid value for searchFields provided. Allowed values are name, description."
 
 
 def test_usergroups_list_command_exception(requests_mock) -> None:
@@ -3824,6 +3854,36 @@ def test_sophos_central_usergroups_membership_get_invalid_page_parameter(request
     assert result.readable_output == "No page found."
 
 
+def test_sophos_central_usergroups_membership_get_invalid_search_fields(requests_mock) -> None:
+    """
+    Scenario: Invalid page or pageSize raised while listing all users in a specific group.
+    Given:
+     - User has provided valid credentials.
+     - Headers and JWT token have been set.
+    When:
+     - sophos_central_usergroups_membership_get is called.
+    Then:
+     - Ensure that the valid result is returned when any exception is raised.
+    """
+    from SophosCentral import sophos_central_usergroups_membership_get
+
+    group_id = "1cce37cb-99c0-4ab1-be75-60c4331ffb4c"
+    args = {
+        "groupId": group_id,
+        "sourceType": "custom",
+        "page": "1",
+        "pageSize": "1",
+        "searchFields": "names"
+    }
+    client = init_mock_client(requests_mock)
+
+    # non-positive page index
+    with pytest.raises(DemistoException) as e:
+        sophos_central_usergroups_membership_get(client, args)
+    assert str(e.value) == "Invalid value for searchFields provided. Allowed values are name, firstName, lastName, " \
+                           "email, exchangeLogin."
+
+
 def test_sophos_central_usergroups_users_add(requests_mock) -> None:
     """
     Scenario: Add users to a group.
@@ -3953,8 +4013,8 @@ def test_users_list_command(requests_mock) -> None:
     result = sophos_central_users_list_command(client, {
         "searchFields": "name,email",
         "sourceType": "custom",
-    }
-    )
+    })
+
     assert len(result.outputs) == 2
     assert result.outputs_prefix == "SophosCentral.Users"
     assert result.outputs[0].get("id") == "55570a08-0a38-41e6-b075-e0a7eb96571d"
@@ -3977,7 +4037,7 @@ def test_users_list_command_invalid_page_parameter(requests_mock) -> None:
     group_ids = "1cce37cb-99c0-4ab1-be75-60c4331ffb4c,04824701-52cc-4c1b-b7e2-445fad9bdd42"
     args = {
         "groupsIds": group_ids,
-        "searchFields": "name,description",
+        "searchFields": "name,firstName",
         "sourceType": "custom",
         "userId": "25de27bc-b07a-4728-b7b2-a021365ebbc",
         "page": "0",
@@ -4009,6 +4069,38 @@ def test_users_list_command_invalid_page_parameter(requests_mock) -> None:
     args["pageSize"] = "50"  # Invalid pageSize index
     result = sophos_central_users_list_command(client, args)
     assert result.readable_output == "No page found."
+
+
+def test_users_list_command_invalid_search_fields(requests_mock) -> None:
+    """
+    Scenario: Usergroups List Command.
+    Given:
+     - User has provided valid credentials.
+     - Headers and JWT token have been set.
+    When:
+     - sophos_central_users_list_command is called.
+    Then:
+     - Ensure the request body is correct.
+     - Ensure the response is correct in case of failure.
+    """
+    from SophosCentral import sophos_central_users_list_command
+
+    group_ids = "1cce37cb-99c0-4ab1-be75-60c4331ffb4c,04824701-52cc-4c1b-b7e2-445fad9bdd42"
+    args = {
+        "groupsIds": group_ids,
+        "searchFields": "name,firstName,middleName",
+        "sourceType": "custom",
+        "userId": "25de27bc-b07a-4728-b7b2-a021365ebbc",
+        "page": "0",
+        "pageSize": "0"
+    }
+    client = init_mock_client(requests_mock)
+
+    # non-positive page index
+    with pytest.raises(DemistoException) as e:
+        sophos_central_users_list_command(client, args)
+    assert str(e.value) == "Invalid value for searchFields provided. Allowed values are name, firstName, lastName, " \
+                           "email, exchangeLogin."
 
 
 def test_users_list_command_exception(requests_mock) -> None:
