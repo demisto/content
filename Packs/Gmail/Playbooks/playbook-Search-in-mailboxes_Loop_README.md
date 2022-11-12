@@ -28,14 +28,14 @@ This playbook does not use any sub-playbooks.
 | filename | Attachments with a certain name or file type. For example, "pdf" or "report.pdf" |  | Optional |
 | from | Specifies the sender. For example, "john" |  | Optional |
 | to | Specifies the receiver. For example, "john" |  | Optional |
-| has-attachments | Whether to search for messages sent with attachments. | False | Optional |
+| has-attachments | Whether to search for messages sent with attachments. |  | Optional |
 | in | Messages in any folder, including Spam and Trash. For example, shopping |  | Optional |
-| include-spam-trash | Includes messages from SPAM and TRASH in the results. \(Default: false\) | False | Optional |
+| include-spam-trash | Includes messages from SPAM and TRASH in the results. \(Default: false\) |  | Optional |
 | labels-ids | Only returns messages with labels that match all of the specified label IDs in a comma separated list. |  | Optional |
-| max-results | The number of accounts Playbook will search in every time it runs,<br/>\(Default is 100\) | 100 | Optional |
+| max-results | The number of accounts Playbook will search in every time it runs,<br/>\(Default is 100\) |  | Optional |
 | page-token | This argument is not usable |  | Optional |
 | query | Returns messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". For more syntax information,see "https://support.google.com/mail/answer/7190?hl=en" |  | Optional |
-| show-only-mailboxes | Whether to return only mailboxes which contain the email. Default is "True". | True | Optional |
+| show-only-mailboxes | Whether to return only mailboxes which contain the email. Default is "True". |  | Optional |
 | subject | Words in the subject line. For example, "alert" |  | Optional |
 
 ## Playbook Outputs
@@ -57,9 +57,8 @@ This playbook does not use any sub-playbooks.
 | Gmail.Attachments | The attachments of the email. IDs are separated by ','. | unknown |
 | Gmail.Headers | All headers of specific mail \(list\). | unknown |
 | Email.Attachments.entryID | Email Attachments. IDs are separated by ','. | unknown |
-| NewPageToken | Needs rewrite. | unknown |
-| isLoop | test | unknown |
-| AccountsSearched | test | unknown |
+| NewPageToken | In the next iteration, additional accounts will be imported using this output. | unknown |
+| Stop | As a result of this output, the loop will come to an end. | unknown |
 
 ## Playbook Image
 ---

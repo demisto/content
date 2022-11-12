@@ -36,34 +36,66 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 6aecaea9-b7a7-4f60-8125-5d9f00ad21e7
+    taskid: 8b33d229-bc7c-46d2-80b0-3487035cce4e
     type: playbook
     task:
-      id: 6aecaea9-b7a7-4f60-8125-5d9f00ad21e7
+      id: 8b33d229-bc7c-46d2-80b0-3487035cce4e
       version: -1
       name: Search in mailboxes Gmail (Loop)
+      description: This playbook is used as a subplaybook for the Playbook Search-all-mailboxes - Gmail, it should not be used.
       playbookName: Search in mailboxes Gmail (Loop)
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "3"
     scriptarguments:
+      after:
+        complex:
+          root: inputs.after
+      before:
+        complex:
+          root: inputs.before
+      fields:
+        complex:
+          root: inputs.fields
+      filename:
+        complex:
+          root: inputs.filename
+      from:
+        complex:
+          root: inputs.from
       has-attachments:
-        simple: "False"
+        complex:
+          root: inputs.has-attachments
+      in:
+        complex:
+          root: inputs.in
       include-spam-trash:
-        simple: "false"
+        complex:
+          root: inputs.include-spam-trash
+      labels-ids:
+        complex:
+          root: inputs.labels-ids
       max-results:
-        simple: "100"
+        complex:
+          root: inputs.max-results
       page-token:
         complex:
           root: NewPageToken
       query:
-        simple: subject:Test search all mailboxes
+        complex:
+          root: inputs.query
       show-only-mailboxes:
-        simple: "true"
+        complex:
+          root: inputs.show-only-mailboxes
+      subject:
+        complex:
+          root: inputs.subject
+      to:
+        complex:
+          root: inputs.to
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -72,11 +104,11 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${isLoop}
+              simple: ${Stop}
             iscontext: true
           right:
             value:
-              simple: stop
+              simple: "true"
       exitCondition: ""
       wait: 5
       max: 100
@@ -84,7 +116,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 205
         }
       }
     note: false
@@ -176,8 +208,106 @@ view: |-
       }
     }
   }
-inputs: []
-outputs: []
+inputs:
+- key: after
+  value: {}
+  required: false
+  description: Search for messages sent after a certain time period. For example, 2018/05/06
+  playbookInputQuery:
+- key: before
+  value: {}
+  required: false
+  description: Search for messages sent before a certain time period. For example, 2018/05/09
+  playbookInputQuery:
+- key: fields
+  value: {}
+  required: false
+  description: Enables partial responses to be retrieved in a comma separated list. For more information, see https://developers.google.com/gdata/docs/2.0/basics#PartialResponse.
+  playbookInputQuery:
+- key: filename
+  value: {}
+  required: false
+  description: Attachments with a certain name or file type. For example, "pdf" or "report.pdf"
+  playbookInputQuery:
+- key: from
+  value: {}
+  required: false
+  description: Specifies the sender. For example, "john"
+  playbookInputQuery:
+- key: to
+  value: {}
+  required: false
+  description: Specifies the receiver. For example, "john"
+  playbookInputQuery:
+- key: has-attachments
+  value: {}
+  required: false
+  description: Whether to search for messages sent with attachments.
+  playbookInputQuery:
+- key: in
+  value: {}
+  required: false
+  description: Messages in any folder, including Spam and Trash. For example, shopping
+  playbookInputQuery:
+- key: include-spam-trash
+  value: {}
+  required: false
+  description: 'Includes messages from SPAM and TRASH in the results. (Default: false)'
+  playbookInputQuery:
+- key: labels-ids
+  value: {}
+  required: false
+  description: Only returns messages with labels that match all of the specified label IDs in a comma separated list.
+  playbookInputQuery:
+- key: show-only-mailboxes
+  value: {}
+  required: false
+  description: Whether to return only mailboxes which contain the email. Default is "True".
+  playbookInputQuery:
+- key: subject
+  value: {}
+  required: false
+  description: Words in the subject line. For example, "alert"
+  playbookInputQuery:
+- key: query
+  value: {}
+  required: false
+  description: 'Returns messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". For more syntax information,see "https://support.google.com/mail/answer/7190?hl=en"'
+  playbookInputQuery:
+- key: max-results
+  value: {}
+  required: false
+  description: |-
+    The maximum number of results to return per user. Default is 100. Maximum is 500. Acceptable values are 1 to 500, inclusive.
+    (Used in the case that show-only-mailboxes argument is false)
+  playbookInputQuery:
+outputs:
+- contextPath: Gmail.Mailboxes
+  description: The Gmail Mailbox.
+- contextPath: Gmail.ID
+  description: Inner ID of the Gmail message.
+- contextPath: Gmail.ThreadId
+  description: The thread ID.
+- contextPath: Gmail.Format
+  description: MIME type of the email.
+- contextPath: Gmail.Labels
+  description: Labels of a specific email.
+- contextPath: Gmail.To
+  description: Email Address of the receiver.
+- contextPath: Gmail.From
+  description: Email Address of the sender.
+- contextPath: Gmail.Cc
+  description: Additional recipient email address (CC).
+- contextPath: Gmail.Bcc
+  description: Additional recipient email address (BCC).
+- contextPath: Gmail.Subject
+  description: Subject of the specific email.
+- contextPath: Gmail.Body
+  description: The content of the email.
+- contextPath: Gmail.Attachments
+  description: The attachments of the email. IDs are separated by ','.
+- contextPath: Gmail.Headers
+  description: All headers of specific mail (list).
 tests:
-- No tests (auto formatted)
+- Gmail Convert Html Test
 fromversion: 6.5.0

@@ -36,17 +36,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: a5f2bcfd-1b97-43ff-8ac6-0bebfc9bd9ba
+    taskid: 9c603a47-588c-430d-8b62-dbf154df1d78
     type: regular
     task:
-      id: a5f2bcfd-1b97-43ff-8ac6-0bebfc9bd9ba
+      id: 9c603a47-588c-430d-8b62-dbf154df1d78
       version: -1
       name: Get users
       description: Lists all Google users in a domain.
       script: '|||gmail-list-users'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ""
     nexttasks:
       '#none#':
       - "19"
@@ -54,8 +54,7 @@ tasks:
       for-searching-all-mailboxes:
         simple: "true"
       max-results:
-        complex:
-          root: inputs.max-results
+        simple: "2500"
       page-token:
         complex:
           root: inputs.page-token
@@ -105,13 +104,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 8b64c5b9-a159-472f-8b95-80a026287743
+    taskid: 78f7f119-3a67-4ec6-8f37-d818119fc5ac
     type: condition
     task:
-      id: 8b64c5b9-a159-472f-8b95-80a026287743
+      id: 78f7f119-3a67-4ec6-8f37-d818119fc5ac
       version: -1
       name: Is batching
-      description: Check if what received from the gmail-list-users function is batch or not
+      description: Determines whether to search with batches or not.
       type: condition
       iscommand: false
       brand: ""
@@ -157,15 +156,15 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
+    quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 63856c5a-066b-48b0-8209-3036ce533979
+    taskid: ff1dac1c-a6f6-4b63-8e2c-5092dc470842
     type: regular
     task:
-      id: 63856c5a-066b-48b0-8209-3036ce533979
+      id: ff1dac1c-a6f6-4b63-8e2c-5092dc470842
       version: -1
       name: DeleteContext
       description: |-
@@ -185,7 +184,7 @@ tasks:
       all:
         simple: "yes"
       keysToKeep:
-        simple: Gmail,NewPageToken,isLoop
+        simple: Gmail,NewPageToken,Stop
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -204,13 +203,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 06f36b6b-d411-4b17-8317-0504591e1259
+    taskid: cd7af026-f4be-4ba2-85f6-e5d63c98020d
     type: regular
     task:
-      id: 06f36b6b-d411-4b17-8317-0504591e1259
+      id: cd7af026-f4be-4ba2-85f6-e5d63c98020d
       version: -1
-      name: Set isLoop = stop
-      description: Set a value in context under the key you entered.
+      name: Set Stop
+      description: |-
+        Set a value in context under the key you entered.
+
+        When the nextPageToken value is not received from gmail-list-users, this task determines that the loop is ending.
       scriptName: Set
       type: regular
       iscommand: false
@@ -222,9 +224,9 @@ tasks:
       append:
         simple: "false"
       key:
-        simple: isLoop
+        simple: Stop
       value:
-        simple: stop
+        simple: "true"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -243,10 +245,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: dce3dddf-9c50-4cc8-89bd-9e8f9843f22f
+    taskid: 2aa00327-4243-4a4a-8663-78dd18f7f734
     type: regular
     task:
-      id: dce3dddf-9c50-4cc8-89bd-9e8f9843f22f
+      id: 2aa00327-4243-4a4a-8663-78dd18f7f734
       version: -1
       name: Set NewPageToken
       description: Set a value in context under the key you entered.
@@ -360,17 +362,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 5c63aa8b-b7ac-4d89-8d9d-89293599618c
+    taskid: 5a60225a-1891-4954-82a1-5b7bbba795fe
     type: regular
     task:
-      id: 5c63aa8b-b7ac-4d89-8d9d-89293599618c
+      id: 5a60225a-1891-4954-82a1-5b7bbba795fe
       version: -1
       name: Search in mailboxes without batching
       description: Searches the Gmail records for all Google users.
       script: '|||gmail-search-all-mailboxes'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ""
     nexttasks:
       '#none#':
       - "15"
@@ -406,6 +408,9 @@ tasks:
         complex:
           root: Account.Gmail.Address
           accessor: '[0]'
+      max-results:
+        complex:
+          root: inputs.max-results
       query:
         complex:
           root: inputs.query
@@ -436,17 +441,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 50716249-0cdf-440b-824b-9c53cf59e8a7
+    taskid: 0e3046d8-3452-4ea0-892e-687959de3cc9
     type: regular
     task:
-      id: 50716249-0cdf-440b-824b-9c53cf59e8a7
+      id: 0e3046d8-3452-4ea0-892e-687959de3cc9
       version: -1
       name: Search in mailboxes from batch 1
       description: Searches the Gmail records for all Google users.
       script: '|||gmail-search-all-mailboxes'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ""
     nexttasks:
       '#none#':
       - "15"
@@ -482,6 +487,9 @@ tasks:
         complex:
           root: Account.Gmail.Address
           accessor: '[0]'
+      max-results:
+        complex:
+          root: inputs.max-results
       query:
         complex:
           root: inputs.query
@@ -512,17 +520,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 4552abd2-7f22-4fe6-801f-0f4d5d8062f5
+    taskid: 9e48d93b-558e-4479-8ac9-e3aa15f90c4c
     type: regular
     task:
-      id: 4552abd2-7f22-4fe6-801f-0f4d5d8062f5
+      id: 9e48d93b-558e-4479-8ac9-e3aa15f90c4c
       version: -1
       name: Search in mailboxes from batch 2
       description: Searches the Gmail records for all Google users.
       script: '|||gmail-search-all-mailboxes'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ""
     nexttasks:
       '#none#':
       - "15"
@@ -558,6 +566,9 @@ tasks:
         complex:
           root: Account.Gmail.Address
           accessor: '[1]'
+      max-results:
+        complex:
+          root: inputs.max-results
       query:
         complex:
           root: inputs.query
@@ -588,17 +599,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 3d84f98f-1129-4fa5-8719-8bfc71ee6486
+    taskid: 916d766d-fa5b-4328-8926-da2cfe735c4d
     type: regular
     task:
-      id: 3d84f98f-1129-4fa5-8719-8bfc71ee6486
+      id: 916d766d-fa5b-4328-8926-da2cfe735c4d
       version: -1
       name: Search in mailboxes from batch 3
       description: Searches the Gmail records for all Google users.
       script: '|||gmail-search-all-mailboxes'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ""
     nexttasks:
       '#none#':
       - "15"
@@ -634,6 +645,9 @@ tasks:
         complex:
           root: Account.Gmail.Address
           accessor: '[2]'
+      max-results:
+        complex:
+          root: inputs.max-results
       query:
         complex:
           root: inputs.query
@@ -664,17 +678,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 4f4137da-8836-475c-8fbc-5d2d4319e511
+    taskid: fa4e80b5-4e17-4cea-8bd8-12ca2ea1b971
     type: regular
     task:
-      id: 4f4137da-8836-475c-8fbc-5d2d4319e511
+      id: fa4e80b5-4e17-4cea-8bd8-12ca2ea1b971
       version: -1
       name: Search in mailboxes from batch 4
       description: Searches the Gmail records for all Google users.
       script: '|||gmail-search-all-mailboxes'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ""
     nexttasks:
       '#none#':
       - "15"
@@ -710,6 +724,9 @@ tasks:
         complex:
           root: Account.Gmail.Address
           accessor: '[3]'
+      max-results:
+        complex:
+          root: inputs.max-results
       query:
         complex:
           root: inputs.query
@@ -740,17 +757,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: cd997e7e-614f-404e-87a7-a0fe23aaeb13
+    taskid: d2ed8b4f-d85c-4bb1-8795-48e61232721d
     type: regular
     task:
-      id: cd997e7e-614f-404e-87a7-a0fe23aaeb13
+      id: d2ed8b4f-d85c-4bb1-8795-48e61232721d
       version: -1
       name: Search in mailboxes from batch 5
       description: Searches the Gmail records for all Google users.
       script: '|||gmail-search-all-mailboxes'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ""
     nexttasks:
       '#none#':
       - "15"
@@ -786,6 +803,9 @@ tasks:
         complex:
           root: Account.Gmail.Address
           accessor: '[4]'
+      max-results:
+        complex:
+          root: inputs.max-results
       query:
         complex:
           root: inputs.query
@@ -860,8 +880,7 @@ inputs:
   description: Specifies the receiver. For example, "john"
   playbookInputQuery:
 - key: has-attachments
-  value:
-    simple: "False"
+  value: {}
   required: false
   description: Whether to search for messages sent with attachments.
   playbookInputQuery:
@@ -871,8 +890,7 @@ inputs:
   description: Messages in any folder, including Spam and Trash. For example, shopping
   playbookInputQuery:
 - key: include-spam-trash
-  value:
-    simple: "False"
+  value: {}
   required: false
   description: 'Includes messages from SPAM and TRASH in the results. (Default: false)'
   playbookInputQuery:
@@ -882,8 +900,7 @@ inputs:
   description: Only returns messages with labels that match all of the specified label IDs in a comma separated list.
   playbookInputQuery:
 - key: max-results
-  value:
-    simple: "100"
+  value: {}
   required: false
   description: |-
     The number of accounts Playbook will search in every time it runs,
@@ -900,8 +917,7 @@ inputs:
   description: 'Returns messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". For more syntax information,see "https://support.google.com/mail/answer/7190?hl=en"'
   playbookInputQuery:
 - key: show-only-mailboxes
-  value:
-    simple: "True"
+  value: {}
   required: false
   description: Whether to return only mailboxes which contain the email. Default is "True".
   playbookInputQuery:
@@ -940,12 +956,9 @@ outputs:
 - contextPath: Email.Attachments.entryID
   description: Email Attachments. IDs are separated by ','.
 - contextPath: NewPageToken
-  description: Needs rewrite.
-- contextPath: isLoop
-  description: test
-  type: unknown
-- contextPath: AccountsSearched
-  description: test
+  description: In the next iteration, additional accounts will be imported using this output.
+- contextPath: Stop
+  description: As a result of this output, the loop will come to an end.
   type: unknown
 tests:
 - Gmail Convert Html Test
