@@ -1112,15 +1112,33 @@ def set_integration_params(build,
         # "name": "McAfee__ESM__v2",
         # "instance_name": "v11.1.3",
         # McAfee__ESM__v2__v11.1.3
-        # integration_params = [change_placeholders_to_values(placeholders_map, item) for item
-        #                       in secret_params if item['name'] == integration['name']]
 
-        instance = secret.get('instance_name', '')
-        secret = secret_conf.get_secret(project_id, f'{integration["name"]}__{instance}')
-        logging.debug(
-            f'the secrete we got from the API:')
-        if secret:
-            matched_integration_params = change_placeholders_to_values(placeholders_map, f'{secret}__{instance}')
+        secrets = secret_conf.list_secrets(project_id, name_filter=integration["name"], with_secret=True)
+        integration_params = [change_placeholders_to_values(placeholders_map, item) for item
+                              in secrets if item['name'] == integration['name']]
+        if integration_params:
+            matched_integration_params = integration_params[0]
+            # if there are more than one integration params, it means that there are configuration
+            # values in our secret conf for multiple instances of the given integration and now we
+            # need to match the configuration values to the proper instance as specified in the
+            # 'instance_names' list argument
+            if len(integration_params) != 1:
+                found_matching_instance = False
+                for item in integration_params:
+                    if item.get('instance_name', 'Not Found') in instance_names:
+                        matched_integration_params = item
+                        found_matching_instance = True
+
+                if not found_matching_instance:
+                    optional_instance_names = [optional_integration.get('instance_name', 'None')
+                                               for optional_integration in integration_params]
+                    failed_match_instance_msg = 'There are {} instances of {}, please select one of them by using' \
+                                                ' the instance_name argument in conf.json. The options are:\n{}'
+                    logging_module.error(failed_match_instance_msg.format(len(integration_params),
+                                                                          integration['name'],
+                                                                          '\n'.join(optional_instance_names)))
+                    return False
+
             integration['params'] = matched_integration_params.get('params', {})
             integration['byoi'] = matched_integration_params.get('byoi', True)
             integration['instance_name'] = matched_integration_params.get('instance_name', integration['name'])
