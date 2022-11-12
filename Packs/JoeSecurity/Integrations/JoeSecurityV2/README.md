@@ -503,14 +503,14 @@ Retrieves URL information from Joe Security.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| URL.Name | String | Name of the URL. | 
-| Joe.URL.Name | String | Name of the URL. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| **Path** | **Type** | **Description**                                            |
+|---| --- |---|
+| URL.Data | String | The URL data.                                       | 
+| Joe.URL.Name | String | Name of the URL.                                           | 
+| DBotScore.Indicator | String | The indicator that was tested.                             | 
+| DBotScore.Score | Number | The actual score.                                          | 
+| DBotScore.Type | String | The indicator type.                                        | 
+| DBotScore.Vendor | String | The vendor used to calculate the score.                    | 
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 
 #### Command example
