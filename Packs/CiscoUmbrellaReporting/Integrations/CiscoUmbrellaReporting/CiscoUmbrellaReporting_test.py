@@ -4,7 +4,7 @@ import io
 from CommonServerPython import DemistoException
 from CiscoUmbrellaReporting import Client, get_destinations_list_command, \
     get_categories_list_command, get_identities_list_command, get_file_list_command, \
-    get_threat_list_command, test_module,\
+    get_threat_list_command, \
     get_event_types_list_command, get_activity_list_command, \
     get_activity_by_traffic_type_command,\
     get_summary_list_command, pagination
@@ -754,6 +754,7 @@ def test_test_module(requests_mock, raw_response):
             Then:
                 -  Check weather the given credentials are correct or not
     """
+    from CiscoUmbrellaReporting import test_module
     post_req_url = client.token_url
     requests_mock.post(post_req_url, json={'access_token': '12345'})
     access_token = client.access_token()
