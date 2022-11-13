@@ -33,14 +33,27 @@ Copy and paste the following in the *Filebeat Configuration File* section (insid
 
 ```
 filebeat.inputs:
-- type: filestream
-  paths:
-    - c:\Windows\System32\dns\DNS.log
-processors:
-  - add_fields:
-      fields:
-        vendor: msft
-        product: dns
+  - type: filestream
+    id: dns
+    enabled: true
+    paths:
+      - c:\Windows\System32\dns\DNS.log
+    processors:
+      - dissect:
+           tokenizer: "%{date} %{+time} %{+time} %{threadid} %{context} %{internalpacketidentifier} %{protocol} %{SendReceiveIndicator} %{RemoteIP->|ip} %{xid} %{QueryType->} %{opcode} [%{qflags}] %{questiontype->} %{questionnamenondetailed}"
+           target_prefix: ""
+      - drop_fields:
+          fields: [ "message" ]
+      - add_locale: ~
+      - rename:
+          fields:
+            - from: "event.timezone"
+              to: "timezone"
+      - add_fields:
+          target: ""
+          fields:
+            vendor: "microsoft"
+            product: "dns"
 ```
 
 **Note**: The above configuration uses the default location of the logs. 
