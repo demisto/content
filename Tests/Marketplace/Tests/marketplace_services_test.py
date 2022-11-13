@@ -403,7 +403,7 @@ class TestHelperFunctions:
         (['Packs', 'A', PackFolders.SCRIPTS.value, 'A', 'Pipfile'], True),
         (['Packs', 'A', PackFolders.SCRIPTS.value, 'A', 'Pipfile.lock'], True),
         (['Packs', 'A', Pack.README], False),
-        (['Packs', 'A', Pack.PACK_METADATA], False),
+        (['Packs', 'A', Pack.USER_METADATA], False),
         (['Packs', 'A', PackFolders.INTEGRATIONS.value, 'A', 'A.py'], False)
     ])
     def test_is_ignored_pack_file(self, modified_file_path_parts, expected_result, mocker):
@@ -1898,10 +1898,10 @@ class TestSetDependencies:
         dependencies = json.dumps(metadata['dependencies'])
         dependencies = json.loads(dependencies)
         dependencies.update(generated_dependencies['ImpossibleTraveler']['dependencies'])
-        p._pack_metadata = metadata
+        p._user_metadata = metadata
         p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
 
-        assert p.pack_metadata['dependencies'] == dependencies
+        assert p.user_metadata['dependencies'] == dependencies
 
     def test_set_dependencies_no_user_dependencies(self):
         """
@@ -1954,10 +1954,10 @@ class TestSetDependencies:
         generated_dependencies['ImpossibleTraveler']['dependencies'].update(BASE_PACK_DEPENDENCY_DICT)
         metadata['dependencies'] = {}
         p = Pack('ImpossibleTraveler', 'dummy_path')
-        p._pack_metadata = metadata
+        p._user_metadata = metadata
         p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
 
-        assert p.pack_metadata['dependencies'] == generated_dependencies['ImpossibleTraveler']['dependencies']
+        assert p.user_metadata['dependencies'] == generated_dependencies['ImpossibleTraveler']['dependencies']
 
     def test_set_dependencies_no_generated_dependencies(self):
         """
@@ -1974,9 +1974,9 @@ class TestSetDependencies:
         metadata = self.get_pack_metadata()
         dependencies = metadata['dependencies']
         p = Pack('ImpossibleTraveler', 'dummy_path')
-        p._pack_metadata = metadata
+        p._user_metadata = metadata
         p.set_pack_dependencies({}, {})
-        assert p.pack_metadata['dependencies'] == dependencies
+        assert p.user_metadata['dependencies'] == dependencies
 
     def test_set_dependencies_core_pack(self):
         """
@@ -2011,13 +2011,13 @@ class TestSetDependencies:
         metadata['name'] = 'HelloWorld'
         metadata['id'] = 'HelloWorld'
         p = Pack('HelloWorld', 'dummy_path')
-        p._pack_metadata = metadata
+        p._user_metadata = metadata
         dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])
         dependencies = json.loads(dependencies)
 
         p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
 
-        assert p.pack_metadata['dependencies'] == dependencies
+        assert p.user_metadata['dependencies'] == dependencies
 
     def test_set_dependencies_core_pack_new_mandatory_dependency(self):
         """
@@ -2057,7 +2057,7 @@ class TestSetDependencies:
         generated_dependencies['HelloWorld']['dependencies'].update(BASE_PACK_DEPENDENCY_DICT)
         metadata['dependencies'] = {}
         p = Pack('HelloWorld', 'dummy_path')
-        p._pack_metadata = metadata
+        p._user_metadata = metadata
 
         with pytest.raises(Exception) as e:
             p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
@@ -2105,11 +2105,11 @@ class TestSetDependencies:
         dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])
         dependencies = json.loads(dependencies)
         dependencies.update(user_dependencies)
-        p._pack_metadata = metadata
+        p._user_metadata = metadata
 
         p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
 
-        assert p.pack_metadata['dependencies'] == dependencies
+        assert p.user_metadata['dependencies'] == dependencies
 
 
 class TestReleaseNotes:

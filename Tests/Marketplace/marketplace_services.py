@@ -79,7 +79,7 @@ class Pack(object):
         self._hidden = False  # initialized in load_user_metadata function
         self._description = None  # initialized in load_user_metadata function
         self._display_name = None  # initialized in load_user_metadata function
-        self._pack_metadata = {}  # initialized in load_user_metadata function
+        self._user_metadata = {}  # initialized in load_user_metadata function
         self._eula_link = None  # initialized in load_user_metadata function
         self._is_feed = False  # a flag that specifies if pack is a feed pack
         self._downloads_count = 0  # number of pack downloads
@@ -264,10 +264,10 @@ class Pack(object):
         return self._display_name
 
     @property
-    def pack_metadata(self):
+    def user_metadata(self):
         """ dict: the pack_metadata.
         """
-        return self._pack_metadata
+        return self._user_metadata
 
     @display_name.setter  # type: ignore[attr-defined,no-redef]
     def display_name(self, display_name_value):
@@ -648,8 +648,8 @@ class Pack(object):
             Metadata.AUTHOR_IMAGE: self._author_image,
             Metadata.CERTIFICATION: self._certification,
             Metadata.PRICE: self._price,
-            Metadata.SERVER_MIN_VERSION: self.pack_metadata.get(Metadata.SERVER_MIN_VERSION) or self.server_min_version,
-            Metadata.CURRENT_VERSION: self.pack_metadata.get(Metadata.CURRENT_VERSION, ''),
+            Metadata.SERVER_MIN_VERSION: self.user_metadata.get(Metadata.SERVER_MIN_VERSION) or self.server_min_version,
+            Metadata.CURRENT_VERSION: self.user_metadata.get(Metadata.CURRENT_VERSION, ''),
             Metadata.VERSION_INFO: build_number,
             Metadata.COMMIT: commit_hash,
             Metadata.DOWNLOADS: self._downloads_count,
@@ -663,7 +663,7 @@ class Pack(object):
             Metadata.KEY_WORDS: self._keywords,
             Metadata.DEPENDENCIES: self._parsed_dependencies,
             Metadata.MARKETPLACES: self._marketplaces,
-            Metadata.VIDEOS: self.pack_metadata.get(Metadata.VIDEOS) or [],
+            Metadata.VIDEOS: self.user_metadata.get(Metadata.VIDEOS) or [],
         }
 
         if self._is_private_pack:
@@ -2315,7 +2315,7 @@ class Pack(object):
             self.hidden = user_metadata.get(Metadata.HIDDEN, False)
             self.description = user_metadata.get(Metadata.DESCRIPTION, False)
             self.display_name = user_metadata.get(Metadata.NAME, '')  # type: ignore[misc]
-            self._pack_metadata = user_metadata
+            self._user_metadata = user_metadata
             self._eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
             self._marketplaces = user_metadata.get('marketplaces', ['xsoar'])
 
@@ -2369,39 +2369,39 @@ class Pack(object):
         pack_dependencies_by_download_count = self._displayed_images_dependent_on_packs
         if not format_dependencies_only:
             # ===== Pack Regular Attributes =====
-            self._support_type = self.pack_metadata.get(Metadata.SUPPORT, Metadata.XSOAR_SUPPORT)
+            self._support_type = self.user_metadata.get(Metadata.SUPPORT, Metadata.XSOAR_SUPPORT)
             self._support_details = self._create_support_section(
-                support_type=self._support_type, support_url=self.pack_metadata.get(Metadata.URL),
-                support_email=self.pack_metadata.get(Metadata.EMAIL)
+                support_type=self._support_type, support_url=self.user_metadata.get(Metadata.URL),
+                support_email=self.user_metadata.get(Metadata.EMAIL)
             )
             self._author = self._get_author(
-                support_type=self._support_type, author=self.pack_metadata.get(Metadata.AUTHOR, ''))
+                support_type=self._support_type, author=self.user_metadata.get(Metadata.AUTHOR, ''))
             self._certification = self._get_certification(
-                support_type=self._support_type, certification=self.pack_metadata.get(Metadata.CERTIFICATION)
+                support_type=self._support_type, certification=self.user_metadata.get(Metadata.CERTIFICATION)
             )
-            self._legacy = self.pack_metadata.get(Metadata.LEGACY, True)
+            self._legacy = self.user_metadata.get(Metadata.LEGACY, True)
             self._create_date = self._get_pack_creation_date(index_folder_path)
             self._update_date = self._get_pack_update_date(index_folder_path)
-            self._use_cases = input_to_list(input_data=self.pack_metadata.get(Metadata.USE_CASES),
+            self._use_cases = input_to_list(input_data=self.user_metadata.get(Metadata.USE_CASES),
                                             capitalize_input=True)
-            self._categories = input_to_list(input_data=self.pack_metadata.get(Metadata.CATEGORIES),
+            self._categories = input_to_list(input_data=self.user_metadata.get(Metadata.CATEGORIES),
                                              capitalize_input=True)
-            self._keywords = input_to_list(self.pack_metadata.get(Metadata.KEY_WORDS))
-        self._parsed_dependencies = self._parse_pack_dependencies(self.pack_metadata.get(Metadata.DEPENDENCIES, {}),
+            self._keywords = input_to_list(self.user_metadata.get(Metadata.KEY_WORDS))
+        self._parsed_dependencies = self._parse_pack_dependencies(self.user_metadata.get(Metadata.DEPENDENCIES, {}),
                                                                   dependencies_metadata_dict)
 
         # ===== Pack Private Attributes =====
         if not format_dependencies_only:
-            self._is_private_pack = Metadata.PARTNER_ID in self.pack_metadata
+            self._is_private_pack = Metadata.PARTNER_ID in self.user_metadata
             self._is_premium = self._is_private_pack
-            self._preview_only = get_valid_bool(self.pack_metadata.get(Metadata.PREVIEW_ONLY, False))
-            self._price = convert_price(pack_id=self._pack_name, price_value_input=self.pack_metadata.get('price'))
+            self._preview_only = get_valid_bool(self.user_metadata.get(Metadata.PREVIEW_ONLY, False))
+            self._price = convert_price(pack_id=self._pack_name, price_value_input=self.user_metadata.get('price'))
             if self._is_private_pack:
-                self._vendor_id = self.pack_metadata.get(Metadata.VENDOR_ID, "")
-                self._partner_id = self.pack_metadata.get(Metadata.PARTNER_ID, "")
-                self._partner_name = self.pack_metadata.get(Metadata.PARTNER_NAME, "")
-                self._content_commit_hash = self.pack_metadata.get(Metadata.CONTENT_COMMIT_HASH, "")
-                self._disable_monthly = self.pack_metadata.get(Metadata.DISABLE_MONTHLY, False)
+                self._vendor_id = self.user_metadata.get(Metadata.VENDOR_ID, "")
+                self._partner_id = self.user_metadata.get(Metadata.PARTNER_ID, "")
+                self._partner_name = self.user_metadata.get(Metadata.PARTNER_NAME, "")
+                self._content_commit_hash = self.user_metadata.get(Metadata.CONTENT_COMMIT_HASH, "")
+                self._disable_monthly = self.user_metadata.get(Metadata.DISABLE_MONTHLY, False)
                 # Currently all content packs are legacy.
                 # Since premium packs cannot be legacy, we directly set this attribute to false.
                 self._legacy = False
@@ -2415,7 +2415,7 @@ class Pack(object):
             self._downloads_count = self._pack_statistics_handler.download_count
             trending_packs = statistics_handler.trending_packs
             pack_dependencies_by_download_count = self._pack_statistics_handler.displayed_dependencies_sorted
-        self._tags = self._collect_pack_tags(self.pack_metadata, landing_page_sections, trending_packs)
+        self._tags = self._collect_pack_tags(self.user_metadata, landing_page_sections, trending_packs)
         self._search_rank = mp_statistics.PackStatisticsHandler.calculate_search_rank(
             tags=self._tags, certification=self._certification, content_items=self._content_items
         )
@@ -2552,11 +2552,11 @@ class Pack(object):
         logging.debug(f'(1) {first_level_dependencies=}')
         logging.debug(f'(1) {all_levels_dependencies=}')
 
-        if Metadata.DISPLAYED_IMAGES not in self._pack_metadata:
-            self._pack_metadata[Metadata.DISPLAYED_IMAGES] = displayed_images_dependent_on_packs
+        if Metadata.DISPLAYED_IMAGES not in self._user_metadata:
+            self._user_metadata[Metadata.DISPLAYED_IMAGES] = displayed_images_dependent_on_packs
 
-        if Metadata.DEPENDENCIES not in self._pack_metadata:
-            self._pack_metadata[Metadata.DEPENDENCIES] = {}
+        if Metadata.DEPENDENCIES not in self._user_metadata:
+            self._user_metadata[Metadata.DEPENDENCIES] = {}
 
         if self._pack_name != GCPConfig.BASE_PACK:
             # add base as a mandatory pack dependency, by design for all packs
@@ -2564,7 +2564,7 @@ class Pack(object):
             logging.debug(f'(2) {first_level_dependencies=}')
 
         # update the calculated dependencies with the hardcoded dependencies
-        first_level_dependencies.update(self.pack_metadata[Metadata.DEPENDENCIES])
+        first_level_dependencies.update(self.user_metadata[Metadata.DEPENDENCIES])
         logging.debug(f'(3) {first_level_dependencies=}')
 
         # If it is a core pack, check that no new mandatory packs (that are not core packs) were added
@@ -2576,12 +2576,12 @@ class Pack(object):
             mandatory_dependencies = [k for k, v in first_level_dependencies.items()
                                       if v.get(Metadata.MANDATORY, False) is True
                                       and k not in core_packs
-                                      and k not in self._pack_metadata[Metadata.DEPENDENCIES].keys()]
+                                      and k not in self._user_metadata[Metadata.DEPENDENCIES].keys()]
             if mandatory_dependencies:
                 raise Exception(f'New mandatory dependencies {mandatory_dependencies} were '
                                 f'found in the core pack {self._pack_name}')
 
-        self._pack_metadata[Metadata.DEPENDENCIES] = first_level_dependencies
+        self._user_metadata[Metadata.DEPENDENCIES] = first_level_dependencies
         self._first_level_dependencies = first_level_dependencies
         self._all_levels_dependencies = all_levels_dependencies
         self._displayed_images_dependent_on_packs = displayed_images_dependent_on_packs
