@@ -15,8 +15,8 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 COUNT = 0
 DEFAULT_PAGE_SIZE = 50
-FROM_DATE = "-7days"
-TO_DATE = "now"
+DEFAULT_FROM_DATE = "-7days"
+DEFAULT_TO_DATE = "now"
 OFFSET = 0
 INTEGRATION_CONTEXT_NAME = 'UmbrellaReporting'
 TOKEN_ENDPOINT = "https://management.api.umbrella.com/auth/v2/oauth2/token"
@@ -84,8 +84,7 @@ class Client(BaseClient):
         self.client_key = client_key
         self.organisation_id = organisation_id
         if not self.organisation_id.isdigit():
-            raise DemistoException("Invalid Input Error:The Organization ID "
-                                   "must be a number.")
+            raise DemistoException("Invalid Input Error: The Organization ID must be a number.")
 
     def access_token(self):
         """
@@ -822,41 +821,41 @@ def create_cisco_umbrella_args(limit: Optional[int], offset: Optional[int], args
     Args:
         limit: Records per page.
         offset: The number of records to be skipped.
-        args: kwargs
+        args: demisto.args()
     Returns:
         Return arguments dict.
     """
     cisco_umbrella_args: Dict = {}
     if sha256 := args.get('sha256'):
-        check_valid_indicator_value("sha256", sha256)
+        check_valid_indicator_value('sha256', sha256)
     if ip := args.get('ip'):
-        check_valid_indicator_value("ip", ip)
-    if domains := args.get("domains"):
+        check_valid_indicator_value('ip', ip)
+    if domains := args.get('domains'):
         check_valid_indicator_value('domains', domains)
-    if urls := args.get("urls"):
+    if urls := args.get('urls'):
         check_valid_indicator_value('urls', urls)
-    if intrusion_action := args.get("intrusion_action"):
-        check_valid_indicator_value("intrusion_action", intrusion_action)
+    if intrusion_action := args.get('intrusion_action'):
+        check_valid_indicator_value('intrusion_action', intrusion_action)
 
     max_limit = args.get('limit', DEFAULT_PAGE_SIZE)
 
-    cisco_umbrella_args["limit"] = limit if limit != DEFAULT_PAGE_SIZE else max_limit
-    cisco_umbrella_args["offset"] = offset
-    cisco_umbrella_args["from"] = args.get('from', FROM_DATE)
-    cisco_umbrella_args["to"] = args.get('to', TO_DATE)
-    cisco_umbrella_args["threattypes"] = args.get('threat_types', None)
-    cisco_umbrella_args["identitytypes"] = args.get('identity_types', None)
-    cisco_umbrella_args["ampdisposition"] = args.get("amp_disposition", None)
-    cisco_umbrella_args["filename"] = args.get("file_name", None)
-    cisco_umbrella_args["intrusionaction"] = args.get("intrusion_action", None)
-    cisco_umbrella_args["domains"] = args.get('domains', None)
-    cisco_umbrella_args["urls"] = args.get("urls", None)
-    cisco_umbrella_args["ip"] = args.get("ip", None)
-    cisco_umbrella_args["ports"] = args.get("ports", None)
-    cisco_umbrella_args["verdict"] = args.get("verdict", None)
-    cisco_umbrella_args["threats"] = args.get("threats", None)
-    cisco_umbrella_args["signatures"] = args.get("signatures", None)
-    cisco_umbrella_args["sha256"] = args.get("sha256", None)
+    cisco_umbrella_args['limit'] = limit if limit != DEFAULT_PAGE_SIZE else max_limit
+    cisco_umbrella_args['offset'] = offset
+    cisco_umbrella_args['from'] = args.get('from', DEFAULT_FROM_DATE)
+    cisco_umbrella_args['to'] = args.get('to', DEFAULT_TO_DATE)
+    cisco_umbrella_args['threattypes'] = args.get('threat_types')
+    cisco_umbrella_args['identitytypes'] = args.get('identity_types')
+    cisco_umbrella_args['ampdisposition'] = args.get('amp_disposition')
+    cisco_umbrella_args['filename'] = args.get('file_name')
+    cisco_umbrella_args['intrusionaction'] = intrusion_action
+    cisco_umbrella_args['domains'] = domains
+    cisco_umbrella_args['urls'] = urls
+    cisco_umbrella_args['ip'] = ip
+    cisco_umbrella_args['ports'] = args.get('ports')
+    cisco_umbrella_args['verdict'] = args.get('verdict')
+    cisco_umbrella_args['threats'] = args.get('threats')
+    cisco_umbrella_args['signatures'] = args.get('signatures')
+    cisco_umbrella_args['sha256'] = sha256
 
     return cisco_umbrella_args
 
