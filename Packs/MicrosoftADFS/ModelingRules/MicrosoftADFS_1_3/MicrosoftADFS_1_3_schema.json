@@ -5,11 +5,11 @@
         "is_array": false
     },
     "event_id": {
-        "type": "number",
+        "type": "int",
         "is_array": false
     },
     "record_id": {
-        "type": "number",
+        "type": "int",
         "is_array": false
     },
     "host_name": {
