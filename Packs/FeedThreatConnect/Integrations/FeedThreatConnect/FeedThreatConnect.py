@@ -353,6 +353,8 @@ class Client(BaseClient):
             # if no url is stated, there is no need to make a request
             return [], None, ''
         headers = self.create_header(url_suffix, full_url, method)
+        demisto.debug(f'{url_suffix=}')
+        demisto.debug(f'{headers=}')
         response = self._http_request(method=method, url_suffix=url_suffix, data=payload, resp_type='json',
                                       params=params, headers=headers, full_url=full_url)
 
@@ -399,19 +401,19 @@ def module_test_command(client: Client, args):  # pragma: no cover
     url = '/api/v3/groups?resultLimit=2'
     try:
         response, status = client.make_request(Method.GET, url)
+        demisto.debug(f"{response=}")
         if status == 'Success':
             return "ok", {}, {}
         else:
-            demisto.debug(response)
             return_error('Error from the API: ' + response.get('message',
                                                             'An error has occurred, if it persist please contact your '
                                                             'local help desk'))
     except Exception as e:
         exception_text = str(e).lower()
         demisto.debug('Exception happened')
-        demisto.debug(exception_text)
+        demisto.debug(f"{exception_text=}")
         if 'resource not found' in exception_text:
-            return 'ok'
+            return "ok", {}, {}
         else:
             return_error(str(e))
 
