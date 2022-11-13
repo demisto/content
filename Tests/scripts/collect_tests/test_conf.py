@@ -49,7 +49,6 @@ class TestConf(DictFileBased):
             for test in self.tests
             if test.integrations
         }
-        logger.debug(f'tests_to_integrations:\n{self.tests_to_integrations}\n')
         self.integrations_to_tests: dict[str, list[str]] = self._calculate_integration_to_tests()
 
         # Attributes
@@ -74,7 +73,6 @@ class TestConf(DictFileBased):
         for test, integrations in self.tests_to_integrations.items():
             for integration in integrations:
                 result[integration].append(test)
-        logger.debug(f'integration_to_tests:\n{result}\n')
         return dict(result)
 
     def get_test(self, test_id: str) -> Optional[TestConfItem]:

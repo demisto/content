@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "***Breaking Change*** In response to a change in the API, API keys have been replaced with API tokens. Users will need to generate an API token."
+}

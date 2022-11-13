@@ -7,6 +7,7 @@ import json as JSON
 import time
 from urllib.parse import urlparse
 
+import urllib3
 import requests
 from requests.utils import quote  # type: ignore
 
@@ -17,7 +18,7 @@ except ImportError:
     from queue import Queue  # type: ignore
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 '''GLOBAL VARS'''
 BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist. ' \
@@ -247,6 +248,9 @@ def urlscan_submit_url(client, url):
         if demisto.args().get('public') == 'public':
             submission_dict['visibility'] = 'public'
     elif demisto.params().get('is_public') is True:
+        # this parameter is now hidden and it is default value is false.
+        # Hence, we do not expect to be entering this code block,
+        # and it is merely here for Backward Compatibility reasons.
         submission_dict['visibility'] = 'public'
 
     submission_dict['url'] = url
@@ -774,7 +778,9 @@ def main():
     params = demisto.params()
 
     api_key = params.get('apikey') or (params.get('creds_apikey') or {}).get('password', '')
-    scan_visibility = params.get('scan_visibility')
+    # to safeguard the visibility of the scan,
+    # if the customer did not choose a visibility, we will set it to private by default.
+    scan_visibility = params.get('scan_visibility', 'private')
     threshold = int(params.get('url_threshold', '1'))
     use_ssl = not params.get('insecure', False)
     reliability = params.get('integrationReliability')
