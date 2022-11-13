@@ -2,8 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 
 from typing import Tuple
-from dateparser import parse
-from datetime import datetime, timedelta
 
 
 ''' CONSTANTS '''
@@ -75,7 +73,7 @@ class Client(BaseClient):
                                           params={'grant_type': 'client_credentials'})
         check_response(raw_response)
 
-        demisto.debug('Succesfully got access token.')
+        demisto.info('Succesfully got access token.')
         return raw_response.get('access_token')
 
     def get_events_request(self, access_token: str, query_params: dict) -> Tuple:
@@ -88,7 +86,7 @@ class Client(BaseClient):
 
         events = raw_response.get('data', [])
         cursor = raw_response.get('pagination', {}).get('after_cursor')
-        demisto.debug(f'Succesfully got {len(events)} events.')
+        demisto.info(f'Succesfully got {len(events)} events.')
         return raw_response, events, cursor
 
     def get_event_types_request(self) -> list:
@@ -98,7 +96,7 @@ class Client(BaseClient):
         raw_response = self._http_request(method='GET', url_suffix='/api/1/events/types')
         check_response(raw_response)
 
-        demisto.debug('Succesfully got event types.')
+        demisto.info('Succesfully got event types.')
         return raw_response.get('data', [])
 
     def get_event_types_from_last_run(self, last_run: dict):
@@ -129,8 +127,8 @@ class Client(BaseClient):
         if event_type_name := event_types.get(str(event['event_type_id'])):
             return event_type_name
 
-        demisto.debug(f"Could not find the event type id {str(event['event_type_id'])}. "
-                      f"Trying to request the event types from OneLogin.")
+        demisto.info(f"Could not find the event type id {str(event['event_type_id'])}. "
+                     f"Trying to request the event types from OneLogin.")
         event_types_res = self.get_event_types_request()
         event_types = {str(event_type['id']): event_type['name'] for event_type in event_types_res}
 
@@ -138,30 +136,9 @@ class Client(BaseClient):
             last_run['event_types'] = event_types
             return event_type_name
 
-        demisto.debug(f"Could not find the event type id '{str(event['event_type_id'])}' "
-                      f"in the event types from OneLogin, returning an empty value")
+        demisto.info(f"Could not find the event type id '{str(event['event_type_id'])}' "
+                     f"in the event types from OneLogin, returning an empty value")
         return ''
-
-    def get_access_token(self):
-        """
-        Gets the API access token.
-        """
-
-        int_context = get_integration_context()
-        if 'access_token' in int_context:
-            expired_token_date_time = parse(int_context['expired_token_time'], settings={'TIMEZONE': 'UTC'})
-            if expired_token_date_time and datetime.now(timezone.utc) < expired_token_date_time:
-                demisto.debug("Found access token in integration context.")
-                return int_context.get('access_token')
-
-        demisto.debug("Access token has expired, sending request to get a new access token.")
-        access_token = self.get_access_token_request()
-        set_integration_context({
-            'access_token': access_token,
-            'expired_token_time': (datetime.utcnow() + timedelta(minutes=590)).strftime(DATE_FORMAT)
-        })
-
-        return access_token
 
     def handle_pagination_first_batch(self, access_token: str, query_params: dict, last_run: dict) -> Tuple:
         """
@@ -218,7 +195,7 @@ class Client(BaseClient):
                 for event in events:
 
                     if len(aggregated_events) == user_defined_limit:
-                        demisto.debug(f'Reached the user-defined limit ({user_defined_limit}) - stopping.')
+                        demisto.info(f'Reached the user-defined limit ({user_defined_limit}) - stopping.')
                         last_run['first_id'] = event.get('id')
                         cursor = query_params['after_cursor']
                         break
@@ -229,18 +206,18 @@ class Client(BaseClient):
                 else:
                     # Finished iterating through all events in this batch
                     if cursor:
-                        demisto.debug('Using the cursor from the last API call to execute the next call.')
+                        demisto.info('Using the cursor from the last API call to execute the next call.')
                         query_params['after_cursor'] = cursor
                         _, events, cursor = self.get_events_request(access_token, query_params)
                         continue
 
-                demisto.debug('Finished iterating through all events in this fetch run.')
+                demisto.info('Finished iterating through all events in this fetch run.')
                 break
 
         except DemistoException as e:
             if not e.res or e.res.status_code != 429:
                 raise e
-            demisto.debug('Reached API rate limit, storing last used cursor.')
+            demisto.info('Reached API rate limit, storing last used cursor.')
             cursor = query_params['after_cursor']
 
         since = query_params['since'] if cursor or not aggregated_events else aggregated_events[-1].get('created_at')
@@ -267,7 +244,7 @@ def test_module_command(client: Client, params: dict) -> str:
     Returns:
         (str) 'ok' if success.
     """
-    access_token = client.get_access_token()
+    access_token = client.get_access_token_request()
     params = prepare_query_params(params)
     client.get_events_request(access_token, params)
     return 'ok'
@@ -284,7 +261,7 @@ def get_events_command(client: Client, args: dict) -> Tuple[list, CommandResults
         (list) the events retrieved from the API call.
         (CommandResults) the CommandResults object holding the collected events information.
     """
-    access_token = client.get_access_token()
+    access_token = client.get_access_token_request()
     query_params = prepare_query_params(args)
     raw_response, events, cursor = client.get_events_request(access_token, query_params)
     results = CommandResults(
@@ -312,7 +289,7 @@ def fetch_events_command(client: Client, params: dict, last_run: dict) -> Tuple[
         (list) the events retrieved from the API call.
         (dict) the updated lastRun object.
     """
-    access_token = client.get_access_token()
+    access_token = client.get_access_token_request()
     query_params = prepare_query_params(params, last_run)
     events = client.fetch_events(access_token, query_params, last_run)
     return events, last_run
@@ -327,7 +304,7 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
 
-    demisto.debug(f'Command being called is {command}')
+    demisto.info(f'Command being called is {command}')
     try:
 
         client_id = params.get('credentials', {}).get('identifier')

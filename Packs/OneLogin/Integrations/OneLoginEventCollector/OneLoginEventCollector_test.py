@@ -202,7 +202,7 @@ def test_get_events(mocker, requests_mock):
     response = MOCK_EVENTS
     requests_mock.get(f'{CORE_URL}/api/1/events', json=response)
 
-    mocker.patch.object(Client, 'get_access_token')
+    mocker.patch.object(Client, 'get_access_token_request')
     mocker.patch.object(Client, 'get_event_types_request')
     _, results = get_events_command(Client(base_url=CORE_URL, headers={}), args={})
 
