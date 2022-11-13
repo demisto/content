@@ -565,11 +565,6 @@
         {
             "integrations": "Azure Security Center v2",
             "playbookID": "Azure SecurityCenter - Test",
-            "instance_names": "ms_azure_sc_dev"
-        },
-        {
-            "integrations": "Azure Security Center v2",
-            "playbookID": "Azure SecurityCenter - Test",
             "instance_names": "ms_azure_sc_self_deployed"
         },
         {
@@ -2335,10 +2330,6 @@
             "fromversion": "6.0.0"
         },
         {
-            "integrations": "duo",
-            "playbookID": "DUO Test Playbook"
-        },
-        {
             "playbookID": "SLA Scripts - Test",
             "fromversion": "4.1.0"
         },
@@ -4057,13 +4048,6 @@
             ]
         },
         {
-            "playbookID": "MicrosoftGraphMail-Test",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "MicrosoftGraphMail"
-            ]
-        },
-        {
             "playbookID": "PassiveTotal_v2-Test",
             "fromversion": "5.0.0",
             "integrations": [
@@ -4175,20 +4159,14 @@
             ]
         },
         {
-            "playbookID": "GitLab-test-playbook",
-            "fromversion": "6.0.0",
-            "integrations": [
-                "GitLab",
-                "LGTM",
-                "MinIO",
-                "Docker Engine API"
-            ]
+            "playbookID": "Test-GitLab-v2",
+            "fromversion": "6.5.0",
+            "integrations": "GitLabv2"
         },
         {
             "playbookID": "LGTM-test-playbook",
             "fromversion": "6.0.0",
             "integrations": [
-                "GitLab",
                 "LGTM",
                 "MinIO",
                 "Docker Engine API"
@@ -4198,7 +4176,6 @@
             "playbookID": "playbook-MinIO-Test",
             "fromversion": "6.0.0",
             "integrations": [
-                "GitLab",
                 "LGTM",
                 "MinIO",
                 "Docker Engine API"
@@ -5212,6 +5189,8 @@
         "Calculate Severity - Standard - Test": "Issue 32715",
         "Calculate Severity - Generic v2 - Test": "Issue 32716",
         "Workday - Test": "No credentials Issue 29595",
+        "McAfee-MAR_Test": "Issue CIAC-4521",
+        "MAR - Endpoint data collection test": "Issue CIAC-4521",
         "Tidy - Test": "Will run it manually.",
         "Protectwise-Test": "Issue 28168",
         "TestDedupIncidentsPlaybook": "Issue 24344",
@@ -5280,10 +5259,6 @@
         "McAfee ESM v2 - Test v11.1.3": "Issue 43825",
         "McAfee ESM v2 (v11.3) - Test" : "Jira ticket CRTX-65370",
         "McAfee ESM Watchlists - Test v11.3": "Jira ticket CRTX-65370",
-        "MicrosoftGraphMail-Test_prod": "Issue 40125",
-        "MicrosoftGraphMail-Test": "Issue CIAC-4222",
-        "MicrosoftGraphMail-Test_dev": "Issue CIAC-4223",
-        "MicrosoftGraphMail-Test_dev_no_oproxy": "Issue CIAC-512",
         "Detonate URL - WildFire v2.1 - Test": "Issue 40834",
         "Domain Enrichment - Generic v2 - Test": "Issue 40862",
         "TestIPQualityScorePlaybook": "Issue 40915",
@@ -5348,8 +5323,7 @@
         "Process Email - Generic - Test - Incident Starter": "Issue CIAC-4161",
         "AD v2 - debug-mode": "No credentials",
         "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
-        "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407",
-        "O365-SecurityAndCompliance-Test": "Failing in nightly, being handled"
+        "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407"
     },
     "skipped_integrations": {
         "AbuseIPDB": "License expired",
@@ -5426,7 +5400,6 @@
         "carbonblackprotection": "License expired",
         "icebrg": "Issue 14312",
         "Freshdesk": "Trial account expired",
-        "Threat Grid": "Issue 16197",
         "Kafka V2": "Can not connect to instance from remote",
         "KafkaV3": "Can not connect to instance from remote",
         "Check Point Sandblast": "Issue 15948",

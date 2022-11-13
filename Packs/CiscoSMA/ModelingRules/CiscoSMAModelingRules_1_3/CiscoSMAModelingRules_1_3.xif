@@ -1,5 +1,5 @@
 [MODEL: dataset="Cisco_SMA_raw"]
-filter _raw_log contains "system_logs" or _raw_log contains "ftpd_logs" or _raw_log contains "euqgui_logs: Info:"or _raw_log contains"euqgui_logs: Info: login:" and _raw_log not contains "euqgui_logs: Info: logout:" or _raw_log contains "audit_logs" and _raw_log not contains "Event: User logged out" and _raw_log not contains "Event: User input was" and _raw_log not contains "Event: Successful login" and _raw_log not contains "Event: Permission denied" and _raw_log not contains "Event: User visited the web page"
+filter (_raw_log contains "system_logs" or _raw_log contains "ftpd_logs" or _raw_log contains "euqgui_logs: Info:" or _raw_log contains "euqgui_logs: Info: login:" or _raw_log contains "audit_logs") and (_raw_log not contains "euqgui_logs: Info: logout:"  or _raw_log not contains "Event: User logged out" or _raw_log not contains "Event: User input was" or _raw_log not contains "Event: Successful login" or _raw_log not contains "Event: Permission denied" or _raw_log not contains "Event: User visited the web page")
 | alter date = arrayindex(regextract(_raw_log,"(\w+\s\d+)"),0),
 		time = arrayindex(regextract(_raw_log,"\s(\d+\:\d+\:\d+)"),0)
 | alter Timestamp = concat (date, " ",time)
