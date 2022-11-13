@@ -6,10 +6,17 @@ from typing import Callable
 import requests
 from google.oauth2 import service_account
 import google.auth.transport.requests
+from enum import Enum
 
 ''' CONSTANTS '''
 BASE_URL = 'https://admin.googleapis.com/'
 OUTPUT_PREFIX = 'Google'
+
+
+class Devices(Enum):
+    CHROMEOS_DEVICE = 0
+    MOBILE_DEVICE = 1
+
 
 requests.packages.urllib3.disable_warnings()
 
@@ -94,7 +101,7 @@ class Client(BaseClient):
 
     def google_mobile_device_list_request(self, projection: str | None = None, query: str | None = None,
                                           order_by: str | None = None, sort_order: str | None = None,
-                                          page_token: str | None = None, max_results: int | None = None):
+                                          page_token: str | None = None, max_results: int | None = None) -> dict:
         params = assign_params(projection=projection, query=query, orderBy=order_by,
                                sortOrder=sort_order, pageToken=page_token, maxResults=max_results)
         scopes = ['https://www.googleapis.com/auth/admin.directory.device.mobile.readonly']
@@ -102,7 +109,8 @@ class Client(BaseClient):
         headers = self._headers | {'Authorization': f'Bearer {token}'}
         response = self.http_request(
             method='GET', url_suffix=f'admin/directory/v1/customer/{self._customer_id}/devices/mobile',
-            params=params, headers=headers)
+            params=params, headers=headers
+        )
         return response
 
     def google_chromeos_device_action_request(self, resource_id: str, action: str, deprovision_reason: str = ''):
@@ -115,6 +123,21 @@ class Client(BaseClient):
         response = self.http_request(
             method='POST', url_suffix=f'admin/directory/v1/customer/{self._customer_id}/devices/chromeos/{resource_id}/action',
             json_data=json_body, headers=headers, resp_type='response')
+        return response
+
+    def google_chromeos_device_list_request(self, projection: str | None = None, query: str | None = None,
+                                            order_by: str | None = None, sort_order: str | None = None,
+                                            org_unit_path: str | None = None, page_token: str | None = None,
+                                            max_results: int | None = None) -> dict:
+        params = assign_params(projection=projection, query=query, orderBy=order_by, orgUnitPath=org_unit_path,
+                               sortOrder=sort_order, pageToken=page_token, maxResults=max_results)
+        scopes = ['https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly']
+        token = self._get_oauth_token(scopes=scopes)
+        headers = self._headers | {'Authorization': f'Bearer {token}'}
+        response = self.http_request(
+            method='GET', url_suffix=f'admin/directory/v1/customer/{self._customer_id}/devices/chromeos',
+            params=params, headers=headers
+        )
         return response
 
 
@@ -138,17 +161,39 @@ def google_mobile_device_action_command(client: Client, resource_id: str, action
     return command_results
 
 
+def chromeos_device_list_to_context_data(response: dict) -> dict:
+    # TODO Should I add the nextPageToken?
+    return {'chromeosListObjects': response.get('chromeosdevices')}
+
+
+def mobile_device_list_to_context_data(response: dict) -> dict:
+    # TODO Should I add the nextPageToken?
+    return {'mobileListObjects': response.get('mobiledevices')}
+
+
+def device_list_to_context_data(response: dict, device_list_type: Devices) -> dict:
+    context_data = {'resourceKind': response.get('kind'), 'ETag': response.get('etag')}
+    if device_list_type == Devices.CHROMEOS_DEVICE:
+        context_data |= chromeos_device_list_to_context_data(response=response)
+
+    elif device_list_type == Devices.MOBILE_DEVICE:
+        context_data |= mobile_device_list_to_context_data(response=response)
+
+    return context_data
+
+
 def google_mobile_device_list_command(client: Client, projection: str | None = None, query: str | None = None,
                                       order_by: str | None = None, sort_order: str | None = None,
                                       limit: str | None = None, page_token: str | None = None) -> CommandResults:
     response = client.google_mobile_device_list_request(projection=projection, query=query, order_by=order_by,
                                                         sort_order=sort_order, page_token=page_token,
                                                         max_results=arg_to_number(limit))
+    context_data = device_list_to_context_data(response=response, device_list_type=Devices.MOBILE_DEVICE)
     command_results = CommandResults(
         outputs_prefix=f'{OUTPUT_PREFIX}.mobileEvent',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
+        readable_output='Data has been returned',
+        outputs=context_data,
+        raw_response=response,
     )
     return command_results
 
@@ -175,8 +220,22 @@ def google_chromeos_device_action_command(client: Client, resource_id: str, acti
     return command_results
 
 
-def google_chromeos_device_list_command():
-    pass
+def google_chromeos_device_list_command(client: Client, projection: str | None = None, query: str | None = None,
+                                        order_by: str | None = None, sort_order: str | None = None,
+                                        org_unit_path: str | None = None, limit: str | None = None,
+                                        page_token: str | None = None):
+    response = client.google_chromeos_device_list_request(projection=projection, query=query, order_by=order_by,
+                                                          sort_order=sort_order, page_token=page_token,
+                                                          org_unit_path=org_unit_path, max_results=arg_to_number(limit))
+    context_data = device_list_to_context_data(response=response, device_list_type=Devices.CHROMEOS_DEVICE)
+
+    command_results = CommandResults(
+        outputs_prefix=f'{OUTPUT_PREFIX}.chromeosEvent',
+        readable_output='Data has been returned',
+        outputs=context_data,
+        raw_response=response,
+    )
+    return command_results
 
 
 def test_module(client: Client) -> str:

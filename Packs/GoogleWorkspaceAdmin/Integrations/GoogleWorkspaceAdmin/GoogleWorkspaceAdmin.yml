@@ -2,15 +2,18 @@ commonfields:
   id: GoogleWorkspaceAdmin
   version: -1
 name: GoogleWorkspaceAdmin
-display: GoogleWorkspaceAdmin
+display: Google Workspace Admin
 category: Utilities
 description: Generated description - REPLACE THIS
 configuration:
-  - name: url
-    display: Server URL
-    defaultvalue: https://www.example.com
-    type: 0
+  - display: Customer ID
+    name: customer_id
     required: true
+    type: 4
+  - display: User's Service Account JSON
+    name: user_service_account_json
+    required: true
+    type: 4
   - name: proxy
     display: Use system proxy
     defaultvalue: "false"
@@ -23,7 +26,7 @@ configuration:
     required: false
 script:
   commands:
-    - name: googleworkspaceadmin-google-mobiledevice-action
+    - name: google-mobiledevice-action
       description: ""
       arguments:
         - name: customerid
@@ -38,7 +41,7 @@ script:
           description: ""
           required: false
           isArray: false
-    - name: googleworkspaceadmin-google-mobiledevice-list
+    - name: google-mobiledevice-list
       description: ""
       arguments:
         - name: customerid
@@ -190,7 +193,38 @@ script:
         - type: String
           contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.privilege
           description: ""
-    - name: googleworkspaceadmin-google-chromeosdevice-action
+    - name: google_chromeosdevice_list
+      description: ""
+      arguments:
+        - name: customerid
+          description: ""
+          required: false
+          isArray: false
+        - name: projection
+          description: ""
+          required: false
+          isArray: false
+        - name: query
+          description: ""
+          required: false
+          isArray: false
+        - name: orderby
+          description: ""
+          required: false
+          isArray: false
+        - name: sortorder
+          description: ""
+          required: false
+          isArray: false
+        - name: pagetoken
+          description: ""
+          required: false
+          isArray: false
+        - name: maxresults
+          description: ""
+          required: false
+          isArray: false
+    - name: google-chromeosdevice-action
       description: ""
       arguments:
         - name: customerid
