@@ -14,9 +14,11 @@ Delete content to keep XSOAR tidy.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| include_ids | The ids to deleting. If set, delete only these ids. |
-| exclude_ids | The ids to exclude from deleting. If set, will delete everything else. |
-| dry_run | When set to false, will delete content. |
+| include_ids_dict | The content items ids to delete, in a JSON format. |
+| exclude_ids_dict | The content items IDs to preserve, in a JSON format. |
+| dry_run | If set to true, the flow will work as usuall except that no content items will be deleted from the system. |
+| verify_cert | If true, verify certificates when accessing github. |
+| skip_proxy | If true, skip system proxy settings. |
 
 ## Outputs
 ---

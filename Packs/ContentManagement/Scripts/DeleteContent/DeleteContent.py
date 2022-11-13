@@ -591,7 +591,7 @@ def handle_content_enitity(entity_api: EntityAPI,
     return deletion_status, {entity_api.name: deleted_ids}, {entity_api.name: undeleted_ids}
 
 
-def handle_input_dict(input_dict: Any) -> Any:
+def handle_input_json(input_dict: Any) -> Any:
     if type(input_dict) == str:
         return json.loads(input_dict)
     return input_dict
@@ -601,8 +601,13 @@ def get_and_delete_needed_ids(args: dict) -> CommandResults:
     """Search and delete provided ids to delete.
 
     Args:
-        args[ids_dict] (dict): List of job ids to exclude. Will delete all the rest of the found ids.
+        args[exclude_ids_dict] (dict): Dict content items ids to exclude. Will delete all the rest of the found ids.
+        args[include_ids_dict] (dict): Dict content items ids to include. Will delete all the ids specified.
         args[dry_run] (str(bool)): If True, will only collect items for deletion and will not delete them.
+
+    Remark:
+        exclude_ids_dict, include_ids_dict are assumed to be in the {'entity_type': [entity_ids]} format.
+        (e.g. {'job': ['job1', 'job2'], 'playbook': ['playbook1', 'playbook2']})
 
     Raise:
         ValueError if both exclude_ids and include_ids are specified.
@@ -613,11 +618,11 @@ def get_and_delete_needed_ids(args: dict) -> CommandResults:
             not_deleted: list of content ids gathered not to delete.
             status: Deletion status (Failed/Completed/Dry run, nothing really deleted.)
     """
-    dry_run = True if args.get('dry_run', 'true') == 'true' else False
-    include_ids = handle_input_dict(args.get('include_ids_dict'))
-    exclude_ids = handle_input_dict(args.get('exclude_ids_dict'))
-    skip_proxy = True if args.get('skip_proxy', 'false') == 'true' else False
-    verify_cert = True if args.get('verify_cert', 'true') == 'true' else False
+    dry_run = argToBoolean(args.get('dry_run', 'true'))
+    include_ids = handle_input_json(args.get('include_ids_dict'))
+    exclude_ids = handle_input_json(args.get('exclude_ids_dict'))
+    skip_proxy = argToBoolean(args.get('skip_proxy', 'false'))
+    verify_cert = argToBoolean(args.get('verify_cert', 'true'))
 
     entities_to_delete = [InstalledPackAPI(proxy_skip=skip_proxy, verify=verify_cert), IntegrationAPI(), ScriptAPI(),
                           PlaybookAPI(), IncidentFieldAPI(),
