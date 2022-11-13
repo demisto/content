@@ -565,11 +565,6 @@
         {
             "integrations": "Azure Security Center v2",
             "playbookID": "Azure SecurityCenter - Test",
-            "instance_names": "ms_azure_sc_dev"
-        },
-        {
-            "integrations": "Azure Security Center v2",
-            "playbookID": "Azure SecurityCenter - Test",
             "instance_names": "ms_azure_sc_self_deployed"
         },
         {
@@ -2335,10 +2330,6 @@
             "fromversion": "6.0.0"
         },
         {
-            "integrations": "duo",
-            "playbookID": "DUO Test Playbook"
-        },
-        {
             "playbookID": "SLA Scripts - Test",
             "fromversion": "4.1.0"
         },
@@ -2403,11 +2394,6 @@
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
             "playbookID": "active directory search user with parentheses test",
-            "has_api": false
-        },
-        {
-            "integrations": "mysql",
-            "playbookID": "MySQL Test",
             "has_api": false
         },
         {
@@ -3068,11 +3054,6 @@
         {
             "integrations": "AutoFocus Feed",
             "playbookID": "playbook-FeedAutofocus_test",
-            "fromversion": "5.5.0"
-        },
-        {
-            "integrations": "AutoFocus Daily Feed",
-            "playbookID": "playbook-FeedAutofocus_daily_test",
             "fromversion": "5.5.0"
         },
         {
@@ -3888,16 +3869,6 @@
             ]
         },
         {
-            "playbookID": "EDL Indicator Performance Test",
-            "fromversion": "6.0.0",
-            "has_api": false
-        },
-        {
-            "playbookID": "EDL Performance Test - Concurrency",
-            "fromversion": "6.0.0",
-            "has_api": false
-        },
-        {
             "playbookID": "Venafi - Test",
             "fromversion": "5.0.0",
             "integrations": [
@@ -4082,13 +4053,6 @@
             ]
         },
         {
-            "playbookID": "MicrosoftGraphMail-Test",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "MicrosoftGraphMail"
-            ]
-        },
-        {
             "playbookID": "PassiveTotal_v2-Test",
             "fromversion": "5.0.0",
             "integrations": [
@@ -4200,20 +4164,14 @@
             ]
         },
         {
-            "playbookID": "GitLab-test-playbook",
-            "fromversion": "6.0.0",
-            "integrations": [
-                "GitLab",
-                "LGTM",
-                "MinIO",
-                "Docker Engine API"
-            ]
+            "playbookID": "Test-GitLab-v2",
+            "fromversion": "6.5.0",
+            "integrations": "GitLabv2"
         },
         {
             "playbookID": "LGTM-test-playbook",
             "fromversion": "6.0.0",
             "integrations": [
-                "GitLab",
                 "LGTM",
                 "MinIO",
                 "Docker Engine API"
@@ -4223,7 +4181,6 @@
             "playbookID": "playbook-MinIO-Test",
             "fromversion": "6.0.0",
             "integrations": [
-                "GitLab",
                 "LGTM",
                 "MinIO",
                 "Docker Engine API"
@@ -4724,10 +4681,6 @@
         },
         {
             "playbookID": "IsIPInRanges - Test",
-            "fromversion": "5.0.0"
-        },
-        {
-            "playbookID": "Delete Context Subplaybook Test",
             "fromversion": "5.0.0"
         },
         {
@@ -5241,6 +5194,8 @@
         "Calculate Severity - Standard - Test": "Issue 32715",
         "Calculate Severity - Generic v2 - Test": "Issue 32716",
         "Workday - Test": "No credentials Issue 29595",
+        "McAfee-MAR_Test": "Issue CIAC-4521",
+        "MAR - Endpoint data collection test": "Issue CIAC-4521",
         "Tidy - Test": "Will run it manually.",
         "Protectwise-Test": "Issue 28168",
         "TestDedupIncidentsPlaybook": "Issue 24344",
@@ -5309,10 +5264,6 @@
         "McAfee ESM v2 - Test v11.1.3": "Issue 43825",
         "McAfee ESM v2 (v11.3) - Test" : "Jira ticket CRTX-65370",
         "McAfee ESM Watchlists - Test v11.3": "Jira ticket CRTX-65370",
-        "MicrosoftGraphMail-Test_prod": "Issue 40125",
-        "MicrosoftGraphMail-Test": "Issue CIAC-4222",
-        "MicrosoftGraphMail-Test_dev": "Issue CIAC-4223",
-        "MicrosoftGraphMail-Test_dev_no_oproxy": "Issue CIAC-512",
         "Detonate URL - WildFire v2.1 - Test": "Issue 40834",
         "Domain Enrichment - Generic v2 - Test": "Issue 40862",
         "TestIPQualityScorePlaybook": "Issue 40915",
@@ -5454,7 +5405,6 @@
         "carbonblackprotection": "License expired",
         "icebrg": "Issue 14312",
         "Freshdesk": "Trial account expired",
-        "Threat Grid": "Issue 16197",
         "Kafka V2": "Can not connect to instance from remote",
         "KafkaV3": "Can not connect to instance from remote",
         "Check Point Sandblast": "Issue 15948",
@@ -5580,7 +5530,6 @@
         "Cortex Data Lake": "Integration requires SSL",
         "Google Key Management Service": "The API requires an SSL secure connection to work.",
         "McAfee ESM-v10": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
-        "mysql": "Does not use http",
         "SlackV2": "Integration requires SSL",
         "SlackV3": "Integration requires SSL",
         "Whois": "Mocks does not support sockets",

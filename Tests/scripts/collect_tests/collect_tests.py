@@ -29,7 +29,8 @@ from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.collect_tests.test_conf import TestConf
 from Tests.scripts.collect_tests.utils import (ContentItem, Machine,
                                                PackManager, find_pack_folder,
-                                               find_yml_content_type, to_tuple, hotfix_detect_old_script_yml)
+                                               find_yml_content_type, to_tuple, hotfix_detect_old_script_yml,
+                                               FilesToCollect)
 from Tests.scripts.collect_tests.version_range import VersionRange
 
 PATHS = PathManager(Path(__file__).absolute().parents[3])
@@ -52,7 +53,7 @@ class CollectionReason(str, Enum):
     ALWAYS_INSTALLED_PACKS = 'packs that are always installed'
     PACK_TEST_DEPENDS_ON = 'a test depends on this pack'
     NON_XSOAR_SUPPORTED = 'support level is not xsoar: collecting the pack, not collecting tests'
-
+    FILES_MOVED_FROM_PACK = 'files were moved from this pack, installing to make sure it is not broken'
     DUMMY_OBJECT_FOR_COMBINING = 'creating an empty object, to combine two CollectionResult objects'
 
 
@@ -75,7 +76,7 @@ class CollectionResult:
             id_set: Optional[Union[IdSet, Graph]],
             is_sanity: bool = False,
             is_nightly: bool = False,
-            override_pack_compatibility_check: bool = False,
+            skip_support_level_compatibility: bool = False
     ):
         """
         Collected test playbook, and/or a pack to install.
@@ -93,7 +94,7 @@ class CollectionResult:
         :param id_set: an IdSet object. It may be None only when reason in VALIDATION_BYPASSING_REASONS.
         :param is_sanity: whether the test is a sanity test. Sanity tests do not have to be in the id_set.
         :param is_nightly: whether the run is a nightly run. When running on nightly, only specific packs need to run.
-        :param override_pack_compatibility_check:
+        :param skip_support_level_compatibility:
                 whether to install a pack, even if it is not directly compatible.
                 This is used when collecting a pack containing a content item, when their marketplace values differ.
         """
@@ -112,7 +113,7 @@ class CollectionResult:
                 id_set=id_set,
                 is_sanity=is_sanity,
                 is_nightly=is_nightly,
-                skip_pack_compatibility=override_pack_compatibility_check,
+                skip_support_level_compatibility=skip_support_level_compatibility,
             )
 
         except NonXsoarSupportedPackException:
@@ -151,7 +152,7 @@ class CollectionResult:
             id_set: Optional[Union[IdSet, Graph]],
             is_sanity: bool,
             is_nightly: bool,
-            skip_pack_compatibility: bool,
+            skip_support_level_compatibility: bool,
     ):
         """
         Validates the arguments of the constructor.
@@ -199,8 +200,8 @@ class CollectionResult:
                 PACK_MANAGER.validate_pack(pack)
 
             except NonXsoarSupportedPackException:
-                if skip_pack_compatibility:
-                    logger.info(f'overriding pack compatibility check for {pack} - not compliant, but IS collected')
+                if skip_support_level_compatibility:
+                    logger.info(f'overriding pack support level compatibility check for {pack} - it IS collected')
                 elif is_sanity and pack == 'HelloWorld':  # Sanity tests are saved under HelloWorld, so we allow it.
                     pass
                 else:
@@ -399,7 +400,8 @@ class TestCollector(ABC):
         self._validate_path(path)
         if is_integration:
             self.__validate_skipped_integration(id_, path)
-        self.__validate_marketplace_compatibility(marketplaces or (), path)
+        pack_marketplaces = PACK_MANAGER.get_pack_metadata(pack_id).marketplaces
+        self.__validate_marketplace_compatibility(marketplaces or pack_marketplaces or (), path)
         self.__validate_support_level_is_xsoar(pack_id, version_range)
 
     def _validate_path(self, path: Path):
@@ -550,18 +552,26 @@ class BranchTestCollector(TestCollector):
         return tuple(str(path) for path in self.private_pack_path.rglob('*') if path.is_file())
 
     def _collect(self) -> Optional[CollectionResult]:
-        result = []
-        paths: tuple[str, ...] = self._get_private_pack_files() \
+        collect_from = FilesToCollect(changed_files=self._get_private_pack_files(),
+                                      pack_ids_files_were_removed_from=tuple()) \
             if self.private_pack_path \
-            else self._get_changed_files()
+            else self._get_git_diff()
 
-        for raw_path in paths:
+        return CollectionResult.union([
+            self.__collect_from_changed_files(collect_from.changed_files),
+            self.__collect_packs_from_which_files_were_moved(collect_from.pack_ids_files_were_removed_from)
+        ])
+
+    def __collect_from_changed_files(self, changed_files: tuple[str, ...]) -> Optional[CollectionResult]:
+        """NOTE: this should only be used from _collect"""
+        collected = []
+        for raw_path in changed_files:
             path = PATHS.content_path / raw_path
             logger.debug(f'Collecting tests for {raw_path}')
             try:
-                result.append(self._collect_single(path))
+                collected.append(self._collect_single(path))
             except NonXsoarSupportedPackException as e:
-                result.append(self._collect_pack(
+                collected.append(self._collect_pack(
                     pack_id=find_pack_folder(path).name,
                     reason=CollectionReason.NON_XSOAR_SUPPORTED,
                     reason_description=raw_path,
@@ -572,8 +582,25 @@ class BranchTestCollector(TestCollector):
             except Exception as e:
                 logger.exception(f'Error while collecting tests for {raw_path}', exc_info=True, stack_info=True)
                 raise e
+        return CollectionResult.union(collected)
 
-        return CollectionResult.union(result)
+    def __collect_packs_from_which_files_were_moved(self, pack_ids: tuple[str, ...]) -> Optional[CollectionResult]:
+        """NOTE: this should only be used from _collect"""
+        collected: list[CollectionResult] = []
+        for pack_id in pack_ids:
+            logger.info(f'one or more files were moved from the {pack_id} pack, attempting to collect the pack.')
+            try:
+                if pack_to_collect := self._collect_pack(pack_id=pack_id,
+                                                         reason=CollectionReason.FILES_MOVED_FROM_PACK,
+                                                         reason_description='',
+                                                         allow_incompatible_marketplace=True):
+                    collected.append(pack_to_collect)
+            except NothingToCollectException as e:
+                logger.info(e.message)
+            except Exception as e:
+                logger.exception(f'Error while collecting tests for {pack_id=}', exc_info=True, stack_info=True)
+                raise e
+        return CollectionResult.union(collected)
 
     def _collect_yml(self, content_item_path: Path) -> Optional[CollectionResult]:
         """
@@ -592,7 +619,7 @@ class BranchTestCollector(TestCollector):
 
         relative_yml_path = PACK_MANAGER.relative_to_packs(yml_path)
         tests: tuple[str, ...]
-        override_pack_compatibility_check = False
+        override_support_level_compatibility = False
 
         match actual_content_type:
             case None:
@@ -619,7 +646,7 @@ class BranchTestCollector(TestCollector):
                         suffix = f'. NOTE: NOT COLLECTING tests from conf.json={tests_str}'
 
                     logger.warning(f'{yml.id_} explicitly states `no tests`: only collecting pack {suffix}')
-                    override_pack_compatibility_check = True
+                    override_support_level_compatibility = True
                     tests = ()
 
                 elif yml.id_ not in self.conf.integrations_to_tests:
@@ -653,7 +680,7 @@ class BranchTestCollector(TestCollector):
                     if not tests:  # no tests were found in yml nor in id_set
                         logger.warning(f'{actual_content_type.value} {relative_yml_path} '
                                        f'has `No Tests` configured, and no tests in id_set')
-                        override_pack_compatibility_check = True
+                        override_support_level_compatibility = True
             case _:
                 raise RuntimeError(f'Unexpected content type {actual_content_type.value} for {content_item_path}'
                                    f'(expected `Integrations`, `Scripts` or `Playbooks`)')
@@ -668,7 +695,7 @@ class BranchTestCollector(TestCollector):
                     conf=self.conf,
                     id_set=self.id_set,
                     is_nightly=False,
-                    override_pack_compatibility_check=override_pack_compatibility_check,
+                    skip_support_level_compatibility=override_support_level_compatibility,
                 ) for test in tests))
         else:
             return self._collect_pack(
@@ -676,7 +703,7 @@ class BranchTestCollector(TestCollector):
                 reason=reason,
                 reason_description='collecting pack only',
                 content_item_range=yml.version_range,
-                allow_incompatible_marketplace=override_pack_compatibility_check,
+                allow_incompatible_marketplace=override_support_level_compatibility,
             )
 
     def _collect_single(self, path: Path) -> Optional[CollectionResult]:
@@ -771,9 +798,10 @@ class BranchTestCollector(TestCollector):
             for test in tests)
         )
 
-    def _get_changed_files(self) -> tuple[str, ...]:
+    def _get_git_diff(self) -> FilesToCollect:
         repo = PATHS.content_repo
         changed_files: list[str] = []
+        packs_files_were_removed_from: set[str] = set()
 
         previous_commit = 'origin/master'
         current_commit = self.branch_name
@@ -804,11 +832,15 @@ class BranchTestCollector(TestCollector):
                 case 2:
                     git_status, file_path = parts
                 case 3:
-                    git_status, _, file_path = parts  # R <old location> <new location>
+                    git_status, old_file_path, file_path = parts  # R <old location> <new location>
 
                     if git_status.startswith('R'):
                         logger.debug(f'{git_status=} for {file_path=}, considering it as <M>odified')
                         git_status = 'M'
+
+                    if pack_file_removed_from := find_pack_file_removed_from(Path(old_file_path), Path(file_path)):
+                        packs_files_were_removed_from.add(pack_file_removed_from)
+
                 case _:
                     raise ValueError(f'unexpected line format '
                                      f'(expected `<modifier>\t<file>` or `<modifier>\t<old_location>\t<new_location>`'
@@ -822,7 +854,29 @@ class BranchTestCollector(TestCollector):
                                f'skipping it as TestCollector cannot properly find the appropriate tests (by design)')
                 continue
             changed_files.append(file_path)  # non-deleted files (added, modified)
-        return tuple(changed_files)
+        return FilesToCollect(changed_files=tuple(changed_files),
+                              pack_ids_files_were_removed_from=tuple(packs_files_were_removed_from))
+
+
+def find_pack_file_removed_from(old_path: Path, new_path: Path):
+    """
+    If a file is moved between packs, we should collect the older one, to make sure it is installed properly.
+    """
+    # two try statements as we need to tell which of the two is a pack, separately.
+    try:
+        old_pack = find_pack_folder(old_path).name
+    except NotUnderPackException:
+        return None  # not moved from a pack, no special treatment we can do here.
+
+    try:
+        new_pack = find_pack_folder(new_path).name
+    except NotUnderPackException:
+        new_pack = None
+
+    if old_pack != new_pack:  # file moved between packs
+        logger.info(f'file {old_path.name} was moved '
+                    f'from pack {old_pack}, adding it, to make sure it still installs properly')
+        return old_pack
 
 
 class UploadCollector(BranchTestCollector):
@@ -976,7 +1030,7 @@ def output(result: Optional[CollectionResult]):
 
 
 if __name__ == '__main__':
-    logger.info('TestCollector v20220913')
+    logger.info('TestCollector v20221108')
     sys.path.append(str(PATHS.content_path))
     parser = ArgumentParser()
     parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
