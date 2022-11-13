@@ -2067,8 +2067,7 @@ def fetch_incidents():
         incident_type = 'incident'
 
         last_fetch_time, offset, prev_fetch, last_fetch_timestamp = get_fetch_times_and_offset(current_fetch_info_incidents)
-        last_run = demisto.getLastRun()
-        last_incident_fetched = last_run.get('last_fetched_incident')
+        last_incident_fetched = current_fetch_info_incidents.get('last_fetched_incident')
         new_last_incident_fetched = ''
 
         fetch_query = demisto.params().get('incidents_fetch_query')
