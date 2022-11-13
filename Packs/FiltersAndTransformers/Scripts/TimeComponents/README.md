@@ -287,3 +287,65 @@ Sunday
 ```
 2022-09-30T12:34:56+09:00
 ```
+
+
+## Tips
+
+### Build a custom time format string
+
+You can create a custom time format in combination with the `DT` transformer on the chain of transformers. For example, now you want to create a RFC 1123 date string such as `Thu, 10 Nov 2022 08:01:44 +0200`, and have the following results from the `TimeComponents`.
+
+**Table 1**
+```json
+{
+    "year": 2022,
+    "year_4_digit": "2022",
+    "month": 11,
+    "month_3_letter": "Nov",
+    "month_full_name": "November",
+    "month_2_digit": "11",
+    "day": 10,
+    "day_2_digit": "10",
+    "day_of_week": 4,
+    "day_of_week_3_letter": "Thu",
+    "day_of_week_full_name": "Thursday",
+    "day_of_year": 314,
+    "day_of_year_3_digit": "314",
+    "hour": 8,
+    "hour_12_clock": 8,
+    "hour_2_digit_24_clock": "08",
+    "hour_2_digit_12_clock": "08",
+    "hour_of_day": 8.02888888888889,
+    "minute": 1,
+    "minute_2_digit": "01",
+    "minute_of_day": 193.73333333333332,
+    "second": 44,
+    "second_2_digit": "44",
+    "second_of_day": 11624,
+    "millisecond": 0,
+    "period_12_clock": "AM",
+    "time_zone_hhmm": "+0200",
+    "time_zone_offset": 120.0,
+    "unix_epoch_time": 1668060104,
+    "iso_8601": "2022-11-10T08:01:44+02:00",
+    "y-m-d": "2022-11-10",
+    "yyyy-mm-dd": "2022-11-10",
+    "h:m:s": "8:1:44",
+    "H:m:s": "8:1:44",
+    "hh:mm:ss": "08:01:44",
+    "HH:mm:ss": "08:01:44"
+}
+```
+
+You can set the following value to the `dt` parameter of the `DT` transformer to build the RFC 1123 date string you want.
+
+#### Parameters to DT
+| **Argument Name** | **Value** |
+| --- | --- |
+| value | **<Table 1>** |
+| dt | .=val.day_of_week_3_letter + ", " + val.day + " " + val.month_3_letter + " " + val.year + " " + val["HH:mm:ss"] + " " + val.time_zone_hhmm |
+
+#### Output
+```
+Thu, 10 Nov 2022 08:01:44 +0200
+```
