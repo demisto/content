@@ -19,10 +19,6 @@
         "Palo Alto Networks"
     ],
     "dependencies": {
-        "ServiceNow": {
-            "mandatory": true,
-            "display_name": "ServiceNow"
-        },
         "Nmap": {
             "mandatory": true,
             "display_name": "Nmap"
@@ -34,9 +30,6 @@
         "AWS-Enrichment-Remediation": {
             "mandatory": true,
             "display_name": "AWS Enrichment and Remediaton"
-        "Rapid7_Nexpose": {
-            "mandatory": true,
-            "display_name": "Rapid7 Nexpose"
         },
         "Tenable_io": {
             "mandatory": false,
@@ -45,6 +38,10 @@
         "CoreAlertFields": {
             "mandatory": true,
             "display_name": "Core Alert Fields"
+        },
+        "ServiceNow": {
+            "mandatory": true,
+            "display_name": "ServiceNow"
         }
     },
     "marketplaces": [
