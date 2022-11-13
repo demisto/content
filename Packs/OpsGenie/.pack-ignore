@@ -15,3 +15,6 @@ ignore=BA101
 
 [file:incidentfield-OpsGenie_AlertId.json]
 ignore=IF115
+
+[known_words]
+AlertId
