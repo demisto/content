@@ -11,7 +11,7 @@ from typing import Optional, Union, TypeVar
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-T = TypeVar('T')
+IterableCollection = TypeVar('IterableCollection', dict, list, set, tuple)
 
 VENDOR_NAME = "Rapid7 Nexpose"  # Vendor name to use for indicators.
 API_DEFAULT_PAGE_SIZE = 10  # Default page size that's set on the API. Used for calculations.
@@ -31,7 +31,7 @@ class ScanStatus(Enum):
 
 
 class FlexibleEnum(EnumMeta):
-    """A custom EnumMeta to allow easy and flexible conversion to and from strings."""
+    """A custom EnumMeta to allow flexible conversion from strings to Enum."""
     def __getitem__(self, item: Any):
         try:
             return super().__getitem__(item)
@@ -81,7 +81,7 @@ class ReportFileFormat(Enum, metaclass=FlexibleEnum):
     RTF = "rtf"
     XML = "xml"
     HTML = "html"
-    Text = "text"
+    TEXT = "text"
 
 
 class RepeatBehaviour(Enum, metaclass=FlexibleEnum):
@@ -177,10 +177,6 @@ class VulnerabilityExceptionStatus(Enum, metaclass=FlexibleEnum):
     REJECT = "reject"
 
 
-class InvalidSiteNameException(DemistoException):
-    pass
-
-
 class Client(BaseClient):
     """Client class for interactions with Rapid7 Nexpose API."""
 
@@ -218,7 +214,7 @@ class Client(BaseClient):
 
     def _http_request(self, **kwargs):
         """
-        Wrapper for BaseClient._http_request() that removes `links` keys from responses.
+        Wrapper for BaseClient._http_request() that optionally removes `links` keys from responses.
         """
         response = super()._http_request(**kwargs)
 
@@ -480,7 +476,8 @@ class Client(BaseClient):
             ssh_permission_elevation_username=ssh_permission_elevation_username,
             ssh_private_key_password=ssh_private_key_password,
             use_windows_authentication=use_windows_authentication,
-            username=username)
+            username=username,
+        )
 
         post_data = find_valid_params(
             description=description,
@@ -717,7 +714,8 @@ class Client(BaseClient):
             ssh_permission_elevation_username=ssh_permission_elevation_username,
             ssh_private_key_password=ssh_private_key_password,
             use_windows_authentication=use_windows_authentication,
-            username=username)
+            username=username,
+        )
 
         post_data = find_valid_params(
             description=description,
@@ -1622,7 +1620,8 @@ class Client(BaseClient):
             ssh_permission_elevation_username=ssh_permission_elevation_username,
             ssh_private_key_password=ssh_private_key_password,
             use_windows_authentication=use_windows_authentication,
-            username=username)
+            username=username,
+        )
 
         post_data = find_valid_params(
             description=description,
@@ -1728,7 +1727,8 @@ class Client(BaseClient):
             ssh_permission_elevation_username=ssh_permission_elevation_username,
             ssh_private_key_password=ssh_private_key_password,
             use_windows_authentication=use_windows_authentication,
-            username=username)
+            username=username,
+        )
 
         post_data = find_valid_params(
             description=description,
@@ -1973,7 +1973,7 @@ class Site:
                 site_id = client.find_site_id(site_name)
 
                 if not site_id:
-                    raise InvalidSiteNameException(f"No site with name \"{site_name}\" was found.")
+                    raise DemistoException(f"No site with name \"{site_name}\" was found.")
 
                 self.id = site_id
 
@@ -2040,11 +2040,10 @@ def convert_asset_search_filters(search_filters: Union[str, list[str]]) -> list[
 
 def convert_datetime_str(time_str: str) -> struct_time:
     """
-    Convert a time string formatted in one of the time formats used by Nexpose's API
-        for scans to a `struct_time` object.
+    Convert an ISO 8601 datetime string to a `struct_time` object.
 
     Args:
-        time_str (str): A time string formatted in one of the time formats used by Nexpose's API for scans.
+        time_str (str): A string representing an ISO 8601 datetime.
 
     Returns:
         struct_time: The datetime represented in a `struct_time` object.
@@ -2076,34 +2075,34 @@ def create_credential_creation_body(service: CredentialService, database_name: O
     """
     Create `account` body for credential-creation API requests.
 
-        Args:
-            service (CredentialService): Credential service type.
-            database_name (str | None, optional): Database name.
-            domain (str | None, optional): Domain address.
-            http_realm (str | None, optional): HTTP realm.
-            notes_id_password (str | None, optional):
-                Password for the notes account that will be used for authenticating.
-            ntlm_hash (str | None, optional): NTLM password hash.
-            oracle_enumerate_sids (bool | None, optional): Whether the scan engine should attempt to enumerate
-                SIDs from the environment.
-            oracle_listener_password (str | None, optional): The Oracle Net Listener password.
-                Used to enumerate SIDs from the environment.
-            oracle_sid (str | None, optional): Oracle database name.
-            password (str | None, optional): Password for the credential.
-            snmp_community_name (str | None, optional): SNMP community for authentication.
-            snmpv3_authentication_type (SNMPv3AuthenticationType): SNMPv3 authentication type for the credential.
-            snmpv3_privacy_password (str | None, optional): SNMPv3 privacy password to use.
-            snmpv3_privacy_type (SNMPv3PrivacyType, optional): SNMPv3 Privacy protocol to use.
-            ssh_key_pem (str | None, optional): PEM formatted private key.
-            ssh_permission_elevation (SSHElevationType | None, optional): Elevation type to use for scans.
-            ssh_permission_elevation_password (str | None, optional): Password to use for elevation.
-            ssh_permission_elevation_username (str | None, optional): Username to use for elevation.
-            ssh_private_key_password (str | None, optional): Password for the private key.
-            use_windows_authentication (bool | None, optional): Whether to use Windows authentication.
-            username (str | None, optional): Username for the credential.
+    Args:
+        service (CredentialService): Credential service type.
+        database_name (str | None, optional): Database name.
+        domain (str | None, optional): Domain address.
+        http_realm (str | None, optional): HTTP realm.
+        notes_id_password (str | None, optional):
+            Password for the notes account that will be used for authenticating.
+        ntlm_hash (str | None, optional): NTLM password hash.
+        oracle_enumerate_sids (bool | None, optional): Whether the scan engine should attempt to enumerate
+            SIDs from the environment.
+        oracle_listener_password (str | None, optional): The Oracle Net Listener password.
+            Used to enumerate SIDs from the environment.
+        oracle_sid (str | None, optional): Oracle database name.
+        password (str | None, optional): Password for the credential.
+        snmp_community_name (str | None, optional): SNMP community for authentication.
+        snmpv3_authentication_type (SNMPv3AuthenticationType): SNMPv3 authentication type for the credential.
+        snmpv3_privacy_password (str | None, optional): SNMPv3 privacy password to use.
+        snmpv3_privacy_type (SNMPv3PrivacyType, optional): SNMPv3 Privacy protocol to use.
+        ssh_key_pem (str | None, optional): PEM formatted private key.
+        ssh_permission_elevation (SSHElevationType | None, optional): Elevation type to use for scans.
+        ssh_permission_elevation_password (str | None, optional): Password to use for elevation.
+        ssh_permission_elevation_username (str | None, optional): Username to use for elevation.
+        ssh_private_key_password (str | None, optional): Password for the private key.
+        use_windows_authentication (bool | None, optional): Whether to use Windows authentication.
+        username (str | None, optional): Username for the credential.
 
-        Returns:
-            dict: `account` body to use for credential-creation API requests.
+    Returns:
+        dict: `account` body to use for credential-creation API requests.
     """
     missing_params: list[str] = []
     special_validation_errors: list[str] = []
@@ -2385,7 +2384,7 @@ def find_asset_last_change(asset_data: dict) -> dict:
 
 def find_valid_params(**kwargs):
     """
-    A function for filtering kwargs to remove keys with a None value.
+    A function for filtering dictionaries (passed as kwargs) to remove keys that have a None value.
 
     Args:
         kwargs: A collection of keyword args to filter.
@@ -2396,7 +2395,7 @@ def find_valid_params(**kwargs):
     new_kwargs = {}
 
     for key, value in kwargs.items():
-        if value:
+        if value is not None:
             new_kwargs[key] = value
 
     return new_kwargs
@@ -2624,35 +2623,36 @@ def readable_duration_time(duration: str) -> str:
     return ", ".join(result)
 
 
-def remove_dict_key(data: T, key_name: str) -> T:
+def remove_dict_key(data: IterableCollection, key: Any) -> IterableCollection:
     """
     Recursively remove a dictionary key from an object
 
     Args:
-        data: An iterable to remove keys for dictionaries within it.
-        key_name (str): Name of the key to remove from dictionaries.
+        data (IterableCollection): An iterable to remove keys for dictionaries within it.
+        key (Any): Key to remove from dictionaries.
 
     Returns:
-        T: The data-structure (original or copy) with the specified key name removed from all dictionaries within it.
+        IterableCollection: The data-structure (original or copy) with the specified key name removed from all dictionaries within it.
     """
     if isinstance(data, dict):
-        if key_name in data:
-            del data[key_name]
+        if key in data:
+            del data[key]
 
         for key in data:
-            remove_dict_key(data[key], key_name)
+            remove_dict_key(data[key], key)
 
     if isinstance(data, (list, tuple)):
         for item in data:
-            remove_dict_key(item, key_name)
+            remove_dict_key(item, key)
 
     return data
 
 
-def replace_key_names(data: T, name_mapping: dict[str, str],
-                      use_reference: bool = False, original_reference: Union[dict, None] = None) -> T:
+def replace_key_names(data: IterableCollection, name_mapping: dict[str, str],
+                      use_reference: bool = False, original_reference: Union[dict, None] = None) -> IterableCollection:
     """
     Replace key names in a dictionary.
+    Works only with string keys.
 
     Note:
         `use-reference` parameter exists because the original code used a reference to the original dictionary
@@ -2661,7 +2661,7 @@ def replace_key_names(data: T, name_mapping: dict[str, str],
         backwards compatibility.
 
     Args:
-        data (T): An iterable to replace key names for dictionaries within it.
+        data (IterableCollection): An iterable to replace key names for dictionaries within it.
         name_mapping (dict): A dictionary in a `from (key): to (value)` mapping format of which key names
                              to replace with what. The value of the keys (and only keys)
                              can represent nested dict items in a "parent.child" format.
@@ -2670,12 +2670,12 @@ def replace_key_names(data: T, name_mapping: dict[str, str],
         original_reference (dict | None, optional): Used internally for recursion. Should not be used.
 
     Returns:
-        T: The data-structure (original or copy) with key names of dicts replaced according to mapping.
+        IterableCollection: The data-structure (original or copy) with key names of dicts replaced according to mapping.
     """
     if not use_reference:
         data = deepcopy(data)
 
-    if isinstance(data, (list, tuple)):
+    if isinstance(data, (list, set, tuple)):
         for i in range(len(data)):
             replace_key_names(
                 data=data[i],
