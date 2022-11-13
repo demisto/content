@@ -115,7 +115,9 @@ class Client(BaseClient):
 
     def google_chromeos_device_action_request(self, resource_id: str, action: str, deprovision_reason: str = ''):
         json_body = {'action': action}
-        if not deprovision_reason:
+        if action == 'deprovision':
+            if not deprovision_reason:  # This means the string is empty
+                raise DemistoException('A deprovision reason is required if the action is deprovision')
             json_body['deprovisionReason'] = deprovision_reason
         scopes = ['https://www.googleapis.com/auth/admin.directory.device.chromeos']
         token = self._get_oauth_token(scopes=scopes)
