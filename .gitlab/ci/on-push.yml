@@ -228,7 +228,7 @@ prepare-testing-bucket-xpanse:
 
     - section_start "Replace Cortex XSOAR" --collapsed
     - pushd "$ARTIFACTS_FOLDER"
-    - export PRODUCT_NAME_XPANSE="XPANSE"
+    - export PRODUCT_NAME_XPANSE="Cortex XPANSE"
     - find content_packs -type f -not \( -path "*/ReleaseNotes/*" \) -exec sed -i -e 's/Cortex XSOAR/'"$PRODUCT_NAME_XPANSE"'/gI' {} \;
     - pushd content_packs; zip -r ../content_packs.zip *; popd
     - pushd all_content; zip -r ../all_content.zip *; popd
