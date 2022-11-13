@@ -10,7 +10,9 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Data Source"
+    ],
     "useCases": [],
     "keywords": [
         "Email Security",
@@ -20,7 +22,11 @@
         "Data Leaks",
         "Compliance"
     ],
-    "githubUser": ["urajat", "ab-samba", "ab-dj"],
+    "githubUser": [
+        "urajat",
+        "ab-samba",
+        "ab-dj"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

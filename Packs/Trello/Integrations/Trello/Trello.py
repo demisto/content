@@ -1,3 +1,4 @@
+import urllib3
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -9,7 +10,7 @@ import requests
 import dateparser
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
