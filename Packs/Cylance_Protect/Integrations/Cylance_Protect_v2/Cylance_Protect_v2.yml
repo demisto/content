@@ -62,6 +62,7 @@ configuration:
   required: false
   type: 19
   section: Collect
+  advanced: true
 description: Manage Endpoints using Cylance protect
 display: Cylance Protect v2
 name: Cylance Protect v2

@@ -29,7 +29,7 @@ configuration:
   name: board_id
   required: false
   type: 0
-  section: Collect
+  section: Connect
   advanced: true
 - display: API Key
   hidden: false

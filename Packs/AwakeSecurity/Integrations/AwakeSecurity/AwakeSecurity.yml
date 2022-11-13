@@ -57,6 +57,7 @@ configuration:
   type: 0
   required: true
   section: Collect
+  advanced: true
 - display: Minimum threshold to determine an indicator suspicious in Demisto
   name: suspicious_threshold
   defaultvalue: "33"
