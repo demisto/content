@@ -30,7 +30,10 @@ import pytest
     ('https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Ftwitter.com%2FPhilipsBeLux&data=02|01'
      '||cb2462dc8640484baf7608d638d2a698|1a407a2d76754d178692b3ac285306e4|0|0|636758874714819880&sdata'
      '=dnJiphWFhnAKsk5Ps0bj0p%2FvXVo8TpidtGZcW6t8lDQ%3D&reserved=0%3E%5bcid:image003.gif@01CF4D7F.1DF62650%5d'
-     '%3C', 'twitter.com'),  # noqa: E501 disable-secrets-detection
+     '%3C', 'twitter.com'),
+     ('40z1uemcmQejvD2baSzm0oamj.mQ.1665757484059@OMS23.1105data.com', 'oms23.1105data.com'),
+     ('user.user@nowwwtest.com', 'nowwwtest.com'),
+     ('aaaa.2234', '')  # noqa: E501 disable-secrets-detection
 ])  # noqa: E124
 def test_extract_fqdn_or_domain(input, fqdn):
     extracted_fqdn = extract_fqdn(input)
