@@ -12,7 +12,7 @@ from demisto_sdk.commands.common.tools import find_type, str2bool
 
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.constants import (
-    ALWAYS_INSTALLED_PACKS_XSOAR, DEFAULT_MARKETPLACE_WHEN_MISSING,
+    DEFAULT_MARKETPLACE_WHEN_MISSING,
     DEFAULT_REPUTATION_TESTS, IGNORED_FILE_TYPES, NON_CONTENT_FOLDERS,
     ONLY_INSTALL_PACK_FILE_TYPES, SANITY_TEST_TO_PACK,
     SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, XSOAR_SANITY_TEST_NAMES,
@@ -512,7 +512,8 @@ class TestCollector(ABC):
                 # For XSIAM machines we collect tests that have not xsoar marketplace.
                 # Tests for the packs that has only mpv2, or mpv2 and xpanse marketplaces,
                 # will run on xsiam machines only.
-                if (MarketplaceVersions.MarketplaceV2 not in content_item_marketplaces) or (MarketplaceVersions.XSOAR in content_item_marketplaces):
+                if (MarketplaceVersions.MarketplaceV2 not in content_item_marketplaces) or \
+                        (MarketplaceVersions.XSOAR in content_item_marketplaces):
                     raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
             case MarketplaceVersions.XSOAR | MarketplaceVersions.XPANSE:
                 if self.marketplace not in content_item_marketplaces:
