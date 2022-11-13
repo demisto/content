@@ -8,33 +8,30 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Email / User Principal Name (Required)
-  displaypassword: Password (Required for Basic authentication only)
-  name: credentials
-  defaultvalue: ""
+- displaypassword: Certificate
+  name: certificate
   type: 9
-  required: false
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
+  required: true
+  additionalinfo: A pfx certificate encoded in Base64.
+  hiddenusername: true
+- displaypassword: Password
+  name: password
+  required: true
+  type: 9
+  hiddenusername: true
+- display: The organization used in app-only authentication.
+  name: organization
+  required: true
+  type: 0
+- display: The application ID from the Azure portal
+  name: app_id
+  required: true
+  type: 0
 description: This integration allows you to manage and interact with Microsoft security and compliance content search.
 display: O365 - Security And Compliance - Content Search
 name: SecurityAndCompliance
 script:
   commands:
-  - deprecated: false
-    description: OAuth2.0 - Start authorization.
-    execution: false
-    name: o365-sc-auth-start
-  - deprecated: false
-    description: OAuth2.0 - Complete authorization.
-    execution: false
-    name: o365-sc-auth-complete
-  - deprecated: false
-    description: OAuth2.0 - Test authorization.
-    execution: false
-    name: o365-sc-auth-test
   - arguments:
     - default: false
       description: |
