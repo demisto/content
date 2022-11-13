@@ -45,7 +45,6 @@ configuration:
   required: false
   type: 16
   section: Collect
-  advanced: true
 - display: Event type to fetch
   hidden: false
   name: event_type
@@ -57,7 +56,6 @@ configuration:
   required: false
   type: 16
   section: Collect
-  advanced: true
 - defaultvalue: '50'
   display: Maximum number of incidents per fetch
   hidden: false
@@ -65,7 +63,6 @@ configuration:
   required: false
   type: 0
   section: Collect
-  advanced: true
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch

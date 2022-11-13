@@ -42,7 +42,6 @@ configuration:
   required: false
   type: 0
   section: Collect
-  advanced: true
 - display: Fetch incidents
   name: isFetch
   required: false
