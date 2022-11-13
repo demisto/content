@@ -17,7 +17,7 @@ COUNT = 0
 DEFAULT_PAGE_SIZE = 50
 DEFAULT_FROM_DATE = "-7days"
 DEFAULT_TO_DATE = "now"
-OFFSET = 0
+DEFAULT_OFFSET = 0
 INTEGRATION_CONTEXT_NAME = 'UmbrellaReporting'
 TOKEN_ENDPOINT = "https://management.api.umbrella.com/auth/v2/oauth2/token"
 IP_PARAM = 'ip'
@@ -809,7 +809,7 @@ def pagination(page: Optional[int], page_size: Optional[int]):
     """
     if (page and page <= 0) or (page_size and page_size <= 0):
         raise DemistoException(PAGE_NUMBER_ERROR_MSG)
-    page = 0 if not page else page - 1
+    page = DEFAULT_OFFSET if not page else page - 1
     page_size = DEFAULT_PAGE_SIZE if not page_size else page_size
     limit = page_size
     offset = page * page_size
