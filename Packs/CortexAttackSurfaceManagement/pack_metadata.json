@@ -34,6 +34,13 @@
         "AWS-Enrichment-Remediation": {
             "mandatory": true,
             "display_name": "AWS Enrichment and Remediaton"
+        "Rapid7_Nexpose": {
+            "mandatory": true,
+            "display_name": "Rapid7 Nexpose"
+        },
+        "Tenable_io": {
+            "mandatory": false,
+            "display_name": "Tenable.io"
         },
         "CoreAlertFields": {
             "mandatory": true,
