@@ -397,14 +397,23 @@ def module_test_command(client: Client, args):  # pragma: no cover
         dict: Operation raw response - Empty.
     """
     url = '/api/v3/groups?resultLimit=2'
-    response, status = client.make_request(Method.GET, url)
-    if status == 'Success':
-        return "ok", {}, {}
-    else:
-        demisto.debug(response)
-        return_error('Error from the API: ' + response.get('message',
-                                                           'An error has occurred, if it persist please contact your '
-                                                           'local help desk'))
+    try:
+        response, status = client.make_request(Method.GET, url)
+        if status == 'Success':
+            return "ok", {}, {}
+        else:
+            demisto.debug(response)
+            return_error('Error from the API: ' + response.get('message',
+                                                            'An error has occurred, if it persist please contact your '
+                                                            'local help desk'))
+    except Exception as e:
+        exception_text = str(e).lower()
+        demisto.debug('Exception happened')
+        demisto.debug(exception_text)
+        if 'resource not found' in exception_text:
+            return 'ok'
+        else:
+            return_error(str(e))
 
 
 def fetch_indicators_command(client: Client, params, last_run) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
@@ -501,7 +510,7 @@ def should_send_request(params, endpoint):
 def set_tql_query(from_date, params, endpoint):
     """Creating tql query to add information to the API response"""
     owners = f'AND ({create_or_query("ownerName", params.get("owners"))}) '
-    tags = f'AND ({create_or_query("tags", params.get("tags"))}) '
+    tags = f'AND ({create_or_query("tag", params.get("tags"))}) '
     status = f'AND ({create_or_query("status", params.get("status"))}) '
 
     confidence = ''
