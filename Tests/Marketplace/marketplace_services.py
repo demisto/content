@@ -2357,7 +2357,7 @@ class Pack(object):
         for tag in user_metadata.get('tags', []):
             if ':' in tag:
                 tag_data = tag.split(':')
-                if marketplace in tag_data[0]:
+                if marketplace in tag_data[0].split(','):
                     tags.append(tag_data[1])
             else:
                 tags.append(tag)
