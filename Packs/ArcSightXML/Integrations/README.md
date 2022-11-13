@@ -3,6 +3,7 @@
         <div class="article-content">
           <div class="article-body"><h2>Overview</h2>
 <hr>
+<h2><strong>Note</strong>: This Integration is deprecated. Please migrate to <a src="https://xsoar.pan.dev/docs/reference/integrations/arc-sight-esm-v2">ArcSight ESM v2</a></h2>
 <p>Use the ArcSight XML integration to fetch cases from ArcSight and create incidents Cortex XSOAR using XML files. ArcSight exports cases and security events as XML to a specified folder and Cortex XSOAR fetches the emails from the folder and creates an incident in Cortex XSOAR for each case.</p>
 <p><strong>Important: </strong> The integration should be executed in native Python, not Docker, because the program must have direct access to the folder, otherwise will not be fetched. You can use an engine, but make sure the engine does not use Docker. If the folder is on the Cortex XSOAR server then you can use <code>python.executable=python</code>.</p>
 <h2>Configure ArcSight XML on Cortex XSOAR</h2>
