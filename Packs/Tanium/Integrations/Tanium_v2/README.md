@@ -4790,6 +4790,11 @@ There are no context output for this command.
       <td>Optional</td>
     </tr>
     <tr>
+      <td>expire-in-seconds</td>
+      <td>Expiration time (in seconds) for the package.</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
       <td>action-name</td>
       <td>The action name.</td>
       <td>Optional</td>

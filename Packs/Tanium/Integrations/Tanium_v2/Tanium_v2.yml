@@ -1235,6 +1235,8 @@ script:
     - defaultValue: via Demisto API
       description: The action name.
       name: action-name
+    - description: Expiration time (in seconds) for the package.
+      name: expire-in-seconds
     description: Creates an action object, based on a package name or package ID.
     name: tn-create-action-by-host
     outputs:
