@@ -54,7 +54,6 @@ filebeat.inputs:
             vendor: "microsoft"
             product: "dns"
 ```
-
 **Note**: The above configuration uses the default location of the logs. 
 
 For **XSIAM version 1.3** and above, please use the built-in YAML template provided within the XDR collector  configuration.
