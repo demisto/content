@@ -14,7 +14,9 @@ If a branch with the name "MyPack" exists, the script return "MyPack_1".
 ## Used In
 ---
 This script is used in the following playbooks and scripts.
-Pull Request Creation - Generic
+* Pull Request Creation - Github
+* Pull Request Creation - Gitlab
+* Pull Request Creation - Bitbucket
 
 ## Inputs
 ---

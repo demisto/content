@@ -1131,7 +1131,7 @@ tasks:
       version: -1
       name: Commit files
       description: This script gets content files as input from the context, commits the files in the correct folder and creates the pull request text.
-      scriptName: CommitFilesBitbucket
+      scriptName: CommitFiles
       type: regular
       iscommand: false
       brand: ""
@@ -1148,6 +1148,8 @@ tasks:
           accessor: cicdpullrequestcomment
       files:
         simple: ${inputs.File}
+      git_integration:
+        simple: Bitbucket
       pack:
         simple: ${inputs.PackName}
       template:
@@ -1297,4 +1299,4 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.5.0
+fromversion: 6.0.0
