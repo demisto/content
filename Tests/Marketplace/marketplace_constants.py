@@ -300,7 +300,7 @@ class PackStatus(enum.Enum):
 
     """
     SUCCESS = "Successfully uploaded pack data to gcs"
-    FAILED_LOADING_USER_METADATA = "Failed in loading user defined metadata"
+    FAILED_LOADING_PACK_METADATA = "Failed in loading user-defined pack metadata"
     FAILED_IMAGES_UPLOAD = "Failed to upload pack integration images to gcs"
     FAILED_AUTHOR_IMAGE_UPLOAD = "Failed to upload pack author image to gcs"
     FAILED_PREVIEW_IMAGES_UPLOAD = "Failed to upload pack preview images to gcs"
