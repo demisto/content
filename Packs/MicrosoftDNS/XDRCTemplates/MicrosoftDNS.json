@@ -1,6 +1,6 @@
 {
     "os_type": "AGENT_OS_WINDOWS",
-    "profile_type": "FILEBEAT",
+    "profile_type": "STANDARD",
     "name": "MicrosoftDNS",
     "content_global_id": "MicrosoftDNS",
     "from_xdr_version": "3.5.0",
