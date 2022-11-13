@@ -75,7 +75,7 @@ class GetEvents(IntegrationGetEvents):
             response = self.call()
         except Exception as exc:
             demisto.info(f'Failed to get a response from the endpoint: {self.client.request.url}.\nError:\n{str(exc)}')
-            if '401' in str(exc):
+            if exc.res.status_code == 401:
                 self.client.login_error = f'Cannot login: {exc}'  # type: ignore
             return []
         events: list = response.json()

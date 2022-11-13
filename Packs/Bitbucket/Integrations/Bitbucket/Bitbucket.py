@@ -1595,7 +1595,7 @@ def main() -> None:  # pragma: no cover
     proxy = demisto.params().get('proxy', False)
     auth = (user_name, app_password)
 
-    demisto.debug(f'Command being called is TTTTTTTTTTTTT{demisto.command()}')
+    demisto.debug(f'Command being called is {demisto.command()}')
     try:
         client = Client(
             workspace=workspace,
