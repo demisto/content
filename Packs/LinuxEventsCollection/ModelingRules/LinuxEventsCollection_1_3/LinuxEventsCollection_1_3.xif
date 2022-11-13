@@ -21,7 +21,7 @@ filter _log_source_file_name in("auth*", "secure")
     xdm.source.user.username = coalesce(user_name1 , user_name2 ),
     xdm.target.process.command_line = command;
 
-filter _log_source_file_name in("syslog*", "message")
+filter _log_source_file_name in("syslog*", "messages")
 | alter current_year = arrayindex(regextract(to_string(current_time()), "\d{4}"), 0),
     timestamp = arrayindex(regextract(_raw_log, "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0)
 | alter timestamp = format_string("%s %s", current_year, timestamp),
