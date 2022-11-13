@@ -3744,11 +3744,11 @@ def qradar_remote_network_cidr_list_command(client: Client, args: Dict[str, Any]
 
     if not filter_:
         if group:
-            filter_ += f'group={group}'
+            filter_ += f'group="{group}"'
         if id_:
             filter_ += f' AND id={id_}' if group else f'id={id_}'
         if name:
-            filter_ += f' AND name={name}' if (group or id_) else f'name={name}'
+            filter_ += f' AND name="{name}"' if (group or id_) else f'name="{name}"'
 
     response = client.get_remote_network_cidr(range_, filter_, fields)
     outputs = [{'id': res.get('id'),
