@@ -131,6 +131,7 @@ class IAMUserProfile:
     CREATE_INCIDENT_TYPE = 'User Profile - Create'
     UPDATE_INCIDENT_TYPE = 'User Profile - Update'
     DISABLE_INCIDENT_TYPE = 'User Profile - Disable'
+    ENABLE_INCIDENT_TYPE = 'User Profile - Enable'
 
     def __init__(self, user_profile, mapper: str, incident_type: str, user_profile_delta=None):
         self._user_profile = safe_load_json(user_profile)
@@ -241,7 +242,8 @@ class IAMUserProfile:
                 return {k: v for k, v in self.mapped_user_profile.items() if k != 'olduserdata'}
             return self.mapped_user_profile
         if incident_type not in [IAMUserProfile.CREATE_INCIDENT_TYPE, IAMUserProfile.UPDATE_INCIDENT_TYPE,
-                                 IAMUserProfile.DISABLE_INCIDENT_TYPE]:
+                                 IAMUserProfile.DISABLE_INCIDENT_TYPE,
+                                 IAMUserProfile.ENABLE_INCIDENT_TYPE]:
             raise DemistoException('You must provide a valid incident type to the map_object function.')
         if not self._user_profile:
             raise DemistoException('You must provide the user profile data.')
