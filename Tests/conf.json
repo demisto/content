@@ -1923,12 +1923,6 @@
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
-            "playbookID": "Microsoft Defender - ATP - Indicators Test",
-            "instance_names": "microsoft_defender_atp_dev",
-            "is_mockable": false
-        },
-        {
-            "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
             "instance_names": "microsoft_defender_atp_dev_self_deployed"
         },
@@ -5237,7 +5231,6 @@
         "Detonate Remote File From URL -McAfee-ATD - Test": "Issue 33407",
         "Test Playbook McAfee ATD Upload File": "Issue 33408",
         "Trend Micro Apex - Test": "Issue 27280",
-        "Microsoft Defender - ATP - Indicators Test": "Issue 29279",
         "Test-BPA": "Issue 28406",
         "Test-BPA_Integration": "Issue 28236",
         "TestTOPdeskPlaybook": "Issue 35412",
