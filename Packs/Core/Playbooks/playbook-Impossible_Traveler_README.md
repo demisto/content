@@ -88,4 +88,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Impossible Traveler Response](../doc_files/Impossible_Traveler_Response.png)
+![Impossible Traveler Response](../doc_files/Impossible_Traveler.png)
