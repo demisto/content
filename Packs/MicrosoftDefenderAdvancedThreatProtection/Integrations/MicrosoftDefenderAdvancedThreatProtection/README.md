@@ -1080,7 +1080,13 @@ The alert da637200417169017725_183736971 has been updated successfully
 
 ### 9. microsoft-atp-advanced-hunting
 ---
-Runs programmatic queries in Microsoft Defender ATP Portal (https://securitycenter.windows.com/hunting). You can only run a query on data from the last 30 days. The maximum number of rows is 10,000. The number of executions is limited to 15 calls per minute, and 15 minutes of running time every hour, and 4 hours of running time a day.
+Runs programmatic queries in Microsoft Defender ATP Portal (https://securitycenter.windows.com/hunting). 
+- You can only run a query on data from the last 30 days. 
+- The maximum number of rows is 10,000. 
+- The number of executions is limited to 15 calls per minute, and 15 minutes of running time every hour, and 4 hours of running time a day.
+- This API can only query tables belonging to Microsoft Defender for Endpoint.
+The following reference - [Data Schema](https://learn.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-schema-tables?view=o365-worldwide#learn-the-schema-tables),
+lists all the tables in the schema. Each table name links to a page describing the column names for that table and which service it applies to. 
 
 ##### Required Permissions
 AdvancedQuery.Read.All	
