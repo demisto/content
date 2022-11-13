@@ -1,6 +1,6 @@
 {
-    "name": "Linux Events Collection",
-    "description": "Linux is an operating system for servers, desktops, cloud, and IoTs",
+    "name": "Linux Debian Events Collection",
+    "description": "Linux Debian is an operating system for servers, desktops, cloud, and IoTs",
     "support": "xsoar",
     "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",
