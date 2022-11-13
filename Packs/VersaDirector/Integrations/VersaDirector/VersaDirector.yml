@@ -695,7 +695,7 @@ script:
       required: true
       isArray: false
     - name: custom_rule_json
-      description: 'Allows the use of the Custom SD-WAN Rule JSON template. All of the arguments listed below will be overridden. For an example, please see the integration documentation: LINK'
+      description: 'Allows the use of the Custom SD-WAN Rule JSON template. All of the arguments listed below will be overridden. For an example, please see the integration documentation.'
       required: false
       isArray: false
     - name: rule_name
@@ -770,7 +770,7 @@ script:
       required: true
       isArray: false
     - name: custom_rule_json
-      description: 'Allows the use of the Custom SD-WAN Rule JSON template. All of the arguments listed below will be overridden. For an example, please see the integration documentation: LINK'
+      description: 'Allows the use of the Custom SD-WAN Rule JSON template. All of the arguments listed below will be overridden. For an example, please see the integration documentation.'
       required: false
       isArray: false
     - name: rule_name
@@ -940,7 +940,7 @@ script:
       required: true
       isArray: false
     - name: custom_rule_json
-      description: 'Allows the use of the Custom SD-WAN Rule JSON template. All of the arguments listed below will be overridden. For an example, please see the integration documentation: LINK'
+      description: 'Allows the use of the Custom SD-WAN Rule JSON template. All of the arguments listed below will be overridden. For an example, please see the integration documentation.'
       required: false
       isArray: false
     - name: rule_name
@@ -1015,7 +1015,7 @@ script:
       required: true
       isArray: false
     - name: custom_rule_json
-      description: 'Allows the use of the Custom SD-WAN Rule JSON template. All of the arguments listed below will be overridden. For an example, please see the integration documentation: LINK'
+      description: 'Allows the use of the Custom SD-WAN Rule JSON template. All of the arguments listed below will be overridden. For an example, please see the integration documentation.'
       required: false
       isArray: false
     - name: rule_name
@@ -1173,7 +1173,7 @@ script:
       required: true
       isArray: false
     - name: custom_rule_json
-      description: 'Allows the use of the Custom Access policy rule JSON template. All of the arguments listed below will be overridden. For an example, please see the integration documentation: LINK'
+      description: 'Allows the use of the Custom Access policy rule JSON template. All of the arguments listed below will be overridden. For an example, please see the integration documentation.'
       required: false
       isArray: false
     - name: rule_name
@@ -1224,7 +1224,7 @@ script:
       required: true
       isArray: false
     - name: custom_rule_json
-      description: 'Allows the use of the Custom Access policy rule JSON template. All of the arguments listed below will be overridden. For an example, please see the integration documentation: LINK'
+      description: 'Allows the use of the Custom Access policy rule JSON template. All of the arguments listed below will be overridden. For an example, please see the integration documentation.'
       required: false
       isArray: false
     - name: rule_name
@@ -1364,7 +1364,7 @@ script:
       required: true
       isArray: false
     - name: custom_rule_json
-      description: 'Allows the use of the Custom Access policy rule JSON template. All of the arguments listed below will be overridden. For an example, please see the integration documentation: LINK'
+      description: 'Allows the use of the Custom Access policy rule JSON template. All of the arguments listed below will be overridden. For an example, please see the integration documentation.'
       required: false
       isArray: false
     - name: rule_name
@@ -1415,7 +1415,7 @@ script:
       required: true
       isArray: false
     - name: custom_rule_json
-      description: 'Allows the use of the Custom Access policy rule JSON template. All of the arguments listed below will be overridden. For an example, please see the integration documentation: LINK'
+      description: 'Allows the use of the Custom Access policy rule JSON template. All of the arguments listed below will be overridden. For an example, please see the integration documentation.'
       required: false
       isArray: false
     - name: rule_name
