@@ -5247,6 +5247,7 @@
         "Test-BPA_Integration": "Issue 28236",
         "TestTOPdeskPlaybook": "Issue 35412",
         "PAN-OS EDL Setup v3 Test": "Issue 35386",
+        "GmailTest": "Issue 27057",
         "get_file_sample_by_hash_-_cylance_protect_-_test": "Issue 28823",
         "Carbon Black Enterprise EDR Test": "Issue 29775",
         "VirusTotal (API v3) Detonate Test": "Issue 36004",

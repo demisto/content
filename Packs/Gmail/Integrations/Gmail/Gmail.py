@@ -1987,6 +1987,7 @@ def forwarding_address_add(user_id: str, forwarding_email: str) -> tuple:
         Returns:
             A Response object.
     """
+    result = None
     exception = False
     error_message = ''
     request_body = {'forwardingEmail': forwarding_email}
@@ -1997,11 +1998,12 @@ def forwarding_address_add(user_id: str, forwarding_email: str) -> tuple:
         delegated_user=user_id)
     try:
         result = service.users().settings().forwardingAddresses().create(userId=user_id, body=request_body).execute()
+        result['userId'] = user_id
     except HttpError as e:
         error_message = e.reason
         exception = True
 
-    return result, exception, {"forwardingEmail": forwarding_email, "errorMessage": error_message}
+    return result, exception, {'forwardingEmail': forwarding_email, 'errorMessage': error_message, 'userId': user_id}
 
 
 def forwarding_address_add_command() -> list[CommandResults]:
@@ -2028,24 +2030,21 @@ def forwarding_address_add_command() -> list[CommandResults]:
             outputs_list_failure.append(error_details)
             demisto.debug(error_details)
         else:
-            result_forwarding_add['userId'] = user_id
             outputs_list_success.append(result_forwarding_add)
 
-    if outputs_list_failure:
-        results.append(CommandResults(raw_response=outputs_list_success,
-                                      outputs=outputs_list_success,
-                                      readable_output=tableToMarkdown('Forwarding addresses results',
-                                                                      outputs_list_success, headers['failure'],removeNull=True),
-                                      outputs_prefix='Gmail.ForwardingAddress',
-                                      outputs_key_field=['userId', 'forwardingEmail']))
     if outputs_list_success:
         results.append(CommandResults(raw_response=outputs_list_success,
                                       outputs=outputs_list_success,
-                                      readable_output=tableToMarkdown('Forwarding addresses error',
+                                      readable_output=tableToMarkdown(f'Forwarding addresses results for "{user_id}":',
                                                                       outputs_list_success, headers['success'], removeNull=True),
                                       outputs_prefix='Gmail.ForwardingAddress',
-                                      outputs_key_field='forwardingEmail'))
-
+                                      outputs_key_field=['forwardingEmail', 'userId']))
+    if outputs_list_failure:
+        results.append(CommandResults(raw_response=outputs_list_failure,
+                                      readable_output=tableToMarkdown(f'Forwarding addresses errors for "{user_id}":',
+                                                                      outputs_list_failure, headers['failure'], removeNull=True),
+                                      outputs_prefix='Gmail.ForwardingAddress',
+                                      outputs_key_field=['forwardingEmail', 'userId']))
     return results
 
 
@@ -2073,11 +2072,12 @@ def forwarding_address_update(user_id: str, disposition: str, forwarding_email: 
                         }
         try:
             result = service.users().settings().updateAutoForwarding(userId=user_id, body=request_body).execute()
+            result['userId'] = user_id
         except HttpError as e:
             error_message = e.reason
             exception = True
 
-    return result, exception, {"forwardingEmail": forwarding_email, "errorMessage": error_message}
+    return result, exception, {'forwardingEmail': forwarding_email, 'errorMessage': error_message, 'userId': user_id}
 
 
 def forwarding_address_update_command() -> list[CommandResults]:
@@ -2109,20 +2109,19 @@ def forwarding_address_update_command() -> list[CommandResults]:
             result_forwarding_update['userId'] = user_id
             outputs_list_success.append(result_forwarding_update)
 
-    if outputs_list_failure:
-        results.append(CommandResults(raw_response=outputs_list_success,
-                                      outputs=outputs_list_success,
-                                      readable_output=tableToMarkdown('Forwarding addresses update results',
-                                                                      outputs_list_success, headers['failure'], removeNull=True),
-                                      outputs_prefix='Gmail.ForwardingAddress',
-                                      outputs_key_field=['userId', 'forwardingEmail']))
     if outputs_list_success:
         results.append(CommandResults(raw_response=outputs_list_success,
                                       outputs=outputs_list_success,
-                                      readable_output=tableToMarkdown('Forwarding addresses update errors',
+                                      readable_output=tableToMarkdown(f'Forwarding addresses update results for "{user_id}":',
                                                                       outputs_list_success, headers['success'], removeNull=True),
                                       outputs_prefix='Gmail.ForwardingAddress',
-                                      outputs_key_field='forwardingEmail'))
+                                      outputs_key_field=['forwardingEmail', 'userId']))
+    if outputs_list_failure:
+        results.append(CommandResults(raw_response=outputs_list_failure,
+                                      readable_output=tableToMarkdown(f'Forwarding addresses update errors for "{user_id}":',
+                                                                      outputs_list_failure, headers['failure'], removeNull=True),
+                                      outputs_prefix='Gmail.ForwardingAddress',
+                                      outputs_key_field=['userId', 'forwardingEmail']))
 
     return results
 
@@ -2220,7 +2219,7 @@ def forwarding_address_get_command() -> CommandResults:
         raw_response=result,
         outputs=result,
         readable_output=tableToMarkdown(f'Get forwarding address for: "{user_id}"', result, headers, removeNull=True),
-        outputs_prefix='Gmail.ForwardingAddress, Gmail.userId',
+        outputs_prefix='Gmail.ForwardingAddress',
         outputs_key_field=['forwardingEmail', 'userId']
     )
 
@@ -2291,13 +2290,15 @@ def forwarding_address_list_command() -> CommandResults:
     limit = int(args.get('limit', '50'))
     result = forwarding_address_list(user_id)
     context = result.get('forwardingAddresses')[:limit]  # type: ignore
+    for msg in context:
+        msg['userId'] = user_id
     headers = ['forwardingEmail', 'verificationStatus']
     return CommandResults(
         raw_response=result,
         outputs=context,
         readable_output=tableToMarkdown(f'Forwarding addresses list for: "{user_id}"', context, headers, removeNull=True),
         outputs_prefix='Gmail.ForwardingAddress',
-        outputs_key_field='forwardingEmail'
+        outputs_key_field=['forwardingEmail', 'userId']
     )
 
 
@@ -2393,7 +2394,8 @@ def main():
         'gmail-forwarding-address-get': forwarding_address_get_command,
         'gmail-forwarding-address-remove': forwarding_address_remove_command,
         'gmail-forwarding-address-list': forwarding_address_list_command,
-        'gmail-forwarding-address-update': forwarding_address_update_command
+        'gmail-forwarding-address-update': forwarding_address_update_command,
+        'gmail-forwarding-address-add': forwarding_address_add_command,
     }
     command = demisto.command()
     LOG('GMAIL: command is %s' % (command,))

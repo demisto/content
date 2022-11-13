@@ -1976,7 +1976,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Creates a forwarding address. If ownership verification is required, a message will be sent to the recipient and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted. This method is only available to service account clients that have been delegated domain-wide authority.
+    description: Creates a forwarding address. If ownership verification is required, a message will be sent to the recipient and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted. This method is only available to service account clients that have been delegated domain-wide authority. The special value "me" can be used to indicate the authenticated user.
     name: gmail-forwarding-address-add
     outputs:
     - contextPath: Gmail.ForwardingAddress.forwardingEmail
@@ -2019,7 +2019,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Creates a forwarding address. If ownership verification is required, a message will be sent to the recipient and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted. This method is only available to service account clients that have been delegated domain-wide authority.
+    description: |-
+      Updates the auto-forwarding setting for the specified account. A verified forwarding address must be specified when auto-forwarding is enabled.
+    execution: false
     name: gmail-forwarding-address-update
     outputs:
     - contextPath: Gmail.ForwardingAddress.forwardingEmail
@@ -2037,7 +2039,6 @@ script:
     - contextPath: Gmail.ForwardingAddress.Enabled
       description: Indicates whether all incoming mail is automatically forwarded to another address.
       type: Boolean
-    execution: false
   - arguments:
     - default: false
       description: The user's email address.
@@ -2227,7 +2228,7 @@ script:
     name: gmail-forwarding-address-remove
   - arguments:
     - default: false
-      description: User's email address.
+      description: The user email address or the user id, use the !gmail-list-users command, in order to get the user id. The special value "me" can be used to indicate the authenticated user.
       isArray: false
       name: user_id
       required: true
