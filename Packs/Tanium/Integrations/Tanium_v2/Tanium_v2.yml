@@ -1407,7 +1407,7 @@ script:
     - contextPath: Tanium.ActionResult.ID
       description: The action results ID.
       type: String
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.8.37233
   runonce: false
   script: ''
   subtype: python3
