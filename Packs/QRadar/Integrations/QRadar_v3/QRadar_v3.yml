@@ -2881,7 +2881,9 @@ script:
     - contextPath: QRadar.deploy.status
       description: The deployment status (INITIALIZING, IN_PROGRESS, COMPLETE).
       type: String
-    description: Executes a deploy. This API command executes any awaiting system deployments in Qradar within the same deployment type and hosts defined.
+    description: |
+      Executes a deploy.
+      Potentially harmful: This API command executes any awaiting system deployments in Qradar within the same deployment type and hosts defined.
   runonce: false
   script: '-'
   type: python
