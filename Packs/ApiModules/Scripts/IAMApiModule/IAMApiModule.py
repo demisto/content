@@ -481,11 +481,11 @@ class IAMCommand:
                                             skip=True,
                                             skip_reason=error_message)
                 else:
-                    if user_app_data.is_active:
+                    if not user_app_data.is_active:
                         enabled_user = client.enable_user(user_app_data.id)
                         user_profile.set_result(
                             action=IAMActions.ENABLE_USER,
-                            active=False,
+                            active=True,
                             iden=enabled_user.id,
                             email=user_profile.get_attribute('email') or user_app_data.email,
                             username=enabled_user.username,

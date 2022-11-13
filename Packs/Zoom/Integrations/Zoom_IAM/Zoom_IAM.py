@@ -1,10 +1,11 @@
-import demistomock as demisto
-from CommonServerPython import *
-from IAMApiModule import *
-import jwt
-import urllib3
 from datetime import timedelta
 import dateparser
+import demistomock as demisto
+import jwt
+import urllib3
+from CommonServerPython import *
+from IAMApiModule import *
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -295,9 +296,9 @@ def main():
     api_key = params.get('api_key')
     api_secret = params.get('api_secret')
     account_id = params.get('account_id')
-    client_id = params.get('client_id', {}).get('password')
-    client_secret = params.get('client_secret', {}).get('password')
-    is_jwt = argToBoolean(params.get('is_jwt', False))
+    client_id = params.get('credentials', {}).get('identifier')
+    client_secret = params.get('credentials', {}).get('password')
+    is_jwt = api_key and api_secret and not (client_id and client_secret and account_id)
     mapper_in = params.get('mapper_in', DEFAULT_INCOMING_MAPPER)
     # mapper_out = params.get('mapper_out', DEFAULT_OUTGOING_MAPPER)
     verify_certificate = not params.get('insecure', False)

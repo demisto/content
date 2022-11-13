@@ -3,30 +3,25 @@ commonfields:
   id: Zoom_IAM Dev
   version: -1
 configuration:
-  - display: API Key
+  - display: API Key (Deprecated)
     name: api_key
-    required: false
     type: 4
+    required: false
     additionalinfo: This authentication method is deprecated
-  - display: API Secret
+  - display: API Secret (Deprecated)
     name: api_secret
-    required: false
     type: 4
+    required: false
     additionalinfo: This authentication method is deprecated
   - display: Account ID
     name: account_id
-    required: False
     type: 0
+    required: false
   - display: Client ID
-    name: client_id
-    required: false
+    displaypassword: Client Secret
+    name: credentials
     type: 9
-    hiddenusername: true
-  - display: Client secret
-    name: client_secret
     required: false
-    type: 9
-    hiddenusername: true
   - display: Use system proxy settings
     name: proxy
     required: false
@@ -37,6 +32,10 @@ configuration:
     type: 8
   - display: Allow disabling users
     name: disable-user-enabled
+    required: false
+    type: 8
+  - display: Allow enabling users
+    name: enable-user-enabled
     required: false
     type: 8
   - defaultvalue: User Profile - SCIM (Incoming)
