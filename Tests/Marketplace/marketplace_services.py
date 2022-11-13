@@ -49,7 +49,7 @@ class Pack(object):
         CHANGELOG_JSON (str): changelog json full name, may be changed in the future.
         README (str): pack's readme file name.
         METADATA (str): pack's metadata file name, the one that will be deployed to cloud storage.
-        PACK_METADATA (str); pack metadata file name, the one that located in content repo.
+        USER_METADATA (str); pack metadata file name, the one that located in content repo.
         EXCLUDE_DIRECTORIES (list): list of directories to excluded before uploading pack zip to storage.
         AUTHOR_IMAGE_NAME (str): author image file name.
         RELEASE_NOTES (str): release notes folder name.
@@ -58,7 +58,7 @@ class Pack(object):
     PACK_INITIAL_VERSION = "1.0.0"
     CHANGELOG_JSON = "changelog.json"
     README = "README.md"
-    PACK_METADATA = "pack_metadata.json"
+    USER_METADATA = "pack_metadata.json"
     METADATA = "metadata.json"
     AUTHOR_IMAGE_NAME = "Author_image.png"
     EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS.value]
@@ -829,7 +829,7 @@ class Pack(object):
                     full_file_path = os.path.join(root, pack_file)
                     # removing unwanted files
                     if pack_file.startswith('.') \
-                            or pack_file in [Pack.AUTHOR_IMAGE_NAME, Pack.PACK_METADATA] \
+                            or pack_file in [Pack.AUTHOR_IMAGE_NAME, Pack.USER_METADATA] \
                             or pack_file in self._remove_files_list:
                         os.remove(full_file_path)
                         logging.info(f"Deleted pack {pack_file} file for {self._pack_name} pack")
@@ -2299,9 +2299,9 @@ class Pack(object):
         user_metadata = {}
 
         try:
-            user_metadata_path = os.path.join(self._pack_path, Pack.PACK_METADATA)  # user metadata path before parsing
+            user_metadata_path = os.path.join(self._pack_path, Pack.USER_METADATA)  # user metadata path before parsing
             if not os.path.exists(user_metadata_path):
-                logging.error(f"{self._pack_name} pack is missing {Pack.PACK_METADATA} file.")
+                logging.error(f"{self._pack_name} pack is missing {Pack.USER_METADATA} file.")
                 return task_status
 
             with open(user_metadata_path, "r") as user_metadata_file:
