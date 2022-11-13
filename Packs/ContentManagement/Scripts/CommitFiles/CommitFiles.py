@@ -60,7 +60,7 @@ class ContentFile:
             self.path_to_file = os.path.join('Packs', pack_name, folder)
 
 
-def get_file_sha(branch_name: str, content_file: ContentFile):
+def get_file_sha(branch_name: str, content_file: ContentFile, get_files_command: str):
     full_path = os.path.join(content_file.path_to_file, content_file.file_name)
 
     sha = file_path_to_sha.get(full_path)
@@ -68,8 +68,8 @@ def get_file_sha(branch_name: str, content_file: ContentFile):
         return sha
 
     # try to get the file from branch
-    status, list_files_res = execute_command('Github-list-files', {'branch': branch_name,
-                                                                   'path': content_file.path_to_file},
+    status, list_files_res = execute_command(get_files_command, {'branch': branch_name,
+                                                                 'path': content_file.path_to_file},
                                              fail_on_error=False)
 
     if status:
@@ -84,7 +84,7 @@ def commit_content_item(branch_name: str, content_file: ContentFile):
                    'path_to_file': f'{content_file.path_to_file}/{content_file.file_name}',
                    'branch_name': branch_name, 'file_text': content_file.file_text}
 
-    file_sha = get_file_sha(branch_name, content_file)
+    file_sha = get_file_sha(branch_name, content_file, 'Github-list-files')
 
     # dont commit pack_metadata.json if already exists in the branch
     if file_sha and content_file.file_name == 'pack_metadata.json':
@@ -108,7 +108,7 @@ def commit_content_item_gitlab(branch_name: str, content_file: ContentFile):
                    'file_path': f'{content_file.path_to_file}/{content_file.file_name}',
                    'branch': branch_name, 'file_content': content_file.file_text}
 
-    file_sha = get_file_sha(branch_name, content_file)
+    file_sha = get_file_sha(branch_name, content_file, 'gitlab-file-get')
 
     # dont commit pack_metadata.json if already exists in the branch
     if file_sha and content_file.file_name == 'pack_metadata.json':
@@ -121,7 +121,7 @@ def commit_content_item_gitlab(branch_name: str, content_file: ContentFile):
     else:
         # new file added
         new_files.append(content_file.file_name)
-#  gitlab-file-create
+    #  gitlab-file-create
     status, commit_res = execute_command('gitlab-file-create', commit_args, fail_on_error=False)
     if not status:
         raise DemistoException(commit_res)
@@ -311,7 +311,6 @@ def main():
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

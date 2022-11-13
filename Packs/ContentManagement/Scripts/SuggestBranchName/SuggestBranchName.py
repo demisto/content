@@ -18,7 +18,7 @@ def find_available_branch(pack_name: str, command_get_branch: str):
 ''' MAIN FUNCTION '''
 
 
-def main():
+def main():  # pragma: no cover
 
     try:
         pack_name = demisto.getArg('pack')
