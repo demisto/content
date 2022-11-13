@@ -2842,6 +2842,7 @@ script:
       required: true
     - name: group
       description: The remote network group that CIDRs should belong to. If the CIDR-associated group should be changed, it can be inserted here.
+      required: true
     - name: fields
       description: Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets, and multiple fields in the same object are separated by commas. The possible fields are id,group,name,cidr,description.
     outputs:
