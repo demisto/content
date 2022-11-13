@@ -362,11 +362,11 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
         marketplace (str): the marketplace type of the bucket. possible options: xsoar, marketplace_v2
 
     """
-    marketplace_core_packs = GCPConfig.get_core_packs(marketplace)
+    required_core_packs = GCPConfig.get_core_packs(marketplace)
     core_packs_public_urls = []
-    found_core_packs = set()
+    bucket_core_packs = set()
     for pack in os.scandir(index_folder_path):
-        if pack.is_dir() and pack.name in marketplace_core_packs:
+        if pack.is_dir() and pack.name in required_core_packs:
             pack_metadata_path = os.path.join(index_folder_path, pack.name, Pack.METADATA)
 
             if not os.path.exists(pack_metadata_path):
@@ -386,13 +386,20 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
                 sys.exit(1)
 
             core_packs_public_urls.append(core_pack_public_url)
-            found_core_packs.add(pack.name)
+            bucket_core_packs.add(pack.name)
 
-    if len(found_core_packs) != len(marketplace_core_packs):
-        missing_core_packs = set(marketplace_core_packs) ^ found_core_packs
-        logging.critical(f"Number of defined core packs are: {len(marketplace_core_packs)}")
-        logging.critical(f"Actual number of found core packs are: {len(found_core_packs)}")
-        logging.critical(f"Missing core packs are: {missing_core_packs}")
+    missing_core_packs = set(required_core_packs).difference(bucket_core_packs)
+    unexpected_core_packs = set(bucket_core_packs).difference(required_core_packs)
+
+    if missing_core_packs:
+        logging.critical(
+            f"missing {len(missing_core_packs)} packs (expected in core_packs configuration, but not found in bucket): "
+            f"{','.join(sorted(missing_core_packs))}")
+    if unexpected_core_packs:
+        logging.critical(
+            f"unexpected {len(missing_core_packs)} packs in bucket (not in the core_packs configuration): "
+            f"{','.join(sorted(unexpected_core_packs))}")
+    if missing_core_packs or unexpected_core_packs:
         sys.exit(1)
 
     corepacks_json_path = os.path.join(artifacts_dir, GCPConfig.CORE_PACK_FILE_NAME)
