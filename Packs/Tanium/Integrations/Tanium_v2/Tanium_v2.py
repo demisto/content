@@ -849,7 +849,7 @@ def create_action_by_host(client, data_args):
     parameters = data_args.get('parameters')
     ip_address = data_args.get('ip-address')
     hostname = data_args.get('hostname')
-    expire = arg_to_number(data_args.get('expire-in-seconds'))
+    expire = arg_to_number(data_args.get('expiration-time'))
 
     body = client.build_create_action_body(True, action_name, parameters, package_id=package_id,
                                            package_name=package_name, action_group_id=action_group_id,
