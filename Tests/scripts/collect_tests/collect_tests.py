@@ -273,7 +273,7 @@ class TestCollector(ABC):
 
     @property
     def _always_installed_packs(self) -> Optional[CollectionResult]:
-        always_installed_packs_list = ALWAYS_INSTALLED_PACKS_MAPPING.get(self.marketplace, ALWAYS_INSTALLED_PACKS_XSOAR)
+        always_installed_packs_list = ALWAYS_INSTALLED_PACKS_MAPPING[self.marketplace]
         return CollectionResult.union(tuple(
             CollectionResult(test=None, pack=pack, reason=CollectionReason.ALWAYS_INSTALLED_PACKS,
                              version_range=None, reason_description=pack, conf=None, id_set=None, is_sanity=True)
@@ -288,7 +288,7 @@ class TestCollector(ABC):
             case MarketplaceVersions.XSOAR:
                 return XSOAR_SANITY_TEST_NAMES
             case MarketplaceVersions.XPANSE:
-                return tuple()
+                return ()  # none at the moment
             case _:
                 raise RuntimeError(f'unexpected marketplace value {self.marketplace.value}')
 
@@ -512,7 +512,7 @@ class TestCollector(ABC):
                 # For XSIAM machines we collect tests that have not xsoar marketplace.
                 # Tests for the packs that has only mpv2, or mpv2 and xpanse marketplaces,
                 # will run on xsiam machines only.
-                if MarketplaceVersions.XSOAR in content_item_marketplaces:
+                if (MarketplaceVersions.MarketplaceV2 not in content_item_marketplaces) or (MarketplaceVersions.XSOAR in content_item_marketplaces):
                     raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
             case MarketplaceVersions.XSOAR | MarketplaceVersions.XPANSE:
                 if self.marketplace not in content_item_marketplaces:
@@ -1036,6 +1036,7 @@ class XPANSENightlyTestCollector(NightlyTestCollector):
         super().__init__(MarketplaceVersions.XPANSE, graph=graph)
 
     def _collect(self) -> Optional[CollectionResult]:
+        logger.info('tests are not currently supported for XPANSE, returning nothing.')
         return None
 
 
