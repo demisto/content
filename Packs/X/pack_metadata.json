@@ -1,0 +1,21 @@
+{
+    "name": "x",
+    "description": "",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "dansterenson",
+    "url": "",
+    "email": "",
+    "created": "2022-11-13T16:39:11Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "dansterenson"
+    ]
+}
