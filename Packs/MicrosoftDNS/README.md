@@ -27,7 +27,7 @@ You can configure the vendor and product by replacing [vendor]\_[product]\_raw w
 
 When configuring the instance, you should use a yml file that configures the vendor and product, as shown in the below configuration for the Microsoft DNS product.
  
-For XSIAM version 1.2 only, copy and paste the below in the *Filebeat Configuration File* section (inside the relevant profile under the *XDR Collectors Profiles*).
+For **XSIAM version 1.2** only, copy and paste the below in the *Filebeat Configuration File* section (inside the relevant profile under the *XDR Collectors Profiles*).
 #### Filebeat Configuration File
 
 ```
@@ -57,4 +57,4 @@ filebeat.inputs:
 
 **Note**: The above configuration uses the default location of the logs. 
 
-For XSIAM version 1.3 and above, please use the built-in YAML template provided within the XDR collector  configuration.
+For **XSIAM version 1.3** and above, please use the built-in YAML template provided within the XDR collector  configuration.
