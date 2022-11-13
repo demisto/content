@@ -46,6 +46,7 @@
 			"Relationship",
 			"Elasticsearch"],
 		"xsoar": [],
-		"marketplacev2": ["Data Source"]
+		"marketplacev2": ["Data Source"],
+		"xpanse": ["Data Source"]
 	}
 }
