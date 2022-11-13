@@ -354,7 +354,7 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
                 dbot_score=dbot_score
             )
 
-            table_for_md = resp_to_hr(response=file_info, type_='file', extra=args.get('extra', False))
+            table_for_md = resp_to_hr(response=file_info, type_='file', extra=args.get('extra', False))  # I need to change the name of extra arg
 
             readable_output = tableToMarkdown(name=f"Hash {_hash} antivirus reputation:", t=table_for_md,
                                               removeNull=True)
@@ -439,7 +439,7 @@ def threat_signature_get_command(client: Client, args: Dict) -> List[CommandResu
     command_results_list: List[CommandResults] = []
 
     if args['file']:
-        command_results_list.extend(file_command(client=client, args=args))
+        command_results_list.extend(file_command(client=client, args=args))  # This is not implemented with fileinfo output to the context
         return command_results_list
 
     for _id in ids:
