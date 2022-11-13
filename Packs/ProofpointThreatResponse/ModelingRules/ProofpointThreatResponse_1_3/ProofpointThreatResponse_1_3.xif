@@ -12,9 +12,17 @@ alter xdm.event.id = to_string(id),
     xdm.email.subject = json_extract_scalar(emails, "$.subject"),
     xdm.email.recipients = arraycreate(coalesce(json_extract_scalar(emails, "$.recipient.email"), "")),
     incident_field_values = incident_field_values -> [],
-    src_ipv4 = to_string(coalesce(attacker_ip_1, attacker_ip_2, attacker_ip_3))
+    src_ipv4 = arraycreate(attacker_ip_1, attacker_ip_2, attacker_ip_3)
 | alter xdm.alert.name = json_extract_scalar(arrayindex(incident_field_values, 1), "$.value"),
     xdm.alert.description = json_extract_scalar(events, "$.description"),
     xdm.email.attachment.path = json_extract_scalar(events, "$.fileName"),
     xdm.alert.original_alert_id = json_extract_scalar(events, "$.id"),
-    xdm.source.ipv4 = if(src_ipv4 ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src_ipv4, null);
+    xdm.source.ipv4 = 
+		to_string(
+    		if(arrayindex(src_ipv4, 0) ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", arrayindex(src_ipv4, 0), 
+				if(arrayindex(src_ipv4, 1) ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", arrayindex(src_ipv4, 1), 
+					if(arrayindex(src_ipv4, 2) ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", arrayindex(src_ipv4, 2), null 
+					)
+				)
+			)
+		);
