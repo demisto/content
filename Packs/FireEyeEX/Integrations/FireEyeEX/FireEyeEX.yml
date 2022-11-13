@@ -954,7 +954,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.8.35482
+  dockerimage: devdemisto/py3-master:8.1.0.37385
 fromversion: 6.0.0
 tests:
 - No tests

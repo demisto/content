@@ -99,7 +99,7 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor reporting the score of the indicator.
       type: String
-  dockerimage: demisto/python3:3.10.1.26972
+  dockerimage: devdemisto/py3-master:8.1.0.37385
   feed: false
   isfetch: false
   longRunning: false
