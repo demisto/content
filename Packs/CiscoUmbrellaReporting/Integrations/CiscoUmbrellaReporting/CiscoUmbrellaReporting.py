@@ -27,6 +27,9 @@ SHA256_PARAM = 'sha256'
 INTRUSION_ACTION = 'intrusion_action'
 DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 PAGE_NUMBER_ERROR_MSG = 'Invalid Input Error: page number should be greater than zero.'
+INVALID_ORG_ID_ERROR_MSG = 'Authorization Error: The provided Organization ID is invalid.'
+INVALID_CREDENTIALS_ERROR_MSG = 'Authorization Error: The provided credentials for Cisco Umbrella Reporting are' \
+                                ' invalid. Please provide a valid Client ID and Client Secret.'
 
 ACTIVITY_TRAFFIC_TYPE_DICT = {
     "dns": ["traffic_type", "limit", "from", "to", "offset", "domains", "ip", "verdict",
@@ -99,10 +102,7 @@ class Client(BaseClient):
         token_response = requests.post(url=self.token_url, auth=HTTPBasicAuth(
             username=self.client_key, password=self.secret_key), data=payload)
         if token_response.status_code == 401:
-            raise DemistoException(
-                "Authorization Error: The provided credentials for "
-                "Cisco Umbrella Reporting are invalid. Please provide "
-                "valid Client ID and Client Secret.")
+            raise DemistoException(INVALID_CREDENTIALS_ERROR_MSG)
         elif token_response.status_code >= 400:
             raise DemistoException("Error: something went wrong, please try "
                                    "again.")
@@ -151,12 +151,9 @@ class Client(BaseClient):
         elif response.status_code >= 400:
             error_message = response.json().get("data", {}).get("error")
             if "invalid organization" in error_message:
-                raise DemistoException("Authorization Error: The provided Organization ID is invalid.")
+                raise DemistoException(INVALID_ORG_ID_ERROR_MSG)
             elif "unauthorized" in error_message:
-                raise DemistoException(
-                    "Authorization Error: The provided credentials for Cisco "
-                    "Umbrella Reporting are invalid. Please provide a valid "
-                    "Client ID and Client Secret.")
+                raise DemistoException(INVALID_CREDENTIALS_ERROR_MSG)
             raise DemistoException(error_message)
 
         return result
@@ -894,13 +891,9 @@ def test_module(client: Client) -> str:
     if response.status_code >= 400:
         error_message = response.json().get("data", {}).get("error")
         if "invalid organization" in error_message:
-            raise DemistoException(
-                "Authorization Error: The provided Organization ID is invalid.")
+            raise DemistoException(INVALID_ORG_ID_ERROR_MSG)
         elif "unauthorized" in error_message:
-            raise DemistoException(
-                "Authorization Error: The provided credentials for Cisco "
-                "Umbrella Reporting are invalid. Please provide a valid "
-                "Client ID and Client Secret.")
+            raise DemistoException(INVALID_CREDENTIALS_ERROR_MSG)
         raise DemistoException(error_message)
     return 'ok'
 
