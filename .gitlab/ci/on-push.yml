@@ -226,7 +226,6 @@ prepare-testing-bucket-xpanse:
     - demisto-sdk find-dependencies -idp Tests/id_set.json --all-packs-dependencies -o $ARTIFACTS_FOLDER/packs_dependencies.json
     - section_end "Calculate Packs Dependencies"
 
-    # todo: change $PRODUCT_NAME
     - section_start "Replace Cortex XSOAR" --collapsed
     - pushd "$ARTIFACTS_FOLDER"
     - export PRODUCT_NAME_XPANSE="XPANSE"
