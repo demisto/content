@@ -1391,7 +1391,7 @@ script:
     - contextPath: Redlock.Scans.results.id
       description: Scan results ID
       type: String
-  dockerimage: demisto/python3:3.10.7.35188
+  dockerimage: devdemisto/py3-master:8.1.0.37385
   feed: false
   isfetch: true
   longRunning: false
