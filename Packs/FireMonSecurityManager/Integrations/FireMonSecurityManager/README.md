@@ -1,5 +1,4 @@
 FireMon Security Manager delivers comprehensive rule lifecycle management to help you manage and automate every stage of the change management process. Workflows can be customized and automated to conform to your security goals and standards, with tools at your disposal to evolve policy and protection over time.
-This integration was integrated and tested with version xx of FireMonSecurityManager
 
 ## Configure FireMon Security Manager on Cortex XSOAR
 
