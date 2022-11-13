@@ -2620,7 +2620,6 @@ Create remote network cidrs
 | cidrs | An input list of CIDRs to add to Qradar (can be obtained from automatically from EDL integrations and playbook).<br>Multiple values in the same object are separated by commas.<br>One of the cidr or query is required. | Optional | 
 | query | The query for getting indicators from Cortex XSOAR.<br>One of the cidr or query is required. | Optional | 
 | name | A CIDRs (remote networks) name that will be displayed for all uploaded values in Qradar. | Required | 
-| id | The associated CIDR id.<br>Only possible when a single CIDR is created. | Optional | 
 | description | Description that will be displayed and associated with all the newly uploaded CIDRs on Qradar. | Required | 
 | group | The exact name of the remote network group that CIDRs should be associated with as it appears in Qradar. A single group can be assigned to each create command.<br>A new remote network group can be created in Qradar by giving a new unique remote network group name (that does not already exist in Qradar remote networks). | Required | 
 | fields | Use this parameter to specify which fields you would like to get back in the response.<br>Fields that are not named are excluded from the output.<br>The possible fields are id, group, name, cidr, and description. | Optional | 
@@ -2817,7 +2816,7 @@ Executes a deploy.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host_ip | The IP of qradar console host. | Required |
-| status | TMust be in capital letters (“INITIATING”). | Required |
+| status | TMust be in capital letters (“INITIATING”). | Optional |
 | deployment_type | Must be in capital letters (“INCREMENTAL” or “FULL”). | Required |
 
 

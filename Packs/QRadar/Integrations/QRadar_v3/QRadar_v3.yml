@@ -2777,8 +2777,6 @@ script:
     - name: name
       required: true
       description: A CIDRs (remote networks) name that will be displayed for all uploaded values in Qradar.
-    - name: id
-      description: The associated CIDR id. Only possible when a single CIDR is created
     - name: description
       required: true
       description: Description that will be displayed and associated with all the newly uploaded CIDRs on Qradar.
@@ -2872,7 +2870,6 @@ script:
       auto: PREDEFINED
       predefined:
       - INITIATING
-      required: true
     - name: deployment_type
       auto: PREDEFINED
       predefined:
@@ -2884,7 +2881,7 @@ script:
     - contextPath: QRadar.deploy.status
       description: The deployment status (INITIALIZING, IN_PROGRESS, COMPLETE).
       type: String
-    description: Executes a deploy.
+    description: Executes a deploy. This API command executes any awaiting system deployments in Qradar within the same deployment type and hosts defined.
   runonce: false
   script: '-'
   type: python

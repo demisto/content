@@ -1499,7 +1499,7 @@ def get_cidrs_indicators(query):
     return indicators
 
 
-def verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, id_, group, fields):
+def verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, group, fields):
     # verify that only one of the arguments is given
     if cidrs_list and cidrs_from_query:
         return 'Cannot specify both cidrs and query arguments.'
@@ -1516,10 +1516,6 @@ def verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, id_,
     # verify that the given name and group are valid
     if not NAME_AND_GROUP_REGEX.match(name) or not NAME_AND_GROUP_REGEX.match(group):
         return 'Name and group arguments only allow letters, numbers, \'_\' and \'-\'.'
-
-    # verify that the given id is valid
-    if id_ and id_ < 0:
-        return 'ID must be a positive number.'
 
     fields_list = argToList(fields)
     if fields_list:
@@ -3693,12 +3689,11 @@ def qradar_remote_network_cidr_create_command(client: Client, args) -> CommandRe
     cidrs_list = argToList(args.get('cidrs'))
     cidrs_from_query = get_cidrs_indicators(args.get('query'))
     name = args.get('name')
-    id_ = arg_to_number(args.get('id'))
     description = args.get('description')
     group = args.get('group')
     fields = args.get('fields')
 
-    error_message = verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, id_, group, fields)
+    error_message = verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, group, fields)
     if error_message:
         raise DemistoException(error_message)
 
@@ -3706,7 +3701,6 @@ def qradar_remote_network_cidr_create_command(client: Client, args) -> CommandRe
         "name": name,
         "description": description,
         "cidrs": cidrs_list or cidrs_from_query,
-        "id": id_,
         "group": group
     }
 
@@ -3819,7 +3813,7 @@ def qradar_remote_network_cidr_update_command(client: Client, args):
     group = args.get('group')
     fields = args.get('fields')
 
-    error_message = verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, id_, group, fields)
+    error_message = verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, group, fields)
     if error_message:
         raise DemistoException(error_message)
 
@@ -3857,7 +3851,7 @@ def qradar_remote_network_deploy_execution_command(client: Client, args):
     CommandResults.
     """
     host_ip = args.get('host_ip')
-    status = args.get('status')
+    status = args.get('status', 'INITIATING')
     deployment_type = args.get('deployment_type')
 
     if not re.match(ipv4Regex, host_ip) and not re.match(ipv6Regex, host_ip):

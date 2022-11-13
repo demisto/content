@@ -1434,22 +1434,19 @@ VERIFY_MESSAGES_ERRORS = [
     'Must specify either cidrs or query arguments.',
     '1.2.3.4 is not a valid CIDR.',
     'Name and group arguments only allow letters, numbers, \'_\' and \'-\'.',
-    'ID is possible only when a single CIDR is created.',
-    'ID must be a positive number.',
     "cidr is not a valid field. Possible fields are: ['id', 'name', 'group', 'cidrs', 'description']."
 ]
 
 
-@pytest.mark.parametrize('cidrs_list, cidrs_from_query, name, id_, group, fields, expected', [
-    (['1.2.3.4/32', '5.6.7.8/2'], ['8.8.8.8/12'], 'test1', '', 'test_group1', '', VERIFY_MESSAGES_ERRORS[0]),
-    ([], [], 'test2', '', 'test_group2', '', VERIFY_MESSAGES_ERRORS[1]),
-    (['1.2.3.4'], [], 'test3', '', 'test_group3', '', VERIFY_MESSAGES_ERRORS[2]),
-    (['1.2.3.4/32'], [], 'test4!', '', 'test_group4', '', VERIFY_MESSAGES_ERRORS[3]),
-    (['1.2.3.4/32'], [], 'test5', '', 'test_group5!', '', VERIFY_MESSAGES_ERRORS[3]),
-    (['1.2.3.4/32'], [], 'test8', -1, 'test_group8', '', VERIFY_MESSAGES_ERRORS[5]),
-    (['1.2.3.4/32'], [], 'test9', '', 'test_group9', 'id,cidr', VERIFY_MESSAGES_ERRORS[6]),
+@pytest.mark.parametrize('cidrs_list, cidrs_from_query, name, group, fields, expected', [
+    (['1.2.3.4/32', '5.6.7.8/2'], ['8.8.8.8/12'], 'test1', 'test_group1', '', VERIFY_MESSAGES_ERRORS[0]),
+    ([], [], 'test2', 'test_group2', '', VERIFY_MESSAGES_ERRORS[1]),
+    (['1.2.3.4'], [], 'test3', 'test_group3', '', VERIFY_MESSAGES_ERRORS[2]),
+    (['1.2.3.4/32'], [], 'test4!', 'test_group4', '', VERIFY_MESSAGES_ERRORS[3]),
+    (['1.2.3.4/32'], [], 'test5', 'test_group5!', '', VERIFY_MESSAGES_ERRORS[3]),
+    (['1.2.3.4/32'], [], 'test9', 'test_group9', 'id,cidr', VERIFY_MESSAGES_ERRORS[4]),
 ])
-def test_verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, id_, group, fields, expected):
+def test_verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, group, fields, expected):
     """
     Given: Command arguments
 
@@ -1457,6 +1454,6 @@ def test_verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name,
 
     Then: Verify that the correct error message is returned
     """
-    error_message = verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, id_, group, fields)
+    error_message = verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, group, fields)
 
     assert error_message == expected
