@@ -1964,13 +1964,13 @@ script:
       - 'markRead'
       - 'trash'
     - default: false
-      description: An email address to which messages can be forwarded.
+      description: A comma-separated list of emails addresses to which messages can be forwarded.
       isArray: true
       name: forwarding_email
       required: true
       secret: false
     - default: false
-      description: User's email address.
+      description: The user email address or the user id, use the !gmail-list-users command, in order to get the user id.
       isArray: false
       name: user_id
       required: true
@@ -1978,6 +1978,49 @@ script:
     deprecated: false
     description: Creates a forwarding address. If ownership verification is required, a message will be sent to the recipient and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted. This method is only available to service account clients that have been delegated domain-wide authority.
     name: gmail-forwarding-address-add
+    outputs:
+    - contextPath: Gmail.ForwardingAddress.forwardingEmail
+      description: An email address to which messages can be forwarded.
+      type: String
+    - contextPath: Gmail.ForwardingAddress.userId
+      description: The user's email address.
+      type: String
+    - contextPath: Gmail.ForwardingAddress.verificationStatus
+      description: Indicates whether this address has been verified and is usable for forwarding.
+      type: String
+    - contextPath: Gmail.ForwardingAddress.Disposition
+      description: The state that a message should be left in after it has been forwarded.
+      type: String
+    - contextPath: Gmail.ForwardingAddress.Enabled
+      description: Indicates whether all incoming mail is automatically forwarded to another address.
+      type: Boolean
+    execution: false
+  - arguments:
+    - description: The state that a message should be left in after it has been forwarded.
+      isArray: false
+      name: disposition
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'archive'
+      - 'leaveInInbox'
+      - 'markRead'
+      - 'trash'
+    - default: false
+      description: A comma-separated list of emails addresses to which messages can be forwarded.
+      isArray: true
+      name: forwarding_email
+      required: true
+      secret: false
+    - default: false
+      description: The user email address or the user id, use the !gmail-list-users command, in order to get the user id.
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a forwarding address. If ownership verification is required, a message will be sent to the recipient and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted. This method is only available to service account clients that have been delegated domain-wide authority.
+    name: gmail-forwarding-address-update
     outputs:
     - contextPath: Gmail.ForwardingAddress.forwardingEmail
       description: An email address to which messages can be forwarded.
@@ -2137,7 +2180,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: User's email address.
+      description: The user email address or the user id, use the !gmail-list-users command, in order to get the user id.
       isArray: false
       name: user_id
       required: true
@@ -2154,7 +2197,7 @@ script:
     name: gmail-forwarding-address-get
     outputs:
     - contextPath: Gmail.ForwardingAddress.userId
-      description: The user's email address.
+      description: The user email address or the user id, use the !gmail-list-users command, in order to get the user id.
       type: String
     - contextPath: Gmail.ForwardingAddress.forwardingEmail
       description: An email address to which messages can be forwarded.
@@ -2167,7 +2210,7 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: User's email address.
+      description: The user email address or the user id, use the !gmail-list-users command, in order to get the user id.
       isArray: false
       name: user_id
       required: true
