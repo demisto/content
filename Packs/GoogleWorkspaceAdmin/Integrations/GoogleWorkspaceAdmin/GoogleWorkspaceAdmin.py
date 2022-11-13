@@ -34,14 +34,16 @@ class Client(BaseClient):
         except Exception:
             raise DemistoException('Please check the service account\'s json content')
 
-    def http_request(self, method: str, url_suffix: str, headers: Dict[str, str], ok_codes: tuple = (200, 204),
+    def http_request(self, method: str, url_suffix: str, headers: Dict[str, str], params: dict = None,
+                     ok_codes: tuple = (200, 204),
                      resp_type: str = 'json', json_data: dict = None) -> Any:
         return self._http_request(method=method,
                                   url_suffix=url_suffix,
                                   resp_type=resp_type,
                                   ok_codes=ok_codes,
                                   json_data=json_data,
-                                  headers=headers)
+                                  headers=headers,
+                                  params=params)
 
     def test_client_connection(self):
         try:
@@ -75,6 +77,7 @@ class Client(BaseClient):
 
             self._credentials.refresh(request)
             if(not self._credentials.valid):
+                request.session.close()
                 raise DemistoException('Could not refresh token')
             request.session.close()
         return self._credentials.token
@@ -89,12 +92,17 @@ class Client(BaseClient):
             json_data=json_body, headers=headers, resp_type='response')
         return response
 
-    def google_mobile_device_list_request(self, customerid, projection, query, orderby, sortorder, pagetoken, maxresults):
-        params = assign_params(projection=projection, query=query, orderBy=orderby,
-                               sortOrder=sortorder, pageToken=pagetoken, maxResults=maxresults)
-        headers = self._headers
-        response = self._http_request(
-            'GET', f'admin/directory/v1/customer/{customerid}/devices/mobile', params=params, headers=headers)
+    def google_mobile_device_list_request(self, projection: str | None = None, query: str | None = None,
+                                          order_by: str | None = None, sort_order: str | None = None,
+                                          page_token: str | None = None, max_results: int | None = None):
+        params = assign_params(projection=projection, query=query, orderBy=order_by,
+                               sortOrder=sort_order, pageToken=page_token, maxResults=max_results)
+        scopes = ['https://www.googleapis.com/auth/admin.directory.device.mobile.readonly']
+        token = self._get_oauth_token(scopes=scopes)
+        headers = self._headers | {'Authorization': f'Bearer {token}'}
+        response = self.http_request(
+            method='GET', url_suffix=f'admin/directory/v1/customer/{self._customer_id}/devices/mobile',
+            params=params, headers=headers)
         return response
 
     def google_chromeos_device_action_request(self, resource_id: str, action: str, deprovision_reason: str = ''):
@@ -130,18 +138,14 @@ def google_mobile_device_action_command(client: Client, resource_id: str, action
     return command_results
 
 
-def google_mobile_device_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    customerid = args.get('customerid')
-    projection = args.get('projection')
-    query = args.get('query')
-    orderby = args.get('orderby')
-    sortorder = args.get('sortorder')
-    pagetoken = args.get('pagetoken')
-    maxresults = args.get('maxresults')
-    response = client.google_mobile_device_list_request(
-        customerid, projection, query, orderby, sortorder, pagetoken, maxresults)
+def google_mobile_device_list_command(client: Client, projection: str | None = None, query: str | None = None,
+                                      order_by: str | None = None, sort_order: str | None = None,
+                                      limit: str | None = None, page_token: str | None = None) -> CommandResults:
+    response = client.google_mobile_device_list_request(projection=projection, query=query, order_by=order_by,
+                                                        sort_order=sort_order, page_token=page_token,
+                                                        max_results=arg_to_number(limit))
     command_results = CommandResults(
-        outputs_prefix='GoogleWorkspaceAdmin.GoogleMobiledeviceList',
+        outputs_prefix=f'{OUTPUT_PREFIX}.mobileEvent',
         outputs_key_field='',
         outputs=response,
         raw_response=response
