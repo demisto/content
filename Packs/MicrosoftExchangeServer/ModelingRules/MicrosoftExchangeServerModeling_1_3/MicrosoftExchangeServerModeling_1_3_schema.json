@@ -1,7 +1,7 @@
 {
     "msft_exchange_raw": {
         "date_time": {
-            "type": "string",
+            "type": "datetime",
             "is_array": false
         },
         "client_ip": {
