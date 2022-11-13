@@ -10,12 +10,13 @@ This integration was integrated and tested with version v1 of CheckPointSandBlas
 2. Search for Check Point Threat Emulation (SandBlast).
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL | https://te.checkpoint.com | True |
-    | Authorization - API Key |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+    | **Parameter** | **Description**                                            | **Required** |
+    |------------------------------------------------------------| --- | --- |
+    | Server URL | https://te.checkpoint.com                                  | True |
+    | Authorization - API Key |                                                            | False |
+    | Trust any certificate (not secure) |                                                            | False |
+    | Use system proxy settings |                                                            | False |
+    | Source Reliability | Reliability of the source providing the intelligence data. | True
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

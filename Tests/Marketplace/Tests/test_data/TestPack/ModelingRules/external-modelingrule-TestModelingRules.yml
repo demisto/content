@@ -1,0 +1,26 @@
+fromversion: 6.8.0
+id: test_rule
+name: Test Modeling Rule
+rules: >
+  [MODEL: dataset=test_raw, model=Audit]
+
+  filter event_eventtype in("Test")
+
+  | alter XDM.Audit.event_timestamp=timestamp_seconds(to_integer(__time__));
+
+  [MODEL: dataset=test_raw, model=Auth]
+
+  filter event_eventtype in("Test")
+
+  | alter XDM.Auth.event_timestamp=timestamp_seconds(to_integer(__time__));
+schema: >-
+  {
+      "test_raw": {
+          "__time__": {
+              "type": "string",
+              "is_array": false
+          }
+      }
+  }
+tags: test
+toversion: 6.9.9

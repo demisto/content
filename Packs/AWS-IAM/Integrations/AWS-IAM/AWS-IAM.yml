@@ -2470,7 +2470,7 @@ script:
       description: Specifies whether the user is required to set a new password on
         next sign-in.
       type: Boolean
-  dockerimage: demisto/boto3py3:1.0.0.33664
+  dockerimage: demisto/boto3py3:1.0.0.37317
   feed: false
   isfetch: false
   longRunning: false

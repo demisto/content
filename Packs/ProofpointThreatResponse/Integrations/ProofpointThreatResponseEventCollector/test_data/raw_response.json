@@ -1,0 +1,184 @@
+[
+  {
+    "id": 1,
+    "summary": "Unsolicited Bulk Email",
+    "description": "EvilScheme test message",
+    "score": 4200,
+    "state": "Open",
+    "created_at": "2018-05-26T21:07:17Z",
+    "event_count": 3,
+    "event_sources": [
+      "Proofpoint TAP"
+    ],
+    "users": [
+      "nbadguy"
+    ],
+    "assignee": "Unassigned",
+    "team": "Unassigned",
+    "hosts": {
+      "attacker": [
+        "1.1.1.1",
+        "http://tapdemo.evilscheme.org/files/1234.pdf"
+      ],
+      "forensics": [
+        "http://tapdemo.evilscheme.org/files/1234.pdf",
+        "tapdemo.evilscheme.org"
+      ]
+    },
+    "incident_field_values": [
+      {
+        "name": "Classification",
+        "value": "Email"
+      },
+      {
+        "value": "Spam"
+      },
+      {
+        "name": "Severity",
+        "value": "Critical"
+      }
+    ],
+    "events": [
+      {
+        "id": 3,
+        "category": "malware",
+        "severity": "Info",
+        "source": "Proofpoint TAP",
+        "threatname": "Infection.PDF.File.Exploit.CVE-2010-0188_LibTIFF.",
+        "classified": false,
+        "state": "Linked",
+        "description": "Infection.PDF.File.Exploit.CVE-2010-0188_LibTIFF.",
+        "attackDirection": "inbound",
+        "received": "2018-05-26T21:07:17Z",
+        "malwareName": "Infection.PDF.File.Exploit.CVE-2010-0188_LibTIFF."
+      },
+      {
+        "name": "Classification",
+        "id": 1,
+        "category": "spam",
+        "severity": "Critical",
+        "source": "Proofpoint TAP",
+        "threatname": "Unsolicited Bulk Email",
+        "classified": false,
+        "state": "Linked",
+        "attackDirection": "inbound",
+        "received": "2018-05-26T21:07:17Z"
+      },
+      {
+        "id": 2,
+        "category": "spam",
+        "severity": "Critical",
+        "source": "Proofpoint TAP",
+        "threatname": "Unsolicited Bulk Email",
+        "classified": false,
+        "state": "Linked",
+        "attackDirection": "inbound",
+        "received": "2018-05-26T21:07:17Z"
+      }
+    ],
+    "quarantine_results": [],
+    "successful_quarantines": 0,
+    "failed_quarantines": 0,
+    "pending_quarantines": 0
+  },
+  {
+    "id": 2,
+    "summary": "Unsolicited Bulk Email",
+    "description": "",
+    "score": 5200,
+    "state": "Open",
+    "created_at": "2018-06-01T17:57:09Z",
+    "event_count": 2,
+    "event_sources": [
+      "Abuse Mailbox 1",
+      "Proofpoint TAP"
+    ],
+    "users": [],
+    "assignee": "Unassigned",
+    "team": "Unassigned",
+    "hosts": {
+      "attacker": [
+        "1.1.1.1",
+        "http://tapdemo.evilscheme.org/files/123.pdf"
+      ],
+      "cnc": [
+        "1.1.1.1"
+      ],
+      "url": [
+        "http://tapdemo.evilscheme.org/files/123.pdf",
+        "https://urldefense.proofpoint.com/v2/url?"
+      ],
+      "forensics": [
+        "http://tapdemo.evilscheme.org/files/123.pdf",
+        "tapdemo.evilscheme.org"
+      ]
+    },
+    "incident_field_values": [
+      {
+        "name": "Attack Vector",
+        "value": "Email"
+      },
+      {
+        "name": "Severity",
+        "value": "Critical"
+      },
+      {
+        "name": "Classification",
+        "value": "Phishing"
+      },
+      {
+        "value": "Reported Abuse"
+      },
+      {
+        "name": "Abuse Disposition",
+        "value": "Malicious"
+      }
+    ],
+    "events": [
+      {
+        "id": 8,
+        "category": "malware",
+        "severity": "Info",
+        "source": "Proofpoint TAP",
+        "threatname": "Malicious content dropped during execution",
+        "classified": false,
+        "state": "Linked",
+        "description": "Malicious content dropped during execution",
+        "attackDirection": "inbound",
+        "received": "2018-06-01T18:02:10Z",
+        "malwareName": "Malicious content dropped during execution"
+      },
+      {
+        "name": "Classification",
+        "id": 6,
+        "category": "malware",
+        "severity": "Info",
+        "source": "Proofpoint TAP",
+        "threatname": "Example signature to fire on TAP demo evilness",
+        "classified": false,
+        "state": "Linked",
+        "description": "Example signature to fire on TAP demo evilness",
+        "attackDirection": "inbound",
+        "received": "2018-06-01T17:57:10Z",
+        "malwareName": "Example signature to fire on TAP demo evilness"
+      }
+    ],
+    "quarantine_results": [
+      {
+        "alertSource": "Not Available",
+        "startTime": "2018-06-01T18:17:43.941Z",
+        "endTime": "2018-06-01T18:17:44.001Z",
+        "status": "successful",
+        "recipientType": "Search",
+        "recipient": "some_email",
+        "messageId": "<email>",
+        "isRead": "true",
+        "wasUndone": "true",
+        "details": "Success"
+      }
+    ],
+    "successful_quarantines": 1,
+    "failed_quarantines": 0,
+    "pending_quarantines": 0
+  }
+]
