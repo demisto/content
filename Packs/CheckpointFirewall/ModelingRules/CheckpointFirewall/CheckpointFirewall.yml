@@ -1,6 +1,7 @@
-name: CheckPoint Firewall Collection
-id: checkpoint_firewall_collection
 fromversion: 6.8.0
+id: checkpoint_firewall_collection
+name: CheckPoint Firewall Collection
+rules: ''
+schema: ''
 tags: CheckPoint Firewall Event Collection
-rules: ""
-schema: ""
+toversion: 6.9.9

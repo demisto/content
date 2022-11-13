@@ -14,8 +14,8 @@ Documentation for the integration was provided by FTK Connect.
     | Web Protocol | Protocol used in the FTKC server | https (or) https |
     | Service URL | The URL to the FTKC server, including the scheme. | FQDN or IP address in X.X.X.X format with scheme specified. |
     | Service Listening Port | The Port to the FTKC server. | 4443 |
-    | APIKEY | A piece of data that servers use to verify for authenticity | eea810f5-a6f6 |
-    | PUBLIC_CERT | When selected, certificates are not checked. | N/A |
+    | The API authentication key | A piece of data that servers use to verify for authenticity | eea810f5-a6f6 |
+    | The path to the public certificate required to authenticate | When selected, certificates are not checked. | N/A |
     
 4.  Click **Test** to validate the URLs, API Key, and connection.
 
@@ -37,13 +37,13 @@ Triggers the automation job and returns a string.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| Automation ID | The Id of the automation workflow. | Required |
-| Case Name | The name of the case. | Optional |
-| Case IDs | Value of caseids. | Optional |
-| Evidence Path | The filepath of the evidence. | Optional |
-| Target IPs |  Targetips for the collection. | Optional |
-| SearchandTag Path | The filepath of the search and tag. | Optional |
-| Export Path | The path to export files. | Optional |
+| automation_id | The Id of the automation workflow. | Required |
+| case_name | The name of the case. | Optional |
+| case_ids | Value of caseids. | Optional |
+| evidence_path | The filepath of the evidence. | Optional |
+| target_ips |  Targetips for the collection. | Optional |
+| search_tag_path | The filepath of the search and tag. | Optional |
+| export_path | The path to export files. | Optional |
 
 
 ##### Context Output
@@ -56,12 +56,12 @@ Triggers the automation job and returns a string.
 ##### Command Example
 If automation workflow Id 232 is designed for Agent Memory collection in FTK Connect, then below command can be used to trigger the automation job from cortex xsoar.
 ```
-exterro-ftk-trigger-workflow Automation ID=232 Target IPs=X.X.X.X
+exterro-ftk-trigger-workflow automation_id=232 target_ips=X.X.X.X
 ```
 ##### Command Example
 If automation workflow Id 233 is designed to create new case, add and process the evidence from provided path in FTK Connect, then below command can be used to trigger the automation job from cortex xsoar.
 ```
-exterro-ftk-trigger-workflow Automation ID=233 Case Name="Test case_name" Evidence Path="\\X.X.X.X\ProjectData\Evidences\AR"
+exterro-ftk-trigger-workflow automation_id=233 case_name="Test case_name" evidence_path="\\X.X.X.X\ProjectData\Evidences\AR"
 ```
 
 ##### Context Example

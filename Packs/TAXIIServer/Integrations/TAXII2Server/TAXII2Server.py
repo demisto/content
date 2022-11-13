@@ -34,6 +34,7 @@ TAXII_VER_2_1 = '2.1'
 PAWN_UUID = uuid.uuid5(uuid.NAMESPACE_URL, 'https://www.paloaltonetworks.com')
 SCO_DET_ID_NAMESPACE = uuid.UUID('00abedb4-aa42-466c-9c01-fed23315a9b7')
 STIX_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+UTC_DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 TAXII_V20_CONTENT_LEN = 9765625
 TAXII_V21_CONTENT_LEN = 104857600
 TAXII_REQUIRED_FILTER_FIELDS = {'name', 'type', 'modified', 'createdTime', 'description',
@@ -838,9 +839,12 @@ def parse_manifest_and_object_args() -> tuple:
 
     try:
         if added_after:
+            datetime.strptime(added_after, UTC_DATE_FORMAT)
+    except ValueError:
+        try:
             datetime.strptime(added_after, STIX_DATE_FORMAT)
-    except Exception as e:
-        raise Exception(f'Added after time format should be YYYY-MM-DDTHH:mm:ss.[s+]Z. {e}')
+        except Exception as e:
+            raise Exception(f'Added after time format should be YYYY-MM-DDTHH:mm:ss.[s+]Z. {e}')
 
     if SERVER.version == TAXII_VER_2_0:
         if content_range := request.headers.get('Content-Range'):
