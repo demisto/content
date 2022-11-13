@@ -1,14 +1,5 @@
 id: File Enrichment - Generic v2
-version: 9
-contentitemexportablefields:
-  contentitemfields:
-    packID: CommonPlaybooks
-    packName: Common Playbooks
-    itemVersion: 2.3.8
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: File Enrichment - Generic v2
 description: |-
   Enrich a file using one or more integrations.
@@ -26,11 +17,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
-      '#none#':
+      "#none#":
       - "31"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -45,6 +36,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "7":
     id: "7"
     taskid: 89ce26db-58e9-4a6d-88f2-d6810e458ee2
@@ -56,8 +48,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -72,6 +64,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "25":
     id: "25"
     taskid: 339fc232-e5d0-468b-87ea-cf8d41ea0ca6
@@ -85,16 +78,16 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
+      "#default#":
       - "7"
-      "yes":
+      yes:
       - "27"
     scriptarguments:
       value:
         simple: ${File.SHA256}
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -102,7 +95,6 @@ tasks:
               complex:
                 root: inputs.SHA256
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -117,6 +109,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "27":
     id: "27"
     taskid: 0783a3a6-5d8b-48f1-8dee-f3f0ef62defc
@@ -125,19 +118,18 @@ tasks:
       id: 0783a3a6-5d8b-48f1-8dee-f3f0ef62defc
       version: -1
       name: Is Cylance Protect v2 enabled?
-      description: Checks if there is an active instance of the Cylance Protect v2
-        integration enabled.
+      description: Checks if there is an active instance of the Cylance Protect v2 integration enabled.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
+      "#default#":
       - "7"
-      "yes":
+      yes:
       - "28"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -165,7 +157,6 @@ tasks:
                     ignorecase: true
                 accessor: brand
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -180,6 +171,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "28":
     id: "28"
     taskid: ff014724-3ad2-4ce2-8578-5106c126e76b
@@ -194,7 +186,7 @@ tasks:
       iscommand: true
       brand: Cylance Protect v2
     nexttasks:
-      '#none#':
+      "#none#":
       - "7"
     scriptarguments:
       sha256:
@@ -203,9 +195,8 @@ tasks:
           transformers:
           - operator: uniq
     reputationcalc: 1
-    separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -220,6 +211,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "30":
     id: "30"
     taskid: f030af26-2985-453a-88bf-4f1dcc536fab
@@ -234,7 +226,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "#none#":
       - "7"
     scriptarguments:
       FileHash:
@@ -254,7 +246,6 @@ tasks:
                   simple: inputs.MD5
                 iscontext: true
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -274,6 +265,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "31":
     id: "31"
     taskid: cf0cb24c-31c1-4d7d-815b-d203e44b1f44
@@ -287,9 +279,9 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
+      "#default#":
       - "7"
-      "yes":
+      yes:
       - "25"
       - "30"
     scriptarguments:
@@ -297,7 +289,7 @@ tasks:
         simple: ${File.SHA256}
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -317,7 +309,6 @@ tasks:
             value:
               simple: inputs.MD5
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -332,7 +323,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
+    continueonerrortype: ""
 view: |-
   {
     "linkLabelsPosition": {
@@ -356,32 +347,32 @@ inputs:
   value:
     complex:
       root: File
-      accessor: MD5
       transformers:
       - operator: uniq
+      accessor: MD5
   required: false
   description: File MD5 hash to enrich.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SHA256
   value:
     complex:
       root: File
-      accessor: SHA256
       transformers:
       - operator: uniq
+      accessor: SHA256
   required: false
   description: The file SHA256 hash to enrich.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SHA1
   value:
     complex:
       root: File
-      accessor: SHA1
       transformers:
       - operator: uniq
+      accessor: SHA1
   required: false
   description: The file SHA1 hash to enrich.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator
   description: The indicator that was tested.
@@ -422,3 +413,9 @@ outputs:
   description: Whether a scan was detected for this hash (True/False).
 - contextPath: File.VirusTotal.Scans.Result
   description: Scan result for this hash - signature, etc.
+fromversion: 5.0.0
+tests:
+- File Enrichment - Generic v2 - Test
+contentitemexportablefields:
+  contentitemfields: {}
+system: true
