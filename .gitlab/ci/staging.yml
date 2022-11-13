@@ -22,6 +22,7 @@ graph-create-instances:
 
     - !reference [.download-demisto-conf]
     - !reference [.create-release-notes-and-common-docs]
+
     - section_start "Create content graph" --collapsed
     - neo4j-admin --version
     - demisto-sdk create-content-graph -o $ARTIFACTS_FOLDER/content-graph.dump
@@ -29,11 +30,13 @@ graph-create-instances:
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
     - python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "xsoar" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json
+
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
+
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - section_end "Create Content Artifacts and Update Conf"
 
-    - section_start "Collect Tests V2" --collapsed
+    - section_start "Collect Tests" --collapsed
     - |
       if [ -n "${INSTANCE_TESTS}" ]; then
         echo "Skipping - not running in INSTANCE_TESTS build"
@@ -42,7 +45,7 @@ graph-create-instances:
         python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY --graph true
       fi
     - cp $ARTIFACTS_FOLDER/content_packs_to_install.txt $ARTIFACTS_FOLDER/content_packs_to_install-graph.txt
-    - section_end "Collect Tests V2"
+    - section_end "Collect Tests"
     
     - section_start "Prepare Content Packs for Testing" --collapsed
     - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET" "$STORAGE_BASE_PATH"
@@ -59,7 +62,7 @@ graph-create-instances:
     - section_end "Upload Artifacts to GCP"
 
 
-graph-prepare-testing-bucket-mpv2:
+.generic-graph-prepare-testing-bucket:
   tags:
     - gke
   extends:
@@ -70,7 +73,6 @@ graph-prepare-testing-bucket-mpv2:
   cache:
     policy: pull
   variables:
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     KUBERNETES_CPU_REQUEST: 1000m
   needs: []
   stage: create-instances
@@ -87,7 +89,7 @@ graph-prepare-testing-bucket-mpv2:
     - section_end "Create content graph"
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
-    - python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "marketplacev2" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --no-zip
+    - python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --no-zip
 
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
 
@@ -102,19 +104,19 @@ graph-prepare-testing-bucket-mpv2:
     - popd
     - section_end "Replace Cortex XSOAR"
 
-    - section_start "Collect Tests V2" --collapsed
+    - section_start "Collect Tests" --collapsed
     - |
       if [ -n "${INSTANCE_TESTS}" ]; then
         echo "Skipping - not running in INSTANCE_TESTS build"
       else
         [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY --graph true
+        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "$MARKETPLACE_VERSION" --service_account $GCS_MARKET_KEY --graph true
       fi
     - cp $ARTIFACTS_FOLDER/content_packs_to_install.txt $ARTIFACTS_FOLDER/content_packs_to_install-graph.txt
-    - section_end "Collect Tests V2"
+    - section_end "Collect Tests"
 
     - section_start "Prepare Content Packs for Testing" --collapsed
-    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_V2_BUCKET" "$STORAGE_BASE_PATH" "marketplacev2"
+    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$MARKETPLACE_BUCKET" "$STORAGE_BASE_PATH" "$MARKETPLACE_VERSION"
     - section_end "Prepare Content Packs for Testing"
 
     - section_start "Upload Artifacts to GCP" --collapsed
@@ -122,8 +124,26 @@ graph-prepare-testing-bucket-mpv2:
     - section_end "Upload Artifacts to GCP"
 
 
+graph-prepare-testing-bucket-xpanse:
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
+    MARKETPLACE_VERSION: "xpanse"
+    PRODUCT_NAME: "Cortex XPANSE"
+    MARKETPLACE_BUCKET: "$GCS_MARKET_XPANSE_BUCKET"
+  extends:
+    - .generic-graph-prepare-testing-bucket
+
+
+graph-prepare-testing-bucket-mpv2:
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+    MARKETPLACE_VERSION: "marketplacev2"
+    MARKETPLACE_BUCKET: "$GCS_MARKET_V2_BUCKET"
+  extends:
+    - .generic-graph-prepare-testing-bucket
+
 compare_zips:
-  needs: ["prepare-testing-bucket-mpv2", "graph-prepare-testing-bucket-mpv2", "create-instances", "graph-create-instances"]
+  needs: ["prepare-testing-bucket-mpv2", "graph-prepare-testing-bucket-mpv2", "create-instances", "graph-create-instances", "graph-prepare-testing-bucket-xpanse", "prepare-testing-bucket-xpanse"]
   stage: stage-compare
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
@@ -137,5 +157,6 @@ compare_zips:
     - echo "compare between graph and id_set"
     - python3 ./Tests/scripts/utils/compare_staging_graph.py --artifacts $ARTIFACTS_FOLDER_XSOAR --marketplace xsoar --output-path $ARTIFACTS_FOLDER_XSOAR/report -s "$SLACK_TOKEN"
     - python3 ./Tests/scripts/utils/compare_staging_graph.py --artifacts $ARTIFACTS_FOLDER_MPV2 --marketplace marketplacev2 --output-path $ARTIFACTS_FOLDER_MPV2/report -s "$SLACK_TOKEN"
+    - python3 ./Tests/scripts/utils/compare_staging_graph.py --artifacts $ARTIFACTS_FOLDER_XPANSE --marketplace xpanse --output-path $ARTIFACTS_FOLDER_XPANSE/report -s "$SLACK_TOKEN"
 
 
