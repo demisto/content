@@ -89,7 +89,8 @@ class Client(BaseClient):
     def access_token(self):
         """
         Generate Access token
-        :return: access_token
+        Returns:
+            Returns the access_token
         """
         payload = {
             "grant_type": 'client_credentials'
