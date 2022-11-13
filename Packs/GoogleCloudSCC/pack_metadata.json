@@ -8,14 +8,10 @@
     "email": "",
     "created": "2020-12-17T10:49:54Z",
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Cloud Services"
     ],
-    "tags": [
-        "Threat Intelligence"
-    ],
-    "useCases": [
-        "Threat Intelligence Management"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [],
     "githubUser": [],
     "marketplaces": [
