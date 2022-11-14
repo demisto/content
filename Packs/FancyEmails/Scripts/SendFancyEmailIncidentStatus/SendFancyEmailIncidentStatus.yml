@@ -19,10 +19,13 @@ args:
   name: max_name_chars
 - isArray: true
   name: to
+  description: Passed to send-mail, Address to Send Email to
 - isArray: true
   name: cc
+  description: Passed to send-mail, Address to cc Email
 - isArray: true
   name: bcc
+  description: Passed to send-mail, Address to bcc Email
 - name: subject
 - description: Warning Banner Text
   name: banner
