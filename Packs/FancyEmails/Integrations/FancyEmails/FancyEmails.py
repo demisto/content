@@ -363,4 +363,5 @@ command_map = {
     'fancy-email-make-logo': make_logo_command
 }
 
-command_map.get(demisto.command())()
+
+command_map.get(demisto.command(), lambda *args: None)()
