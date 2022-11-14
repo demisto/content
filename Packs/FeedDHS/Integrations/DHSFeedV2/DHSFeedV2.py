@@ -71,8 +71,10 @@ class Client(BaseClient):
 
         response = {'more': True}
         while response.get("more", False) and not reached_limit(limit, len(indicators)):
+            demisto.debug(f'entered loop with next={response.get("next")}')
             response = self.request_public_objects_info(public_collection_id, added_after=added_after, limit=limit,
                                                         next_page=response.get('next'))
+            demisto.debug(f'in request_public_objects_info_all_pages, request_public_objects_info returned {response=}')
             new_indicators, new_relationships = self._parse_objects(response, limit)
             indicators.extend(new_indicators)
             relationships_list.extend(new_relationships)
@@ -380,10 +382,42 @@ def get_indicators_command(client: Client,
     raw = argToBoolean(raw) or False
 
     if collection_to_fetch:
-        indicators = client.request_public_objects_info_all_pages(public_collection_id=collection_to_fetch,
+        collection_id = get_collection_id_by_name(client.request_public_collections_info(), collection_to_fetch)
+        indicators = client.request_public_objects_info_all_pages(public_collection_id=collection_id,
                                                                   added_after=added_after_str, limit=limit)
     else:
         indicators, _ = fetch_all_collections(client, limit, added_after_str)
+
+    if raw:
+        return {'indicators': [x.get('rawJSON') for x in indicators]}
+
+    return CommandResults(
+        readable_output=f'Found {len(indicators)} results:\n' + tableToMarkdown(name='DHS Indicators', t=indicators,
+                                                                                headers=['value', 'type'], removeNull=True),
+        outputs_prefix='DHS.Indicators',
+        outputs_key_field='value',
+        outputs=indicators,
+        raw_response=indicators,
+    )
+
+
+def get_limited_indicators_command(client: Client,
+                                   collection_to_fetch='Public Collection',
+                                   limit='10',
+                                   added_after='20 days',
+                                   raw='false') -> Union[CommandResults, Dict[str, List[Optional[str]]]]:
+    limit = arg_to_number(limit) or 10
+    added_after: datetime = dateparser.parse(added_after or '20 days',
+                                             date_formats=[TAXII_TIME_FORMAT])  # type: ignore[assignment]
+    added_after_str: str = added_after.strftime(TAXII_TIME_FORMAT)
+    raw = argToBoolean(raw) or False
+
+    collection_id = get_collection_id_by_name(client.request_public_collections_info(), collection_to_fetch)
+    response = client.request_public_objects_info(public_collection_id=collection_id, added_after=added_after_str, limit=limit)
+    demisto.debug(f'{response=}')
+    indicators, relationships = client._parse_objects(response, limit)
+    if relationships:
+        indicators.extend(client._parse_relationships(relationships))
 
     if raw:
         return {'indicators': [x.get('rawJSON') for x in indicators]}
@@ -472,6 +506,9 @@ def main():  # pragma: no cover
 
         elif command == 'dhs-get-indicators':
             return_results(get_indicators_command(client, collection_to_fetch, **demisto.args()))
+
+        elif command == 'dhs-get-limited-indicators':
+            return_results(get_limited_indicators_command(client, collection_to_fetch, **demisto.args()))
 
         elif command == 'dhs-get-collections':
             return_results(get_collections_command(client))

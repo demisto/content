@@ -195,6 +195,35 @@ script:
     - contextPath: DHS.Indicators.rawJSON
       description: Indicator rawJSON.
       type: String
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Will return only the rawJSON of the indicator object.
+      name: raw
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '10'
+      description: Maximum number of indicators to return.
+      name: limit
+    - defaultValue: '20 days'
+      description: Fetch only indicators that were added to the server after the given
+        time. Provide a <number> and <time unit> of type minute/hour/day. For
+        example, 1 minute, 12 hour, 24 days.
+      name: added_after
+    description: Allows you to test your feed and to make sure you can fetch indicators
+      successfully.
+    name: dhs-get-limited-indicators
+    outputs:
+    - contextPath: DHS.Indicators.value
+      description: Indicator value.
+      type: String
+    - contextPath: DHS.Indicators.type
+      description: Indicator type.
+      type: String
+    - contextPath: DHS.Indicators.rawJSON
+      description: Indicator rawJSON.
+      type: String
   - description: Gets the list of collections from the discovery service.
     name: dhs-get-collections
     outputs:
