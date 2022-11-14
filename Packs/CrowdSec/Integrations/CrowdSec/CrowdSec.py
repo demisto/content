@@ -276,7 +276,7 @@ def main() -> None:
             return_results(ip_command(client, reliability, demisto.args()))
         else:
             raise NotImplementedError(f'Command "{demisto.command()}" is not implemented.')
-        
+
     # Log exceptions and return errors
     except Exception as e:
         return_error(
