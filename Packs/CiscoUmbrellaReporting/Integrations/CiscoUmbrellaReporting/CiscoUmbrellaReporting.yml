@@ -113,7 +113,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Default is 50.
+      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
       isArray: false
       name: limit
       required: false
@@ -228,7 +228,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Default is 50.
+      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
       isArray: false
       name: limit
       required: false
@@ -363,7 +363,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Default is 50.
+      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
       isArray: false
       name: limit
       required: false
@@ -599,7 +599,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Default is 50.
+      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
       isArray: false
       name: limit
       required: false
@@ -727,7 +727,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Default is 50.
+      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
       isArray: false
       name: limit
       required: false
@@ -813,7 +813,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Default is 50.
+      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
       isArray: false
       name: limit
       required: false
@@ -1070,7 +1070,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Default is 50.
+      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
       isArray: false
       name: limit
       required: false
@@ -1815,7 +1815,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Default is 50.
+      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
       isArray: false
       name: limit
       required: false
