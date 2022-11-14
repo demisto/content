@@ -268,7 +268,7 @@ def make_email_footer(line1, line2):
 def make_logo():
     return f'''
         <div class='logo-container'>
-            <img class='logo' height='{LOGOHEIGHT}' width='{LOGOWIDTH}' src='{BASELOGO}' alt="Logo" />
+            <img class='logo' height='{LOGOHEIGHT}' width='{LOGOWIDTH}' src='{BASELOGO}' alt="Cortex Logo" />
         </div>
     '''
 
@@ -332,7 +332,7 @@ def make_email_command():
         outputs_prefix="FancyEmails.Email",
         outputs={'name': header,
                  'html': email_html},
-        readable_output=html_table if print_to_warroom else "Email Created in the FancyEmails.Email Context",
+        readable_output=email_html if print_to_warroom else "Email Created in the FancyEmails.Email Context",
     )
 
     return_results(results)
