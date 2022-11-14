@@ -16,5 +16,6 @@ tags: []
 type: python
 fromversion: 6.0.0
 tests:
+  - No tests (auto formatted)
 comment: Makes an HTML notes table from the current incident using the Fancy Emails Templating Integration
-- No tests (auto formatted)
+
