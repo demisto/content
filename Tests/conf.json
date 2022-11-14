@@ -565,11 +565,6 @@
         {
             "integrations": "Azure Security Center v2",
             "playbookID": "Azure SecurityCenter - Test",
-            "instance_names": "ms_azure_sc_dev"
-        },
-        {
-            "integrations": "Azure Security Center v2",
-            "playbookID": "Azure SecurityCenter - Test",
             "instance_names": "ms_azure_sc_self_deployed"
         },
         {
@@ -2335,10 +2330,6 @@
             "fromversion": "6.0.0"
         },
         {
-            "integrations": "duo",
-            "playbookID": "DUO Test Playbook"
-        },
-        {
             "playbookID": "SLA Scripts - Test",
             "fromversion": "4.1.0"
         },
@@ -3140,6 +3131,11 @@
             "playbookID": "MongoDBLog - Test",
             "pid_threshold": 12,
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "CyCognito",
+            "playbookID": "CyCognito-Test",
+            "fromversion": "6.2.0"
         },
         {
             "integrations": "FeedCyCognito",
@@ -4168,20 +4164,14 @@
             ]
         },
         {
-            "playbookID": "GitLab-test-playbook",
-            "fromversion": "6.0.0",
-            "integrations": [
-                "GitLab",
-                "LGTM",
-                "MinIO",
-                "Docker Engine API"
-            ]
+            "playbookID": "Test-GitLab-v2",
+            "fromversion": "6.5.0",
+            "integrations": "GitLabv2"
         },
         {
             "playbookID": "LGTM-test-playbook",
             "fromversion": "6.0.0",
             "integrations": [
-                "GitLab",
                 "LGTM",
                 "MinIO",
                 "Docker Engine API"
@@ -4191,7 +4181,6 @@
             "playbookID": "playbook-MinIO-Test",
             "fromversion": "6.0.0",
             "integrations": [
-                "GitLab",
                 "LGTM",
                 "MinIO",
                 "Docker Engine API"
@@ -5205,6 +5194,8 @@
         "Calculate Severity - Standard - Test": "Issue 32715",
         "Calculate Severity - Generic v2 - Test": "Issue 32716",
         "Workday - Test": "No credentials Issue 29595",
+        "McAfee-MAR_Test": "Issue CIAC-4521",
+        "MAR - Endpoint data collection test": "Issue CIAC-4521",
         "Tidy - Test": "Will run it manually.",
         "Protectwise-Test": "Issue 28168",
         "TestDedupIncidentsPlaybook": "Issue 24344",
@@ -5337,8 +5328,7 @@
         "Process Email - Generic - Test - Incident Starter": "Issue CIAC-4161",
         "AD v2 - debug-mode": "No credentials",
         "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
-        "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407",
-        "O365-SecurityAndCompliance-Test": "Failing in nightly, being handled"
+        "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407"
     },
     "skipped_integrations": {
         "AbuseIPDB": "License expired",
@@ -5415,7 +5405,6 @@
         "carbonblackprotection": "License expired",
         "icebrg": "Issue 14312",
         "Freshdesk": "Trial account expired",
-        "Threat Grid": "Issue 16197",
         "Kafka V2": "Can not connect to instance from remote",
         "KafkaV3": "Can not connect to instance from remote",
         "Check Point Sandblast": "Issue 15948",
