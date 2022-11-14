@@ -13,7 +13,6 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
-COUNT = 0
 DEFAULT_PAGE_SIZE = 50
 DEFAULT_FROM_DATE = "-7days"
 DEFAULT_TO_DATE = "now"
@@ -173,10 +172,9 @@ def check_valid_indicator_value(indicator_type: str,
         True if the provided indicator values are valid.
     """
     domain_regex = re.compile(
-        r'^(?:[a-zA-Z0-9]'  # First character of the domain
-        r'(?:[a-zA-Z0-9-_]{0,61}[A-Za-z0-9])?\.)'  # Sub domain + hostname
-        r'+[A-Za-z0-9][A-Za-z0-9-_]{0,61}'  # First 61 characters of the gTLD
-        r'[A-Za-z]$'  # Last character of the gTLD
+        r"(?i)(?:(?:http|ftp|hxxp)s?(?:://|-3A__|%3A%2F%2F))?((?:["
+        r"^\\\.@\s\"',(\[:?=]+(?:\.|\[\.\]))+[a-zA-Z]{2,})(?:[_/\s\"',"
+        r")\]]|[.]\s|%2F|$)"
     )
 
     if indicator_type == DOMAIN_PARAM:
