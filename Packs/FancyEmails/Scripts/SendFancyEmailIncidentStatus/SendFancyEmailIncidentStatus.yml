@@ -57,6 +57,7 @@ runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
+comment: Sends an incident summary email using the Fancy Email templating integration
 tags: []
 type: python
 fromversion: 6.0.0
