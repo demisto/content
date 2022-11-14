@@ -153,7 +153,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A specific page to retrieve when pagination is used.
+      description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
       isArray: false
       name: page
       required: false
@@ -235,7 +235,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A specific page to retrieve when pagination is used.
+      description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
       isArray: false
       name: page
       required: false
@@ -931,7 +931,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A specific page to retrieve when pagination is used.
+      description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
       isArray: false
       name: page
       required: false
@@ -1675,7 +1675,7 @@ script:
         required: false
         secret: false
       - default: false
-        description: A specific page to retrieve when pagination is used.
+        description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
         isArray: false
         name: page
         required: false
@@ -2129,7 +2129,7 @@ script:
         required: false
         secret: false
       - default: false
-        description: A specific page to retrieve when pagination is used.
+        description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
         isArray: false
         name: page
         required: false
@@ -2366,7 +2366,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A specific page to retrieve when pagination is used.
+      description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
       isArray: false
       name: page
       required: false

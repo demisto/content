@@ -276,7 +276,7 @@ class Client(BaseClient):
 
         kwargs["params"].update(find_valid_params(
             page=page,
-            page_size=page_size,
+            size=page_size,
         ))
 
         # If sort is not None, split it into a list and add to kwargs
@@ -291,9 +291,10 @@ class Client(BaseClient):
 
         if not page:
             total_pages = response.get("page", {}).get("totalPages", 1)
-            page_count = 1
+            page_count = 0
 
-            while page_count < total_pages and (limit is None or len(result) < limit):
+            # Note: page indexing on Nexpose's API starts at 0
+            while (page_count + 1) < total_pages and (limit is None or len(result) < limit):
                 page_count += 1
                 kwargs["params"]["page"] = str(page_count)
                 response = self._http_request(**kwargs)
