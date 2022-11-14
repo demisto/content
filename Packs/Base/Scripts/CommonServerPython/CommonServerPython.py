@@ -10292,7 +10292,7 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     else:
         last_run_time = dateparser.parse(last_run_time, settings={'TIMEZONE': 'UTC'})
 
-    # Make sure both times are timezone aware
+    # # Make sure both times are timezone aware
     now = now.replace(tzinfo=pytz.UTC)
     last_run_time = last_run_time.replace(tzinfo=pytz.UTC)
     if look_back > 0:
