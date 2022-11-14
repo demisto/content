@@ -2480,9 +2480,9 @@
         },
         {
             "playbookID": "File Enrichment - Generic v2 - Test",
-            "instance_names": "virus_total_private_api_general",
+            "instance_names": "virus_total_v3",
             "integrations": [
-                "VirusTotal - Private API",
+                "VirusTotal (API v3)",
                 "Cylance Protect v2"
             ],
             "is_mockable": false
