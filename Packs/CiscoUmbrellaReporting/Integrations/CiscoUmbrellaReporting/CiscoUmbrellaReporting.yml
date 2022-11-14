@@ -2095,4 +2095,4 @@ script:
   type: python
 fromversion: 6.5.0
 tests:
-- Cisco Umbrella Reporting Test
+- No tests
