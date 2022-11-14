@@ -17,9 +17,9 @@ For more [info](https://docs.microsoft.com/en-us/powershell/exchange/disable-acc
 
 2. Search for O365 - EWS - Extension.
 
-3. Authentication / Authorization methods:
+3. Authentication / Authorization method:
 
-    1. OAuth2.0 authorization (recommended):
+    - OAuth2.0 authorization (recommended):
 
         1. Click **Add an instance** to create and configure a new integration instance.
 
@@ -40,17 +40,6 @@ For more [info](https://docs.microsoft.com/en-us/powershell/exchange/disable-acc
 
             2. Test - OAuth2.0 authorization, Run the ***!ews-auth-test*** command. 
 
-2. Basic authentication (Not recommended):
-
-    1. Click **Add an instance** to create and configure a new integration instance.
-       
-       | **Parameter** | **Description** | **Required** |
-       | ------------- | --------------- | ------------ |
-       | url | Search and Compliance URL | True |
-       | credentials | Fill Email (aka UPN) and password | False |
-       | insecure | Trust any certificate \(not secure\) | False |
-
-    2. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.

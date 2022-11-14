@@ -8,10 +8,11 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Email (Password for basic authentication only)
+- display: Email
   name: credentials
   required: false
   type: 9
+  hiddenpassword: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false

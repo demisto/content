@@ -1109,17 +1109,7 @@ class ExchangeOnlineClient {
 #### COMMAND FUNCTIONS ####
 
 function TestModuleCommand ([OAuth2DeviceCodeClient]$oclient, [ExchangeOnlineClient]$exo_client) {
-    try {
-        $exo_client.CreateSession()
-    }
-    finally {
-        $exo_client.CloseSession()
-    }
-    $raw_response = $null
-    $human_readable = "ok"
-    $entry_context = $null
-
-    return $human_readable, $entry_context, $raw_response
+    throw "When using OAuth2 configuration, Please enable the integration and run `!$script:COMMAND_PREFIX-auth-start` and `!$script:COMMAND_PREFIX-auth-complete` to log in. You can validate the connection by running `!$script:COMMAND_PREFIX-auth-test`."
 }
 
 function StartAuthCommand ([OAuth2DeviceCodeClient]$client) {
