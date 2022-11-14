@@ -218,8 +218,8 @@ def get_command_title_string(sub_context: str, page: Optional[int],
         Returns the title for the readable output
     """
     if page and page_size and (page > 0 and page_size > 0):
-        return f"{sub_context} List\nShowing page {page}\nCurrent page size:" \
-               f" {page_size}"
+        return f'{sub_context} List\nCurrent page size: {page_size}\n' \
+               f'Showing page {page} out of others that may exist'
 
     return f"{sub_context} List"
 
@@ -918,8 +918,7 @@ def get_destinations_list_command(client: Client, args: Dict[str, Any]):
     if data:
         readable_output = destination_lookup_to_markdown(data, title)
     else:
-        readable_output = f'{INTEGRATION_CONTEXT_NAME} does not have ' \
-                          f'destinations to present. \n'
+        readable_output = 'No destinations to present.\n'
 
     return CommandResults(
         readable_output=readable_output,
@@ -952,8 +951,7 @@ def get_categories_list_command(client: Client, args: Dict[str, Any]):
     if data:
         readable_output = categories_lookup_to_markdown(data, title)
     else:
-        readable_output = f'{INTEGRATION_CONTEXT_NAME} does not have ' \
-                          f'categories to present. \n'
+        readable_output = 'No categories to present.\n'
 
     return CommandResults(
         readable_output=readable_output,
@@ -985,7 +983,7 @@ def get_identities_list_command(client: Client, args: Dict[str, Any]):
     if data:
         readable_output = identities_lookup_to_markdown(data, title)
     else:
-        readable_output = f'{INTEGRATION_CONTEXT_NAME} does not have identities to present. \n'
+        readable_output = 'No identities to present.\n'
 
     return CommandResults(
         readable_output=readable_output,
@@ -1016,8 +1014,7 @@ def get_file_list_command(client: Client, args: Dict[str, Any]):
     if data:
         readable_output = file_type_lookup_to_markdown(data, title)
     else:
-        readable_output = f'{INTEGRATION_CONTEXT_NAME} does not have ' \
-                          f'files to present. \n'
+        readable_output = 'No files to present.\n'
 
     return CommandResults(
         readable_output=readable_output,
@@ -1049,8 +1046,7 @@ def get_threat_list_command(client: Client, args: Dict[str, Any]):
     if data:
         readable_output = threat_lookup_to_markdown(data, title)
     else:
-        readable_output = f'{INTEGRATION_CONTEXT_NAME} does not have ' \
-                          f'threats to present. \n'
+        readable_output = 'No threats to present.\n'
 
     return CommandResults(
         readable_output=readable_output,
@@ -1082,8 +1078,7 @@ def get_event_types_list_command(client: Client, args: Dict[str, Any]):
     if data:
         readable_output = event_types_lookup_to_markdown(data, title)
     else:
-        readable_output = f'{INTEGRATION_CONTEXT_NAME} does not have ' \
-                          f'Event Types to present. \n'
+        readable_output = 'No event types to present.\n'
 
     return CommandResults(
         readable_output=readable_output,
@@ -1114,8 +1109,7 @@ def get_activity_list_command(client: Client, args: Dict[str, Any]):
     if data:
         readable_output = activity_lookup_to_markdown(data, title)
     else:
-        readable_output = f'{INTEGRATION_CONTEXT_NAME} does not have ' \
-                          f'activity entries to present. \n'
+        readable_output = 'No activities to present.\n'
 
     return CommandResults(
         readable_output=readable_output,
@@ -1174,8 +1168,7 @@ def get_activity_by_traffic_type_command(client: Client, args: Dict[str, Any]):
     if data:
         readable_output = markdown_function[traffic_type](data, title)
     else:
-        readable_output = f'{INTEGRATION_CONTEXT_NAME} does not have ' \
-                          f'{traffic_type} activity to present. \n'
+        readable_output = f'No {traffic_type} activities to present.\n'
 
     return CommandResults(
         readable_output=readable_output,
@@ -1232,8 +1225,7 @@ def get_summary_list_command(client: Client, args: Dict[str, Any]):
         if data:
             readable_output = summary_markdown_dict[summary_type](data, title)
         else:
-            readable_output = f'{INTEGRATION_CONTEXT_NAME} does not have ' \
-                              f'{summary_type} summary to present. \n'
+            readable_output = f'No {summary_type} summary to present.\n'
         return CommandResults(
             readable_output=readable_output,
             outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{context_output_name[summary_type]}',
@@ -1247,8 +1239,7 @@ def get_summary_list_command(client: Client, args: Dict[str, Any]):
         if data:
             readable_output = summary_lookup_to_markdown(data, title)
         else:
-            readable_output = f'{INTEGRATION_CONTEXT_NAME} does not have ' \
-                              f'summary to present. \n'
+            readable_output = 'No summary to present.\n'
         return CommandResults(
             readable_output=readable_output,
             outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Summary',
