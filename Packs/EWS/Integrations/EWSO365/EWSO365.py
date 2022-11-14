@@ -2071,7 +2071,11 @@ def parse_incident_from_item(item):
     # handle attachments
     if item.attachments:
         incident["attachment"] = []
+        demisto.debug(f"parsing {len(item.attachments)} attachments for item with id {item.id}")
+        attachment_counter = 0
         for attachment in item.attachments:
+            attachment_counter += 1
+            demisto.debug(f'retrieving attachment number {attachment_counter}')
             file_result = None
             label_attachment_type = None
             label_attachment_id_type = None
@@ -2172,6 +2176,7 @@ def parse_incident_from_item(item):
             labels.append(
                 {"type": label_attachment_id_type, "value": attachment.attachment_id.id}
             )
+        demisto.debug(f'finished parsing attachment {attachment_counter}')
 
     # handle headers
     if item.headers:
@@ -2199,12 +2204,11 @@ def parse_incident_from_item(item):
         labels.append({"type": "Email/ConversionID", "value": item.conversation_id.id})
 
     incident["labels"] = labels
-    demisto.debug("before rawjson")
+    demisto.debug("before generating rawJSON for incident")
     log_memory()
     incident["rawJSON"] = json.dumps(parse_item_as_dict(item, None), ensure_ascii=False)
     log_memory()
     demisto.debug("after rawjson")
-
 
     return incident
 
@@ -2308,14 +2312,17 @@ def fetch_last_emails(
         assert first_fetch_datetime is not None
         first_fetch_ews_datetime = EWSDateTime.from_datetime(first_fetch_datetime.replace(tzinfo=tz))
         qs = qs.filter(last_modified_time__gte=first_fetch_ews_datetime)
-    qs = qs.filter().only(*[x.name for x in Message.FIELDS])
-    qs = qs.filter().order_by("datetime_received")  # .exclude(id__in=list(exclude_ids))
+    qs = qs.filter().only(*[x.name for x in Message.FIELDS if x.name != 'mime_content'])
+    qs = qs.filter().order_by("datetime_received")
     result = []
     exclude_ids = exclude_ids if exclude_ids else set()
     demisto.debug(f'{APP_NAME} - Exclude ID list: {exclude_ids}')
-    # qs.chunk_size = 200
-    # qs.page_size = 200
+    qs.chunk_size = min(client.max_fetch, 100)
+    qs.page_size = min(client.max_fetch, 100)
+    demisto.debug("before iter")
+    demisto.debug(f'qs size:{sys.getsizeof(qs)}')
     for item in qs:
+        demisto.debug("fetching an item")
         if isinstance(item, Message) and item.message_id not in exclude_ids:
             result.append(item)
             if len(result) >= client.max_fetch:
@@ -2427,7 +2434,7 @@ def sub_main():
             return_outputs(*output)
 
     except Exception as e:
-        demisto.debug(f"got an err, {str(e)}")
+        demisto.debug(f"got an err, {str(e)} {e.with_traceback()} {e.__traceback__}")
         start_logging()
         debug_log = log_stream.getvalue()  # type: ignore[union-attr]
         error_message_simple = ""
@@ -2535,6 +2542,7 @@ def main():
             p = Process(target=process_main)
             p.start()
             p.join()
+            demisto.debug("subprocess finished")
         except Exception as ex:
             demisto.error("Failed starting Process: {}".format(ex))
     else:
