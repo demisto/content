@@ -6,7 +6,6 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import json
-import requests
 import dateparser
 
 # Disable insecure warnings
