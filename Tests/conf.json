@@ -5173,6 +5173,11 @@
             "integrations": "JoeSecurityV2",
             "fromversion": "6.2.0",
             "playbookID": "testplaybook- JoeSecuirtyV2"
+        },
+        {
+            "integrations": "Cisco Umbrella Reporting",
+            "playbookID": "Cisco Umbrella Reporting Test",
+            "fromversion": "6.5.0"
         }
     ],
     "skipped_tests": {
@@ -5441,7 +5446,8 @@
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
-        "LogRhythm": "The integration is deprecated"
+        "LogRhythm": "The integration is deprecated",
+        "Cisco Umbrella Reporting": "No instance - developed by Login-Soft"
     },
     "nightly_integrations": [
     ],
