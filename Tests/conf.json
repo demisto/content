@@ -4529,7 +4529,7 @@
             "instance_names": [
                 "feodo_tracker_ip_currently__active",
                 "feodo_tracker_ip_30_days"
-            ],
+            ]
         },
         {
             "playbookID": "playbook-feodotrackeripblock_test",
