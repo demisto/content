@@ -39,6 +39,7 @@ Scripts/**/__init__.py
 Integrations/**/__init__.py
 Packs/**/__init__.py
 requirements.txt
+Tests/scripts/collect_tests.log
 
 # Environment and reports
 .demisto-sdk-conf
@@ -47,8 +48,6 @@ requirements.txt
 .env
 .envrc
 Packs/**/report_pytest.json
-
-
 
 # coverage related
 /coverage_report
@@ -63,3 +62,6 @@ Packs/**/report_pytest.json
 *.pem
 *.crt
 *.key
+
+# neo4j
+neo4j-data
