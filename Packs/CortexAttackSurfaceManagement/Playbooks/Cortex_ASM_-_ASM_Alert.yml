@@ -1787,103 +1787,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "56":
-    id: "56"
-    taskid: 537825af-17a8-45e8-8dde-2358cc17bb63
-    type: regular
-    task:
-      id: 537825af-17a8-45e8-8dde-2358cc17bb63
-      version: -1
-      name: Create ServiceNow incident
-      description: Creates new ServiceNow ticket.
-      script: ServiceNow v2|||servicenow-create-ticket
-      type: regular
-      iscommand: true
-      brand: ServiceNow v2
-    nexttasks:
-      '#none#':
-      - "57"
-    scriptarguments:
-      description:
-        complex:
-          root: inputs.OwnerNotificationBody
-          transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ${RemediationGuidance}
-      short_description:
-        complex:
-          root: inputs.OwnerNotificationSubject
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": 2710
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "57":
-    id: "57"
-    taskid: 0c81e6f6-85f8-4a64-8acd-919da4a96fc7
-    type: regular
-    task:
-      id: 0c81e6f6-85f8-4a64-8acd-919da4a96fc7
-      version: -1
-      name: Set notification grid field
-      description: |-
-        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
-        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
-      type: regular
-      iscommand: false
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "50"
-    scriptarguments:
-      gridfield:
-        simple: asmnotification
-      keys:
-        simple: Type,Value,Url,Timestamp
-      val1:
-        simple: ServiceNow
-      val2:
-        complex:
-          root: ServiceNow.Ticket
-          accessor: ID
-      val3:
-        simple: n/a
-      val4:
-        complex:
-          root: ServiceNow.Ticket
-          accessor: CreatedOn
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": 3020
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "59":
     id: "59"
     taskid: 6b5a9e0f-9cb4-4c40-8623-dbc9af70ff33
@@ -2753,7 +2656,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "56"
+      - "94"
     separatecontext: true
     continueonerrortype: ""
     view: |-
@@ -2932,6 +2835,121 @@ tasks:
         "position": {
           "x": 90,
           "y": 4580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: 13302767-7ca2-465d-83c7-4e1b1be60007
+    type: regular
+    task:
+      id: 13302767-7ca2-465d-83c7-4e1b1be60007
+      version: -1
+      name: Create ServiceNow incident
+      description: Creates new ServiceNow ticket.
+      script: ServiceNow v2|||servicenow-create-ticket
+      type: regular
+      iscommand: true
+      brand: ServiceNow v2
+    nexttasks:
+      '#none#':
+      - "95"
+    scriptarguments:
+      description:
+        complex:
+          root: inputs.OwnerNotificationBody
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ${RemediationGuidance}
+      extend-context:
+        simple: 'ServiceNowDomain=.={"url": val.result.sys_domain.link.split(''api/now'')[0]}'
+      short_description:
+        complex:
+          root: inputs.OwnerNotificationSubject
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 2710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: 922b6878-b8e7-412e-8a04-dda2070add55
+    type: regular
+    task:
+      id: 922b6878-b8e7-412e-8a04-dda2070add55
+      version: -1
+      name: Set notification grid field
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      gridfield:
+        simple: asmnotification
+      keys:
+        simple: Type,Value,Url,Timestamp
+      val1:
+        simple: ServiceNow
+      val2:
+        complex:
+          root: ServiceNow.Ticket
+          accessor: ID
+      val3:
+        complex:
+          root: ServiceNowDomain
+          accessor: url
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: incident.do?sysparm_query=number=
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ServiceNow.Ticket.Number
+                iscontext: true
+      val4:
+        complex:
+          root: ServiceNow.Ticket
+          accessor: CreatedOn
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 3020
         }
       }
     note: false
