@@ -11,7 +11,7 @@ from typing import Optional, Union, TypeVar
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-IterableCollection = TypeVar('IterableCollection', dict, list, set, tuple)
+IterableCollection = TypeVar('IterableCollection', dict, list, tuple)
 
 VENDOR_NAME = "Rapid7 Nexpose"  # Vendor name to use for indicators.
 API_DEFAULT_PAGE_SIZE = 10  # Default page size that's set on the API. Used for calculations.
@@ -2633,7 +2633,8 @@ def remove_dict_key(data: IterableCollection, key: Any) -> IterableCollection:
         key (Any): Key to remove from dictionaries.
 
     Returns:
-        IterableCollection: The data-structure (original or copy) with the specified key name removed from all dictionaries within it.
+        IterableCollection: The data-structure (original or copy) with the specified key name removed
+        from all dictionaries within.
     """
     if isinstance(data, dict):
         if key in data:
@@ -2676,7 +2677,7 @@ def replace_key_names(data: IterableCollection, name_mapping: dict[str, str],
     if not use_reference:
         data = deepcopy(data)
 
-    if isinstance(data, (list, set, tuple)):
+    if isinstance(data, (list, tuple)):
         for i in range(len(data)):
             replace_key_names(
                 data=data[i],
@@ -2819,7 +2820,7 @@ def create_scan_report_command(client: Client, scan_id: str, template_id: Option
     )
 
 
-def create_scan_schedule_command(client: Client, site: Site, repeat_behaviour: str,  start_date: str,
+def create_scan_schedule_command(client: Client, site: Site, repeat_behaviour: str, start_date: str,
                                  excluded_asset_groups: Optional[str] = None, excluded_targets: Optional[str] = None,
                                  included_asset_groups: Optional[str] = None, included_targets: Optional[str] = None,
                                  duration_days: Optional[str] = None, duration_hours: Optional[str] = None,
