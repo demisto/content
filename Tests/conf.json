@@ -5721,6 +5721,10 @@
             },
             "demisto/python3:3.10.4.29342": {
                 "memory_threshold": 85
+            },
+            "devdemisto/py3-master": {
+                "memory_threshold": 200,
+                "pid_threshold": 15
             }
         }
     },
