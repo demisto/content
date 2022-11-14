@@ -1274,10 +1274,8 @@
         {
             "playbookID": "URL Enrichment - Generic v2 - Test",
             "integrations": [
-                "Rasterize",
-                "VirusTotal - Private API"
+                "Rasterize"
             ],
-            "instance_names": "virus_total_private_api_general",
             "timeout": 500,
             "pid_threshold": 12
         },
