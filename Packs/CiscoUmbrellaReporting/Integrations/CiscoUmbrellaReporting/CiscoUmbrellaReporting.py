@@ -26,6 +26,7 @@ SHA256_PARAM = 'sha256'
 INTRUSION_ACTION = 'intrusion_action'
 DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 PAGE_NUMBER_ERROR_MSG = 'Invalid Input Error: page number should be greater than zero.'
+PAGE_SIZE_ERROR_MSG = 'Invalid Input Error: page size should be greater than zero.'
 INVALID_ORG_ID_ERROR_MSG = 'Authorization Error: The provided Organization ID is invalid.'
 INVALID_CREDENTIALS_ERROR_MSG = 'Authorization Error: The provided credentials for Cisco Umbrella Reporting are' \
                                 ' invalid. Please provide a valid Client ID and Client Secret.'
@@ -103,8 +104,7 @@ class Client(BaseClient):
         if token_response.status_code == 401:
             raise DemistoException(INVALID_CREDENTIALS_ERROR_MSG)
         elif token_response.status_code >= 400:
-            raise DemistoException("Error: something went wrong, please try "
-                                   "again.")
+            raise DemistoException('Error: something went wrong, please try again.')
 
         return token_response.json().get('access_token')
 
@@ -148,10 +148,10 @@ class Client(BaseClient):
         elif response.status_code in range(200, 299):
             result = response.json()
         elif response.status_code >= 400:
-            error_message = response.json().get("data", {}).get("error")
-            if "invalid organization" in error_message:
+            error_message = response.json().get('data', {}).get('error')
+            if 'invalid organization' in error_message:
                 raise DemistoException(INVALID_ORG_ID_ERROR_MSG)
-            elif "unauthorized" in error_message:
+            elif 'unauthorized' in error_message:
                 raise DemistoException(INVALID_CREDENTIALS_ERROR_MSG)
             raise DemistoException(error_message)
 
@@ -235,8 +235,8 @@ def destination_lookup_to_markdown(results: List[Dict], title: str) -> str:
     """
     destination_list = []
     for destination in results:
-        category = [label.get("label") for label in destination.get(
-            "categories", [])]
+        category = [label.get('label') for label in destination.get(
+            'categories', [])]
         new = {
             'Destination': destination.get('domain', ''),
             'Category': ", ".join(category),
@@ -247,8 +247,8 @@ def destination_lookup_to_markdown(results: List[Dict], title: str) -> str:
         destination_list.append(new)
     headers = destination_list[0] if destination_list else {}
     headers = list(headers.keys())
-    markdown = tableToMarkdown(title, destination_list, headers=headers,
-                               removeNull=True)
+    markdown = tableToMarkdown(title, destination_list, headers=headers, removeNull=True)
+
     return markdown
 
 
@@ -265,15 +265,15 @@ def categories_lookup_to_markdown(results: List[Dict], title: str) -> str:
     categories_list = []
     for category in results:
         new = {
-            "Category": category.get('category', {}).get("label", ""),
-            "Type": category.get('category', {}).get("type", ""),
-            "Activity": category.get("count", 0)
+            'Category': category.get('category', {}).get('label', ''),
+            'Type': category.get('category', {}).get('type', ''),
+            'Activity': category.get('count', 0)
         }
         categories_list.append(new)
     headers = categories_list[0] if categories_list else {}
     headers = list(headers.keys())
-    markdown = tableToMarkdown(title, categories_list, headers=headers,
-                               removeNull=True)
+    markdown = tableToMarkdown(title, categories_list, headers=headers, removeNull=True)
+
     return markdown
 
 
@@ -308,8 +308,7 @@ def summary_lookup_to_markdown(summary: Dict, title: str) -> str:
 
     headers = summary_list[0] if summary_list else {}
     headers = list(headers.keys())
-    markdown = tableToMarkdown(title, summary_list, headers=headers,
-                               removeNull=True)
+    markdown = tableToMarkdown(title, summary_list, headers=headers, removeNull=True)
     return markdown
 
 
@@ -347,8 +346,7 @@ def summary_category_lookup_to_markdown(results: List[Dict], title: str) -> str:
 
     headers = summary_category[0] if summary_category else {}
     headers = list(headers.keys())
-    markdown = tableToMarkdown(title, summary_category, headers=headers,
-                               removeNull=True)
+    markdown = tableToMarkdown(title, summary_category, headers=headers, removeNull=True)
     return markdown
 
 
@@ -373,7 +371,8 @@ def summary_rule_lookup_to_markdown(results: List[Dict], title: str):
             }
             summary_rule.append(new)
     headers = ['Blocked', 'Detected', 'Would Block', "Last Event"]
-    return tableToMarkdown(title, summary_rule, headers=headers, removeNull=True)
+    markdown = tableToMarkdown(title, summary_rule, headers=headers, removeNull=True)
+    return markdown
 
 
 def summary_destination_lookup_to_markdown(results: List[Dict], title: str) -> str:
@@ -408,8 +407,7 @@ def summary_destination_lookup_to_markdown(results: List[Dict], title: str) -> s
         summary_dest.append(new)
     headers = summary_dest[0] if summary_dest else {}
     headers = list(headers.keys())
-    markdown = tableToMarkdown(title, summary_dest, headers=headers,
-                               removeNull=True)
+    markdown = tableToMarkdown(title, summary_dest, headers=headers, removeNull=True)
     return markdown
 
 
@@ -425,14 +423,13 @@ def identities_lookup_to_markdown(results: List[Dict], title: str) -> str:
     identities_list = []
     for identity in results:
         new = {
-            "Identity": identity.get('identity', {}).get("label", ""),
-            "Requests": identity.get('requests', 0)
+            'Identity': identity.get('identity', {}).get('label', ''),
+            'Requests': identity.get('requests', 0)
         }
         identities_list.append(new)
     headers = identities_list[0] if identities_list else {}
     headers = list(headers.keys())
-    markdown = tableToMarkdown(title, identities_list, headers=headers,
-                               removeNull=True)
+    markdown = tableToMarkdown(title, identities_list, headers=headers, removeNull=True)
     return markdown
 
 
@@ -450,22 +447,22 @@ def file_type_lookup_to_markdown(results: List[Dict], title: str) -> str:
         category = []
         type_list = []
         for label in file.get('categories', []):
-            category.append(label.get("label", ''))
-            type_list.append(label.get("type", ''))
+            category.append(label.get('label', ''))
+            type_list.append(label.get('type', ''))
         new = {
-            "Requests": file.get("requests", ''),
-            "Identity Count": file.get("identitycount", ''),
-            "SHA256": file.get('sha256', ''),
-            "Category": ", ".join(category),
-            "Category Type": ", ".join(type_list),
-            "File Name": ", ".join(file.get("filenames", [])),
-            "File Types": ", ".join(file.get("filetypes", []))
+            'Requests': file.get('requests', ''),
+            'Identity Count': file.get('identitycount', ''),
+            'SHA256': file.get('sha256', ''),
+            'Category': ", ".join(category),
+            'Category Type': ", ".join(type_list),
+            'File Name': ", ".join(file.get('filenames', [])),
+            'File Types': ", ".join(file.get('filetypes', []))
         }
         file_list.append(new)
     headers = file_list[0] if file_list else {}
     headers = list(headers.keys())
-    markdown = tableToMarkdown(title, file_list, headers=headers,
-                               removeNull=True)
+    markdown = tableToMarkdown(title, file_list, headers=headers, removeNull=True)
+
     return markdown
 
 
@@ -481,14 +478,14 @@ def event_types_lookup_to_markdown(results: List[Dict], title: str) -> str:
     event_list = []
     for event in results:
         new = {
-            "Event Type": event.get('eventtype', ''),
-            "Count": event.get('count', 0)
+            'Event Type': event.get('eventtype', ''),
+            'Count': event.get('count', 0)
         }
         event_list.append(new)
     headers = event_list[0] if event_list else {}
     headers = list(headers.keys())
-    markdown = tableToMarkdown(title, event_list, headers=headers,
-                               removeNull=True)
+    markdown = tableToMarkdown(title, event_list, headers=headers, removeNull=True)
+
     return markdown
 
 
@@ -504,14 +501,15 @@ def threat_lookup_to_markdown(results: List[Dict], title: str) -> str:
     threat_list = []
     for threat in results:
         new = {
-            "Threat": threat.get('threat', ''),
-            "Threat Type": threat.get('threattype', ''),
-            "Count": threat.get('count', 0)
+            'Threat': threat.get('threat', ''),
+            'Threat Type': threat.get('threattype', ''),
+            'Count': threat.get('count', 0)
         }
         threat_list.append(new)
     headers = threat_list[0] if threat_list else {}
     headers = list(headers.keys())
     markdown = tableToMarkdown(title, threat_list, headers=headers, removeNull=True)
+
     return markdown
 
 
@@ -584,8 +582,8 @@ def activity_lookup_to_markdown(results: List[Dict], title: str) -> str:
         activity_list.append(new)
     headers = activity_list[0] if activity_list else {}
     headers = list(headers.keys())
-    markdown = tableToMarkdown(title, activity_list, headers=headers,
-                               removeNull=True)
+    markdown = tableToMarkdown(title, activity_list, headers=headers, removeNull=True)
+
     return markdown
 
 
@@ -657,8 +655,7 @@ def activity_proxy_lookup_to_markdown(results: List[Dict], title: str) -> str:
     return markdown
 
 
-def activity_firewall_lookup_to_markdown(results: List[Dict], title: str) -> \
-        str:
+def activity_firewall_lookup_to_markdown(results: List[Dict], title: str) -> str:
     """
     Parsing the Cisco Umbrella Reporting data
     Args:
@@ -695,8 +692,7 @@ def activity_firewall_lookup_to_markdown(results: List[Dict], title: str) -> \
     return markdown
 
 
-def activity_intrusion_lookup_to_markdown(results: List[Dict], title: str) -> \
-        str:
+def activity_intrusion_lookup_to_markdown(results: List[Dict], title: str) -> str:
     """
     Parsing the Cisco Umbrella Reporting data
     Args:
@@ -802,8 +798,11 @@ def pagination(page: Optional[int], page_size: Optional[int]):
         limit (int): Records per page.
         offset (int): The number of records to be skipped.
     """
-    if (page and page <= 0) or (page_size and page_size <= 0):
+    if page and page <= 0:
         raise DemistoException(PAGE_NUMBER_ERROR_MSG)
+    if page_size and page_size <= 0:
+        raise DemistoException(PAGE_SIZE_ERROR_MSG)
+
     page = DEFAULT_OFFSET if not page else page - 1
     page_size = DEFAULT_PAGE_SIZE if not page_size else page_size
     limit = page_size
@@ -822,6 +821,7 @@ def create_cisco_umbrella_args(limit: Optional[int], offset: Optional[int], args
         Return arguments dict.
     """
     cisco_umbrella_args: Dict = {}
+
     if sha256 := args.get('sha256'):
         check_valid_indicator_value('sha256', sha256)
     if ip := args.get('ip'):
@@ -833,7 +833,7 @@ def create_cisco_umbrella_args(limit: Optional[int], offset: Optional[int], args
     if intrusion_action := args.get('intrusion_action'):
         check_valid_indicator_value('intrusion_action', intrusion_action)
 
-    max_limit = args.get('limit', DEFAULT_PAGE_SIZE)
+    max_limit = arg_to_number(args.get('limit', DEFAULT_PAGE_SIZE), arg_name='limit')
 
     cisco_umbrella_args['limit'] = limit if limit != DEFAULT_PAGE_SIZE else max_limit
     cisco_umbrella_args['offset'] = offset
@@ -874,10 +874,10 @@ def test_module(client: Client) -> str:
 
     payload: Dict = {}
     params: Dict = {
-        "limit": 1,
-        "from": "-1days",
-        "to": "now",
-        "offset": 0
+        'limit': 1,
+        'from': '-1days',
+        'to': 'now',
+        'offset': 0
     }
     response = requests.get(
         url=url,
@@ -887,10 +887,10 @@ def test_module(client: Client) -> str:
         allow_redirects=False,
     )
     if response.status_code >= 400:
-        error_message = response.json().get("data", {}).get("error")
-        if "invalid organization" in error_message:
+        error_message = response.json().get('data', {}).get('error')
+        if 'invalid organization' in error_message:
             raise DemistoException(INVALID_ORG_ID_ERROR_MSG)
-        elif "unauthorized" in error_message:
+        elif 'unauthorized' in error_message:
             raise DemistoException(INVALID_CREDENTIALS_ERROR_MSG)
         raise DemistoException(error_message)
     return 'ok'
@@ -906,15 +906,15 @@ def get_destinations_list_command(client: Client, args: Dict[str, Any]):
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    traffic_type = args.get("traffic_type", None)
-    endpoint = f"top-destinations/{traffic_type}" if traffic_type else "top-destinations"
+    traffic_type = args.get("traffic_type")
+    endpoint = f'top-destinations/{traffic_type}' if traffic_type else 'top-destinations'
     page = arg_to_number(args.get('page'), arg_name='page')
     page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE), arg_name='page_size')
     limit, offset = pagination(page, page_size)
     cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
-    title = get_command_title_string("Destination", page, page_size)
+    title = get_command_title_string('Destination', page, page_size)
     raw_json_response = client.fetch_data_from_cisco_api(endpoint, cisco_umbrella_args)
-    data = raw_json_response.get("data", [])
+    data = raw_json_response.get('data', [])
     if data:
         readable_output = destination_lookup_to_markdown(data, title)
     else:
@@ -940,21 +940,20 @@ def get_categories_list_command(client: Client, args: Dict[str, Any]):
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    traffic_type = args.get("traffic_type", None)
-    endpoint = f"top-categories/{traffic_type}" if traffic_type else "top-categories"
+    traffic_type = args.get('traffic_type')
+    endpoint = f'top-categories/{traffic_type}' if traffic_type else 'top-categories'
     page = arg_to_number(args.get('page'), arg_name='page')
-    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE),
-                              arg_name='page_size')
+    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE), arg_name='page_size')
     limit, offset = pagination(page, page_size)
     cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
-    title = get_command_title_string("Category", page, page_size)
+    title = get_command_title_string('Category', page, page_size)
     raw_json_response = client.fetch_data_from_cisco_api(endpoint, cisco_umbrella_args)
-    data = raw_json_response.get("data", [])
+    data = raw_json_response.get('data', [])
     if data:
         readable_output = categories_lookup_to_markdown(data, title)
     else:
         readable_output = f'{INTEGRATION_CONTEXT_NAME} does not have ' \
-                          f'category to present. \n'
+                          f'categories to present. \n'
 
     return CommandResults(
         readable_output=readable_output,
@@ -974,21 +973,19 @@ def get_identities_list_command(client: Client, args: Dict[str, Any]):
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    traffic_type = args.get("traffic_type", None)
-    endpoint = f"top-identities/{traffic_type}" if traffic_type else "top-identities"
+    traffic_type = args.get('traffic_type')
+    endpoint = f'top-identities/{traffic_type}' if traffic_type else 'top-identities'
     page = arg_to_number(args.get('page'), arg_name='page')
-    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE),
-                              arg_name='page_size')
+    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE), arg_name='page_size')
     limit, offset = pagination(page, page_size)
     cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
-    title = get_command_title_string("Identities", page, page_size)
+    title = get_command_title_string('Identities', page, page_size)
     raw_json_response = client.fetch_data_from_cisco_api(endpoint, cisco_umbrella_args)
-    data = raw_json_response.get("data", [])
+    data = raw_json_response.get('data', [])
     if data:
         readable_output = identities_lookup_to_markdown(data, title)
     else:
-        readable_output = f'{INTEGRATION_CONTEXT_NAME} does not have ' \
-                          f'identity to present. \n'
+        readable_output = f'{INTEGRATION_CONTEXT_NAME} does not have identities to present. \n'
 
     return CommandResults(
         readable_output=readable_output,
@@ -1009,19 +1006,18 @@ def get_file_list_command(client: Client, args: Dict[str, Any]):
             result.
     """
     page = arg_to_number(args.get('page'), arg_name='page')
-    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE),
-                              arg_name='page_size')
+    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE), arg_name='page_size')
     limit, offset = pagination(page, page_size)
     cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
     endpoint = 'top-files'
-    title = get_command_title_string("File", page, page_size)
+    title = get_command_title_string('File', page, page_size)
     raw_json_response = client.fetch_data_from_cisco_api(endpoint, cisco_umbrella_args)
-    data = raw_json_response.get("data", [])
+    data = raw_json_response.get('data', [])
     if data:
         readable_output = file_type_lookup_to_markdown(data, title)
     else:
         readable_output = f'{INTEGRATION_CONTEXT_NAME} does not have ' \
-                          f'file to present. \n'
+                          f'files to present. \n'
 
     return CommandResults(
         readable_output=readable_output,
@@ -1041,21 +1037,20 @@ def get_threat_list_command(client: Client, args: Dict[str, Any]):
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    traffic_type = args.get("traffic_type", None)
-    endpoint = f"top-threats/{traffic_type}" if traffic_type else "top-threats"
+    traffic_type = args.get('traffic_type')
+    endpoint = f'top-threats/{traffic_type}' if traffic_type else 'top-threats'
     page = arg_to_number(args.get('page'), arg_name='page')
-    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE),
-                              arg_name='page_size')
+    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE), arg_name='page_size')
     limit, offset = pagination(page, page_size)
     cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
-    title = get_command_title_string("Threat", page, page_size)
+    title = get_command_title_string('Threat', page, page_size)
     raw_json_response = client.fetch_data_from_cisco_api(endpoint, cisco_umbrella_args)
-    data = raw_json_response.get("data", [])
+    data = raw_json_response.get('data', [])
     if data:
         readable_output = threat_lookup_to_markdown(data, title)
     else:
         readable_output = f'{INTEGRATION_CONTEXT_NAME} does not have ' \
-                          f'threat to present. \n'
+                          f'threats to present. \n'
 
     return CommandResults(
         readable_output=readable_output,
@@ -1077,19 +1072,18 @@ def get_event_types_list_command(client: Client, args: Dict[str, Any]):
             result.
     """
     page = arg_to_number(args.get('page'), arg_name='page')
-    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE),
-                              arg_name='page_size')
+    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE), arg_name='page_size')
     limit, offset = pagination(page, page_size)
     cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
-    endpoint = "top-eventtypes"
-    title = get_command_title_string("Event Type", page, page_size)
+    endpoint = 'top-eventtypes'
+    title = get_command_title_string('Event Type', page, page_size)
     raw_json_response = client.fetch_data_from_cisco_api(endpoint, cisco_umbrella_args)
-    data = raw_json_response.get("data", [])
+    data = raw_json_response.get('data', [])
     if data:
         readable_output = event_types_lookup_to_markdown(data, title)
     else:
         readable_output = f'{INTEGRATION_CONTEXT_NAME} does not have ' \
-                          f'Event to present. \n'
+                          f'Event Types to present. \n'
 
     return CommandResults(
         readable_output=readable_output,
@@ -1110,19 +1104,18 @@ def get_activity_list_command(client: Client, args: Dict[str, Any]):
             result.
     """
     page = arg_to_number(args.get('page'), arg_name='page')
-    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE),
-                              arg_name='page_size')
+    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE), arg_name='page_size')
     limit, offset = pagination(page, page_size)
     cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
-    endpoint = "activity"
-    title = get_command_title_string("Activity", page, page_size)
+    endpoint = 'activity'
+    title = get_command_title_string('Activity', page, page_size)
     raw_json_response = client.fetch_data_from_cisco_api(endpoint, cisco_umbrella_args)
-    data = raw_json_response.get("data", [])
+    data = raw_json_response.get('data', [])
     if data:
         readable_output = activity_lookup_to_markdown(data, title)
     else:
         readable_output = f'{INTEGRATION_CONTEXT_NAME} does not have ' \
-                          f'activity to present. \n'
+                          f'activity entries to present. \n'
 
     return CommandResults(
         readable_output=readable_output,
@@ -1144,46 +1137,45 @@ def get_activity_by_traffic_type_command(client: Client, args: Dict[str, Any]):
         CommandResults: A ``CommandResults`` object that is then passed
          to ``return_results``, that contains an updated result.
     """
-    traffic_type = args.get("traffic_type", None)
+    traffic_type = args.get('traffic_type')
     if traffic_type:
-        endpoint = "activity/amp-retrospective" if traffic_type == "amp"\
-            else f"activity/{traffic_type}"
+        endpoint = 'activity/amp-retrospective' if traffic_type == 'amp'\
+            else f'activity/{traffic_type}'
     else:
         raise DemistoException("Please select a traffic type.")
     markdown_function = {
-        "dns": activity_dns_lookup_to_markdown,
-        "proxy": activity_proxy_lookup_to_markdown,
-        "firewall": activity_firewall_lookup_to_markdown,
-        "ip": activity_ip_lookup_to_markdown,
-        "intrusion": activity_intrusion_lookup_to_markdown,
-        "amp": activity_amp_lookup_to_markdown
+        'dns': activity_dns_lookup_to_markdown,
+        'proxy': activity_proxy_lookup_to_markdown,
+        'firewall': activity_firewall_lookup_to_markdown,
+        'ip': activity_ip_lookup_to_markdown,
+        'intrusion': activity_intrusion_lookup_to_markdown,
+        'amp': activity_amp_lookup_to_markdown
     }
     context_output_name = {
-        "dns": "ActivityDns",
-        "proxy": "ActivityProxy",
-        "firewall": "ActivityFirewall",
-        "intrusion": "ActivityIntrusion",
-        "ip": "ActivityIP",
-        "amp": "ActivityAMPRetro"
+        'dns': 'ActivityDns',
+        'proxy': 'ActivityProxy',
+        'firewall': 'ActivityFirewall',
+        'intrusion': 'ActivityIntrusion',
+        'ip': 'ActivityIP',
+        'amp': 'ActivityAMPRetro'
     }
     traffic_type_params_list = ACTIVITY_TRAFFIC_TYPE_DICT[traffic_type]
     if not set(args.keys()).issubset(traffic_type_params_list):
         raise DemistoException(
             f"Invalid optional parameter is selected for {traffic_type}")
+
     page = arg_to_number(args.get('page'), arg_name='page')
-    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE),
-                              arg_name='page_size')
+    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE), arg_name='page_size')
     limit, offset = pagination(page, page_size)
     cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
-    title = get_command_title_string(f"{traffic_type.capitalize()} "
-                                     f"Activity", page, page_size)
+    title = get_command_title_string(f'{traffic_type.capitalize()} Activity', page, page_size)
     raw_json_response = client.fetch_data_from_cisco_api(endpoint, cisco_umbrella_args)
-    data = raw_json_response.get("data", [])
+    data = raw_json_response.get('data', [])
     if data:
         readable_output = markdown_function[traffic_type](data, title)
     else:
         readable_output = f'{INTEGRATION_CONTEXT_NAME} does not have ' \
-                          f'activity {traffic_type} to present. \n'
+                          f'{traffic_type} activity to present. \n'
 
     return CommandResults(
         readable_output=readable_output,
@@ -1204,30 +1196,30 @@ def get_summary_list_command(client: Client, args: Dict[str, Any]):
          to ``return_results``, that contains an updated result.
     """
     summary_endpoint_dict = {
-        "category": "summaries-by-category",
-        "destination": "summaries-by-destination",
-        "intrusion_rule": "summaries-by-rule/intrusion"
+        'category': 'summaries-by-category',
+        'destination': 'summaries-by-destination',
+        'intrusion_rule': 'summaries-by-rule/intrusion'
     }
     summary_markdown_dict = {
         'category': summary_category_lookup_to_markdown,
         'destination': summary_destination_lookup_to_markdown,
-        "intrusion_rule": summary_rule_lookup_to_markdown
+        'intrusion_rule': summary_rule_lookup_to_markdown
     }
     context_output_name = {
-        "category": "SummaryWithCategory",
-        "destination": "SummaryWithDestination",
-        "intrusion_rule": "SignatureListSummary"
+        'category': 'SummaryWithCategory',
+        'destination': 'SummaryWithDestination',
+        'intrusion_rule': 'SignatureListSummary'
     }
-    summary_type = args.get("summary_type", None)
-    endpoint = summary_endpoint_dict.get(summary_type, "summary")
+    summary_type = args.get('summary_type')
+    endpoint = summary_endpoint_dict.get(summary_type, 'summary')
     category_type_param_list = SUMMARY_TYPE_DICT.get(summary_type,
-                                                     SUMMARY_TYPE_DICT["all"])
+                                                     SUMMARY_TYPE_DICT['all'])
     if not set(args.keys()).issubset(category_type_param_list):
         raise DemistoException(
             f"Invalid optional parameter is selected for {summary_type}")
+
     page = arg_to_number(args.get('page'), arg_name='page')
-    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE),
-                              arg_name='page_size')
+    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE), arg_name='page_size')
     limit, offset = pagination(page, page_size)
     cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
     raw_json_response = client.fetch_data_from_cisco_api(endpoint, cisco_umbrella_args)
@@ -1244,8 +1236,7 @@ def get_summary_list_command(client: Client, args: Dict[str, Any]):
                               f'{summary_type} summary to present. \n'
         return CommandResults(
             readable_output=readable_output,
-            outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}'
-                           f'.{context_output_name[summary_type]}',
+            outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{context_output_name[summary_type]}',
             outputs_key_field='',
             outputs=data
         )
