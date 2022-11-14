@@ -787,7 +787,7 @@ inputs:
   playbookInputQuery:
 - key: GitIntegration
   value:
-    simple: github
+    simple: GitHub
   required: true
   description: Which version control integration to use.
   playbookInputQuery:

@@ -9,7 +9,7 @@ args:
 - auto: PREDEFINED
   description: Which version control integration to use.
   name: git_integration
-  required: true
+  required: false
   predefined:
   - Gitlab
   - GitHub

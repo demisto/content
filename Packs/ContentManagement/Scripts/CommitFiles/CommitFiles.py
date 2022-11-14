@@ -25,7 +25,7 @@ modified_files = []
 files_path = []
 
 
-class ContentFile:
+class ContentFile:  # pragma: no cover
     path_to_file: str = ''
     file_name: str = ''
     content_type: str = ''
@@ -244,14 +244,14 @@ def commit_git(git_integration: str, branch_name: str, content_file: ContentFile
         commit_content_item_gitlab(branch_name, content_file)
     elif git_integration == 'GitHub':
         commit_content_item(branch_name, content_file)
-    else:
+    else:  # git_integration == 'Bitbucket'
         commit_content_item_bitbucket(branch_name, content_file)
 
 
 ''' MAIN FUNCTION '''
 
 
-def main():
+def main():  # pragma: no cover
     try:
         files = demisto.getArg('files')
         branch_name = demisto.getArg('branch')

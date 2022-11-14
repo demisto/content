@@ -22,9 +22,9 @@ This script is used in the following playbooks and scripts.
 ---
 
 | **Argument Name** | **Description** |
-| --- | --- |
+| --- |---|
 | pack | The name of the pack. |
-| use_command | Which command to use. |
+| use_command | Which command to use. Possible commands: * gitlab-branch-list * GitHub-get-branch * bitbucket-branch-get |
 
 ## Outputs
 ---

@@ -5,7 +5,7 @@ args:
 - auto: PREDEFINED
   description: Which command to use.
   name: use_command
-  required: true
+  required: false
   predefined:
   - gitlab-branch-list
   - GitHub-get-branch

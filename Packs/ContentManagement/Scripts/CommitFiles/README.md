@@ -12,6 +12,7 @@ This script gets content files as input from the context, commits the files in t
 ---
 This script is used in the following playbooks and scripts.
 * Pull Request Creation - Github
+* Pull Request Creation - Bitbucket
 
 ## Inputs
 ---
