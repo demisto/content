@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: okta_Access_gateway_modeling_rule
+name: Okta Access Gateway
+rules: ''
+schema: ''
+tags: Okta Access Gateway

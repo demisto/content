@@ -45,7 +45,8 @@ def test_incorrect_authentication():
     assert 'Incorrect password' in str(e)
 
     with pytest.raises(PdfInvalidCredentialsException) as e:
-        handling_pdf_credentials(cpy_file_path=file_path, dec_file_path=dec_file_path, user_password='12')
+        handling_pdf_credentials(cpy_file_path=file_path, dec_file_path=dec_file_path, encrypted='yes',
+                                 user_password='12')
     assert 'Incorrect password' in str(e)
 
 
@@ -120,7 +121,8 @@ def test_get_pdf_text_with_encrypted(tmp_path):
     from ReadPDFFileV2 import get_pdf_text, handling_pdf_credentials
     file_path = f'{CWD}/encrypted.pdf'
     dec_file_path = f'{CWD}/decrypted.pdf'
-    dec_file_path = handling_pdf_credentials(cpy_file_path=file_path, user_password='1234', dec_file_path=dec_file_path)
+    dec_file_path = handling_pdf_credentials(cpy_file_path=file_path, user_password='1234',
+                                             dec_file_path=dec_file_path, encrypted='yes')
     text = get_pdf_text(dec_file_path, f'{tmp_path}/encrypted.txt')
     expected = "XSL FO Sample Copyright © 2002-2005 Antenna House, Inc. All rights reserved.\n\n" \
                "Links in PDF\nPDF link is classified into two parts, link to the specified position in the PDF " \
@@ -170,7 +172,8 @@ def test_get_pdf_htmls_content_with_encrypted(mocker, tmp_path):
     from ReadPDFFileV2 import get_pdf_htmls_content, get_images_paths_in_path, handling_pdf_credentials
     file_path = f'{CWD}/encrypted.pdf'
     dec_file_path = f'{CWD}/decrypted.pdf'
-    dec_file_path = handling_pdf_credentials(cpy_file_path=file_path, user_password='1234', dec_file_path=dec_file_path)
+    dec_file_path = handling_pdf_credentials(cpy_file_path=file_path, user_password='1234',
+                                             dec_file_path=dec_file_path, encrypted='yes')
     # to_html_output_folder = f'{tmp_path}/PDF_html'
     html_text = get_pdf_htmls_content(dec_file_path, tmp_path)
     expected = 'If you are end user who wishes to use XSL Formatter yourself, you may purchase ' \
@@ -253,7 +256,8 @@ def test_get_urls_and_emails_from_pdf_annots_with_encrypt(file_path):
     file_path = f'{CWD}/{file_path}'
     dec_file_path = handling_pdf_credentials(cpy_file_path=file_path,
                                              user_password='123456',
-                                             dec_file_path=dec_file_path)
+                                             dec_file_path=dec_file_path,
+                                             encrypted='')
     # decrypt_pdf_file(file_path, '1234', dec_file_path)
 
     # Extract URLs and Emails:
@@ -339,7 +343,8 @@ def test_get_urls_and_emails_from_pdf_file_with_encrypt(tmp_path):
     # Decrypt the PDF:
     file_path = f'{CWD}/URLs_Extraction_Test_PDF_Encoding_LibreOffice_protected.pdf'
     dec_file_path = f'{CWD}/decrypted.pdf'
-    dec_file_path = handling_pdf_credentials(cpy_file_path=file_path, user_password='123456', dec_file_path=dec_file_path)
+    dec_file_path = handling_pdf_credentials(cpy_file_path=file_path, user_password='123456',
+                                             dec_file_path=dec_file_path, encrypted='')
     # decrypt_pdf_file(file_path, '123456', dec_file_path)
 
     # Extract URLs and Emails:

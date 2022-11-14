@@ -2826,7 +2826,7 @@ def calculate_dbot_score(category: str, additional_suspicious: list, additional_
                              'not-resolved']
     suspicious_categories = list((set(additional_suspicious)).union(set(predefined_suspicious)))
 
-    predefined_malicious = ['phishing', 'command-and-control', 'malware']
+    predefined_malicious = ['phishing', 'command-and-control', 'malware', 'ransomware']
     malicious_categories = list((set(additional_malicious)).union(set(predefined_malicious)))
 
     dbot_score = 1
