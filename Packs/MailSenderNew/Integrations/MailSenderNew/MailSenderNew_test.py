@@ -36,7 +36,7 @@ def test_create_msg(mocker, subject, subj_include, headers):
     if cc is not None:
         assert (cc == ['cc@test.com'])  # disable-secrets-detection
     if bcc is not None:
-        assert (bcc == ['bcc@test.com']) # disable-secrets-detection
+        assert (bcc == ['bcc@test.com'])  # disable-secrets-detection
     lines = msg.splitlines()
     subj = [x for x in lines if 'Subject' in x][0]
     assert subj_include in subj
@@ -72,10 +72,11 @@ def test_hmac(mocker):
     user, password = MailSenderNew.get_user_pass()
     res = user + hmac.HMAC(password, 'test').hexdigest()
     assert len(res) > 0
-    
+
+
 def test_rewrite_recipients_true(mocker):
-    '''      
-    Test that recipients are overwritten when intercept recipients is turned on 
+    '''
+    Test that recipients are overwritten when intercept recipients is turned on
     '''
     mocker.patch.object(demisto, 'args', return_value={
         'to': 'test@test.com,test1@test.com',  # disable-secrets-detection
@@ -94,11 +95,11 @@ def test_rewrite_recipients_true(mocker):
     assert to == ['dbot@demisto.bot']
     assert cc == []
     assert bcc == []
-    
+
 
 def test_rewrite_recipients_false(mocker):
-    '''      
-    Test that recipients are not overwritten when intercept recipients is turned off 
+    '''
+    Test that recipients are not overwritten when intercept recipients is turned off
     '''
     mocker.patch.object(demisto, 'args', return_value={
         'to': 'test@test.com,test1@test.com',  # disable-secrets-detection

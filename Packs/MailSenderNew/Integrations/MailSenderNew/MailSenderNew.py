@@ -37,8 +37,8 @@ def return_error_mail_sender(data):
     Return error as result and exit
     """
     if SERVER:
-        try:
-            SERVER.quit()  # quite may throw if the connection was closed already
+        try:  # quite may throw if the connection was closed already
+            SERVER.quit()
         except Exception:
             pass
     return_error(data)
@@ -73,6 +73,7 @@ def handle_file(msg, filename, maintype, subtype, cid, data):
     if maintype == 'text':
         # UTF-8 is a pretty safe bet
         att = MIMEText(data, subtype, UTF_8)  # type: MIMEBase
+
     elif maintype == 'image':
         att = MIMEImage(data, subtype)
     elif maintype == 'audio':
