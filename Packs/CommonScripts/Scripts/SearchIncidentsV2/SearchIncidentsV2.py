@@ -75,6 +75,11 @@ def search_incidents(args: Dict):   # pragma: no cover
         to_date = todate.isoformat()
         args['todate'] = to_date
 
+    if args.get('trimevents'):
+        platform = demisto.demistoVersion().get('platform', 'xsoar')
+        if platform == 'xsoar' or platform == 'xsoar_hosted':
+            raise ValueError('trimevents argument is not supported in XSOAR.')
+
     if args.get('trimevents') == '0':
         args.pop('trimevents')
 
