@@ -2047,16 +2047,6 @@ def fetch_incidents():
 
                     incident_date_timestamp = int(parse(incident_date).timestamp() * 1000)
 
-                    # make sure that the two timestamps are in the same length
-                    if len(str(incident_date_timestamp)) != len(str(last_fetch_timestamp)):
-                        incident_date_timestamp, last_fetch_timestamp = timestamp_length_equalization(
-                            incident_date_timestamp, last_fetch_timestamp)
-
-                    # Update last run and add incident if the incident is newer than last fetch
-                    if incident_date_timestamp > last_fetch_timestamp:
-                        last_fetch_time = incident_date
-                        last_fetch_timestamp = incident_date_timestamp
-
                     incidents.append(incident)
 
             if len(incidents) == INCIDENTS_PER_FETCH:
@@ -2108,15 +2098,8 @@ def fetch_incidents():
 
                     incident_date_timestamp = int(parse(incident_date).timestamp() * 1000)
 
-                    # make sure that the two timestamps are in the same length
-                    if len(str(incident_date_timestamp)) != len(str(last_fetch_timestamp)):
-                        incident_date_timestamp, last_fetch_timestamp = timestamp_length_equalization(
-                            incident_date_timestamp, last_fetch_timestamp)
-
                     # Update last run and add incident if the incident is newer than last fetch
                     if incident_date_timestamp > last_fetch_timestamp:
-                        last_fetch_time = incident_date
-                        last_fetch_timestamp = incident_date_timestamp
                         new_last_incident_fetched = incident.get('incident_id')
 
                     if last_incident_fetched != incident.get('incident_id'):
