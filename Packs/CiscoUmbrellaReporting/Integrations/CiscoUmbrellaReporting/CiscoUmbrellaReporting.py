@@ -1156,7 +1156,9 @@ def get_activity_by_traffic_type_command(client: Client, args: Dict[str, Any]):
     traffic_type_params_list = ACTIVITY_TRAFFIC_TYPE_DICT[traffic_type]
     if not set(args.keys()).issubset(traffic_type_params_list):
         raise DemistoException(
-            f"Invalid optional parameter is selected for {traffic_type}")
+            f"Invalid optional parameter is selected for traffic type {traffic_type}.\n"
+            f"Supported optional parameters for {traffic_type} traffic type are:"
+            f" {', '.join(traffic_type_params_list)}.")
 
     page = arg_to_number(args.get('page'), arg_name='page')
     page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE), arg_name='page_size')
@@ -1209,7 +1211,9 @@ def get_summary_list_command(client: Client, args: Dict[str, Any]):
                                                      SUMMARY_TYPE_DICT['all'])
     if not set(args.keys()).issubset(category_type_param_list):
         raise DemistoException(
-            f"Invalid optional parameter is selected for {summary_type}")
+            f"Invalid optional parameter is selected for summary type {summary_type}.\n"
+            f"Supported optional parameters for {summary_type} summary type are:"
+            f" {', '.join(category_type_param_list)}.")
 
     page = arg_to_number(args.get('page'), arg_name='page')
     page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE), arg_name='page_size')
