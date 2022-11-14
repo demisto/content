@@ -29,7 +29,7 @@ def test_create_msg(mocker, subject, subj_include, headers):
     mocker.patch.object(demisto, 'params', return_value={
         'from': 'test@test.com',
         'intercept_recipients': False,
-        'replacement_recipient': 'dbot@test.bot'
+        'replacement_recipient': 'dbot@test.com'
     })
     (msg, to, cc, bcc) = MailSenderNew.create_msg()
     assert (to == ['test@test.com', 'test1@test.com'])  # disable-secrets-detection
