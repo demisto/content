@@ -5725,7 +5725,7 @@
             "devdemisto/py3-master": {
                 "memory_threshold": 200,
                 "pid_threshold": 11
-            },
+            }
         }
     },
     "test_marketplacev2": [
