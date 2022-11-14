@@ -272,10 +272,11 @@ def main() -> None:
         if demisto.command() == "test-module":
             result = test_module(client)
             return_results(result)
-
         elif demisto.command() == "ip":
             return_results(ip_command(client, reliability, demisto.args()))
-
+        else:
+            raise NotImplementedError(f'Command "{demisto.command()}" is not implemented.')
+        
     # Log exceptions and return errors
     except Exception as e:
         return_error(
