@@ -82,10 +82,12 @@ script:
     - isArray: true
       name: items
       type: textArea
+      description: List of objects to conver to table
     - description: Name of the table
       name: name
       type: textArea
     - isArray: true
+      description: List of strings (keys) to use when extracting table from items list
       name: headers
       type: textArea
     - description: Include CSS Styling [only needs to be done if the table is being used outside the email template]
