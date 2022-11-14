@@ -2616,28 +2616,28 @@ def readable_duration_time(duration: str) -> str:
     return ", ".join(result)
 
 
-def remove_dict_key(data: IterableCollection, key: Any) -> IterableCollection:
+def remove_dict_key(data: IterableCollection, removal_key: Any) -> IterableCollection:
     """
     Recursively remove a dictionary key from an object
 
     Args:
         data (IterableCollection): An iterable to remove keys for dictionaries within it.
-        key (Any): Key to remove from dictionaries.
+        removal_key (Any): Key to remove from dictionaries.
 
     Returns:
         IterableCollection: The data-structure (original or copy) with the specified key name removed
         from all dictionaries within.
     """
     if isinstance(data, dict):
-        if key in data:
-            del data[key]
+        if removal_key in data:
+            del data[removal_key]
 
         for key in data:
-            remove_dict_key(data[key], key)
+            remove_dict_key(data[key], removal_key)
 
     if isinstance(data, (list, tuple)):
         for item in data:
-            remove_dict_key(item, key)
+            remove_dict_key(item, removal_key)
 
     return data
 
