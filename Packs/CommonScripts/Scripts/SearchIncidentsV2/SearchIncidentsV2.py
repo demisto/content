@@ -3,6 +3,7 @@ import demistomock as demisto
 from CommonServerPython import *
 
 special = ['n', 't', '\\', '"', '\'', '7', 'r']
+platform = get_demisto_version().get('platform')
 
 
 def check_if_found_incident(res: List):
@@ -57,10 +58,19 @@ def apply_filters(incidents: List, args: Dict):
 
 
 def add_incidents_link(data: List):
-    server_url = demisto.demistoUrls().get('server')
-    for incident in data:
-        incident_link = urljoin(server_url, f'#/Details/{incident.get("id")}')
-        incident['incidentLink'] = incident_link
+    # For XSIAM links
+    if platform == 'x2':
+        server_url = demisto.getLicenseCustomField('Http_Connector.url')
+        for incident in data:
+            incident_link = urljoin(server_url,
+                                    f'alerts?action:openAlertDetails={incident.get("id")}-investigation')
+            incident['alertLink'] = incident_link
+    # For XSOAR links
+    else:
+        server_url = demisto.demistoUrls().get('server')
+        for incident in data:
+            incident_link = urljoin(server_url, f'#/Details/{incident.get("id")}')
+            incident['incidentLink'] = incident_link
     return data
 
 
@@ -89,8 +99,13 @@ def search_incidents(args: Dict):   # pragma: no cover
 
     data = apply_filters(res[0]['Contents']['data'], args)
     data = add_incidents_link(data)
-    headers: List[str] = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed', 'incidentLink']
-    md: str = tableToMarkdown(name="Incidents found", t=data, headers=headers)
+    headers: List[str] = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed']
+    if platform == 'x2':
+        headers.append('alertLink')
+        md: str = tableToMarkdown(name="Alerts found", t=data, headers=headers)
+    else:
+        headers.append('incidentLink')
+        md: str = tableToMarkdown(name="Incidents found", t=data, headers=headers)
     return md, data, res
 
 
