@@ -355,14 +355,16 @@ def make_date_time_string():
 
     return_results(results)
 
+def test_module():
+    return_results(True)
 
 command_map = {
     'fancy-email-make-table': make_table_command,
     'fancy-email-make-email': make_email_command,
     'fancy-email-make-timestring': make_date_time_string,
     'fancy-email-make-logo': make_logo_command,
-    'test-module': lambda *args: True
+    'test-module': test_module
 }
 
 
-command_map.get(demisto.command(), lambda *args: None)()
+command_map.get(demisto.command(), test_module)()
