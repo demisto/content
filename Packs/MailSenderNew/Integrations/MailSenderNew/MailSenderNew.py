@@ -56,6 +56,16 @@ def guess_type(filename):
     return ctype.split('/', 1)
 
 
+def rewrite_recipients(to, cc, bcc):
+    if bool(demisto.getParam('intercept_recipients')):
+        to = argToList(demisto.getParam('replacement_recipient'))
+        cc = []
+        bcc = []
+        return to, cc, bcc
+    else:
+        return to, cc, bcc
+
+
 def handle_file(msg, filename, maintype, subtype, cid, data):
     """
     Add the attachment to the message and add the relevant header
@@ -233,13 +243,10 @@ def create_msg():
     Return: a string representation of the message, to, cc, bcc
     """
     # Collect all parameters
-    to = argToList(demisto.getArg('to'))
-    if bool(demisto.getParam('intercept_recipients')) is True:
-        to = argToList(demisto.getParam('replacement_recipient'))
-    else:
-        to = argToList(demisto.getArg('to'))
-    cc = argToList(demisto.getArg('cc'))
-    bcc = argToList(demisto.getArg('bcc'))
+
+    to, cc, bcc = rewrite_recipients(argToList(demisto.getArg('to')),
+                                     argToList(demisto.getArg('cc')),
+                                     argToList(demisto.getArg('bcc')))  # pylint: disable=unbalanced-tuple-unpacking
     additional_header = argToList(demisto.getArg('additionalHeader'))
     subject = demisto.getArg('subject') or ''
     body = demisto.getArg('body') or ''
@@ -383,13 +390,9 @@ def main():
         elif demisto.command() == 'send-mail':
             raw_message = demisto.getArg('raw_message')
             if raw_message:
-                #  Check if intercept_recipients is set
-                if bool(demisto.getParam('intercept_recipients')) is True:
-                    to = argToList(demisto.getParam('replacement_recipient'))
-                else:
-                    to = argToList(demisto.getArg('to'))
-                cc = argToList(demisto.getArg('cc'))
-                bcc = argToList(demisto.getArg('bcc'))
+                to, cc, bcc = rewrite_recipients(argToList(demisto.getArg('to')),
+                                                 argToList(demisto.getArg('cc')),
+                                                 argToList(demisto.getArg('bcc')))
                 str_msg = raw_message
             else:
                 (str_msg, to, cc, bcc) = create_msg()

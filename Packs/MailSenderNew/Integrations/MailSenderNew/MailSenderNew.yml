@@ -1,6 +1,6 @@
 category: Messaging
 commonfields:
-  id: Mail Sender (New)
+  id: Mail Sender (New) Rewrite Recipients
   version: -1
 configuration:
 - display: Mail server hostname or IP address
@@ -52,8 +52,8 @@ configuration:
   required: false
   type: 8
 description: Send emails implemented in Python with embedded image support
-display: Mail Sender (New)
-name: Mail Sender (New)
+display: Mail Sender (New) Rewrite Recipients
+name: Mail Sender (New) Rewrite Recipients
 script:
   commands:
   - arguments:
@@ -166,5 +166,5 @@ script:
   subtype: python2
   dockerimage: demisto/python:2.7.18.27799
 tests:
-- Mail Sender (New)
+- No tests
 fromversion: 5.0.0

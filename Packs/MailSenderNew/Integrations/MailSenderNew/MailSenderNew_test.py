@@ -28,11 +28,15 @@ def test_create_msg(mocker, subject, subj_include, headers):
     })
     mocker.patch.object(demisto, 'params', return_value={
         'from': 'test@test.com',
+        'intercept_recipients': False,
+        'replacement_recipient': 'dbot@test.bot'
     })
     (msg, to, cc, bcc) = MailSenderNew.create_msg()
-    assert to == ['test@test.com', 'test1@test.com']  # disable-secrets-detection
-    assert cc == ['cc@test.com']  # disable-secrets-detection
-    assert bcc == ['bcc@test.com']  # disable-secrets-detection
+    assert (to == ['test@test.com', 'test1@test.com'])  # disable-secrets-detection
+    if cc is not None:
+        assert (cc == ['cc@test.com'])  # disable-secrets-detection
+    if bcc is not None:
+        assert (bcc == ['bcc@test.com']) # disable-secrets-detection
     lines = msg.splitlines()
     subj = [x for x in lines if 'Subject' in x][0]
     assert subj_include in subj
@@ -68,6 +72,51 @@ def test_hmac(mocker):
     user, password = MailSenderNew.get_user_pass()
     res = user + hmac.HMAC(password, 'test').hexdigest()
     assert len(res) > 0
+    
+def test_rewrite_recipients_true(mocker):
+    '''      
+    Test that recipients are overwritten when intercept recipients is turned on 
+    '''
+    mocker.patch.object(demisto, 'args', return_value={
+        'to': 'test@test.com,test1@test.com',  # disable-secrets-detection
+        'from': 'test@test.com',
+        'bcc': 'bcc@test.com',  # disable-secrets-detection
+        'cc': 'cc@test.com',  # disable-secrets-detection
+        'subject': 'testsubject my',
+        'body': 'this is the body',
+        'additionalHeader': 'foo=baz'
+    })
+    mocker.patch.object(demisto, 'params', return_value={
+        'intercept_recipients': True,
+        'replacement_recipient': 'dbot@demisto.bot'
+    })
+    (msg, to, cc, bcc) = MailSenderNew.create_msg()
+    assert to == ['dbot@demisto.bot']
+    assert cc == []
+    assert bcc == []
+    
+
+def test_rewrite_recipients_false(mocker):
+    '''      
+    Test that recipients are not overwritten when intercept recipients is turned off 
+    '''
+    mocker.patch.object(demisto, 'args', return_value={
+        'to': 'test@test.com,test1@test.com',  # disable-secrets-detection
+        'from': 'test@test.com',
+        'bcc': 'bcc@test.com',  # disable-secrets-detection
+        'cc': 'cc@test.com',  # disable-secrets-detection
+        'subject': 'testsubject my',
+        'body': 'this is the body',
+        'additionalHeader': 'foo=baz'
+    })
+    mocker.patch.object(demisto, 'params', return_value={
+        'intercept_recipients': False,
+        'replacement_recipient': 'dbot@demisto.bot'
+    })
+    (msg, to, cc, bcc) = MailSenderNew.create_msg()
+    assert to == ['test@test.com', 'test1@test.com']
+    assert cc == ['cc@test.com']
+    assert bcc == ['bcc@test.com']
 
 
 @pytest.mark.parametrize(
