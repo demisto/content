@@ -1523,7 +1523,7 @@ def get_indicator_command_result(alert: Dict[str, Any]) -> CommandResults:
             indicator=indicator,
             readable_output=md_table
         )
-        
+
     return CommandResults(readable_output='There is no IP or File indicators')
 
 
