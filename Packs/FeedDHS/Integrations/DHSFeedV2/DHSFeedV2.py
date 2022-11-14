@@ -5,7 +5,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from TAXII2ApiModule import Taxii2FeedClient, TAXII_TIME_FORMAT, DFLT_LIMIT_PER_REQUEST, INDICATOR_EQUALS_VAL_PATTERN, \
     HASHES_EQUALS_VAL_PATTERN, STIX_2_TYPES_TO_CORTEX_TYPES, CIDR_ISSUBSET_VAL_PATTERN, CIDR_ISUPPERSET_VAL_PATTERN, \
-    STIX_2_TYPES_TO_CORTEX_CIDR_TYPES
+    STIX_2_TYPES_TO_CORTEX_CIDR_TYPES, THREAT_INTEL_TYPE_TO_DEMISTO_TYPES
 
 ''' CONSTANTS '''
 
@@ -319,7 +319,8 @@ def fetch_indicators_command(client: Client, collection_to_fetch, limit: int, la
     :param initial_interval: initial interval in human readable format
     :return: indicators in cortex TIM format, updated last_run_ctx
     """
-    initial_interval = dateparser.parse(initial_interval or '24 hours', date_formats=[TAXII_TIME_FORMAT])
+    initial_interval: datetime = dateparser.parse(initial_interval or '24 hours',
+                                                  date_formats=[TAXII_TIME_FORMAT])  # type: ignore[assignment]
     limit = limit or -1
 
     if collection_to_fetch:
@@ -373,14 +374,16 @@ def get_indicators_command(client: Client,
                            added_after='20 days',
                            raw='false') -> Union[CommandResults, Dict[str, List[Optional[str]]]]:
     limit = arg_to_number(limit) or 10
-    added_after = dateparser.parse(added_after, date_formats=[TAXII_TIME_FORMAT])
-    raw = argToBoolean(raw)
+    added_after: datetime = dateparser.parse(added_after or '20 days',
+                                             date_formats=[TAXII_TIME_FORMAT])  # type: ignore[assignment]
+    added_after_str: str = added_after.strftime(TAXII_TIME_FORMAT)
+    raw = argToBoolean(raw) or False
 
     if collection_to_fetch:
         indicators = client.request_public_objects_info_all_pages(public_collection_id=collection_to_fetch,
-                                                                  added_after=added_after, limit=limit)
+                                                                  added_after=added_after_str, limit=limit)
     else:
-        indicators, _ = fetch_all_collections(client, limit, added_after)
+        indicators, _ = fetch_all_collections(client, limit, added_after_str)
 
     if raw:
         return {'indicators': [x.get('rawJSON') for x in indicators]}
