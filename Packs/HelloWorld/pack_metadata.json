@@ -11,7 +11,9 @@
     "categories": [
         "Utilities"
     ],
-    "tags": [],
+    "tags": [
+        "Getting Started"
+    ],
     "useCases": [],
     "keywords": [],
     "dependencies": {

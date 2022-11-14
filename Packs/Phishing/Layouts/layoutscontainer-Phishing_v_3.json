@@ -307,7 +307,6 @@
                         "w": 1,
                         "x": 2,
                         "y": 6,
-                        "minW": 1,
                         "type": "workplan"
                     },
                     {
@@ -394,8 +393,7 @@
                         "w": 1,
                         "x": 2,
                         "y": 8,
-                        "displayType": "ROW",
-                        "minW": 1
+                        "displayType": "ROW"
                     },
                     {
                         "displayType": "ROW",
@@ -429,8 +427,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 10,
-                        "minW": 1
+                        "y": 10
                     }
                 ],
                 "type": "custom"
@@ -461,7 +458,6 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Email Headers",
                         "static": false,
@@ -523,7 +519,6 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Headers Analysis",
                         "static": false,
@@ -574,7 +569,6 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "ML Prediction For The Email",
                         "static": false,
@@ -610,7 +604,6 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Email Type Information",
                         "static": false,
@@ -626,7 +619,7 @@
                         "i": "swtuqptgvs-86ec81a0-a905-11ec-8585-0dac7af6e9b0",
                         "items": [
                             {
-                                "endCol": 6,
+                                "endCol": 4,
                                 "fieldId": "emailhtml",
                                 "height": 44,
                                 "id": "b3eb0fa0-a905-11ec-8585-0dac7af6e9b0",
@@ -637,11 +630,10 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Raw Email HTML",
                         "static": false,
-                        "w": 3,
+                        "w": 2,
                         "x": 0,
                         "y": 8
                     },
@@ -664,7 +656,6 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Domain-squatting Check",
                         "static": false,
@@ -679,13 +670,12 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "ML Prediction for URLs",
                         "query": {
                             "notTags": [],
                             "tags": [
-                            "DBOT_URL_PHISHING_MALICIOUS"
+                                "DBOT_URL_PHISHING_MALICIOUS"
                             ]
                         },
                         "queryType": "warRoomFilter",
@@ -694,6 +684,32 @@
                         "w": 1,
                         "x": 1,
                         "y": 5
+                    },
+                    {
+                        "description": "In case a macro code was found in any of the attachments, the source code will appear here.",
+                        "displayType": "CARD",
+                        "h": 5,
+                        "hideName": false,
+                        "i": "swtuqptgvs-2b388350-4a26-11ed-9b10-cf167480534f",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "macrosourcecode",
+                                "height": 22,
+                                "id": "59b96b90-4a26-11ed-9b10-cf167480534f",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Macro Source Code",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 8
                     }
                 ]
             },

@@ -1,4 +1,5 @@
 import os
+import pytest
 import demistomock as demisto  # noqa: F401
 
 os.environ["HTTP_PROXY"] = "test"
@@ -90,3 +91,40 @@ def test_get_with_limit_fail(mocker):
 
     res = get_with_limit('mock_obj', 'mock_path', 1)
     assert res == 'Some string'
+
+
+@pytest.mark.parametrize('test_dict, expected_result', [
+    (
+        {'Sample': {'File': [],
+                    'Domain': {},
+                    'Regitry Keys Created': ['test'],
+                    'Sample': {'test': 'test'}},
+         'File': 'test',
+         'Artifact': 'test'},
+        {'Sample': {'File': []}, 'File': 'test', 'Artifact': 'test'}
+    )
+])
+def test_create_analysis_json_human_readable(mocker, test_dict, expected_result):
+
+    mocker.patch.object(demisto, 'params', return_value=PARAMS)
+    from ThreatGrid import create_analysis_json_human_readable
+    mocker.patch('ThreatGrid.tableToMarkdown', return_value='test')
+    create_analysis_json_human_readable(test_dict)
+    assert test_dict == expected_result
+
+
+def test_feed_helper_byte_response(mocker):
+    from ThreatGrid import feeds_helper
+
+    class MockResponse:
+        def __init__(self):
+            self.content = b'{"api_version":2,"id":1234,"request_id":"req-7","data":' \
+                           b'{"items":[{"path":"w.dll","sample_id":"123","severity":100,"aid":1}],' \
+                           b'"items_per_page":1000}}'
+
+    res = MockResponse()
+    mocker.patch('ThreatGrid.req', return_value=res)
+    demisto_results_mocker = mocker.patch.object(demisto, 'results')
+
+    feeds_helper('artifacts')
+    assert demisto_results_mocker.call_args[0][0][0]['Contents'][0]['id'] == 1234

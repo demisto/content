@@ -1,0 +1,31 @@
+{
+    "id": "incident_zendeskforumid",
+    "version": -1,
+    "modified": "2022-07-06T14:08:34.266689+03:00",
+    "name": "Zendesk Forum Id",
+    "ownerOnly": false,
+    "cliName": "zendeskforumid",
+    "type": "number",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Zendesk Ticket"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0"
+}

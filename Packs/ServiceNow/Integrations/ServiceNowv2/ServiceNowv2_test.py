@@ -15,7 +15,7 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main, \
     get_mapping_fields_command, get_remote_data_command, update_remote_system_command, \
     ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, \
-    get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case
+    get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case, converts_state_close_reason
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -1117,7 +1117,7 @@ def test_assigned_to_field_user_exists():
     assert res == 'oscar@example.com'
 
 
-CLOSING_RESPONSE = {'dbotIncidentClose': True, 'closeReason': 'From ServiceNow: Test'}
+CLOSING_RESPONSE = {'dbotIncidentClose': True, 'closeNotes': 'From ServiceNow: Test', 'closeReason': 'Other'}
 
 
 def test_get_remote_data_closing_incident(mocker):
@@ -1414,6 +1414,25 @@ def test_clear_fields_in_get_ticket_fields(args, expected_ticket_fields):
         assert res == expected_ticket_fields
 
 
+def test_clear_fields_for_update_remote_system():
+    """
+    Given:
+        - The fields from the parsed_args.data (from update_remote_system)
+    When:
+        - Run get_ticket_fields
+    Then:
+        - Validate that the ampty fields exists in the fields that returns.
+    """
+    parsed_args_data = {'assigned_to': '', 'category': 'Software', 'description': '', 'impact': '3 - Low',
+                        'notify': '1 - Do Not Notify', 'priority': '5 - Planning', 'severity': '1 - High - Low',
+                        'short_description': 'Testing 3', 'sla_due': '0001-01-01T02:22:42+02:20',
+                        'state': '2 - In Progress', 'subcategory': '', 'urgency': '3 - Low',
+                        'work_start': '0001-01-01T02:22:42+02:20'}
+
+    res = get_ticket_fields(parsed_args_data)
+    assert 'assigned_to' in res
+
+
 def test_query_table_with_fields(mocker):
     """
     Given:
@@ -1621,3 +1640,17 @@ def test_get_closure_case(params, expected):
         - case 6: Should return 'closed'
     """
     assert get_closure_case(params) == expected
+
+
+@pytest.mark.parametrize('ticket_state, expected_res', [('1', 'Other'),
+                                                        ('7', 'Resolved')])
+def test_converts_state_close_reason(ticket_state, expected_res):
+    """
+    Givne:
+        - ticket_state: The state for the closed service now ticket
+    When:
+        - closing a ticket on service now
+    Then:
+        - return the matching XSOAR incident state.
+    """
+    assert converts_state_close_reason(ticket_state) == expected_res

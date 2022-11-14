@@ -299,7 +299,7 @@ def tc_delete_group_command(client: Client, args: dict) -> Any:  # pragma: no co
 
 def tc_get_indicators_command(client: Client, args: dict, confidence_threshold: str = '', rating_threshold: str = '',
                               tag: str = '', owners: str = '', indicator_id: str = '', indicator_type: str = '',
-                              return_raw=False, group_associations: str = 'false',
+                              return_raw=False, group_associations: str = 'false', summary: str = '',
                               indicator_associations: str = 'false',
                               indicator_observations: str = 'false', indicator_tags: str = 'false',
                               indicator_attributes: str = 'false') -> Any:  # pragma: no cover
@@ -318,6 +318,9 @@ def tc_get_indicators_command(client: Client, args: dict, confidence_threshold: 
     indicator_associations = args.get('indicator_associations', indicator_associations)
     group_associations = args.get('group_associations', group_associations)
     tql_prefix = ''
+    if summary:
+        summary = f' AND summary EQ "{summary}"'
+        tql_prefix = '?tql='
     if rating_threshold:
         rating_threshold = f'AND (rating > {rating_threshold}) '
         tql_prefix = '?tql='
@@ -340,7 +343,8 @@ def tc_get_indicators_command(client: Client, args: dict, confidence_threshold: 
     fields = set_fields({'associatedGroups': group_associations, 'associatedIndicators': indicator_associations,
                          'observations': indicator_observations, 'tags': indicator_tags,
                          'attributes': indicator_attributes})
-    tql = f'{indicator_id}{indicator_type}{owners}{tag}{confidence_threshold}{rating_threshold}'.replace(' AND ', '', 1)
+    tql = f'{indicator_id}{summary}{indicator_type}{owners}{tag}{confidence_threshold}' \
+          f'{rating_threshold}'.replace(' AND ', '', 1)
     tql = urllib.parse.quote(tql.encode('utf8'))
     url = f'/api/v3/indicators{tql_prefix}{tql}{fields}&resultStart={page}&resultLimit={limit}'
     if not tql_prefix:
@@ -795,90 +799,108 @@ def tc_get_indicators_by_tag_command(client: Client, args: dict) -> None:  # pra
 
 def tc_get_indicator_command(client: Client, args: dict) -> None:  # pragma: no cover
     indicator = args.get('indicator')
-    response = tc_get_indicators_command(client, args, return_raw=True, indicator_id=indicator)  # type: ignore
+    indicator_id = ''
+    summary = ''
+    # We do this to check if the given indicator is an ID or a summary
+    try:
+        # If it's an int it means that it's an ID
+        int(indicator)  # type: ignore
+        indicator_id = indicator  # type: ignore
+    except ValueError:
+        # If not we'll treat it as a summary
+        summary = indicator  # type: ignore
+    response = tc_get_indicators_command(client, args, return_raw=True, indicator_id=indicator_id,
+                                         summary=summary)  # type: ignore
     ec, indicators = create_context(response, include_dbot_score=True)
-    include_attributes = response[0].get('attributes')
-    include_observations = response[0].get('observations')
-    include_tags = response[0].get('tags')
-    associated_indicators = response[0].get('associatedIndicators')
-    associated_groups = response[0].get('associatedGroups')
+    if not indicators:
+        return_results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': f'Could not find indicator: {indicator}'
+        })
+    else:
+        include_attributes = response[0].get('attributes')
+        include_observations = response[0].get('observations')
+        include_tags = response[0].get('tags')
+        associated_indicators = response[0].get('associatedIndicators')
+        associated_groups = response[0].get('associatedGroups')
 
-    if ec == []:
-        ec = {}
-    if ec:
-        indicators = copy.deepcopy(ec)
-        indicators = indicators['TC.Indicator(val.ID && val.ID === obj.ID)']
+        if ec == []:
+            ec = {}
+        if ec:
+            indicators = copy.deepcopy(ec)
+            indicators = indicators['TC.Indicator(val.ID && val.ID === obj.ID)']
 
-    return_results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': response,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ThreatConnect indicator for: {}'.format(args.get('id', '')),
-                                         indicators,
-                                         headerTransform=pascalToSpace),
-        'EntryContext': ec
-    })
-
-    if associated_groups:
         return_results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': associated_groups.get('data', []),
+            'Contents': response,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(
-                'ThreatConnect Associated Groups for indicator: {}'.format(args.get('id', '')),
-                associated_groups.get('data', []),
-                headerTransform=pascalToSpace)
+            'HumanReadable': tableToMarkdown('ThreatConnect indicator for: {}'.format(args.get('id', '')),
+                                             indicators,
+                                             headerTransform=pascalToSpace),
+            'EntryContext': ec
         })
 
-    if associated_indicators:
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': associated_indicators.get('data', []),
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(
-                'ThreatConnect Associated Indicators for indicator: {}'.format(args.get('id', '')),
-                associated_indicators.get('data', []),
-                headerTransform=pascalToSpace)
-        })
+        if associated_groups:
+            return_results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': associated_groups.get('data', []),
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(
+                    'ThreatConnect Associated Groups for indicator: {}'.format(args.get('id', '')),
+                    associated_groups.get('data', []),
+                    headerTransform=pascalToSpace)
+            })
 
-    if include_tags:
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': include_tags.get('data', []),
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(
-                'ThreatConnect Tags for indicator: {}'.format(args.get('id', '')),
-                include_tags.get('data', []),
-                headerTransform=pascalToSpace)
-        })
+        if associated_indicators:
+            return_results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': associated_indicators.get('data', []),
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(
+                    'ThreatConnect Associated Indicators for indicator: {}'.format(args.get('id', '')),
+                    associated_indicators.get('data', []),
+                    headerTransform=pascalToSpace)
+            })
 
-    if include_attributes:
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': include_attributes.get('data', []),
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(
-                'ThreatConnect Attributes for indicator: {}'.format(args.get('id', '')),
-                include_attributes.get('data', []),
-                headerTransform=pascalToSpace)
-        })
+        if include_tags:
+            return_results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': include_tags.get('data', []),
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(
+                    'ThreatConnect Tags for indicator: {}'.format(args.get('id', '')),
+                    include_tags.get('data', []),
+                    headerTransform=pascalToSpace)
+            })
 
-    if include_observations is not None:
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': include_observations,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(
-                'ThreatConnect Observations for indicator: {}'.format(args.get('id', '')),
-                include_observations,
-                headerTransform=pascalToSpace)
-        })
+        if include_attributes:
+            return_results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': include_attributes.get('data', []),
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(
+                    'ThreatConnect Attributes for indicator: {}'.format(args.get('id', '')),
+                    include_attributes.get('data', []),
+                    headerTransform=pascalToSpace)
+            })
+
+        if include_observations is not None:
+            return_results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': include_observations,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown(
+                    'ThreatConnect Observations for indicator: {}'.format(args.get('id', '')),
+                    include_observations,
+                    headerTransform=pascalToSpace)
+            })
 
 
 def tc_delete_indicator_command(client: Client, args: dict) -> None:  # pragma: no cover
