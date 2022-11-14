@@ -37,10 +37,6 @@ BASE_URL = "http://test.com/"
 ACCESS_ID = "access_id"
 SECRET_KEY = "secret_key"
 
-BASE_URL = "https://cs30.cyware.com/ctixapi/"
-ACCESS_ID = "f77e8e57-aac6-464a-81f4-7a72f65160e7"
-SECRET_KEY = "62e69548-a980-4d25-bc8b-3a7c1e14dcd2"
-
 
 def util_load_json(path):
     with io.open(path, mode="r", encoding="utf-8") as f:
