@@ -1,0 +1,44 @@
+[MODEL: dataset="apache_httpd_raw"]
+filter
+    _raw_log contains "emerg" or _raw_log contains "alert" or _raw_log contains "error" or _raw_log contains "warn" or _raw_log contains "notice" or _raw_log contains "info" or _raw_log contains "debug" or _raw_log contains "trace1"
+| alter log_level = arrayindex(regextract(_raw_log,"\[\w+\:(\w+)\]"),0),
+		Tid = arrayindex(regextract(_raw_log,"tid\s(\d+)"),0),
+		sourceipv4 = arrayindex(regextract(_raw_log,"client\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+		sourceipv6 = arrayindex(regextract(_raw_log,"client\s(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"),0)
+| alter sourceip = coalesce(sourceipv4,sourceipv6)
+| alter pid = arrayindex(regextract(_raw_log,"\[\w+\s(\d+)\:"),0),
+		error_status_code = arrayindex(regextract(_raw_log,"\:\d+\]\s+(\S+)\:"),0),
+		Source_code_file_line = arrayindex(regextract(_raw_log,"tid\s\d+\]\s([^\:|\[]+)"),0),
+		message = arrayindex(regextract(_raw_log,"client\s\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\S+[^\:]+\:([^\@]+)"),0)
+| alter
+    xdm.source.process.pid = to_number(pid),
+    xdm.alert.severity = log_level,
+    xdm.source.process.thread_id = to_number(tid),
+    xdm.source.ipv4 = sourceip,
+    xdm.source.user.identifier = error_status_code,
+    xdm.target.resource.id = Source_code_file_line,
+    xdm.alert.description = message;
+filter
+    _raw_log contains "GET" or _raw_log contains "HEAD" or _raw_log contains "POST" or _raw_log contains "DELETE" or _raw_log contains "CONNECT" or _raw_log contains "OPTIONS" or _raw_log contains "TRACE" or _raw_log contains "PATCH"
+| alter 
+		Username = arrayindex(regextract(_raw_log,"(\S+)\s\[\d+\/"),0),
+		requested_line = arrayindex(regextract(_raw_log,"\"[A-Z]+\s(\S+)\sHTTP"),0),
+		statuscode = arrayindex(regextract(_raw_log,"\"\s(\d+)\s\d+"),0),
+		User_agent = arrayindex(regextract(_raw_log,"\"\s\"([^\"]+)"),0),
+		Referrer = arrayindex(regextract(_raw_log,"(http[^\"]+)"),0),
+		bytes_size = arrayindex(regextract(_raw_log,"\d\s(\d+)"),0),
+        httpMethod=arrayindex(regextract(_raw_log, "\"([A-Z]+)\s\S+\sHTTP"),0),
+// extract source_ip
+		sourceipv4 = arrayindex(regextract(_raw_log, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\s)"),0),
+		sourceipv6 = arrayindex(regextract(_raw_log,"(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"),0)
+| alter sourceip = coalesce(sourceipv4,sourceipv6)
+// end extract source_ip
+| alter
+    xdm.source.user.username = username,
+    xdm.network.http.url = requested_line,
+    xdm.network.http.referrer = Referrer,
+    xdm.target.sent_bytes = to_number(bytes_size),
+    xdm.source.ipv4 = sourceip,
+	xdm.network.http.method=httpMethod,
+	xdm.network.http.response_code = statuscode,
+    xdm.source.user_agent=User_agent;
