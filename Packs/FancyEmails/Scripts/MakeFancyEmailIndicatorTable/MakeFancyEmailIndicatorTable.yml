@@ -22,7 +22,7 @@ contentitemexportablefields:
 dependson:
   must:
   - '|||fancy-email-make-table'
-dockerimage: demisto/python3:3.10.7.33922
+dockerimage: demisto/python3:3.10.8.37233
 enabled: true
 name: MakeFancyEmailIndicatorTable
 runas: DBotWeakRole
