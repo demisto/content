@@ -3513,7 +3513,15 @@ def test_auto_detect_indicator_type_tldextract(mocker):
         assert 'cache_file' in res[1].keys()
 
 
-VALID_DOMAIN_INDICATORS = ['www.static.attackiqtes.com', 'test.com']
+VALID_DOMAIN_INDICATORS = ['www.static.attackiqtes.com',
+                           'test.com',
+                           'www.testö.com',
+                           'hxxps://path.test.com/check',
+                           'https%3A%2F%2Ftwitter.com%2FPhilipsBeLux&data=02|01||cb2462dc8640484baf7608d638d2a698|1a407a2d7675' \
+                           '4d178692b3ac285306e4|0|0|636758874714819880&sdata=dnJiphWFhnAKsk5Ps0bj0p%2FvXVo8TpidtGZcW6t8lDQ%3' \
+                           'D&reserved=0%3E%5bcid:image003.gif@01CF4D7F.1DF62650%5d%3C',
+                           'https://emea01.safelinks.protection.outlook.com/',
+                           'good.good']
 
 @pytest.mark.parametrize('indicator_value', VALID_DOMAIN_INDICATORS)
 def test_valid_domain_indicator_types(indicator_value):
@@ -3528,7 +3536,14 @@ def test_valid_domain_indicator_types(indicator_value):
     assert re.match(domainRegex, indicator_value)
 
 
-INVALID_DOMAIN_INDICATORS = ['aaa.2234', '1.1.1.1']
+INVALID_DOMAIN_INDICATORS = ['aaa.2234',
+                             '1.1.1.1',
+                             'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad',
+                             '1.1',
+                             '2001 : db8: 3333 : 4444 : 5555',
+                             'test..com',
+                             'test/com',
+                             '3.21.32.65/path']
 
 @pytest.mark.parametrize('indicator_value', INVALID_DOMAIN_INDICATORS)
 def test_invalid_domain_indicator_types(indicator_value):
