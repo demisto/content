@@ -10,14 +10,8 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "Threat Intelligence",
-        "Alerts",
-        "Attack"
-    ],
-    "useCases": [
-        "Threat Intelligence Management"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "Phishing",
         "Enrichment",
