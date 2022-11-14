@@ -1,5 +1,5 @@
-id: CiscoUmbrellaReporting
-name: CiscoUmbrellaReporting
+id: Cisco Umbrella Reporting Test
+name: Cisco Umbrella Reporting Test
 version: -1
 fromversion: 6.5.0
 starttaskid: '0'
