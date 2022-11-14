@@ -69,7 +69,7 @@ class Client(BaseClient):
 
     def test_module(self, ip: str):
         return self._http_request(
-            method="GET", url_suffix=f"/smoke/{ip}", resp_type="response"
+            method="GET", url_suffix=f"/smoke/{ip}", resp_type="response", ok_codes=(200, 403, 404)
         )
 
 
