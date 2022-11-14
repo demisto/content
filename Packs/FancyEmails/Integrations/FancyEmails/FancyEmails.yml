@@ -130,7 +130,7 @@ script:
   - arguments: []
     description: Return div and img html tags with Logo embeded as a base64 string
     name: fancy-email-make-logo
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.8.37233
   runonce: false
   script: ''
   subtype: python3
