@@ -4,7 +4,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.7.33922
+dockerimage: demisto/python3:3.10.8.37233
 enabled: true
 name: MakeFancyEmailNotesTable
 runas: DBotWeakRole
