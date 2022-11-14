@@ -5,7 +5,6 @@ APP_USER_OUTPUT = {
     "user_name": "mock_user_name",
     "first_name": "mock_first_name",
     "last_name": "mock_last_name",
-    "active": "true",
     "email": "testdemisto2@paloaltonetworks.com"
 }
 
@@ -237,6 +236,32 @@ def test_disable_user_command__non_existing_user(mocker):
     outputs = get_outputs_from_user_profile(user_profile)
 
     assert outputs.get('action') == IAMActions.DISABLE_USER
+    assert outputs.get('success') is True
+    assert outputs.get('skipped') is True
+    assert outputs.get('reason') == IAMErrors.USER_DOES_NOT_EXIST[1]
+
+
+def test_enable_user_command__non_existing_user(mocker):
+    """
+    Given:
+        - An app client object
+        - A user-profile argument that contains an email of a user
+    When:
+        - create-if-not-exists parameter is unchecked
+        - The user does not exist in the application
+        - Calling function enable_user_command
+    Then:
+        - Ensure the command is considered successful and skipped
+    """
+    client = MockCLient()
+    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
+
+    mocker.patch.object(client, 'get_user', return_value=None)
+
+    user_profile = IAMCommand().enable_user(client, args)
+    outputs = get_outputs_from_user_profile(user_profile)
+
+    assert outputs.get('action') == IAMActions.ENABLE_USER
     assert outputs.get('success') is True
     assert outputs.get('skipped') is True
     assert outputs.get('reason') == IAMErrors.USER_DOES_NOT_EXIST[1]
