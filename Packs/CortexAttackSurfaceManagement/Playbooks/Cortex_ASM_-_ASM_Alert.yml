@@ -1789,10 +1789,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 6b5a9e0f-9cb4-4c40-8623-dbc9af70ff33
+    taskid: 56c575f4-2419-4e05-85ec-5f166c570736
     type: regular
     task:
-      id: 6b5a9e0f-9cb4-4c40-8623-dbc9af70ff33
+      id: 56c575f4-2419-4e05-85ec-5f166c570736
       version: -1
       name: Set notification grid field
       description: |-
@@ -1809,7 +1809,7 @@ tasks:
       gridfield:
         simple: asmnotification
       keys:
-        simple: Type,Value,Url,Timestamp
+        simple: Type,Value,URL,Timestamp
       val1:
         simple: Email
       val2:
@@ -2894,10 +2894,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "95":
     id: "95"
-    taskid: 922b6878-b8e7-412e-8a04-dda2070add55
+    taskid: 42c18c49-f571-4474-8432-c2bb60651c7c
     type: regular
     task:
-      id: 922b6878-b8e7-412e-8a04-dda2070add55
+      id: 42c18c49-f571-4474-8432-c2bb60651c7c
       version: -1
       name: Set notification grid field
       description: |-
@@ -2914,7 +2914,7 @@ tasks:
       gridfield:
         simple: asmnotification
       keys:
-        simple: Type,Value,Url,Timestamp
+        simple: Type,Value,URL,Timestamp
       val1:
         simple: ServiceNow
       val2:
