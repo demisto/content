@@ -489,218 +489,218 @@ script:
       description: Common Vulnerabilities and Exposures ids
       type: string
   - arguments:
-      - default: false
-        description: Name of the credential.
-        isArray: false
-        name: name
-        required: true
-        secret: false
-      - auto: PREDEFINED
-        default: false
-        description: Site assignment configuration for the credential. Assign the shared scan credential either to be available to all sites, or a specific list of sites.
-        isArray: false
-        name: site_assignment
-        predefined:
-          - All-Sites
-          - Specific-Sites
-        required: true
-        secret: false
-      - auto: PREDEFINED
-        default: false
-        description: Credential service type.
-        isArray: false
-        name: service
-        predefined:
-          - AS400
-          - CIFS
-          - CIFSHash
-          - CVS
-          - DB2
-          - FTP
-          - HTTP
-          - MS-SQL
-          - MySQL
-          - Notes
-          - Oracle
-          - POP
-          - PostgresSQL
-          - Remote-Exec
-          - SNMP
-          - SNMPv3
-          - SSH
-          - SSH-Key
-          - Sybase
-          - Telnet
-        required: true
-        secret: false
-      - default: false
-        description: Database name.
-        isArray: false
-        name: database
-        required: false
-        secret: false
-      - default: false
-        description: Description for the credential.
-        isArray: false
-        name: description
-        required: false
-        secret: false
-      - default: false
-        description: Domain address.
-        isArray: false
-        name: domain
-        required: false
-        secret: false
-      - default: false
-        description: Hostname or IP address to restrict the credentials to.
-        isArray: false
-        name: host_restriction
-        required: false
-        secret: false
-      - default: false
-        description: HTTP realm.
-        isArray: false
-        name: http_realm
-        required: false
-        secret: false
-      - default: false
-        description: Password for the notes account that will be used for authenticating.
-        isArray: false
-        name: notes_id_password
-        required: false
-        secret: false
-      - default: false
-        description: NTLM password hash.
-        isArray: false
-        name: ntlm_hash
-        required: false
-        secret: false
-      - auto: PREDEFINED
-        default: false
-        description: Whether the scan engine should attempt to enumerate SIDs from the environment.
-        isArray: false
-        name: oracle_enumerate_sids
-        predefined:
-          - 'true'
-          - 'false'
-        required: false
-        secret: false
-      - default: false
-        description: Oracle Net Listener password. Used to enumerate SIDs from your environment.
-        isArray: false
-        name: oracle_listener_password
-        required: false
-        secret: false
-      - default: false
-        description: Oracle database name.
-        isArray: false
-        name: oracle_sid
-        required: false
-        secret: false
-      - default: false
-        description: Password for the credential.
-        isArray: false
-        name: password
-        required: false
-        secret: false
-      - default: false
-        description: Further restricts the credential to attempt to authenticate on a specific port. Can be used only if `host_restriction` is used.
-        isArray: false
-        name: port_restriction
-        required: false
-        secret: false
-      - default: false
-        description: List of site IDs for the shared credential that are explicitly assigned access to the shared scan credential,
-          allowing it to use the credential during a scan.
-        isArray: true
-        name: sites
-        required: false
-        secret: false
-      - default: false
-        description: SNMP community for authentication.
-        isArray: false
-        name: community_name
-        required: false
-      - auto: PREDEFINED
-        default: false
-        description: SNMPv3 authentication type for the credential.
-        isArray: false
-        name: authentication_type
-        predefined:
-          - No-Authentication
-          - MD5
-          - SHA
-        required: false
-        secret: false
-      - default: false
-        description: SNMPv3 privacy password to use.
-        isArray: false
-        name: privacy_password
-        required: false
-      - auto: PREDEFINED
-        default: false
-        description: SNMPv3 Privacy protocol to use.
-        isArray: false
-        name: privacy_type
-        predefined:
-          - No-Privacy
-          - DES
-          - AES-128
-          - AES-192
-          - AES-192-With-3-DES-Key-Extension
-          - AES-256
-          - AES-256-With-3-DES-Key-Extension
-        required: false
-        secret: false
-      - default: false
-        description: PEM formatted private key.
-        isArray: false
-        name: ssh_key_pem
-        required: false
-      - auto: PREDEFINED
-        default: false
-        description: Elevation type to use for scans.
-        isArray: false
-        name: ssh_permission_elevation
-        predefined:
-          - None
-          - sudo
-          - sudosu
-          - su
-          - pbrun
-          - Privileged-Exec
-        required: false
-        secret: false
-      - default: false
-        description: Password to use for elevation.
-        isArray: false
-        name: ssh_permission_elevation_password
-        required: false
-      - default: false
-        description: Username to use for elevation.
-        isArray: false
-        name: ssh_permission_elevation_username
-        required: false
-      - default: false
-        description: Password for the private key.
-        isArray: false
-        name: ssh_private_key_password
-        required: false
-      - auto: PREDEFINED
-        default: false
-        description: Whether to use Windows authentication.
-        isArray: false
-        name: use_windows_authentication
-        predefined:
-          - 'true'
-          - 'false'
-        required: false
-        secret: false
-      - default: false
-        description: Username for the credential.
-        isArray: false
-        name: username
-        required: false
+    - default: false
+      description: Name of the credential.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Site assignment configuration for the credential. Assign the shared scan credential either to be available to all sites, or a specific list of sites.
+      isArray: false
+      name: site_assignment
+      predefined:
+        - All-Sites
+        - Specific-Sites
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Credential service type.
+      isArray: false
+      name: service
+      predefined:
+        - AS400
+        - CIFS
+        - CIFSHash
+        - CVS
+        - DB2
+        - FTP
+        - HTTP
+        - MS-SQL
+        - MySQL
+        - Notes
+        - Oracle
+        - POP
+        - PostgresSQL
+        - Remote-Exec
+        - SNMP
+        - SNMPv3
+        - SSH
+        - SSH-Key
+        - Sybase
+        - Telnet
+      required: true
+      secret: false
+    - default: false
+      description: Database name.
+      isArray: false
+      name: database
+      required: false
+      secret: false
+    - default: false
+      description: Description for the credential.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: Domain address.
+      isArray: false
+      name: domain
+      required: false
+      secret: false
+    - default: false
+      description: Hostname or IP address to restrict the credentials to.
+      isArray: false
+      name: host_restriction
+      required: false
+      secret: false
+    - default: false
+      description: HTTP realm.
+      isArray: false
+      name: http_realm
+      required: false
+      secret: false
+    - default: false
+      description: Password for the notes account that will be used for authenticating.
+      isArray: false
+      name: notes_id_password
+      required: false
+      secret: false
+    - default: false
+      description: NTLM password hash.
+      isArray: false
+      name: ntlm_hash
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether the scan engine should attempt to enumerate SIDs from the environment.
+      isArray: false
+      name: oracle_enumerate_sids
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Oracle Net Listener password. Used to enumerate SIDs from your environment.
+      isArray: false
+      name: oracle_listener_password
+      required: false
+      secret: false
+    - default: false
+      description: Oracle database name.
+      isArray: false
+      name: oracle_sid
+      required: false
+      secret: false
+    - default: false
+      description: Password for the credential.
+      isArray: false
+      name: password
+      required: false
+      secret: false
+    - default: false
+      description: Further restricts the credential to attempt to authenticate on a specific port. Can be used only if `host_restriction` is used.
+      isArray: false
+      name: port_restriction
+      required: false
+      secret: false
+    - default: false
+      description: List of site IDs for the shared credential that are explicitly assigned access to the shared scan credential,
+        allowing it to use the credential during a scan.
+      isArray: true
+      name: sites
+      required: false
+      secret: false
+    - default: false
+      description: SNMP community for authentication.
+      isArray: false
+      name: community_name
+      required: false
+    - auto: PREDEFINED
+      default: false
+      description: SNMPv3 authentication type for the credential.
+      isArray: false
+      name: authentication_type
+      predefined:
+        - No-Authentication
+        - MD5
+        - SHA
+      required: false
+      secret: false
+    - default: false
+      description: SNMPv3 privacy password to use.
+      isArray: false
+      name: privacy_password
+      required: false
+    - auto: PREDEFINED
+      default: false
+      description: SNMPv3 Privacy protocol to use.
+      isArray: false
+      name: privacy_type
+      predefined:
+        - No-Privacy
+        - DES
+        - AES-128
+        - AES-192
+        - AES-192-With-3-DES-Key-Extension
+        - AES-256
+        - AES-256-With-3-DES-Key-Extension
+      required: false
+      secret: false
+    - default: false
+      description: PEM formatted private key.
+      isArray: false
+      name: ssh_key_pem
+      required: false
+    - auto: PREDEFINED
+      default: false
+      description: Elevation type to use for scans.
+      isArray: false
+      name: ssh_permission_elevation
+      predefined:
+        - None
+        - sudo
+        - sudosu
+        - su
+        - pbrun
+        - Privileged-Exec
+      required: false
+      secret: false
+    - default: false
+      description: Password to use for elevation.
+      isArray: false
+      name: ssh_permission_elevation_password
+      required: false
+    - default: false
+      description: Username to use for elevation.
+      isArray: false
+      name: ssh_permission_elevation_username
+      required: false
+    - default: false
+      description: Password for the private key.
+      isArray: false
+      name: ssh_private_key_password
+      required: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to use Windows authentication.
+      isArray: false
+      name: use_windows_authentication
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Username for the credential.
+      isArray: false
+      name: username
+      required: false
     deprecated: false
     description: "Create a new shared credential. For detailed explanation of all parameters of this command,
       please see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createSharedCredential"
@@ -757,68 +757,68 @@ script:
       description: ID of the created site.
       type: number
   - arguments:
-      - default: false
-        description: The date and time the vulnerability exception is set to expire in an ISO 8601 date format.
-        isArray: false
-        name: expires
-        required: false
-        secret: false
-      - default: false
-        description: "ID of the vulnerability to create the exception for. Example: 7-zip-cve-2008-6536"
-        isArray: false
-        name: vulnerability_id
-        required: true
-        secret: false
-      - auto: PREDEFINED
-        default: false
-        description: The type of the exception scope. If set to anything other than `Global`, `scope_id` parameter is required.
-        isArray: false
-        name: scope_type
-        predefined:
-          - Global
-          - Site
-          - Asset
-          - Asset-Group
+    - default: false
+      description: The date and time the vulnerability exception is set to expire in an ISO 8601 date format.
+      isArray: false
+      name: expires
+      required: false
+      secret: false
+    - default: false
+      description: "ID of the vulnerability to create the exception for. Example: 7-zip-cve-2008-6536"
+      isArray: false
+      name: vulnerability_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of the exception scope. If set to anything other than `Global`, `scope_id` parameter is required.
+      isArray: false
+      name: scope_type
+      predefined:
+        - Global
+        - Site
+        - Asset
+        - Asset-Group
 #          - Instance  # We had issues with this option, so it's not currently supported
-        required: true
-        secret: false
-      - auto: PREDEFINED
-        default: false
-        description: State of the vulnerability exception.
-        isArray: false
-        name: state
-        predefined:
-          - Expired
-          - Approved
-          - Rejected
-          - Under-Review
-        required: true
-        secret: false
-      - default: false
-        description: A comment from the submitter as to why the exception was submitted.
-        isArray: false
-        name: comment
-        required: false
-        secret: false
-      - auto: PREDEFINED
-        default: false
-        description: Reason why the vulnerability exception was submitted.
-        isArray: false
-        name: reason
-        predefined:
-          - False-Positive
-          - Compensating-Control
-          - Acceptable-Use
-          - Acceptable-Risk
-          - Other
-        required: true
-        secret: false
-      - default: false
-        description: ID of the chosen `scope_type` (site ID, asset ID, etc.). Required if `scope_type` is anything other than `Global`
-        isArray: false
-        name: scope_id
-        required: false
-        secret: false
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: State of the vulnerability exception.
+      isArray: false
+      name: state
+      predefined:
+        - Expired
+        - Approved
+        - Rejected
+        - Under-Review
+      required: true
+      secret: false
+    - default: false
+      description: A comment from the submitter as to why the exception was submitted.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Reason why the vulnerability exception was submitted.
+      isArray: false
+      name: reason
+      predefined:
+        - False-Positive
+        - Compensating-Control
+        - Acceptable-Use
+        - Acceptable-Risk
+        - Other
+      required: true
+      secret: false
+    - default: false
+      description: ID of the chosen `scope_type` (site ID, asset ID, etc.). Required if `scope_type` is anything other than `Global`
+      isArray: false
+      name: scope_id
+      required: false
+      secret: false
     deprecated: false
     description: Create a new vulnerability exception.
     execution: false
@@ -1662,37 +1662,37 @@ script:
         description: Credential service type.
         type: string
   - arguments:
-      - default: false
-        description: ID of a specific vulnerability to retrieve.
-        isArray: false
-        name: id
-        required: false
-        secret: false
-      - default: false
-        description: Number of records to retrieve in each API call when pagination is used.
-        isArray: false
-        name: page_size
-        required: false
-        secret: false
-      - default: false
-        description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
-        isArray: false
-        name: page
-        required: false
-        secret: false
-      - default: false
-        defaultValue: '10'
-        description: A number of records to limit the response to.
-        isArray: false
-        name: limit
-        required: false
-        secret: false
-      - default: false
-        description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
-        isArray: false
-        name: sort
-        required: false
-        secret: false
+    - default: false
+      description: ID of a specific vulnerability to retrieve.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: Number of records to retrieve in each API call when pagination is used.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: A number of records to limit the response to.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
+      isArray: false
+      name: sort
+      required: false
+      secret: false
     deprecated: false
     description: Retrieve information about all or a specific vulnerability.
     execution: false
@@ -1825,30 +1825,30 @@ script:
         description: The title (summary) of the vulnerability.
         type: string
   - arguments:
-      - default: false
-        description: ID of the site.
-        isArray: false
-        name: site_id
-        required: false
-        secret: false
-      - default: false
-        description: Name of the site (can be used instead of `site_id`)
-        isArray: false
-        name: site_name
-        required: false
-        secret: false
-      - default: false
-        description: ID of the scheduled scan (optional, will return a single specific scan if used).
-        isArray: false
-        name: schedule_id
-        required: false
-        secret: false
-      - default: false
-        description: A number of records to limit the response to.
-        isArray: false
-        name: limit
-        required: false
-        secret: false
+    - default: false
+      description: ID of the site.
+      isArray: false
+      name: site_id
+      required: false
+      secret: false
+    - default: false
+      description: Name of the site (can be used instead of `site_id`)
+      isArray: false
+      name: site_name
+      required: false
+      secret: false
+    - default: false
+      description: ID of the scheduled scan (optional, will return a single specific scan if used).
+      isArray: false
+      name: schedule_id
+      required: false
+      secret: false
+    - default: false
+      description: A number of records to limit the response to.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Retrieve information about scan schedules for a specific site or a specific scan schedule.
     execution: false
@@ -1904,19 +1904,19 @@ script:
         description: The scheduled start date and time.
           Repeating schedules will determine the next schedule to begin based on this date and time.
   - arguments:
-      - default: false
-        description: ID of a specific shared credential to retrieve.
-        isArray: false
-        name: id
-        required: false
-        secret: false
-      - default: false
-        defaultValue: '10'
-        description: A number of records to limit the response to.
-        isArray: false
-        name: limit
-        required: false
-        secret: false
+    - default: false
+      description: ID of a specific shared credential to retrieve.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: A number of records to limit the response to.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Retrieve information about all or a specific shared credential.
     execution: false
@@ -2007,31 +2007,31 @@ script:
         description: List of site IDs for the shared credential that are explicitly assigned access to the shared scan credential, allowing it to use the credential during a scan.
         type: array
   - arguments:
-      - default: false
-        description: ID of the site.
-        isArray: false
-        name: site_id
-        required: false
-        secret: false
-      - default: false
-        description: Name of the site (can be used instead of `site_id`)
-        isArray: false
-        name: site_name
-        required: false
-        secret: false
-      - default: false
-        description: ID of a specific scan credential to retrieve.
-        isArray: false
-        name: credential_id
-        required: false
-        secret: false
-      - default: true
-        defaultValue: '50'
-        description: A number of records to limit the response to.
-        isArray: false
-        name: limit
-        required: false
-        secret: false
+    - default: false
+      description: ID of the site.
+      isArray: false
+      name: site_id
+      required: false
+      secret: false
+    - default: false
+      description: Name of the site (can be used instead of `site_id`)
+      isArray: false
+      name: site_name
+      required: false
+      secret: false
+    - default: false
+      description: ID of a specific scan credential to retrieve.
+      isArray: false
+      name: credential_id
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '50'
+      description: A number of records to limit the response to.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Retrieve information about all or a specific sca credential.
     execution: false
@@ -2116,37 +2116,37 @@ script:
         description: Further restricts the credential to attempt to authenticate on a specific port. Can be used only if `host_restriction` is used.
         type: number
   - arguments:
-      - default: false
-        description: ID of the vulnerability exception to retrieve. If not set, all vulnerability exceptions
-        isArray: false
-        name: id
-        required: false
-        secret: false
-      - default: false
-        description: Number of records to retrieve in each API call when pagination is used.
-        isArray: false
-        name: page_size
-        required: false
-        secret: false
-      - default: false
-        description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
-        isArray: false
-        name: page
-        required: false
-        secret: false
-      - default: true
-        defaultValue: submit.date,ASC
-        description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
-        isArray: false
-        name: sort
-        required: false
-        secret: false
-      - default: false
-        description: A number of records to limit the response to.
-        isArray: false
-        name: limit
-        required: false
-        secret: false
+    - default: false
+      description: ID of the vulnerability exception to retrieve. If not set, all vulnerability exceptions
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: Number of records to retrieve in each API call when pagination is used.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: true
+      defaultValue: submit.date,ASC
+      description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    - default: false
+      description: A number of records to limit the response to.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Retrieve information about scan schedules for a specific site or a specific scan schedule
     execution: false
@@ -2516,137 +2516,137 @@ script:
       type: string
     description: Returns the status of a report generation process.
   - arguments:
-      - default: false
-        description: ID of the site.
-        isArray: false
-        name: site_id
-        required: false
-        secret: false
-      - default: false
-        description: Name of the site (can be used instead of `site_id`)
-        isArray: false
-        name: site_name
-        required: false
-        secret: false
-      - default: false
-        description: ID of the scan schedule to update.
-        isArray: false
-        name: schedule_id
-        required: false
-        secret: false
-      - auto: PREDEFINED
-        default: false
-        defaultValue: 'True'
-        description: A flag indicating whether the scheduled scan is enabled or not.
-        isArray: false
-        name: enabled
-        predefined:
-          - 'True'
-          - 'False'
-        required: false
-        secret: false
-      - auto: PREDEFINED
-        default: false
-        description: The desired behavior of a repeating scheduled scan when the previous scan was paused
-          due to reaching its maximum duration.
-        isArray: false
-        name: on_scan_repeat
-        predefined:
-          - Restart-Scan
-          - Resume-Scan
-        required: true
-        secret: false
-      - default: false
-        description: The scheduled start date and time formatted in ISO 8601 format.
-          Repeating schedules will determine the next schedule to begin based on this date and time.
-        isArray: false
-        name: start
-        required: true
-        secret: false
-      - default: false
-        description: A list of ids for asset groups to exclude from the scan.
-        isArray: true
-        name: excluded_asset_group_ids
-        required: false
-        secret: false
-      - default: false
-        description: A list of addresses to exclude from the scan.
-        isArray: true
-        name: excluded_addresses
-        required: false
-        secret: false
-      - default: false
-        description: A list of ids for asset groups to include in the scan.
-        isArray: true
-        name: included_asset_group_ids
-        required: false
-        secret: false
-      - default: false
-        description: A list of addresses to include in the scan.
-        isArray: true
-        name: included_addresses
-        required: false
-        secret: false
-      - default: false
-        description: Maximum duration of the scan in days.
-        isArray: false
-        name: duration_days
-        required: false
-        secret: false
-      - default: false
-        description: Maximum duration of the scan in hours.
-        isArray: false
-        name: duration_hours
-        required: false
-        secret: false
-      - default: false
-        description: Maximum duration of the scan in minutes.
-        isArray: false
-        name: duration_minutes
-        required: false
-        secret: false
-      - auto: PREDEFINED
-        default: false
-        description: How frequent should the schedule to repeat (Every...).
-        isArray: false
-        name: frequency
-        predefined:
-          - Hour
-          - Day
-          - Week
-          - Date-of-month
-        required: false
-        secret: false
-      - default: false
-        description: The interval time the schedule should repeat. This depends on the value set in `frequency`.
-          For example, if the value of `frequency` is set to "Day" and `interval` is set to 2,
-          then the schedule will repeat every 2 days.
-          Required only if frequency is used.
-        isArray: false
-        name: interval_time
-        required: false
-        secret: false
-      - default: false
-        description: Specifies the schedule repeat day of the interval month. For example, if `date_of_month` is 17
-          and `interval` is set to 2, then the schedule will repeat every 2 months on the 17th day of the month.
-          Required and used only if frequency is set to `Date of month`.
-        isArray: false
-        name: date_of_month
-        required: false
-        secret: false
-      - default: false
-        description: A unique user-defined name for the scan launched by the schedule.
-          If not explicitly set in the schedule, the scan name will be generated prior to the scan launching.
-        isArray: false
-        name: scan_name
-        required: false
-        secret: false
-      - default: false
-        description: ID of the scan template to use.
-        isArray: false
-        name: scan_template
-        required: false
-        secret: false
+    - default: false
+      description: ID of the site.
+      isArray: false
+      name: site_id
+      required: false
+      secret: false
+    - default: false
+      description: Name of the site (can be used instead of `site_id`)
+      isArray: false
+      name: site_name
+      required: false
+      secret: false
+    - default: false
+      description: ID of the scan schedule to update.
+      isArray: false
+      name: schedule_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'True'
+      description: A flag indicating whether the scheduled scan is enabled or not.
+      isArray: false
+      name: enabled
+      predefined:
+        - 'True'
+        - 'False'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The desired behavior of a repeating scheduled scan when the previous scan was paused
+        due to reaching its maximum duration.
+      isArray: false
+      name: on_scan_repeat
+      predefined:
+        - Restart-Scan
+        - Resume-Scan
+      required: true
+      secret: false
+    - default: false
+      description: The scheduled start date and time formatted in ISO 8601 format.
+        Repeating schedules will determine the next schedule to begin based on this date and time.
+      isArray: false
+      name: start
+      required: true
+      secret: false
+    - default: false
+      description: A list of ids for asset groups to exclude from the scan.
+      isArray: true
+      name: excluded_asset_group_ids
+      required: false
+      secret: false
+    - default: false
+      description: A list of addresses to exclude from the scan.
+      isArray: true
+      name: excluded_addresses
+      required: false
+      secret: false
+    - default: false
+      description: A list of ids for asset groups to include in the scan.
+      isArray: true
+      name: included_asset_group_ids
+      required: false
+      secret: false
+    - default: false
+      description: A list of addresses to include in the scan.
+      isArray: true
+      name: included_addresses
+      required: false
+      secret: false
+    - default: false
+      description: Maximum duration of the scan in days.
+      isArray: false
+      name: duration_days
+      required: false
+      secret: false
+    - default: false
+      description: Maximum duration of the scan in hours.
+      isArray: false
+      name: duration_hours
+      required: false
+      secret: false
+    - default: false
+      description: Maximum duration of the scan in minutes.
+      isArray: false
+      name: duration_minutes
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: How frequent should the schedule to repeat (Every...).
+      isArray: false
+      name: frequency
+      predefined:
+        - Hour
+        - Day
+        - Week
+        - Date-of-month
+      required: false
+      secret: false
+    - default: false
+      description: The interval time the schedule should repeat. This depends on the value set in `frequency`.
+        For example, if the value of `frequency` is set to "Day" and `interval` is set to 2,
+        then the schedule will repeat every 2 days.
+        Required only if frequency is used.
+      isArray: false
+      name: interval_time
+      required: false
+      secret: false
+    - default: false
+      description: Specifies the schedule repeat day of the interval month. For example, if `date_of_month` is 17
+        and `interval` is set to 2, then the schedule will repeat every 2 months on the 17th day of the month.
+        Required and used only if frequency is set to `Date of month`.
+      isArray: false
+      name: date_of_month
+      required: false
+      secret: false
+    - default: false
+      description: A unique user-defined name for the scan launched by the schedule.
+        If not explicitly set in the schedule, the scan name will be generated prior to the scan launching.
+      isArray: false
+      name: scan_name
+      required: false
+      secret: false
+    - default: false
+      description: ID of the scan template to use.
+      isArray: false
+      name: scan_template
+      required: false
+      secret: false
     deprecated: false
     description: Update an existing site scan schedule.
     execution: false
