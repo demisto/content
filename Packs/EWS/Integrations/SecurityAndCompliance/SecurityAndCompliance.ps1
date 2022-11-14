@@ -1219,17 +1219,7 @@ class SecurityAndComplianceClient {
 #### COMMAND FUNCTIONS ####
 
 function TestModuleCommand ([OAuth2DeviceCodeClient]$oclient, [SecurityAndComplianceClient]$cs_client) {
-    if ($cs_client.password) {
-        $cs_client.ListSearchActions() | Out-Null
-    }
-    else {
-        throw "Fill password for basic auth or use command !$script:COMMAND_PREFIX-auth-start for Oauth2.0 authorization (MFA enabled accounts)."
-    }
-    $raw_response = $null
-    $human_readable = "ok"
-    $entry_context = $null
-
-    return $human_readable, $entry_context, $raw_response
+    throw "When using OAuth2 configuration, Please enable the integration and run `!$script:COMMAND_PREFIX-auth-start` and `!$script:COMMAND_PREFIX-auth-complete` to log in. You can validate the connection by running `!$script:COMMAND_PREFIX-auth-test`."
 }
 
 function StartAuthCommand ([OAuth2DeviceCodeClient]$client) {
