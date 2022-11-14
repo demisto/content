@@ -142,7 +142,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The number of requested results per page.
+      description: The number of requested results per page. Default is 50.
       isArray: false
       name: page_size
       required: false
@@ -304,8 +304,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The number of requested results per page.
-      isArray: false
+      description: The number of requested results per page. Default is 50.
       name: page_size
       required: false
       secret: false
@@ -446,7 +445,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The number of requested results per page.
+      description: The number of requested results per page. Default is 50.
       isArray: false
       name: page_size
       required: false
@@ -570,7 +569,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The number of requested results per page.
+      description: The number of requested results per page. Default is 50.
       isArray: false
       name: page_size
       required: false
@@ -664,7 +663,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The number of requested results per page.
+      description: The number of requested results per page. Default is 50.
       isArray: false
       name: page_size
       required: false
@@ -781,7 +780,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The number of requested results per page.
+      description: The number of requested results per page. Default is 50.
       isArray: false
       name: page_size
       required: false
@@ -896,7 +895,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The number of requested results per page.
+      description: The number of requested results per page. Default is 50.
       isArray: false
       name: page_size
       required: false
@@ -1153,7 +1152,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The number of requested results per page.
+      description: The number of requested results per page. Default is 50.
       isArray: false
       name: page_size
       required: false
@@ -1898,7 +1897,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The number of requested results per page.
+      description: The number of requested results per page. Default is 50.
       isArray: false
       name: page_size
       required: false

@@ -50,7 +50,7 @@ List of destinations ordered by the number of requests made in descending order.
 | identity_types | An identity type or comma-separated list of identity types. | Optional | 
 | verdict | A verdict string. Possible values are: allowed, blocked, proxied. | Optional | 
 | page | The page number. Default is 1. | Optional | 
-| page_size | The number of requested results per page. | Optional | 
+| page_size | The number of requested results per page. Default is 50.| Optional | 
 
 
 #### Context Output
@@ -227,7 +227,7 @@ List of categories ordered by the number of requests made matching the categorie
 | identity_types | An identity type or comma-separated list of identity types. | Optional | 
 | verdict | A verdict string. Possible values are: allowed, blocked, proxied. | Optional | 
 | page | The page number. Default is 1. | Optional | 
-| page_size | The number of requested results per page. | Optional | 
+| page_size | The number of requested results per page. Default is 50.| Optional | 
 
 
 #### Context Output
@@ -315,7 +315,7 @@ List of identities ordered by the number of requests made matching the categorie
 | amp_disposition | An Advanced Malware Protection (AMP) disposition string. Possible values are: clean, malicious, unknown. | Optional | 
 | identity_types | An identity type or comma-separated list of identity types. | Optional | 
 | page | The page number. Default is 1. | Optional | 
-| page_size | The number of requested results per page. | Optional | 
+| page_size | The number of requested results per page. Default is 50.| Optional | 
 
 
 #### Context Output
@@ -419,7 +419,7 @@ List of event types ordered by the number of requests made for each type of even
 | threat_types | A threat type or comma-separated list of threat types. | Optional | 
 | amp_disposition | An Advanced Malware Protection (AMP) disposition string. Possible values are: clean, malicious, unknown. | Optional | 
 | page | The page number. Default is 1. | Optional | 
-| page_size | The number of requested results per page. | Optional | 
+| page_size | The number of requested results per page. Default is 50.| Optional | 
 
 
 #### Context Output
@@ -506,7 +506,7 @@ List of files within a time frame. Only returns proxy data.
 | amp_disposition | An Advanced Malware Protection (AMP) disposition string. Possible values are: clean, malicious, unknown. | Optional | 
 | identity_types | An identity type or comma-separated list of identity types. | Optional | 
 | page | The page number. Default is 1. | Optional | 
-| page_size | The number of requested results per page. | Optional | 
+| page_size | The number of requested results per page. Default is 50.| Optional | 
 
 
 #### Context Output
@@ -592,7 +592,7 @@ List of top threats within a time frame. Returns both DNS and Proxy data.
 | threats | A threat name or comma-separated list of threat names. | Optional | 
 | threat_types | A threat type or comma-separated list of threat types. | Optional | 
 | page | The page number. Default is 1. | Optional | 
-| page_size | The number of requested results per page. | Optional | 
+| page_size | The number of requested results per page. Default is 50.| Optional | 
 
 
 #### Context Output
@@ -652,7 +652,7 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
 | threat_types | A threat type or comma-separated list of threat types. | Optional | 
 | amp_disposition | An Advanced Malware Protection (AMP) disposition string. Possible values are: clean, malicious, unknown. | Optional | 
 | page | The page number. Default is 1. | Optional | 
-| page_size | The number of requested results per page. | Optional | 
+| page_size | The number of requested results per page. Default is 50.| Optional | 
 
 
 #### Context Output
@@ -873,7 +873,7 @@ Only one activity type can be selected at a time.
 | threat_types | A threat type or comma-separated list of threat types.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Optional | 
 | amp_disposition | An Advanced Malware Protection (AMP) disposition string. Possible values are: clean, malicious, unknown.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Optional | 
 | page | The page number. Default is 1.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Optional | 
-| page_size | The number of requested results per page.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Optional | 
+| page_size | The number of requested results per page. Default is 50.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Optional | 
 | signatures | A comma-separated list of Generator id - Signatures ID. Where Generator ID is unique id assigned to the part of the IPS which generated the event and Signature ID is used to uniquely identify signatures. Example:- 1-2,1-4.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Optional | 
 | intrusion_action | Comma-separated list of intrusion actions. Possible values: would_block, blocked, detected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Optional | 
 
@@ -1672,7 +1672,7 @@ Get the summary.
 | threat_types | A threat type or comma-separated list of threat types. | Optional | 
 | amp_disposition | An Advanced Malware Protection (AMP) disposition string. Possible values are: clean, malicious, unknown. | Optional | 
 | page | The page number. Default is 1. | Optional | 
-| page_size | The number of requested results per page. | Optional | 
+| page_size | The number of requested results per page. Default is 50.| Optional | 
 | signatures | A comma-separated list of Generator id - Signatures ID. Where Generator ID is unique id assigned to the part of the IPS which generated the event and Signature ID is used to uniquely identify signatures. Example:- 1-2,1-4. | Optional | 
 | intrusion_action | Comma-separated List of intrusion actions. Possible values: would_block, blocked, detected. | Optional | 
 
