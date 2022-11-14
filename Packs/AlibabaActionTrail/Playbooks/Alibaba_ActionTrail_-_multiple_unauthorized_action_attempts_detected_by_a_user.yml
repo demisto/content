@@ -256,10 +256,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 2c6990bd-4bb2-4236-86b4-de164d0aa6e9
+    taskid: dae4ed4a-afd2-4f74-8b1a-dc0673bfb02a
     type: collection
     task:
-      id: 2c6990bd-4bb2-4236-86b4-de164d0aa6e9
+      id: dae4ed4a-afd2-4f74-8b1a-dc0673bfb02a
       version: -1
       name: EmailAsk User
       description: EmailAsk's the user to confirm the multiple unauthorized API call attempts.
@@ -284,19 +284,8 @@ tasks:
     message:
       to:
         complex:
-          root: alert.username
-          filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: alert.username
-                iscontext: true
-              right:
-                value:
-                  simple: '@'
-          transformers:
-          - operator: uniq
-          - operator: ExtractEmailTransformer
+          root: alert
+          accessor: employeeemail
       subject:
         simple: Unauthorized API call attempts were detected
       body:
@@ -310,7 +299,7 @@ tasks:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
-        completeafterv2: false
+        completeafterv2: true
         completeaftersla: false
     form:
       questions:
@@ -372,10 +361,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: f97d66cc-cc42-435b-8c47-ce2608da49af
+    taskid: c7267573-e4b8-421f-8a2c-6da44ade025d
     type: playbook
     task:
-      id: f97d66cc-cc42-435b-8c47-ce2608da49af
+      id: c7267573-e4b8-421f-8a2c-6da44ade025d
       version: -1
       name: Enrichment for Verdict
       description: This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then  returns the information needed to establish the alert's verdict.
@@ -389,6 +378,14 @@ tasks:
     scriptarguments:
       CloseReason:
         simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved - Known Issue
+      Domain:
+        complex:
+          root: alert
+          accessor: domainname
+      FileSHA256:
+        complex:
+          root: alert
+          accessor: initiatorsha256
       IP:
         complex:
           root: alert
@@ -398,28 +395,16 @@ tasks:
       InternalRange:
         complex:
           root: inputs.InternalRange
+      URL:
+        complex:
+          root: alert
+          accessor: url
       User:
         complex:
-          root: alert.username
-          filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: alert.username
-                iscontext: true
-              right:
-                value:
-                  simple: '@'
+          root: alert
+          accessor: username
           transformers:
           - operator: uniq
-          - operator: ExtractInbetween
-            args:
-              from:
-                value:
-                  simple: ':'
-              to:
-                value:
-                  simple: '@'
       query:
         simple: (initiatorsha256:${inputs.FileSHA256} or remoteip:${inputs.IP}) and alertsource:${alert.sourceBrand} and alertname:${alert.name}
       threshold:
@@ -447,10 +432,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: c4a4a198-d2e8-4746-885c-7a5cd6fc6eb7
+    taskid: 724f2b0a-67a9-4c5b-8c0d-f250ce07b30e
     type: condition
     task:
-      id: c4a4a198-d2e8-4746-885c-7a5cd6fc6eb7
+      id: 724f2b0a-67a9-4c5b-8c0d-f250ce07b30e
       version: -1
       name: User confirmed the activity?
       description: |
@@ -471,7 +456,7 @@ tasks:
           left:
             value:
               complex:
-                root: Failed login attempts.Answers
+                root: Unauthorized API call attempts were detected.Answers
                 accessor: "0"
             iscontext: true
           right:
