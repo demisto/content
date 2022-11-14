@@ -1210,7 +1210,7 @@ def get_summary_list_command(client: Client, args: Dict[str, Any]):
         'destination': 'SummaryWithDestination',
         'intrusion_rule': 'SignatureListSummary'
     }
-    summary_type = args.get('summary_type')
+    summary_type = args.get('summary_type', '')
     endpoint = summary_endpoint_dict.get(summary_type, 'summary')
     category_type_param_list = SUMMARY_TYPE_DICT.get(summary_type,
                                                      SUMMARY_TYPE_DICT['all'])
