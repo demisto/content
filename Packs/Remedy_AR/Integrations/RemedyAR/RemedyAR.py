@@ -7,7 +7,6 @@ from CommonServerUserPython import *  # noqa
 ''' IMPORTS '''
 import json
 import os
-import urllib
 import urllib3
 
 import requests
