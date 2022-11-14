@@ -27,15 +27,14 @@ class Client(BaseClient):
 
     def __init__(
         self,
-        base_url,
-        api_key,
-        api_secret,
-        account_id,
-        client_id,
-        client_secret,
+        base_url: str,
+        api_key: str | None,
+        api_secret: str | None,
+        account_id: str | None = None,
+        client_id: str | None = None,
+        client_secret: str | None = None,
         verify=True,
         proxy=False,
-        is_jwt=False
     ):
         super().__init__(base_url, verify, proxy)
         self.api_key = api_key
@@ -43,6 +42,7 @@ class Client(BaseClient):
         self.account_id = account_id
         self.client_id = client_id
         self.client_secret = client_secret
+        is_jwt = api_key and api_secret and not (client_id and client_secret and account_id)
         if is_jwt:
             self.access_token = get_jwt(api_key, api_secret)
         else:
@@ -298,7 +298,6 @@ def main():
     account_id = params.get('account_id')
     client_id = params.get('credentials', {}).get('identifier')
     client_secret = params.get('credentials', {}).get('password')
-    is_jwt = api_key and api_secret and not (client_id and client_secret and account_id)
     mapper_in = params.get('mapper_in', DEFAULT_INCOMING_MAPPER)
     # mapper_out = params.get('mapper_out', DEFAULT_OUTGOING_MAPPER)
     verify_certificate = not params.get('insecure', False)
