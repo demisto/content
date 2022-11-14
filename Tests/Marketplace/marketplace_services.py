@@ -52,7 +52,7 @@ class Pack(object):
         CHANGELOG_JSON (str): changelog json full name, may be changed in the future.
         README (str): pack's readme file name.
         METADATA (str): pack's metadata file name, the one that will be deployed to cloud storage.
-        USER_METADATA (str); user metadata file name, the one that located in content repo.
+        USER_METADATA (str); pack metadata file name, the one that located in content repo.
         EXCLUDE_DIRECTORIES (list): list of directories to excluded before uploading pack zip to storage.
         AUTHOR_IMAGE_NAME (str): author image file name.
         RELEASE_NOTES (str): release notes folder name.
@@ -2569,11 +2569,15 @@ class Pack(object):
         first_level_dependencies = pack_dependencies_mapping.get(Metadata.DEPENDENCIES, {})
         all_levels_dependencies = pack_dependencies_mapping.get(Metadata.ALL_LEVELS_DEPENDENCIES, [])
         displayed_images_dependent_on_packs = pack_dependencies_mapping.get(Metadata.DISPLAYED_IMAGES, [])
+        logging.debug(f'(0) {first_level_dependencies=}')
+        logging.debug(f'(0) {all_levels_dependencies=}')
 
         # filter out packs that are not a part of the marketplace this upload is for
         first_level_dependencies = {k: v for k, v in first_level_dependencies.items() if k in packs_dict}
         all_levels_dependencies = [k for k in all_levels_dependencies if k in packs_dict]
         displayed_images_dependent_on_packs = [k for k in displayed_images_dependent_on_packs if k in packs_dict]
+        logging.debug(f'(1) {first_level_dependencies=}')
+        logging.debug(f'(1) {all_levels_dependencies=}')
 
         if Metadata.DISPLAYED_IMAGES not in self._user_metadata:
             self._user_metadata[Metadata.DISPLAYED_IMAGES] = displayed_images_dependent_on_packs
@@ -2584,13 +2588,17 @@ class Pack(object):
         if self._pack_name != GCPConfig.BASE_PACK:
             # add base as a mandatory pack dependency, by design for all packs
             first_level_dependencies.update(BASE_PACK_DEPENDENCY_DICT)
+            logging.debug(f'(2) {first_level_dependencies=}')
 
         # update the calculated dependencies with the hardcoded dependencies
         first_level_dependencies.update(self.user_metadata[Metadata.DEPENDENCIES])
+        logging.debug(f'(3) {first_level_dependencies=}')
 
         # If it is a core pack, check that no new mandatory packs (that are not core packs) were added
         # They can be overridden in the user metadata to be not mandatory so we need to check there as well
         core_packs = GCPConfig.get_core_packs(marketplace)
+        logging.debug(f'{core_packs=}')
+
         if self._pack_name in core_packs:
             mandatory_dependencies = [k for k, v in first_level_dependencies.items()
                                       if v.get(Metadata.MANDATORY, False) is True
