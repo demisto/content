@@ -2,7 +2,7 @@ id: File Enrichment - Generic v2 - Test
 version: -1
 fromversion: 5.0.0
 name: File Enrichment - Generic v2 - Test
-description: A test for the File Enrichment - Generic v2 playbook.
+description: A test for the File Enrichment - Generic v2 playbook. with and instance
 starttaskid: "0"
 tasks:
   "0":
