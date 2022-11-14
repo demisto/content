@@ -26,21 +26,34 @@ Use the information described [here](https://docs.paloaltonetworks.com/cortex/co
 You can configure the vendor and product by replacing [vendor]\_[product]\_raw with *msft_dns_raw*.
 
 When configuring the instance, you should use a yml file that configures the vendor and product, as shown in the below configuration for the Microsoft DNS product.
-
-Copy and paste the following in the *Filebeat Configuration File* section (inside the relevant profile under the *XDR Collectors Profiles*).
-
+ 
+For **XSIAM version 1.2** only, copy and paste the below in the *Filebeat Configuration File* section (inside the relevant profile under the *XDR Collectors Profiles*).
 #### Filebeat Configuration File
 
 ```
 filebeat.inputs:
-- type: filestream
-  paths:
-    - c:\Windows\System32\dns\DNS.log
-processors:
-  - add_fields:
-      fields:
-        vendor: msft
-        product: dns
+  - type: filestream
+    id: dns
+    enabled: true
+    paths:
+      - c:\Windows\System32\dns\DNS.log
+    processors:
+      - dissect:
+           tokenizer: "%{date} %{+time} %{+time} %{threadid} %{context} %{internalpacketidentifier} %{protocol} %{SendReceiveIndicator} %{RemoteIP->|ip} %{xid} %{QueryType->} %{opcode} [%{qflags}] %{questiontype->} %{questionnamenondetailed}"
+           target_prefix: ""
+      - drop_fields:
+          fields: [ "message" ]
+      - add_locale: ~
+      - rename:
+          fields:
+            - from: "event.timezone"
+              to: "timezone"
+      - add_fields:
+          target: ""
+          fields:
+            vendor: "microsoft"
+            product: "dns"
 ```
-
 **Note**: The above configuration uses the default location of the logs. 
+
+For **XSIAM version 1.3** and above, please use the built-in YAML template provided within the XDR collector  configuration.
