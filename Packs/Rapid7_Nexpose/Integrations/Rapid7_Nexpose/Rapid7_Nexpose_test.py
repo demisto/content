@@ -53,12 +53,12 @@ def test_convert_asset_search_filters(test_input: list[str], expected_output: li
 @pytest.mark.parametrize("test_input, expected_output",
                          [
                              (
-                                     "2022-01-01T00:00:00Z",
-                                     strptime("2022-01-01T00:00:00Z", "%Y-%m-%dT%H:%M:%SZ")
+                                "2022-01-01T00:00:00Z",
+                                strptime("2022-01-01T00:00:00Z", "%Y-%m-%dT%H:%M:%SZ")
                              ),
                              (
-                                     "2022-01-01T00:00:00.000Z",
-                                     strptime("2022-01-01T00:00:00.000Z", "%Y-%m-%dT%H:%M:%S.%fZ")
+                                "2022-01-01T00:00:00.000Z",
+                                strptime("2022-01-01T00:00:00.000Z", "%Y-%m-%dT%H:%M:%S.%fZ")
                              ),
                          ])
 def test_convert_datetime_str(test_input: str, expected_output: struct_time):
@@ -190,6 +190,27 @@ def test_remove_dict_key(test_input_data: IterableCollection, test_input_key: st
     assert remove_dict_key(test_input_data, test_input_key) == expected_output
 
 
+@pytest.mark.parametrize("test_input_data, name_mapping, use_reference, expected_output",
+                         [
+                             ({"a": "b", "c": "d", "e": "f"}, {"a": "A", "e": "E"}, False,
+                              {"A": "b", "c": "d", "E": "f"}),
+                             ({"a": {"b": {"test": "x"}}}, {"a": "A", "test": "TEST"}, True,
+                              {"A": {"b": {"test": "x"}}}),
+                             ([(1, {"a": {"b": {"a": "a"}}}), 2], {"a": "A"}, True, [(1, {"A": {"b": {"a": "a"}}}), 2]),
+                             ({"a": {"b": {"test": "x"}}}, {"a.b": "A", "test": "TEST"}, True,
+                              {"A": {"test": "x"}, "a": {}}),
+                             ({}, {"a": "b"}, False, {})
+                         ])
+def test_replace_key_names(test_input_data: IterableCollection, name_mapping: dict,
+                           use_reference: bool, expected_output: IterableCollection):
+    result = replace_key_names(test_input_data, name_mapping, use_reference)
+    assert result == expected_output
+
+    if use_reference:
+        assert result is test_input_data
+
+
+# --- Command & Client Functions Tests ---
 @pytest.mark.parametrize("test_input, expected_output",
                          [
                              ("Test1", "1"),
@@ -200,3 +221,38 @@ def test_remove_dict_key(test_input_data: IterableCollection, test_input_key: st
 def test_find_site_id(mocker, mock_client: Client, test_input: str, expected_output: Union[str, None]):
     mocker.patch.object(Client, "_paged_http_request", return_value=load_test_data("client_get_sites"))
     assert mock_client.find_site_id(test_input) == expected_output
+
+
+@pytest.mark.parametrize("test_input_kwargs, api_mock_data, expected_output_context",
+                         [
+                             ({"site": Site(site_id="1"), "date": "2022-01-01T10:00:00Z", "ip_address": "192.0.2.0"},
+                              {"id": 1}, {"id": 1})
+                         ])
+def test_create_asset_command(mocker, mock_client: Client, test_input_kwargs: dict,
+                              api_mock_data: dict, expected_output_context: dict):
+    mocker.patch.object(Client, "_http_request", return_value=api_mock_data)
+    assert create_asset_command(client=mock_client, **test_input_kwargs).outputs == expected_output_context
+
+
+@pytest.mark.parametrize("test_input_kwargs, api_mock_data, expected_output_context",
+                         [
+                             ({"name": "Test", "site_assignment": "All-Sites", "service": "FTP", "username": "Test1",
+                               "password": "Test2"},
+                              {"id": 1}, {"id": 1})
+                         ])
+def test_create_shared_credential_command(mocker, mock_client: Client, test_input_kwargs: dict,
+                                          api_mock_data: dict, expected_output_context: dict):
+    mocker.patch.object(Client, "_http_request", return_value=api_mock_data)
+    assert create_shared_credential_command(client=mock_client, **test_input_kwargs).outputs == expected_output_context
+
+
+@pytest.mark.parametrize("test_input_kwargs, api_mock_data, expected_output_context",
+                         [
+                             ({"vulnerability_id": "7-zip-cve-2008-6536", "scope_type": "Global", "state": "Approved",
+                               "reason": "Acceptable-Risk", "comment": "Comment"}, {"id": 1}, {"id": 1})
+                         ])
+def test_create_vulnerability_exception_command(mocker, mock_client: Client, test_input_kwargs: dict,
+                                                api_mock_data: dict, expected_output_context: dict):
+    mocker.patch.object(Client, "_http_request", return_value=api_mock_data)
+    assert create_vulnerability_exception_command(client=mock_client, **test_input_kwargs).outputs == \
+           expected_output_context
