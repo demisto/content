@@ -131,39 +131,6 @@ EXPECTED_GMAIL_CONTEXT = {
 }
 
 
-def forwarding_address_add_side_effect(user_id, forwarding_email):
-    if user_id == "111111111111111111111" and forwarding_email == "test1@gmail.com":
-        return None, 'test1@gmail.com: requested entity already exists', True
-    if user_id == "111111111111111111111" and forwarding_email == "test2@gmail.com":
-        return None, 'test2@gmail.com: requested entity already exists', True
-    if user_id == "222222222222222222222" and forwarding_email == "test1@gmail.com":
-        return None, 'test1@gmail.com: requested entity already exists', True
-    if user_id == "222222222222222222222" and forwarding_email == "test2@gmail.com":
-        return {'forwardingEmail': 'test2@gmail.com', 'verificationStatus': 'accepted'}, None, False
-    if user_id == "333333333333333333333" and forwarding_email == "test1@gmail.com":
-        return {'forwardingEmail': 'test1@gmail.com', 'verificationStatus': 'accepted'}, None, False
-    if user_id == "333333333333333333333" and forwarding_email == "test2@gmail.com":
-        return {'forwardingEmail': 'test2@gmail.com', 'verificationStatus': 'accepted'}, None, False
-    return 0
-
-
-def forwarding_address_update_side_effect(user_id, disposition, forwarding_email):
-    if user_id == "111111111111111111111" and forwarding_email == "test1@gmail.com":
-        return {'enabled': True, 'emailAddress': 'test1@gmail.com', 'disposition': disposition}, None, False
-    if user_id == "111111111111111111111" and forwarding_email == "test2@gmail.com":
-        return {'enabled': True, 'emailAddress': 'test2@gmail.com', 'disposition': disposition}, None, False
-    if user_id == "222222222222222222222" and forwarding_email == "test1@gmail.com":
-        return {'enabled': True, 'emailAddress': 'test1@gmail.com', 'disposition': disposition}, None, False
-    if user_id == "222222222222222222222" and forwarding_email == "test2@gmail.com":
-        return {'enabled': True, 'emailAddress': 'test2@gmail.com', 'disposition': disposition}, None, False
-    if user_id == "333333333333333333333" and forwarding_email == "test1@gmail.com":
-        return {'enabled': True, 'emailAddress': 'test1@gmail.com', 'disposition': disposition}, None, False
-    if user_id == "333333333333333333333" and forwarding_email == "test2@gmail.com":
-        return {'enabled': True, 'emailAddress': 'test2@gmail.com', 'disposition': disposition}, None, False
-    return 0
-    return 0
-
-
 def test_timestamp_to_date():
     from Gmail import create_base_time
     valid_timestamp = '1566819604000'

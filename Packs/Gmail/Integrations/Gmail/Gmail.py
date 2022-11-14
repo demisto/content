@@ -1,34 +1,36 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
-import re
-import json
 import base64
-from datetime import datetime, timedelta
-from typing import *
-import httplib2
-from urllib.parse import urlparse
-from distutils.util import strtobool
+import concurrent.futures
+import itertools as it
+import json
+import mimetypes
+import random
+import re
+import string
 import sys
-from html.parser import HTMLParser
-from html.entities import name2codepoint
+from datetime import datetime, timedelta
+from distutils.util import strtobool
+from email.header import Header
+from email.mime.application import MIMEApplication
 from email.mime.audio import MIMEAudio
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
-from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.header import Header
-import mimetypes
-import random
-import string
+from html.entities import name2codepoint
+from html.parser import HTMLParser
+from typing import *
+from urllib.parse import urlparse
+
+import google_auth_httplib2
+import httplib2
 from apiclient import discovery
 from google.oauth2 import service_account
-import google_auth_httplib2
 from googleapiclient.errors import HttpError
-import itertools as it
-import concurrent.futures
 
 ''' GLOBAL VARS '''
 
@@ -1979,15 +1981,16 @@ def reply_mail_command():
     return sent_mail_to_entry('Email sent:', [result], emailto, emailfrom, cc, bcc, body, subject)
 
 
-def forwarding_address_add(user_id: str, forwarding_email: str) -> tuple:
+def forwarding_address_add(user_id: str, forwarding_email: str) -> tuple[dict, bool, Optional[dict]]:
     """ Creates forwarding address.
         Args:
-            user_id: str - The repository the user entered, if he did.
+            user_id: str - The user's email address or the user id.
             forwarding_email: str - The name of the file
         Returns:
             A Response object.
     """
-    result = None
+    result = {}
+    exception_details = None
     exception = False
     error_message = ''
     request_body = {'forwardingEmail': forwarding_email}
@@ -2002,14 +2005,14 @@ def forwarding_address_add(user_id: str, forwarding_email: str) -> tuple:
     except HttpError as e:
         error_message = e.reason
         exception = True
-
-    return result, exception, {'forwardingEmail': forwarding_email, 'errorMessage': error_message, 'userId': user_id}
+        exception_details = {'forwardingEmail': forwarding_email, 'errorMessage': error_message, 'userId': user_id}
+    return result, exception, exception_details
 
 
 def forwarding_address_add_command() -> list[CommandResults]:
     """ Creates forwarding address.
         Args:
-            user_id: str - The repository the user entered, if he did.
+            user_id: str - The user's email address or the user id.
             forwarding_email: str - The name of the file
         Returns:
             A Response object.
@@ -2048,7 +2051,7 @@ def forwarding_address_add_command() -> list[CommandResults]:
     return results
 
 
-def forwarding_address_update(user_id: str, disposition: str, forwarding_email: str) -> tuple:
+def forwarding_address_update(user_id: str, disposition: str, forwarding_email: str) -> tuple[dict, bool, Optional[dict]]:
     """ Update forwarding address with disposition.
         Args:
             user_id: str - The user's email address or the user id.
@@ -2057,8 +2060,9 @@ def forwarding_address_update(user_id: str, disposition: str, forwarding_email: 
         Returns:
             A dict object.
     """
-    exception = None
-    result = None
+    exception = False
+    result = {}
+    exception_details = None
     error_message = None
     if disposition != "":
         service = get_service(
@@ -2076,8 +2080,9 @@ def forwarding_address_update(user_id: str, disposition: str, forwarding_email: 
         except HttpError as e:
             error_message = e.reason
             exception = True
+            exception_details = {'forwardingEmail': forwarding_email, 'errorMessage': error_message, 'userId': user_id}
 
-    return result, exception, {'forwardingEmail': forwarding_email, 'errorMessage': error_message, 'userId': user_id}
+    return result, exception, exception_details
 
 
 def forwarding_address_update_command() -> list[CommandResults]:
@@ -2265,6 +2270,7 @@ def forwarding_address_list(user_id: str) -> dict:
         Returns:
             A Dict object.
     """
+    result = {}
     service = get_service(
         'gmail',
         'v1',
@@ -2289,7 +2295,7 @@ def forwarding_address_list_command() -> CommandResults:
     user_id = args.get('user_id')
     limit = int(args.get('limit', '50'))
     result = forwarding_address_list(user_id)
-    context = result.get('forwardingAddresses')[:limit]  # type: ignore
+    context = result.get('forwardingAddresses')[:limit] if result else None  # type: ignore
     for msg in context:
         msg['userId'] = user_id
     headers = ['forwardingEmail', 'verificationStatus']

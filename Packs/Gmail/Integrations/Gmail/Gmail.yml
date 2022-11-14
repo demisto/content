@@ -1953,16 +1953,6 @@ script:
       description: The name of the privilege.
       type: String
   - arguments:
-    - description: The state that a message should be left in after it has been forwarded.
-      isArray: false
-      name: disposition
-      required: false
-      auto: PREDEFINED
-      predefined:
-      - 'archive'
-      - 'leaveInInbox'
-      - 'markRead'
-      - 'trash'
     - default: false
       description: A comma-separated list of emails addresses to which messages can be forwarded.
       isArray: true
@@ -1988,12 +1978,6 @@ script:
     - contextPath: Gmail.ForwardingAddress.verificationStatus
       description: Indicates whether this address has been verified and is usable for forwarding.
       type: String
-    - contextPath: Gmail.ForwardingAddress.Disposition
-      description: The state that a message should be left in after it has been forwarded.
-      type: String
-    - contextPath: Gmail.ForwardingAddress.Enabled
-      description: Indicates whether all incoming mail is automatically forwarded to another address.
-      type: Boolean
     execution: false
   - arguments:
     - description: The state that a message should be left in after it has been forwarded.
@@ -2203,12 +2187,6 @@ script:
     - contextPath: Gmail.ForwardingAddress.forwardingEmail
       description: An email address to which messages can be forwarded.
       type: String
-    - contextPath: Gmail.ForwardingAddress.Disposition
-      description: The state that a message should be left in after it has been forwarded.
-      type: String
-    - contextPath: Gmail.ForwardingAddress.Enabled
-      description: Whether all incoming mail is automatically forwarded to another address.
-      type: Boolean
   - arguments:
     - default: false
       description: The user email address or the user id, use the !gmail-list-users command, in order to get the user id.
