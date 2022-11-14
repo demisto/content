@@ -367,7 +367,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.UserManagerEmail
+                root: UserManagerEmail
             iscontext: true
           right:
             value: {}
@@ -736,7 +736,7 @@ tasks:
     message:
       to:
         complex:
-          root: inputs.UserManagerEmail
+          root: UserManagerEmail
       subject:
         simple: Impossible Traveler Alert Validation
       body:
