@@ -942,7 +942,7 @@ function ListSearchActionsCommand([SecurityAndComplianceClient]$client, [hashtab
 #### INTEGRATION COMMANDS MANAGER ####
 
 function Main {
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", Scope='Function')]
     $command = $Demisto.GetCommand()
     $command_arguments = $Demisto.Args()
     $integration_params = $Demisto.Params()
