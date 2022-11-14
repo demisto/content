@@ -3,9 +3,7 @@ from typing import Tuple
 
 import demistomock as demisto
 from CommonServerPython import *
-from TAXII2ApiModule import Taxii2FeedClient, TAXII_TIME_FORMAT, DFLT_LIMIT_PER_REQUEST, INDICATOR_EQUALS_VAL_PATTERN, \
-    HASHES_EQUALS_VAL_PATTERN, STIX_2_TYPES_TO_CORTEX_TYPES, CIDR_ISSUBSET_VAL_PATTERN, CIDR_ISUPPERSET_VAL_PATTERN, \
-    STIX_2_TYPES_TO_CORTEX_CIDR_TYPES, THREAT_INTEL_TYPE_TO_DEMISTO_TYPES
+from TAXII2ApiModule import *
 
 ''' CONSTANTS '''
 
@@ -299,7 +297,7 @@ def command_test_module(client: Client, default_api_root: str, is_fetch: bool = 
         return 'ok'
 
     except DemistoException as de:
-        if de.res.status_code in [403, 404]:
+        if de.res is not None and de.res.status_code in [403, 404]:
             api_roots = client.request_production_collection_endpoints()
             if default_api_root not in api_roots:
                 return f'The given "Default API Root" ({default_api_root}) is not one of the reachable API roots. ' \
@@ -465,6 +463,9 @@ def main():  # pragma: no cover
     skip_complex_mode = COMPLEX_OBSERVATION_MODE_SKIP == params.get('observation_operator_mode')
     feed_tags = argToList(params.get('feedTags'))
     tlp_color = params.get('tlp_color', '')
+    objects_to_fetch = params.get('objects_to_fetch', 'indicator,relationship')
+    if isinstance(objects_to_fetch, list):
+        objects_to_fetch = ','.join(objects_to_fetch)
 
     initial_interval = params.get('initial_interval', '24 hours')
     limit = arg_to_number(params.get('limit')) or -1
@@ -483,7 +484,7 @@ def main():  # pragma: no cover
                         headers=HEADERS,
                         api_root=default_api_root,
                         tags=feed_tags,
-                        objects_to_fetch='indicator,relationship',
+                        objects_to_fetch=objects_to_fetch,
                         tlp_color=tlp_color,
                         skip_complex_mode=skip_complex_mode,
                         limit_per_request=limit_per_request,
