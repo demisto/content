@@ -1,11 +1,10 @@
 # Marketplace Related - Marketplace PMs only
-/Tests/Marketplace/approved_tags.json @glicht @bakatzir @GuyLibermanPA
-/Tests/Marketplace/approved_usecases.json @glicht @bakatzir @GuyLibermanPA
-/Tests/Marketplace/landingPage_sections.json @glicht @bakatzir @GuyLibermanPA
-/Tests/Marketplace/approved_categories.json @glicht @bakatzir @GuyLibermanPA
-/Tests/Marketplace/approved_categories.json @glicht @bakatzir @GuyLibermanPA
-/Tests/Marketplace/core_packs_list.json @glicht @bakatzir @GuyLibermanPA
-/Tests/Marketplace/core_packs_mpv2_list.json @glicht @bakatzir @GuyLibermanPA
+/Tests/Marketplace/approved_tags.json @glicht @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Tests/Marketplace/approved_usecases.json @glicht @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Tests/Marketplace/landingPage_sections.json @glicht @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Tests/Marketplace/approved_categories.json @glicht @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Tests/Marketplace/core_packs_list.json @glicht @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Tests/Marketplace/core_packs_mpv2_list.json @glicht @bakatzir @GuyLibermanPA @demisto/content-leaders
 
 # Marketplace & Upload-Flow
 /Tests/scripts/create_artifacts_graph/create_artifacts.py @ilaner
