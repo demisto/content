@@ -1,0 +1,110 @@
+id: Cybereason Pre Processing Test
+version: -1
+name: Cybereason Pre Processing Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: bfc48a19-82d9-4989-8295-28adaf7489ba
+    type: start
+    task:
+      id: bfc48a19-82d9-4989-8295-28adaf7489ba
+      version: -1
+      name: ''
+      iscommand: false
+      brand: Cybereason
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: 728acbcb-117a-47bc-81aa-29bb6fa7803e
+    type: regular
+    task:
+      id: 728acbcb-117a-47bc-81aa-29bb6fa7803e
+      version: -1
+      name: CybereasonPreProcessingExample
+      description: |-
+        Preprocessing script to run when fetching Cybereason malops.
+        Will check if malop was already fetched, and will then update the existing incident, otherwise will create a new incident.
+      scriptName: CybereasonPreProcessingExample
+      type: regular
+      iscommand: false
+      brand: Cybereason
+    nexttasks:
+      '#none#':
+      - '2'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: eeada645-264c-404e-8d7d-cd6ee0381737
+    type: title
+    task:
+      id: eeada645-264c-404e-8d7d-cd6ee0381737
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: Cybereason
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 465,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: Test Playbook for Cybereason Pre Processing

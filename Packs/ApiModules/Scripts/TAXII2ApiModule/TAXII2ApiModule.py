@@ -241,7 +241,7 @@ class Taxii2FeedClient:
             self.set_api_root()
         # (TAXIIServiceException, HTTPError) should suffice, but sometimes it raises another type of HTTPError
         except Exception as e:
-            if "406 Client Error" not in str(e):
+            if "406 Client Error" not in str(e) and "version=2.1" not in str(e):
                 raise e
             # switch to TAXII 2.1
             self.init_server(version=TAXII_VER_2_1)
@@ -388,6 +388,9 @@ class Taxii2FeedClient:
 
     """ PARSING FUNCTIONS"""
 
+    def update_tlp(self, fields):
+        return self.tlp_color and not fields.get('trafficlightprotocol')
+
     def parse_indicator(self, indicator_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
         """
         Parses a single indicator object
@@ -456,7 +459,7 @@ class Taxii2FeedClient:
             "publications": publications,
             "tags": list(self.tags),
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         attack_pattern["fields"] = fields
 
@@ -489,7 +492,7 @@ class Taxii2FeedClient:
             "report_types": report_obj.get('report_types', []),
             "tags": list((set(report_obj.get('labels', []))).union(set(self.tags))),
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         report["fields"] = fields
 
@@ -523,7 +526,7 @@ class Taxii2FeedClient:
             "secondary_motivations": threat_actor_obj.get('secondary_motivations', []),
             "tags": list((set(threat_actor_obj.get('labels', []))).union(set(self.tags))),
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         threat_actor["fields"] = fields
 
@@ -555,7 +558,7 @@ class Taxii2FeedClient:
             "modified": infrastructure_obj.get('modified'),
             "tags": list(set(self.tags))
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         infrastructure["fields"] = fields
         return [infrastructure]
@@ -591,7 +594,7 @@ class Taxii2FeedClient:
             "sample_refs": malware_obj.get('sample_refs', []),
             "tags": list((set(malware_obj.get('labels', []))).union(set(self.tags)))
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         malware["fields"] = fields
         return [malware]
@@ -622,7 +625,7 @@ class Taxii2FeedClient:
             "tool_version": tool_obj.get('tool_version', ''),
             "tags": list(set(self.tags))
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         tool["fields"] = fields
         return [tool]
@@ -650,7 +653,7 @@ class Taxii2FeedClient:
             "publications": publications,
             "tags": [tag for tag in self.tags]
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         course_of_action["fields"] = fields
         return [course_of_action]
@@ -676,7 +679,7 @@ class Taxii2FeedClient:
             "objective": campaign_obj.get('objective', ''),
             "tags": [tag for tag in self.tags],
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         campaign["fields"] = fields
         return [campaign]
@@ -708,7 +711,7 @@ class Taxii2FeedClient:
             "publications": publications,
             "tags": list(self.tags),
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         intrusion_set["fields"] = fields
         return [intrusion_set]
@@ -734,7 +737,7 @@ class Taxii2FeedClient:
             'stixid': sco_object.get('id'),
             'tags': list(set(self.tags))
         }
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields['trafficlightprotocol'] = self.tlp_color
         sco_indicator['fields'] = fields
         return [sco_indicator]
@@ -966,7 +969,7 @@ class Taxii2FeedClient:
 
     def parse_dict_envelope(self, envelopes: Dict[str, Any],
                             parse_objects_func, limit: int = -1):
-        indicators = []
+        indicators: list = []
         relationships_list: List[Dict[str, Any]] = []
         for obj_type, envelope in envelopes.items():
             cur_limit = limit
@@ -1007,6 +1010,7 @@ class Taxii2FeedClient:
                         "Error: TAXII 2 client received the following response while requesting "
                         f"indicators: {str(envelope)}\n\nExpected output is json"
                     )
+
         if relationships_list:
             indicators.extend(self.parse_relationships(relationships_list))
         return indicators
@@ -1135,7 +1139,7 @@ class Taxii2FeedClient:
 
         fields["tags"] = tags
 
-        if self.tlp_color:
+        if self.update_tlp(fields):
             fields["trafficlightprotocol"] = self.tlp_color
 
         indicator["fields"] = fields

@@ -8,6 +8,7 @@ import sys
 import warnings
 
 import dateparser
+from freezegun import freeze_time
 import pytest
 import requests
 from pytest import raises, mark
@@ -3063,6 +3064,7 @@ class TestParseDateRange:
         assert abs(utc_start_time - utc_end_time).days == 2
 
     @staticmethod
+    @freeze_time("2022-11-03 13:40:00 UTC")
     def test_case_insensitive():
         utc_now = datetime.utcnow()
         utc_start_time, utc_end_time = parse_date_range('2 Days', utc=True)
@@ -7101,8 +7103,26 @@ class TestIsDemistoServerGE:
         assert is_demisto_version_ge('5.0.0')
         assert is_demisto_version_ge('4.5.0')
         assert not is_demisto_version_ge('5.5.0')
-        assert get_demisto_version_as_str() == '5.0.0-50000'
+        assert get_demisto_version_as_str() == '5.0.0-50000'        
 
+    def test_get_demisto_version_2(self, mocker):
+        mocker.patch.object(
+            demisto,
+            'demistoVersion',
+            return_value={
+                'version': '6.10.0',
+                'buildNumber': '50000'
+            }
+        )
+        assert get_demisto_version() == {
+            'version': '6.10.0',
+            'buildNumber': '50000'
+        }
+        assert is_demisto_version_ge('6.5.0')
+        assert is_demisto_version_ge('6.1.0')
+        assert is_demisto_version_ge('6.5')
+        assert not is_demisto_version_ge('7.0.0')
+        
     def test_is_demisto_version_ge_4_5(self, mocker):
         get_version_patch = mocker.patch('CommonServerPython.get_demisto_version')
         get_version_patch.side_effect = AttributeError('simulate missing demistoVersion')
