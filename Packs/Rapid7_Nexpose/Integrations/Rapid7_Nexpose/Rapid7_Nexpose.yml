@@ -1639,6 +1639,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '10'
       description: A number of records to limit the response to.
       isArray: false
       name: limit
@@ -1844,6 +1845,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '10'
       description: A number of records to limit the response to.
       isArray: false
       name: limit
@@ -2026,7 +2028,7 @@ script:
       required: false
       secret: false
     - default: true
-      defaultValue: '50'
+      defaultValue: '10'
       description: A number of records to limit the response to.
       isArray: false
       name: limit
@@ -2142,6 +2144,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '10'
       description: A number of records to limit the response to.
       isArray: false
       name: limit
