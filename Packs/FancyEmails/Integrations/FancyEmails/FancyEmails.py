@@ -355,8 +355,10 @@ def make_date_time_string():
 
     return_results(results)
 
+
 def test_module():
     return_results(True)
+
 
 command_map = {
     'fancy-email-make-table': make_table_command,
