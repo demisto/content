@@ -6,7 +6,8 @@ from CommonServerPython import *  # noqa: F401
 
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+urllib3.disable_warnings()
 
 INCIDENT = 'incident'
 SIR_INCIDENT = 'sn_si_incident'
@@ -107,6 +108,9 @@ SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additi
              'severity', 'sla_due', 'state', 'subcategory', 'sys_tags', 'sys_updated_by', 'sys_updated_on',
              'time_worked', 'title', 'type', 'urgency', 'user_input', 'watch_list', 'work_end', 'work_notes',
              'work_notes_list', 'work_start', 'business_criticality', 'risk_score']
+
+SIR_OUT_FIELDS = ['attack_vector', 'affected_user', 'change_request', 'incident', 'parent_security_incident',
+                  'substate']
 
 
 # Every table in ServiceNow should have those fields
@@ -396,6 +400,12 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
     inv_approval = {v: k for k, v in approval.items()} if approval else {}
     fields_to_clear = argToList(
         args.get('clear_fields', []))  # This argument will contain fields to allow their value empty
+
+    # This is for updating null fields for update_remote_system function for example: assigned_to.
+    for arg in args.keys():
+        if not args[arg]:
+            fields_to_clear.append(arg)
+    demisto.debug(f'Fields to clear {fields_to_clear}')
 
     ticket_fields = {}
     for arg in SNOW_ARGS:
@@ -2295,13 +2305,28 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                 'Type': EntryType.NOTE,
                 'Contents': {
                     'dbotIncidentClose': True,
-                    'closeReason': f'From ServiceNow: {ticket.get("close_notes")}'
+                    'closeNotes': f'From ServiceNow: {ticket.get("close_notes")}',
+                    'closeReason': converts_state_close_reason(ticket.get("state"))
                 },
                 'ContentsFormat': EntryFormat.JSON
             })
 
     demisto.debug(f'Pull result is {ticket}')
     return [ticket] + entries
+
+
+def converts_state_close_reason(ticket_state: str):
+    """
+    converts between XSOAR and service now state.
+    Args:
+        ticket_state: Service now state
+    Returns:
+        The XSOAR state
+    """
+    if ticket_state in ['6', '7']:
+        return 'Resolved'
+
+    return 'Other'
 
 
 def update_remote_system_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> str:
@@ -2419,7 +2444,9 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
     incident_type_scheme = SchemeTypeMapping(type_name=client.ticket_type)
     demisto.debug(f'Collecting incident mapping for incident type - "{client.ticket_type}"')
 
-    for field in SNOW_ARGS:
+    # If the type is sn_si_incident then add it specific fields else use the snow args as is.
+    out_fields = SNOW_ARGS + SIR_OUT_FIELDS if client.ticket_type == SIR_INCIDENT else SNOW_ARGS
+    for field in out_fields:
         incident_type_scheme.add_field(field)
 
     mapping_response = GetMappingFieldsResponse()

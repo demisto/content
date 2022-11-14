@@ -31,7 +31,8 @@
   "IAM - Rehire User",
   "Mandiant Automated Defense Incident",
   "OpsGenie Incident",
-  "ThreatConnect"
+  "ThreatConnect",
+  "Vectra Account"
  ],
  "associatedToAll": false,
  "unmapped": false,
