@@ -1,6 +1,6 @@
 import pytest
 from test_data import input_data
-# import demistomock as demisto
+import demistomock as demisto
 
 MOCK_MAIL_NO_LABELS = {
     u'internalDate': u'1572251535000',
@@ -482,26 +482,36 @@ class MockExecuteMessagesList:
 
 class MockExecute:
 
-    def __init__(self, name, userId):
+    def __init__(self, name, userId, pageToken, q, msgid):
         self.name = name
         self.user_id = userId
+        self.pageToken = pageToken
+        self.q = q
+        self.msgid = msgid
 
     def message(self):
+        if self.msgid == "1845fa4c3a5618cb":
+            return input_data.first_message
+        else:
+            return input_data.second_message
         return 0
 
     def execute(self):
         if self.name == "list":
-            return input_data.service_result
+            if self.pageToken:
+                return input_data.service_result_with_pageToken
+            else:
+                return input_data.service_result_without_pageToken
         if self.name == "get":
             return self.message()
 
 
 class MockListAndGet:
-    def list(self, userId, maxResults, q):
-        return MockExecute("list", 0)
+    def list(self, userId, maxResults, pageToken, q):
+        return MockExecute("list", 0, pageToken, q, 0)
 
     def get(self, id, userId):
-        return MockExecute("get", userId)
+        return MockExecute("get", userId, None, 0, id)
 
 
 class MockService:
@@ -509,22 +519,27 @@ class MockService:
         return MockMessages()
 
 
-# def test_fetch_incidents(mocker):
-#     """
-#     Tests emails_to_entry function.
-#         Given:
-#              - gmail get message list api response (from search_command function).
-#         When:
-#             - executing emails_to_entry function.
-#         Then:
-#             -the contents and human readable are valid.
-#     """
+@pytest.mark.parametrize('return_value_get_last_run, expected_result', [
+    ({'lastRun': '2018-10-24T14:13:20+00:00', 'gmt_time': '2017-10-24T14:13:20Z'}, input_data.first_incident_result),
+    ({'lastRun': '2018-10-24T14:13:20+00:00', 'gmt_time': '2017-10-24T14:13:20Z', 'page_token': '02582292467408105606'},
+     input_data.second_incident_result)
+])
+def test_fetch_incidents(mocker, return_value_get_last_run, expected_result):
+    """
+    Tests emails_to_entry function.
+        Given:
+             - gmail get message list api response (from search_command function).
+        When:
+            - executing emails_to_entry function.
+        Then:
+            -the contents and human readable are valid.
+    """
 
-#     from Gmail import fetch_incidents
-#     import Gmail
-#     service = MockService()
-#     mocker.patch.object(Gmail, 'get_service', return_value=service)
-#     mocker.patch.object(demisto, 'params', return_value={'queryUserKey': '111', 'query': ''})
-#     mocker.patch.object(demisto, 'getLastRun', return_value={"lastRun": "2018-10-24T14:13:20+00:00"})
-#     result = fetch_incidents()
-#     assert result == []
+    from Gmail import fetch_incidents
+    import Gmail
+    service = MockService()
+    mocker.patch.object(Gmail, 'get_service', return_value=service)
+    mocker.patch.object(demisto, 'params', return_value={'queryUserKey': '111', 'query': '', 'fetch_limit': '1'})
+    mocker.patch.object(demisto, 'getLastRun', return_value=return_value_get_last_run)
+    result = fetch_incidents()
+    assert result == expected_result

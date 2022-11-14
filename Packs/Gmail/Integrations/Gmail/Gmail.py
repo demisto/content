@@ -234,16 +234,7 @@ def get_occurred_date(email_data: dict) -> Tuple[datetime, bool]:
     Returns:
         Tuple[datetime, bool]: occurred datetime, can be used for incrementing search date
     """
-    internalDate = email_data.get('internalDate')
-    if internalDate and internalDate != '0':
-        # intenalDate timestamp has 13 digits, but epoch-timestamp counts the seconds since Jan 1st 1970
-        # (which is currently less than 13 digits) thus a need to cut the timestamp down to size.
-        timestamp_len = len(str(int(time.time())))
-        if len(str(internalDate)) > timestamp_len:
-            internalDate = (str(internalDate)[:timestamp_len])
-        return datetime.fromtimestamp(int(internalDate), tz=timezone.utc), True
     headers = demisto.get(email_data, 'payload.headers')
-    demisto.info(f"couldn't extract occurred date from internalDate trying headers: {headers}")
     if not headers or not isinstance(headers, list):
         demisto.error(f"couldn't get headers for msg (shouldn't happen): {email_data}")
     else:
@@ -257,7 +248,16 @@ def get_occurred_date(email_data: dict) -> Tuple[datetime, bool]:
                     if res:
                         demisto.debug(f"Using occurred date: {res} from header: {name} value: {val}")
                         return res, True
-    # we didn't get a date from anywhere
+    internalDate = email_data.get('internalDate')
+    demisto.info(f"couldn't extract occurred date from headers trying internalDate: {internalDate}")
+    if internalDate and internalDate != '0':
+        # intenalDate timestamp has 13 digits, but epoch-timestamp counts the seconds since Jan 1st 1970
+        # (which is currently less than 13 digits) thus a need to cut the timestamp down to size.
+        timestamp_len = len(str(int(time.time())))
+        if len(str(internalDate)) > timestamp_len:
+            internalDate = (str(internalDate)[:timestamp_len])
+        return datetime.fromtimestamp(int(internalDate), tz=timezone.utc), True
+        # we didn't get a date from anywhere
     demisto.info("Failed finding date from internal or headers. Using 'datetime.now()'")
     return datetime.now(tz=timezone.utc), False
 
@@ -2151,7 +2151,7 @@ def fetch_incidents():
     ignore_list_used = last_run.get('ignore_list_used') or False  # can we reset the ignore list if we haven't used it
     # handle first time fetch - gets current GMT time -1 day
     if not last_fetch:
-        last_fetch, _ = parse_date_range(date_range=FETCH_TIME, utc=True, to_timestamp=False)
+        last_fetch = dateparser.parse(date_string=FETCH_TIME, settings={'TIMEZONE': 'UTC'})
         last_fetch = str(last_fetch.isoformat(timespec='seconds')) + 'Z'
     # use replace(tzinfo) to  make the datetime aware of the timezone as all other dates we use are aware
     last_fetch = parse_date_isoformat_server(last_fetch)
@@ -2171,20 +2171,18 @@ def fetch_incidents():
     max_results = max_fetch
     if max_fetch > 200:
         max_results = 200
-    LOG(f'GMAIL: fetch parameters: user: {user_key} query={query}'
-        f' fetch time: {last_fetch} page_token: {page_token} max results: {max_results}')
+    demisto.debug(f'GMAIL: fetch parameters: user: {user_key} query={query} fetch time: {last_fetch} \
+    page_token: {page_token} max results: {max_results}')
     result = service.users().messages().list(
-        userId=user_key, maxResults=max_results, q=query).execute()
+        userId=user_key, maxResults=max_results, pageToken=page_token, q=query).execute()
 
     incidents = []
     # so far, so good
-    demisto.info(f'GMAIL: possible new incidents are {result}')
-    re
+    LOG(f'GMAIL: possible new incidents are {result}')
     for msg in result.get('messages', []):
         msg_id = msg['id']
         if msg_id in ignore_ids:
             demisto.info(f'Ignoring msg id: {msg_id} as it is in the ignore list')
-            demisto.debug(f'Ignoring msg id: {msg_id} as it is in the ignore list')
             ignore_list_used = True
             continue
         msg_result = service.users().messages().get(
@@ -2204,8 +2202,7 @@ def fetch_incidents():
         else:
             demisto.info(
                 f'skipped incident with lower date: {occurred} than fetch: {last_fetch} name: {incident.get("name")}')
-            demisto.debug(
-                f'skipped incident with lower date: {occurred} than fetch: {last_fetch} name: {incident.get("name")}')
+
     demisto.info('extract {} incidents'.format(len(incidents)))
     next_page_token = result.get('nextPageToken', '')
     if next_page_token:
