@@ -14,7 +14,8 @@ import requests
 from dateutil.parser import parse
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # type: ignore
+import urllib3
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
@@ -1991,6 +1992,21 @@ def get_fetch_times_and_offset(current_fetch_info: dict):
     return last_fetch_time, offset, prev_fetch, last_fetch_timestamp
 
 
+def migrate_last_run():
+    last_run = demisto.getLastRun()
+    if isinstance(last_run, list):
+        return
+    updated_last_run_detections = {}
+    updated_last_run_detections['time'] = last_run.get('first_behavior_detection_time')
+    updated_last_run_detections['offset'] = last_run.get('detection_offset')
+    
+    updated_last_run_incidents = {}
+    updated_last_run_incidents['time'] = last_run.get('first_behavior_incident_time')
+    updated_last_run_incidents['last_fetched_incident'] = last_run.get('last_fetched_incident')
+    updated_last_run_incidents['offset'] = last_run.get('incident_offset')
+    demisto.setLastRun([updated_last_run_detections, updated_last_run_incidents])
+    
+
 def fetch_incidents():
     incidents = []  # type:List
     last_run = demisto.getLastRun()
@@ -2051,7 +2067,9 @@ def fetch_incidents():
                                                                  fetch_limit=fetch_limit, id_field='name')
 
             for incident in incidents:
-                incident["occurred"] = dateparser.parse(incident["occurred"]).strftime(DATE_FORMAT)
+                occurred = dateparser.parse(incident["occurred"])
+                if occurred:
+                    incident["occurred"] = occurred.strftime(DATE_FORMAT)
             last_run = update_last_run_object(last_run=current_fetch_info_detections, incidents=incidents,
                                               fetch_limit=fetch_limit,
                                               start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
@@ -2109,12 +2127,14 @@ def fetch_incidents():
                 current_fetch_info_incidents['last_fetched_incident'] = new_last_incident_fetched
             else:
                 current_fetch_info_incidents['offset'] = 0
-                current_fetch_info_incidents['incident'] = new_last_incident_fetched
+                current_fetch_info_incidents['last_fetched_incident'] = new_last_incident_fetched
 
             incidents = filter_incidents_by_duplicates_and_limit(incidents_res=incidents, last_run=current_fetch_info_incidents,
                                                                  fetch_limit=fetch_limit, id_field='name')
             for incident in incidents:
-                incident["occurred"] = dateparser.parse(incident["occurred"]).strftime(DATE_FORMAT)
+                occurred = dateparser.parse(incident["occurred"])
+                if occurred:
+                    incident["occurred"] = occurred.strftime(DATE_FORMAT)
 
             last_run = update_last_run_object(last_run=current_fetch_info_incidents, incidents=incidents,
                                               fetch_limit=fetch_limit,
@@ -2325,13 +2345,13 @@ def upload_custom_ioc_command(
     """
     if action in {'prevent', 'detect'} and not severity:
         raise ValueError(f'Severity is required for action {action}.')
-    value = argToList(value)
+    values: list[str] = argToList(value)
     applied_globally = argToBoolean(applied_globally) if applied_globally else None
-    host_groups = argToList(host_groups)
+    host_groups: list[str] = argToList(host_groups)
     tags = argToList(tags)
-    platforms = argToList(platforms)
+    platforms_list = argToList(platforms)
 
-    iocs_json_batch = create_json_iocs_list(ioc_type, value, action, platforms, severity, source, description,
+    iocs_json_batch = create_json_iocs_list(ioc_type, values, action, platforms_list, severity, source, description,
                                             expiration, applied_globally, host_groups, tags)
     raw_res = upload_batch_custom_ioc(ioc_batch=iocs_json_batch)
     handle_response_errors(raw_res)
@@ -3860,9 +3880,11 @@ def main():
     args = demisto.args()
     try:
         if command == 'test-module':
+            migrate_last_run()
             result = test_module()
             return_results(result)
         elif command == 'fetch-incidents':
+            migrate_last_run()
             demisto.incidents(fetch_incidents())
 
         elif command in ('cs-device-ran-on', 'cs-falcon-device-ran-on'):
