@@ -268,7 +268,7 @@ def make_email_footer(line1, line2):
 def make_logo():
     return f'''
         <div class='logo-container'>
-            <img class='logo' height='{LOGOHEIGHT}' width='{LOGOWIDTH}' src='{BASELOGO}' alt="HCSC Logo" />
+            <img class='logo' height='{LOGOHEIGHT}' width='{LOGOWIDTH}' src='{BASELOGO}' alt="Logo" />
         </div>
     '''
 
