@@ -1,8 +1,7 @@
 ## O365 Defender Safe Links
 
-#### Supported Authentication Methods
+#### Supported Authentication Method
 
-- Basic authentication - Fill in the email and password.
 - OAuth2.0 (For MFA enabled accounts) -
     1. Enter a value for the UPN parameter in the integration configuration.
     2. Run the ***o365-defender-safelinks-auth-start*** command and follow the instructions.

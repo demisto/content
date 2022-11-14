@@ -19,10 +19,8 @@ ___
     | --- | --- |
     | Exchange Online URL | True |
     | Email / User Principal Name (Required) | False |
-    | Password (Required for Basic authentication only) | False |
     | Trust any certificate (not secure) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ### Safe Links Rule and Policy
 ___

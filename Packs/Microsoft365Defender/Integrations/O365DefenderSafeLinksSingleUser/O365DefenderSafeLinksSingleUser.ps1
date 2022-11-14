@@ -1191,14 +1191,7 @@ function GetAggregateReport {
 }
 
 function TestModuleCommand($client) {
-    try {
-        $client.CreateSession()
-        $demisto.results("ok")
-    }
-    finally {
-        $client.CloseSession()
-    }
-
+    throw "When using OAuth2 configuration, Please enable the integration and run `!$script:COMMAND_PREFIX-auth-start` and `!$script:COMMAND_PREFIX-auth-complete` to log in. You can validate the connection by running `!$script:COMMAND_PREFIX-auth-test`."
 }
 
 function Main {
