@@ -890,6 +890,8 @@ def get_images_data(packs_list: list):
             pack_image_data[pack.name][BucketUploadFlow.INTEGRATIONS] = pack.uploaded_integration_images
         if pack.uploaded_preview_images:
             pack_image_data[pack.name][BucketUploadFlow.PREVIEW_IMAGES] = pack.uploaded_preview_images
+        if pack.uploaded_readme_images:
+            pack_image_data[pack.name][BucketUploadFlow.README_IMAGES] = pack.uploaded_readme_images
         if pack_image_data[pack.name]:
             images_data.update(pack_image_data)
 
@@ -1142,9 +1144,9 @@ def main():
             pack.cleanup()
             continue
 
-        # upload author and integration images
+        # upload author integration images and readme images
         if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list,
-                                  override_all_packs):
+                                  override_all_packs, marketplace):
             continue
 
         # detect if the pack is modified and return modified RN files
