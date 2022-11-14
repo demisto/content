@@ -180,7 +180,7 @@ class VulnerabilityExceptionStatus(Enum, metaclass=FlexibleEnum):
 class Client(BaseClient):
     """Client class for interactions with Rapid7 Nexpose API."""
 
-    def __init__(self, url: str, username: str, password: str, token: Optional[str] = None, verify: bool = True):
+    def __init__(self, url: str, username: str, password: str, token: str | None = None, verify: bool = True):
         """
         Initialize the client.
 
@@ -213,9 +213,7 @@ class Client(BaseClient):
         )
 
     def _http_request(self, **kwargs):
-        """
-        Wrapper for BaseClient._http_request() that optionally removes `links` keys from responses.
-        """
+        """Wrapper for BaseClient._http_request() that optionally removes `links` keys from responses."""
         response = super()._http_request(**kwargs)
 
         if REMOVE_RESPONSE_LINKS:
@@ -248,8 +246,8 @@ class Client(BaseClient):
             ok_codes=(200,),
         ).get("sessionID")
 
-    def _paged_http_request(self, page_size: Optional[int], page: Optional[int] = None,
-                            sort: Optional[str] = None, limit: Optional[int] = None, **kwargs) -> list:
+    def _paged_http_request(self, page_size: int | None, page: int | None = None, sort: str | None = None,
+                            limit: int | None = None, **kwargs) -> list:
         """
         Run _http_request with pagination handling.
 
@@ -305,8 +303,8 @@ class Client(BaseClient):
 
         return result
 
-    def create_asset(self, site_id: str, date: str, ip_address: Optional[str] = None,
-                     hostname: Optional[str] = None, hostname_source: Optional[HostnameSource] = None) -> dict:
+    def create_asset(self, site_id: str, date: str, ip_address: str | None = None, hostname: str | None = None,
+                     hostname_source: HostnameSource | None = None) -> dict:
         """
         | Create a new asset on a site.
         |
@@ -395,24 +393,22 @@ class Client(BaseClient):
         )
 
     def create_shared_credential(self, name: str, site_assignment: SharedCredentialSiteAssignment,
-                                 service: CredentialService, database_name: Optional[str] = None,
-                                 description: Optional[str] = None, domain: Optional[str] = None,
-                                 host_restriction: Optional[str] = None, http_realm: Optional[str] = None,
-                                 notes_id_password: Optional[str] = None, ntlm_hash: Optional[str] = None,
-                                 oracle_enumerate_sids: Optional[bool] = None,
-                                 oracle_listener_password: Optional[str] = None, oracle_sid: Optional[str] = None,
-                                 password: Optional[str] = None, port_restriction: Optional[str] = None,
-                                 sites: Optional[list[int]] = None, snmp_community_name: Optional[str] = None,
-                                 snmpv3_authentication_type: Optional[SNMPv3AuthenticationType] = None,
-                                 snmpv3_privacy_password: Optional[str] = None,
-                                 snmpv3_privacy_type: Optional[SNMPv3PrivacyType] = None,
-                                 ssh_key_pem: Optional[str] = None,
-                                 ssh_permission_elevation: Optional[SSHElevationType] = None,
-                                 ssh_permission_elevation_password: Optional[str] = None,
-                                 ssh_permission_elevation_username: Optional[str] = None,
-                                 ssh_private_key_password: Optional[str] = None,
-                                 use_windows_authentication: Optional[bool] = None,
-                                 username: Optional[str] = None) -> dict:
+                                 service: CredentialService, database_name: str | None = None,
+                                 description: str | None = None, domain: str | None = None,
+                                 host_restriction: str | None = None, http_realm: str | None = None,
+                                 notes_id_password: str | None = None, ntlm_hash: str | None = None,
+                                 oracle_enumerate_sids: bool | None = None, oracle_listener_password: str | None = None,
+                                 oracle_sid: str | None = None, password: str | None = None,
+                                 port_restriction: str | None = None, sites: list[int] | None = None,
+                                 snmp_community_name: str | None = None,
+                                 snmpv3_authentication_type: SNMPv3AuthenticationType | None = None,
+                                 snmpv3_privacy_password: str | None = None,
+                                 snmpv3_privacy_type: SNMPv3PrivacyType | None = None, ssh_key_pem: str | None = None,
+                                 ssh_permission_elevation: SSHElevationType | None = None,
+                                 ssh_permission_elevation_password: str | None = None,
+                                 ssh_permission_elevation_username: str | None = None,
+                                 ssh_private_key_password: str | None = None,
+                                 use_windows_authentication: bool | None = None, username: str | None = None) -> dict:
         """
         | Create a new shared credential.
         |
@@ -503,14 +499,14 @@ class Client(BaseClient):
         )
 
     def create_site_scan_schedule(self, site_id: str, start_date: str, enabled: bool,
-                                  excluded_asset_groups: Optional[list[int]] = None,
-                                  excluded_targets: Optional[list[str]] = None,
-                                  included_asset_groups: Optional[list[int]] = None,
-                                  included_targets: Optional[list[str]] = None, duration: Optional[str] = None,
-                                  repeat_behaviour: Optional[RepeatBehaviour] = None,
-                                  frequency: Optional[RepeatFrequencyType] = None,
-                                  interval: Optional[int] = None, date_of_month: Optional[int] = None,
-                                  scan_name: Optional[str] = None, scan_template_id: Optional[str] = None) -> dict:
+                                  excluded_asset_groups: list[int] | None = None,
+                                  excluded_targets: list[str] | None = None,
+                                  included_asset_groups: list[int] | None = None,
+                                  included_targets: list[str] | None = None, duration: str | None = None,
+                                  repeat_behaviour: RepeatBehaviour | None = None,
+                                  frequency: RepeatFrequencyType | None = None,
+                                  interval: int | None = None, date_of_month: int | None = None,
+                                  scan_name: str | None = None, scan_template_id: str | None = None) -> dict:
         """
         | Create a new site scan schedule.
         |
@@ -592,8 +588,8 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def create_site(self, name: str, description: Optional[str] = None, assets: Optional[list[str]] = None,
-                    site_importance: Optional[SiteImportance] = None, template_id: Optional[str] = None) -> dict:
+    def create_site(self, name: str, description: str | None = None, assets: list[str] | None = None,
+                    site_importance: SiteImportance | None = None, template_id: str | None = None) -> dict:
         """
         | Create a new site.
         |
@@ -611,7 +607,7 @@ class Client(BaseClient):
         Returns:
             dict: API response with information about the newly created site.
         """
-        importance: Optional[str] = site_importance.value if site_importance else None
+        importance: str | None = site_importance.value if site_importance else None
 
         post_data = find_valid_params(
             name=name,
@@ -635,23 +631,23 @@ class Client(BaseClient):
         )
 
     def create_site_scan_credential(self, site_id: str, name: str, service: CredentialService,
-                                    database_name: Optional[str] = None, description: Optional[str] = None,
-                                    domain: Optional[str] = None, host_restriction: Optional[str] = None,
-                                    http_realm: Optional[str] = None, notes_id_password: Optional[str] = None,
-                                    ntlm_hash: Optional[str] = None, oracle_enumerate_sids: Optional[bool] = None,
-                                    oracle_listener_password: Optional[str] = None, oracle_sid: Optional[str] = None,
-                                    password: Optional[str] = None, port_restriction: Optional[str] = None,
-                                    snmp_community_name: Optional[str] = None,
-                                    snmpv3_authentication_type: Optional[SNMPv3AuthenticationType] = None,
-                                    snmpv3_privacy_password: Optional[str] = None,
-                                    snmpv3_privacy_type: Optional[SNMPv3PrivacyType] = None,
-                                    ssh_key_pem: Optional[str] = None,
-                                    ssh_permission_elevation: Optional[SSHElevationType] = None,
-                                    ssh_permission_elevation_password: Optional[str] = None,
-                                    ssh_permission_elevation_username: Optional[str] = None,
-                                    ssh_private_key_password: Optional[str] = None,
-                                    use_windows_authentication: Optional[bool] = None,
-                                    username: Optional[str] = None) -> dict:
+                                    database_name: str | None = None, description: str | None = None,
+                                    domain: str | None = None, host_restriction: str | None = None,
+                                    http_realm: str | None = None, notes_id_password: str | None = None,
+                                    ntlm_hash: str | None = None, oracle_enumerate_sids: bool | None = None,
+                                    oracle_listener_password: str | None = None, oracle_sid: str | None = None,
+                                    password: str | None = None, port_restriction: str | None = None,
+                                    snmp_community_name: str | None = None,
+                                    snmpv3_authentication_type: SNMPv3AuthenticationType | None = None,
+                                    snmpv3_privacy_password: str | None = None,
+                                    snmpv3_privacy_type: SNMPv3PrivacyType | None = None,
+                                    ssh_key_pem: str | None = None,
+                                    ssh_permission_elevation: SSHElevationType | None = None,
+                                    ssh_permission_elevation_password: str | None = None,
+                                    ssh_permission_elevation_username: str | None = None,
+                                    ssh_private_key_password: str | None = None,
+                                    use_windows_authentication: bool | None = None,
+                                    username: str | None = None) -> dict:
         """
         | Create a new site scan credential.
         |
@@ -738,8 +734,8 @@ class Client(BaseClient):
 
     def create_vulnerability_exception(self, vulnerability_id: str, scope_type: VulnerabilityExceptionScopeType,
                                        state: VulnerabilityExceptionState, reason: VulnerabilityExceptionReason,
-                                       scope_id: Optional[int] = None, expires: Optional[str] = None,
-                                       comment: Optional[str] = None) -> dict:
+                                       scope_id: int | None = None, expires: str | None = None,
+                                       comment: str | None = None) -> dict:
         """
         | Create a new vulnerability exception.
         |
@@ -940,9 +936,9 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_asset_vulnerabilities(self, asset_id: str, page_size: Optional[int] = DEFAULT_PAGE_SIZE,
-                                  page: Optional[int] = None, sort: Optional[str] = None,
-                                  limit: Optional[int] = None) -> list[dict]:
+    def get_asset_vulnerabilities(self, asset_id: str, page_size: int | None = DEFAULT_PAGE_SIZE,
+                                  page: int | None = None, sort: str | None = None,
+                                  limit: int | None = None) -> list[dict]:
         """
         | Retrieves a list of all vulnerability findings on an asset.
         |
@@ -1011,8 +1007,8 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_assets(self, page_size: Optional[int] = DEFAULT_PAGE_SIZE, page: Optional[int] = None,
-                   sort: Optional[str] = None, limit: Optional[int] = None) -> list[dict]:
+    def get_assets(self, page_size: int | None = DEFAULT_PAGE_SIZE, page: int | None = None, sort: str | None = None,
+                   limit: int | None = None) -> list[dict]:
         """
         | Retrieve a list of all assets.
         |
@@ -1111,8 +1107,8 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_scans(self, active: Optional[bool] = False, page_size: Optional[int] = DEFAULT_PAGE_SIZE,
-                  page: Optional[int] = None, sort: Optional[str] = None, limit: Optional[int] = None) -> list[dict]:
+    def get_scans(self, active: bool | None = False, page_size: int | None = DEFAULT_PAGE_SIZE, page: int | None = None,
+                  sort: str | None = None, limit: int | None = None) -> list[dict]:
         """
         | Retrieve a list of all scans.
         |
@@ -1178,8 +1174,8 @@ class Client(BaseClient):
             resp_type="json",
         ).get("resources")
 
-    def get_site_assets(self, site_id: str, page_size: Optional[int] = DEFAULT_PAGE_SIZE, page: Optional[int] = None,
-                        sort: Optional[str] = None, limit: Optional[int] = None) -> list[dict]:
+    def get_site_assets(self, site_id: str, page_size: int | None = DEFAULT_PAGE_SIZE, page: int | None = None,
+                        sort: str | None = None, limit: int | None = None) -> list[dict]:
         """
         | Retrieve a list of all assets that are linked with a specific site.
         |
@@ -1245,8 +1241,8 @@ class Client(BaseClient):
             resp_type="json",
         ).get("resources")
 
-    def get_site_scans(self, site_id: str, page_size: Optional[int] = DEFAULT_PAGE_SIZE, page: Optional[int] = None,
-                       sort: Optional[str] = None, limit: Optional[int] = None) -> list[dict]:
+    def get_site_scans(self, site_id: str, page_size: int | None = DEFAULT_PAGE_SIZE, page: int | None = None,
+                       sort: str | None = None, limit: int | None = None) -> list[dict]:
         """
         | Retrieve a list of scans from a specific site.
         |
@@ -1313,8 +1309,8 @@ class Client(BaseClient):
             resp_type="json",
         ).get("resources")
 
-    def get_sites(self, page_size: Optional[int] = DEFAULT_PAGE_SIZE, page: Optional[int] = None,
-                  sort: Optional[str] = None, limit: Optional[int] = None) -> list[dict]:
+    def get_sites(self, page_size: int | None = DEFAULT_PAGE_SIZE, page: int | None = None, sort: str | None = None,
+                  limit: int | None = None) -> list[dict]:
         """
         | Retrieve a list of sites.
         |
@@ -1342,8 +1338,8 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_vulnerabilities(self, page_size: Optional[int] = DEFAULT_PAGE_SIZE, page: Optional[int] = None,
-                            sort: Optional[str] = None, limit: Optional[int] = None) -> list[dict]:
+    def get_vulnerabilities(self, page_size: int | None = DEFAULT_PAGE_SIZE, page: int | None = None,
+                            sort: str | None = None, limit: int | None = None) -> list[dict]:
         """
         | Retrieve information about all existing vulnerabilities.
         |
@@ -1408,8 +1404,8 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_vulnerability_exceptions(self, page_size: Optional[int] = DEFAULT_PAGE_SIZE, page: Optional[int] = None,
-                                     sort: Optional[str] = None, limit: Optional[int] = None) -> list[dict]:
+    def get_vulnerability_exceptions(self, page_size: int | None = DEFAULT_PAGE_SIZE, page: int | None = None,
+                                     sort: str | None = None, limit: int | None = None) -> list[dict]:
         """
         | Retrieve exceptions defined on vulnerabilities.
         |
@@ -1434,9 +1430,9 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def search_assets(self, filters: Optional[list[dict]], match: str,
-                      page_size: Optional[int] = DEFAULT_PAGE_SIZE, page: Optional[int] = None,
-                      sort: Optional[str] = None, limit: Optional[int] = None) -> list[dict]:
+    def search_assets(self, filters: list[dict] | None, match: str,
+                      page_size: int | None = DEFAULT_PAGE_SIZE, page: int | None = None, sort: str | None = None,
+                      limit: int | None = None) -> list[dict]:
         """
         | Retrieve a list of all assets with access permissions that match the provided search filters.
         |
@@ -1539,23 +1535,21 @@ class Client(BaseClient):
 
     def update_shared_credential(self, shared_credential_id: str, name: str,
                                  site_assignment: SharedCredentialSiteAssignment, service: CredentialService,
-                                 database_name: Optional[str] = None, description: Optional[str] = None,
-                                 domain: Optional[str] = None, host_restriction: Optional[str] = None,
-                                 http_realm: Optional[str] = None, notes_id_password: Optional[str] = None,
-                                 ntlm_hash: Optional[str] = None, oracle_enumerate_sids: Optional[bool] = None,
-                                 oracle_listener_password: Optional[str] = None, oracle_sid: Optional[str] = None,
-                                 password: Optional[str] = None, port_restriction: Optional[str] = None,
-                                 sites: Optional[list[int]] = None, snmp_community_name: Optional[str] = None,
-                                 snmpv3_authentication_type: Optional[SNMPv3AuthenticationType] = None,
-                                 snmpv3_privacy_password: Optional[str] = None,
-                                 snmpv3_privacy_type: Optional[SNMPv3PrivacyType] = None,
-                                 ssh_key_pem: Optional[str] = None,
-                                 ssh_permission_elevation: Optional[SSHElevationType] = None,
-                                 ssh_permission_elevation_password: Optional[str] = None,
-                                 ssh_permission_elevation_username: Optional[str] = None,
-                                 ssh_private_key_password: Optional[str] = None,
-                                 use_windows_authentication: Optional[bool] = None,
-                                 username: Optional[str] = None) -> dict:
+                                 database_name: str | None = None, description: str | None = None,
+                                 domain: str | None = None, host_restriction: str | None = None,
+                                 http_realm: str | None = None, notes_id_password: str | None = None,
+                                 ntlm_hash: str | None = None, oracle_enumerate_sids: bool | None = None,
+                                 oracle_listener_password: str | None = None, oracle_sid: str | None = None,
+                                 password: str | None = None, port_restriction: str | None = None,
+                                 sites: list[int] | None = None, snmp_community_name: str | None = None,
+                                 snmpv3_authentication_type: SNMPv3AuthenticationType | None = None,
+                                 snmpv3_privacy_password: str | None = None,
+                                 snmpv3_privacy_type: SNMPv3PrivacyType | None = None, ssh_key_pem: str | None = None,
+                                 ssh_permission_elevation: SSHElevationType | None = None,
+                                 ssh_permission_elevation_password: str | None = None,
+                                 ssh_permission_elevation_username: str | None = None,
+                                 ssh_private_key_password: str | None = None,
+                                 use_windows_authentication: bool | None = None, username: str | None = None) -> dict:
         """
         | Update an existing new shared credential.
         |
@@ -1647,23 +1641,23 @@ class Client(BaseClient):
         )
 
     def update_site_scan_credential(self, site_id: str, credential_id: str, name: str, service: CredentialService,
-                                    database_name: Optional[str] = None, description: Optional[str] = None,
-                                    domain: Optional[str] = None, host_restriction: Optional[str] = None,
-                                    http_realm: Optional[str] = None, notes_id_password: Optional[str] = None,
-                                    ntlm_hash: Optional[str] = None, oracle_enumerate_sids: Optional[bool] = None,
-                                    oracle_listener_password: Optional[str] = None, oracle_sid: Optional[str] = None,
-                                    password: Optional[str] = None, port_restriction: Optional[str] = None,
-                                    snmp_community_name: Optional[str] = None,
-                                    snmpv3_authentication_type: Optional[SNMPv3AuthenticationType] = None,
-                                    snmpv3_privacy_password: Optional[str] = None,
-                                    snmpv3_privacy_type: Optional[SNMPv3PrivacyType] = None,
-                                    ssh_key_pem: Optional[str] = None,
-                                    ssh_permission_elevation: Optional[SSHElevationType] = None,
-                                    ssh_permission_elevation_password: Optional[str] = None,
-                                    ssh_permission_elevation_username: Optional[str] = None,
-                                    ssh_private_key_password: Optional[str] = None,
-                                    use_windows_authentication: Optional[bool] = None,
-                                    username: Optional[str] = None) -> dict:
+                                    database_name: str | None = None, description: str | None = None,
+                                    domain: str | None = None, host_restriction: str | None = None,
+                                    http_realm: str | None = None, notes_id_password: str | None = None,
+                                    ntlm_hash: str | None = None, oracle_enumerate_sids: bool | None = None,
+                                    oracle_listener_password: str | None = None, oracle_sid: str | None = None,
+                                    password: str | None = None, port_restriction: str | None = None,
+                                    snmp_community_name: str | None = None,
+                                    snmpv3_authentication_type: SNMPv3AuthenticationType | None = None,
+                                    snmpv3_privacy_password: str | None = None,
+                                    snmpv3_privacy_type: SNMPv3PrivacyType | None = None,
+                                    ssh_key_pem: str | None = None,
+                                    ssh_permission_elevation: SSHElevationType | None = None,
+                                    ssh_permission_elevation_password: str | None = None,
+                                    ssh_permission_elevation_username: str | None = None,
+                                    ssh_private_key_password: str | None = None,
+                                    use_windows_authentication: bool | None = None,
+                                    username: str | None = None) -> dict:
         """
         | Update an existing site scan credential.
         |
@@ -1752,14 +1746,14 @@ class Client(BaseClient):
         )
 
     def update_site_scan_schedule(self, site_id: str, scan_schedule_id: int, start_date: str, enabled: bool,
-                                  excluded_asset_groups: Optional[list[int]] = None,
-                                  excluded_targets: Optional[list[str]] = None,
-                                  included_asset_groups: Optional[list[int]] = None,
-                                  included_targets: Optional[list[str]] = None, duration: Optional[str] = None,
-                                  repeat_behaviour: Optional[RepeatBehaviour] = None,
-                                  frequency: Optional[RepeatFrequencyType] = None,
-                                  interval: Optional[int] = None, date_of_month: Optional[int] = None,
-                                  scan_name: Optional[str] = None, scan_template_id: Optional[str] = None) -> dict:
+                                  excluded_asset_groups: list[int] | None = None,
+                                  excluded_targets: list[str] | None = None,
+                                  included_asset_groups: list[int] | None = None,
+                                  included_targets: list[str] | None = None, duration: str | None = None,
+                                  repeat_behaviour: RepeatBehaviour | None = None,
+                                  frequency: RepeatFrequencyType | None = None,
+                                  interval: int | None = None, date_of_month: int | None = None,
+                                  scan_name: str | None = None, scan_template_id: str | None = None) -> dict:
         """
         | Update a site scan schedule.
         |
@@ -1887,7 +1881,7 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def find_site_id(self, name: str) -> Optional[str]:
+    def find_site_id(self, name: str) -> str | None:
         """
         Find a site ID by its name.
 
@@ -1946,8 +1940,7 @@ class Client(BaseClient):
 class Site:
     """A class representing a site, which can be identified by ID or name."""
 
-    def __init__(self, site_id: Optional[str] = None,
-                 site_name: Optional[str] = None, client: Optional[Client] = None) -> None:
+    def __init__(self, site_id: str | None = None, site_name: str | None = None, client: Client | None = None) -> None:
         """
         Create a new Site object.
         Required parameters are either `site_id`, or both `site_name` and `client`.
@@ -1964,7 +1957,7 @@ class Site:
             InvalidSiteNameException: If no ID was provided and a site with a matching name could not be found.
         """
         self.id: str
-        self.name: Optional[str] = None
+        self.name: str | None = None
 
         if site_id:
             self.id = site_id
@@ -1987,7 +1980,7 @@ class Site:
         self.name = site_name
 
 
-def convert_asset_search_filters(search_filters: Union[str, list[str]]) -> list[dict]:
+def convert_asset_search_filters(search_filters: str | list[str]) -> list[dict]:
     """
     | Convert string-based asset search filters to dict-based asset search filters that can be used in Nexpose's API.
     |
@@ -2056,23 +2049,23 @@ def convert_datetime_str(time_str: str) -> struct_time:
         return strptime(time_str, "%Y-%m-%dT%H:%M:%SZ")
 
 
-def create_credential_creation_body(service: CredentialService, database_name: Optional[str] = None,
-                                    domain: Optional[str] = None, http_realm: Optional[str] = None,
-                                    notes_id_password: Optional[str] = None, ntlm_hash: Optional[str] = None,
-                                    oracle_enumerate_sids: Optional[bool] = None,
-                                    oracle_listener_password: Optional[str] = None,
-                                    oracle_sid: Optional[str] = None, password: Optional[str] = None,
-                                    snmp_community_name: Optional[str] = None,
-                                    snmpv3_authentication_type: Optional[SNMPv3AuthenticationType] = None,
-                                    snmpv3_privacy_password: Optional[str] = None,
-                                    snmpv3_privacy_type: Optional[SNMPv3PrivacyType] = None,
-                                    ssh_key_pem: Optional[str] = None,
-                                    ssh_permission_elevation: Optional[SSHElevationType] = None,
-                                    ssh_permission_elevation_password: Optional[str] = None,
-                                    ssh_permission_elevation_username: Optional[str] = None,
-                                    ssh_private_key_password: Optional[str] = None,
-                                    use_windows_authentication: Optional[bool] = None,
-                                    username: Optional[str] = None) -> dict:
+def create_credential_creation_body(service: CredentialService, database_name: str | None = None,
+                                    domain: str | None = None, http_realm: str | None = None,
+                                    notes_id_password: str | None = None, ntlm_hash: str | None = None,
+                                    oracle_enumerate_sids: bool | None = None,
+                                    oracle_listener_password: str | None = None,
+                                    oracle_sid: str | None = None, password: str | None = None,
+                                    snmp_community_name: str | None = None,
+                                    snmpv3_authentication_type: SNMPv3AuthenticationType | None = None,
+                                    snmpv3_privacy_password: str | None = None,
+                                    snmpv3_privacy_type: SNMPv3PrivacyType | None = None,
+                                    ssh_key_pem: str | None = None,
+                                    ssh_permission_elevation: SSHElevationType | None = None,
+                                    ssh_permission_elevation_password: str | None = None,
+                                    ssh_permission_elevation_username: str | None = None,
+                                    ssh_private_key_password: str | None = None,
+                                    use_windows_authentication: bool | None = None,
+                                    username: str | None = None) -> dict:
     """
     Create `account` body for credential-creation API requests.
 
@@ -2256,9 +2249,9 @@ def create_credential_creation_body(service: CredentialService, database_name: O
     return account_data
 
 
-def create_report(client: Client, scope: dict[str, Any], template_id: Optional[str] = None,
-                  report_name: Optional[str] = None, report_format: Optional[ReportFileFormat] = None,
-                  download_immediately: Optional[bool] = None) -> Union[dict, CommandResults]:
+def create_report(client: Client, scope: dict[str, Any], template_id: str | None = None,
+                  report_name: str | None = None, report_format: ReportFileFormat | None = None,
+                  download_immediately: bool | None = None) -> dict | CommandResults:
     """
     Create a report and optionally download it.
 
@@ -2462,10 +2455,9 @@ def get_scan_entry(scan: dict) -> CommandResults:
     )
 
 
-def generate_duration_time(years: Optional[int] = None, months: Optional[int] = None,
-                           weeks: Optional[int] = None, days: Optional[int] = None,
-                           hours: Optional[int] = None, minutes: Optional[int] = None,
-                           seconds: Optional[float] = None) -> Optional[str]:
+def generate_duration_time(years: int | None = None, months: int | None = None, weeks: int | None = None,
+                           days: int | None = None, hours: int | None = None, minutes: int | None = None,
+                           seconds: float | None = None) -> str | None:
     """
     | Generate an ISO 8601 duration string.
     | More info about format's specification can be found on:
@@ -2651,7 +2643,7 @@ def remove_dict_key(data: IterableCollection, key: Any) -> IterableCollection:
 
 
 def replace_key_names(data: IterableCollection, name_mapping: dict[str, str],
-                      use_reference: bool = False, original_reference: Union[dict, None] = None) -> IterableCollection:
+                      use_reference: bool = False, original_reference: dict | None = None) -> IterableCollection:
     """
     Replace key names in a dictionary.
     Works only with string keys.
@@ -2709,8 +2701,8 @@ def replace_key_names(data: IterableCollection, name_mapping: dict[str, str],
 
 
 # --- Command Functions --- #
-def create_asset_command(client: Client, site: Site, date: str, ip_address: Optional[str] = None,
-                         hostname: Optional[str] = None, hostname_source: Optional[str] = None) -> CommandResults:
+def create_asset_command(client: Client, site: Site, date: str, ip_address: str | None = None,
+                         hostname: str | None = None, hostname_source: str | None = None) -> CommandResults:
     """
     Create a new asset.
 
@@ -2744,9 +2736,9 @@ def create_asset_command(client: Client, site: Site, date: str, ip_address: Opti
     )
 
 
-def create_assets_report_command(client: Client, asset_ids: str, template_id: Optional[str] = None,
-                                 report_name: Optional[str] = None, report_format: Optional[str] = None,
-                                 download_immediately: Optional[str] = None) -> Union[dict, CommandResults]:
+def create_assets_report_command(client: Client, asset_ids: str, template_id: str | None = None,
+                                 report_name: str | None = None, report_format: str | None = None,
+                                 download_immediately: str | None = None) -> dict | CommandResults:
     """
     Create a report about specific assets.
 
@@ -2783,9 +2775,9 @@ def create_assets_report_command(client: Client, asset_ids: str, template_id: Op
     )
 
 
-def create_scan_report_command(client: Client, scan_id: str, template_id: Optional[str] = None,
-                               report_name: Optional[str] = None, report_format: Optional[str] = None,
-                               download_immediately: Optional[str] = None) -> Union[dict, CommandResults]:
+def create_scan_report_command(client: Client, scan_id: str, template_id: str | None = None,
+                               report_name: str | None = None, report_format: str | None = None,
+                               download_immediately: str | None = None) -> dict | CommandResults:
     """
     Create a report about specific sites.
 
@@ -2821,13 +2813,13 @@ def create_scan_report_command(client: Client, scan_id: str, template_id: Option
 
 
 def create_scan_schedule_command(client: Client, site: Site, repeat_behaviour: str, start_date: str,
-                                 excluded_asset_groups: Optional[str] = None, excluded_targets: Optional[str] = None,
-                                 included_asset_groups: Optional[str] = None, included_targets: Optional[str] = None,
-                                 duration_days: Optional[str] = None, duration_hours: Optional[str] = None,
-                                 duration_minutes: Optional[str] = None, enabled: Optional[str] = None,
-                                 frequency: Optional[str] = None, interval: Optional[str] = None,
-                                 scan_name: Optional[str] = None, date_of_month: Optional[int] = None,
-                                 scan_template_id: Optional[str] = None) -> CommandResults:
+                                 excluded_asset_groups: str | None = None, excluded_targets: str | None = None,
+                                 included_asset_groups: str | None = None, included_targets: str | None = None,
+                                 duration_days: str | None = None, duration_hours: str | None = None,
+                                 duration_minutes: str | None = None, enabled: str | None = None,
+                                 frequency: str | None = None, interval: str | None = None,
+                                 scan_name: str | None = None, date_of_month: int | None = None,
+                                 scan_template_id: str | None = None) -> CommandResults:
     """
     Create a new site scan schedule.
 
@@ -2928,22 +2920,22 @@ def create_scan_schedule_command(client: Client, site: Site, repeat_behaviour: s
 
 
 def create_shared_credential_command(client: Client, name: str, site_assignment: str, service: str,
-                                     database_name: Optional[str] = None, description: Optional[str] = None,
-                                     domain: Optional[str] = None, host_restriction: Optional[str] = None,
-                                     http_realm: Optional[str] = None, notes_id_password: Optional[str] = None,
-                                     ntlm_hash: Optional[str] = None, oracle_enumerate_sids: Optional[str] = None,
-                                     oracle_listener_password: Optional[str] = None, oracle_sid: Optional[str] = None,
-                                     password: Optional[str] = None, port_restriction: Optional[str] = None,
-                                     sites: Optional[str] = None, snmp_community_name: Optional[str] = None,
-                                     snmpv3_authentication_type: Optional[str] = None,
-                                     snmpv3_privacy_password: Optional[str] = None,
-                                     snmpv3_privacy_type: Optional[str] = None, ssh_key_pem: Optional[str] = None,
-                                     ssh_permission_elevation: Optional[str] = None,
-                                     ssh_permission_elevation_password: Optional[str] = None,
-                                     ssh_permission_elevation_username: Optional[str] = None,
-                                     ssh_private_key_password: Optional[str] = None,
-                                     use_windows_authentication: Optional[str] = None,
-                                     username: Optional[str] = None) -> CommandResults:
+                                     database_name: str | None = None, description: str | None = None,
+                                     domain: str | None = None, host_restriction: str | None = None,
+                                     http_realm: str | None = None, notes_id_password: str | None = None,
+                                     ntlm_hash: str | None = None, oracle_enumerate_sids: str | None = None,
+                                     oracle_listener_password: str | None = None, oracle_sid: str | None = None,
+                                     password: str | None = None, port_restriction: str | None = None,
+                                     sites: str | None = None, snmp_community_name: str | None = None,
+                                     snmpv3_authentication_type: str | None = None,
+                                     snmpv3_privacy_password: str | None = None,
+                                     snmpv3_privacy_type: str | None = None, ssh_key_pem: str | None = None,
+                                     ssh_permission_elevation: str | None = None,
+                                     ssh_permission_elevation_password: str | None = None,
+                                     ssh_permission_elevation_username: str | None = None,
+                                     ssh_private_key_password: str | None = None,
+                                     use_windows_authentication: str | None = None,
+                                     username: str | None = None) -> CommandResults:
     """
     Create a new shared credential.
 
@@ -3045,8 +3037,8 @@ def create_shared_credential_command(client: Client, name: str, site_assignment:
     )
 
 
-def create_site_command(client: Client, name: str, description: Optional[str] = None, assets: Optional[str] = None,
-                        site_importance: Optional[str] = None, template_id: Optional[str] = None) -> CommandResults:
+def create_site_command(client: Client, name: str, description: str | None = None, assets: str | None = None,
+                        site_importance: str | None = None, template_id: str | None = None) -> CommandResults:
     """
     Create a new site.
 
@@ -3086,9 +3078,9 @@ def create_site_command(client: Client, name: str, description: Optional[str] = 
     )
 
 
-def create_sites_report_command(client: Client, site_ids: str, site_names: str, template_id: Optional[str] = None,
-                                report_name: Optional[str] = None, report_format: Optional[str] = None,
-                                download_immediately: Optional[str] = None) -> Union[dict, CommandResults]:
+def create_sites_report_command(client: Client, site_ids: str, site_names: str, template_id: str | None = None,
+                                report_name: str | None = None, report_format: str | None = None,
+                                download_immediately: str | None = None) -> dict | CommandResults:
     """
     Create a report about specific sites.
 
@@ -3133,24 +3125,23 @@ def create_sites_report_command(client: Client, site_ids: str, site_names: str, 
 
 
 def create_site_scan_credential_command(client: Client, site: Site, name: str,
-                                        service: str, database_name: Optional[str] = None,
-                                        description: Optional[str] = None, domain: Optional[str] = None,
-                                        host_restriction: Optional[str] = None, http_realm: Optional[str] = None,
-                                        notes_id_password: Optional[str] = None, ntlm_hash: Optional[str] = None,
-                                        oracle_enumerate_sids: Optional[str] = None,
-                                        oracle_listener_password: Optional[str] = None,
-                                        oracle_sid: Optional[str] = None, password: Optional[str] = None,
-                                        port_restriction: Optional[str] = None,
-                                        snmp_community_name: Optional[str] = None,
-                                        snmpv3_authentication_type: Optional[str] = None,
-                                        snmpv3_privacy_password: Optional[str] = None,
-                                        snmpv3_privacy_type: Optional[str] = None, ssh_key_pem: Optional[str] = None,
-                                        ssh_permission_elevation: Optional[str] = None,
-                                        ssh_permission_elevation_password: Optional[str] = None,
-                                        ssh_permission_elevation_username: Optional[str] = None,
-                                        ssh_private_key_password: Optional[str] = None,
-                                        use_windows_authentication: Optional[str] = None,
-                                        username: Optional[str] = None) -> CommandResults:
+                                        service: str, database_name: str | None = None,
+                                        description: str | None = None, domain: str | None = None,
+                                        host_restriction: str | None = None, http_realm: str | None = None,
+                                        notes_id_password: str | None = None, ntlm_hash: str | None = None,
+                                        oracle_enumerate_sids: str | None = None,
+                                        oracle_listener_password: str | None = None,
+                                        oracle_sid: str | None = None, password: str | None = None,
+                                        port_restriction: str | None = None, snmp_community_name: str | None = None,
+                                        snmpv3_authentication_type: str | None = None,
+                                        snmpv3_privacy_password: str | None = None,
+                                        snmpv3_privacy_type: str | None = None, ssh_key_pem: str | None = None,
+                                        ssh_permission_elevation: str | None = None,
+                                        ssh_permission_elevation_password: str | None = None,
+                                        ssh_permission_elevation_username: str | None = None,
+                                        ssh_private_key_password: str | None = None,
+                                        use_windows_authentication: str | None = None,
+                                        username: str | None = None) -> CommandResults:
     """
     Create a new site scan credential.
 
@@ -3246,9 +3237,8 @@ def create_site_scan_credential_command(client: Client, site: Site, name: str,
 
 
 def create_vulnerability_exception_command(client: Client, vulnerability_id: str,
-                                           scope_type: str, state: str, reason: str, scope_id: Optional[str] = None,
-                                           expires: Optional[str] = None,
-                                           comment: Optional[str] = None) -> CommandResults:
+                                           scope_type: str, state: str, reason: str, scope_id: str | None = None,
+                                           expires: str | None = None, comment: str | None = None) -> CommandResults:
     """
     Create a vulnerability exception.
 
@@ -3399,8 +3389,8 @@ def delete_vulnerability_exception_command(client: Client, vulnerability_excepti
     )
 
 
-def download_report_command(client: Client, report_id: str, instance_id: str,
-                            report_format: Optional[ReportFileFormat], report_name: Optional[str] = None) -> dict:
+def download_report_command(client: Client, report_id: str, instance_id: str, report_format: ReportFileFormat | None,
+                            report_name: str | None = None) -> dict:
     """
     Download a report file.
 
@@ -3440,7 +3430,7 @@ def download_report_command(client: Client, report_id: str, instance_id: str,
     )
 
 
-def get_asset_command(client: Client, asset_id: str) -> Union[CommandResults, list[CommandResults]]:
+def get_asset_command(client: Client, asset_id: str) -> CommandResults | list[CommandResults]:
     """
     Retrieve information about an asset.
 
@@ -3634,9 +3624,8 @@ def get_asset_command(client: Client, asset_id: str) -> Union[CommandResults, li
     return result
 
 
-def get_assets_command(client: Client, page_size: Optional[str] = None,
-                       page: Optional[str] = None, sort: Optional[str] = None,
-                       limit: Optional[str] = None) -> Union[CommandResults, list[CommandResults]]:
+def get_assets_command(client: Client, page_size: str | None = None, page: str | None = None, sort: str | None = None,
+                       limit: str | None = None) -> CommandResults | list[CommandResults]:
     """
     Retrieve a list of all assets.
 
@@ -3725,7 +3714,7 @@ def get_assets_command(client: Client, page_size: Optional[str] = None,
 
 
 def get_asset_vulnerability_command(client: Client, asset_id: str,
-                                    vulnerability_id: str) -> Union[CommandResults, list[CommandResults]]:
+                                    vulnerability_id: str) -> CommandResults | list[CommandResults]:
     """
     Retrieve information about vulnerability findings on an asset.
 
@@ -3964,7 +3953,7 @@ def get_report_templates_command(client: Client) -> CommandResults:
     )
 
 
-def get_scan_command(client: Client, scan_ids: Union[str, list[str]]) -> Union[CommandResults, list[CommandResults]]:
+def get_scan_command(client: Client, scan_ids: str | list[str]) -> CommandResults | list[CommandResults]:
     """
     Retrieve information about a specific or multiple scans.
 
@@ -3999,9 +3988,9 @@ def get_scan_command(client: Client, scan_ids: Union[str, list[str]]) -> Union[C
     return scans
 
 
-def get_scans_command(client: Client, active: Optional[str] = None, page_size: Optional[str] = None,
-                      page: Optional[str] = None, sort: Optional[str] = None,
-                      limit: Optional[str] = None) -> CommandResults:
+def get_scans_command(client: Client, active: str | None = None, page_size: str | None = None,
+                      page: str | None = None, sort: str | None = None,
+                      limit: str | None = None) -> CommandResults:
     """
     Retrieve a list of all scans.
 
@@ -4061,8 +4050,8 @@ def get_scans_command(client: Client, active: Optional[str] = None, page_size: O
     )
 
 
-def get_sites_command(client: Client, page_size: Optional[str] = None, page: Optional[str] = None,
-                      sort: Optional[str] = None, limit: Optional[str] = None) -> CommandResults:
+def get_sites_command(client: Client, page_size: str | None = None, page: str | None = None,
+                      sort: str | None = None, limit: str | None = None) -> CommandResults:
     """
     Retrieve a list of sites.
 
@@ -4125,8 +4114,8 @@ def get_sites_command(client: Client, page_size: Optional[str] = None, page: Opt
     )
 
 
-def list_scan_schedule_command(client: Client, site: Site, schedule_id: Optional[str] = None,
-                               limit: Optional[str] = None) -> CommandResults:
+def list_scan_schedule_command(client: Client, site: Site, schedule_id: str | None = None,
+                               limit: str | None = None) -> CommandResults:
     """
     Retrieve information about scan schedules for a specific site or a specific scan schedule.
 
@@ -4195,8 +4184,8 @@ def list_scan_schedule_command(client: Client, site: Site, schedule_id: Optional
     )
 
 
-def list_shared_credential_command(client: Client, credential_id: Optional[str],
-                                   limit: Optional[str] = None) -> CommandResults:
+def list_shared_credential_command(client: Client, credential_id: str | None,
+                                   limit: str | None = None) -> CommandResults:
     """
     Retrieve information about all or a specific vulnerability.
 
@@ -4257,7 +4246,7 @@ def list_shared_credential_command(client: Client, credential_id: Optional[str],
     )
 
 
-def list_assigned_shared_credential_command(client: Client, site: Site, limit: Optional[str] = None) -> CommandResults:
+def list_assigned_shared_credential_command(client: Client, site: Site, limit: str | None = None) -> CommandResults:
     """
     Retrieve information about shared credentials for a specific site.
 
@@ -4308,8 +4297,8 @@ def list_assigned_shared_credential_command(client: Client, site: Site, limit: O
     )
 
 
-def list_site_scan_credential_command(client: Client, site: Site, credential_id: Optional[str] = None,
-                                      limit: Optional[str] = None) -> CommandResults:
+def list_site_scan_credential_command(client: Client, site: Site, credential_id: str | None = None,
+                                      limit: str | None = None) -> CommandResults:
     """
     Retrieve information about all or a specific scan credential.
 
@@ -4372,9 +4361,9 @@ def list_site_scan_credential_command(client: Client, site: Site, credential_id:
     )
 
 
-def list_vulnerability_command(client: Client, vulnerability_id: Optional[str], page_size: Optional[str] = None,
-                               page: Optional[str] = None, sort: Optional[str] = None,
-                               limit: Optional[str] = None) -> CommandResults:
+def list_vulnerability_command(client: Client, vulnerability_id: str | None, page_size: str | None = None,
+                               page: str | None = None, sort: str | None = None,
+                               limit: str | None = None) -> CommandResults:
     """
     Retrieve information about all or a specific vulnerability.
 
@@ -4448,9 +4437,9 @@ def list_vulnerability_command(client: Client, vulnerability_id: Optional[str], 
     )
 
 
-def list_vulnerability_exceptions_command(client: Client, vulnerability_exception_id: Optional[str] = None,
-                                          page_size: Optional[str] = None, page: Optional[str] = None,
-                                          sort: Optional[str] = None, limit: Optional[str] = None) -> CommandResults:
+def list_vulnerability_exceptions_command(client: Client, vulnerability_exception_id: str | None = None,
+                                          page_size: str | None = None, page: str | None = None,
+                                          sort: str | None = None, limit: str | None = None) -> CommandResults:
     """
     Retrieve information about all or a specific vulnerability exception.
 
@@ -4523,12 +4512,12 @@ def list_vulnerability_exceptions_command(client: Client, vulnerability_exceptio
     )
 
 
-def search_assets_command(client: Client, filter_query: Optional[str] = None, ip_addresses: Optional[str] = None,
-                          hostnames: Optional[str] = None, risk_score: Optional[str] = None,
-                          vulnerability_title: Optional[str] = None, site_ids: Optional[str] = None,
-                          site_names: Optional[str] = None, match: Optional[str] = None,
-                          page_size: Optional[str] = None, page: Optional[str] = None, sort: Optional[str] = None,
-                          limit: Optional[str] = None) -> Union[CommandResults, list[CommandResults]]:
+def search_assets_command(client: Client, filter_query: str | None = None, ip_addresses: str | None = None,
+                          hostnames: str | None = None, risk_score: str | None = None,
+                          vulnerability_title: str | None = None, site_ids: str | None = None,
+                          site_names: str | None = None, match: str | None = None,
+                          page_size: str | None = None, page: str | None = None, sort: str | None = None,
+                          limit: str | None = None) -> CommandResults | list[CommandResults]:
     """
     Retrieve a list of all assets with access permissions that match the provided search filters.
 
@@ -4570,7 +4559,7 @@ def search_assets_command(client: Client, filter_query: Optional[str] = None, ip
     if not match:
         match = MATCH_DEFAULT_VALUE
 
-    filters_data: list[Union[list[str], str]] = []
+    filters_data: list[list[str] | str] = []
 
     if filter_query:
         filters_data.append(filter_query.split(";"))
@@ -4696,8 +4685,8 @@ def set_assigned_shared_credential_status_command(client: Client, site: Site,
     )
 
 
-def start_assets_scan_command(client: Client, ip_addresses: Optional[str] = None,
-                              hostnames: Optional[str] = None, scan_name: Optional[str] = None) -> CommandResults:
+def start_assets_scan_command(client: Client, ip_addresses: str | None = None,
+                              hostnames: str | None = None, scan_name: str | None = None) -> CommandResults:
     """
     Start a scan on the provided assets.
 
@@ -4769,7 +4758,7 @@ def start_assets_scan_command(client: Client, ip_addresses: Optional[str] = None
 
 
 def start_site_scan_command(client: Client, site: Site,
-                            scan_name: Optional[str], hosts: Optional[str]) -> CommandResults:
+                            scan_name: str | None, hosts: str | None) -> CommandResults:
     """
     Start a scan for a specific site.
 
@@ -4824,24 +4813,24 @@ def update_scan_command(client: Client, scan_id: str, scan_status: ScanStatus) -
 
 
 def update_shared_credential_command(client: Client, shared_credential_id: str, name: str, site_assignment: str,
-                                     service: str, database_name: Optional[str] = None,
-                                     description: Optional[str] = None, domain: Optional[str] = None,
-                                     host_restriction: Optional[str] = None, http_realm: Optional[str] = None,
-                                     notes_id_password: Optional[str] = None, ntlm_hash: Optional[str] = None,
-                                     oracle_enumerate_sids: Optional[str] = None,
-                                     oracle_listener_password: Optional[str] = None,
-                                     oracle_sid: Optional[str] = None, password: Optional[str] = None,
-                                     port_restriction: Optional[str] = None, sites: Optional[str] = None,
-                                     snmp_community_name: Optional[str] = None,
-                                     snmpv3_authentication_type: Optional[str] = None,
-                                     snmpv3_privacy_password: Optional[str] = None,
-                                     snmpv3_privacy_type: Optional[str] = None, ssh_key_pem: Optional[str] = None,
-                                     ssh_permission_elevation: Optional[str] = None,
-                                     ssh_permission_elevation_password: Optional[str] = None,
-                                     ssh_permission_elevation_username: Optional[str] = None,
-                                     ssh_private_key_password: Optional[str] = None,
-                                     use_windows_authentication: Optional[str] = None,
-                                     username: Optional[str] = None) -> CommandResults:
+                                     service: str, database_name: str | None = None,
+                                     description: str | None = None, domain: str | None = None,
+                                     host_restriction: str | None = None, http_realm: str | None = None,
+                                     notes_id_password: str | None = None, ntlm_hash: str | None = None,
+                                     oracle_enumerate_sids: str | None = None,
+                                     oracle_listener_password: str | None = None,
+                                     oracle_sid: str | None = None, password: str | None = None,
+                                     port_restriction: str | None = None, sites: str | None = None,
+                                     snmp_community_name: str | None = None,
+                                     snmpv3_authentication_type: str | None = None,
+                                     snmpv3_privacy_password: str | None = None,
+                                     snmpv3_privacy_type: str | None = None, ssh_key_pem: str | None = None,
+                                     ssh_permission_elevation: str | None = None,
+                                     ssh_permission_elevation_password: str | None = None,
+                                     ssh_permission_elevation_username: str | None = None,
+                                     ssh_private_key_password: str | None = None,
+                                     use_windows_authentication: str | None = None,
+                                     username: str | None = None) -> CommandResults:
     """
     Update an existing shared credential.
 
@@ -4943,23 +4932,22 @@ def update_shared_credential_command(client: Client, shared_credential_id: str, 
 
 
 def update_site_scan_credential_command(client: Client, site: Site, credential_id: str, name: str, service: str,
-                                        database_name: Optional[str] = None, description: Optional[str] = None,
-                                        domain: Optional[str] = None, host_restriction: Optional[str] = None,
-                                        http_realm: Optional[str] = None, notes_id_password: Optional[str] = None,
-                                        ntlm_hash: Optional[str] = None, oracle_enumerate_sids: Optional[str] = None,
-                                        oracle_listener_password: Optional[str] = None,
-                                        oracle_sid: Optional[str] = None, password: Optional[str] = None,
-                                        port_restriction: Optional[str] = None,
-                                        snmp_community_name: Optional[str] = None,
-                                        snmpv3_authentication_type: Optional[str] = None,
-                                        snmpv3_privacy_password: Optional[str] = None,
-                                        snmpv3_privacy_type: Optional[str] = None, ssh_key_pem: Optional[str] = None,
-                                        ssh_permission_elevation: Optional[str] = None,
-                                        ssh_permission_elevation_password: Optional[str] = None,
-                                        ssh_permission_elevation_username: Optional[str] = None,
-                                        ssh_private_key_password: Optional[str] = None,
-                                        use_windows_authentication: Optional[str] = None,
-                                        username: Optional[str] = None) -> CommandResults:
+                                        database_name: str | None = None, description: str | None = None,
+                                        domain: str | None = None, host_restriction: str | None = None,
+                                        http_realm: str | None = None, notes_id_password: str | None = None,
+                                        ntlm_hash: str | None = None, oracle_enumerate_sids: str | None = None,
+                                        oracle_listener_password: str | None = None,
+                                        oracle_sid: str | None = None, password: str | None = None,
+                                        port_restriction: str | None = None, snmp_community_name: str | None = None,
+                                        snmpv3_authentication_type: str | None = None,
+                                        snmpv3_privacy_password: str | None = None,
+                                        snmpv3_privacy_type: str | None = None, ssh_key_pem: str | None = None,
+                                        ssh_permission_elevation: str | None = None,
+                                        ssh_permission_elevation_password: str | None = None,
+                                        ssh_permission_elevation_username: str | None = None,
+                                        ssh_private_key_password: str | None = None,
+                                        use_windows_authentication: str | None = None,
+                                        username: str | None = None) -> CommandResults:
     """
     Update an existing site scan credential.
 
@@ -5054,14 +5042,14 @@ def update_site_scan_credential_command(client: Client, site: Site, credential_i
 
 
 def update_scan_schedule_command(client: Client, site: Site, scan_schedule_id: int, repeat_behaviour: str,
-                                 start_date: str, excluded_asset_groups: Optional[str] = None,
-                                 excluded_targets: Optional[str] = None, included_asset_groups: Optional[str] = None,
-                                 included_targets: Optional[str] = None, duration_days: Optional[str] = None,
-                                 duration_hours: Optional[str] = None, duration_minutes: Optional[str] = None,
-                                 enabled: Optional[str] = None, frequency: Optional[str] = None,
-                                 interval: Optional[str] = None, scan_name: Optional[str] = None,
-                                 date_of_month: Optional[str] = None,
-                                 scan_template_id: Optional[str] = None) -> CommandResults:
+                                 start_date: str, excluded_asset_groups: str | None = None,
+                                 excluded_targets: str | None = None, included_asset_groups: str | None = None,
+                                 included_targets: str | None = None, duration_days: str | None = None,
+                                 duration_hours: str | None = None, duration_minutes: str | None = None,
+                                 enabled: str | None = None, frequency: str | None = None,
+                                 interval: str | None = None, scan_name: str | None = None,
+                                 date_of_month: str | None = None,
+                                 scan_template_id: str | None = None) -> CommandResults:
     """
     Update a site scan schedule.
 
@@ -5219,7 +5207,7 @@ def main():
             verify=not params.get("unsecure")
         )
 
-        results: Union[CommandResults, list[CommandResults], dict, str]
+        results: CommandResults | list[CommandResults] | dict | str
 
         if command == "test-module":
             client.get_assets(page_size=1, limit=1)
