@@ -360,7 +360,8 @@ command_map = {
     'fancy-email-make-table': make_table_command,
     'fancy-email-make-email': make_email_command,
     'fancy-email-make-timestring': make_date_time_string,
-    'fancy-email-make-logo': make_logo_command
+    'fancy-email-make-logo': make_logo_command,
+    'test-module': lambda *args: True
 }
 
 
