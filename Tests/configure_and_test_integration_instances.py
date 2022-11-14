@@ -1698,7 +1698,8 @@ def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Tu
         build (Build): The build object.
     Returns:
         (Set[str]): The set of the pack names that should not be installed.
-        (Set[str]): The set of the non-hidden pack names (should be installed only in post update).
+        (Set[str]): The set of the pack names that should be installed only in post update. (non-hidden packs or packs
+                                                that new to current marketplace)
     """
     non_hidden_packs = get_turned_non_hidden_packs(modified_packs_names, build)
     packs_with_higher_min_version = get_packs_with_higher_min_version(modified_packs_names - non_hidden_packs,
@@ -1742,10 +1743,11 @@ def main():
         2. Disable all enabled integrations.
         3. Finds only modified (not new) packs and install them, same version as in production.
             (before the update in this branch).
-        4. Finds all the packs that should not be intalled, like turned hidden -> non-hidden packs names
-           or packs with higher min version than the server version.
+        4. Finds all the packs that should not be installed, like turned hidden -> non-hidden packs names
+           or packs with higher min version than the server version,
+           or existing packs that were added to a new marketplace.
         5. Compares master to commit_sha and return two lists - new integrations and modified in the current branch.
-           Filter the lists, add the turned non-hidden to the new integrations list and remove it from the modified list.
+           Filter the lists, add the turned non-hidden to the new integrations list and remove it from the modified list
            This filter purpose is to ignore the turned-hidden integration tests in the pre-update step. (#CIAC-3009)
         6. Configures integration instances (same version as in production) for the modified packs
             and runs `test-module` (pre-update).
@@ -1771,10 +1773,12 @@ def main():
         build.install_nightly_pack()
     else:
         modified_packs_names = get_non_added_packs_ids(build)
+        # todo: add
         packs_not_to_install, packs_to_install_in_post_update = get_packs_not_to_install(modified_packs_names, build)
         packs_to_install = modified_packs_names - packs_not_to_install
         build.install_packs(pack_ids=packs_to_install)
         new_integrations_names, modified_integrations_names = build.get_changed_integrations(packs_to_install_in_post_update)
+        # test button:
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations_names,
                                                                                             modified_integrations_names)
         modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
