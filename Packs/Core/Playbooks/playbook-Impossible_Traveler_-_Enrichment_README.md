@@ -1,7 +1,7 @@
-This playbook get as an input all of the involved IP addresses and identities from the Impossible Traveler playbook alert and enriches them based on the following:
+This playbook get as an input all of the involved IP addresses and identities from the Impossible Traveler playbook alert, and enriches them based on the following:
 * Geo location
 * Active Directory
-* Verdict enrichment e.g. VirusTotal, AbuseIPDB, etc.
+* IP enrichment e.g. VirusTotal, AbuseIPDB, etc.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -15,9 +15,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 * http
-* Set
-* DeleteContext
 * ParseJSON
+* DeleteContext
+* Set
 
 ### Commands
 * ip
@@ -28,12 +28,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| sourceip | The source IP to iterate over |  | Optional |
+| sourceip | The source IP to iterate over. |  | Optional |
 
 ## Playbook Outputs
 ---
-There are no outputs for this playbook.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| UserManagerEmail | The email of the user's manager. | unknown |
 
 ## Playbook Image
 ---
-![Impossible Traveler - Enrichment](https://raw.githubusercontent.com/demisto/content/b391822313ec453de36439890a0137d4dd126e8e/Packs/Core/doc_files/Impossible_Traveler_-_Enrichment.png)
+![Impossible Traveler - Enrichment](../doc_files/Impossible_Traveler_-_Enrichment.png)
