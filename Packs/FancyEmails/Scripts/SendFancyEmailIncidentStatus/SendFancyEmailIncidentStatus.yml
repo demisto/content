@@ -27,6 +27,7 @@ args:
   name: bcc
   description: Passed to send-mail, Address to bcc Email
 - name: subject
+  description: Passed to send-mail, Subject of Email
 - description: Warning Banner Text
   name: banner
 - auto: PREDEFINED
@@ -36,10 +37,12 @@ args:
   predefined:
   - "True"
   - "False"
-- description: 'Custom CSS to '
+- description: 'Custom CSS to use'
   name: custom_css
 - name: attachIDs
+  description: 'Passed to send-mail, Subject of Email, XSOAR File IDs for Attachments'
 - name: attachNames
+  description: 'Passed to send-mail, Subject of Email, File Names for Attachments'
 commonfields:
   id: SendFancyEmailIncidentStatus
   version: -1
