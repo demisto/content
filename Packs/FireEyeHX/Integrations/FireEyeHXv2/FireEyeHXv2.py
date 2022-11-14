@@ -692,10 +692,10 @@ class Client(BaseClient):
             )
         except Exception as e:
             exception_str = str(e)
-            demisto.debug(f'Encountered an error for url {self._base_url}/token: {exception_str}')
+            demisto.info(f'Encountered an error for url {self._base_url}/token: {exception_str}')
             if 'Incorrect user id or password' in exception_str:
                 raise DemistoException('Unauthorized - Incorrect user id or password')
-            raise ValueError("Server URL incorrect")
+            raise ValueError('Could not get a token')
 
         # successful request
         response_headers = response.headers
@@ -714,8 +714,8 @@ class Client(BaseClient):
                     url_suffix='token',
                     resp_type='response'
                 )
-            except Exception:
-                demisto.debug('Encountered an error when tring to logout')
+            except Exception as e:
+                demisto.debug(f'Encountered an error when tring to logout: {e}')
 
             # successful request
             self._headers['X-FeApi-Token'] = None
