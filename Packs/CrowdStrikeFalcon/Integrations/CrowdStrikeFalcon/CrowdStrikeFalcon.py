@@ -1999,13 +1999,13 @@ def migrate_last_run():
     updated_last_run_detections = {}
     updated_last_run_detections['time'] = last_run.get('first_behavior_detection_time')
     updated_last_run_detections['offset'] = last_run.get('detection_offset')
-    
+
     updated_last_run_incidents = {}
     updated_last_run_incidents['time'] = last_run.get('first_behavior_incident_time')
     updated_last_run_incidents['last_fetched_incident'] = last_run.get('last_fetched_incident')
     updated_last_run_incidents['offset'] = last_run.get('incident_offset')
     demisto.setLastRun([updated_last_run_detections, updated_last_run_incidents])
-    
+
 
 def fetch_incidents():
     incidents = []  # type:List
