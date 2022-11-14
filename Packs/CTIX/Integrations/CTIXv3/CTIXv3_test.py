@@ -26,13 +26,20 @@ from CTIXv3 import (
     get_indicator_observations_command,
     get_conversion_feed_source_command,
     get_lookup_threat_data_command,
+    domain,
+    url,
+    ip,
+    file,
 )
 
 """CONSTANTS"""
-
 BASE_URL = "http://test.com/"
 ACCESS_ID = "access_id"
 SECRET_KEY = "secret_key"
+
+BASE_URL = "https://cs30.cyware.com/ctixapi/"
+ACCESS_ID = "f77e8e57-aac6-464a-81f4-7a72f65160e7"
+SECRET_KEY = "62e69548-a980-4d25-bc8b-3a7c1e14dcd2"
 
 
 def util_load_json(path):
@@ -604,7 +611,7 @@ def test_search_for_tag_command(requests_mock):
 
     response = search_for_tag_command(client, args)
 
-    assert response.outputs == mock_response['results']
+    assert response.outputs == mock_response["results"]
     assert response.outputs_prefix == "CTIX.SearchTag"
 
     assert isinstance(response.raw_response, list)
@@ -680,7 +687,7 @@ def test_get_indicator_relations_command(requests_mock):
 
     response = get_indicator_relations_command(client, args)
 
-    assert response.outputs == mock_response['results']
+    assert response.outputs == mock_response["results"]
     assert response.outputs_prefix == "CTIX.IndicatorRelations"
 
     assert isinstance(response.raw_response, list)
@@ -705,7 +712,7 @@ def test_get_indicator_observations_command(requests_mock):
 
     response = get_indicator_observations_command(client, args)
 
-    assert response.outputs == mock_response['results']
+    assert response.outputs == mock_response["results"]
     assert response.outputs_prefix == "CTIX.IndicatorObservations"
 
     assert isinstance(response.raw_response, list)
@@ -728,7 +735,7 @@ def test_get_conversion_feed_source_command(requests_mock):
 
     response = get_conversion_feed_source_command(client, args)
 
-    assert response.outputs[0] == mock_response['results'][0]
+    assert response.outputs[0] == mock_response["results"][0]
     assert response.outputs_prefix == "CTIX.ConversionFeedSource"
 
     assert isinstance(response.raw_response, list)
@@ -755,6 +762,122 @@ def test_get_lookup_threat_data_command(requests_mock):
     }
 
     response = get_lookup_threat_data_command(client, args)
+
+    assert response[0].outputs == mock_response["results"][0]
+    assert response[0].outputs_prefix == "CTIX.ThreatDataLookup"
+
+    assert isinstance(response[0].raw_response, dict)
+    assert len(response[0].raw_response) == 37
+
+
+def test_domain(requests_mock):
+    mock_response = util_load_json("test_data/domain.json")
+    requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
+
+    client = Client(
+        base_url=BASE_URL,
+        access_id=ACCESS_ID,
+        secret_key=SECRET_KEY,
+        verify=False,
+        proxies={},
+    )
+
+    args = {
+        "domain": "google.com",
+        "page": 1,
+        "page_size": 1,
+        "object_type": "indicator",
+        "object_names": "foo,bar",
+    }
+
+    response = domain(client, args)
+
+    assert response[0].outputs == mock_response["results"][0]
+    assert response[0].outputs_prefix == "CTIX.ThreatDataLookup"
+
+    assert isinstance(response[0].raw_response, dict)
+    assert len(response[0].raw_response) == 37
+
+
+def test_url(requests_mock):
+    mock_response = util_load_json("test_data/url.json")
+    requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
+
+    client = Client(
+        base_url=BASE_URL,
+        access_id=ACCESS_ID,
+        secret_key=SECRET_KEY,
+        verify=False,
+        proxies={},
+    )
+
+    args = {
+        "url": "https://indiaimpex.co/aod/offerTrombley",
+        "page": 1,
+        "page_size": 1,
+        "object_type": "indicator",
+        "object_names": "foo,bar",
+    }
+
+    response = url(client, args)
+
+    assert response[0].outputs == mock_response["results"][0]
+    assert response[0].outputs_prefix == "CTIX.ThreatDataLookup"
+
+    assert isinstance(response[0].raw_response, dict)
+    assert len(response[0].raw_response) == 37
+
+
+def test_ip(requests_mock):
+    mock_response = util_load_json("test_data/ip.json")
+    requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
+
+    client = Client(
+        base_url=BASE_URL,
+        access_id=ACCESS_ID,
+        secret_key=SECRET_KEY,
+        verify=False,
+        proxies={},
+    )
+
+    args = {
+        "ip": "1.2.3.4",
+        "page": 1,
+        "page_size": 1,
+        "object_type": "indicator",
+        "object_names": "foo,bar",
+    }
+
+    response = ip(client, args)
+
+    assert response[0].outputs == mock_response["results"][0]
+    assert response[0].outputs_prefix == "CTIX.ThreatDataLookup"
+
+    assert isinstance(response[0].raw_response, dict)
+    assert len(response[0].raw_response) == 37
+
+
+def test_file(requests_mock):
+    mock_response = util_load_json("test_data/file.json")
+    requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
+
+    client = Client(
+        base_url=BASE_URL,
+        access_id=ACCESS_ID,
+        secret_key=SECRET_KEY,
+        verify=False,
+        proxies={},
+    )
+
+    args = {
+        "file": "a6a91e61a729bb4c12cc3db3eb9ea746",
+        "page": 1,
+        "page_size": 1,
+        "object_type": "indicator",
+        "object_names": "foo,bar",
+    }
+
+    response = file(client, args)
 
     assert response[0].outputs == mock_response["results"][0]
     assert response[0].outputs_prefix == "CTIX.ThreatDataLookup"

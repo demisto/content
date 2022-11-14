@@ -74,8 +74,7 @@ script:
       - pink
       - light-red
       - grey
-      description: New tag's name for the defined colour. If no colour selected, colour
-        grey will be given
+      description: New tag's name for the defined colour. If no colour selected, colour grey will be given
     outputs:
     - contextPath: CTIX.Tag.name
       description: Name of the tag

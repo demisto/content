@@ -2,19 +2,22 @@ register_module_line("CTIX v3", "start", __line__())
 # Uncomment while development
 
 
+import urllib3
+import requests
+from typing import Any, Dict
+import urllib.parse
+import time
+import json
+import hmac
+import hashlib
+import base64
+
+# register_module_line("CTIX v3", "start", __line__())
+# Uncomment while development=
+
+
 """IMPORTS"""
 
-
-import base64
-import hashlib
-import hmac
-import json
-import time
-import urllib.parse
-from typing import Any, Dict
-
-import requests
-import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
