@@ -1,0 +1,246 @@
+[
+    {
+        "severe_issues": 1,
+        "domain_names": [
+            "test-1",
+            "test-2"
+        ],
+        "dynamically_resolved": "no",
+        "id": "ip/dummy",
+        "organizations": [
+            "Acme Interior Design"
+        ],
+        "first_seen": "2022-03-17T03:11:02.882Z",
+        "open_ports": [
+            {
+                "status": "open",
+                "port": 5800,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 5000,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 119,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 1026,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 79,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 106,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 443,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 873,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 4040,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 5009,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 389,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 1028,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 5357,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 80,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 2000,
+                "protocol": "tcp"
+            }
+        ],
+        "security_grade": "A",
+        "investigation_status": "uninvestigated",
+        "locations": [
+            "IND"
+        ],
+        "ip": "test",
+        "last_seen": "2022-03-24T04:26:03.296Z",
+        "type": "ip",
+        "closed_ports": [
+            {
+                "status": "closed",
+                "port": 10000,
+                "protocol": "tcp"
+            },
+            {
+                "status": "closed",
+                "port": 53,
+                "protocol": "tcp"
+            }
+        ],
+        "hosting_type": "undetermined",
+        "status": "new",
+        "alive": true,
+        "issues_count": 1
+    },
+    {
+        "severe_issues": 0,
+        "domain_names": [
+            "test-3",
+            "test-4"
+        ],
+        "dynamically_resolved": "no",
+        "id": "ip/dummy-1",
+        "organizations": [
+            "Acme Interior Design",
+            "Acme Corporation"
+        ],
+        "first_seen": "2022-03-17T03:11:02.882Z",
+        "open_ports": [
+            {
+                "status": "open",
+                "port": 3306,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 995,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 587,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 21,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 110,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 143,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 53,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 2525,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 443,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 25,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 465,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 993,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 5432,
+                "protocol": "tcp"
+            },
+            {
+                "status": "open",
+                "port": 80,
+                "protocol": "tcp"
+            }
+        ],
+        "security_grade": "A",
+        "investigation_status": "uninvestigated",
+        "locations": [
+            "IND"
+        ],
+        "ip": "dummy-3",
+        "last_seen": "2022-03-24T04:26:03.296Z",
+        "type": "ip",
+        "closed_ports": [
+            {
+                "status": "closed",
+                "port": 1022,
+                "protocol": "tcp"
+            },
+            {
+                "status": "closed",
+                "port": 34571,
+                "protocol": "tcp"
+            },
+            {
+                "status": "closed",
+                "port": 81,
+                "protocol": "tcp"
+            },
+            {
+                "status": "closed",
+                "port": 20,
+                "protocol": "tcp"
+            },
+            {
+                "status": "closed",
+                "port": 34573,
+                "protocol": "tcp"
+            },
+            {
+                "status": "closed",
+                "port": 34572,
+                "protocol": "tcp"
+            }
+        ],
+        "hosting_type": "cloud",
+        "status": "new",
+        "alive": true,
+        "issues_count": 6
+    }
+]
