@@ -323,12 +323,10 @@ class SecurityAndComplianceClient {
             "SharePointLocationExclusion" = $share_point_location_exclusion
         }
         $response = New-ComplianceSearch @cmd_params
-        
         # Close session to remote
         $this.DisconnectSession()
 
         return $response
-        
         <#
             .DESCRIPTION
             Create compliance search in the Security & Compliance Center.
@@ -402,7 +400,6 @@ class SecurityAndComplianceClient {
         Set-ComplianceSearch @cmd_params
         # Close session to remote
         $this.DisconnectSession()
-        
         <#
             .DESCRIPTION
             Set compliance search in the Security & Compliance Center.
@@ -491,7 +488,6 @@ class SecurityAndComplianceClient {
         $this.DisconnectSession()
 
         return $response
-        
 
        <#
             .DESCRIPTION
@@ -518,7 +514,6 @@ class SecurityAndComplianceClient {
         $this.DisconnectSession()
 
         return $response
-    
         <#
             .DESCRIPTION
             Get compliance search by name from the Security & Compliance Center.
@@ -614,7 +609,6 @@ class SecurityAndComplianceClient {
         $this.DisconnectSession()
 
         return $response
-        
         <#
             .DESCRIPTION
             Create compliance search action in the Security & Compliance Center.
@@ -645,10 +639,8 @@ class SecurityAndComplianceClient {
         $this.CreateSession()
         # Execute command
         Remove-ComplianceSearchAction -Identity $search_action_name -Confirm:$false
-        
         # Close session to remote
         $this.DisconnectSession()
-
 
         <#
             .DESCRIPTION
@@ -675,8 +667,6 @@ class SecurityAndComplianceClient {
         $this.DisconnectSession()
 
         return $response
-    
-    
         <#
             .DESCRIPTION
             List all compliance search action in the Security & Compliance Center.
@@ -702,7 +692,6 @@ class SecurityAndComplianceClient {
         # Close session to remote
         $this.DisconnectSession()
         return $response
-
         <#
             .DESCRIPTION
             Get compliance search action in the Security & Compliance Center.
@@ -725,9 +714,8 @@ class SecurityAndComplianceClient {
 #### COMMAND FUNCTIONS ####
 
 function TestModuleCommand ([SecurityAndComplianceClient]$cs_client) {
-
     $cs_client.ListSearchActions() | Out-Null
-    
+
     $raw_response = $null
     $human_readable = "ok"
     $entry_context = $null
@@ -931,8 +919,6 @@ function GetSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable
             $file_entry = FileResult "$($kwargs.search_action_name)_search_action.json" $($parsed_results_all | ConvertTo-Json) $true
         }
     }
-
-
     return $human_readable, $entry_context, $raw_response, $file_entry
 }
 
@@ -956,6 +942,7 @@ function ListSearchActionsCommand([SecurityAndComplianceClient]$client, [hashtab
 #### INTEGRATION COMMANDS MANAGER ####
 
 function Main {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
     $command = $Demisto.GetCommand()
     $command_arguments = $Demisto.Args()
     $integration_params = $Demisto.Params()
@@ -968,7 +955,7 @@ function Main {
         } else {
             $password = $null
         }
-    
+
         $cs_client = [SecurityAndComplianceClient]::new(
             $integration_params.url,
             $integration_params.app_id,
