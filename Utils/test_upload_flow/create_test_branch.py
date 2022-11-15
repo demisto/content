@@ -1,17 +1,36 @@
 import argparse
-import time
+import json
 import logging
 import os
-from git import GitCommandError, Repo, Head
+import shutil
+import subprocess
+import time
+from pathlib import Path
+from typing import Union
 
-from Tests.Marketplace.marketplace_services import *
+from git import GitCommandError, Head, Repo
+
+# from Tests.Marketplace.marketplace_services import *
 versions_dict = {}
 pack_items_dict = {}
 changed_packs = set()
 
 import logging
-from Tests.scripts.utils.log_util import install_logging
+
+# from Tests.scripts.utils.log_util import install_logging
 # install_logging('create_test_branch.log', logger=logging)
+
+
+def json_write(file_path: str, data: Union[list, dict]):
+    """ Writes given data to a json file
+
+    Args:
+        file_path: The file path
+        data: The data to write
+
+    """
+    with open(file_path, "w") as f:
+        f.write(json.dumps(data, indent=4))
 
 
 def add_changed_pack(func):
@@ -66,13 +85,14 @@ def create_new_pack():
 @add_changed_pack
 def add_dependency(base_pack: Path, new_depndency_pack: Path):
     metadata_json = base_pack / 'pack_metadata.json'
-    with metadata_json.open('r') as f:
-        base_metadata = json.load(f)
+    with metadata_json.open('r') as fr:
+        base_metadata = json.load(fr)
     new_pack_name = new_depndency_pack.name
     base_metadata['dependencies'][new_pack_name] = {
         "mandatory": True,
         "display_name": new_pack_name
     }
+    json_write(str(metadata_json), base_metadata)
     return base_pack, base_metadata['currentVersion'], None
 
 
@@ -183,10 +203,10 @@ def get_current_version(pack: Path):
     return base_metadata['currentVersion']
 
 
-def get_all_packs_items_dict(pack: Path):
-    pack = Pack(pack.name, str(pack))
-    pack.collect_content_items()
-    return pack._content_items
+# def get_all_packs_items_dict(pack: Path):
+#     pack = Pack(pack.name, str(pack))
+#     pack.collect_content_items()
+#     return pack._content_items
 
 
 def create_new_branch(repo: Repo, new_branch_name: str) -> Head:
