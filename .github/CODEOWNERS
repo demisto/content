@@ -2,25 +2,28 @@
 /Tests/Marketplace/approved_tags.json @glicht @bakatzir @GuyLibermanPA
 /Tests/Marketplace/approved_usecases.json @glicht @bakatzir @GuyLibermanPA
 /Tests/Marketplace/landingPage_sections.json @glicht @bakatzir @GuyLibermanPA
+/Tests/Marketplace/approved_categories.json @glicht @bakatzir @GuyLibermanPA
 
 # Marketplace & Upload-Flow
-/Tests/Marketplace/upload_git_snapshot.py @Noy-Maimon
-/Tests/Marketplace/install_packs.sh @Noy-Maimon
-/Tests/Marketplace/configure_and_install_packs.py @Noy-Maimon
-/Tests/Marketplace/copy_and_upload_packs.py @Noy-Maimon
-/Tests/Marketplace/marketplace_services.py @Noy-Maimon
-/Tests/Marketplace/marketplace_statistics.py @Noy-Maimon
-/Tests/Marketplace/marketplace_constants.py @Noy-Maimon
-/Tests/Marketplace/zip_packs.py @Noy-Maimon
-/Tests/Marketplace/upload_packs.py @Noy-Maimon
-/Tests/Marketplace/packs_dependencies.py @Noy-Maimon
-/Tests/Marketplace/search_and_install_packs.py @Noy-Maimon
-/Tests/scripts/prepare_content_packs_for_testing.sh @Noy-Maimon
-/Utils/trigger_test_upload_flow.sh @Noy-Maimon
-/Utils/trigger_upload_packs_to_production.sh @Noy-Maimon
+/Tests/scripts/create_artifacts_graph/create_artifacts.py @ilaner
+/Tests/Marketplace/upload_git_snapshot.py @yaakovpraisler
+/Tests/Marketplace/install_packs.sh @yaakovpraisler
+/Tests/Marketplace/configure_and_install_packs.py @yaakovpraisler
+/Tests/Marketplace/copy_and_upload_packs.py @yaakovpraisler
+/Tests/Marketplace/marketplace_services.py @yaakovpraisler @ilaner
+/Tests/Marketplace/marketplace_statistics.py @yaakovpraisler
+/Tests/Marketplace/marketplace_constants.py @yaakovpraisler
+/Tests/Marketplace/zip_packs.py @yaakovpraisler
+/Tests/Marketplace/upload_packs.py @yaakovpraisler @ilaner
+/Tests/Marketplace/packs_dependencies.py @yaakovpraisler
+/Tests/Marketplace/search_and_install_packs.py @yaakovpraisler
+/Tests/scripts/prepare_content_packs_for_testing.sh @yaakovpraisler
+/Utils/trigger_test_upload_flow.sh @yaakovpraisler
+/Utils/trigger_upload_packs_to_production.sh @yaakovpraisler
 
 # Test Collection
 /Tests/scripts/collect_tests @dorschw
+/Tests/scripts/collect_tests/id_set.py @ilaner
 
 # PANW Products
 /Packs/Palo_Alto_Networks_Enterprise_DLP/ @DeanArbel
@@ -57,6 +60,7 @@
 .gitlab/* @esharf
 .gitlab-ci.yml @esharf
 /Tests/scripts/wait_in_line_for_xsiam_env.sh @daryakoval
+.gitlab/ci/staging.yml @ilaner
 
 # SDK Related
 .gitlab/ci/sdk-nightly.yml @dorschw
