@@ -1,7 +1,7 @@
 import pytest
 import io
 from CommonServerPython import *
-from PANOSPolicyOptimizer import Client, policy_optimizer_get_rules_command, policy_optimizer_get_dag_command, policy_optimizer_get_rules_command
+from PANOSPolicyOptimizer import Client, policy_optimizer_get_rules_command, policy_optimizer_get_dag_command
 
 BASE_URL = 'https://test.com'
 
@@ -160,6 +160,7 @@ def test_get_unused_rules(mocker, position, num_of_rules):
     Then: return rules based on their location
 
     """
+
     def mock_policy_optimizer_get_rules(timeframe: str, usage: str, exclude: bool, position: str, rule_type: str):
         pre = {'result': {'result': {'entry': ['test1', 'test2']}}}
         post = {'result': {'result': {'entry': ['test3']}}}
@@ -170,12 +171,12 @@ def test_get_unused_rules(mocker, position, num_of_rules):
 
     client = get_panorama_instance_client()
     mocker.patch.object(client, 'policy_optimizer_get_rules', side_effect=mock_policy_optimizer_get_rules)
-    args= { 'timeframe': '',
+    args = {'timeframe': '',
             'usage': 'test',
             'exclude': 'false',
             'position': position,
             'rule_type': 'unused'
-    }
+            }
     rules = policy_optimizer_get_rules_command(client, args).outputs
 
     assert len(rules) == num_of_rules
