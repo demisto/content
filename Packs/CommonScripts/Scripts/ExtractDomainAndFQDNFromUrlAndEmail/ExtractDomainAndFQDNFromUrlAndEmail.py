@@ -7,10 +7,10 @@ import re
 PROOFPOINT_PREFIXES = ['https://urldefense.proofpoint.com/',
                        "https://urldefense.com/"]
 ATP_LINK_REG = r'(https:\/\/\w*|\w*)\.safelinks\.protection\.outlook\.com/'
-DOMAIN_REGEX = r"(?i)(?:(?:http|ftp|hxxp)s?(?:://|-3A__|%3A%2F%2F))?((?:[^\\\.@\s\"',(\[:?=]+(?:\.|\[\.\]))+[a-zA-Z]{2,})(?:[_/\s\"',)\]]|[.]\s|%2F|$)" # noqa: E501
+DOMAIN_REGEX = r"(?i)(?:(?:http|ftp|hxxp)s?(?:://|-3A__|%3A%2F%2F))?((?:[^\\\.@\s\"',(\[:?=]+(?:\.|\[\.\]))+[a-zA-Z]{2,})(?:[_/\s\"',)\]]|[.]\s|%2F|$)"  # noqa: E501
 
 
-def atp_get_original_url(safe_url):
+def atp_get_original_url(safe_url):  # pragma: no cover
     split_url = urlparse(safe_url)
     query = split_url.query
     query_dict = parse_qs(query)
@@ -24,7 +24,7 @@ def atp_get_original_url(safe_url):
     return decoded_url
 
 
-def proofpoint_get_original_url(safe_url):
+def proofpoint_get_original_url(safe_url):  # pragma: no cover
     if safe_url.startswith(PROOFPOINT_PREFIXES[2]):
         safe_url = safe_url.replace(PROOFPOINT_PREFIXES[2], '')
         return safe_url
