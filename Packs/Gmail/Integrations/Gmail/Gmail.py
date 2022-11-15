@@ -1985,12 +1985,14 @@ def forwarding_address_add(user_id: str, forwarding_email: str) -> tuple[dict, b
     """ Creates forwarding address.
         Args:
             user_id: str - The user's email address or the user id.
-            forwarding_email: str - The name of the file
+            forwarding_email: str - The forwarding address to be retrieved.
         Returns:
-            A Response object.
+            result: dict - Response body from the API.
+            exception: bool - Indicates whether there is an error.
+            exception_details: dict - The details of the exception.
     """
     result = {}
-    exception_details = None
+    exception_details = {}
     exception = False
     error_message = ''
     request_body = {'forwardingEmail': forwarding_email}
@@ -2013,9 +2015,9 @@ def forwarding_address_add_command() -> list[CommandResults]:
     """ Creates forwarding address.
         Args:
             user_id: str - The user's email address or the user id.
-            forwarding_email: str - The name of the file
+            forwarding_email: str - The forwarding address to be retrieved.
         Returns:
-            A Response object.
+            A list of CommandResults.
     """
     args = demisto.args()
     forwarding_email_list = argToList(args.get('forwarding_email'))
@@ -2056,14 +2058,16 @@ def forwarding_address_update(user_id: str, disposition: str, forwarding_email: 
         Args:
             user_id: str - The user's email address or the user id.
             forwarding_email: str - The forwarding address to be retrieved.
-            disposition: str - The state that a message should be left in after it has been forwarded..
+            disposition: str - The state that a message should be left in after it has been forwarded.
         Returns:
-            A dict object.
+            result: dict - Response body from the API.
+            exception: bool - Indicates whether there is an error.
+            exception_details: dict - The details of the exception.
     """
     exception = False
     result = {}
-    exception_details = None
-    error_message = None
+    exception_details = {}
+    error_message = ''
     if disposition != "":
         service = get_service(
             'gmail',
@@ -2090,9 +2094,9 @@ def forwarding_address_update_command() -> list[CommandResults]:
         Args:
             user_id: str - The user's email address or the user id.
             forwarding_email: list[str] - a forwarding addresses list to be retrieved.
-            disposition: str - The state that a message should be left in after it has been forwarded..
+            disposition: str - The state that a message should be left in after it has been forwarded.
         Returns:
-            A dict object.
+           A list of CommandResults.
     """
     args = demisto.args()
     forwarding_email_list = argToList(args.get('forwarding_email'))
@@ -2191,7 +2195,7 @@ def forwarding_address_get(user_id: str, forwarding_email: str) -> dict:
             user_id: str - The user email address or the user id.
             forwarding_email: str - The forwarding address to be retrieved.
         Returns:
-            A dict object.
+            A Dict object - Response body from the API.
     """
     service = get_service(
         'gmail',
@@ -2235,7 +2239,7 @@ def forwarding_address_remove(user_id: str, forwarding_email: str) -> dict:
             user_id: str - The user's email address or the user id.
             forwarding_email: str - The forwarding address to be retrieved.
         Returns:
-            A Dict object.
+            A Dict object - Response body from the API (empty when successful).
     """
     service = get_service(
         'gmail',
@@ -2268,7 +2272,7 @@ def forwarding_address_list(user_id: str) -> dict:
         Args:
             user_id: str - The user's email address or the user id.
         Returns:
-            A Dict object.
+            A Dict object - Response body from the API.
     """
     result = {}
     service = get_service(
@@ -2295,7 +2299,8 @@ def forwarding_address_list_command() -> CommandResults:
     user_id = args.get('user_id')
     limit = int(args.get('limit', '50'))
     result = forwarding_address_list(user_id)
-    context = result.get('forwardingAddresses')[:limit] if result else None  # type: ignore
+    context = result.get('forwardingAddresses')
+    context = context[:limit] if context else []
     for msg in context:
         msg['userId'] = user_id
     headers = ['forwardingEmail', 'verificationStatus']
