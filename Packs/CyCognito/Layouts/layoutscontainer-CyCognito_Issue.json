@@ -913,14 +913,6 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_dbotprediction",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_dbotpredictionprobability",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_description",
                         "isVisible": true
                     },
@@ -1014,22 +1006,6 @@
                     },
                     {
                         "fieldId": "incident_dsts",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emaildeletefrombrand",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emaildeletereason",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emaildeleteresult",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emaildeletetype",
                         "isVisible": true
                     },
                     {
@@ -1346,106 +1322,6 @@
                     },
                     {
                         "fieldId": "incident_scenario",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowassignedto",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowassignmentgroup",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowattackvector",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowbusinessimpact",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowcaller",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowcallerid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowcategory",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowclosedby",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowcloseddate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowdescription",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowduedate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowescalation",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowimpact",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenownotify",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowopeneddate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowpriority",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowresolutioncode",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowresolutionnotes",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowresolvedtime",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowseverity",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowsircategory",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowsirstate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowstate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowticketnumber",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowurgency",
                         "isVisible": true
                     },
                     {
@@ -1817,14 +1693,6 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_dbotprediction",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_dbotpredictionprobability",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_description",
                         "isVisible": true
                     },
@@ -1922,22 +1790,6 @@
                     },
                     {
                         "fieldId": "incident_dsts",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emaildeletefrombrand",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emaildeletereason",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emaildeleteresult",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emaildeletetype",
                         "isVisible": true
                     },
                     {
@@ -2258,106 +2110,6 @@
                     },
                     {
                         "fieldId": "incident_scenario",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowassignedto",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowassignmentgroup",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowattackvector",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowbusinessimpact",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowcaller",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowcallerid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowcategory",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowclosedby",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowcloseddate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowdescription",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowduedate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowescalation",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowimpact",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenownotify",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowopeneddate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowpriority",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowresolutioncode",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowresolutionnotes",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowresolvedtime",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowseverity",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowsircategory",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowsirstate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowstate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowticketnumber",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_servicenowurgency",
                         "isVisible": true
                     },
                     {
