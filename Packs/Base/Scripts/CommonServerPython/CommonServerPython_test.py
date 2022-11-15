@@ -7692,7 +7692,7 @@ class TestFetchWithLookBack:
                     {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 3},
                     [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], 3
             ),
-            
+
             (
                     {'limit': 2, 'first_fetch': '50 minutes', 'look_back': 15}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
                     [NEW_INCIDENTS_TIME_AWARE[0], INCIDENTS_TIME_AWARE[4]], [],
