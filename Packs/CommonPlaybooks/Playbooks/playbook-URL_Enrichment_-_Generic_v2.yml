@@ -1,6 +1,6 @@
 id: URL Enrichment - Generic v2
-version: -1
-fromversion: 5.0.0
+version: 11
+vcShouldKeepItemLegacyProdMachine: false
 name: URL Enrichment - Generic v2
 description: |-
   Enrich URLs using one or more integrations.
@@ -13,19 +13,19 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8ec1d86f-9108-44d5-8c64-49fa9294f043
+    taskid: b22e1f46-1d21-4d45-849d-bed03a162b30
     type: start
     task:
-      id: 8ec1d86f-9108-44d5-8c64-49fa9294f043
+      id: b22e1f46-1d21-4d45-849d-bed03a162b30
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "16"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -36,12 +36,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 7bc8f493-84d1-4d5e-8bfc-64db0cab685c
+    taskid: dbd96c17-808a-49b6-8ef6-07e9dc74e97e
     type: condition
     task:
-      id: 7bc8f493-84d1-4d5e-8bfc-64db0cab685c
+      id: dbd96c17-808a-49b6-8ef6-07e9dc74e97e
       version: -1
       name: Are there URLs?
       description: Determine whtether the playbook's input contains at least one URL.
@@ -67,6 +71,7 @@ tasks:
             value:
               simple: inputs.URL
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -77,19 +82,23 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 86cea036-b5bf-40d7-86f9-278a0e1d5557
+    taskid: ab486425-3395-4ca0-8488-226cb3fac308
     type: title
     task:
-      id: 86cea036-b5bf-40d7-86f9-278a0e1d5557
+      id: ab486425-3395-4ca0-8488-226cb3fac308
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -100,15 +109,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: b5ea6e49-a7eb-49d7-8398-3087829d7aee
+    taskid: 0d706db2-852e-41bc-8f95-c327c39659c7
     type: condition
     task:
-      id: b5ea6e49-a7eb-49d7-8398-3087829d7aee
+      id: 0d706db2-852e-41bc-8f95-c327c39659c7
       version: -1
       name: 'Is Rasterize integration enabled? '
-      description: Checks if there is an active instance of the Rasterize integration enabled.
+      description: Checks if there is an active instance of the Rasterize integration
+        enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -140,6 +154,7 @@ tasks:
                 value:
                   simple: active
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -150,12 +165,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 0eb62106-7a26-485e-857f-c59252e9c10b
+    taskid: c77ba89d-d266-4682-8186-2fc36c664670
     type: regular
     task:
-      id: 0eb62106-7a26-485e-857f-c59252e9c10b
+      id: c77ba89d-d266-4682-8186-2fc36c664670
       version: -1
       name: Get URL screenshot
       description: Gets a screenshot of the URL page.
@@ -169,18 +188,15 @@ tasks:
       '#none#':
       - "24"
     scriptarguments:
-      height: {}
-      type: {}
       url:
         complex:
           root: inputs.URL
           transformers:
           - operator: uniq
-      wait_time: {}
-      width: {}
     reputationcalc: 1
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -191,15 +207,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: f4894996-e946-44e3-8405-95efb847e7cb
+    taskid: 2e8f4a80-14ac-4105-8a22-a511ad49e4e6
     type: condition
     task:
-      id: f4894996-e946-44e3-8405-95efb847e7cb
+      id: 2e8f4a80-14ac-4105-8a22-a511ad49e4e6
       version: -1
       name: Capture screenshots of the URL?
-      description: Checks if the playbook's Rasterize input is set to "True", which determines whether screenshots of the URLs are created.
+      description: Checks if the playbook's Rasterize input is set to "True", which
+        determines whether screenshots of the URLs are created.
       type: condition
       iscommand: false
       brand: ""
@@ -222,6 +243,7 @@ tasks:
             value:
               simple: "True"
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -232,15 +254,18 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: bf3d5a2f-6be9-4625-80df-e679e2e3e8ef
+    taskid: f47b67b4-c266-40df-817c-8a13d8657bbb
     type: title
     task:
-      id: bf3d5a2f-6be9-4625-80df-e679e2e3e8ef
+      id: f47b67b4-c266-40df-817c-8a13d8657bbb
       version: -1
       name: URL Screenshots
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -248,6 +273,7 @@ tasks:
       '#none#':
       - "27"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -258,15 +284,18 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 35491163-4370-45fb-87d1-5de849f33eb0
+    taskid: bf6b144d-6347-4db7-8fc0-f55ee4ef8463
     type: title
     task:
-      id: 35491163-4370-45fb-87d1-5de849f33eb0
+      id: bf6b144d-6347-4db7-8fc0-f55ee4ef8463
       version: -1
       name: URL Verification
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -274,6 +303,7 @@ tasks:
       '#none#':
       - "33"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -284,12 +314,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: c1f28ba3-01a8-49c1-8526-f019649a5400
+    taskid: 6ab945d5-572a-4fd1-8a7d-f8514db6904a
     type: regular
     task:
-      id: c1f28ba3-01a8-49c1-8526-f019649a5400
+      id: 6ab945d5-572a-4fd1-8a7d-f8514db6904a
       version: -1
       name: Verify SSL for URLs
       description: Verify URL SSL certificate
@@ -308,6 +342,7 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -318,15 +353,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: f2ea80eb-2dc7-4939-8962-bbbbf052af6a
+    taskid: 91bf1b6e-ff54-4556-8139-2fa20b250fbd
     type: condition
     task:
-      id: f2ea80eb-2dc7-4939-8962-bbbbf052af6a
+      id: 91bf1b6e-ff54-4556-8139-2fa20b250fbd
       version: -1
       name: Verify URLs?
-      description: Checks if the playbook's VerifyURL input is set to "True", to determine whether to perform SSL verification on the URLs.
+      description: Checks if the playbook's VerifyURL input is set to "True", to determine
+        whether to perform SSL verification on the URLs.
       type: condition
       iscommand: false
       brand: ""
@@ -349,6 +389,7 @@ tasks:
             value:
               simple: "True"
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -359,22 +400,26 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: aeefcfba-7860-4d19-8785-b3a80a660e4b
+    taskid: 1371d97e-ab2a-47ff-848d-cdf20c1b54f8
     type: title
     task:
-      id: aeefcfba-7860-4d19-8785-b3a80a660e4b
+      id: 1371d97e-ab2a-47ff-848d-cdf20c1b54f8
       version: -1
       name: VirusTotal Private API Enrichment
-      description: ""
       type: title
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "35"
+      - "39"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -385,16 +430,85 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "35":
-    id: "35"
-    taskid: 04fb60ca-4713-4a4e-854f-70f28ff6bbe0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: d8c05ede-0753-4786-819a-3aaec99dea10
+    type: title
+    task:
+      id: d8c05ede-0753-4786-819a-3aaec99dea10
+      version: -1
+      name: No URLs
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -510,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: f3095c0e-9f46-4543-8776-c6376eacb774
+    type: regular
+    task:
+      id: f3095c0e-9f46-4543-8776-c6376eacb774
+      version: -1
+      name: Get URL report from VirusTotal (API V3)
+      description: Checks the reputation of a URL.
+      script: VirusTotal (API v3)|||url
+      type: regular
+      iscommand: true
+      brand: VirusTotal (API v3)
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      url:
+        simple: ${inputs.URL}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: a0c2af63-61b6-4861-81f7-04908ce0bc1b
     type: condition
     task:
-      id: 04fb60ca-4713-4a4e-854f-70f28ff6bbe0
+      id: a0c2af63-61b6-4861-81f7-04908ce0bc1b
       version: -1
-      name: Is Virus TotalPrivate API enabled?
+      name: Is VirusTotal (API v3) enabled?
       description: |
-        Checks if there is an active instance of the VirusTotal Private API integration enabled.
+        Checks if there is an active instance of the VirusTotal (API v3) integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -402,7 +516,7 @@ tasks:
       '#default#':
       - "24"
       "yes":
-      - "36"
+      - "38"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -420,7 +534,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: VirusTotal - Private API
+                        simple: VirusTotal (API v3)
                 - - operator: isEqualString
                     left:
                       value:
@@ -431,82 +545,24 @@ tasks:
                         simple: active
                 accessor: brand
             iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1030,
-          "y": 510
+          "y": 500
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "36":
-    id: "36"
-    taskid: 42285b15-afd4-4163-8b9d-20adc26e11a9
-    type: regular
-    task:
-      id: 42285b15-afd4-4163-8b9d-20adc26e11a9
-      version: -1
-      name: Get URL report from VirusTotal Private API
-      description: Retrieves a report from VirusTotal API for a specified URL.
-      script: '|||vt-private-get-url-report'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "24"
-    scriptarguments:
-      allInfo: {}
-      fullResponse: {}
-      resource:
-        complex:
-          root: inputs.URL
-          transformers:
-          - operator: uniq
-      retries: {}
-      retry_time: {}
-      shortFormat: {}
-      threshold: {}
-    reputationcalc: 1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1030,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "37":
-    id: "37"
-    taskid: 1515fb6b-457d-4bcd-8da5-47cec04bde81
-    type: title
-    task:
-      id: 1515fb6b-457d-4bcd-8da5-47cec04bde81
-      version: -1
-      name: No URLs
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "24"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -510,
-          "y": 360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -514,8 +570,7 @@ view: |-
       "25_26_yes": 0.47,
       "27_25_yes": 0.5,
       "33_24_#default#": 0.13,
-      "33_32_yes": 0.67,
-      "35_24_#default#": 0.76
+      "33_32_yes": 0.67
     },
     "paper": {
       "dimensions": {
@@ -536,16 +591,19 @@ inputs:
       - operator: uniq
   required: false
   description: URLs to enrich.
+  playbookInputQuery: null
 - key: Rasterize
   value:
     simple: "True"
   required: false
   description: Should the system take safe screenshots of input URLs?
+  playbookInputQuery: null
 - key: VerifyURL
   value:
     simple: "False"
   required: false
   description: Should the system perform SSL certificate verification on the URLs?
+  playbookInputQuery: null
 outputs:
 - contextPath: URL
   description: The URL object.

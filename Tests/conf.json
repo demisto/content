@@ -1273,7 +1273,9 @@
         },
         {
             "playbookID": "URL Enrichment - Generic v2 - Test",
+            "instance_names": "virus_total_v3",
             "integrations": [
+                "VirusTotal (API v3)",
                 "Rasterize"
             ],
             "timeout": 500,
