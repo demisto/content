@@ -8,21 +8,14 @@
     "email": "sm@keepersecurity.com",
     "created": "2022-08-15T15:04:05Z",
     "categories": [
-        "Authentication",
-        "IT Services",
-        "Utilities"
+        "Authentication"
     ],
-    "tags": [
-        "IAM",
-        "Compliance",
-        "Security"
-    ],
-    "useCases": [
+    "tags": [],
+    "useCases": [],
+    "keywords": [
         "Access",
         "Identity and Access Management",
-        "IT Services"
-    ],
-    "keywords": [
+        "IT Services",
         "credential",
         "Keeper",
         "KeeperSecretsManager",

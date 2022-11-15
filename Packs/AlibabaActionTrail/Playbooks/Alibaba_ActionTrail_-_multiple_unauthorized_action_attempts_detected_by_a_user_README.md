@@ -12,8 +12,8 @@ Alert Name = Alibaba ActionTrail - multiple unauthorized action attempts detecte
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Enrichment for Verdict
 * Block IP - Generic v3
+* Enrichment for Verdict
 
 ### Integrations
 This playbook does not use any integrations.
