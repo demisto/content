@@ -7,8 +7,7 @@ import re
 PROOFPOINT_PREFIXES = ['https://urldefense.proofpoint.com/',
                        "https://urldefense.com/"]
 ATP_LINK_REG = r'(https:\/\/\w*|\w*)\.safelinks\.protection\.outlook\.com/'
-DOMAIN_REGEX = r"(?i)(?:(?:http|ftp|hxxp)s?(?:://|-3A__|%3A%2F%2F))?((?:[^\\\.@\s\"',(\[:?=]+(?:\.|\[\.\]))+[a-zA-Z]{2,})(?:[_/\s\"',)\]]|[.]\s|%2F|$)"
-CHARECTERS_TO_REMOVE = ',.()/\\ _'
+DOMAIN_REGEX = r"(?i)(?:(?:http|ftp|hxxp)s?(?:://|-3A__|%3A%2F%2F))?((?:[^\\\.@\s\"',(\[:?=]+(?:\.|\[\.\]))+[a-zA-Z]{2,})(?:[_/\s\"',)\]]|[.]\s|%2F|$)" # noqa: E501
 
 
 def atp_get_original_url(safe_url):
