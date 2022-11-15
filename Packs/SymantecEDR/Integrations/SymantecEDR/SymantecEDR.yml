@@ -1,28 +1,18 @@
 category: Authentication
 commonfields:
-  id: SymantecEDR
+  id: SymantecEDRDev
   version: -1
 configuration:
 - additionalinfo: Symantec EDR Appliance Console URL
-  defaultvalue: https://192.168.20.8
-  display: Server URL (e.g. https://192.168.20.8)
+  display: Symantec-EDR URL (e.g. https://1.1.1.1)
   name: api_url
   required: true
   type: 0
-- additionalinfo: OAuth Client ID and Client Secret for authorizes third-party applications
-    to communicate with Symantec EDR
+- additionalinfo: OAuth Client ID and Client Secret for authorizes third-party applications to communicate with Symantec EDR
   display: Client ID
   name: credentials
   required: true
   type: 9
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -31,18 +21,23 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Queries Symantec EDR endpoints help to detect threats on your network
-  (on-premise) by filter endpoints data to find Indicators of Compromise (IoCs) and
-  take actions to remediate the threat(s)
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+description: Queries Symantec EDR endpoints help to detect threats on your network (on-premise) by filter endpoints data to find Indicators of Compromise (IoCs) and take actions to remediate the threat(s)
 display: Symantec Endpoint Detection and Response (EDR)
-name: SymantecEDR
+name: SymantecEDRDev
 script:
   commands:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The action to perform on the endpoints. Possible values are: isolate_endpoint,
-        rejoin_endpoint, delete_endpoint_file'
+      description: 'The action to perform on the endpoints. Possible values are: isolate_endpoint, rejoin_endpoint, delete_endpoint_file'
       isArray: false
       name: action
       predefined:
@@ -52,11 +47,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: "The targets field is specific to the type of command For isolate_endpoint\
-        \ and rejoin_endpoint the field is an array of strings each representing a\
-        \ device_uid of the target computer. \nFor delete, array of object, each with\
-        \ hash and device_uid attributes (supports comma-delimited hash:uid, hash:uid\
-        \ as well)."
+      description: "The targets field is specific to the tttype of command For isolate_endpoint and rejoin_endpoint the field is an array of strings each representing a device_uid of the target computer. \nFor delete, array of object, each with hash and device_uid attributes (supports comma-delimited hash:uid, hash:uid as well)."
       isArray: true
       name: targets
       predefined:
@@ -64,85 +55,96 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: "Isolates endpoints by cutting connections that the endpoint(s) has\
-      \ to internal networks and external networks, based on the endpoint IDs \n\n\
-      Rejoins endpoints by re-establishing connections that the endpoint(s) has to\
-      \ internal networks and external networks, based on the endpoint IDs \n\nDeletes\
-      \ a file, i.e. deletes all instances of the file, based on the file hash that\
-      \ you have specified from the endpoint that you have specified using the Device\
-      \ ID"
+    description: |-
+      Isolates endpoints by cutting connections that the endpoint(s) has to internal networks and external networks, based on the endpoint IDs
+
+      Rejoins endpoints by re-establishing connections that the endpoint(s) has to internal networks and external networks, based on the endpoint IDs
+
+      Deletes a file, i.e. deletes all instances of the file, based on the file hash that you have specified from the endpoint that you have specified using the Device ID.
     execution: false
     name: symantec-edr-endpoint-command
-    outputs:
-    - contextPath: hello
-      description: Should be Hello **something** here
-      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
       defaultValue: query
-      description: Specify a search condition
+      description: ' Request verb. Currently, only query verb is supported. example: query'
       isArray: false
       name: verb
       predefined:
       - query
+      required: true
+      secret: false
+    - default: false
+      description: Maximum number of events to return, Default is 1
+      isArray: false
+      name: limit
       required: false
       secret: false
     - default: false
-      defaultValue: '20'
-      description: Maximum number of events to return, Default is 20
+      description: 'example: first_seen:[2017-01-01T00:00:00.000Z TO 2017-01-08T00:00:00.000Z]'
       isArray: false
-      name: limit
+      name: query
       required: false
       secret: false
     deprecated: false
     description: Get associations Between domains and files
     execution: false
-    name: symantec-edr-domain-file-association-get
+    name: symantec-edr-domain-file-association-list
   - arguments:
     - auto: PREDEFINED
       default: false
       defaultValue: query
-      description: Specify a search condition
+      description: ' Request verb. Currently, only query verb is supported. example: query'
       isArray: false
       name: verb
       predefined:
       - query
+      required: true
+      secret: false
+    - default: false
+      description: Maximum number of events to return, Default is 1
+      isArray: false
+      name: limit
       required: false
       secret: false
     - default: false
-      defaultValue: '20'
-      description: Maximum number of events to return, Default is 20
+      description: 'example: first_seen:[2017-01-01T00:00:00.000Z TO 2017-01-08T00:00:00.000Z] '
       isArray: false
-      name: limit
+      name: query
       required: false
       secret: false
     deprecated: false
     description: Get Associations between endpooints and domains
     execution: false
-    name: symantec-edr-endpoint-domain-association-get
+    name: symantec-edr-endpoint-domain-association-list
   - arguments:
     - auto: PREDEFINED
       default: false
       defaultValue: query
-      description: Specify a search condition
+      description: ' Request verb. Currently, only query verb is supported. example: query'
       isArray: false
       name: verb
       predefined:
       - query
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: Maximum number of events to return, Default is 1
+      isArray: false
+      name: limit
       required: false
       secret: false
     - default: false
-      defaultValue: '20'
-      description: Maximum number of events to return, Default is 20
+      description: ' Request verb. Currently, only query verb is supported. example: query'
       isArray: false
-      name: limit
+      name: query
       required: false
       secret: false
     deprecated: false
     description: Get Associations between domains and files
     execution: false
-    name: symantec-edr-endpoint-file-association-get
+    name: symantec-edr-endpoint-file-association-list
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -218,12 +220,14 @@ script:
   - arguments:
     - default: false
       defaultValue: query
+      description: Default verb parameter
       isArray: false
       name: verb
       required: false
       secret: false
     - default: false
       defaultValue: '1'
+      description: Number of records returns Maximum limit 5000 minimum 100
       isArray: false
       name: limit
       required: false
@@ -235,15 +239,18 @@ script:
   - arguments:
     - default: false
       defaultValue: query
+      description: Default verb parameter
       isArray: false
       name: verb
       required: false
       secret: false
     - default: false
       defaultValue: '1'
+      description: Number of records returns Maximum limit 5000 minimum 100
       isArray: false
       name: limit
       required: false
+
       secret: false
     deprecated: false
     description: Get  Audit Events
@@ -251,66 +258,318 @@ script:
     name: symantec-edr-audit-event-get
   - arguments:
     - default: false
-      defaultValue: query
+      description: |-
+        Specifes the number of records displayed on the XSOAR console.
+
+        Default:  50
       isArray: false
-      name: verb
+      name: page_size
       required: false
       secret: false
     - default: false
-      defaultValue: '1'
+      description: |-
+        Specifies a search query as Lucene query string.
+
+        Example:
+        query="type_id:(4096 OR 4098 OR 4123)"
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "Specifes the beginning of the search time frame. The value should be back in time. \nThe maximum  time range between \"start_time\" and \"end_time\" parameter  is \"7 days\".\nExample: -<nn>days OR -<nn>mins -<n>weeks, -<nn>hours\n\n"
+      isArray: false
+      name: from
+      predefined:
+      - -5mins
+      - -10mins
+      - -15mins
+      - -1weeks
+      - -1hours
+      - -1days
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |+
+        Specifes the ending of the search time frame. The value should be either current time or back in time.
+        The maximum  time range between "start_time" and "end_time" parameter  is "7 days".
+        Example: now,-<nn>days OR -<nn>mins -<n>weeks, -<nn>hours
+
+      isArray: false
+      name: to
+      predefined:
+      - now
+      - -1mins
+      - -10mins
+      - -15mins
+      - -1weeks
+      - -1hours
+      - -1days
+      required: false
+      secret: false
+    - default: false
+      description: "Specifies the page number \n\nDefault: 1"
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: "Specifes the maximum number of records to return. \nLimit range should be between 1 and 5000. \n\nDefault: 100"
       isArray: false
       name: limit
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: query
+      description: |-
+        Currently, only the "query" verb is supported.
+        Default: query
+      isArray: false
+      name: verb
+      predefined:
+      - query
+      required: true
+      secret: false
     deprecated: false
-    description: Get Events
+    description: Command is used to get events from EDR
     execution: false
     name: symantec-edr-event-list
   - arguments:
-    - default: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: query
+      description: |
+        Request verb. Currently, only the query verb is supported.
       isArray: false
       name: verb
+      predefined:
+      - query
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        Specifes the number of records display on the XSOAR console, Limit range is betwen 1 and 1000
+         If no limit is specifed, then the limit value is set to the default limit e.g. 50
+      isArray: false
+      name: page_size
       required: false
       secret: false
     - default: false
-      defaultValue: '1'
+      description: 'Page Number to '
       isArray: false
-      name: limit
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Specifes a search condition as Lucene query string.
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Specifes the beginning of the search time frame.
+        - The value should either epoch or go back in time e.g. -7days
+        - Default -7days
+      isArray: false
+      name: from
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
+      defaultValue: now
+      description: "Specifes the end of the search time frame. \n- The value should either epoch\n- Default value  now"
+      isArray: false
+      name: to
       required: false
       secret: false
     deprecated: false
-    description: Get Incident Event List
+    description: Command is used to get evetnts for incidents
     execution: false
     name: symantec-edr-incident-event-list
   - arguments:
-    - default: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: query
+      description: |-
+        Currently, only the "query" verb is supported.
+        Default: query
       isArray: false
       name: verb
+      predefined:
+      - query
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        Specifes the number of records displayed on the XSOAR console.
+
+        Default:  50
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Specifies a search query as Lucene query string.
+
+        Example:
+        query="type_id:(4096 OR 4098 OR 4123)"
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |+
+        Specifes the beginning of the search time frame. The value should be back in time. The maximum  time range between "start_time" and "end_time" parameter  is "30 days" .
+        Example: -<nn>days OR -<nn>mins -<n>weeks, -<nn>hours
+
+      isArray: false
+      name: from
+      predefined:
+      - -5mins
+      - -10mins
+      - -15mins
+      - -1weeks
+      - -1hours
+      - -1days
+      - -1days
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "Specifes the ending of the search time frame. The value should be either current time or back in time. \nThe maximum  time range between \"start_time\" and \"end_time\" parameter  is \"30 days\" .\nExample: now,-<nn>days OR -<nn>mins -<n>weeks, -<nn>hours\n\n"
+      isArray: false
+      name: to
+      predefined:
+      - now
+      - -1mins
+      - -10mins
+      - -15mins
+      - -1weeks
+      - -1hours
+      - -1days
       required: false
       secret: false
     - default: false
       defaultValue: '1'
+      description: "Specifies the page number \n\nDefault: 1"
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: "Specifes the maximum number of records to return. \nLimit range should be between 1 and 5000. \n\nDefault: 100"
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: Get Incident List
+    description: Command is used to get incidents from Symantec-EDR API
     execution: false
     name: symantec-edr-incident-list
+    outputs:
+    - contextPath: SymantecEDR.IncidentList.atp_incident_id
+      description: A unique identifer for this incident.
+      type: Number
+    - contextPath: SymantecEDR.IncidentList.log_name
+      description: |-
+        The index of the incident.
+        Note: This is for informational purpose and cannot be used as a flter.
+        Use time as start_time to query for incidents. Example : "epmp_incident-2018-03-01"
+      type: String
+    - contextPath: SymantecEDR.IncidentList.summary
+      description: Summary information about the incident.
+      type: String
+    - contextPath: SymantecEDR.IncidentList.priority_level
+      description: |-
+        Priority level of the incident. Possible values are:
+        1 = LOW
+        2 = MED
+        3 =HIGH
+      type: Number
+    - contextPath: SymantecEDR.IncidentList.last_event_seen
+      description: |-
+        The creation time (in ISO 8601 format) when the last event associated
+        with the incident was created. Matches the last event’s time feld.
+      type: Date
+    - contextPath: SymantecEDR.IncidentList.time
+      description: The creation time (in ISO 8601 format) of the incident.
+      type: Date
+    - contextPath: SymantecEDR.IncidentList.rule_name
+      description: The name of the rule that triggered this incident.
+      type: String
+    - contextPath: SymantecEDR.IncidentList.first_event_seen
+      description: |-
+        The creation time (in ISO 8601 format) when the frst event associated
+        with the incident was created. Matches the frst event’s time feld. This
+        is likely before the incident’s creation time feld given incidents are
+        created after their frst event is seen.
+      type: Date
+    - contextPath: SymantecEDR.IncidentList.state
+      description: |-
+        The current state of the incident. Possible values are:
+        1 = OPEN
+        2 =WAITING
+        3 = IN_WORK
+        4 = CLOSED
+      type: Number
+    - contextPath: SymantecEDR.IncidentList.detection_type
+      description: Incident Detection Type
+      type: String
+    - contextPath: SymantecEDR.IncidentList.device_time
+      description: |-
+        The timestamp (in ISO 8601 format) that specifes the time at which the
+        event occurred
+      type: Date
+    - contextPath: SymantecEDR.IncidentList.recommended_action
+      description: |-
+        Recommended action for this incident. Possible actions could be
+        isolating an endpoint, deleting fle from endpoint, blacklist URL, or
+        domain, etc.
+      type: String
+    - contextPath: SymantecEDR.IncidentList.updated
+      description: The time (in ISO 8601 format) of last modifcation.
+      type: Date
+    - contextPath: SymantecEDR.IncidentList.uuid
+      description: |-
+        The GUID assigned for this incident.
+        Example : "483e3fde-4556-4800-81b1-e8da5ee394b6"
+      type: String
+    - contextPath: SymantecEDR.IncidentList.atp_rule_id
+      description: The textual representation of the rule that triggered this incident.
+      type: String
+    - contextPath: SymantecEDR.IncidentList.resolution
+      description: |-
+        The resolution of the closed incident. Possible values are:
+        0 =INSUFFICIENT_DATA. The incident does not have sufcient information to make a determination.
+        1 = SECURITY_RISK. The incident indicates a true security threat.
+        2 = FALSE_POSITIVE. The incident has been incorrectly reported as a security threat.
+        3 =MANAGED_EXTERNALLY. The incident was exported to an external application and will be triaged there.
+        4 = NOT_SET. The incident resolution was not set.
+        5 = BENIGN. The incident detected the activity as expected but is not a security threat.
+        6 = TEST. The incident was generated due to internal security testing.
+      type: Number
   - arguments:
     - default: false
       defaultValue: query
       isArray: false
+      description: Parameter verb default query
       name: verb
       required: false
       secret: false
     - default: false
-      defaultValue: '1'
+      defaultValue: '50'
+      description: |-
+        Specifes the number of records display on the XSOAR console, Limit range is betwen 1 and 1000
+         If no limit is specifed, then the limit value is set to the default limit e.g. 50
       isArray: false
-      name: limit
+      name: page_size
       required: false
       secret: false
     - default: false
@@ -318,6 +577,34 @@ script:
       isArray: false
       name: uuid
       required: true
+      secret: false
+    - default: false
+      description: Page Number to
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Specifes a search query as Lucene query string.
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Specifes the beginning of the search time frame.
+        - The value should follow ISO 8601 date stamp standard format: yyyy-MMdd’T’HH:mm:ss.SSSXXX
+      isArray: false
+      name: start_time
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
+      description: "Specifes the end of the search time frame. \n- The value should follow ISO 8601 date stamp standard format: yyyy-MM-dd’T’HH:mm:ss.SSSXXX "
+      isArray: false
+      name: end_time
+      required: false
       secret: false
     deprecated: false
     description: Get Incident Comments
@@ -339,18 +626,15 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: analyze
-      description: "Specifies the type of action to take on the specified target(s)\
-        \ \naction value: \"analyze\"  "
+      description: "Specifies the tttype of action to take on the specified target(s) \naction value: \"analyze\"  "
       isArray: false
       name: action
       predefined:
       - analyze
-      required: false
+      required: true
       secret: false
     - default: false
-      description: 'The targets field is specific to the type of command. For analyze,
-        the field is an array of strings each representing a SHA256 of the target
-        file. '
+      description: "The targets field is specific to the tttype of command. \nFor analyze, the field is an array of strings each representing a SHA256 of the target file. "
       isArray: false
       name: targets
       required: false
@@ -369,7 +653,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: File Sandbox command types issue,status,verdict
+      description: File Sandbox command tttypes issue,status,verdict
       isArray: false
       name: type
       predefined:
@@ -378,12 +662,60 @@ script:
       - verdict
       required: true
       secret: false
+    - default: true
+      description: ''
+      isArray: true
+      name: file
+      required: true
+      secret: false
     deprecated: false
-    description: Issue Sandbox Command, Query Sandbox Command Status, Get Sandbox
-      Verdict of specific SHA2
+    description: Issue Sandbox Command, Query Sandbox Command Status, Get Sandbox Verdict of specific SHA2
     execution: false
     name: file
-  dockerimage: demisto/python3:3.7.4.2245
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        Specifes the operation to take on specifed incident.
+        - For close incident, the operation must be "replace".
+        - For update resolution of closed incident, the operation must be "replace".
+        - For add comments, the operation must be "add".
+      isArray: false
+      name: operation
+      predefined:
+      - add
+      - replace
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        String containing a JSON-pointer value that references a location within the incident document where the operation is performed.
+        - For close incident, the path must be /{uuid}/state.
+        - For update resolution of closed incident, the path must be /{uuid}/resolution.
+        - For add comments, the path must be /{uuid}/comments.
+        - The uuid is the UUID assigned for the incident.
+      isArray: false
+      name: path
+      predefined:
+      - ''
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        New value for the feld being patched.
+        - The maximum length of comment is 512 characters.
+        - For close incident, the value must be 4. The type is integer.
+        - For update resolution of closed incident, the value must be a supported incident resolution value. See resolution feld in the incident defnition for supported values. The type is integer.
+        - For add comments, the value should contain user defned comment. The type is string.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    deprecated: false
+    description: Incidents Patch command for the close incident, update resolution of closed incident or add comments to incident.
+    execution: false
+    name: symantec-edr-incident-update
+  dockerimage: demisto/python3:3.10.8.37233
   feed: false
   isfetch: false
   longRunning: false
@@ -392,3 +724,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
