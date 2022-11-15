@@ -2,7 +2,7 @@
     "meta": {},
     "data": [
         {
-            "domain": "history.google.com",
+            "domain": "dummy_domain.com",
             "summary": {
                 "applications": 0,
                 "domains": 1,
