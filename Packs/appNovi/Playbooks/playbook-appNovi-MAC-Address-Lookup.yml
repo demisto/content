@@ -6,19 +6,19 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 47b1dae6-bf61-4d85-87dd-a612459ccbb2
+    taskid: 6fa1faaa-1701-41e2-864a-e63335011bd4
     type: start
     task:
-      id: 47b1dae6-bf61-4d85-87dd-a612459ccbb2
+      id: 6fa1faaa-1701-41e2-864a-e63335011bd4
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "2"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -35,17 +35,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: fccc12c8-9367-4853-8cf4-7b21c41d9ae8
+    taskid: e646da1c-abf2-42fd-8597-5ae7590ceb76
     type: regular
     task:
-      id: fccc12c8-9367-4853-8cf4-7b21c41d9ae8
+      id: e646da1c-abf2-42fd-8597-5ae7590ceb76
       version: -1
       name: search-appnovi-connected
       description: Search for Components connected to supplied identity
-      script: appNovi|||search-appnovi-connected
+      script: '|||search-appnovi-connected'
       type: regular
       iscommand: true
-      brand: appNovi
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
@@ -61,6 +61,7 @@ tasks:
           value:
             simple: mac
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -77,15 +78,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 16dc732b-5992-4312-8458-381acf2e6220
+    taskid: 01e9f6e8-8b0e-4599-885b-187a602c0951
     type: condition
     task:
-      id: 16dc732b-5992-4312-8458-381acf2e6220
+      id: 01e9f6e8-8b0e-4599-885b-187a602c0951
       version: -1
       name: appNovi integration enabled?
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
-      scriptName: Exists
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
@@ -95,9 +96,12 @@ tasks:
       "yes":
       - "4"
     scriptarguments:
-      value:
-        simple: ${modules(val.brand=="appNovi")}
+      brandname:
+        simple: appNovi
+    results:
+    - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -114,17 +118,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 27423745-5047-459e-8511-82fe9f14d631
+    taskid: cfa22122-284d-43b1-8666-03b9b3380e76
     type: title
     task:
-      id: 27423745-5047-459e-8511-82fe9f14d631
+      id: cfa22122-284d-43b1-8666-03b9b3380e76
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -141,16 +145,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 7505b15a-6dc1-4c40-8798-bfca3f224fc6
+    taskid: 788da859-89c7-48b5-8e82-3545e4de4abf
     type: condition
     task:
-      id: 7505b15a-6dc1-4c40-8798-bfca3f224fc6
+      id: 788da859-89c7-48b5-8e82-3545e4de4abf
       version: -1
       name: MAC address in incident?
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "3"
@@ -163,10 +166,11 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: incident.macaddress
+              simple: inputs.mac_address
             iscontext: true
           right:
             value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
