@@ -1997,11 +1997,19 @@ def migrate_last_run():
     if isinstance(last_run, list):
         return
     updated_last_run_detections = {}
+    detection_time = last_run.get('first_behavior_detection_time')
+    if detection_time := last_run.get('first_behavior_detection_time'):
+        if detection_time := dateparser.parse(detection_time):
+            updated_last_run_detections['time'] = detection_time.strftime(DATE_FORMAT)
+
     updated_last_run_detections['time'] = last_run.get('first_behavior_detection_time')
     updated_last_run_detections['offset'] = last_run.get('detection_offset')
 
     updated_last_run_incidents = {}
-    updated_last_run_incidents['time'] = last_run.get('first_behavior_incident_time')
+    incident_time = last_run.get('first_behavior_incident_time')
+    if incident_time := last_run.get('first_behavior_incident_time'):
+        if incident_time := dateparser.parse(incident_time):
+            updated_last_run_incidents['time'] = incident_time.strftime(DATE_FORMAT)
     updated_last_run_incidents['last_fetched_incident'] = last_run.get('last_fetched_incident')
     updated_last_run_incidents['offset'] = last_run.get('incident_offset')
     demisto.setLastRun([updated_last_run_detections, updated_last_run_incidents])
@@ -2100,6 +2108,7 @@ def fetch_incidents():
 
                     # Update last run and add incident if the incident is newer than last fetch
                     if incident_date_timestamp > last_fetch_timestamp:
+                        last_fetch_timestamp = incident_date_timestamp
                         new_last_incident_fetched = incident.get('incident_id')
 
                     if last_incident_fetched != incident.get('incident_id'):
