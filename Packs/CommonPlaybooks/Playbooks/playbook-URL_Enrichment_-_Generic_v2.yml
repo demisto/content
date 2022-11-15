@@ -1,6 +1,6 @@
 id: URL Enrichment - Generic v2
-version: 11
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
+fromversion: 5.0.0
 name: URL Enrichment - Generic v2
 description: |-
   Enrich URLs using one or more integrations.
@@ -21,11 +21,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -36,6 +36,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -71,7 +72,6 @@ tasks:
             value:
               simple: inputs.URL
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -82,6 +82,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -97,8 +98,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -109,6 +110,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -121,8 +123,7 @@ tasks:
       id: 0d706db2-852e-41bc-8f95-c327c39659c7
       version: -1
       name: 'Is Rasterize integration enabled? '
-      description: Checks if there is an active instance of the Rasterize integration
-        enabled.
+      description: Checks if there is an active instance of the Rasterize integration enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -154,7 +155,6 @@ tasks:
                 value:
                   simple: active
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -165,6 +165,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -194,9 +195,8 @@ tasks:
           transformers:
           - operator: uniq
     reputationcalc: 1
-    separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -207,6 +207,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -219,8 +220,7 @@ tasks:
       id: 2e8f4a80-14ac-4105-8a22-a511ad49e4e6
       version: -1
       name: Capture screenshots of the URL?
-      description: Checks if the playbook's Rasterize input is set to "True", which
-        determines whether screenshots of the URLs are created.
+      description: Checks if the playbook's Rasterize input is set to "True", which determines whether screenshots of the URLs are created.
       type: condition
       iscommand: false
       brand: ""
@@ -243,7 +243,6 @@ tasks:
             value:
               simple: "True"
           ignorecase: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -254,6 +253,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -269,11 +269,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "27"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -284,6 +284,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -299,11 +300,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "33"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -314,6 +315,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -342,7 +344,6 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -353,6 +354,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -365,8 +367,7 @@ tasks:
       id: 91bf1b6e-ff54-4556-8139-2fa20b250fbd
       version: -1
       name: Verify URLs?
-      description: Checks if the playbook's VerifyURL input is set to "True", to determine
-        whether to perform SSL verification on the URLs.
+      description: Checks if the playbook's VerifyURL input is set to "True", to determine whether to perform SSL verification on the URLs.
       type: condition
       iscommand: false
       brand: ""
@@ -389,7 +390,6 @@ tasks:
             value:
               simple: "True"
           ignorecase: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -400,6 +400,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -415,11 +416,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "39"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -430,6 +431,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -445,11 +447,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "24"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -460,6 +462,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -562,7 +565,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -591,19 +593,19 @@ inputs:
       - operator: uniq
   required: false
   description: URLs to enrich.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Rasterize
   value:
     simple: "True"
   required: false
   description: Should the system take safe screenshots of input URLs?
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: VerifyURL
   value:
     simple: "False"
   required: false
   description: Should the system perform SSL certificate verification on the URLs?
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: URL
   description: The URL object.
@@ -625,3 +627,4 @@ outputs:
   type: string
 tests:
 - URL Enrichment - Generic v2 - Test
+system: true
