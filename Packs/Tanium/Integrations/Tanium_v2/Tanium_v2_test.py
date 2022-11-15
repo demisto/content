@@ -368,7 +368,7 @@ def test_update_session(mocker):
     client.update_session()
     assert client.session == 'basic authentication'
 
-    client = Client(BASE_URL, username='', pad='', domain='domain', api_token='oauth authentication')
+    client = Client(BASE_URL, username='', password='', domain='domain', api_token='oauth authentication')
     client.update_session()
     assert client.session == 'oauth authentication'
 
