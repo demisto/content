@@ -11,9 +11,9 @@ Used Sub-playbooks:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Enrichment for Verdict
-* Block Account - Generic v2
 * Block IP - Generic v3
+* Block Account - Generic v2
+* Enrichment for Verdict
 
 ### Integrations
 This playbook does not use any integrations.
@@ -22,8 +22,8 @@ This playbook does not use any integrations.
 This playbook does not use any scripts.
 
 ### Commands
-* closeInvestigation
 * setAlert
+* closeInvestigation
 
 ## Playbook Inputs
 ---
@@ -31,8 +31,7 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | InternalRange | List of Internal IP ranges |  | Optional |
-| inputs.AutoBlockIP | Set to True if should block the IP without confirmation | False | Optional |
-| inputs.AutoBlockAccount | Set to True if should block the user account without confirmation | False | Optional |
+| UserVerification | Whether to wait for user verification for blocking those IPs. <br/>False - No prompt will be displayed to the user.<br/>True - The server will ask the user for blocking verification and will display the blocking list. | True | Optional |
 
 ## Playbook Outputs
 ---
