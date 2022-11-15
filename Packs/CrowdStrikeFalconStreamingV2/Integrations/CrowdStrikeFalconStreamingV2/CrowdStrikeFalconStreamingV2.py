@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
-import requests
+import urllib3
 import traceback
 from asyncio import create_task, sleep, run
 from contextlib import asynccontextmanager
@@ -11,7 +11,7 @@ from typing import Dict, AsyncGenerator, AsyncIterator
 from collections import deque
 from random import uniform
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 TOKEN_RETRIEVAL_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'}
 

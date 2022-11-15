@@ -1,4 +1,6 @@
 import hashlib
+from typing import Tuple
+
 from CommonServerPython import *
 
 CSRF_PARSING_CHARS = 14
@@ -273,7 +275,7 @@ class Client:
             json_cmd=json_cmd)
 
 
-def get_unused_rules_by_position(client: Client, position: str, exclude: str, rule_type: str, usage: str, timeframe: str) -> List:
+def get_unused_rules_by_position(client: Client, position, exclude, rule_type, usage, timeframe) -> Tuple[Dict, List]:
     """
 
     Get unused rules from panorama based on user defined arguments.
