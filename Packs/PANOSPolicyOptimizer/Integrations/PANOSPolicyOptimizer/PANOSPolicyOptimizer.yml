@@ -102,13 +102,16 @@ script:
       - 'true'
       required: false
       secret: false
-    - default: false
-      description: Whether to get pre-rules or post-rules, 'pre' for pre rules, 'post' for post-rules, only for panorama instances.
+    - auto: PREDEFINED
+      default: false
+      description: Whether to get pre-rules, post-rules or both. 'pre' for pre rules, 'post' for post-rules, only for panorama instances.
       isArray: false
       name: position
+      defaultValue: 'any'
       predefined:
       - pre
       - post
+      - any
       required: false
       secret: false
     - default: false
