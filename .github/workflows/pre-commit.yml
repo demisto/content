@@ -10,7 +10,7 @@ jobs:
     
     - name: Changed Files
       id: changed-files
-      uses: tj-actions/changed-files@v34.4.0
+      uses: tj-actions/changed-files@v34.4.2
 
     - name: Setup python
       uses: actions/setup-python@v4
