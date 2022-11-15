@@ -2595,12 +2595,13 @@ def readable_duration_time(duration: str) -> str:
 
     for item in t_duration:
         designator = item[-1]
-        number: float = float(item[:-1])
+        number_float = float(item[:-1])
 
-        if number.is_integer():
-            duration_values[duration_mapping_t[designator]] = int(number)
+        if number_float.is_integer():
+            duration_values[duration_mapping_t[designator]] = int(number_float)
 
-        duration_values[duration_mapping_t[designator]] = number
+        else:
+            duration_values[duration_mapping_t[designator]] = number_float
 
     result = []
     for item in duration_values:
