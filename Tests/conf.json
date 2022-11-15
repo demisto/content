@@ -1274,10 +1274,8 @@
         {
             "playbookID": "URL Enrichment - Generic v2 - Test",
             "integrations": [
-                "Rasterize",
-                "VirusTotal - Private API"
+                "Rasterize"
             ],
-            "instance_names": "virus_total_private_api_general",
             "timeout": 500,
             "pid_threshold": 12
         },
@@ -1923,12 +1921,6 @@
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
-            "playbookID": "Microsoft Defender - ATP - Indicators Test",
-            "instance_names": "microsoft_defender_atp_dev",
-            "is_mockable": false
-        },
-        {
-            "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
             "instance_names": "microsoft_defender_atp_dev_self_deployed"
         },
@@ -2480,9 +2472,9 @@
         },
         {
             "playbookID": "File Enrichment - Generic v2 - Test",
-            "instance_names": "virus_total_private_api_general",
+            "instance_names": "virus_total_v3",
             "integrations": [
-                "VirusTotal - Private API",
+                "VirusTotal (API v3)",
                 "Cylance Protect v2"
             ],
             "is_mockable": false
@@ -3131,6 +3123,11 @@
             "playbookID": "MongoDBLog - Test",
             "pid_threshold": 12,
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "CyCognito",
+            "playbookID": "CyCognito-Test",
+            "fromversion": "6.2.0"
         },
         {
             "integrations": "FeedCyCognito",
@@ -4159,20 +4156,14 @@
             ]
         },
         {
-            "playbookID": "GitLab-test-playbook",
-            "fromversion": "6.0.0",
-            "integrations": [
-                "GitLab",
-                "LGTM",
-                "MinIO",
-                "Docker Engine API"
-            ]
+            "playbookID": "Test-GitLab-v2",
+            "fromversion": "6.5.0",
+            "integrations": "GitLabv2"
         },
         {
             "playbookID": "LGTM-test-playbook",
             "fromversion": "6.0.0",
             "integrations": [
-                "GitLab",
                 "LGTM",
                 "MinIO",
                 "Docker Engine API"
@@ -4182,7 +4173,6 @@
             "playbookID": "playbook-MinIO-Test",
             "fromversion": "6.0.0",
             "integrations": [
-                "GitLab",
                 "LGTM",
                 "MinIO",
                 "Docker Engine API"
@@ -5063,14 +5053,6 @@
             "is_mockable": false
         },
         {
-            "playbookID": "TAXII2 Indicator Performance Test",
-            "fromversion": "6.1.0"
-        },
-        {
-            "playbookID": "TAXII2 Performance Test - Concurrency",
-            "fromversion": "6.1.0"
-        },
-        {
             "integrations": "FortiSIEMV2",
             "playbookID": "playbook-FortiSIEMV2_Test",
             "fromversion": "6.0.0"
@@ -5183,6 +5165,7 @@
         }
     ],
     "skipped_tests": {
+        "Cortex Data Lake Test": "Issue CRTX-67423",
         "playbook-CheckPointSandBlast_Test" : "Checkpoint playbook no license",
         "playbook-BmcITSM-Test" : "issue with license CIAC-3776",
         "Panorama Query Logs - Test": "issues with firewall environment configuration - CIAC-3459",
@@ -5196,6 +5179,8 @@
         "Calculate Severity - Standard - Test": "Issue 32715",
         "Calculate Severity - Generic v2 - Test": "Issue 32716",
         "Workday - Test": "No credentials Issue 29595",
+        "McAfee-MAR_Test": "Issue CIAC-4521",
+        "MAR - Endpoint data collection test": "Issue CIAC-4521",
         "Tidy - Test": "Will run it manually.",
         "Protectwise-Test": "Issue 28168",
         "TestDedupIncidentsPlaybook": "Issue 24344",
@@ -5242,7 +5227,6 @@
         "Detonate Remote File From URL -McAfee-ATD - Test": "Issue 33407",
         "Test Playbook McAfee ATD Upload File": "Issue 33408",
         "Trend Micro Apex - Test": "Issue 27280",
-        "Microsoft Defender - ATP - Indicators Test": "Issue 29279",
         "Test-BPA": "Issue 28406",
         "Test-BPA_Integration": "Issue 28236",
         "TestTOPdeskPlaybook": "Issue 35412",
@@ -5328,8 +5312,7 @@
         "Process Email - Generic - Test - Incident Starter": "Issue CIAC-4161",
         "AD v2 - debug-mode": "No credentials",
         "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
-        "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407",
-        "O365-SecurityAndCompliance-Test": "Failing in nightly, being handled"
+        "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407"
     },
     "skipped_integrations": {
         "AbuseIPDB": "License expired",
