@@ -361,10 +361,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: c7267573-e4b8-421f-8a2c-6da44ade025d
+    taskid: 6a7ff31b-1051-454b-8536-3ca9b6198f93
     type: playbook
     task:
-      id: c7267573-e4b8-421f-8a2c-6da44ade025d
+      id: 6a7ff31b-1051-454b-8536-3ca9b6198f93
       version: -1
       name: Enrichment for Verdict
       description: This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then  returns the information needed to establish the alert's verdict.
@@ -384,12 +384,12 @@ tasks:
           accessor: domainname
       FileSHA256:
         complex:
-          root: alert
-          accessor: initiatorsha256
+          root: alert.initiatorsha256
+          accessor: '[0]'
       IP:
         complex:
-          root: alert
-          accessor: remoteip
+          root: alert.remoteip
+          accessor: '[0]'
           transformers:
           - operator: uniq
       InternalRange:
@@ -406,7 +406,7 @@ tasks:
           transformers:
           - operator: uniq
       query:
-        simple: (initiatorsha256:${inputs.FileSHA256} or remoteip:${inputs.IP}) and alertsource:${alert.sourceBrand} and alertname:${alert.name}
+        simple: remoteip:${alert.remoteip.[0]} and alertsource:${alert.sourceBrand} and alertname:${alert.name}
       threshold:
         simple: "5"
     separatecontext: false
