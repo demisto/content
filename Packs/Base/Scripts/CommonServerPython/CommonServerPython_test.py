@@ -7529,6 +7529,20 @@ class TestFetchWithLookBack:
         }
     ]
 
+    INCIDENTS_TIME_AWARE = [
+        {
+            'incident_id': incident.get('incident_id'),
+            'created': incident.get('created') + 'Z'
+        } for incident in INCIDENTS
+    ]
+
+    NEW_INCIDENTS_TIME_AWARE = [
+        {
+            'incident_id': incident.get('incident_id'),
+            'created': incident.get('created') + 'Z'
+        } for incident in NEW_INCIDENTS
+    ]
+
     def example_fetch_incidents(self):
         """
         An example fetch for testing
@@ -7592,6 +7606,17 @@ class TestFetchWithLookBack:
          {'limit': 2, 'time': INCIDENTS[2]['created']}),
         ({'limit': 3, 'first_fetch': '2 hours'}, [INCIDENTS[1], INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
          {'limit': 3, 'time': INCIDENTS[3]['created']}),
+
+        ({'limit': 2, 'first_fetch': '40 minutes'}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]], [INCIDENTS_TIME_AWARE[4]],
+         {'limit': 2, 'time': INCIDENTS_TIME_AWARE[3]['created']}),
+        ({'limit': 3, 'first_fetch': '40 minutes'}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3], INCIDENTS_TIME_AWARE[4]], [],
+         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[4]['created']}),
+        ({'limit': 2, 'first_fetch': '2 hours'}, [INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2]], [INCIDENTS_TIME_AWARE[3],
+                                                                                                      INCIDENTS_TIME_AWARE[4]],
+         {'limit': 2, 'time': INCIDENTS[2]['created']}),
+        ({'limit': 3, 'first_fetch': '2 hours'}, [INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
+         [INCIDENTS_TIME_AWARE[4]],
+         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[3]['created']}),
     ])
     def test_regular_fetch(self, mocker, params, result_phase1, result_phase2, expected_last_run):
         """
@@ -7666,6 +7691,38 @@ class TestFetchWithLookBack:
                     {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 6},
                     {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 3},
                     [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], 3
+            ),
+            
+            (
+                    {'limit': 2, 'first_fetch': '50 minutes', 'look_back': 15}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
+                    [NEW_INCIDENTS_TIME_AWARE[0], INCIDENTS_TIME_AWARE[4]], [],
+                    {'found_incident_ids': {3: '', 4: ''}, 'limit': 4},
+                    {'found_incident_ids': {3: '', 4: '', 5: '', 6: ''}, 'limit': 6},
+                    [NEW_INCIDENTS_TIME_AWARE[0]], 2
+            ),
+            (
+                    {'limit': 2, 'first_fetch': '20 minutes', 'look_back': 30}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
+                    [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], [INCIDENTS_TIME_AWARE[4]],
+                    {'found_incident_ids': {3: '', 4: ''}, 'limit': 4},
+                    {'found_incident_ids': {3: '', 4: '', 7: '', 8: ''}, 'limit': 6},
+                    [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], 3
+            ),
+            (
+                    {'limit': 3, 'first_fetch': '181 minutes', 'look_back': 15},
+                    [INCIDENTS_TIME_AWARE[0], INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2]], [NEW_INCIDENTS_TIME_AWARE[0],
+                                                                                                  INCIDENTS_TIME_AWARE[3],
+                                                                                                  INCIDENTS_TIME_AWARE[4]], [],
+                    {'found_incident_ids': {1: '', 2: '', 3: ''}, 'limit': 6},
+                    {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: '', 6: ''}, 'limit': 9},
+                    [NEW_INCIDENTS_TIME_AWARE[0]], 2
+            ),
+            (
+                    {'limit': 3, 'first_fetch': '20 minutes', 'look_back': 30},
+                    [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3], INCIDENTS_TIME_AWARE[4]],
+                    [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], [],
+                    {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 6},
+                    {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 3},
+                    [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], 3
             ),
         ])
     def test_fetch_with_look_back(self, mocker, params, result_phase1, result_phase2, result_phase3,
