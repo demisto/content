@@ -31,7 +31,7 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     flatten_nested_geolocation_values, get_modified_remote_data_command, get_remote_data_command, is_valid_ip, \
     qradar_ips_source_get_command, qradar_ips_local_destination_get_command, \
     qradar_remote_network_cidr_create_command, get_cidrs_indicators, verify_args_for_remote_network_cidr, \
-    qradar_remote_network_cidr_list_command, verify_args_for_remote_network_cidr_list, \
+    qradar_remote_network_cidr_list_command, verify_args_for_remote_network_cidr_list, is_positive, \
     qradar_remote_network_cidr_delete_command, qradar_remote_network_cidr_update_command, \
     qradar_remote_network_deploy_execution_command, migrate_integration_ctx, enrich_offense_with_events, \
     perform_long_running_loop, validate_integration_context, FetchMode
@@ -1459,12 +1459,23 @@ def test_verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name,
     assert error_message == expected
 
 
+@pytest.mark.parametrize('values, expected', [
+    ([50, 2, 25], True),
+    ([None, 2, None], True),
+    ([None, None, 0], False),
+    ([4, -5], False),
+    ([None], True)
+])
+def test_is_positive(values, expected):
+    assert is_positive(*values) == expected
+
+
 VERIFY_LIST_MESSAGES_ERRORS = [
     'Please provide either limit argument or page and page_size arguments.',
     'Please provide both page and page_size arguments.',
-    'Limit, page and page_size arguments must be positive.',
+    'Limit, page and page_size arguments must be positive numbers.',
     'You can not use filter argument with group, id or name arguments.'
-]    
+]
 
 
 @pytest.mark.parametrize('limit, page, page_size, filter_, group, id_, name, expected', [
@@ -1474,7 +1485,7 @@ VERIFY_LIST_MESSAGES_ERRORS = [
     (-1, None, None, None, None, None, None, VERIFY_LIST_MESSAGES_ERRORS[2]),
     (None, -1, -1, None, None, None, None, VERIFY_LIST_MESSAGES_ERRORS[2]),
     (None, None, None, 'test', 'test', 'test', 'test', VERIFY_LIST_MESSAGES_ERRORS[3])
-    ])
+])
 def test_verify_args_for_remote_network_cidr_list(limit, page, page_size, filter_, group, id_, name, expected):
     """
     Given: Command arguments

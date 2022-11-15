@@ -1525,7 +1525,20 @@ def verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, grou
                 return f'{field} is not a valid field. Possible fields are: {possible_fields}.'
 
 
+def is_positive(*values):
+    # checks if all values are positive or None but not a negative number
+    for value in values:
+        if value is not None and value < 1:
+            return False
+    else:
+        return True
+
+
 def verify_args_for_remote_network_cidr_list(limit, page, page_size, filter_, group, id_, name):
+    # verify that the given limit and page and page_size are valid
+    if not is_positive(limit, page, page_size):
+        return 'Limit, page and page_size arguments must be positive numbers.'
+
     # verify that only one of the arguments is given
     if limit and (page or page_size):
         return 'Please provide either limit argument or page and page_size arguments.'
@@ -1533,10 +1546,6 @@ def verify_args_for_remote_network_cidr_list(limit, page, page_size, filter_, gr
     # verify that if page are given, page_size is also given and vice versa
     if (page and not page_size) or (page_size and not page):
         return 'Please provide both page and page_size arguments.'
-
-    # verify that the given limit and page and page_size are valid
-    if (limit is not None and limit < 1) or (page is not None and page < 1) or (page_size is not None and page_size < 1):
-        return 'Limit, page and page_size arguments must be positive.'
 
     # verify that only one of the arguments is given
     if filter_ and (group or id_ or name):
