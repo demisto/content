@@ -1,6 +1,6 @@
 category: Case Management
 commonfields:
-  id: IBM Resilient Systems - Dev
+  id: IBM Resilient Systems
   version: -1
 configuration:
 - display: Server URL (e.g. 192.168.0.1)
@@ -46,8 +46,8 @@ configuration:
   required: false
   type: 4
 description: Case management that enables visibility across your tools for continual IR improvement.
-display: IBM Resilient Systems - Dev
-name: IBM Resilient Systems - Dev
+display: IBM Resilient Systems
+name: IBM Resilient Systems
 script:
   commands:
   - arguments:
