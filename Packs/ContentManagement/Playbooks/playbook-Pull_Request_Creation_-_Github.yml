@@ -689,7 +689,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "35"
+      - "47"
     scriptarguments:
       branch_name:
         complex:
@@ -1028,6 +1028,43 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
     continueonerrortype: ""
+  "47":
+    id: "47"
+    taskid: 6cec6b0e-aae6-4377-8753-3d21e2561c5e
+    type: regular
+    task:
+      id: 6cec6b0e-aae6-4377-8753-3d21e2561c5e
+      version: -1
+      name: Update pull request
+      description: Updates a pull request in a repository.
+      script: GitHub|||GitHub-update-pull-request
+      type: regular
+      iscommand: true
+      brand: GitHub
+    nexttasks:
+      '#none#':
+        - "35"
+    scriptarguments:
+      body:
+        simple: ${PR_text}
+      pull_number:
+        simple: ${GitHub.PR.Number}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 3910
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},

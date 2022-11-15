@@ -1276,16 +1276,6 @@ inputs:
   required: true
   description: The name of the branch you want the changes pulled into, which must be an existing branch on the current repository.
   playbookInputQuery:
-- key: UserName
-  value: {}
-  required: false
-  description: The user name in Bitbucket
-  playbookInputQuery:
-- key: Email
-  value: {}
-  required: false
-  description: The email in Bitbucket
-  playbookInputQuery:
 - key: PackName
   value: {}
   required: true

@@ -29,8 +29,6 @@ This playbook does not use any sub-playbooks.
 | --- | --- | --- | --- |
 | PullRequestTemplate | Pull request description template. |  | Required |
 | MainBranch | The name of the branch you want the changes pulled into, which must be an existing branch on the current repository. |  | Required |
-| UserName | The user name in Bitbucket |  | Optional |
-| Email | The email in Bitbucket |  | Optional |
 | PackName | The name of the pack |  | Required |
 | File | The File or Files to commit to the new or updated branch or pr |  | Required |
 
