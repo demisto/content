@@ -2501,25 +2501,94 @@ script:
   - arguments: []
     description: Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection.
     name: update-remote-system
-  - arguments:  #§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§ 
-    - default: true
-      description: The incident ID to get detections for.
-      name: incident_id
-      required: true
-    description: Gets the detections for a specific incident.
+  - arguments:
+    - description: limit the vulnerabilities returned to specific properties. Each value must be enclosed in single quotes and placed immediately after the colon with no space. 
+      name: filter
+      required: false
+    - description: Unique agent identifier (AID) of a sensor
+      name: aid 
+      required: false
+    - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
+      name: cve_id
+      required: false
+    - description: Severity of the CVE. Possible values CRITICAL, HIGH, MEDIUM, LOW, UNKNOWN, or NONE.
+      name: cve_severity
+      required: false
+    - description: Name of a tag assigned to a host. Retrieve tags from Host Tags APIs. 
+      name: tags
+      required: false
+    - description: Status of a vulnerability. The value must be entered in all lowercase letters. This filter supports multiple values and negation.
+      name: status
+      required: false
+    - description: Operating system platform. This filter supports negation.
+      name: platform_name
+      required: false
+    - description: Unique system-assigned ID of a host group. Retrieve the host group ID from Host Group APIs.
+      name: host_group
+      required: false
+    - description: Type of host a sensor is running on.
+      name: host_type
+      required: false
+    - description: Filter for vulnerabilities based on the number of days since a host last connected to Falcon. Enter a numeric value from 3 to 45 to indicate the number of days you want to look back. 
+      name: last_seen_within
+      required: false
+    - description: Indicates if the vulnerability is suppressed by a suppression rule or not
+      name: is_suppressed
+      required: false
+    - auto: PREDI
+      description: displaying remediation information
+      default: true
+      name: display_remediation_info
+      required: false
+    - description: 
+      name: display_evaluation_logic_info
+      required: false
+    - description: 
+      name: display_host_info
+      required: false
+    - description: 
+      name: limit
+      required: false
     name: cs-falcon-spotlight-search-vulnerability
     outputs:
-    - contextPath: CrowdStrike.Vulnerability.incident_id
-      description: The incident ID.
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.id
+      description: ''
       type: String
-    - contextPath: CrowdStrike.Vulnerability.behavior_id
-      description: The behavior ID connected to the incident.
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cid
+      description: ''
       type: String
-    - contextPath: CrowdStrike.Vulnerability.detection_ids
-      description: A list of detection IDs connected to the incident.
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.aid
+      description: ''
       type: String
-  dockerimage: demisto/python3:3.10.8.36650
-  isfetch: true
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.created_timestamp
+      description: ''
+      type: Date
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.updated_timestamp
+      description: ''
+      type: Date
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.status
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.apps.product_name_version
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.apps.sub_status
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.apps.remediation.ids
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.apps.evaluation_logic.id
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.suppression_info.is_suppressed
+      description: ''
+      type: Boolean
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.id
+      description: ''
+      type: String
+      dockerimage: demisto/python3:3.10.8.36650
+      isfetch: true
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true

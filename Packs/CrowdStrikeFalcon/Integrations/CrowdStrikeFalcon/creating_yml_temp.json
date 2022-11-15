@@ -1,0 +1,32 @@
+{
+    "resources": [
+        {
+            "id": "15dbb9d8f06b45fe9f61eb46e829d986_f3e3963a67d730668c10392e04828264",
+            "cid": "20879a8064904ecfbb62c118a6a19411",
+            "aid": "15dbb9d8f06b45fe9f61eb46e829d986",
+            "created_timestamp": "2021-09-16T15:12:42Z",
+            "updated_timestamp": "2022-10-19T00:54:43Z",
+            "status": "open",
+            "apps": [
+                {
+                    "product_name_version": "Windows Server 2019 1809",
+                    "sub_status": "open",
+                    "remediation": {
+                        "ids": [
+                            "5f7d9fc628f13a94b45c9372f60a43d0"
+                        ]
+                    },
+                    "evaluation_logic": {
+                        "id": "e17d9e38f04d3db6b59606b281fbee90"
+                    }
+                }
+            ],
+            "suppression_info": {
+                "is_suppressed": false
+            },
+            "cve": {
+                "id": "CVE-2021-36959"
+            }
+        }
+    ]
+}
