@@ -10,7 +10,7 @@ Moved to beta due to the lack of a formal API.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter**                              | **Required** |
---------------------------------------------| --- | --- |
+    | --- | --- |
     | Server URL (e.g., https://192.168.0.1:443) | True |
     | Username                                   | True |
     | Vsys - Firewall instances only             | False |
@@ -19,7 +19,7 @@ Moved to beta due to the lack of a formal API.
     | Trust any certificate (not secure)         | False |
     | Use system proxy settings                  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+1. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
