@@ -756,6 +756,10 @@ UPSERT_COMMAND_DATA_CASES_GET_INDICATOR_RESULT = [
     (
         {'event_type': 'ipv4NetworkEvent'},
         'Ip'
+    ),
+    (
+        {'event_type': 'Unknown'},
+        None
     )
 ]
 

@@ -1524,7 +1524,7 @@ def get_indicator_command_result(alert: Dict[str, Any]) -> CommandResults:
             readable_output=md_table
         )
 
-    return CommandResults(readable_output='There is no IP or File indicators')
+    return CommandResults(readable_output=f'Unknown event type: {alert.get("event_type")}')
 
 
 def get_condition_entry(condition: Dict):
