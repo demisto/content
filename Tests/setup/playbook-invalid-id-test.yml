@@ -448,6 +448,7 @@ tasks:
       name: IP Enrichment - Generic
       description: ""
       playbookName: IP Enrichment - Generic
+      description: ""
       type: playbook
       iscommand: false
       brand: ""
