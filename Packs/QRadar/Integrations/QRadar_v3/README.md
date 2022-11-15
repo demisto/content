@@ -2672,7 +2672,9 @@ Retrieves a list of staged remote networks.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| range | Limit argument - Range of results to return. The default is 0-49. (e.g., 0-20, 3-5, 3-3).<br>Default is 0-49. | Optional | 
+| limit | The maximum number of results to return. The default is 50. | Optional |
+| page | The page number from which to start getting results. | Optional | 
+| page_size | The number of results to return per page. | Optional |
 | group | The name of the remote network group that CIDRs associated with, as it appears in Qradar. | Optional | 
 | id | Id of CIDR (remote network). | Optional | 
 | name | The name of CIDRs (remote network) appears in Qradar. | Required | 

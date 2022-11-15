@@ -1525,6 +1525,24 @@ def verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, grou
                 return f'{field} is not a valid field. Possible fields are: {possible_fields}.'
 
 
+def verify_args_for_remote_network_cidr_list(limit, page, page_size, filter_, group, id_, name):
+    # verify that only one of the arguments is given
+    if limit and (page or page_size):
+        return 'Please provide either limit argument or page and page_size arguments.'
+
+    # verify that if page are given, page_size is also given and vice versa
+    if (page and not page_size) or (page_size and not page):
+        return 'Please provide both page and page_size arguments.'
+
+    # verify that the given limit and page and page_size are valid
+    if (limit is not None and limit < 1) or (page is not None and page < 1) or (page_size is not None and page_size < 1):
+        return 'Limit, page and page_size arguments must be positive.'
+
+    # verify that only one of the arguments is given
+    if filter_ and (group or id_ or name):
+        return 'You can not use filter argument with group, id or name arguments.'
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -3726,15 +3744,25 @@ def qradar_remote_network_cidr_list_command(client: Client, args: Dict[str, Any]
         CommandResults.
 
     """
-    range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
+    limit = arg_to_number(args.get('limit'))
+    page = arg_to_number(args.get('page'))
+    page_size = arg_to_number(args.get('page_size'))
     group = args.get('group')
     id_ = args.get('id')
     name = args.get('name')
     filter_ = args.get('filter', '')
     fields = args.get('fields')
 
-    if filter_ and (group or id_ or name):
-        raise DemistoException('You can not use filter argument with group, id or name arguments.')
+    error_message = verify_args_for_remote_network_cidr_list(limit, page, page_size, filter_, group, id_, name)
+    if error_message:
+        raise DemistoException(error_message)
+
+    if page and page_size:
+        first_item = (int(page) - 1) * int(page_size)
+        last_item = int(page) * int(page_size) - 1
+        range_ = f'items={first_item}-{last_item}'
+    else:
+        range_ = f'items=0-{str(limit - 1) if limit else str(DEFAULT_LIMIT_VALUE - 1)}'
 
     if not filter_:
         if group:
@@ -3751,7 +3779,12 @@ def qradar_remote_network_cidr_list_command(client: Client, args: Dict[str, Any]
                for res in response]
     headers = ['id', 'name', 'group', 'cidrs', 'description']
     success_message = 'List of the staged remote networks'
-    readable_output = tableToMarkdown(success_message, response, headers=headers) if response else 'No results found.'
+    if response:
+        readable_output = tableToMarkdown(success_message, response, headers=headers)
+        readable_output += f"Above results are with page number: {page} and with size: {page_size}." if page and page_size \
+            else f"Above results are with limit: {limit if limit else DEFAULT_LIMIT_VALUE}."
+    else:
+        readable_output = 'No results found.'
 
     return CommandResults(
         outputs_prefix='QRadar.RemoteNetworkCIDR',
