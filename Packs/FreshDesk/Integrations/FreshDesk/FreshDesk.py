@@ -5,9 +5,10 @@ from CommonServerUserPython import *
 
 
 import requests
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 # Remove proxy if not set to true in params
 handle_proxy(proxy_param_name='proxy')
 ''' GLOBALS/PARAMS '''
