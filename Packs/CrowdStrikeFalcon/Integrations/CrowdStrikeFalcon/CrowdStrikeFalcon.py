@@ -2006,7 +2006,7 @@ def migrate_last_run():
         updated_last_run_incidents['time'] = incident_time.strftime(DATE_FORMAT)
     updated_last_run_incidents['last_fetched_incident'] = last_run.get('last_fetched_incident')
     updated_last_run_incidents['offset'] = last_run.get('incident_offset')
-    
+
     demisto.setLastRun([updated_last_run_detections, updated_last_run_incidents])
 
 
