@@ -9,8 +9,6 @@ import hashlib
 import base64
 import urllib3
 
-# comment
-
 API_VERSION = '0.6.0'
 VENDOR = "alibaba"
 PRODUCT = "action-trail"
