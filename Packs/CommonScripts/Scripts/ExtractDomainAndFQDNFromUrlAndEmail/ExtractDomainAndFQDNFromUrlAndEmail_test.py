@@ -14,16 +14,16 @@ import pytest
     # no fqdn extracted
     ('www.test.fake', ''),
     ('test.zip', ''),
+    ('https://emea01.safelinks.protection.outlook.com/', ''),
+    ('https://urldefense.proofpoint.com/', ''),
+    ('https://urldefense.com/', ''),  # noqa: E501
 
     # remove protocol prefixes
     ('ftp://www.test.com/test2/dev', 'www.test.com'),
     ('http://www.test.com/test2/dev', 'www.test.com'),
-    ('https://urldefense.proofpoint.com/', 'urldefense.proofpoint.com'),
     ('hxxps://path.test.com/check', 'path.test.com'),
     ('http-3A__go.getpostman.com_', 'go.getpostman.com'),
     ('http://survey.lavulcamktg.cl/index.php/', 'survey.lavulcamktg.cl'),
-    ('https://emea01.safelinks.protection.outlook.com/', 'emea01.safelinks.protection.outlook.com'),
-    ('https://urldefense.com/', 'urldefense.com'),  # noqa: E501
 
     # unquote protocol prefixes
     ('https%3A%2F%2Fdulunggakada40[.]com', 'dulunggakada40.com'),

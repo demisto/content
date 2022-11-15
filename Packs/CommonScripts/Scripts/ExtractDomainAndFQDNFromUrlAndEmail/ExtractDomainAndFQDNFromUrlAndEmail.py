@@ -4,8 +4,8 @@ from tld import get_tld
 from urllib.parse import urlparse, parse_qs, unquote
 import re
 
-PROOFPOINT_PREFIXES = ['https://urldefense.proofpoint.com/v1/url?u=', 'https://urldefense.proofpoint.com/v2/url?u=',
-                       "https://urldefense.com/v3/__"]
+PROOFPOINT_PREFIXES = ['urldefense.proofpoint.com',
+                       "urldefense.com", 'urldefense.proofpoint.com']
 ATP_LINK_REG = r'(https:\/\/\w*|\w*)\.safelinks\.protection\.outlook\.com\/.*\?url='
 DOMAIN_REGEX = r"(?i)(?:(?:http|ftp|hxxp)s?(?:://|-3A__|%3A%2F%2F))?((?:[^\\\.@\s\"',(\[:?=]+(?:\.|\[\.\]))+[a-zA-Z]{2,})(?:[_/\s\"',)\]]|[.]\s|%2F|$)"
 CHARECTERS_TO_REMOVE = ',.()/\\ _'
@@ -79,18 +79,21 @@ def pre_process_input(the_input):
     return the_input
 
 
+def check_if_known_url(the_input):
+    # Check if it is a Microsoft ATP Safe Link
+    if re.match(ATP_LINK_REG, the_input):
+        return ''
+    # Check if it is a Proofpoint URL
+    elif the_input.find(PROOFPOINT_PREFIXES[0]) == 0 or the_input.find(PROOFPOINT_PREFIXES[1]) == 0 or \
+            the_input.find(PROOFPOINT_PREFIXES[2]) == 0:
+        return ''
+
+
 def extract_fqdn(the_input):
     # pre processing the input, removing excessive charecters
     the_input = pre_process_input(the_input)
 
-    # Check if it is a Microsoft ATP Safe Link
-    if re.match(ATP_LINK_REG, the_input):
-        the_input = atp_get_original_url(the_input)
-    # Check if it is a Proofpoint URL
-    elif the_input.find(PROOFPOINT_PREFIXES[0]) == 0 or the_input.find(PROOFPOINT_PREFIXES[1]) == 0 or \
-            the_input.find(PROOFPOINT_PREFIXES[2]) == 0:
-        the_input = proofpoint_get_original_url(the_input)
-
+    the_input = check_if_known_url(the_input)
     # Not ATP Link or Proofpoint URL so just unescape
     the_input = unquote(the_input)
     the_input = unescape_url(the_input)
