@@ -78,7 +78,7 @@ outputs:
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: devdemisto/python3-ubi:3.10.8.37476
 subtype: python3
 tests:
 - GDPRContactAuthorities Test
