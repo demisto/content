@@ -87,6 +87,8 @@ def search_incidents(args: Dict):   # pragma: no cover
     if args.get('trimevents') == '0':
         args.pop('trimevents')
 
+    platform = get_demisto_version().get('platform')
+
     # handle list of ids
     if args.get('id'):
         args['id'] = ','.join(argToList(args.get('id'), transform=str))
@@ -94,17 +96,19 @@ def search_incidents(args: Dict):   # pragma: no cover
     res: List = execute_command('getIncidents', args, extract_contents=False)
     incident_found: bool = check_if_found_incident(res)
     if incident_found is False:
+        if platform == 'x2':
+            return 'Alerts not found.', {}, {}
         return 'Incidents not found.', {}, {}
 
     data = apply_filters(res[0]['Contents']['data'], args)
-    platform = get_demisto_version().get('platform')
     data = add_incidents_link(data, platform)
-    headers: List[str] = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed']
+    headers: List[str]
     if platform == 'x2':
-        headers.append('alertLink')
+        headers = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed', 'alertLink']
+        print(data)
         md = tableToMarkdown(name="Alerts found", t=data, headers=headers)
     else:
-        headers.append('incidentLink')
+        headers = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed', 'incidentLink']
         md = tableToMarkdown(name="Incidents found", t=data, headers=headers)
     return md, data, res
 
