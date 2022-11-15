@@ -1,4 +1,4 @@
-- alert_category: EXFILTRATION
+  alert_category: EXFILTRATION
   alert_description: This rule detects more than 100 downloaded files during an hour
     by the same user. This is a suspicious behavior which can be an indication of
     a data exfiltration.
