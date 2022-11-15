@@ -217,7 +217,7 @@ CHANGED_MARKETPLACE_PACKS = [
 
 
 @pytest.mark.parametrize('diff, build_type, the_expected_result', CHANGED_MARKETPLACE_PACKS)
-def test_get_turned_non_hidden_packs(mocker, diff, build_type, the_expected_result):
+def test_first_added_to_marketplace(mocker, diff, build_type, the_expected_result):
     """
     Given:
         - A pack_metadata.json content returned from the git diff.
