@@ -1994,7 +1994,6 @@ def forwarding_address_add(user_id: str, forwarding_email: str) -> tuple[dict, b
     result = {}
     exception_details = {}
     exception = False
-    error_message = ''
     request_body = {'forwardingEmail': forwarding_email}
     service = get_service(
         'gmail',
@@ -2005,9 +2004,8 @@ def forwarding_address_add(user_id: str, forwarding_email: str) -> tuple[dict, b
         result = service.users().settings().forwardingAddresses().create(userId=user_id, body=request_body).execute()
         result['userId'] = user_id
     except HttpError as e:
-        error_message = e.reason
         exception = True
-        exception_details = {'forwardingEmail': forwarding_email, 'errorMessage': error_message, 'userId': user_id}
+        exception_details = {'forwardingEmail': forwarding_email, 'errorMessage': e.reason, 'userId': user_id}
     return result, exception, exception_details
 
 
@@ -2067,24 +2065,21 @@ def forwarding_address_update(user_id: str, disposition: str, forwarding_email: 
     exception = False
     result = {}
     exception_details = {}
-    error_message = ''
-    if disposition != "":
-        service = get_service(
-            'gmail',
-            'v1',
-            ['https://www.googleapis.com/auth/gmail.settings.sharing'],
-            delegated_user=user_id)
-        request_body = {'emailAddress': forwarding_email,
-                        'enabled': True,
-                        'disposition': disposition
-                        }
-        try:
-            result = service.users().settings().updateAutoForwarding(userId=user_id, body=request_body).execute()
-            result['userId'] = user_id
-        except HttpError as e:
-            error_message = e.reason
-            exception = True
-            exception_details = {'forwardingEmail': forwarding_email, 'errorMessage': error_message, 'userId': user_id}
+    service = get_service(
+        'gmail',
+        'v1',
+        ['https://www.googleapis.com/auth/gmail.settings.sharing'],
+        delegated_user=user_id)
+    request_body = {'emailAddress': forwarding_email,
+                    'enabled': True,
+                    'disposition': disposition
+                    }
+    try:
+        result = service.users().settings().updateAutoForwarding(userId=user_id, body=request_body).execute()
+        result['userId'] = user_id
+    except HttpError as e:
+        exception = True
+        exception_details = {'forwardingEmail': forwarding_email, 'errorMessage': e.reason, 'userId': user_id}
 
     return result, exception, exception_details
 
