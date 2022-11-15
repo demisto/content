@@ -401,17 +401,14 @@ def module_test_command(client: Client, args):  # pragma: no cover
     url = '/api/v3/groups?resultLimit=2'
     try:
         response, status = client.make_request(Method.GET, url)
-        demisto.debug(f"{response=}")
         if status == 'Success':
             return "ok", {}, {}
         else:
             return_error('Error from the API: ' + response.get('message',
-                                                            'An error has occurred, if it persist please contact your '
-                                                            'local help desk'))
+                                                               'An error has occurred, if it persist, please contact your '
+                                                               'local help desk'))
     except Exception as e:
         exception_text = str(e).lower()
-        demisto.debug('Exception happened')
-        demisto.debug(f"{exception_text=}")
         if 'resource not found' in exception_text:
             return "ok", {}, {}
         else:
