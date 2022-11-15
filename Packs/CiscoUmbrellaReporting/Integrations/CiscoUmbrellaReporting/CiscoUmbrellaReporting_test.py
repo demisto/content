@@ -1,3 +1,7 @@
+"""
+Tests module for Cisco Umbrella Reporting integration
+"""
+
 import pytest
 import json
 import io
