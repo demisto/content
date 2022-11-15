@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import json
-import traceback
 from typing import Any, Dict, List, Union
 
 import urllib3
