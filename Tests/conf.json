@@ -5169,6 +5169,7 @@
         }
     ],
     "skipped_tests": {
+        "Detonate URL - Generic Test": "Issue CRTX-67709 and CRTX-67708",
         "Cortex Data Lake Test": "Issue CRTX-67423",
         "playbook-CheckPointSandBlast_Test" : "Checkpoint playbook no license",
         "playbook-BmcITSM-Test" : "issue with license CIAC-3776",
