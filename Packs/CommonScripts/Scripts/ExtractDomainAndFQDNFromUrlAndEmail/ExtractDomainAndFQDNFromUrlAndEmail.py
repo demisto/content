@@ -7,6 +7,8 @@ import re
 PROOFPOINT_PREFIXES = ['https://urldefense.proofpoint.com/v1/url?u=', 'https://urldefense.proofpoint.com/v2/url?u=',
                        "https://urldefense.com/v3/__"]
 ATP_LINK_REG = r'(https:\/\/\w*|\w*)\.safelinks\.protection\.outlook\.com\/.*\?url='
+DOMAIN_REGEX = r"(?i)(?:(?:http|ftp|hxxp)s?(?:://|-3A__|%3A%2F%2F))?((?:[^\\\.@\s\"',(\[:?=]+(?:\.|\[\.\]))+[a-zA-Z]{2,})(?:[_/\s\"',)\]]|[.]\s|%2F|$)"
+CHARECTERS_TO_REMOVE = ',.()/\\ _'
 
 
 def atp_get_original_url(safe_url):
@@ -66,7 +68,21 @@ def get_fqdn(the_input):
     return fqdn
 
 
+def pre_process_input(the_input):
+    the_input = the_input.removesuffix('.')
+    the_input = the_input.removeprefix('/')
+
+    match = re.match(DOMAIN_REGEX, the_input)
+    if match:
+        the_input = match.group(1)
+
+    return the_input
+
+
 def extract_fqdn(the_input):
+    # pre processing the input, removing excessive charecters
+    the_input = pre_process_input(the_input)
+
     # Check if it is a Microsoft ATP Safe Link
     if re.match(ATP_LINK_REG, the_input):
         the_input = atp_get_original_url(the_input)
