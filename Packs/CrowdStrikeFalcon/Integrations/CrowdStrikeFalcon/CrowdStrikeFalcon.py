@@ -1999,8 +1999,6 @@ def migrate_last_run():
     updated_last_run_detections = {}
     if (detection_time := last_run.get('first_behavior_detection_time')) and (detection_time := dateparser.parse(detection_time)):
         updated_last_run_detections['time'] = detection_time.strftime(DATE_FORMAT)
-
-    updated_last_run_detections['time'] = last_run.get('first_behavior_detection_time')
     updated_last_run_detections['offset'] = last_run.get('detection_offset')
 
     updated_last_run_incidents = {}
