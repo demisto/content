@@ -8,7 +8,7 @@ import subprocess
 import sys
 import uuid
 import zipfile
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from datetime import datetime
 from packaging.version import Version
 from enum import IntEnum
@@ -175,7 +175,7 @@ def get_id_set(id_set_path) -> Union[dict, None]:
     return None
 
 
-class Build:
+class Build(ABC):
     # START CHANGE ON LOCAL RUN #
     content_path = f'{os.getenv("HOME")}/project' if os.getenv('CIRCLECI') else os.getenv('CI_PROJECT_DIR')
     test_pack_target = f'{os.getenv("HOME")}/project/Tests' if os.getenv(
@@ -212,6 +212,11 @@ class Build:
         self.content_root = options.content_root
         self.pack_ids_to_install = self.fetch_pack_ids_to_install(options.pack_ids_to_install)
         self.service_account = options.service_account
+
+    @property
+    @abstractmethod
+    def marketplace_name(self) -> str:
+        pass
 
     @staticmethod
     def fetch_tests_list(tests_to_run_path: str):
@@ -269,6 +274,19 @@ class Build:
     @staticmethod
     def set_marketplace_url(servers, branch_name, ci_build_number):
         pass
+
+    def check_if_new_to_marketplace(self, diff: str) -> bool:
+        """
+        Args:
+            diff: the git diff for pack_metadata file, between master and branch
+        Returns:
+            (bool): whether new (current) marketplace was added to the pack_metadata or not
+        """
+        spaced_diff = " ".join(diff.split())
+        if (f'+ "{self.marketplace_name}"' in spaced_diff) and not (f'- "{self.marketplace_name}"' in spaced_diff):
+            return True
+        else:
+            return False
 
     def disable_instances(self):
         for server in self.servers:
@@ -547,6 +565,10 @@ class XSOARBuild(Build):
                                     branch_name=self.branch_name)
         return self._proxy
 
+    @property
+    def marketplace_name(self) -> str:
+        return 'xsoar'
+
     def configure_servers_and_restart(self):
         manual_restart = Build.run_environment == Running.WITH_LOCAL_SERVER
         for server in self.servers:
@@ -726,6 +748,10 @@ class XSIAMBuild(Build):
         xsiam_servers_api_keys = get_json_file(xsiam_servers_api_keys_path)
         api_key = xsiam_servers_api_keys.get(xsiam_machine)
         return api_key, conf.get('demisto_version'), conf.get('base_url'), conf.get('x-xdr-auth-id')
+
+    @property
+    def marketplace_name(self) -> str:
+        return 'marketplacev2'
 
     def configure_servers_and_restart(self):
         # No need of this step in XSIAM.
@@ -1690,9 +1716,25 @@ def update_integration_lists(new_integrations_names: List[str], packs_not_to_ins
     return list(set(new_integrations_names)), modified_integrations_names
 
 
+def filter_new_to_marketplace_packs(build: Build, modified_pack_names: Set[str]) -> Set[str]:
+    """
+    Return a set of packs that is new to the marketplace.
+    Args:
+        build (Build): The build object.
+        modified_packs_names (Set[str]): The set of packs to install.
+    Returns:
+        (Set[str]): The set of the pack names that should not be installed.
+    """
+    first_added_to_marketplace = set()
+    for pack_name in modified_pack_names:
+        diff = run_git_diff(pack_name, build)
+        build.check_if_new_to_marketplace(diff)
+    return first_added_to_marketplace
+
+
 def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Tuple[Set[str], Set[str]]:
     """
-    Return a set of packs to install only in the post-update.
+    Return a set of packs to install only in the post-update, and set not to install in pre-update.
     Args:
         modified_packs_names (Set[str]): The set of packs to install.
         build (Build): The build object.
@@ -1704,8 +1746,16 @@ def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Tu
     non_hidden_packs = get_turned_non_hidden_packs(modified_packs_names, build)
     packs_with_higher_min_version = get_packs_with_higher_min_version(modified_packs_names - non_hidden_packs,
                                                                       build.content_path, build.server_numeric_version)
+    # packs to install used in post update
     build.pack_ids_to_install = list(set(build.pack_ids_to_install) - packs_with_higher_min_version)
-    return packs_with_higher_min_version.union(non_hidden_packs), non_hidden_packs
+
+    first_added_to_marketplace = filter_new_to_marketplace_packs(
+        build, modified_packs_names - non_hidden_packs - packs_with_higher_min_version
+    )
+
+    packs_not_to_install_in_pre_update = set().union(*[packs_with_higher_min_version,
+                                                       non_hidden_packs, first_added_to_marketplace])
+    return packs_not_to_install_in_pre_update, non_hidden_packs
 
 
 def get_packs_with_higher_min_version(packs_names: Set[str], content_path: str, server_numeric_version: str) -> Set[str]:
@@ -1773,12 +1823,12 @@ def main():
         build.install_nightly_pack()
     else:
         modified_packs_names = get_non_added_packs_ids(build)
-        # todo: add
-        packs_not_to_install, packs_to_install_in_post_update = get_packs_not_to_install(modified_packs_names, build)
-        packs_to_install = modified_packs_names - packs_not_to_install
+        packs_not_to_install_in_pre_update, packs_to_install_in_post_update = get_packs_not_to_install(
+            modified_packs_names, build)
+        packs_to_install = modified_packs_names - packs_not_to_install_in_pre_update
         build.install_packs(pack_ids=packs_to_install)
-        new_integrations_names, modified_integrations_names = build.get_changed_integrations(packs_to_install_in_post_update)
-        # test button:
+        new_integrations_names, modified_integrations_names = build.get_changed_integrations(
+            packs_to_install_in_post_update)
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations_names,
                                                                                             modified_integrations_names)
         modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
