@@ -59,8 +59,7 @@ def test_get_destinations_list_command(mocker, raw_response, expected):
             - Running the 'get_destinations_list_command'.
 
         Then:
-            -  Checks the output of the command function with the expected
-            output.
+            - Checks that the context output and the readable output of the command function are as expected.
     """
     mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
@@ -93,8 +92,7 @@ def test_get_category_list_command(mocker, raw_response, expected):
             - Running the 'get_category_list_command'.
 
         Then:
-            -  Checks the output of the command function with the expected
-            output.
+            - Checks that the context output and the readable output of the command function are as expected.
     """
 
     mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
@@ -107,7 +105,6 @@ def test_get_category_list_command(mocker, raw_response, expected):
     with open(os.path.join("test_data", "command_readable_output/category_command_readable_output.md"), 'r') as f:
         readable_output = f.read()
     results_without_traffic = get_categories_list_command(client, args)
-    # print(results_without_traffic.readable_output)
     args['traffic_type'] = "dns"
     results_with_traffic = get_categories_list_command(client, args)
     # results is CommandResults list
@@ -116,9 +113,10 @@ def test_get_category_list_command(mocker, raw_response, expected):
     assert detail_without_traffic == expected.get("data")
     assert results_without_traffic.readable_output == readable_output
     assert detail_with_traffic == expected.get("data")
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError) as e:
         args["sha256"] = "4c5f650943b0ae6ae2c9864f3bf6"
         get_categories_list_command(client, args)
+    assert e.value.args[0] == 'SHA256 value 4c5f650943b0ae6ae2c9864f3bf6 is invalid'
 
 
 @pytest.mark.parametrize('raw_response, expected', [(IDENTITY_LIST_RESPONSE,
@@ -136,8 +134,7 @@ def test_get_identities_list_command(mocker, raw_response, expected):
             - Running the 'get_identities_list_command'.
 
         Then:
-            -  Checks the output of the command function with the expected
-            output.
+            - Checks that the context output and the readable output of the command function are as expected.
     """
     mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
@@ -178,8 +175,7 @@ def test_get_file_list_command(mocker, raw_response, expected):
             - Running the 'get_file_list_command'.
 
         Then:
-            -  Checks the output of the command function with the expected
-            output.
+            - Checks that the context output and the readable output of the command function are as expected.
     """
     mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
@@ -212,8 +208,7 @@ def test_get_threat_list_command(mocker, raw_response, expected):
             - Running the 'get_threat_list_command'.
 
         Then:
-            -  Checks the output of the command function with the expected
-            output.
+            -  Checks that the context output and the readable output of the command function are as expected.
     """
     mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
@@ -246,8 +241,7 @@ def test_get_event_types_list_command(mocker, raw_response, expected):
             - Running the 'get_event_types_list_command'.
 
         Then:
-            -  Checks the output of the command function with the expected
-            output.
+            -  Checks that the context output and the readable output of the command function are as expected.
     """
     mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
@@ -281,8 +275,7 @@ def test_get_activity_list_command(mocker, raw_response, expected):
             - Running the 'get_activity_list_command'.
 
         Then:
-            -  Checks the output of the command function with the expected
-            output.
+            -  Checks that the context output and the readable output of the command function are as expected.
     """
     mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
@@ -319,8 +312,7 @@ def test_get_activity_by_dns_traffic_type_command(mocker, raw_response,
             - Running the 'get_activity_by_traffic_type_command'.
 
         Then:
-            -  Checks the output of the command function with the expected
-            output.
+            -  Checks that the context output and the readable output of the command function are as expected.
     """
     mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
@@ -360,8 +352,7 @@ def test_get_activity_proxy_by_traffic_type(mocker, raw_response, expected):
             - Running the 'get_activity_by_traffic_type_command'.
 
         Then:
-            -  Checks the output of the command function with the expected
-            output.
+            -  Checks that the context output and the readable output of the command function are as expected.
     """
     mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
@@ -401,8 +392,7 @@ def test_get_activity_ip_by_traffic_type(mocker, raw_response, expected):
             - Running the 'get_activity_by_traffic_type_command'.
 
         Then:
-            -  Checks the output of the command function with the expected
-            output.
+            -  Checks that the context output and the readable output of the command function are as expected.
     """
     mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
@@ -443,8 +433,7 @@ def test_get_activity_firewall_by_traffic_type(mocker, raw_response, expected):
             - Running the 'get_activity_by_traffic_type_command'.
 
         Then:
-            -  Checks the output of the command function with the expected
-            output.
+            -  Checks that the context output and the readable output of the command function are as expected.
     """
     mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
@@ -485,8 +474,7 @@ def test_get_activity_amp_by_traffic_type(mocker, raw_response, expected):
             - Running the 'get_activity_by_traffic_type_command'.
 
         Then:
-            -  Checks the output of the command function with the expected
-            output.
+            -  Checks that the context output and the readable output of the command function are as expected.
     """
     mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
@@ -527,8 +515,7 @@ def test_get_activity_intrusion_by_traffic_type(mocker, raw_response, expected):
             - Running the 'get_activity_by_traffic_type_command'.
 
         Then:
-            -  Checks the output of the command function with the expected
-            output.
+            -  Checks that the context output and the readable output of the command function are as expected.
     """
     mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
@@ -568,8 +555,7 @@ def test_get_summary_list_command(mocker, raw_response, expected):
             - Running the 'get_summary_list_command'.
 
         Then:
-            -  Checks the output of the command function with the expected
-            output.
+            -  Checks that the context output and the readable output of the command function are as expected.
     """
     mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
@@ -603,8 +589,7 @@ def test_get_category_summary_list(mocker, raw_response, expected):
             - Running the 'get_summary_list_command'.
 
         Then:
-            -  Checks the output of the command function with the expected
-            output.
+            -  Checks that the context output and the readable output of the command function are as expected.
     """
     mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
@@ -642,8 +627,7 @@ def test_get_destination_summary_list(mocker, raw_response, expected):
             - Running the 'get_summary_list_command'.
 
         Then:
-            -  Checks the output of the command function with the expected
-            output.
+            -  Checks that the context output and the readable output of the command function are as expected.
     """
     mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
@@ -681,8 +665,7 @@ def test_get_intrusion_rule_summary_list(mocker, raw_response, expected):
             - Running the 'get_summary_list_command'.
 
         Then:
-            -  Checks the output of the command function with the expected
-            output.
+            -  Checks that the context output and the readable output of the command function are as expected.
     """
     mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
@@ -716,8 +699,7 @@ def test_pagination():
             - Running the 'pagination function'.
 
         Then:
-            -  Checks the output of the command function with the
-            expected output.
+            -  Checks that the context output and the readable output of the command function are as expected.
     """
     page = 2
     page_size = 5
@@ -733,13 +715,13 @@ def test_test_module(requests_mock, raw_response):
         Tests the test_module function.
 
             Given:
-                no argument required
+                no argument required.
 
             When:
                 - Running the 'test_module function'.
 
             Then:
-                -  Check weather the given credentials are correct or not
+                -  Check weather the given credentials are correct or not.
     """
     from CiscoUmbrellaReporting import test_module
     post_req_url = client.token_url
@@ -774,8 +756,7 @@ def test_access_token(requests_mock):
                 - Running the 'get_activity_list_command function'.
 
             Then:
-                -  Checks the output of the command function with the
-                expected output.
+                -  Checks the output of the command function with the expected output.
     """
     req_url = client.token_url
 
@@ -801,8 +782,7 @@ def test_check_valid_indicator_value():
                 - Running the 'check_valid_indicator_value function'.
 
             Then:
-                -  Checks the output of the command function with the
-                expected output.
+                -  Checks the output of the command function with the expected output.
     """
     indicator = {
         'domains': 'google.com',
@@ -832,8 +812,7 @@ def test_get_command_title_string():
                 - Running the 'get_command_title_string function'.
 
             Then:
-                -  Checks the output of the command function with the
-                expected output.
+                -  Checks the output of the command function with the expected output.
     """
 
     sub_context = 'Activity'
@@ -856,8 +835,7 @@ def test_activity_build_data():
                 - Running the 'activity_build_data function'.
 
             Then:
-                -  Checks the output of the command function with the
-                expected output.
+                -  Checks the output of the command function with the expected output.
     """
     activity_data = ACTIVITY_LIST_RESPONSE['data'][0]
     expected_output = {
@@ -888,8 +866,7 @@ def test_create_cisco_umbrella_args():
                 - Running the 'create_cisco_umbrella_args function'.
 
             Then:
-                -  Checks the output of the command function with the
-                expected output.
+                -  Checks the output of the command function with the expected output.
     """
     args = {
         'domains': 'google.com',
