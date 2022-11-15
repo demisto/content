@@ -6,9 +6,10 @@ from CommonServerUserPython import *
 
 import json
 import requests
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
@@ -124,6 +125,8 @@ def submit_to_checkphish(url, api_key, base_url, use_ssl):
             'scanType': 'full'
         }
         res = http_request('POST', base_url, use_ssl, data=json.dumps(query))
+        if res.get('errorMessage'):
+            raise ValueError(res.get('errorMessage'))
 
         return res['jobID']
 
@@ -220,7 +223,6 @@ handle_proxy()
 def main():
 
     demisto_params = demisto.params()
-
     good_disp = argToList(demisto_params.get('good_disp'))
     susp_disp = argToList(demisto_params.get('susp_disp'))
     bad_disp = argToList(demisto_params.get('bad_disp'))

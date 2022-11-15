@@ -1,11 +1,12 @@
 {
     "name": "Code42",
-    "description": "Use the Code42 integration to identify potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.",
+    "description": "The Code42 INCYDR integration accelerates insider threat incident response and remediation procedures for potential data exfiltration across computers, email, cloud and SaaS apps.",
     "support": "partner",
-    "currentVersion": "2.0.13",
+    "currentVersion": "3.0.0",
     "author": "Code42",
-    "url": "https://support.code42.com/Administrator/Cloud/Monitoring_and_managing",
-    "email": "",
+    "url": "https://support.code42.com/Administrator/Cloud/Monitoring_and_managing/Install_and_manage_the_Code42_app_for_Cortex_XSOAR",
+    "email": "gethelp@code42.com",
+    "devEmail": "integrations@code42.com",
     "created": "2020-03-11T13:16:53Z",
     "certification": "certified",
     "categories": [
@@ -14,9 +15,6 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "githubUser": [
-        "nathanhunstad"
-    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

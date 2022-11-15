@@ -1,0 +1,8 @@
+winlogbeat.event_logs:
+  - name: Security
+    event_id: 510, 1200, 1201, 1202, 1203, 1204, 1205, 1206, 1207
+    processors:
+      - add_fields:
+          fields:
+            vendor: microsoft
+            product: windows

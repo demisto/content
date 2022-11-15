@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from CommonServerPython import *
+import pytest
 
 
 def load_mock_response(file_name):
@@ -260,3 +261,170 @@ def test_get_users_on_call_now(requests_mock, mocker):
     res = get_on_call_now_users_command(**demisto.args())
     assert res.outputs[0].get('ScheduleID') in demisto.args().get('schedule_ids')
     assert 'oncalls' in res.raw_response
+
+
+def test_submit_event(requests_mock, mocker):
+    """
+    Given:
+        - a reqest to submit request.
+
+    When:
+        - Running submit_event function.
+
+    Then:
+        - Ensure the function returns a valid output.
+    """
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            'APIKey': 'API_KEY',
+            'ServiceKey': 'SERVICE_KEY',
+            'FetchInterval': 'FETCH_INTERVAL',
+            'DefaultRequestor': 'P09TT3C'
+        }
+    )
+    source = 'test'
+    summary = 'test'
+    severity = 'test'
+    action = 'test'
+
+    requests_mock.post(
+        'https://events.pagerduty.com/v2/enqueue',
+        json={
+            'status': 'status',
+            'message': 'message',
+            'dedup_key': 'dedup_key'
+        }
+    )
+    from PagerDuty import submit_event_command
+    res = submit_event_command(source, summary, severity, action)
+    assert '### Trigger Event' in res.get('HumanReadable')
+
+
+def test_get_all_schedules_command(mocker, requests_mock):
+    """
+    Given:
+        - a reqest to get all schedule
+
+    When:
+        - Running get_all_schedules function.
+
+    Then:
+        - Ensure the function returns a valid output.
+    """
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            'APIKey': 'API_KEY',
+            'ServiceKey': 'SERVICE_KEY',
+            'FetchInterval': 'FETCH_INTERVAL',
+            'DefaultRequestor': 'P09TT3C'
+        }
+    )
+
+    requests_mock.get(
+        'https://api.pagerduty.com/schedules',
+        json={
+            'schedules': [{'id': 'id',
+                           'name': 'name',
+                           'time_zone': 'time_zone',
+                           'escalation_policies': [{'id': 'id', 'summary': 'summary'}]}]
+
+        }
+    )
+    from PagerDuty import get_all_schedules_command
+    res = get_all_schedules_command()
+    assert '### All Schedules' in res.get('HumanReadable')
+
+
+def test_get_users_contact_methods_command(mocker, requests_mock):
+    """
+    Given:
+        - a reqest to get all schedule.
+
+    When:
+        - Running get_all_schedules function.
+
+    Then:
+        - Ensure the function returns a valid output.
+    """
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            'APIKey': 'API_KEY',
+            'ServiceKey': 'SERVICE_KEY',
+            'FetchInterval': 'FETCH_INTERVAL',
+            'DefaultRequestor': 'P09TT3C'
+        }
+    )
+
+    user_id = 'id'
+
+    requests_mock.get(
+        f'https://api.pagerduty.com/users/{user_id}/contact_methods',
+        json={'contact_methods': [{'id': 'id', 'address': 'address', 'country_code': 'country_code'}]}
+    )
+    from PagerDuty import get_users_contact_methods_command
+    res = get_users_contact_methods_command(user_id)
+    assert '### Contact Methods' in res.get('HumanReadable')
+
+
+def test_get_users_notification_command(mocker, requests_mock):
+    """
+    Given:
+        - a request to get users notifications.
+
+    When:
+        - Running get_users_notification_command function.
+
+    Then:
+        - Ensure the function returns a valid output.
+    """
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            'APIKey': 'API_KEY',
+            'ServiceKey': 'SERVICE_KEY',
+            'FetchInterval': 'FETCH_INTERVAL',
+            'DefaultRequestor': 'P09TT3C'
+        }
+    )
+
+    user_id = 'id'
+
+    requests_mock.get(
+        f'https://api.pagerduty.com/users/{user_id}/notification_rules',
+        json={'notification_rules': [{'id': 'id', 'urgency': 'urgency', 'type': 'type'}]}
+    )
+    from PagerDuty import get_users_notification_command
+    res = get_users_notification_command(user_id)
+    assert '### User notification rules' in res.get('HumanReadable')
+
+
+@pytest.mark.parametrize('severity, expected_result', [('high', 3), ('low', 1), ('other_severity', 0)])
+def test_translate_severity(mocker, severity, expected_result):
+    """
+    Given:
+        - a severity.
+    When:
+        - Running translate_severity function.
+    Then:
+        - Ensure the function returns a valid output.
+    """
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            'APIKey': 'API_KEY',
+            'ServiceKey': 'SERVICE_KEY',
+            'FetchInterval': 'FETCH_INTERVAL',
+            'DefaultRequestor': 'P09TT3C'
+        }
+    )
+    from PagerDuty import translate_severity
+    res = translate_severity(severity)
+    assert res == expected_result

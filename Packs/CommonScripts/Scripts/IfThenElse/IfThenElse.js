@@ -72,11 +72,11 @@ function evaluate(operator, lhs, rhs, options) {
         }
         case "==": {
             [lhs, rhs] = lowerIfPossible(lhs, rhs, options.case_insensitive);
-            return lhs == rhs;
+            return (lhs === null ? "" : lhs) == (rhs === null ? "" : rhs);
         }
         case "!=": {
             [lhs, rhs] = lowerIfPossible(lhs, rhs, options.case_insensitive);
-            return lhs != rhs;
+            return (lhs === null ? "" : lhs) != (rhs === null ? "" : rhs);
         }
         case ">": {
             [lhs, rhs] = lowerIfPossible(lhs, rhs, options.case_insensitive);

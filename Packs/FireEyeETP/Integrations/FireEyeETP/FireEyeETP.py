@@ -16,9 +16,6 @@ import json
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-reload(sys)
-sys.setdefaultencoding('utf8')  # pylint: disable=no-member
-
 '''
 GLOBAL VARS
 '''

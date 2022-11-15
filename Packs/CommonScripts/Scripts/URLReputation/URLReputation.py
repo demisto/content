@@ -6,10 +6,19 @@ def url_reputation():
     results = demisto.executeCommand('url', {'url': demisto.get(demisto.args(), 'url')})
 
     for item in results:
-        if isError(item):
-            item['Contents'] = item['Brand'] + ' returned an error.\n' + item['Contents']
+        if isError(item) and is_valid_error(item):  # call to is_valid_error is a temporary fix to ignore offset 1 error
+            item['Contents'] = item['Brand'] + ' returned an error.\n' + str(item['Contents'])
 
     demisto.results(results)
+
+
+def is_valid_error(item) -> bool:
+    '''error msg: 'Offset: 1' will not be displayed to Users
+       This method is temporary and will be removed
+       once XSUP-18208 issue is fixed.'''
+    if item['Contents'] == "'Offset': 1":
+        return False
+    return True
 
 
 def main():

@@ -29,7 +29,7 @@ DEFAULT_HEADERS = {
     'Authorization': 'Bearer {}'.format(API_TOKEN),
     'Accept': 'application/json'
 }
-SUSPICIOUS_THRESHOLD = arg_to_number(demisto.params().get('suspicous_threshold', 0))
+SUSPICIOUS_THRESHOLD = arg_to_number(demisto.params().get('suspicious_threshold', 0))
 MALICIOUS_THRESHOLD = arg_to_number(demisto.params().get('dboscore_threshold', -100))
 MAX_THRESHOLD_VALUE = 100
 MIN_THRESHOLD_VALUE = -100
@@ -112,7 +112,7 @@ def verify_threshold_params(suspicious_threshold, malicious_threshold):
     if not (MAX_THRESHOLD_VALUE >= suspicious_threshold > malicious_threshold >= MIN_THRESHOLD_VALUE):  # type: ignore
         return_error(
             "Please provide valid threshold values for the Suspicious and Malicious thresholds when Suspicious is greater than "
-            "Malicious and both are within a range of -100 to 100"
+            f"Malicious and both are within a range of {MIN_THRESHOLD_VALUE} to {MAX_THRESHOLD_VALUE}"
         )
 
 

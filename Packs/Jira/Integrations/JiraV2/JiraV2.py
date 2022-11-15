@@ -4,9 +4,8 @@ from requests_oauthlib import OAuth1
 from dateparser import parse
 from datetime import timedelta
 from CommonServerPython import *
-
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 BASE_URL = demisto.getParam('url').rstrip('/') + '/'
@@ -67,23 +66,23 @@ def jira_req(
         try:
             rj = result.json()
             if rj.get('errorMessages'):
-                return_error(f'Status code: {result.status_code}\nMessage: {",".join(rj["errorMessages"])}')
+                raise DemistoException(f'Status code: {result.status_code}\nMessage: {",".join(rj["errorMessages"])}')
             elif rj.get('errors'):
-                return_error(f'Status code: {result.status_code}\nMessage: {",".join(rj["errors"].values())}')
+                raise DemistoException(f'Status code: {result.status_code}\nMessage: {",".join(rj["errors"].values())}')
             else:
-                return_error(f'Status code: {result.status_code}\nError text: {result.text}')
+                raise DemistoException(f'Status code: {result.status_code}\nError text: {result.text}')
         except ValueError as ve:
             demisto.debug(str(ve))
             if result.status_code == 401:
-                return_error('Unauthorized request, please check authentication related parameters.'
-                             f'{BASIC_AUTH_ERROR_MSG}')
+                raise DemistoException('Unauthorized request, please check authentication related parameters.'
+                                       f'{BASIC_AUTH_ERROR_MSG}')
             elif result.status_code == 404:
-                return_error("Could not connect to the Jira server. Verify that the server URL is correct.")
+                raise DemistoException("Could not connect to the Jira server. Verify that the server URL is correct.")
             elif result.status_code == 500 and files:
-                return_error(f"Failed to execute request, status code: 500\nBody: {result.text}"
-                             f"\nMake sure file name doesn't contain any special characters")
+                raise DemistoException(f"Failed to execute request, status code: 500\nBody: {result.text}"
+                                       f"\nMake sure file name doesn't contain any special characters")
             else:
-                return_error(
+                raise DemistoException(
                     f"Failed reaching the server. status code: {result.status_code}")
 
     if resp_type == 'json':
@@ -376,6 +375,7 @@ def generate_md_context_get_issue(data, customfields=None, nofields=None, extra_
         context_obj['ProjectName'] = md_obj['project'] = demisto.get(element, 'fields.project.name')
         context_obj['DueDate'] = md_obj['duedate'] = demisto.get(element, 'fields.duedate')
         context_obj['Created'] = md_obj['created'] = demisto.get(element, 'fields.created')
+        context_obj['Description'] = md_obj['description'] = demisto.get(element, 'fields.description')
 
         # Parse custom fields into their original names
         custom_fields = [i for i in demisto.get(element, "fields") if "custom" in i]
@@ -552,11 +552,36 @@ def get_project_id(project_key='', project_name=''):
     if not project_key and not project_name:
         return_error('You must provide at least one of the following: project_key or project_name')
 
-    result = jira_req('GET', 'rest/api/latest/issue/createmeta', resp_type='json')
+    result: dict = {}
 
-    for project in result.get('projects'):
-        if project_key.lower() == project.get('key').lower() or project_name.lower() == project.get('name').lower():
-            return project.get('id')
+    try:
+        result = jira_req('GET', 'rest/api/latest/issue/createmeta', resp_type='json')
+    except DemistoException as de:
+
+        if de.message != 'Status code: 404\nMessage: Issue Does Not Exist':
+            raise de
+
+        demisto.debug(f'Could not find expected Jira endpoint: {BASE_URL}/api/latest/issue/createmeta.'
+                      f'Trying another endpoint: {BASE_URL}/api/latest/project.')
+
+        # a new endpoint for Jira version 9.0.0 and above, so we execute another api call
+        result = jira_req('GET', 'rest/api/latest/project', resp_type='json')
+
+        # Jira's response changed to a list of projects from version 9.0.0
+        projects_lst = list(filter(
+            lambda x: x.get('key').lower() == project_key.lower() or x.get('name').lower() == project_name.lower(),
+            result))
+
+        # Filtering should give us a list with one project, only one project should match the filter's conditions
+        if projects_lst:
+            return projects_lst[0].get('id')
+
+    # Jira used to respond with a dictionary with the 'projects' key until version 9.0.0
+    if isinstance(result, dict):
+        for project in result.get('projects', []):
+            if project_key.lower() == project.get('key').lower() or project_name.lower() == project.get('name').lower():
+                return project.get('id')
+
     return_error('Project not found')
 
 

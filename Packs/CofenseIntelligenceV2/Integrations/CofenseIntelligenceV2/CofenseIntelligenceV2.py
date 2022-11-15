@@ -1,11 +1,11 @@
 import base64
+import traceback
+from typing import Any, Dict, List
+
+import requests
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-
-import requests
-import traceback
-from typing import Dict, Any, List
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -22,6 +22,12 @@ DBOT_TO_VERDICT = {0: 'Unknown', 1: 'Benign', 2: 'Suspicious', 3: 'Malicious'}
 
 EMAIL_REGEX = r'[^@]+@[^@]+\.[^@]+'
 BRAND = "Cofense Intelligence"
+BLOCK_TYPE_MAPPING = {
+    "ip": "IPv4 Address",
+    "domain": "Domain Name",
+    "email": "Email",
+    "url": "URL",
+}
 
 
 class Client(BaseClient):
@@ -172,45 +178,70 @@ def create_hr_for_cofense_search(threat: Dict):
     return threat_row
 
 
-def threats_analysis(severity_score: dict, threats: List, indicator: str, threshold: str):
+def extract_indicator_from_block(block: dict, command: str) -> str:
+    """Extract indicator from a block based on what command is being called.
+
+    Args:
+        block (dict): block from blockSet
+        command (str): the name of the command
+
+    Returns:
+        str: the value of the indicator
+    """
+    if command == "url":
+        try:
+            data = block.get("data_1", {}).get("url")
+        except AttributeError:
+            data = block.get("data_1")
+    else:
+        data = block.get("data_1")
+
+    return data
+
+
+def threats_analysis(severity_score: dict, threats: List, indicator: str, threshold: str, command: str):
     """ process raw response data and generate dbot score and human readable results
             Args:
                 - severity_score(dict): severity score mapping
                 - threats (list): threats data from cofense raw response
                 - indicator (string): threat severity level for dbot score calculation
                 - threshold (string): threshold for threat's severity
+                - command (string): name of the command
             return:
              Dict: represents human readable markdown table
              int: dbot score
     """
 
-    threshold_score = severity_score.get(threshold)
-    if threshold_score is None:
+    block_type: str = BLOCK_TYPE_MAPPING.get(command, "")
+    threshold_score = severity_score.get(threshold, -1)
+    if threshold_score < 0 or threshold_score > 3:
         raise Exception(
             f'Cofense error: Invalid threshold value: {threshold}. Valid values are: None, Minor, Moderate or Major')
 
-    md_data = []
-    indicator_found = False
-    dbot_score = adjusted_score = 0
+    md_data: list[dict] = []
+    dbot_score = 0  # To maintain the dbot score across all threats
 
+    # Iterating over threats
     for threat in threats:
-        severity_level = 0
-        for block in threat.get('blockSet'):
+        severity_level = 0  # To maintain severity throughout a threat
+        indicator_found = False
 
-            if block.get('impact'):
-                threat_score: int = severity_score.get(block.get('impact'), 0)
+        # Iterating over blocks in blockSet
+        for block in threat.get("blockSet", {}):
+            # Extracting the indicator from the block based on what command is being called
+            data_1_content = extract_indicator_from_block(block, command)
+
+            if block.get("blockType") == block_type and data_1_content == indicator and block.get("impact"):
+                indicator_found = True
+                threat_score = severity_score.get(block.get("impact"), 0)
                 adjusted_score = 3 if threshold_score <= threat_score else threat_score
-                if block.get('data') == indicator:
-                    dbot_score = severity_level = adjusted_score
-                    indicator_found = True
-                    break
+                # Setting the maximum severity from last known and current severity
+                severity_level = max(severity_level, adjusted_score)
 
-            severity_level = max(severity_level, adjusted_score)
-
-        md_data.append(create_threat_md_row(threat, severity_level))
-
-        if not indicator_found:
+        # If an indicator found in block sets, create a new row and update dbot score
+        if indicator_found:
             dbot_score = max(dbot_score, severity_level)
+            md_data.append(create_threat_md_row(threat, severity_level))
 
     return md_data, dbot_score
 
@@ -226,39 +257,38 @@ def ip_threats_analysis(severity_score, threats: List, ip: str, threshold: str, 
              int: dbot score
              ip indicator : indicator object with the data collected from the threats
     """
-    threshold_score = severity_score.get(threshold)
-    if threshold_score is None:
+    block_type = BLOCK_TYPE_MAPPING.get("ip")
+    threshold_score = severity_score.get(threshold, -1)
+    if threshold_score < 0 or threshold_score > 3:
         raise Exception(
             f'Cofense error: Invalid threshold value: {threshold}. Valid values are: None, Minor, Moderate or Major')
 
     md_data = []
-    indicator_found = False
-    dbot_score = adjusted_score = severity_level = 0
+    dbot_score = 0
     ip_indicator = Common.IP(ip=ip, dbot_score=dbot_score_obj)
     for threat in threats:
         severity_level = 0
-        for block in threat.get('blockSet'):
-            if block.get('impact'):
+        indicator_found = False
+        for block in threat.get('blockSet', {}):
+            data_1_content = extract_indicator_from_block(block, command="ip")
+            if block.get("blockType") == block_type and data_1_content == ip and block.get("impact"):
+                indicator_found = True
                 threat_score = severity_score.get(block.get('impact'), 0)
                 adjusted_score = 3 if threshold_score <= threat_score else threat_score
+                severity_level = max(severity_level, adjusted_score)
                 if block.get('ipDetail') and block.get('ipDetail').get('ip') == ip:
                     ip_indicator.asn = block.get('ipDetail').get('asn')
                     ip_indicator.geo_latitude = block.get("ipDetail").get("latitude")
                     ip_indicator.geo_longitude = block.get("ipDetail").get("longitude")
                     ip_indicator.geo_country = block.get("ipDetail").get("countryIsoCode")
                     ip_indicator.malware_family = block.get('malwareFamily', {}).get('familyName')
-                    severity_level = adjusted_score
-                    dbot_score = severity_level
-                    indicator_found = True
-                    # if the searched ip is found - will take its severity
-                    break
-            severity_level = max(severity_level, adjusted_score)
-        threat_md_row = create_threat_md_row(threat, severity_level)
-        threat_md_row["ASN"] = ip_indicator.asn
-        threat_md_row["Country"] = ip_indicator.geo_country
-        md_data.append(threat_md_row)
-    if not indicator_found:
-        dbot_score = max(dbot_score, severity_level)
+
+        if indicator_found:
+            dbot_score = max(dbot_score, severity_level)
+            threat_md_row = create_threat_md_row(threat, severity_level)
+            threat_md_row["ASN"] = ip_indicator.asn
+            threat_md_row["Country"] = ip_indicator.geo_country
+            md_data.append(threat_md_row)
 
     return md_data, dbot_score, ip_indicator
 
@@ -275,37 +305,36 @@ def file_threats_analysis(severity_score, threats: List, file: str, threshold: s
              file indicator : indicator object with the data collected from the threats
     """
 
-    threshold_score = severity_score.get(threshold)
-    if threshold_score is None:
+    threshold_score = severity_score.get(threshold, -1)
+    if threshold_score < 0 or threshold_score > 3:
         raise Exception(
             f'Cofense error: Invalid threshold value: {threshold}. Valid values are: None, Minor, Moderate or Major')
 
     md_data = []
-    dbot_score = adjusted_score = 0
+    dbot_score = 0
+    indicator_found = False
 
     file_indicator = Common.File(md5=file, dbot_score=dbot_score_obj)
     for threat in threats:
         severity_level = 0
-        block_set = threat.get('blockSet')
-        for block in block_set:
-            if block.get('impact'):
-                threat_score: int = severity_score.get(block.get('impact'), 0)
-                adjusted_score = 3 if threshold_score <= threat_score else threat_score
-            severity_level = max(severity_level, adjusted_score)
-
-        for es in threat.get('executableSet'):
+        indicator_found = False
+        for es in threat.get('executableSet', {}):
             if es.get('md5Hex') == file:
+                indicator_found = True
+                threat_score = severity_score.get(es.get('severityLevel'), 0)
+                adjusted_score = 3 if threshold_score <= threat_score else threat_score
+                severity_level = max(severity_level, adjusted_score)
+
                 file_indicator.sha512 = es.get('sha512Hex')
                 file_indicator.sha1 = es.get('sha1Hex')
                 file_indicator.sha256 = es.get('sha256Hex')
                 file_indicator.name = es.get('fileName')
                 file_indicator.malware_family = es.get('malwareFamily', {}).get('familyName')
                 file_indicator.extension = es.get('fileNameExtension')
-                break
-
-        threat_md_row = create_threat_md_row(threat, severity_level)
-        md_data.append(threat_md_row)
-        dbot_score = max(dbot_score, severity_level)
+        if indicator_found:
+            dbot_score = max(dbot_score, severity_level)
+            threat_md_row = create_threat_md_row(threat, severity_level)
+            md_data.append(threat_md_row)
 
     return md_data, dbot_score, file_indicator
 
@@ -348,7 +377,7 @@ def create_relationship(client: Client, indicator: str, threats: List, entity_a_
     relationships = []
     if client.create_relationships:
         for threat in threats:
-            for block in threat.get('blockSet'):
+            for block in threat.get('blockSet', {}):
                 relationships.append(
                     EntityRelationship(name='related-to',
                                        entity_a=indicator,
@@ -356,7 +385,7 @@ def create_relationship(client: Client, indicator: str, threats: List, entity_a_
                                        entity_b=block.get('data'),
                                        entity_b_type=check_indicator_type(block.get('data')),
                                        brand=BRAND))
-            for exec_set in threat.get('executableSet'):
+            for exec_set in threat.get('executableSet', {}):
                 relationships.append(
                     EntityRelationship(name='related-to',
                                        entity_a=indicator,
@@ -420,7 +449,7 @@ def search_url_command(client: Client, args: Dict[str, Any], params) -> List[Com
         remove_false_vendors_detections_from_threat(threats)
         outputs = {'Data': url, 'Threats': threats}
         md_data, dbot_score = threats_analysis(client.severity_score, threats, indicator=url,
-                                               threshold=params.get('url_threshold'))
+                                               threshold=params.get('url_threshold'), command='url')
 
         dbot_score_obj = Common.DBotScore(indicator=url, indicator_type=DBotScoreType.URL,
                                           integration_name=INTEGRATION_NAME, score=dbot_score,
@@ -523,7 +552,7 @@ def check_email_command(client: Client, args: Dict[str, Any], params) -> List[Co
         remove_false_vendors_detections_from_threat(threats)
         outputs = {'Data': email, 'Threats': threats}
         md_data, dbot_score = threats_analysis(client.severity_score, threats, indicator=email,
-                                               threshold=params.get('email_threshold'))
+                                               threshold=params.get('email_threshold'), command="email")
 
         dbot_score_obj = Common.DBotScore(indicator=email, indicator_type=DBotScoreType.EMAIL,
                                           integration_name=INTEGRATION_NAME, score=dbot_score,
@@ -666,7 +695,7 @@ def check_domain_command(client: Client, args: Dict[str, Any], params) -> List[C
         remove_false_vendors_detections_from_threat(threats)
         outputs = {'Data': domain, 'Threats': threats}
         md_data, dbot_score = threats_analysis(client.severity_score, threats, indicator=domain,
-                                               threshold=params.get('domain_threshold'))
+                                               threshold=params.get('domain_threshold'), command='domain')
         dbot_score_obj = Common.DBotScore(indicator=domain, indicator_type=DBotScoreType.DOMAIN,
                                           integration_name=INTEGRATION_NAME, score=dbot_score,
                                           reliability=params.get(RELIABILITY))

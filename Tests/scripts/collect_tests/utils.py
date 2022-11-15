@@ -1,7 +1,7 @@
 from configparser import ConfigParser, MissingSectionHeaderError
 from enum import Enum
 from pathlib import Path
-from typing import Any, Iterator, Optional, Union
+from typing import Any, Iterator, Optional, Union, NamedTuple
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import json, yaml
@@ -9,7 +9,7 @@ from packaging import version
 from packaging._structures import InfinityType, NegativeInfinityType
 from packaging.version import Version
 
-from Tests.scripts.collect_tests.constants import ALWAYS_INSTALLED_PACKS
+from Tests.scripts.collect_tests.constants import ALWAYS_INSTALLED_PACKS_XSOAR
 from Tests.scripts.collect_tests.exceptions import (
     BlankPackNameException, DeprecatedPackException, NonDictException,
     NonexistentPackException, NonXsoarSupportedPackException,
@@ -102,6 +102,9 @@ class DictBased:
     def __getitem__(self, key):
         return self.content[key]
 
+    def __contains__(self, item):
+        return item in self.content
+
     def _calculate_from_version(self) -> Version | NegativeInfinityType:
         # all three options are equivalent
         if value := (
@@ -164,13 +167,22 @@ class ContentItem(DictFileBased):
         self.pack_path = find_pack_folder(self.path)
         self.deprecated = self.get('deprecated', warn_if_missing=False)
         self._tests = self.get('tests', default=(), warn_if_missing=False)
-        self._is_pack_metadata = self.path.name == 'pack_metadata.json'
 
     @property
-    def id_(self) -> Optional[str]:  # Optional as pack_metadata (for example) doesn't have this field
-        if self._is_pack_metadata:
+    def _has_no_id(self):
+        # some content files may not have an id
+        return self.path.name == 'pack_metadata.json' or self.path.name.endswith('_schema.json')
+
+    @property
+    def id_(self) -> Optional[str]:  # Optional as some content items don't have an id
+        if self._has_no_id:
             return None
-        return self['commonfields']['id'] if 'commonfields' in self.content else self['id']
+        # todo use get_id from the SDK once https://github.com/demisto/demisto-sdk/pull/2345 is merged & released
+        if 'commonfields' in self:
+            return self['commonfields']['id']
+        if self.path.parent.name == 'Layouts' and self.path.name.startswith('layout-') and self.path.suffix == '.json':
+            return self['layout']['id']
+        return self['id']
 
     @property
     def name(self) -> str:
@@ -253,7 +265,7 @@ class PackManager:
 
     def validate_pack(self, pack: str) -> None:
         """raises InvalidPackException if the pack name is not valid."""
-        if pack in ALWAYS_INSTALLED_PACKS:
+        if pack in ALWAYS_INSTALLED_PACKS_XSOAR:
             return
         if not pack:
             raise BlankPackNameException(pack)
@@ -292,3 +304,15 @@ def find_yml_content_type(yml_path: Path) -> Optional[FileType]:
     """
     return {'Playbooks': FileType.PLAYBOOK, 'TestPlaybooks': FileType.TEST_PLAYBOOK}.get(yml_path.parent.name) or \
            {'Integrations': FileType.INTEGRATION, 'Scripts': FileType.SCRIPT, }.get(yml_path.parents[1].name)
+
+
+def hotfix_detect_old_script_yml(path: Path):
+    # a hotfix until SDK v1.7.5 is released
+    if path.parent.name == 'Scripts' and path.name.startswith('script-') and path.suffix == '.yml':
+        return FileType.SCRIPT
+    return None
+
+
+class FilesToCollect(NamedTuple):
+    changed_files: tuple[str, ...]
+    pack_ids_files_were_removed_from: tuple[str, ...]
