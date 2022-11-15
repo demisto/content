@@ -1,7 +1,7 @@
 id: generic-sql
 version: -1
 name: generic-sql
-description: The initial state of the table is that in each database there are 4 records. While the playbook run, another record is added and later removed from the table.
+description: The initial state of the table is that in each database there are 4 records. While the playbook run, another record is added and later removed from the table. test
 starttaskid: "0"
 tasks:
   "0":
