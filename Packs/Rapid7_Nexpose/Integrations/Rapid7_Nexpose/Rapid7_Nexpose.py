@@ -1,15 +1,14 @@
-import re
+import json
+
 import urllib3
 
 import demistomock as demisto
 
 from copy import deepcopy
-from datetime import datetime
 from enum import Enum, EnumMeta
 from time import strptime, struct_time
-from typing import Optional, Union, TypeVar
+from typing import TypeVar
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 IterableCollection = TypeVar('IterableCollection', dict, list, tuple)
 
@@ -3443,17 +3442,11 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults | list[Co
 
     except DemistoException as e:
         if e.res is not None and e.res.status_code is not None and e.res.status_code == 404:
-            return CommandResults(readable_output="Asset not found.",)
+            return CommandResults(readable_output="Asset not found.")
 
         raise e
 
-    last_scan = find_asset_last_change(asset_data)
-    asset_data["LastScanDate"] = last_scan["date"]
-    asset_data["LastScanId"] = last_scan["id"]
-    found_site = client.find_asset_site(asset_data["id"])
-
-    if found_site is not None:
-        asset_data["Site"] = found_site.name
+    enrich_asset_data(client, asset_data)
 
     asset_headers = [
         "AssetId",
@@ -3553,7 +3546,7 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults | list[Co
         "Instances",
     ]
 
-    asset_data["vulnerabilities"] = client.get_asset_vulnerabilities(asset_id=asset_data["AssetId"])
+    asset_data["vulnerabilities"] = client.get_asset_vulnerabilities(asset_id=str(asset_data["AssetId"]))
 
     vulnerabilities_output = []
     cve_indicators: list[CommandResults] = []
@@ -4130,7 +4123,7 @@ def list_scan_schedule_command(client: Client, site: Site, schedule_id: str | No
     limit_int = arg_to_number(limit, required=False)
 
     if not schedule_id:
-        scan_schedules_data = client.get_site_scan_schedules(site_id=site.id,)
+        scan_schedules_data = client.get_site_scan_schedules(site_id=site.id)
 
         if limit_int is not None and limit_int < len(scan_schedules_data):
             scan_schedules_data = scan_schedules_data[:limit_int]
@@ -5289,7 +5282,7 @@ def main():
                 snmp_community_name=args.get("community_name"),
                 snmpv3_authentication_type=args.get("authentication_type"),
                 snmpv3_privacy_password=args.get("privacy_password"),
-                snmpv3_privacy_type=args.get("snmpv3_privacy_type"),
+                snmpv3_privacy_type=args.get("privacy_type"),
                 ssh_key_pem=args.get("ssh_key_pem"),
                 ssh_permission_elevation=args.get("ssh_permission_elevation"),
                 ssh_permission_elevation_password=args.get("ssh_permission_elevation_password"),
@@ -5342,7 +5335,7 @@ def main():
                 snmp_community_name=args.get("community_name"),
                 snmpv3_authentication_type=args.get("authentication_type"),
                 snmpv3_privacy_password=args.get("privacy_password"),
-                snmpv3_privacy_type=args.get("snmpv3_privacy_type"),
+                snmpv3_privacy_type=args.get("privacy_type"),
                 ssh_key_pem=args.get("ssh_key_pem"),
                 ssh_permission_elevation=args.get("ssh_permission_elevation"),
                 ssh_permission_elevation_password=args.get("ssh_permission_elevation_password"),
@@ -5582,7 +5575,7 @@ def main():
                 snmp_community_name=args.get("community_name"),
                 snmpv3_authentication_type=args.get("authentication_type"),
                 snmpv3_privacy_password=args.get("privacy_password"),
-                snmpv3_privacy_type=args.get("snmpv3_privacy_type"),
+                snmpv3_privacy_type=args.get("privacy_type"),
                 ssh_key_pem=args.get("ssh_key_pem"),
                 ssh_permission_elevation=args.get("ssh_permission_elevation"),
                 ssh_permission_elevation_password=args.get("ssh_permission_elevation_password"),
@@ -5617,7 +5610,7 @@ def main():
                 snmp_community_name=args.get("community_name"),
                 snmpv3_authentication_type=args.get("authentication_type"),
                 snmpv3_privacy_password=args.get("privacy_password"),
-                snmpv3_privacy_type=args.get("snmpv3_privacy_type"),
+                snmpv3_privacy_type=args.get("privacy_type"),
                 ssh_key_pem=args.get("ssh_key_pem"),
                 ssh_permission_elevation=args.get("ssh_permission_elevation"),
                 ssh_permission_elevation_password=args.get("ssh_permission_elevation_password"),
@@ -5704,7 +5697,7 @@ def main():
                 scan_status=ScanStatus.STOP,
             )
         else:
-            raise NotImplementedError(f"Command {command} not implemented")
+            raise NotImplementedError(f"Command {command} not implemented.")
 
         return_results(results)
 
