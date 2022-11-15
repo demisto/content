@@ -79,8 +79,7 @@ class Client(BaseClient):
         super().__init__(
             base_url,
             verify=verify,
-            proxy=proxy,
-            ok_codes=(200,),
+            proxy=proxy
         )
         self.token_url = TOKEN_ENDPOINT
         self.secret_key = secret_key
@@ -111,27 +110,29 @@ class Client(BaseClient):
     def query(self, end_point: str, params: dict) -> Dict:
         """
         Call Cisco Umbrella Reporting API
+
+        Redirection:
+        Umbrella stores the reporting data in geolocated data warehouses.
+        EU: api.eu.reports.umbrella.com
+        US: api.us.reports.umbrella.com
+        If an HTTP client request does not originate from the same continent
+        as the location of the Umbrella data warehouse,
+        the Umbrella server responds with 302 Found.
+
+        Here in first request we make an API call and if users not belongs to
+        same continent as the location of the Umbrella data warehouse,
+        the status code will be in range of (300 - 310) and in the second call we take
+        the redirected url from  the first response header location and make a new call.
+
+        for more info see:
+         https://developer.cisco.com/docs/cloud-security/#!api-reference-reports-reporting-overview/http-redirects-and-request-authorization-header
+
         Args:
             end_point (str): Cisco Umbrella Reporting endpoint
             params (dict): Params
         Returns:
             Return the raw api response from Cisco Umbrella Reporting API.
         """
-        # Umbrella stores the reporting data in geolocated data warehouses.
-        # EU: api.eu.reports.umbrella.com
-        # US: api.us.reports.umbrella.com
-        # If an HTTP client request does not originate from the same continent
-        # as the location of the Umbrella data warehouse,
-        # the Umbrella server responds with 302 Found.
-
-        # Here in first request we make an API call and if users not belongs to
-        # same continent as the location of the Umbrella data warehouse,
-        # the status code will be in range of 300 and in the second call we take
-        # the redirected url from response header location and make a call.
-
-        # for more info:
-        # https://developer.cisco.com/docs/cloud-security/#!api-reference-reports-reporting-overview/http-redirects-and-request-authorization-header
-
         result: Dict = {}
         url_path = f'{self._base_url}/v2/organizations' \
                    f'/{self.organisation_id}/{end_point}'
@@ -141,12 +142,11 @@ class Client(BaseClient):
             full_url=url_path,
             headers={'Authorization': f'Bearer {access_token}'},
             params=params,
-            ok_codes=(300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310),
             resp_type='response',
             allow_redirects=False,
             error_handler=cisco_umbrella_error_handler
         )
-        if response.status_code in range(300, 310):
+        if response.status_code in range(300, 310):  # Redirection - explained in the function's docstring
             response = self._http_request(
                 method='GET',
                 full_url=response.headers['Location'],
@@ -154,7 +154,8 @@ class Client(BaseClient):
                 data={}, allow_redirects=True)
             if response:
                 result = response
-        elif response.status_code in range(200, 299):
+
+        else:  # Success response (status code == 200)
             result = response.json()
 
         return result
