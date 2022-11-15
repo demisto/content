@@ -1,4 +1,4 @@
-category: Data Enrichment & Threat Intelligence
+category: Network Security
 commonfields:
   id: Cisco Umbrella Reporting
   version: -1
@@ -17,7 +17,6 @@ configuration:
   type: 0
 - additionalinfo: Client ID and Client Secret.
   display: Client ID
-  displaypassword: Client Secret
   name: credentials
   required: true
   type: 9
@@ -29,7 +28,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The Umbrella Reporting v2 API provides visibility into your core network and security activities and Umbrella logs.
+description: The Umbrella Reporting v2 API provides visibility into your core network
+  and security activities and Umbrella logs.
 display: Cisco Umbrella Reporting
 name: Cisco Umbrella Reporting
 script:
@@ -37,7 +37,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: true
-      description: Specify the type of traffic. By default, all supported traffic types are included.
+      description: Specify the type of traffic. By default, all supported traffic
+        types are included.
       isArray: false
       name: traffic_type
       predefined:
@@ -101,19 +102,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days.
+      description: A timestamp (milliseconds) or relative time string (for example:-1days'
+        or '1639146300000'). Filter for data that appears after this time. Default
+        is -7days.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'.
+      description: A timestamp (milliseconds) or relative time string (for example:'now'
+        or 1661510185000). Filter for data that appears before this time. Default
+        is 'now'.
       isArray: false
       name: to
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
+      description: The maximum number of records to return from the collection. Limit
+        default value is 50. If the page_size argument is set by the user then the
+        limit argument will be ignored.
       isArray: false
       name: limit
       required: false
@@ -148,7 +155,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List of destinations ordered by the number of requests made in descending order.
+    description: List of destinations ordered by the number of requests made in descending
+      order.
     execution: false
     name: umbrella-reporting-destination-list
     outputs:
@@ -159,7 +167,8 @@ script:
       description: Destination.
       type: String
     - contextPath: UmbrellaReporting.Destination.bandwidth
-      description: The total bandwidth of proxy requests uploaded and downloaded for this destination.
+      description: The total bandwidth of proxy requests uploaded and downloaded for
+        this destination.
       type: Number
     - contextPath: UmbrellaReporting.Destination.rank
       description: The rank of the result based on the number of requests.
@@ -206,7 +215,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: true
-      description: Specify the type of traffic. By default, all supported traffic types are included.
+      description: Specify the type of traffic. By default, all supported traffic
+        types are included.
       isArray: false
       name: traffic_type
       predefined:
@@ -216,19 +226,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days.
+      description: A timestamp (milliseconds) or relative time string (for example:-1days'
+        or '1639146300000'). Filter for data that appears after this time. Default
+        is -7days.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'.
+      description: A timestamp (milliseconds) or relative time string (for example:'now'
+        or 1661510185000). Filter for data that appears before this time. Default
+        is 'now'.
       isArray: false
       name: to
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
+      description: The maximum number of records to return from the collection. Limit
+        default value is 50. If the page_size argument is set by the user then the
+        limit argument will be ignored.
       isArray: false
       name: limit
       required: false
@@ -305,11 +321,13 @@ script:
       secret: false
     - default: false
       description: The number of requested results per page. Default is 50.
+      isArray: false
       name: page_size
       required: false
       secret: false
     deprecated: false
-    description: List of categories ordered by the number of requests made matching the categories in descending order.
+    description: List of categories ordered by the number of requests made matching
+      the categories in descending order.
     execution: false
     name: umbrella-reporting-category-list
     outputs:
@@ -317,7 +335,8 @@ script:
       description: Number of requests made that match this category.
       type: Number
     - contextPath: UmbrellaReporting.Category.bandwidth
-      description: The total bandwidth of proxy requests uploaded and downloaded for this category.
+      description: The total bandwidth of proxy requests uploaded and downloaded for
+        this category.
       type: String
     - contextPath: UmbrellaReporting.Category.category.id
       description: Category ID.
@@ -340,7 +359,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: true
-      description: Specify the type of traffic. By default, all supported traffic types are included.
+      description: Specify the type of traffic. By default, all supported traffic
+        types are included.
       isArray: false
       name: traffic_type
       predefined:
@@ -351,19 +371,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days.
+      description: A timestamp (milliseconds) or relative time string (for example:-1days'
+        or '1639146300000'). Filter for data that appears after this time. Default
+        is -7days.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'.
+      description: A timestamp (milliseconds) or relative time string (for example:'now'
+        or 1661510185000). Filter for data that appears before this time. Default
+        is 'now'.
       isArray: false
       name: to
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
+      description: The maximum number of records to return from the collection. Limit
+        default value is 50. If the page_size argument is set by the user then the
+        limit argument will be ignored.
       isArray: false
       name: limit
       required: false
@@ -451,7 +477,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List of identities ordered by the number of requests made matching the categories in descending order.
+    description: List of identities ordered by the number of requests made matching
+      the categories in descending order.
     execution: false
     name: umbrella-reporting-identity-list
     outputs:
@@ -459,7 +486,8 @@ script:
       description: Total number of requests made by this identity.
       type: Number
     - contextPath: UmbrellaReporting.Identity.bandwidth
-      description: The total bandwidth of proxy requests uploaded and downloaded for this identity.
+      description: The total bandwidth of proxy requests uploaded and downloaded for
+        this identity.
       type: Number
     - contextPath: UmbrellaReporting.Identity.rank
       description: The rank of the result based on the number of requests.
@@ -493,13 +521,17 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days.
+      description: A timestamp (milliseconds) or relative time string (for example:-1days'
+        or '1639146300000'). Filter for data that appears after this time. Default
+        is -7days.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'.
+      description: A timestamp (milliseconds) or relative time string (for example:'now'
+        or 1661510185000). Filter for data that appears before this time. Default
+        is 'now'.
       isArray: false
       name: to
       required: false
@@ -575,31 +607,40 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'List of event types ordered by the number of requests made for each type of event in descending order. The event types are: domain_security, domain_integration, url_security, url_integration, cisco_amp and antivirus.'
+    description: 'List of event types ordered by the number of requests made for each
+      type of event in descending order. The event types are: domain_security, domain_integration,
+      url_security, url_integration, cisco_amp and antivirus.'
     execution: false
     name: umbrella-reporting-event-type-list
     outputs:
     - contextPath: UmbrellaReporting.EventType.eventtype
-      description: The event type. One of "domain_security", "domain_integration", "url_security", "url_integration", "cisco_amp" and "antivirus".
+      description: The event type. One of "domain_security", "domain_integration",
+        "url_security", "url_integration", "cisco_amp" and "antivirus".
       type: String
     - contextPath: UmbrellaReporting.EventType.count
       description: Number of requests made that match this event type.
       type: Number
   - arguments:
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days.
+      description: A timestamp (milliseconds) or relative time string (for example:-1days'
+        or '1639146300000'). Filter for data that appears after this time. Default
+        is -7days.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'.
+      description: A timestamp (milliseconds) or relative time string (for example:'now'
+        or 1661510185000). Filter for data that appears before this time. Default
+        is 'now'.
       isArray: false
       name: to
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
+      description: The maximum number of records to return from the collection. Limit
+        default value is 50. If the page_size argument is set by the user then the
+        limit argument will be ignored.
       isArray: false
       name: limit
       required: false
@@ -706,7 +747,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: true
-      description: Specify the type of traffic. By default, all supported traffic types are included.
+      description: Specify the type of traffic. By default, all supported traffic
+        types are included.
       isArray: false
       name: traffic_type
       predefined:
@@ -715,19 +757,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days.
+      description: A timestamp (milliseconds) or relative time string (for example:-1days'
+        or '1639146300000'). Filter for data that appears after this time. Default
+        is -7days.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'.
+      description: A timestamp (milliseconds) or relative time string (for example:'now'
+        or 1661510185000). Filter for data that appears before this time. Default
+        is 'now'.
       isArray: false
       name: to
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
+      description: The maximum number of records to return from the collection. Limit
+        default value is 50. If the page_size argument is set by the user then the
+        limit argument will be ignored.
       isArray: false
       name: limit
       required: false
@@ -786,7 +834,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List of top threats within a time frame. Returns both DNS and Proxy data.
+    description: List of top threats within a time frame. Returns both DNS and Proxy
+      data.
     execution: false
     name: umbrella-reporting-threat-list
     outputs:
@@ -801,19 +850,25 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days.
+      description: A timestamp (milliseconds) or relative time string (for example:-1days'
+        or '1639146300000'). Filter for data that appears after this time. Default
+        is -7days.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'.
+      description: A timestamp (milliseconds) or relative time string (for example:'now'
+        or 1661510185000). Filter for data that appears before this time. Default
+        is 'now'.
       isArray: false
       name: to
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
+      description: The maximum number of records to return from the collection. Limit
+        default value is 50. If the page_size argument is set by the user then the
+        limit argument will be ignored.
       isArray: false
       name: limit
       required: false
@@ -860,7 +915,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: A string that identifies a filename. Filter the request by the filename. Supports globbing or use of the wildcard character (''). The asterisk (*) matches zero or more occurrences of any character.
+      description: A string that identifies a filename. Filter the request by the
+        filename. Supports globbing or use of the wildcard character (''). The asterisk
+        (*) matches zero or more occurrences of any character.
       isArray: false
       name: file_name
       required: false
@@ -901,7 +958,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time frame.
+    description: List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within
+      the time frame.
     execution: false
     name: umbrella-reporting-activity-list
     outputs:
@@ -1014,10 +1072,12 @@ script:
       description: ID of the application category.
       type: Number
     - contextPath: UmbrellaReporting.Activity.querytype
-      description: The type of DNS request that was made. For more information, see Common DNS Request Types. https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella-
+      description: The type of DNS request that was made. For more information, see
+        Common DNS Request Types. https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella-
       type: String
     - contextPath: UmbrellaReporting.Activity.returncode
-      description: The DNS return code for this request. For more information, see Common DNS return codes for any DNS service (and Umbrella). https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella-
+      description: The DNS return code for this request. For more information, see
+        Common DNS return codes for any DNS service (and Umbrella). https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella-
       type: Number
     - contextPath: UmbrellaReporting.Activity.blockedapplications.id
       description: ID of the application.
@@ -1058,19 +1118,25 @@ script:
       required: true
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days.
+      description: A timestamp (milliseconds) or relative time string (for example:-1days'
+        or '1639146300000'). Filter for data that appears after this time. Default
+        is -7days.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'.
+      description: A timestamp (milliseconds) or relative time string (for example:'now'
+        or 1661510185000). Filter for data that appears before this time. Default
+        is 'now'.
       isArray: false
       name: to
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
+      description: The maximum number of records to return from the collection. Limit
+        default value is 50. If the page_size argument is set by the user then the
+        limit argument will be ignored.
       isArray: false
       name: limit
       required: false
@@ -1117,7 +1183,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: A string that identifies a filename. Filter the request by the filename. Supports globbing or use of the wildcard character (''). The asterisk (*) matches zero or more occurrences of any character.
+      description: A string that identifies a filename. Filter the request by the
+        filename. Supports globbing or use of the wildcard character (''). The asterisk
+        (*) matches zero or more occurrences of any character.
       isArray: false
       name: file_name
       required: false
@@ -1158,13 +1226,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of Generator id - Signatures ID. Where Generator ID is unique id assigned to the part of the IPS which generated the event and Signature ID is used to uniquely identify signatures. Example:- 1-2,1-4.
+      description: A comma-separated list of Generator id - Signatures ID. Where Generator
+        ID is unique id assigned to the part of the IPS which generated the event
+        and Signature ID is used to uniquely identify signatures. Example:- 1-2,1-4.
       isArray: false
       name: signatures
       required: false
       secret: false
     - default: false
-      description: 'Comma-separated list of intrusion actions. Possible values: would_block, blocked, detected.'
+      description: 'Comma-separated list of intrusion actions. Possible values: would_block,
+        blocked, detected.'
       isArray: false
       name: intrusion_action
       required: false
@@ -1285,10 +1356,12 @@ script:
       description: ID of the application category.
       type: Number
     - contextPath: UmbrellaReporting.ActivityDns.querytype
-      description: The type of DNS request that was made. For more information, see https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella-
+      description: The type of DNS request that was made. For more information, see
+        https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella-
       type: String
     - contextPath: UmbrellaReporting.ActivityDns.returncode
-      description: The DNS return code for this request. For more information, see Common DNS return codes for any DNS service (and Umbrella). https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella-
+      description: The DNS return code for this request. For more information, see
+        Common DNS return codes for any DNS service (and Umbrella). https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella-
       type: Number
     - contextPath: UmbrellaReporting.ActivityDns.blockedapplications.id
       description: ID of the application.
@@ -1387,10 +1460,12 @@ script:
       description: Internal IP for entry.
       type: String
     - contextPath: UmbrellaReporting.ActivityProxy.isolated.fileaction
-      description: A string that describes the remote browser isolation (RBI) file action type.
+      description: A string that describes the remote browser isolation (RBI) file
+        action type.
       type: String
     - contextPath: UmbrellaReporting.ActivityProxy.isolated.state
-      description: A string that describes the remote browser isolation(RBI) isolation type.
+      description: A string that describes the remote browser isolation(RBI) isolation
+        type.
       type: String
     - contextPath: UmbrellaReporting.ActivityProxy.policy.ruleid
       description: The rule ID for the policy.
@@ -1633,7 +1708,8 @@ script:
       description: Label of the application.
       type: String
     - contextPath: UmbrellaReporting.ActivityFirewall.allapplications.app
-      description: 'Type: "IT Service Management" (string) - application/protocol type.'
+      description: 'Type: "IT Service Management" (string) - application/protocol
+        type.'
       type: String
     - contextPath: UmbrellaReporting.ActivityFirewall.applicationprotocols.id
       description: ID of the application.
@@ -1642,13 +1718,15 @@ script:
       description: Application/Protocol label.
       type: String
     - contextPath: UmbrellaReporting.ActivityFirewall.applicationprotocols.app
-      description: 'Type: "IT Service Management" (string) - application/protocol type.'
+      description: 'Type: "IT Service Management" (string) - application/protocol
+        type.'
       type: String
     - contextPath: UmbrellaReporting.ActivityFirewall.packetsize
       description: The size of the packet that Umbrella CDFW received.
       type: Number
     - contextPath: UmbrellaReporting.ActivityFirewall.direction
-      description: The direction of the packet. It is destined either towards the internet or to the customer's network.
+      description: The direction of the packet. It is destined either towards the
+        internet or to the customer's network.
       type: String
     - contextPath: UmbrellaReporting.ActivityIntrusion.type
       description: Type of the request. A Intrusion request always has type Intrusion.
@@ -1672,13 +1750,16 @@ script:
       description: Unique id assigned to a Default or Custom Signature List.
       type: Number
     - contextPath: UmbrellaReporting.ActivityIntrusion.classification
-      description: The category of attack detected by a rule that is part of a more general type of attack class, such as trojan-activity, attempted-user, and unknown.
+      description: The category of attack detected by a rule that is part of a more
+        general type of attack class, such as trojan-activity, attempted-user, and
+        unknown.
       type: String
     - contextPath: UmbrellaReporting.ActivityIntrusion.sourceport
       description: Source port for entry.
       type: Number
     - contextPath: UmbrellaReporting.ActivityIntrusion.sessionid
-      description: The unique identifier of a session, which is used to group the correlated events between various services.
+      description: The unique identifier of a session, which is used to group the
+        correlated events between various services.
       type: Number
     - contextPath: UmbrellaReporting.ActivityIntrusion.verdict
       description: Verdict for entry.
@@ -1711,7 +1792,8 @@ script:
       description: Indicates whether the identity was deleted or not.
       type: Boolean
     - contextPath: UmbrellaReporting.ActivityIntrusion.severity
-      description: The severity level of the rule, such as High, Medium, Low, and Very Low.
+      description: The severity level of the rule, such as High, Medium, Low, and
+        Very Low.
       type: String
     - contextPath: UmbrellaReporting.ActivityIntrusion.signature.generatorid
       description: Unique id assigned to the part of the IPS which generated the event.
@@ -1803,19 +1885,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days.
+      description: A timestamp (milliseconds) or relative time string (for example:-1days'
+        or '1639146300000'). Filter for data that appears after this time. Default
+        is -7days.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'.
+      description: A timestamp (milliseconds) or relative time string (for example:'now'
+        or 1661510185000). Filter for data that appears before this time. Default
+        is 'now'.
       isArray: false
       name: to
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
+      description: The maximum number of records to return from the collection. Limit
+        default value is 50. If the page_size argument is set by the user then the
+        limit argument will be ignored.
       isArray: false
       name: limit
       required: false
@@ -1862,7 +1950,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: A string that identifies a filename. Filter the request by the filename. Supports globbing or use of the wildcard character (''). The asterisk (*) matches zero or more occurrences of any character.
+      description: A string that identifies a filename. Filter the request by the
+        filename. Supports globbing or use of the wildcard character (''). The asterisk
+        (*) matches zero or more occurrences of any character.
       isArray: false
       name: file_name
       required: false
@@ -1903,13 +1993,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of Generator id - Signatures ID. Where Generator ID is unique id assigned to the part of the IPS which generated the event and Signature ID is used to uniquely identify signatures. Example:- 1-2,1-4.
+      description: A comma-separated list of Generator id - Signatures ID. Where Generator
+        ID is unique id assigned to the part of the IPS which generated the event
+        and Signature ID is used to uniquely identify signatures. Example:- 1-2,1-4.
       isArray: false
       name: signatures
       required: false
       secret: false
     - default: false
-      description: 'Comma-separated List of intrusion actions. Possible values: would_block, blocked, detected.'
+      description: 'Comma-separated List of intrusion actions. Possible values: would_block,
+        blocked, detected.'
       isArray: false
       name: intrusion_action
       required: false
@@ -2093,6 +2186,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 6.5.0
 tests:
 - Cisco Umbrella Reporting Test
+fromversion: 6.5.0

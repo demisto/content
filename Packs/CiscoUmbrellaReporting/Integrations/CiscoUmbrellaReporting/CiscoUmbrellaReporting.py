@@ -108,17 +108,6 @@ class Client(BaseClient):
 
         return token_response.json().get('access_token')
 
-    def fetch_data_from_cisco_api(self, end_point: str, params: dict) -> Dict:
-        """
-        Fetch Cisco Umbrella Reporting API
-        Args:
-            end_point (str): Cisco Umbrella Reporting endpoint
-            params (dict): Params
-        Returns:
-             Return the raw api response from Cisco Umbrella Reporting API.
-        """
-        return self.query(end_point, params)
-
     def query(self, end_point: str, params: dict) -> Dict:
         """
         Call Cisco Umbrella Reporting API
@@ -128,37 +117,67 @@ class Client(BaseClient):
         Returns:
             Return the raw api response from Cisco Umbrella Reporting API.
         """
+        # Umbrella stores the reporting data in geolocated data warehouses.
+        # EU: api.eu.reports.umbrella.com
+        # US: api.us.reports.umbrella.com
+        # If an HTTP client request does not originate from the same continent
+        # as the location of the Umbrella data warehouse,
+        # the Umbrella server responds with 302 Found.
+
+        # Here in first request we make an API call and if users not belongs to
+        # same continent as the location of the Umbrella data warehouse,
+        # the status code will be in range of 300 and in the second call we take
+        # the redirected url from response header location and make a call.
+
+        # for more info:
+        # https://developer.cisco.com/docs/cloud-security/#!api-reference-reports-reporting-overview/http-redirects-and-request-authorization-header
+
         result: Dict = {}
         url_path = f'{self._base_url}/v2/organizations' \
                    f'/{self.organisation_id}/{end_point}'
         access_token = self.access_token()
-        response = requests.get(
-            url=url_path,
+        response = self._http_request(
+            method='GET',
+            full_url=url_path,
             headers={'Authorization': f'Bearer {access_token}'},
             params=params,
+            ok_codes=(300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310),
+            resp_type='response',
             allow_redirects=False,
+            error_handler=cisco_umbrella_error_handler
         )
         if response.status_code in range(300, 310):
-            response = requests.get(
-                response.headers['Location'],
+            response = self._http_request(
+                method='GET',
+                full_url=response.headers['Location'],
                 headers={'Authorization': f'Bearer {access_token}'},
                 data={}, allow_redirects=True)
-            if response.ok:
-                result = response.json()
+            if response:
+                result = response
         elif response.status_code in range(200, 299):
             result = response.json()
-        elif response.status_code >= 400:
-            error_message = response.json().get('data', {}).get('error')
-            if 'invalid organization' in error_message:
-                raise DemistoException(INVALID_ORG_ID_ERROR_MSG)
-            elif 'unauthorized' in error_message:
-                raise DemistoException(INVALID_CREDENTIALS_ERROR_MSG)
-            raise DemistoException(error_message)
 
         return result
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def cisco_umbrella_error_handler(response: requests.Response):
+    """
+    Error Handler for Cisco Umbrella
+    Args:
+        response (response): Cisco Umbrella response
+    Raise:
+         DemistoException
+    """
+    if response.status_code >= 400:
+        error_message = response.json().get('data', {}).get('error')
+        if 'invalid organization' in error_message:
+            raise DemistoException(INVALID_ORG_ID_ERROR_MSG)
+        elif 'unauthorized' in error_message:
+            raise DemistoException(INVALID_CREDENTIALS_ERROR_MSG)
+        raise DemistoException(error_message)
 
 
 def check_valid_indicator_value(indicator_type: str,
@@ -869,30 +888,14 @@ def test_module(client: Client) -> str:
     Returns:
         Connection ok
     """
-    token = client.access_token()
-    url = f'{client._base_url}/v2/organizations/{client.organisation_id}/activity'
-
-    payload: Dict = {}
     params: Dict = {
         'limit': 1,
         'from': '-1days',
         'to': 'now',
         'offset': 0
     }
-    response = requests.get(
-        url=url,
-        headers={'Authorization': f'Bearer {token}'},
-        data=payload,
-        params=params,
-        allow_redirects=False,
-    )
-    if response.status_code >= 400:
-        error_message = response.json().get('data', {}).get('error')
-        if 'invalid organization' in error_message:
-            raise DemistoException(INVALID_ORG_ID_ERROR_MSG)
-        elif 'unauthorized' in error_message:
-            raise DemistoException(INVALID_CREDENTIALS_ERROR_MSG)
-        raise DemistoException(error_message)
+    client.query('activity', params)
+
     return 'ok'
 
 
@@ -913,7 +916,7 @@ def get_destinations_list_command(client: Client, args: Dict[str, Any]):
     limit, offset = pagination(page, page_size)
     cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
     title = get_command_title_string('Destination', page, page_size)
-    raw_json_response = client.fetch_data_from_cisco_api(endpoint, cisco_umbrella_args)
+    raw_json_response = client.query(endpoint, cisco_umbrella_args)
     data = raw_json_response.get('data', [])
     if data:
         readable_output = destination_lookup_to_markdown(data, title)
@@ -946,7 +949,7 @@ def get_categories_list_command(client: Client, args: Dict[str, Any]):
     limit, offset = pagination(page, page_size)
     cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
     title = get_command_title_string('Category', page, page_size)
-    raw_json_response = client.fetch_data_from_cisco_api(endpoint, cisco_umbrella_args)
+    raw_json_response = client.query(endpoint, cisco_umbrella_args)
     data = raw_json_response.get('data', [])
     if data:
         readable_output = categories_lookup_to_markdown(data, title)
@@ -978,7 +981,7 @@ def get_identities_list_command(client: Client, args: Dict[str, Any]):
     limit, offset = pagination(page, page_size)
     cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
     title = get_command_title_string('Identities', page, page_size)
-    raw_json_response = client.fetch_data_from_cisco_api(endpoint, cisco_umbrella_args)
+    raw_json_response = client.query(endpoint, cisco_umbrella_args)
     data = raw_json_response.get('data', [])
     if data:
         readable_output = identities_lookup_to_markdown(data, title)
@@ -1009,7 +1012,7 @@ def get_file_list_command(client: Client, args: Dict[str, Any]):
     cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
     endpoint = 'top-files'
     title = get_command_title_string('File', page, page_size)
-    raw_json_response = client.fetch_data_from_cisco_api(endpoint, cisco_umbrella_args)
+    raw_json_response = client.query(endpoint, cisco_umbrella_args)
     data = raw_json_response.get('data', [])
     if data:
         readable_output = file_type_lookup_to_markdown(data, title)
@@ -1041,7 +1044,7 @@ def get_threat_list_command(client: Client, args: Dict[str, Any]):
     limit, offset = pagination(page, page_size)
     cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
     title = get_command_title_string('Threat', page, page_size)
-    raw_json_response = client.fetch_data_from_cisco_api(endpoint, cisco_umbrella_args)
+    raw_json_response = client.query(endpoint, cisco_umbrella_args)
     data = raw_json_response.get('data', [])
     if data:
         readable_output = threat_lookup_to_markdown(data, title)
@@ -1073,7 +1076,7 @@ def get_event_types_list_command(client: Client, args: Dict[str, Any]):
     cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
     endpoint = 'top-eventtypes'
     title = get_command_title_string('Event Type', page, page_size)
-    raw_json_response = client.fetch_data_from_cisco_api(endpoint, cisco_umbrella_args)
+    raw_json_response = client.query(endpoint, cisco_umbrella_args)
     data = raw_json_response.get('data', [])
     if data:
         readable_output = event_types_lookup_to_markdown(data, title)
@@ -1104,7 +1107,7 @@ def get_activity_list_command(client: Client, args: Dict[str, Any]):
     cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
     endpoint = 'activity'
     title = get_command_title_string('Activity', page, page_size)
-    raw_json_response = client.fetch_data_from_cisco_api(endpoint, cisco_umbrella_args)
+    raw_json_response = client.query(endpoint, cisco_umbrella_args)
     data = raw_json_response.get('data', [])
     if data:
         readable_output = activity_lookup_to_markdown(data, title)
@@ -1165,7 +1168,7 @@ def get_activity_by_traffic_type_command(client: Client, args: Dict[str, Any]):
     limit, offset = pagination(page, page_size)
     cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
     title = get_command_title_string(f'{traffic_type.capitalize()} Activity', page, page_size)
-    raw_json_response = client.fetch_data_from_cisco_api(endpoint, cisco_umbrella_args)
+    raw_json_response = client.query(endpoint, cisco_umbrella_args)
     data = raw_json_response.get('data', [])
     if data:
         readable_output = markdown_function[traffic_type](data, title)
@@ -1219,7 +1222,7 @@ def get_summary_list_command(client: Client, args: Dict[str, Any]):
     page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE), arg_name='page_size')
     limit, offset = pagination(page, page_size)
     cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
-    raw_json_response = client.fetch_data_from_cisco_api(endpoint, cisco_umbrella_args)
+    raw_json_response = client.query(endpoint, cisco_umbrella_args)
 
     if summary_type:
         data = raw_json_response.get('data', [])

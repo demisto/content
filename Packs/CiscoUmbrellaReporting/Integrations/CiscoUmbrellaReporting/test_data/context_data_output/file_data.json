@@ -4,7 +4,7 @@
         {
             "requests": 10,
             "identitycount": 1,
-            "sha256": "275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f",
+            "sha256": "dummy_sha256",
             "categories": [
                 {
                     "id": 113,
@@ -36,7 +36,7 @@
                 }
             ],
             "filenames": [
-                "eicar.com"
+                "dummy_domain.com"
             ],
             "filetypes": []
         }

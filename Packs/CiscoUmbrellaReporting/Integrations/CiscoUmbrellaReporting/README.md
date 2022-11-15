@@ -127,7 +127,7 @@ List of destinations ordered by the number of requests made in descending order.
                     "blockedrequests": 0,
                     "requests": 1286
                 },
-                "domain": "www.cisco.com",
+                "domain": "dummy.domain.com",
                 "policycategories": [],
                 "rank": 1
             },
@@ -183,7 +183,7 @@ List of destinations ordered by the number of requests made in descending order.
                     "blockedrequests": 0,
                     "requests": 1003
                 },
-                "domain": "presence.teams.microsoft.com",
+                "domain": "dummy.domain.com",
                 "policycategories": [],
                 "rank": 2
             }
@@ -554,7 +554,7 @@ List of files within a time frame. Only returns proxy data.
                 "filetypes": [],
                 "identitycount": 1,
                 "requests": 2,
-                "sha256": "94fe42af4a67ed5be45bd7913d8a8aebc4e35afddd5675d01bd37df8e9b399ae"
+                "sha256": "dummy_sha256"
             }
         ]
     }
@@ -743,7 +743,7 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
                 "device": {
                     "id": null
                 },
-                "domain": "stats.g.doubleclick.net",
+                "domain": "dummy.domain.com",
                 "externalip": "4.4.4.4",
                 "identities": [
                     {
@@ -757,7 +757,7 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
                         }
                     }
                 ],
-                "internalip": "192.168.0.105",
+                "internalip": "1.1.1.1",
                 "policycategories": [],
                 "querytype": "A",
                 "returncode": 0,
@@ -807,7 +807,7 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
                 "device": {
                     "id": null
                 },
-                "domain": "google.com",
+                "domain": "dummy.domain.com",
                 "externalip": "4.4.4.4",
                 "identities": [
                     {
@@ -821,7 +821,7 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
                         }
                     }
                 ],
-                "internalip": "192.168.0.105",
+                "internalip": "1.1.1.1",
                 "policycategories": [],
                 "querytype": "AAAA",
                 "returncode": 0,
@@ -840,9 +840,9 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
 
 >### Activity List
 >|Request|Identity|Policy or Ruleset Identity|Destination|Internal IP|External IP|DNS Type|Action|Categories|Public Application|Application Category|Date & Time|
->|---|---|---|---|---|---|---|---|---|---|---|---|
->| dns | S’s MacBook Pro | S’s MacBook Pro | stats.g.doubleclick.net | 192.168.0.105 | 4.4.4.4 | A | allowed | Advertisements, Application | Google Marketing Platform | Ad Publishing | 2022-10-29T07:39:08Z |
->| dns | S’s MacBook Pro | S’s MacBook Pro | google.com | 192.168.0.105 | 4.4.4.4 | AAAA | allowed | abc/efgh, Infrastructure and Content Delivery Networks, Application | Do Not Decrypt Application | Sample Application Group | 2022-10-29T07:38:57Z |
+>|---|---|---|--|---|---|---|---|---|---|---|---|
+>| dns | S’s MacBook Pro | S’s MacBook Pro | stats.g.doubleclick.net | 1.1.1.1 | 4.4.4.4 | A | allowed | Advertisements, Application | Google Marketing Platform | Ad Publishing | 2022-10-29T07:39:08Z |
+>| dns | S’s MacBook Pro | S’s MacBook Pro | google.com | 1.1.1.1 | 4.4.4.4 | AAAA | allowed | abc/efgh, Infrastructure and Content Delivery Networks, Application | Do Not Decrypt Application | Sample Application Group | 2022-10-29T07:38:57Z |
 
 
 ### umbrella-reporting-activity-get
@@ -966,7 +966,7 @@ Only one activity type can be selected at a time.
                 "device": {
                     "id": null
                 },
-                "domain": "stats.g.doubleclick.net",
+                "domain": "dummy.domain.com",
                 "externalip": "4.4.4.4",
                 "identities": [
                     {
@@ -980,7 +980,7 @@ Only one activity type can be selected at a time.
                         }
                     }
                 ],
-                "internalip": "192.168.0.105",
+                "internalip": "1.1.1.1",
                 "policycategories": [],
                 "querytype": "A",
                 "returncode": 0,
@@ -1030,7 +1030,7 @@ Only one activity type can be selected at a time.
                 "device": {
                     "id": null
                 },
-                "domain": "google.com",
+                "domain": "dummy.domain.com",
                 "externalip": "4.4.4.4",
                 "identities": [
                     {
@@ -1044,7 +1044,7 @@ Only one activity type can be selected at a time.
                         }
                     }
                 ],
-                "internalip": "192.168.0.105",
+                "internalip": "1.1.1.1",
                 "policycategories": [],
                 "querytype": "AAAA",
                 "returncode": 0,
@@ -1064,8 +1064,8 @@ Only one activity type can be selected at a time.
 >### Dns Activity List
 >|Identity|Policy or Ruleset Identity|Destination|Internal IP|External IP|DNS Type|Action|Categories|Public Application|Application Category|Date & Time|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| S’s MacBook Pro | S’s MacBook Pro | stats.g.doubleclick.net | 192.168.0.105 | 4.4.4.4 | A | allowed | Advertisements, Application | Google Marketing Platform | Ad Publishing | 2022-10-29T07:39:08Z |
->| S’s MacBook Pro | S’s MacBook Pro | google.com | 192.168.0.105 | 4.4.4.4 | AAAA | allowed | abc/efgh, Infrastructure and Content Delivery Networks, Application | Do Not Decrypt Application | Sample Application Group | 2022-10-29T07:38:57Z |
+>| S’s MacBook Pro | S’s MacBook Pro | stats.g.doubleclick.net | 1.1.1.1 | 4.4.4.4 | A | allowed | Advertisements, Application | Google Marketing Platform | Ad Publishing | 2022-10-29T07:39:08Z |
+>| S’s MacBook Pro | S’s MacBook Pro | google.com | 1.1.1.1 | 4.4.4.4 | AAAA | allowed | abc/efgh, Infrastructure and Content Delivery Networks, Application | Do Not Decrypt Application | Sample Application Group | 2022-10-29T07:38:57Z |
 
 
 #### Context Output for **`traffic_type = amp`** for base command **`umbrella-reporting-activity-get`**
@@ -1096,7 +1096,7 @@ Only one activity type can be selected at a time.
             "score": 10,
             "hostname": "google.com",
             "malwarename": "malware",
-            "sha256": "9495b6c155044053953efe30ebaf804780c114e7b721b14f6a5b0a782769696e"
+            "sha256": "dummy_sha256"
         }
     ]
    }
@@ -1254,7 +1254,7 @@ Only one activity type can be selected at a time.
                         }
                     }
                 ],
-                "internalip": "10.10.10.217",
+                "internalip": "1.1.1.1",
                 "isolated": {
                     "fileaction": "",
                     "state": ""
@@ -1273,7 +1273,7 @@ Only one activity type can be selected at a time.
                 "responsefilename": " ",
                 "responsesize": 0,
                 "securityoverridden": false,
-                "sha256": "",
+                "sha256": "dummy_sha256",
                 "statuscode": 304,
                 "tenantcontrols": false,
                 "threats": [],
@@ -1339,7 +1339,7 @@ Only one activity type can be selected at a time.
                         }
                     }
                 ],
-                "internalip": "10.10.10.217",
+                "internalip": "1.1.1.1",
                 "isolated": {
                     "fileaction": "",
                     "state": ""
@@ -1358,7 +1358,7 @@ Only one activity type can be selected at a time.
                 "responsefilename": " ",
                 "responsesize": 0,
                 "securityoverridden": false,
-                "sha256": "",
+                "sha256": "dummy_sha256",
                 "statuscode": 304,
                 "tenantcontrols": false,
                 "threats": [],
@@ -1830,7 +1830,7 @@ Get the summary.
    "UmbrellaReporting":{
       "SummaryWithDestination":[
         {
-            "domain": "www.google.com",
+            "domain": "dummy.domain.com",
             "summary": {
                 "applications": 0,
                 "domains": 0,

@@ -5,24 +5,31 @@
             "returncode": 0,
             "externalip": "1.1.1.1",
             "allapplications": [],
-            "date": "2022-09-07",
+            "date": "2022-09-12",
             "internalip": "1.1.1.1",
-            "time": "22:49:44",
+            "time": "10:27:15",
             "querytype": "A",
             "policycategories": [],
             "type": "dns",
             "categories": [
                 {
-                    "id": 123,
+                    "id": 23,
                     "type": "content",
-                    "label": "Infrastructure and Content Delivery Networks",
+                    "label": "Search Engines",
+                    "integration": false,
+                    "deprecated": true
+                },
+                {
+                    "id": 190,
+                    "type": "content",
+                    "label": "Search Engines and Portals",
                     "integration": false,
                     "deprecated": false
                 }
             ],
-            "verdict": "proxied",
-            "domain": "x1.c.lencr.org",
-            "timestamp": 1662590984000,
+            "verdict": "allowed",
+            "domain": "dummy.domain.com",
+            "timestamp": 1662978435000,
             "blockedapplications": [],
             "allowedapplications": [],
             "identities": [
@@ -33,7 +40,7 @@
                         "type": "roaming",
                         "label": "Roaming Computers"
                     },
-                    "label": "DESKTOP-IIQVPJ7",
+                    "label": "DESKTOP",
                     "deleted": false
                 }
             ],
