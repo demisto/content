@@ -10,5 +10,5 @@ jobs:
       with:
         python-version: '3.10'
     - uses: pre-commit/action@v3.0.0
-      # with: 
-        # extra_args: '' # if not provided blank, will run on all-files
+      with: 
+        extra_args: '' # if not provided blank, will run on all-files
