@@ -1728,7 +1728,8 @@ def filter_new_to_marketplace_packs(build: Build, modified_pack_names: Set[str])
     first_added_to_marketplace = set()
     for pack_name in modified_pack_names:
         diff = run_git_diff(pack_name, build)
-        build.check_if_new_to_marketplace(diff)
+        if build.check_if_new_to_marketplace(diff):
+            first_added_to_marketplace.add(pack_name)
     return first_added_to_marketplace
 
 
