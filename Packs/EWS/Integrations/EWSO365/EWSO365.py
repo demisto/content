@@ -2204,9 +2204,10 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incidentFilter):
 
         last_fetch_time = last_run.get(LAST_RUN_TIME)
 
-        last_incident_run_time = last_fetch_time
-        if isinstance(last_incident_run_time, EWSDateTime):
-            last_incident_run_time = last_incident_run_time.ewsformat()
+        last_modification_time = last_fetch_time
+        if isinstance(last_modification_time, EWSDateTime):
+            last_modification_time = last_modification_time.ewsformat()
+            
         for item in last_emails:
             if item.message_id:
                 current_fetch_ids.add(item.message_id)
@@ -2214,8 +2215,8 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incidentFilter):
                 incidents.append(incident)
                 if incidentFilter == 'modified-time':
                     item_modified_time = item.last_modified_time.ewsformat()
-                    if last_incident_run_time is None or last_incident_run_time < item_modified_time:
-                        last_incident_run_time = item_modified_time
+                    if last_modification_time is None or last_modification_time < item_modified_time:
+                        last_modification_time = item_modified_time
 
                 if len(incidents) >= client.max_fetch:
                     break
@@ -2223,7 +2224,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incidentFilter):
         demisto.debug(f'{APP_NAME} - ending fetch - got {len(incidents)} incidents.')
 
         if incidentFilter == 'modified-time':
-            pass  # Just want to make sure you know this isn't doing anything
+            last_incident_run_time = last_modification_time
         else:  # default case - using 'received' time
             last_incident_run_time = incident.get("occurred", last_fetch_time)
 
