@@ -34,7 +34,7 @@ def http_request(method, url_suffix, data, headers):
                                headers=headers
                                )
         if res.status_code not in (200, 204):
-            raise Exception('Your request failed with the following error: ' + res.reason)
+            raise Exception(f'Your request failed with the following error: {res.reason}')
     except Exception as ex:
         raise Exception(ex)
     return res
@@ -76,12 +76,12 @@ def get_server_details(qualification, fields):
     # Adds fields to filter by
     if isinstance(fields, list):
         fields = ','.join(fields)
-    fields = 'fields=values(' + fields + ')'
+    fields = f'fields=values({fields})'
 
     # URL Encodes qualification
     qualification = quote_plus(qualification)
 
-    cmd_url = '/arsys/v1/entry/AST:ComputerSystem/?q=' + qualification + '&' + fields
+    cmd_url = f'/arsys/v1/entry/AST:ComputerSystem/?q={qualification}&{fields}'
     result = http_request('GET', cmd_url, None, DEFAULT_HEADERS).json()
 
     entries = result['entries']
