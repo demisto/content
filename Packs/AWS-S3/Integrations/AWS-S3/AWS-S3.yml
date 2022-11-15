@@ -645,6 +645,79 @@ script:
     description: Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket.
     execution: false
     name: aws-s3-put-public-access-block
+  - arguments:
+      - description: Name of the bucket
+        name: bucket
+        required: true
+      - description: The AWS Region, if not specified the default region will be used.
+        name: region
+      - description: The Amazon Resource Name (ARN) of the role to assume
+        name: roleArn
+      - description: An identifier for the assumed role session.
+        name: roleSessionName
+      - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration for the role.
+        name: roleSessionDuration
+    description: Gets the Tags for a particular bucket.
+    name: aws-s3-get-bucket-tags
+    outputs:
+      - contextPath: AWS.S3.Buckets.BucketName
+        description: The name of the Bucket
+      - contextPath: AWS.S3.Buckets.Tags
+        description: The list of Tags from the Bucket, in Key:Value pairs.
+  - arguments:
+      - description: Name of the bucket.
+        name: bucket
+        required: true
+    description: Get the AWS S3 Bucket ACL
+    name: aws-s3-get-bucket-acl
+    outputs:
+      - contextPath: AWS.S3.Buckets.Acl.Owner
+        description: Owner of the bucket
+        type: string
+      - contextPath: AWS.S3.Buckets.Acl.BucketName
+        description: Name of the bucket
+        type: string
+      - contextPath: AWS.S3.Buckets.Acl.DisplayName
+        description: Display name of grantee
+        type: string
+      - contextPath: AWS.S3.Buckets.Acl.EmailAddress
+        description: Email of grantee
+        type: string
+      - contextPath: AWS.S3.Buckets.Acl.Type
+        description: Type of grant
+        type: string
+      - contextPath: AWS.S3.Buckets.Acl.URI
+        description: URI of grantee
+        type: string
+      - contextPath: AWS.S3.Buckets.Acl.Permission
+        description: Permission granted
+        type: string
+      - contextPath: AWS.S3.Buckets.Acl.Json
+        description: Json string
+        type: string
+  - arguments:
+      - description: Name of the bucket.
+        name: bucket
+        required: true
+    description: Remove the Public Access Block configuration from a bucket
+    execution: true
+    name: aws-s3-delete-public-access-block
+  - arguments:
+      - description: Name of the bucket.
+        name: bucket
+        required: true
+    description: Get the policy status of an S3 bucket
+    name: aws-s3-get-bucket-policy-status
+    outputs:
+      - contextPath: AWS.S3.Buckets.PolicyStatus.BucketName
+        description: Name of the bucket
+        type: string
+      - contextPath: AWS.S3.Buckets.PolicyStatus.IsPublic
+        description: Does the policy allow public access?
+        type: boolean
+      - contextPath: AWS.S3.Buckets.PolicyStatus.Json
+        description: JSON string of PolicyStatus
+        type: string
   dockerimage: demisto/boto3py3:1.0.0.37317
   isfetch: false
   runonce: false

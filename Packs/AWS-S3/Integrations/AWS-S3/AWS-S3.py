@@ -108,6 +108,25 @@ def get_bucket_policy_command(args: Dict[str, Any], aws_client: AWSClient) -> Co
                           outputs_key_field='BucketName', outputs=data)
 
 
+def get_bucket_policy_status_command(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
+        region=args.get('region'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+    data = []
+    response = client.get_bucket_policy_status(Bucket=args.get('bucket').lower())
+    policy = response.get('PolicyStatus')
+    data.append(
+        {'BucketName': args.get('bucket'), 'IsPublic': policy.get('IsPublic'), 'Json': response.get('PolicyStatus')}
+    )
+    human_readable = tableToMarkdown('AWS S3 Bucket Policy Status', data)
+    return CommandResults(readable_output=human_readable, outputs_prefix='AWS.S3.Buckets',
+                          outputs_key_field='BucketName', outputs=data)
+
+
 def put_bucket_policy_command(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
                                     role_session_name=args.get('roleSessionName'),
@@ -184,6 +203,21 @@ def upload_file_command(args: Dict[str, Any], aws_client: AWSClient) -> CommandR
             readable_output=f"File {args.get('key')} was uploaded successfully to {args.get('bucket')}")
 
 
+def get_bucket_tags_command(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
+        region=args.get("region"),
+        role_arn=args.get("roleArn"),
+        role_session_name=args.get("roleSessionName"),
+        role_session_duration=args.get("roleSessionDuration"),
+    )
+    response = client.get_bucket_tagging(Bucket=args.get("bucket").lower())
+    tags = response.get("TagSet", [])
+    data = {"BucketName": args.get("bucket"), "Tags": tags}
+    human_readable = tableToMarkdown("AWS S3 Bucket Tags for {}".format(args.get("bucket")), tags)
+    ec = {"AWS.S3.Buckets(val.BucketName === obj.BucketName)": data}
+    return_outputs(human_readable, ec)
+
 def get_public_access_block(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
                                     role_session_name=args.get('roleSessionName'),
@@ -199,6 +233,51 @@ def get_public_access_block(args: Dict[str, Any], aws_client: AWSClient) -> Comm
     return CommandResults(outputs=data, readable_output=human_readable, outputs_prefix='AWS.S3.Buckets',
                           outputs_key_field='BucketName')
 
+def delete_public_access_block_command(args, aws_client):
+    bucket = args.get("bucket").lower()
+    client = aws_client.aws_session(
+        service=SERVICE,
+        region=args.get("region"),
+        role_arn=args.get("roleArn"),
+        role_session_name=args.get("roleSessionName"),
+        role_session_duration=args.get("roleSessionDuration"),
+    )
+    response = client.delete_public_access_block(Bucket=args.get("bucket").lower())
+    if response["ResponseMetadata"]["HTTPStatusCode"] == 204:
+        demisto.results(
+            "Successfully removed Public Access Block configuration from {bucket} bucket".format(bucket=bucket)
+        )
+
+
+def get_bucket_acl_command(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
+        region=args.get("region"),
+        role_arn=args.get("roleArn"),
+        role_session_name=args.get("roleSessionName"),
+        role_session_duration=args.get("roleSessionDuration"),
+    )
+    data = []
+    response = client.get_bucket_acl(Bucket=args.get("bucket").lower())
+    owner = response.get("Owner")
+    grants = response.get("Grants")
+    for grant in grants:
+        grantee = grant.get("Grantee")
+        data.append(
+            {
+                "Owner": owner.get("DisplayName"),
+                "BucketName": args.get("bucket"),
+                "DisplayName": grantee.get("DisplayName"),
+                "EmailAddress": grantee.get("EmailAddress"),
+                "Type": grantee.get("Type"),
+                "URI": grantee.get("URI"),
+                "Permission": grant.get("Permission"),
+                "Json": json.dumps(grant),
+            }
+        )
+    ec = {"AWS.S3.Buckets(val.BucketName === obj.BucketName).Acl": data}
+    human_readable = tableToMarkdown("AWS S3 Bucket ACL", data)
+    return_outputs(human_readable, ec)
 
 def put_public_access_block(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
     client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
@@ -284,6 +363,9 @@ def main():  # pragma: no cover
         elif command == 'aws-s3-put-bucket-policy':
             return_results(put_bucket_policy_command(args, aws_client))
 
+        elif command == "aws-s3-get-bucket-policy-status":
+            return_results(get_bucket_policy_status_command(args, aws_client))
+
         elif command == 'aws-s3-delete-bucket-policy':
             return_results(delete_bucket_policy_command(args, aws_client))
 
@@ -296,6 +378,9 @@ def main():  # pragma: no cover
         elif command == 'aws-s3-upload-file':
             return_results(upload_file_command(args, aws_client))
 
+        elif command == "aws-s3-get-bucket-tags":
+            return_results(get_bucket_tags_command(args, aws_client))
+
         elif command == 'aws-s3-get-public-access-block':
             return_results(get_public_access_block(args, aws_client))
 
@@ -304,6 +389,12 @@ def main():  # pragma: no cover
 
         elif command == 'aws-s3-get-bucket-encryption':
             return_results(get_bucket_encryption(args, aws_client))
+
+        elif command == "aws-s3-delete-public-access-block":
+            return_results(delete_public_access_block_command(args, aws_client))
+
+        elif command == "aws-s3-get-bucket-acl":
+            return_results(get_bucket_acl_command(args, aws_client))
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 
