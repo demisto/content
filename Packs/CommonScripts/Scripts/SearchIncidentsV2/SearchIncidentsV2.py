@@ -59,7 +59,7 @@ def apply_filters(incidents: List, args: Dict):
 def add_incidents_link(data: List, platform: str):
     # For XSIAM links
     if platform == 'x2':
-        server_url = demisto.getLicenseCustomField('Http_Connector.url')
+        server_url = 'https://' + demisto.getLicenseCustomField('Http_Connector.url')
         for incident in data:
             incident_link = urljoin(server_url,
                                     f'alerts?action:openAlertDetails={incident.get("id")}-investigation')
