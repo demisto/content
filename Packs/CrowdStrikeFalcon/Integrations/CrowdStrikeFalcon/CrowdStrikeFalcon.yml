@@ -2501,6 +2501,23 @@ script:
   - arguments: []
     description: Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection.
     name: update-remote-system
+  - arguments:  #§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§ 
+    - default: true
+      description: The incident ID to get detections for.
+      name: incident_id
+      required: true
+    description: Gets the detections for a specific incident.
+    name: cs-falcon-spotlight-search-vulnerability
+    outputs:
+    - contextPath: CrowdStrike.Vulnerability.incident_id
+      description: The incident ID.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.behavior_id
+      description: The behavior ID connected to the incident.
+      type: String
+    - contextPath: CrowdStrike.Vulnerability.detection_ids
+      description: A list of detection IDs connected to the incident.
+      type: String
   dockerimage: demisto/python3:3.10.8.36650
   isfetch: true
   ismappable: true
