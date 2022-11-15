@@ -1,20 +1,23 @@
-register_module_line("CTIX v3", "start", __line__())
-# Uncomment while development
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
+
+import urllib3
+import requests
+from typing import Any, Dict
+import urllib.parse
+import time
+import json
+import hmac
+import hashlib
+import base64
+
+# register_module_line("CTIX v3", "start", __line__())
+# Uncomment while development=
 
 
 """IMPORTS"""
 
-
-import base64
-import hashlib
-import hmac
-import json
-import time
-import urllib.parse
-from typing import Any, Dict
-
-import requests
-import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -549,7 +552,9 @@ class Client(BaseClient):
         url_suffix = "ingestion/threat-data/list/"
         query = f"type={object_type}"
 
-        if len(ioc_type) > 0:
+        if len(ioc_type) == 1:
+            query += f" AND ioc_type IN ('{ioc_type[0]}')"
+        elif len(ioc_type) > 1:
             query += f" AND ioc_type IN {tuple(ioc_type)}"
 
         if len(object_names) == 1:
@@ -1637,4 +1642,4 @@ def main() -> None:
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
 
-register_module_line("CTIX v3", "end", __line__())
+# register_module_line("CTIX v3", "end", __line__())
