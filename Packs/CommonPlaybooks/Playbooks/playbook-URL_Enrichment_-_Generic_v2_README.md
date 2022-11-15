@@ -12,16 +12,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Rasterize
 * VirusTotal (API v3)
+* Rasterize
 
 ### Scripts
 * Exists
 * URLSSLVerification
 
 ### Commands
-* rasterize
 * url
+* rasterize
 
 ## Playbook Inputs
 ---

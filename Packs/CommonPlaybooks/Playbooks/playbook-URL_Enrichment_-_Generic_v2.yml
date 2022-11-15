@@ -484,8 +484,18 @@ tasks:
       '#none#':
       - "24"
     scriptarguments:
-      url:
-        simple: ${inputs.URL}
+      allInfo: {}
+      fullResponse: {}
+      resource:
+        complex:
+          root: inputs.URL
+          transformers:
+          - operator: uniq
+      retries: {}
+      retry_time: {}
+      shortFormat: {}
+      threshold: {}
+    reputationcalc: 1
     separatecontext: false
     continueonerrortype: ""
     view: |-
