@@ -16,17 +16,18 @@ def mock_client():
     )
 
 
-def load_test_data(file_name: str) -> dict:
+def load_test_data(folder: str, file_name: str) -> dict:
     """
     A function for loading and returning data from json files within the "test_data" folder.
 
     Args:
+        folder (str): Name of the parent folder of the file within `test_data`.
         file_name (str): Name of a json file to load data from.
 
     Returns:
         dict: Dictionary data loaded from the json file.
     """
-    with open(Path("test_data") / f"{file_name}.json", "r") as f:
+    with open(Path("test_data") / folder / f"{file_name}.json", "r") as f:
         return json.load(f)
 
 
@@ -219,7 +220,7 @@ def test_replace_key_names(test_input_data: IterableCollection, name_mapping: di
                              ("Site-That-Doesn't-Exist", None),
                          ])
 def test_find_site_id(mocker, mock_client: Client, test_input: str, expected_output: Union[str, None]):
-    mocker.patch.object(Client, "_paged_http_request", return_value=load_test_data("client_get_sites"))
+    mocker.patch.object(Client, "_paged_http_request", return_value=load_test_data("api_mock", "client_get_sites"))
     assert mock_client.find_site_id(test_input) == expected_output
 
 
@@ -243,6 +244,7 @@ def test_create_asset_command(mocker, mock_client: Client, test_input_kwargs: di
 def test_create_shared_credential_command(mocker, mock_client: Client, test_input_kwargs: dict,
                                           api_mock_data: dict, expected_output_context: dict):
     mocker.patch.object(Client, "_http_request", return_value=api_mock_data)
+
     assert create_shared_credential_command(client=mock_client, **test_input_kwargs).outputs == expected_output_context
 
 
@@ -254,5 +256,51 @@ def test_create_shared_credential_command(mocker, mock_client: Client, test_inpu
 def test_create_vulnerability_exception_command(mocker, mock_client: Client, test_input_kwargs: dict,
                                                 api_mock_data: dict, expected_output_context: dict):
     mocker.patch.object(Client, "_http_request", return_value=api_mock_data)
+
     assert create_vulnerability_exception_command(client=mock_client, **test_input_kwargs).outputs == \
            expected_output_context
+
+
+@pytest.mark.parametrize("api_mock_data_file, asset_vulnerability_api_mock_file, vulnerability_api_mock_file, "
+                         "expected_output_context_file",
+                         [
+                             ("client_get_asset", "client_get_asset_vulnerabilities", "client_get_vulnerability",
+                              "get_asset_command")
+                         ])
+def test_get_asset_command(mocker, mock_client: Client, api_mock_data_file: str, asset_vulnerability_api_mock_file: str,
+                           vulnerability_api_mock_file: str, expected_output_context_file: str):
+    api_mock_data = load_test_data("api_mock", api_mock_data_file)
+    mocker.patch.object(Client, "get_asset", return_value=api_mock_data)
+
+    mocker.patch.object(Client, "find_asset_site", return_value=Site(site_id="1", site_name="Test"))
+
+    asset_vulnerability_api_mock_data = load_test_data("api_mock", asset_vulnerability_api_mock_file)
+    mocker.patch.object(Client, "get_asset_vulnerabilities", return_value=asset_vulnerability_api_mock_data)
+
+    vulnerability_api_mock_data = load_test_data("api_mock", vulnerability_api_mock_file)
+    mocker.patch.object(Client, "get_vulnerability", return_value=vulnerability_api_mock_data)
+
+    result = get_asset_command(client=mock_client, asset_id="1")
+    expected_output_context = load_test_data("expected_context", expected_output_context_file)
+
+    if isinstance(result, CommandResults):
+        assert result.outputs == expected_output_context
+
+    elif isinstance(result, list):
+        assert result[-1].outputs == expected_output_context
+
+
+@pytest.mark.parametrize("api_mock_data_file, expected_output_context_file",
+                         [
+                             ("client_get_assets", "get_assets_command")
+                         ])
+def test_get_assets_command(mocker, mock_client: Client, api_mock_data_file: str, expected_output_context_file: str):
+    api_mock_data = load_test_data("api_mock", api_mock_data_file)
+    mocker.patch.object(Client, "get_assets", return_value=api_mock_data)
+
+    mocker.patch.object(Client, "find_asset_site", return_value=Site(site_id="1", site_name="Test"))
+
+    result = get_assets_command(client=mock_client)
+    expected_output_context = load_test_data("expected_context", expected_output_context_file)
+
+    assert [r.outputs for r in result] == expected_output_context

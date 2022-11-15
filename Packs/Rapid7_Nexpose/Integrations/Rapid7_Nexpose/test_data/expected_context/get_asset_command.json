@@ -1,0 +1,425 @@
+{
+    "addresses": [
+        {}
+    ],
+    "assessedForPolicies": false,
+    "assessedForVulnerabilities": true,
+    "history": [
+        {
+            "date": "2020-10-01T22:40:41.396Z",
+            "scanId": 650,
+            "type": "SCAN",
+            "version": 1
+        },
+        {
+            "date": "2021-06-29T07:06:35.829Z",
+            "scanId": 763,
+            "type": "SCAN",
+            "version": 2
+        }
+    ],
+    "hostName": "test-hostname.com",
+    "hostNames": [
+        {
+            "source": "dns"
+        }
+    ],
+    "ip": "192.0.2.0",
+    "osFingerprint": {
+        "cpe": {
+            "part": "o",
+            "product": "linux_kernel",
+            "v2.2": "cpe:/o:linux:linux_kernel:2.6.18",
+            "v2.3": "cpe:2.3:o:linux:linux_kernel:2.6.18:*:*:*:*:*:*:*",
+            "vendor": "linux",
+            "version": "2.6.18"
+        },
+        "description": "Linux 2.6.18",
+        "family": "Linux",
+        "id": 19,
+        "product": "Linux",
+        "systemName": "Linux",
+        "type": "General",
+        "vendor": "Linux",
+        "version": "2.6.18"
+    },
+    "rawRiskScore": 1321.88427734375,
+    "services": [
+        {
+            "configurations": [
+                {
+                    "name": "http.banner",
+                    "value": "nginx"
+                },
+                {
+                    "name": "http.banner.server",
+                    "value": "nginx"
+                }
+            ],
+            "family": "nginx",
+            "vendor": "nginx",
+            "Name": "HTTP",
+            "Port": 80,
+            "Product": "nginx",
+            "Protocol": "tcp"
+        },
+        {
+            "configurations": [
+                {
+                    "name": "http.banner",
+                    "value": "nginx"
+                },
+                {
+                    "name": "http.banner.server",
+                    "value": "nginx"
+                },
+                {
+                    "name": "ssl",
+                    "value": "true"
+                },
+                {
+                    "name": "ssl.cert.issuer.dn",
+                    "value": "CN=RapidSSL RSA CA 2018, OU=www.digicert.com, O=DigiCert Inc, C=US"
+                },
+                {
+                    "name": "ssl.cert.key.alg.name",
+                    "value": "RSA"
+                },
+                {
+                    "name": "ssl.cert.key.rsa.modulusBits",
+                    "value": "2048"
+                },
+                {
+                    "name": "ssl.cert.not.valid.after",
+                    "value": "Sun, 29 Aug 2021 15:00:00 IDT"
+                },
+                {
+                    "name": "ssl.cert.not.valid.before",
+                    "value": "Mon, 01 Jul 2019 03:00:00 IDT"
+                },
+                {
+                    "name": "ssl.cert.selfsigned",
+                    "value": "false"
+                },
+                {
+                    "name": "ssl.cert.serial.number",
+                    "value": "6851373033688357139444286552416378126"
+                },
+                {
+                    "name": "ssl.cert.sha1.fingerprint",
+                    "value": "c6a00220562bb921d359e1cb2f74e579da6eddd0"
+                },
+                {
+                    "name": "ssl.cert.sig.alg.name",
+                    "value": "SHA256withRSA"
+                },
+                {
+                    "name": "ssl.cert.subject.alt.name-1",
+                    "value": "*.wpengine.com"
+                },
+                {
+                    "name": "ssl.cert.subject.alt.name-2",
+                    "value": "wpengine.com"
+                },
+                {
+                    "name": "ssl.cert.subject.alt.name-count",
+                    "value": "2"
+                },
+                {
+                    "name": "ssl.cert.subject.dn",
+                    "value": "CN=*.wpengine.com"
+                },
+                {
+                    "name": "ssl.cert.validchain",
+                    "value": "true"
+                },
+                {
+                    "name": "ssl.cert.version",
+                    "value": "3"
+                },
+                {
+                    "name": "ssl.protocols",
+                    "value": "tlsv1_2"
+                },
+                {
+                    "name": "sslv2",
+                    "value": "false"
+                },
+                {
+                    "name": "sslv3",
+                    "value": "false"
+                },
+                {
+                    "name": "tlsv1_0",
+                    "value": "false"
+                },
+                {
+                    "name": "tlsv1_1",
+                    "value": "false"
+                },
+                {
+                    "name": "tlsv1_2",
+                    "value": "true"
+                },
+                {
+                    "name": "tlsv1_2.ciphers",
+                    "value": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_128_GCM_SHA256"
+                },
+                {
+                    "name": "tlsv1_2.extensions",
+                    "value": "RENEGOTIATION_INFO,EXTENDED_MASTER_SECRET,EC_POINT_FORMATS,ENCRYPT_THEN_MAC"
+                }
+            ],
+            "family": "nginx",
+            "vendor": "nginx",
+            "Name": "HTTPS",
+            "Port": 443,
+            "Product": "nginx",
+            "Protocol": "tcp"
+        },
+        {
+            "configurations": [
+                {
+                    "name": "ssh.banner",
+                    "value": "SSH-2.0-mod_sftp"
+                },
+                {
+                    "name": "ssh.protocol.version",
+                    "value": "2.0"
+                }
+            ],
+            "Name": "SSH",
+            "Port": 2222,
+            "Protocol": "tcp"
+        }
+    ],
+    "vulnerabilities": [
+        {
+            "id": "certificate-common-name-mismatch",
+            "instances": 1,
+            "results": [
+                {
+                    "port": 443,
+                    "proof": "<p><p>The subject common name found in the X.509 certificate does not seem to match the scan target:<ul><li>Subject CN *.wpengine.com does not match target name specified in the site.</li><li>Subject CN *.wpengine.com does not match DNS name specified in the site.</li><li>Subject CN *.wpengine.com could not be resolved to an IP address via DNS lookup</li><li>Subject Alternative Name *.wpengine.com does not match target name specified in the site.</li><li>Subject Alternative Name wpengine.com does not match target name specified in the site.</li><li>Subject Alternative Name *.wpengine.com does not match DNS name specified in the site.</li><li>Subject Alternative Name wpengine.com does not match DNS name specified in the site.</li></ul></p></p>",
+                    "protocol": "tcp",
+                    "since": "2020-10-01T22:40:41.396Z",
+                    "status": "vulnerable"
+                }
+            ],
+            "since": "2020-10-01T22:40:41.396Z",
+            "status": "vulnerable",
+            "added": "2007-08-03",
+            "categories": [
+                "HTTP",
+                "Web"
+            ],
+            "cvss": {
+                "v2": {
+                    "accessComplexity": "H",
+                    "accessVector": "N",
+                    "authentication": "N",
+                    "availabilityImpact": "N",
+                    "confidentialityImpact": "C",
+                    "exploitScore": 4.928,
+                    "impactScore": 9.2066,
+                    "integrityImpact": "C",
+                    "score": 7.1,
+                    "vector": "AV:N/AC:H/Au:N/C:C/I:C/A:N"
+                }
+            },
+            "denialOfService": false,
+            "description": {
+                "html": "<p>The subject common name (CN) field in the X.509 certificate does not match\nthe name of the entity presenting the certificate.</p>\n\n\n<p>Before issuing a certificate, a Certification Authority (CA) must check the\nidentity of the entity requesting the certificate, as specified in the CA&#39;s\nCertification Practice Statement (CPS). Thus, standard certificate validation\nprocedures require the subject CN field of a certificate to match the actual\nname of the entity presenting the certificate. For example, in a certificate\npresented by &quot;https://www.example.com/&quot;, the CN should be &quot;www.example.com&quot;.\n</p>\n\n\n<p>In order to detect and prevent active eavesdropping attacks, the validity of\na certificate must be verified, or else an attacker could then launch a\nman-in-the-middle attack and gain full control of the data stream. Of\nparticular importance is the validity of the subject&#39;s CN, that should match\nthe name of the entity (hostname).</p>\n\n\n<p>A CN mismatch most often occurs due to a configuration error, though it can\nalso indicate that a man-in-the-middle attack is being conducted. </p>\n\n\n<p>Please note that this check may flag a false positive against servers\n that are properly configured using SNI.</p>",
+                "text": "The subject common name (CN) field in the X.509 certificate does not match the name of the entity presenting the certificate.\n\nBefore issuing a certificate, a Certification Authority (CA) must check the identity of the entity requesting the certificate, as specified in the CA's Certification Practice Statement (CPS). Thus, standard certificate validation procedures require the subject CN field of a certificate to match the actual name of the entity presenting the certificate. For example, in a certificate presented by \"https://www.example.com/\", the CN should be \"www.example.com\". \n\nIn order to detect and prevent active eavesdropping attacks, the validity of a certificate must be verified, or else an attacker could then launch a man-in-the-middle attack and gain full control of the data stream. Of particular importance is the validity of the subject's CN, that should match the name of the entity (hostname).\n\nA CN mismatch most often occurs due to a configuration error, though it can also indicate that a man-in-the-middle attack is being conducted. \n\nPlease note that this check may flag a false positive against servers that are properly configured using SNI."
+            },
+            "exploits": 0,
+            "malwareKits": 0,
+            "modified": "2019-04-25",
+            "pci": {
+                "adjustedCVSSScore": 7,
+                "adjustedSeverityScore": 5,
+                "fail": true,
+                "status": "Fail"
+            },
+            "published": "2007-08-03",
+            "riskScore": 835.84,
+            "severity": "Severe",
+            "severityScore": 7,
+            "title": "X.509 Certificate Subject CN Does Not Match the Entity Name"
+        }
+    ],
+    "LastScanDate": "2021-06-29T07:06:35.829Z",
+    "LastScanId": 763,
+    "AssetId": 13,
+    "Addresses": "192.0.2.0",
+    "Aliases": "test.com",
+    "Site": "Test",
+    "OperatingSystem": "Linux 2.6.18",
+    "Vulnerabilities": 2,
+    "RiskScore": 1321.88427734375,
+    "Vulnerability": [
+        {
+            "Id": "certificate-common-name-mismatch",
+            "Title": "X.509 Certificate Subject CN Does Not Match the Entity Name",
+            "Malware": 0,
+            "Exploit": 0,
+            "CVSS": 7.1,
+            "Risk": 835.84,
+            "PublishedOn": "2007-08-03",
+            "ModifiedOn": "2019-04-25",
+            "Severity": "Severe",
+            "Instances": 1
+        }
+    ],
+    "Software": null,
+    "Service": [
+        {
+            "configurations": [
+                {
+                    "name": "http.banner",
+                    "value": "nginx"
+                },
+                {
+                    "name": "http.banner.server",
+                    "value": "nginx"
+                }
+            ],
+            "family": "nginx",
+            "vendor": "nginx",
+            "Name": "HTTP",
+            "Port": 80,
+            "Product": "nginx",
+            "Protocol": "tcp"
+        },
+        {
+            "configurations": [
+                {
+                    "name": "http.banner",
+                    "value": "nginx"
+                },
+                {
+                    "name": "http.banner.server",
+                    "value": "nginx"
+                },
+                {
+                    "name": "ssl",
+                    "value": "true"
+                },
+                {
+                    "name": "ssl.cert.issuer.dn",
+                    "value": "CN=RapidSSL RSA CA 2018, OU=www.digicert.com, O=DigiCert Inc, C=US"
+                },
+                {
+                    "name": "ssl.cert.key.alg.name",
+                    "value": "RSA"
+                },
+                {
+                    "name": "ssl.cert.key.rsa.modulusBits",
+                    "value": "2048"
+                },
+                {
+                    "name": "ssl.cert.not.valid.after",
+                    "value": "Sun, 29 Aug 2021 15:00:00 IDT"
+                },
+                {
+                    "name": "ssl.cert.not.valid.before",
+                    "value": "Mon, 01 Jul 2019 03:00:00 IDT"
+                },
+                {
+                    "name": "ssl.cert.selfsigned",
+                    "value": "false"
+                },
+                {
+                    "name": "ssl.cert.serial.number",
+                    "value": "6851373033688357139444286552416378126"
+                },
+                {
+                    "name": "ssl.cert.sha1.fingerprint",
+                    "value": "c6a00220562bb921d359e1cb2f74e579da6eddd0"
+                },
+                {
+                    "name": "ssl.cert.sig.alg.name",
+                    "value": "SHA256withRSA"
+                },
+                {
+                    "name": "ssl.cert.subject.alt.name-1",
+                    "value": "*.wpengine.com"
+                },
+                {
+                    "name": "ssl.cert.subject.alt.name-2",
+                    "value": "wpengine.com"
+                },
+                {
+                    "name": "ssl.cert.subject.alt.name-count",
+                    "value": "2"
+                },
+                {
+                    "name": "ssl.cert.subject.dn",
+                    "value": "CN=*.wpengine.com"
+                },
+                {
+                    "name": "ssl.cert.validchain",
+                    "value": "true"
+                },
+                {
+                    "name": "ssl.cert.version",
+                    "value": "3"
+                },
+                {
+                    "name": "ssl.protocols",
+                    "value": "tlsv1_2"
+                },
+                {
+                    "name": "sslv2",
+                    "value": "false"
+                },
+                {
+                    "name": "sslv3",
+                    "value": "false"
+                },
+                {
+                    "name": "tlsv1_0",
+                    "value": "false"
+                },
+                {
+                    "name": "tlsv1_1",
+                    "value": "false"
+                },
+                {
+                    "name": "tlsv1_2",
+                    "value": "true"
+                },
+                {
+                    "name": "tlsv1_2.ciphers",
+                    "value": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_128_GCM_SHA256"
+                },
+                {
+                    "name": "tlsv1_2.extensions",
+                    "value": "RENEGOTIATION_INFO,EXTENDED_MASTER_SECRET,EC_POINT_FORMATS,ENCRYPT_THEN_MAC"
+                }
+            ],
+            "family": "nginx",
+            "vendor": "nginx",
+            "Name": "HTTPS",
+            "Port": 443,
+            "Product": "nginx",
+            "Protocol": "tcp"
+        },
+        {
+            "configurations": [
+                {
+                    "name": "ssh.banner",
+                    "value": "SSH-2.0-mod_sftp"
+                },
+                {
+                    "name": "ssh.protocol.version",
+                    "value": "2.0"
+                }
+            ],
+            "Name": "SSH",
+            "Port": 2222,
+            "Protocol": "tcp"
+        }
+    ],
+    "User": null
+}
