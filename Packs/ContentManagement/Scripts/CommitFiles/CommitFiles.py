@@ -71,7 +71,6 @@ def get_file_sha(branch_name: str, content_file: ContentFile, get_files_command:
     status, list_files_res = execute_command(get_files_command, {'branch': branch_name,
                                                                  'path': content_file.path_to_file},
                                              fail_on_error=False)
-
     if status:
         for file in list_files_res:
             file_path_to_sha[file['path']] = file['sha']
