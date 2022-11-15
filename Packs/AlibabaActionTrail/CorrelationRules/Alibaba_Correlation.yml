@@ -1,4 +1,4 @@
-- alert_category: EXECUTION
+  alert_category: EXECUTION
   alert_description: This alert will trigger in an event where multiple attempts of
     unauthorized actions were detected
   alert_fields:
