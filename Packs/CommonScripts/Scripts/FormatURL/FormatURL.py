@@ -630,7 +630,11 @@ class URLFormatter(object):
 
 
 def main():
-    raw_urls = demisto.args().get('input').split()
+    raw_urls = demisto.args().get('input')
+
+    if isinstance(raw_urls, str):
+        raw_urls = raw_urls.split(",")
+
     formatted_urls: List[str] = []
 
     for url in raw_urls:
