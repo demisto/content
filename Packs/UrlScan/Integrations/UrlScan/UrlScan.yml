@@ -261,7 +261,7 @@ script:
     - name: useragent
       description: User agent to perform request
     - name: use_url_as_name
-      default: true
+      default: false
       description: Whether to use the URL as the file name.
       auto: PREDEFINED
       predefined:
