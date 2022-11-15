@@ -1,0 +1,830 @@
+id: CyberArk - Brute Force_Investigation
+version: -1
+name: CyberArk - Brute Force_Investigation
+description: |+
+  This playbook investigates a “Brute Force” incident by gathering user and IP information  and performs remediation based on the information gathered and received from the user.
+
+  Used Sub-playbooks:
+  * Enrichment for Verdict
+  * Block IP - Generic v3
+  * Block Account - Generic v2
+
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5c019e26-e3fb-47d3-8e61-5bd74fd4a9f9
+    type: start
+    task:
+      id: 5c019e26-e3fb-47d3-8e61-5bd74fd4a9f9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: c5b591b8-af68-428d-893a-93806bf9aa0f
+    type: title
+    task:
+      id: c5b591b8-af68-428d-893a-93806bf9aa0f
+      version: -1
+      name: Enrich Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 5ec9b8c7-1c31-437e-8f53-e3a8d46ea0e9
+    type: title
+    task:
+      id: 5ec9b8c7-1c31-437e-8f53-e3a8d46ea0e9
+      version: -1
+      name: False Positive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: e69435c0-6b48-4cd3-8789-3f20485cff14
+    type: regular
+    task:
+      id: e69435c0-6b48-4cd3-8789-3f20485cff14
+      version: -1
+      name: Close the alert as False Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      closeNotes:
+        simple: The user confirmed he made these multiple failed logins attempts
+      closeReason:
+        simple: false  positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: d8d52e3e-8d22-4903-887d-65b966f0c7d9
+    type: condition
+    task:
+      id: d8d52e3e-8d22-4903-887d-65b966f0c7d9
+      version: -1
+      name: Continue based on verdict
+      description: Continue based on verdict.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      Malicious IP:
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: Malicious IP
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IPVerdict
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IPVerdict
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Malicious
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: c9f27e10-2870-4290-84ed-b2189c1a148b
+    type: collection
+    task:
+      id: c9f27e10-2870-4290-84ed-b2189c1a148b
+      version: -1
+      name: EmailAsk User
+      description: EmailAsk User to confirm multiple failed login attempts.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        complex:
+          root: alert.employeeemail
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: alert.employeeemail
+                iscontext: true
+      subject:
+        simple: Failed login attempts
+      body:
+        simple: "Hello,\n\nWe have identified several failed login attempts with your user ID. Please confirm or deny that you attempted these logins. "
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Were the login attempts made by you?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "No"
+        - simple: "Yes"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Failed login attempts
+      description: 'We have identified several failed login attempts with your user ID. Please confirm or deny that you attempted these logins. '
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 81095e29-58b4-4f15-82ec-36541e8b6249
+    type: playbook
+    task:
+      id: 81095e29-58b4-4f15-82ec-36541e8b6249
+      version: -1
+      name: Enrichment for Verdict
+      description: This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then  returns the information needed to establish the alert's verdict.
+      playbookName: Enrichment for Verdict
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      CloseReason:
+        simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved - Known Issue
+      Domain:
+        complex:
+          root: alert
+          accessor: domainname
+      FileSHA256:
+        complex:
+          root: alert
+          accessor: initiatorsha256
+      IP:
+        complex:
+          root: alert
+          accessor: hostip
+          transformers:
+          - operator: uniq
+      InternalRange:
+        complex:
+          root: inputs.InternalRange
+      URL:
+        complex:
+          root: alert
+          accessor: url
+      User:
+        complex:
+          root: alert
+          accessor: username
+      query:
+        simple: (initiatorsha256:${inputs.FileSHA256} or hostip:${inputs.IP}) and alertsource:${alert.sourceBrand} and alertname:${alert.name}
+      threshold:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 1dbac001-bb7e-4a38-817c-dcfdbe1b1c7e
+    type: condition
+    task:
+      id: 1dbac001-bb7e-4a38-817c-dcfdbe1b1c7e
+      version: -1
+      name: User confirmed the activity?
+      description: User confirmed the activity.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Failed login attempts.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: f761e6eb-4e26-4e04-8ea1-58451095248a
+    type: regular
+    task:
+      id: f761e6eb-4e26-4e04-8ea1-58451095248a
+      version: -1
+      name: Lower alert severity
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setAlert
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      severity:
+        simple: Low
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: cf0dabbc-a6a7-4315-8343-8ad4a63d41fb
+    type: title
+    task:
+      id: cf0dabbc-a6a7-4315-8343-8ad4a63d41fb
+      version: -1
+      name: True Positive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 8f476dfb-6af2-4435-8a54-c3805798a86d
+    type: title
+    task:
+      id: 8f476dfb-6af2-4435-8a54-c3805798a86d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 43a745a2-cf8b-4acd-8c0d-574110940c20
+    type: regular
+    task:
+      id: 43a745a2-cf8b-4acd-8c0d-574110940c20
+      version: -1
+      name: Continue Manual Investigation
+      description: "Check for:  \n* Any other actions made by this user after this change?\n* Any other suspicious behavior in this group/project?"
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 1990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 3b0049f6-b417-4174-8693-93957c450605
+    type: playbook
+    task:
+      id: 3b0049f6-b417-4174-8693-93957c450605
+      version: -1
+      name: Block IP - Generic v3
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
+      playbookName: Block IP - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      IP:
+        complex:
+          root: alert
+          accessor: hostip
+      InputEnrichment:
+        simple: "False"
+      InternalRange:
+        complex:
+          root: inputs.InternalRange
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block IP playbook - ${alert.alertid}
+      UserVerification:
+        simple: "False"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 1015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: f5d92577-257f-4d07-8242-d9e9d9d779a0
+    type: condition
+    task:
+      id: f5d92577-257f-4d07-8242-d9e9d9d779a0
+      version: -1
+      name: Should block IP without confirmation?
+      description: Checks whether to block ip without confirmation
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "44"
+      "Yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoBlockIP
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 58b9bb67-b803-45c2-8834-032002ad5171
+    type: playbook
+    task:
+      id: 58b9bb67-b803-45c2-8834-032002ad5171
+      version: -1
+      name: Block Account - Generic v2
+      description: |-
+        This playbook blocks malicious usernames using all integrations that you have enabled.
+
+        Supported integrations for this playbook:
+        * Active Directory
+        * PAN-OS - This requires PAN-OS 9.1 or higher.
+        * SailPoint
+        * PingOne
+        * AWS IAM
+        * Clarizen IAM
+        * Envoy IAM
+        * ExceedLMS IAM
+        * Okta
+      playbookName: Block Account - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      Tag:
+        simple: Bad Account
+      UserVerification:
+        simple: "True"
+      Username:
+        complex:
+          root: alert
+          accessor: username
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 1725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 0c947ed1-c4b2-438a-84a0-8305629bfe54
+    type: condition
+    task:
+      id: 0c947ed1-c4b2-438a-84a0-8305629bfe54
+      version: -1
+      name: Should block account without confirmation?
+      description: Check if should automatically block the user account based on verdict and user's response
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "45"
+      "YES":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoBlockAccount
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 042d040b-abf5-42c4-80f4-226f27fa9bef
+    type: condition
+    task:
+      id: 042d040b-abf5-42c4-80f4-226f27fa9bef
+      version: -1
+      name: User confirmation for block IP
+      description: |-
+        Should we block the following IP?
+
+        * ${alert.remoteip.[0]}
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "37"
+      "Yes":
+      - "40"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 395712b7-20d5-4123-8d52-deb06035d86b
+    type: condition
+    task:
+      id: 395712b7-20d5-4123-8d52-deb06035d86b
+      version: -1
+      name: User confirmation for block user account
+      description: |-
+        Should we block the following account?
+
+        * ${alert.username}
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "39"
+      "Yes":
+      - "42"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "28_29_#default#": 0.53
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2375,
+        "width": 1330,
+        "x": 70,
+        "y": -110
+      }
+    }
+  }
+inputs:
+- key: InternalRange
+  value: {}
+  required: false
+  description: List of Internal IP ranges
+  playbookInputQuery:
+- key: inputs.AutoBlockIP
+  value:
+    simple: "False"
+  required: false
+  description: Set to True if should block the IP without confirmation
+  playbookInputQuery:
+- key: inputs.AutoBlockAccount
+  value:
+    simple: "False"
+  required: false
+  description: Set to True if should block the user account without confirmation
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
