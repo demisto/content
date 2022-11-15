@@ -353,8 +353,6 @@ class Client(BaseClient):
             # if no url is stated, there is no need to make a request
             return [], None, ''
         headers = self.create_header(url_suffix, full_url, method)
-        demisto.debug(f'{url_suffix=}')
-        demisto.debug(f'{headers=}')
         response = self._http_request(method=method, url_suffix=url_suffix, data=payload, resp_type='json',
                                       params=params, headers=headers, full_url=full_url)
 
