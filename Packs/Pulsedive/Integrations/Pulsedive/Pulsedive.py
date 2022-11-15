@@ -431,9 +431,9 @@ def scan_result_command(client: Client, args: Dict[str, Any], api_key) -> List[C
 
                     ip_indicator = Common.IP(
                         ip=qid_data['data']['indicator'],
-                        asn=qid_data['data']['properties']['geo']['asn'],
-                        geo_country=qid_data['data']['properties']['geo']['country'],
-                        port=qid_data['data']['attributes']['port'],
+                        asn=qid_data['data']['properties']['geo'].get('asn'),
+                        geo_country=qid_data['data']['properties']['geo'].get('country'),
+                        port=qid_data.get('data', {}).get('attributes', {}).get('port'),
                         dbot_score=dbot_score
                     )
 
@@ -459,8 +459,8 @@ def scan_result_command(client: Client, args: Dict[str, Any], api_key) -> List[C
 
                     domain_indicator = Common.Domain(
                         domain=qid_data['data']['indicator'],
-                        domain_status=qid_data['data']['properties']['whois']['status'],
-                        name_servers=qid_data['data']['properties']['whois']['nserver'],
+                        domain_status=qid_data['data']['properties']['whois'].get('status'),
+                        name_servers=qid_data['data']['properties']['whois'].get('nserver'),
                         dbot_score=dbot_score
                     )
 
