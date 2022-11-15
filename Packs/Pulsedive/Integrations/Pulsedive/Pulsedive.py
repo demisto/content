@@ -6,8 +6,9 @@ import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
 
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+
+urllib3.disable_warnings()
 
 
 ''' CONSTANTS '''
