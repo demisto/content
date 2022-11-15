@@ -88,7 +88,7 @@ class Client(BaseClient):
         if not self.organisation_id.isdigit():
             raise DemistoException("Invalid Input Error: The Organization ID must be a number.")
 
-    def access_token(self):
+    def get_access_token(self):
         """
         Generate Access token
         Returns:
@@ -107,7 +107,7 @@ class Client(BaseClient):
 
         return token_response.json().get('access_token')
 
-    def query(self, end_point: str, params: dict) -> Dict:
+    def query_cisco_umbrella_api(self, end_point: str, params: dict) -> Dict:
         """
         Call Cisco Umbrella Reporting API
 
@@ -136,7 +136,7 @@ class Client(BaseClient):
         result: Dict = {}
         url_path = f'{self._base_url}/v2/organizations' \
                    f'/{self.organisation_id}/{end_point}'
-        access_token = self.access_token()
+        access_token = self.get_access_token()
         response = self._http_request(
             method='GET',
             full_url=url_path,
@@ -895,7 +895,7 @@ def test_module(client: Client) -> str:
         'to': 'now',
         'offset': 0
     }
-    client.query('activity', params)
+    client.query_cisco_umbrella_api('activity', params)
 
     return 'ok'
 
@@ -917,7 +917,7 @@ def get_destinations_list_command(client: Client, args: Dict[str, Any]):
     limit, offset = pagination(page, page_size)
     cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
     title = get_command_title_string('Destination', page, page_size)
-    raw_json_response = client.query(endpoint, cisco_umbrella_args)
+    raw_json_response = client.query_cisco_umbrella_api(endpoint, cisco_umbrella_args)
     data = raw_json_response.get('data', [])
     if data:
         readable_output = destination_lookup_to_markdown(data, title)
@@ -950,7 +950,7 @@ def get_categories_list_command(client: Client, args: Dict[str, Any]):
     limit, offset = pagination(page, page_size)
     cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
     title = get_command_title_string('Category', page, page_size)
-    raw_json_response = client.query(endpoint, cisco_umbrella_args)
+    raw_json_response = client.query_cisco_umbrella_api(endpoint, cisco_umbrella_args)
     data = raw_json_response.get('data', [])
     if data:
         readable_output = categories_lookup_to_markdown(data, title)
@@ -982,7 +982,7 @@ def get_identities_list_command(client: Client, args: Dict[str, Any]):
     limit, offset = pagination(page, page_size)
     cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
     title = get_command_title_string('Identities', page, page_size)
-    raw_json_response = client.query(endpoint, cisco_umbrella_args)
+    raw_json_response = client.query_cisco_umbrella_api(endpoint, cisco_umbrella_args)
     data = raw_json_response.get('data', [])
     if data:
         readable_output = identities_lookup_to_markdown(data, title)
@@ -1013,7 +1013,7 @@ def get_file_list_command(client: Client, args: Dict[str, Any]):
     cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
     endpoint = 'top-files'
     title = get_command_title_string('File', page, page_size)
-    raw_json_response = client.query(endpoint, cisco_umbrella_args)
+    raw_json_response = client.query_cisco_umbrella_api(endpoint, cisco_umbrella_args)
     data = raw_json_response.get('data', [])
     if data:
         readable_output = file_type_lookup_to_markdown(data, title)
@@ -1045,7 +1045,7 @@ def get_threat_list_command(client: Client, args: Dict[str, Any]):
     limit, offset = pagination(page, page_size)
     cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
     title = get_command_title_string('Threat', page, page_size)
-    raw_json_response = client.query(endpoint, cisco_umbrella_args)
+    raw_json_response = client.query_cisco_umbrella_api(endpoint, cisco_umbrella_args)
     data = raw_json_response.get('data', [])
     if data:
         readable_output = threat_lookup_to_markdown(data, title)
@@ -1077,7 +1077,7 @@ def get_event_types_list_command(client: Client, args: Dict[str, Any]):
     cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
     endpoint = 'top-eventtypes'
     title = get_command_title_string('Event Type', page, page_size)
-    raw_json_response = client.query(endpoint, cisco_umbrella_args)
+    raw_json_response = client.query_cisco_umbrella_api(endpoint, cisco_umbrella_args)
     data = raw_json_response.get('data', [])
     if data:
         readable_output = event_types_lookup_to_markdown(data, title)
@@ -1108,7 +1108,7 @@ def get_activity_list_command(client: Client, args: Dict[str, Any]):
     cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
     endpoint = 'activity'
     title = get_command_title_string('Activity', page, page_size)
-    raw_json_response = client.query(endpoint, cisco_umbrella_args)
+    raw_json_response = client.query_cisco_umbrella_api(endpoint, cisco_umbrella_args)
     data = raw_json_response.get('data', [])
     if data:
         readable_output = activity_lookup_to_markdown(data, title)
@@ -1169,7 +1169,7 @@ def get_activity_by_traffic_type_command(client: Client, args: Dict[str, Any]):
     limit, offset = pagination(page, page_size)
     cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
     title = get_command_title_string(f'{traffic_type.capitalize()} Activity', page, page_size)
-    raw_json_response = client.query(endpoint, cisco_umbrella_args)
+    raw_json_response = client.query_cisco_umbrella_api(endpoint, cisco_umbrella_args)
     data = raw_json_response.get('data', [])
     if data:
         readable_output = markdown_function[traffic_type](data, title)
@@ -1223,7 +1223,7 @@ def get_summary_list_command(client: Client, args: Dict[str, Any]):
     page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE), arg_name='page_size')
     limit, offset = pagination(page, page_size)
     cisco_umbrella_args = create_cisco_umbrella_args(limit, offset, args)
-    raw_json_response = client.query(endpoint, cisco_umbrella_args)
+    raw_json_response = client.query_cisco_umbrella_api(endpoint, cisco_umbrella_args)
 
     if summary_type:
         data = raw_json_response.get('data', [])

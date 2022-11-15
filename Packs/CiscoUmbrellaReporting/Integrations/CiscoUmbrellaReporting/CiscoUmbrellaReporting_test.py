@@ -62,7 +62,7 @@ def test_get_destinations_list_command(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected
             output.
     """
-    mocker.patch.object(client, 'query', side_effect=[raw_response] * 5)
+    mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
         "limit": 5,
         "from": 1662015255000,
@@ -97,7 +97,7 @@ def test_get_category_list_command(mocker, raw_response, expected):
             output.
     """
 
-    mocker.patch.object(client, 'query', side_effect=[raw_response] * 5)
+    mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
         "limit": 5,
         "from": 1662015255000,
@@ -139,7 +139,7 @@ def test_get_identities_list_command(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected
             output.
     """
-    mocker.patch.object(client, 'query', side_effect=[raw_response] * 5)
+    mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
         "limit": 5,
         "from": 1662015255000,
@@ -181,7 +181,7 @@ def test_get_file_list_command(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected
             output.
     """
-    mocker.patch.object(client, 'query', side_effect=[raw_response] * 5)
+    mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
         "limit": 5,
         "from": 1662015255000,
@@ -215,7 +215,7 @@ def test_get_threat_list_command(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected
             output.
     """
-    mocker.patch.object(client, 'query', side_effect=[raw_response] * 5)
+    mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
         "limit": 5,
         "from": 1662015255000,
@@ -249,7 +249,7 @@ def test_get_event_types_list_command(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected
             output.
     """
-    mocker.patch.object(client, 'query', side_effect=[raw_response] * 5)
+    mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
         "limit": 5,
         "from": 1662015255000,
@@ -284,7 +284,7 @@ def test_get_activity_list_command(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected
             output.
     """
-    mocker.patch.object(client, 'query', side_effect=[raw_response] * 5)
+    mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
         "limit": 5,
         "from": 1662015255000,
@@ -322,7 +322,7 @@ def test_get_activity_by_dns_traffic_type_command(mocker, raw_response,
             -  Checks the output of the command function with the expected
             output.
     """
-    mocker.patch.object(client, 'query', side_effect=[raw_response] * 5)
+    mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
         "limit": 5,
         "from": 1662015255000,
@@ -363,7 +363,7 @@ def test_get_activity_proxy_by_traffic_type(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected
             output.
     """
-    mocker.patch.object(client, 'query', side_effect=[raw_response] * 5)
+    mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
         "limit": 5,
         "from": 1662015255000,
@@ -404,7 +404,7 @@ def test_get_activity_ip_by_traffic_type(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected
             output.
     """
-    mocker.patch.object(client, 'query', side_effect=[raw_response] * 5)
+    mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
         "limit": 5,
         "from": 1662015255000,
@@ -446,7 +446,7 @@ def test_get_activity_firewall_by_traffic_type(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected
             output.
     """
-    mocker.patch.object(client, 'query', side_effect=[raw_response] * 5)
+    mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
         "limit": 5,
         "from": 1662015255000,
@@ -488,7 +488,7 @@ def test_get_activity_amp_by_traffic_type(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected
             output.
     """
-    mocker.patch.object(client, 'query', side_effect=[raw_response] * 5)
+    mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
         "limit": 5,
         "from": 1662015255000,
@@ -530,7 +530,7 @@ def test_get_activity_intrusion_by_traffic_type(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected
             output.
     """
-    mocker.patch.object(client, 'query', side_effect=[raw_response] * 5)
+    mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
         "limit": 5,
         "from": 1662015255000,
@@ -571,7 +571,7 @@ def test_get_summary_list_command(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected
             output.
     """
-    mocker.patch.object(client, 'query', side_effect=[raw_response] * 5)
+    mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
         "limit": 5,
         "from": 1662015255000,
@@ -606,7 +606,7 @@ def test_get_category_summary_list(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected
             output.
     """
-    mocker.patch.object(client, 'query', side_effect=[raw_response] * 5)
+    mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
         "limit": 5,
         "from": 1662015255000,
@@ -645,7 +645,7 @@ def test_get_destination_summary_list(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected
             output.
     """
-    mocker.patch.object(client, 'query', side_effect=[raw_response] * 5)
+    mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
         "limit": 5,
         "from": 1662015255000,
@@ -684,7 +684,7 @@ def test_get_intrusion_rule_summary_list(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected
             output.
     """
-    mocker.patch.object(client, 'query', side_effect=[raw_response] * 5)
+    mocker.patch.object(client, 'query_cisco_umbrella_api', side_effect=[raw_response] * 5)
     args = {
         "limit": 5,
         "from": 1662015255000,
@@ -744,7 +744,7 @@ def test_test_module(requests_mock, raw_response):
     from CiscoUmbrellaReporting import test_module
     post_req_url = client.token_url
     requests_mock.post(post_req_url, json={'access_token': '12345'})
-    access_token = client.access_token()
+    access_token = client.get_access_token()
     get_req_url = f'{client._base_url}/v2/organizations' \
                   f'/{client.organisation_id}/activity'
     headers = {'Authorization': f'Bearer {access_token}'}
@@ -781,13 +781,13 @@ def test_access_token(requests_mock):
 
     requests_mock.post(req_url, json={'access_token': '12345'})
 
-    response = client.access_token()
+    response = client.get_access_token()
     assert response == "12345"
     with pytest.raises(DemistoException):
         requests_mock.post(req_url, status_code=401)
-        client.access_token()
+        client.get_access_token()
         requests_mock.post(req_url, status_code=400)
-        client.access_token()
+        client.get_access_token()
 
 
 def test_check_valid_indicator_value():
