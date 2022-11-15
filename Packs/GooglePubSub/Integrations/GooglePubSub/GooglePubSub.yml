@@ -17,6 +17,7 @@ configuration:
   type: 13
   section: Connect
 - display: Service account private key file contents (JSON).
+  additionalinfo: See the Help tab for details on creating a Service Account file.
   hidden: false
   name: service_account_json
   required: true
