@@ -1,6 +1,7 @@
 from Zoom_IAM import Client
-
 from IAMApiModule import *
+from freezegun import freeze_time
+import Zoom_IAM
 
 APP_USER_OUTPUT = {
     "user_id": "mock_id",
@@ -35,8 +36,11 @@ DISABLED_USER_APP_DATA = IAMUserAppData("mock_id", "mock_user_name", is_active=F
 ENABLED_USER_APP_DATA = IAMUserAppData("mock_id", "mock_user_name", is_active=True, app_data=APP_ENABLED_USER_OUTPUT)
 
 
-def mock_client():
-    client = Client(base_url='https://test.com', api_key="mockkey", api_secret="mocksecret")
+def mock_client_ouath(mocker):
+
+    mocker.patch.object(Client, 'get_oauth_token')
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
     return client
 
 
@@ -44,6 +48,70 @@ def get_outputs_from_user_profile(user_profile):
     entry_context = user_profile.to_entry()
     outputs = entry_context.get('Contents')
     return outputs
+
+
+def test_generate_oauth_token(mocker):
+    """
+        Given -
+           client
+        When -
+            generating a token
+        Then -
+            Validate the parameters and the result are as expected
+    """
+    client = mock_client_ouath(mocker)
+
+    m = mocker.patch.object(client, '_http_request', return_value={'access_token': 'token'})
+    res = client.generate_oauth_token()
+    assert m.call_args[1]['method'] == 'POST'
+    assert m.call_args[1]['full_url'] == 'https://zoom.us/oauth/token'
+    assert m.call_args[1]['params'] == {'account_id': 'mockaccount',
+                                        'grant_type': 'account_credentials'}
+    assert m.call_args[1]['auth'] == ('mockclient', 'mocksecret')
+
+    assert res == 'token'
+
+
+@freeze_time("1988-03-03T11:00:00")
+def test_get_oauth_token__while_old_token_still_valid(mocker):
+    """
+        Given -
+           client
+        When -
+            asking for a token while the previous token is still valid
+        Then -
+            Validate that a new token will not be generated, and the old token will be returned
+            Validate that the old token is the one
+            stored in the get_integration_context dict.
+    """
+    mocker.patch.object(Zoom_IAM, "get_integration_context",
+                        return_value={"generation_time": "1988-03-03T10:50:00",
+                                      'oauth_token': "old token"})
+    generate_token_mock = mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    assert not generate_token_mock.called
+    assert client.access_token == "old token"
+
+
+def test_get_oauth_token___old_token_expired(mocker):
+    """
+        Given -
+           client
+        When -
+            asking for a token when the previous token was expired
+        Then -
+            Validate that a func that creates a new token has been called
+            Validate that a new token was stored in the get_integration_context dict.
+    """
+    mocker.patch.object(Zoom_IAM, "get_integration_context",
+                        return_value={"generation_time": "1988-03-03T10:00:00",
+                                      'oauth_token': "old token"})
+    generate_token_mock = mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    assert generate_token_mock.called
+    assert client.access_token != "old token"
 
 
 def test_disable_user_command__allow_disable(mocker):
@@ -58,7 +126,7 @@ def test_disable_user_command__allow_disable(mocker):
     Then:
         - Ensure the user is disabled at the end of the command execution.
     """
-    client = mock_client()
+    client = mock_client_ouath(mocker)
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com', 'givenname': 'mock_first_name'},
             'allow-disable': 'true'}
     mocker.patch.object(client, 'get_user', return_value=USER_APP_DATA)
@@ -87,7 +155,7 @@ def test_disable_user_command__non_existing_user(mocker):
     Then:
         - Ensure the command is considered successful and skipped
     """
-    client = mock_client()
+    client = mock_client_ouath(mocker)
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
 
     mocker.patch.object(client, 'get_user', return_value=None)
@@ -112,7 +180,7 @@ def test_enable_user_command__allow_enable(mocker):
     Then:
         - Ensure the user is enabled at the end of the command execution.
     """
-    client = mock_client()
+    client = mock_client_ouath(mocker)
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com', 'givenname': 'mock_first_name'},
             'allow-enable': 'true'}
     mocker.patch.object(client, 'get_user', return_value=USER_APP_DATA2)
@@ -141,7 +209,7 @@ def test_enable_user_command__non_existing_user(mocker):
     Then:
         - Ensure the command is considered successful and skipped
     """
-    client = mock_client()
+    client = mock_client_ouath(mocker)
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
 
     mocker.patch.object(client, 'get_user', return_value=None)

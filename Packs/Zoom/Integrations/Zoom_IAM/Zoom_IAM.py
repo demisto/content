@@ -28,8 +28,8 @@ class Client(BaseClient):
     def __init__(
         self,
         base_url: str,
-        api_key: str | None,
-        api_secret: str | None,
+        api_key: str | None = None,
+        api_secret: str | None = None,
         account_id: str | None = None,
         client_id: str | None = None,
         client_secret: str | None = None,
@@ -44,11 +44,11 @@ class Client(BaseClient):
         self.client_secret = client_secret
         is_jwt = api_key and api_secret and not (client_id and client_secret and account_id)
         if is_jwt:
-            self.access_token = get_jwt(api_key, api_secret)
+            self.access_token = get_jwt_token(api_key, api_secret)  # type: ignore[arg-type]
         else:
-            self.access_token = self.get_token()
+            self.access_token = self.get_oauth_token()
 
-    def generate_token(self):
+    def generate_oauth_token(self):
         """
     Generate an OAuth Access token using the app credentials (AKA: client id and client secret) and the account id
 
@@ -59,7 +59,7 @@ class Client(BaseClient):
                                                "grant_type": "account_credentials"}, auth=(self.client_id, self.client_secret))
         return token_res.get('access_token')
 
-    def get_token(self, force_gen_new_token=False):
+    def get_oauth_token(self, force_gen_new_token=False):
         """
             Retrieves the token from the server if it's expired and updates the global HEADERS to include it
 
@@ -73,7 +73,7 @@ class Client(BaseClient):
         # ctx["generation_time"]
         if not ctx or not ctx.get('generation_time', force_gen_new_token):
             # new token is needed
-            auth_token = self.generate_token()
+            oauth_token = self.generate_oauth_token()
         else:
             generation_time = dateparser.parse(ctx.get('generation_time'))
             if generation_time and now:
@@ -82,14 +82,14 @@ class Client(BaseClient):
                 time_passed = TOKEN_LIFE_TIME
             if time_passed < TOKEN_LIFE_TIME:
                 # token hasn't expired
-                return ctx.get('auth_token')
+                return ctx.get('oauth_token')
             else:
                 # token expired
-                auth_token = self.generate_token()
+                oauth_token = self.generate_oauth_token()
 
-        ctx.update({'auth_token': auth_token, 'generation_time': now.strftime("%Y-%m-%dT%H:%M:%S")})
+        ctx.update({'oauth_token': oauth_token, 'generation_time': now.strftime("%Y-%m-%dT%H:%M:%S")})
         set_integration_context(ctx)
-        return auth_token
+        return oauth_token
 
     def test(self):
         """ Tests connectivity with the application. """
@@ -238,7 +238,7 @@ class Client(BaseClient):
 '''HELPER FUNCTIONS'''
 
 
-def get_jwt(api_key: str, api_secret: str) -> str:
+def get_jwt_token(api_key: str, api_secret: str) -> str:
     """
     Encode the JWT token given the api key and secret
     """
