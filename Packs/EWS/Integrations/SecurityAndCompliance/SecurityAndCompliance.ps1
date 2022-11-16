@@ -18,30 +18,6 @@ Import-Module ExchangeOnlineManagement
 
 #### HELPER FUNCTIONS ####
 
-function UpdateIntegrationContext([OAuth2DeviceCodeClient]$client){
-    $integration_context = @{
-        "DeviceCode" = $client.device_code
-        "DeviceCodeExpiresIn" = $client.device_code_expires_in
-        "DeviceCodeCreationTime" = $client.device_code_creation_time
-        "AccessToken" = $client.access_token
-        "RefreshToken" = $client.refresh_token
-        "AccessTokenExpiresIn" = $client.access_token_expires_in
-        "AccessTokenCreationTime" = $client.access_token_creation_time
-    }
-
-    SetIntegrationContext $integration_context
-    <#
-        .DESCRIPTION
-        Update integration context from OAuth2DeviceCodeClient client
-
-        .EXAMPLE
-        UpdateIntegrationContext $client
-
-        .PARAMETER search_name
-        OAuth2DeviceCodeClient client.
-    #>
-}
-
 function ParseSuccessResults([string]$success_results, [int]$limit, [bool]$all_results) {
     $parsed_success_results = New-Object System.Collections.Generic.List[System.Object]
     if ($success_results) {
@@ -265,30 +241,20 @@ function ParseSearchActionToEntryContext([psobject]$search_action, [int]$limit =
 
 class SecurityAndComplianceClient {
     [string]$url
-    [System.Security.Cryptography.X509Certificates.X509Certificate2]$certificate
-    [string]$organization
     [string]$app_id
-    [SecureString]$password
+    [string]$organization
+    [System.Security.Cryptography.X509Certificates.X509Certificate2]$certificate
+    [SecureString]$delegated_password
+    [string]$upn
 
-    SecurityAndComplianceClient(
-            [string]$url,
-            [string]$app_id,
-            [string]$organization,
-            [string]$certificate,
-            [SecureString]$password){
+    SecurityAndComplianceClient([string]$url, [string]$app_id, [string]$organization, [System.Security.Cryptography.X509Certificates.X509Certificate2]$certificate,
+                                [SecureString]$delegated_password, [string]$upn) {
         $this.url = $url
-        try
-        {
-            $ByteArray = [System.Convert]::FromBase64String($certificate)
-        }
-        catch
-        {
-            throw "Could not decode the certificate. Try to re-enter it"
-        }
-        $this.certificate = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($ByteArray, $password)
-
-        $this.organization = $organization
         $this.app_id = $app_id
+        $this.organization = $organization
+        $this.certificate = $certificate
+        $this.delegated_password = $delegated_password
+        $this.upn = $upn
     }
 
     CreateSession(){
@@ -297,7 +263,12 @@ class SecurityAndComplianceClient {
             "Organization" = $this.organization
             "Certificate" = $this.certificate
         }
-        Connect-IPPSSession @cmd_params -ShowBanner:$false -WarningAction:SilentlyContinue | Out-Null
+        Connect-IPPSSession @cmd_params -WarningAction:SilentlyContinue | Out-Null
+    }
+
+    CreateDelegatedSession(){
+        $delegated_cred = New-Object System.Management.Automation.PSCredential ($this.upn, $this.delegated_password)
+        Connect-IPPSSession -Credential $delegated_cred -WarningAction:SilentlyContinue | Out-Null
     }
 
     DisconnectSession(){
@@ -534,7 +505,7 @@ class SecurityAndComplianceClient {
 
     StartSearch([string]$search_name) {
         # Establish session to remote
-        $this.CreateSession()
+        $this.CreateDelegatedSession()
         # Execute command
         Start-ComplianceSearch -Identity $search_name -Confirm:$false -Force:$true
 
@@ -582,7 +553,7 @@ class SecurityAndComplianceClient {
 
     [psobject]NewSearchAction([string]$search_name, [string]$action, [string]$purge_type) {
         # Establish session to remote
-        $this.CreateSession()
+        $this.CreateDelegatedSession()
         # Execute command
         $cmd_params = @{
             "SearchName" = $search_name
@@ -684,7 +655,7 @@ class SecurityAndComplianceClient {
 
     [psobject]GetSearchAction([string]$search_action_name) {
         # Establish session to remote
-        $this.CreateSession()
+        $this.CreateDelegatedSession()
 
         # Execute command
         $response = Get-ComplianceSearchAction -Identity $search_action_name
@@ -942,7 +913,8 @@ function ListSearchActionsCommand([SecurityAndComplianceClient]$client, [hashtab
 #### INTEGRATION COMMANDS MANAGER ####
 
 function Main {
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", Scope='Function')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '')]
     $command = $Demisto.GetCommand()
     $command_arguments = $Demisto.Args()
     $integration_params = $Demisto.Params()
@@ -950,18 +922,35 @@ function Main {
     try {
         $Demisto.Debug("Command being called is $Command")
 
-        if ($integration_params.password.password) {
-            $password = ConvertTo-SecureString $integration_params.password.password -AsPlainText -Force
+        if ($integration_params.certificate.password) {
+            $certificate_password = ConvertTo-SecureString $integration_params.certificate.password -AsPlainText -Force
         } else {
-            $password = $null
+            $certificate_password = $null
+        }
+
+        if ($integration_params.delegated_password) {
+            $delegated_password = ConvertTo-SecureString $integration_params.delegated_password.password -AsPlainText -Force
+        } else {
+            $delegated_password = $null
+        }
+
+        try
+        {
+            $ByteArray = [System.Convert]::FromBase64String($integration_params.certificate.credentials.sshkey)
+            $certificate = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($ByteArray, $certificate_password)
+        }
+        catch
+        {
+            throw "Could not decode the certificate. Try to re-enter it"
         }
 
         $cs_client = [SecurityAndComplianceClient]::new(
             $integration_params.url,
             $integration_params.app_id,
             $integration_params.organization,
-            $integration_params.certificate.password,
-            $password
+            $certificate,
+            $delegated_password,
+            $integration_params.delegated_password.identifier
         )
 
         # Executing command
@@ -1022,9 +1011,6 @@ Error: $($_.Exception.Message)")
         } else {
             ReturnError $_.Exception.Message
         }
-    } finally {
-        # Always disconnect the session, even if no sessions are available.
-        $cs_client.DisconnectSession()
     }
 }
 
