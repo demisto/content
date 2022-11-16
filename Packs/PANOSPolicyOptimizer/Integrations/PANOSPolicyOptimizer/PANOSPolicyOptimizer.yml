@@ -107,11 +107,11 @@ script:
       description: Whether to get pre-rules, post-rules or both. 'pre' for pre rules, 'post' for post-rules, only for panorama instances.
       isArray: false
       name: position
-      defaultValue: 'any'
+      defaultValue: 'both'
       predefined:
       - pre
       - post
-      - any
+      - both
       required: false
       secret: false
     - default: false

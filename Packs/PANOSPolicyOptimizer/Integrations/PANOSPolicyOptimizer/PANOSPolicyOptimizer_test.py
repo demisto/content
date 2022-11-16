@@ -149,7 +149,7 @@ def test_extract_csrf():
            '422JE5PO1WARA1I91CB5FRS99UQ65RF31P9Y3L4T'  # noqa
 
 
-@pytest.mark.parametrize("position, num_of_rules", [('any', 3), ('pre', 2), ('post', 1)])
+@pytest.mark.parametrize("position, num_of_rules", [('both', 3), ('pre', 2), ('post', 1)])
 def test_get_unused_rules(mocker, position, num_of_rules):
     """
 

@@ -380,13 +380,15 @@ def policy_optimizer_get_rules_command(client: Client, args: dict) -> CommandRes
     position = position if client.is_cms_selected else 'main'  # firewall instance only has position main
     rules = []
 
-    if position == 'any':
+    if position == 'both':
         post_raw, post_rules = get_unused_rules_by_position(client, 'post', exclude, rule_type, usage, timeframe)
         pre_raw, pre_rules = get_unused_rules_by_position(client, 'pre', exclude, rule_type, usage, timeframe)
         raw_response = {'post': post_raw,
                         'pre': pre_raw}
         rules.extend(post_rules)
         rules.extend(pre_rules)
+        print('here')
+        print(rules)
     else:
         raw_response, rules = get_unused_rules_by_position(client, position, exclude, rule_type, usage, timeframe)
 
