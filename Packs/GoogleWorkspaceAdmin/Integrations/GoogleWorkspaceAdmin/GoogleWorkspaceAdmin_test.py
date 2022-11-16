@@ -1,17 +1,11 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-
 import json
 import io
+import pytest
+from GoogleWorkspaceAdmin import Client
+import demistomock as demisto
+
+BASE_URL = 'https://example.com/'
+OUTPUT_PREFIX = 'Google'  # TODO Ask if we should keep this
 
 
 def util_load_json(path):
@@ -19,24 +13,102 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
+def create_test_client(mocker):
+    mocker.patch('GoogleWorkspaceAdmin.Client._init_credentials', return_value=None)
+    return Client(base_url=BASE_URL, verify=False, proxy=False, customer_id='id', service_account_json={})
 
-    Checks the output of the command function with the expected output.
 
-    No mock is needed here because the say_hello_command does not call
-    any external API.
+def test_mobile_device_action_exception(mocker):
     """
-    from BaseIntegration import Client, baseintegration_dummy_command
+    Given:
+        - 
+    When:
+        - 
+    Then:
+        - 
+    """
+    from GoogleWorkspaceAdmin import google_mobile_device_action_command
+    from CommonServerPython import CommandResults
+    expected_command_result = CommandResults(
+        outputs_prefix=f'{OUTPUT_PREFIX}.mobileAction',
+        readable_output='Failure',
+        outputs={'Response': 'Failure'},
+    )
+    demisto_mocker = mocker.patch.object(demisto, 'debug')
+    client = create_test_client(mocker=mocker)
+    command_result = google_mobile_device_action_command(client=client, resource_id='nothing', action='wrong_action')
+    assert 'Unsupported argument value' and 'action' in demisto_mocker.call_args[0][0]
+    assert command_result.to_context() == expected_command_result.to_context()
 
-    client = Client(base_url='some_mock_url', verify=False)
-    args = {
-        'dummy': 'this is a dummy response'
-    }
-    response = baseintegration_dummy_command(client, args)
 
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
+def test_mobile_device_action(mocker):
+    """
+    Given:
+        - 
+    When:
+        - 
+    Then:
+        - 
+    """
+    from GoogleWorkspaceAdmin import google_mobile_device_action_command
+    from CommonServerPython import CommandResults
+    expected_command_result = CommandResults(
+        outputs_prefix=f'{OUTPUT_PREFIX}.mobileAction',
+        readable_output='Success',
+        outputs={'Response': 'Success'},
+    )
+    client = create_test_client(mocker=mocker)
+    mocker.patch.object(client, 'google_mobile_device_action_request', return_value='nothing')
+    command_result = google_mobile_device_action_command(client=client, resource_id='nothing', action='nothing')
+    assert command_result.to_context() == expected_command_result.to_context()
 
-    assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
+
+def test_chromeos_device_action_exception(mocker):
+    """
+    Given:
+        - 
+    When:
+        - 
+    Then:
+        - 
+    """
+    from GoogleWorkspaceAdmin import google_chromeos_device_action_command
+    from CommonServerPython import CommandResults
+    expected_command_result = CommandResults(
+        outputs_prefix=f'{OUTPUT_PREFIX}.chromeOSAction',
+        readable_output='Failure',
+        outputs={'Response': 'Failure'},
+    )
+    demisto_mocker = mocker.patch.object(demisto, 'debug')
+    client = create_test_client(mocker=mocker)
+    command_result = google_chromeos_device_action_command(client=client, resource_id='nothing',
+                                                           deprovision_reason='wrong_reason', action='deprovision')
+    assert 'Unsupported argument value' and 'deprovision_reason' in demisto_mocker.call_args[0][0]
+    assert command_result.to_context() == expected_command_result.to_context()
+
+    command_result = google_chromeos_device_action_command(client=client, resource_id='nothing', action='wrong_action')
+    assert 'Unsupported argument value' and 'action' in demisto_mocker.call_args[0][0]
+    assert command_result.to_context() == expected_command_result.to_context()
+
+
+def test_chromeos_device_action(mocker):
+    """
+    Given:
+        - 
+    When:
+        - 
+    Then:
+        - 
+    """
+    from GoogleWorkspaceAdmin import google_chromeos_device_action_command
+    from CommonServerPython import CommandResults
+    expected_command_result = CommandResults(
+        outputs_prefix=f'{OUTPUT_PREFIX}.chromeOSAction',
+        readable_output='Success',
+        outputs={'Response': 'Success'},
+    )
+    client = create_test_client(mocker=mocker)
+    mocker.patch.object(client, 'google_chromeos_device_action_request', return_value='nothing')
+    command_result = google_chromeos_device_action_command(client=client, resource_id='nothing', deprovision_reason='nothing',
+                                                           action='nothing')
+    assert command_result.to_context() == expected_command_result.to_context()

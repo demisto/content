@@ -227,10 +227,6 @@ script:
     - name: google-chromeosdevice-action
       description: ""
       arguments:
-        - name: customerid
-          description: ""
-          required: false
-          isArray: false
         - name: resourceid
           description: ""
           required: false

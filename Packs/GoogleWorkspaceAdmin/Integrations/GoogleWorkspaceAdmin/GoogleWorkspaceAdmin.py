@@ -11,6 +11,13 @@ from enum import Enum
 ''' CONSTANTS '''
 BASE_URL = 'https://admin.googleapis.com/'
 OUTPUT_PREFIX = 'Google'
+INTEGRATION_NAME = 'Google Workspace Admin'
+
+CHROMEOS_DEVICE_ACTION = ['deprovision', 'disable', 'reenable', 'pre_provisioned_disable', 'pre_provisioned_reenable']
+CHROMEOS_DEPROVISION_REASON = ['different_model_replacement', 'retiring_device', 'same_model_replacement', 'upgrade_transfer']
+
+MOBILE_DEVICE_ACTION = ['admin_remote_wipe', 'admin_account_wipe', 'approve',
+                        'block', 'cancel_remote_wipe_then_activate', 'cancel_remote_wipe_then_block']
 
 
 class Devices(Enum):
@@ -24,13 +31,12 @@ requests.packages.urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def __init__(self, base_url: str, verify: bool, proxy: bool, customer_id: str, service_account_json: Dict[str, str],
-                 auth: tuple = None):
+    def __init__(self, base_url: str, verify: bool, proxy: bool, customer_id: str, service_account_json: Dict[str, str]):
         self._headers = {'Content-Type': 'application/json'}
         self._customer_id = customer_id
         self._service_account_json = service_account_json
         self._credentials = self._init_credentials()
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=self._headers, auth=auth)
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=self._headers)
 
     def _init_credentials(self) -> service_account.Credentials:
         try:
@@ -81,15 +87,17 @@ class Client(BaseClient):
                 request = google.auth.transport.requests.Request()
             except google.auth.exceptions.TransportError:
                 raise DemistoException('An error has occurred while requesting a request adapter')
-
             self._credentials.refresh(request)
-            if(not self._credentials.valid):
-                request.session.close()
-                raise DemistoException('Could not refresh token')
             request.session.close()
+
+        if(not self._credentials.valid):
+            raise DemistoException('Could not refresh token')
         return self._credentials.token
 
     def google_mobile_device_action_request(self, resource_id: str, action: str):
+        if action not in MOBILE_DEVICE_ACTION:
+            raise DemistoException(
+                f'Unsupported argument value {action if action else "of empty string"} for action.')
         json_body = {'action': action}
         scopes = ['https://www.googleapis.com/auth/admin.directory.device.mobile.action']
         token = self._get_oauth_token(scopes=scopes)
@@ -115,10 +123,17 @@ class Client(BaseClient):
 
     def google_chromeos_device_action_request(self, resource_id: str, action: str, deprovision_reason: str = ''):
         json_body = {'action': action}
-        if action == 'deprovision':
+        if action not in CHROMEOS_DEVICE_ACTION:
+            raise DemistoException(
+                f'Unsupported argument value {action if action else "of empty string"} for action.')
+        elif action == 'deprovision':
             if not deprovision_reason:  # This means the string is empty
-                raise DemistoException('A deprovision reason is required if the action is deprovision')
+                raise DemistoException('A reason is required if the action is deprovision')
+            elif deprovision_reason not in CHROMEOS_DEPROVISION_REASON:
+                raise DemistoException(
+                    f'Unsupported argument value {deprovision_reason} for deprovision_reason.')
             json_body['deprovisionReason'] = deprovision_reason
+
         scopes = ['https://www.googleapis.com/auth/admin.directory.device.chromeos']
         token = self._get_oauth_token(scopes=scopes)
         headers = self._headers | {'Authorization': f'Bearer {token}'}
@@ -150,22 +165,15 @@ def google_mobile_device_action_command(client: Client, resource_id: str, action
         # request as failure
         client.google_mobile_device_action_request(resource_id, action)
     except DemistoException as e:
-        demisto.debug(str(e))
-        if 'Error in API call' in str(e):
-            readable_output = 'Failure'
-        else:
-            raise e
+        demisto.debug(f'An error has occurred when running the command:\n{str(e)}')
+        readable_output = 'Failure'
+
     command_results = CommandResults(
-        outputs_prefix=f'{OUTPUT_PREFIX}.MobileDeviceAction',
+        outputs_prefix=f'{OUTPUT_PREFIX}.mobileAction',
         readable_output=readable_output,
         outputs={'Response': readable_output},
     )
     return command_results
-
-
-def chromeos_device_list_to_context_data(response: dict) -> dict:
-    # TODO Should I add the nextPageToken?
-    return {'chromeosListObjects': response.get('chromeosdevices')}
 
 
 def mobile_device_list_to_context_data(response: dict) -> dict:
@@ -184,6 +192,20 @@ def device_list_to_context_data(response: dict, device_list_type: Devices) -> di
     return context_data
 
 
+def mobile_device_list_to_human_readable(response: dict) -> List[dict]:
+    human_readable: List[dict] = []
+    for mobile_device in response.get('mobiledevices', []):
+        human_readable.append({'Serial Number': mobile_device.get('deviceId'),
+                               'User Names': mobile_device.get('name'),
+                               'Model Name': mobile_device.get('model'),
+                               'OS': mobile_device.get('os'),
+                               'Type': mobile_device.get('type'),
+                               'Status': mobile_device.get('status')
+                               })
+
+    return human_readable
+
+
 def google_mobile_device_list_command(client: Client, projection: str | None = None, query: str | None = None,
                                       order_by: str | None = None, sort_order: str | None = None,
                                       limit: str | None = None, page_token: str | None = None) -> CommandResults:
@@ -191,9 +213,13 @@ def google_mobile_device_list_command(client: Client, projection: str | None = N
                                                         sort_order=sort_order, page_token=page_token,
                                                         max_results=arg_to_number(limit))
     context_data = device_list_to_context_data(response=response, device_list_type=Devices.MOBILE_DEVICE)
+    human_readable = mobile_device_list_to_human_readable(response=response)
+    markdown = tableToMarkdown(f'{INTEGRATION_NAME} - Mobile Devices List', human_readable,
+                               headers=['Serial Number', 'User Names', 'Model Name',
+                                        'OS', 'Type', 'Status'])
     command_results = CommandResults(
         outputs_prefix=f'{OUTPUT_PREFIX}.mobileEvent',
-        readable_output='Data has been returned',
+        readable_output=markdown,
         outputs=context_data,
         raw_response=response,
     )
@@ -201,7 +227,7 @@ def google_mobile_device_list_command(client: Client, projection: str | None = N
 
 
 def google_chromeos_device_action_command(client: Client, resource_id: str, action: str,
-                                          deprovision_reason: str) -> CommandResults:
+                                          deprovision_reason: str = '') -> CommandResults:
     readable_output = 'Success'
     try:
         # We want to catch the exception that is thrown from a bad API call, so we can mark this
@@ -209,17 +235,32 @@ def google_chromeos_device_action_command(client: Client, resource_id: str, acti
         client.google_chromeos_device_action_request(
             resource_id=resource_id, action=action, deprovision_reason=deprovision_reason)
     except DemistoException as e:
-        demisto.debug(str(e))
-        if 'Error in API call' in str(e):
-            readable_output = 'Failure'
-        else:
-            raise e
+        demisto.debug(f'An error has occurred when running the command:\n{str(e)}')
+        readable_output = 'Failure'
     command_results = CommandResults(
-        outputs_prefix=f'{OUTPUT_PREFIX}.ChromeOSAction',
+        outputs_prefix=f'{OUTPUT_PREFIX}.chromeOSAction',
         readable_output=readable_output,
         outputs={'Response': readable_output},
     )
     return command_results
+
+
+def chromeos_device_list_to_context_data(response: dict) -> dict:
+    # TODO Should I add the nextPageToken?
+    return {'chromeosListObjects': response.get('chromeosdevices')}
+
+
+def chromeos_device_list_to_human_readable(response: dict) -> List[dict]:
+    human_readable: List[dict] = []
+    for mobile_device in response.get('chromeosdevices', []):
+        human_readable.append({'Serial Number': mobile_device.get('serialNumber'),
+                               'User Name': mobile_device.get('annotatedUser'),
+                               'Model': mobile_device.get('model'),
+                               'OS': mobile_device.get('osVersion'),
+                               'Status': mobile_device.get('status')
+                               })
+
+    return human_readable
 
 
 def google_chromeos_device_list_command(client: Client, projection: str | None = None, query: str | None = None,
@@ -230,10 +271,13 @@ def google_chromeos_device_list_command(client: Client, projection: str | None =
                                                           sort_order=sort_order, page_token=page_token,
                                                           org_unit_path=org_unit_path, max_results=arg_to_number(limit))
     context_data = device_list_to_context_data(response=response, device_list_type=Devices.CHROMEOS_DEVICE)
-
+    human_readable = chromeos_device_list_to_human_readable(response=response)
+    markdown = tableToMarkdown(f'{INTEGRATION_NAME} - ChromeOs Devices List', human_readable,
+                               headers=['Serial Number', 'User Name', 'Model Name',
+                                        'OS', 'Status'])
     command_results = CommandResults(
         outputs_prefix=f'{OUTPUT_PREFIX}.chromeosEvent',
-        readable_output='Data has been returned',
+        readable_output=markdown,
         outputs=context_data,
         raw_response=response,
     )
@@ -262,7 +306,7 @@ def main() -> None:
         verify_certificate: bool = not params.get('insecure', False)
         proxy = params.get('proxy', False)
         client: Client = Client(base_url=BASE_URL, verify=verify_certificate, proxy=proxy,
-                                customer_id=customer_id, service_account_json=service_account_json, auth=None)
+                                customer_id=customer_id, service_account_json=service_account_json)
 
         if command == 'test-module':
             return_results(test_module(client))
