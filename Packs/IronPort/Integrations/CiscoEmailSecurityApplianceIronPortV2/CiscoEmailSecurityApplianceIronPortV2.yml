@@ -97,7 +97,7 @@ script:
   script: ""
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.8.36650
+  dockerimage: demisto/python3:3.10.8.37233
   isfetch: true
   commands:
   - name: cisco-esa-spam-quarantine-message-search
@@ -1147,7 +1147,7 @@ script:
       required: false
       isArray: false
     - name: order_dir
-      description: The report sort order direction. 
+      description: The report sort order direction.
       required: false
       isArray: false
       auto: PREDEFINED
