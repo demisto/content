@@ -1,6 +1,5 @@
-The Cisco Email Security Appliance is an email security gateway product. It is designed to detect and block a wide variety of email-borne threats, such as malware, spam and phishing attempts.
+The Cisco Email Security Appliance is an email security gateway product. It is designed to detect and block a wide variety of email-born threats, such as malware, spam and phishing attempts.
 This integration was integrated and tested with version 14.0 of Cisco Email Security Appliance.
-
 ## Configure Cisco ESA on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -9,18 +8,20 @@ This integration was integrated and tested with version 14.0 of Cisco Email Secu
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL | Base URL, e.g. https://XXX.eu.iphmx.com | True |
+    | Server URL | Base URL, e.g., https://XXX.eu.iphmx.com | True |
     | Username |  | True |
     | Password |  | True |
     | Maximum incidents per fetch | Default is 50. Maximum is 100. | False |
-    | First fetch timestamp | Timestamp in ISO format or number time unit,<br/>e.g. 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | False |
-    | Filter by | Filter results to fetch by message field. | False |
-    | Filter operator | Filter operator to fetch by message field. | False |
-    | Filter value | Filter value to fetch by message field. | False |
-    | Recipient filter operator | Recipient filter operator to fetch by message field. | False |
-    | Recipient filter value | Filter value to fetch by message field. | False |
-    | Use system proxy |  | False |
-    | Trust any certificate |  | False |
+    | First fetch timestamp | Timestamp in ISO format or number time unit,<br/>e.g., 2022-01-01T00:00:00000Z, 12 hours, 7 days, 3 months, now. | False |
+    | Filter by | The message field by which to fetch results. | False |
+    | Filter operator | The message field operator by which to fetch results. | False |
+    | Filter value | The message filter value by which to fetch results. | False |
+    | Recipient filter operator | The message recipient filter operator by which to fetch results. | False |
+    | Recipient filter value | The message recipient filter value by which to fetch results. | False |
+    | Use system proxy settings |  | False |
+    | Trust any certificate (not secure) |  | False |
+    | Incident type |  | False |
+    | Fetch incidents |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -38,16 +39,16 @@ Search messages in the spam quarantine.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_date | Start date in ISO format or &lt;number&gt; &lt;time unit&gt;,<br/>e.g. 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | Required | 
-| end_date | End date in ISO format or &lt;number&gt; &lt;time unit&gt;,<br/>e.g. 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | Required | 
-| filter_by | Filter by. Possible values are: from_address, to_address, subject. | Optional | 
-| filter_operator | Filter operator. Possible values are: contains, is, begins_with, ends_with, does_not_contain. | Optional | 
-| filter_value | The value to search for. This is a user defined value. e.g. filterValue=abc.com. | Optional | 
-| recipient_filter_operator | Recipient operator filter. Possible values are: contains, is, begins_with, ends_with, does_not_contain. | Optional | 
-| recipient_filter_value | Recipient filter. | Optional | 
-| order_by | Results order by. Possible values are: from_address, date, subject, size. | Optional | 
+| start_date | Start date in ISO format or &lt;number&gt; &lt;time unit&gt;,<br/>e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | Required | 
+| end_date | End date in ISO format or &lt;number&gt; &lt;time unit&gt;,<br/>e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | Required | 
+| filter_by | The message field by which to filter the results. Possible values are: from_address, to_address, subject. | Optional | 
+| filter_operator | Filter operator by which to filter the results. Possible values are: contains, is, begins_with, ends_with, does_not_contain. | Optional | 
+| filter_value | The value to search for. This is a user defined value. D.g., filterValue=abc.com. | Optional | 
+| recipient_filter_operator | Recipient operator filter by which to filter the results. Possible values are: contains, is, begins_with, ends_with, does_not_contain. | Optional | 
+| recipient_filter_value | Recipient filter by which to filter the results. | Optional | 
+| order_by | The attribute by which to order the data in the response. Possible values are: from_address, date, subject, size. | Optional | 
 | order_dir | Results order direction. Possible values are: asc, desc. | Optional | 
-| page | Page number of paginated results.<br/>min value: 1. | Optional | 
+| page | Page number of paginated results.<br/>Minimum value: 1. | Optional | 
 | page_size | Number of results per page. Maximum value 100. | Optional | 
 | limit | The maximum number of records to retrieve. Default is 50. | Optional | 
 
@@ -56,12 +57,12 @@ Search messages in the spam quarantine.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoESA.SpamQuarantineMessage.envelopeRecipient | String | Recipient Email address. | 
-| CiscoESA.SpamQuarantineMessage.toAddress | String | Recipient Email address. | 
+| CiscoESA.SpamQuarantineMessage.envelopeRecipient | String | Recipient email address. | 
+| CiscoESA.SpamQuarantineMessage.toAddress | String | Recipient email address. | 
 | CiscoESA.SpamQuarantineMessage.subject | String | Email subject. | 
 | CiscoESA.SpamQuarantineMessage.date | String | Email due date. | 
-| CiscoESA.SpamQuarantineMessage.fromAddress | String | Sender Email address. | 
-| CiscoESA.SpamQuarantineMessage.size | String | Email size. | 
+| CiscoESA.SpamQuarantineMessage.fromAddress | String | Sender email address. | 
+| CiscoESA.SpamQuarantineMessage.size | String | email size. | 
 | CiscoESA.SpamQuarantineMessage.mid | Number | Message ID. | 
 
 #### Command example
@@ -129,7 +130,7 @@ Get spam quarantine message details.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_id | Message IDs. | Required | 
+| message_id | Message ID. | Required | 
 
 
 #### Context Output
@@ -191,7 +192,7 @@ Release quarantine emails.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_ids | Message IDs. | Required | 
+| message_ids | A comma-separated list of message IDs. | Required | 
 
 
 #### Context Output
@@ -215,7 +216,7 @@ Delete quarantine emails.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_ids | Message IDs to delete. | Required | 
+| message_ids | A comma-separated list of message IDs to delete. | Required | 
 
 
 #### Context Output
@@ -240,13 +241,13 @@ Get spam quarantine blocklist/safelist entry.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entry_type | List entry type. Possible values are: blocklist, safelist. | Required | 
-| page | Page number of paginated results.<br/>min value: 1. | Optional | 
+| page | Page number of paginated results.<br/>Minimum value: 1. | Optional | 
 | page_size | Number of results per page. Maximum value 100. | Optional | 
 | limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| order_by | Results order by. Possible values are: recipient, sender. | Optional | 
+| order_by | The attribute by which to order the data in the response. Possible values are: recipient, sender. | Optional | 
 | order_dir | Results order direction. Possible values are: asc, desc. | Optional | 
 | view_by | View results by. Possible values are: recipient, sender. Default is recipient. | Optional | 
-| search | Search for recipients or senders in blocklist/safelist with 'contains' operator.<br/>e.g. test@test.com, test.com<br/>This is only supported for the argument view_by=recipient. | Optional | 
+| search | Search for recipients or senders in blocklist/safelist with 'contains' operator.<br/>e.g., test@test.com, test.com<br/>This is only supported for the argument view_by=recipient. | Optional | 
 
 
 #### Context Output
@@ -319,10 +320,10 @@ Add spam quarantine blocklist/safelist entry.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entry_type | List entry type. Possible values are: blocklist, safelist. | Required | 
-| view_by | Add list entry by recipient/sender.<br/>When view_by = recipient: recipient_addresses and sender_list are mandatory.<br/>When view_by = sender: sender_addresses and recipient_list are mandatory. Possible values are: recipient, sender. Default is recipient. | Optional | 
-| recipient_addresses | A comma-separated list of recipients to add. | Optional | 
+| view_by | Add list entry by recipient/sender.<br/>When view_by = recipient, recipient_addresses and sender_list are mandatory.<br/>When view_by = sender, sender_addresses and recipient_list are mandatory. Possible values are: recipient, sender. Default is recipient. | Optional | 
+| recipient_addresses | A comma-separated list of recipient addresses to add. | Optional | 
 | sender_list | A comma-separated list of senders to add. | Optional | 
-| sender_addresses | A comma-separated list of senders to add. | Optional | 
+| sender_addresses | A comma-separated list of sender addresses to add. | Optional | 
 | recipient_list | A comma-separated list of recipients to add. | Optional | 
 
 
@@ -348,11 +349,11 @@ Append spam quarantine blocklist/safelist entry.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entry_type | List entry type. Possible values are: blocklist, safelist. | Required | 
-| view_by | Append list entry by recipient/sender.<br/>When view_by = recipient: recipient_addresses and sender_list are mandatory.<br/>When view_by = sender: sender_addresses and recipient_list are mandatory. Possible values are: recipient, sender. Default is recipient. | Optional | 
+| view_by | Append list entry by recipient/sender.<br/>When view_by = recipient, recipient_addresses and sender_list are mandatory.<br/>When view_by = sender, sender_addresses and recipient_list are mandatory. Possible values are: recipient, sender. Default is recipient. | Optional | 
 | recipient_list | A comma-separated list of recipients to append. | Optional | 
 | sender_list | A comma-separated list of senders to append. | Optional | 
-| recipient_addresses | A comma-separated list of recipients to append. | Optional | 
-| sender_addresses | A comma-separated list of senders to append. | Optional | 
+| recipient_addresses | A comma-separated list of recipient addresses to append. | Optional | 
+| sender_addresses | A comma-separated list of sender addresses to append. | Optional | 
 
 
 #### Context Output
@@ -366,7 +367,7 @@ There is no context output for this command.
 
 ### cisco-esa-list-entry-edit
 ***
-Edit spam quarantine blocklist/safelist entry. Using this command will overide the existing value.
+Edit spam quarantine blocklist/safelist entry. Using this command will override the existing value.
 
 
 #### Base Command
@@ -377,11 +378,11 @@ Edit spam quarantine blocklist/safelist entry. Using this command will overide t
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entry_type | List entry type. Possible values are: blocklist, safelist. | Required | 
-| view_by | Edit list entry by recipient/sender.<br/>When view_by = recipient: recipient_addresses and sender_list are mandatory.<br/>When view_by = sender: sender_addresses and recipient_list are mandatory. Possible values are: recipient, sender. Default is recipient. | Optional | 
+| view_by | Edit list entry by recipient/sender.<br/>When view_by = recipient, recipient_addresses and sender_list are mandatory.<br/>When view_by = sender, sender_addresses and recipient_list are mandatory. Possible values are: recipient, sender. Default is recipient. | Optional | 
 | recipient_list | A comma-separated list of recipients to edit. | Optional | 
 | sender_list | A comma-separated list of senders to edit. | Optional | 
-| recipient_addresses | A comma-separated list of recipients to edit. | Optional | 
-| sender_addresses | A comma-separated list of senders to edit. | Optional | 
+| recipient_addresses | A comma-separated list of recipient addresses to edit. | Optional | 
+| sender_addresses | A comma-separated list of sender addresses to edit. | Optional | 
 
 
 #### Context Output
@@ -406,7 +407,7 @@ Delete spam quarantine blocklist/safelist entry.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entry_type | List entry type. Possible values are: blocklist, safelist. | Required | 
-| view_by | Delete list entry by recipient/sender.<br/>When view_by = recipient: recipient_list is mandatory.<br/>When view_by = sender: sender_list is mandatory. Possible values are: recipient, sender. Default is recipient. | Optional | 
+| view_by | Delete list entry by recipient/sender.<br/>When view_by = recipient, recipient_list is mandatory.<br/>When view_by = sender, sender_list is mandatory. Possible values are: recipient, sender. Default is recipient. | Optional | 
 | recipient_list | List of recipient/sender addresses to delete. | Optional | 
 | sender_list | List of recipient/sender addresses to delete. | Optional | 
 
@@ -432,9 +433,9 @@ Search tracking messages.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_date | Start date in ISO format or &lt;number&gt; &lt;time unit&gt;,<br/>e.g. 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | Required | 
-| end_date | End date in ISO format or &lt;number&gt; &lt;time unit&gt;,<br/>e.g. 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | Required | 
-| page | Page number of paginated results.<br/>min value: 1. | Optional | 
+| start_date | Start date in ISO format or &lt;number&gt; &lt;time unit&gt;,<br/>e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | Required | 
+| end_date | End date in ISO format or &lt;number&gt; &lt;time unit&gt;,<br/>e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | Required | 
+| page | Page number of paginated results.<br/>Minimum value: 1. | Optional | 
 | page_size | Number of results per page. Maximum value 100. | Optional | 
 | limit | The maximum number of records to retrieve. Default is 50. | Optional | 
 | sender_filter_operator | Sender filter operator. Possible values are: contains, is, begins_with. | Optional | 
@@ -445,17 +446,17 @@ Search tracking messages.
 | subject_filter_value | Subject filter value. | Optional | 
 | attachment_name_operator | Attachment name operator. Possible values are: contains, is, begins_with. | Optional | 
 | attachment_name_value | Attachment name value. | Optional | 
-| file_sha_256 | SHA256 must be 64 characters long and can contain only "0-9" and "a-f" symbols.<br/>e.g. e0d123e5f316bef78bfdf5a008837577e0d123e5f316bef78bfdf5a008837577. | Optional | 
-| custom_query | Custom query for cisco ESA's advanced filters.<br/>Syntax: &lt;key&gt;=&lt;value&gt;;&lt;key&gt;=&lt;value&gt;;&lt;key&gt;=&lt;value&gt;<br/>e.g.  graymail=True;message_delivered=True. | Optional | 
+| file_sha_256 | SHA256 must be 64 characters long and can contain only "0-9" and "a-f" characters.<br/>e.g. e0d123e5f316bef78bfdf5a008837577e0d123e5f316bef78bfdf5a008837577. | Optional | 
+| custom_query | Custom query for cisco ESA's advanced filters.<br/>Syntax: &lt;key&gt;=&lt;value&gt;;&lt;key&gt;=&lt;value&gt;;&lt;key&gt;=&lt;value&gt;<br/>e.g., graymail=True;message_delivered=True. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoESA.Message.hostName | String | Email Gateway Hostname. | 
-| CiscoESA.Message.friendly_from | String | Friendly formatted sender Email address. | 
-| CiscoESA.Message.isCompleteData | String | Is complete data pulled. | 
+| CiscoESA.Message.hostName | String | Email gateway hostname. | 
+| CiscoESA.Message.friendly_from | String | Friendly formatted sender email address. | 
+| CiscoESA.Message.isCompleteData | String | Whether the entire data was pulled. | 
 | CiscoESA.Message.messageStatus | String | Message delivery status. | 
 | CiscoESA.Message.recipientMap | String | Recipients list. | 
 | CiscoESA.Message.senderIp | String | Sender IP address. | 
@@ -466,14 +467,14 @@ Search tracking messages.
 | CiscoESA.Message.senderDomain | String | Domain of email message sender. | 
 | CiscoESA.Message.finalSubject | String | Extended email subject. | 
 | CiscoESA.Message.direction | String | Message direction, incoming or outgoing. | 
-| CiscoESA.Message.icid | Number | An Injection Connection ID \(ICID\) is a numerical identifier for an individual SMTP connection to the system. | 
+| CiscoESA.Message.icid | Number | An Injection Connection ID \(ICID\). A numerical identifier for an individual SMTP connection to the system. | 
 | CiscoESA.Message.replyTo | String | Email message reply to. | 
-| CiscoESA.Message.timestamp | String | Time of email message. | 
+| CiscoESA.Message.timestamp | String | Time of the email message. | 
 | CiscoESA.Message.messageID | String | Extended message ID. | 
 | CiscoESA.Message.verdictChart | String | Verdict visual chart ID. | 
-| CiscoESA.Message.recipient | String | Recipients Email addresses List. | 
-| CiscoESA.Message.sender | String | Sender Email address. | 
-| CiscoESA.Message.serialNumber | String | Cisco ESA Email Gateway serial number. | 
+| CiscoESA.Message.recipient | String | Recipients email addresses list. | 
+| CiscoESA.Message.sender | String | Sender email address. | 
+| CiscoESA.Message.serialNumber | String | Cisco ESA email gateway serial number. | 
 | CiscoESA.Message.allIcid | Number | ICIDs list. | 
 | CiscoESA.Message.sbrs | String | Sender Base Reputation Scores. | 
 
@@ -600,7 +601,7 @@ Search tracking messages.
 
 ### cisco-esa-message-details-get
 ***
-Get more details on message.
+Get message details.
 
 
 #### Base Command
@@ -610,45 +611,45 @@ Get more details on message.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| serial_number | Email Gateway serial number. | Required | 
+| serial_number | Email gateway serial number. | Required | 
 | message_ids | Message ID list. | Required | 
-| injection_connection_id | Injection Connection ID. | Optional | 
+| injection_connection_id | Injection connection ID. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoESA.Message.sdrAge | String | Sender Domain Reputation Age. | 
-| CiscoESA.Message.attachments | String | Message attachements. | 
-| CiscoESA.Message.hostName | String | Email Gateway Hostname. | 
-| CiscoESA.Message.isCompleteData | Boolean | Is complete data pulled. | 
+| CiscoESA.Message.sdrAge | String | Sender domain reputation age. | 
+| CiscoESA.Message.attachments | String | Message attachments. | 
+| CiscoESA.Message.hostName | String | Email gateway hostname. | 
+| CiscoESA.Message.isCompleteData | Boolean | Whether the entire data was pulled. | 
 | CiscoESA.Message.messageStatus | String | Message delivery status. | 
 | CiscoESA.Message.mailPolicy | String | Matched mail policy. | 
 | CiscoESA.Message.senderGroup | String | Matched sender group. | 
-| CiscoESA.Message.subject | String | Email message subject. | 
-| CiscoESA.Message.showSummaryTimeBox | Boolean | Is show summary timebox. | 
-| CiscoESA.Message.sdrCategory | String | Sender Domain Reputation Category. | 
+| CiscoESA.Message.subject | String | Subject of email message. | 
+| CiscoESA.Message.showSummaryTimeBox | Boolean | Whether to display the summary timebox. | 
+| CiscoESA.Message.sdrCategory | String | Sender domain reputation category. | 
 | CiscoESA.Message.mid | Number | Message ID. | 
 | CiscoESA.Message.sendingHostSummary.reverseDnsHostname | String | Sending host reverse DNS hostname. | 
 | CiscoESA.Message.sendingHostSummary.ipAddress | String | Sending host IP address. | 
-| CiscoESA.Message.sendingHostSummary.sbrsScore | String | Sending host Sender Base Reputation Scores. | 
+| CiscoESA.Message.sendingHostSummary.sbrsScore | String | Sending host sender base reputation scores. | 
 | CiscoESA.Message.direction | String | Message direction, incoming or outgoing. | 
-| CiscoESA.Message.smtpAuthId | String | SMTP auth ID. | 
+| CiscoESA.Message.smtpAuthId | String | SMTP authorization ID. | 
 | CiscoESA.Message.midHeader | String | Message ID header. | 
 | CiscoESA.Message.timestamp | String | Email message time. | 
-| CiscoESA.Message.showDLP | Boolean | Is DLP report available boolean. | 
+| CiscoESA.Message.showDLP | Boolean | Whether the DLP report is available. | 
 | CiscoESA.Message.messageSize | String | Email message size. | 
-| CiscoESA.Message.sdrReputation | String | Sender Domain Reputation. | 
-| CiscoESA.Message.showURL | Boolean | Is URL report available boolean. | 
-| CiscoESA.Message.recipient | String | Message recipient Email address. | 
-| CiscoESA.Message.sender | String | Message sender Email address. | 
-| CiscoESA.Message.showAMP | Boolean | Is AMP report available boolean. | 
+| CiscoESA.Message.sdrReputation | String | Sender domain reputation. | 
+| CiscoESA.Message.showURL | Boolean | Whether the URL report is available. | 
+| CiscoESA.Message.recipient | String | Message recipient email address. | 
+| CiscoESA.Message.sender | String | Message sender email address. | 
+| CiscoESA.Message.showAMP | Boolean | Whether the AMP report is available. | 
 | CiscoESA.Message.summary.timestamp | String | Event summary time. | 
 | CiscoESA.Message.summary.description | String | Event summary description | 
-| CiscoESA.Message.summary.lastEvent | Boolean | Event summary is last event boolean. | 
+| CiscoESA.Message.summary.lastEvent | Boolean | Whether this is the last summary event. | 
 | CiscoESA.Message.allIcid | Number | ICIDs list. | 
-| CiscoESA.Message.headerFrom | String | Email header from. | 
+| CiscoESA.Message.headerFrom | String | Email message header from. | 
 
 #### Command example
 ```!cisco-esa-message-details-get serial_number=test-test message_ids=1576 injection_connection_id=36859```
@@ -920,7 +921,7 @@ Get message AMP summary details.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| serial_number | Email Gateway serial number. | Required | 
+| serial_number | Email gateway serial number. | Required | 
 | message_ids | Message ID list. | Required | 
 
 
@@ -928,27 +929,27 @@ Get message AMP summary details.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoESA.AMPDetail.sdrAge | String | Sender Domain Reputation Age. | 
-| CiscoESA.AMPDetail.attachments | String | Message attachements. | 
-| CiscoESA.AMPDetail.hostName | String | Email Gateway Hostname. | 
+| CiscoESA.AMPDetail.sdrAge | String | Sender domain reputation age. | 
+| CiscoESA.AMPDetail.attachments | String | Message attachments. | 
+| CiscoESA.AMPDetail.hostName | String | Email gateway hostname. | 
 | CiscoESA.AMPDetail.direction | String | Message direction, incoming or outgoing. | 
 | CiscoESA.AMPDetail.messageStatus | String | Message delivery status. | 
 | CiscoESA.AMPDetail.senderGroup | String | Matched sender group. | 
 | CiscoESA.AMPDetail.subject | String | Email message subject. | 
-| CiscoESA.AMPDetail.sdrCategory | String | Sender Domain Reputation Category. | 
+| CiscoESA.AMPDetail.sdrCategory | String | Sender domain reputation category. | 
 | CiscoESA.AMPDetail.mid | Number | Message ID. | 
 | CiscoESA.AMPDetail.ampDetails.timestamp | String | AMP event summary details timestamp. | 
 | CiscoESA.AMPDetail.ampDetails.description | String | AMP event summary details description. | 
 | CiscoESA.AMPDetail.ampDetails.lastEvent | Boolean | AMP event summary details last event. | 
-| CiscoESA.AMPDetail.smtpAuthId | String | SMTP auth ID. | 
+| CiscoESA.AMPDetail.smtpAuthId | String | SMTP authorization ID. | 
 | CiscoESA.AMPDetail.midHeader | String | Message ID header. | 
 | CiscoESA.AMPDetail.timestamp | String | Email message time. | 
 | CiscoESA.AMPDetail.messageSize | String | Email message size. | 
-| CiscoESA.AMPDetail.sdrThreatLevels | String | Sender Domain Reputation threat levels. | 
-| CiscoESA.AMPDetail.sdrReputation | String | Sender Domain Reputation. | 
-| CiscoESA.AMPDetail.recipient | String | Message recipient Email address. | 
-| CiscoESA.AMPDetail.sender | String | Message sender Email address. | 
-| CiscoESA.AMPDetail.showAMPDetails | Boolean | Is show AMP details. | 
+| CiscoESA.AMPDetail.sdrThreatLevels | String | Sender domain reputation threat levels. | 
+| CiscoESA.AMPDetail.sdrReputation | String | Sender domain reputation. | 
+| CiscoESA.AMPDetail.recipient | String | Message recipient email address. | 
+| CiscoESA.AMPDetail.sender | String | Message sender email address. | 
+| CiscoESA.AMPDetail.showAMPDetails | Boolean | Whether to show AMP details. | 
 | CiscoESA.AMPDetail.allIcid | Number | ICIDs list. | 
 | CiscoESA.AMPDetail.headerFrom | String | Email header from. | 
 
@@ -1038,7 +1039,7 @@ Get message DLP summary details.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| serial_number | Email Gateway serial number. | Required | 
+| serial_number | Email gateway serial number. | Required | 
 | message_ids | Message ID list. | Required | 
 
 
@@ -1047,15 +1048,15 @@ Get message DLP summary details.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CiscoESA.DLPDetail.direction | String | Message direction, incoming or outgoing. | 
-| CiscoESA.DLPDetail.smtpAuthId | String | SMTP auth ID. | 
-| CiscoESA.DLPDetail.sdrAge | String | Sender Domain Reputation Age. | 
-| CiscoESA.DLPDetail.sender | String | Message sender Email address. | 
+| CiscoESA.DLPDetail.smtpAuthId | String | SMTP authorization ID. | 
+| CiscoESA.DLPDetail.sdrAge | String | Sender domain reputation age. | 
+| CiscoESA.DLPDetail.sender | String | Message sender email address. | 
 | CiscoESA.DLPDetail.midHeader | String | Message ID header. | 
 | CiscoESA.DLPDetail.timestamp | String | Email message time. | 
-| CiscoESA.DLPDetail.sdrCategory | String | Sender Domain Reputation Category. | 
-| CiscoESA.DLPDetail.hostName | String | Email Gateway Hostname. | 
+| CiscoESA.DLPDetail.sdrCategory | String | Sender domain reputation category. | 
+| CiscoESA.DLPDetail.hostName | String | Email gateway hostname. | 
 | CiscoESA.DLPDetail.mid | Number | Message ID. | 
-| CiscoESA.DLPDetail.attachments | String | Message attachements. | 
+| CiscoESA.DLPDetail.attachments | String | Message attachments. | 
 | CiscoESA.DLPDetail.messageSize | String | Email message size. | 
 | CiscoESA.DLPDetail.dlpDetails.violationSeverity | String | DLP details violation severity. | 
 | CiscoESA.DLPDetail.dlpDetails.dlpMatchedContent.messagePartMatch.classifier | String | DLP matched content classifier. | 
@@ -1064,12 +1065,12 @@ Get message DLP summary details.
 | CiscoESA.DLPDetail.dlpDetails.mid | String | DLP message ID. | 
 | CiscoESA.DLPDetail.dlpDetails.riskFactor | Number | DLP risk factor. | 
 | CiscoESA.DLPDetail.dlpDetails.dlpPolicy | String | DLP policy. | 
-| CiscoESA.DLPDetail.sdrThreatLevels | String | Sender Domain Reputation threat levels. | 
-| CiscoESA.DLPDetail.sdrReputation | String | Sender Domain Reputation. | 
+| CiscoESA.DLPDetail.sdrThreatLevels | String | Sender domain reputation threat levels. | 
+| CiscoESA.DLPDetail.sdrReputation | String | Sender domain reputation. | 
 | CiscoESA.DLPDetail.messageStatus | String | Message delivery status. | 
 | CiscoESA.DLPDetail.allIcid | Number | ICIDs list. | 
 | CiscoESA.DLPDetail.senderGroup | String | Matched sender group. | 
-| CiscoESA.DLPDetail.recipient | String | Message recipient Email address. | 
+| CiscoESA.DLPDetail.recipient | String | Message recipient email address. | 
 | CiscoESA.DLPDetail.subject | String | Email message subject. | 
 | CiscoESA.DLPDetail.headerFrom | String | Email header from. | 
 
@@ -1170,7 +1171,7 @@ Get message URL summary details.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| serial_number | Email Gateway serial number. | Required | 
+| serial_number | Email gateway serial number. | Required | 
 | message_ids | Message ID list. | Required | 
 
 
@@ -1178,26 +1179,26 @@ Get message URL summary details.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoESA.URLDetail.sdrAge | String | Sender Domain Reputation Age. | 
-| CiscoESA.URLDetail.attachments | String | Message attachements. | 
-| CiscoESA.URLDetail.showURLDetails | Boolean | Is show URL event details. | 
+| CiscoESA.URLDetail.sdrAge | String | Sender domain reputation age. | 
+| CiscoESA.URLDetail.attachments | String | Message attachments. | 
+| CiscoESA.URLDetail.showURLDetails | Boolean | Whether to show URL event details. | 
 | CiscoESA.URLDetail.urlDetails.timestamp | String | URL event details timestamp. | 
 | CiscoESA.URLDetail.urlDetails.description | String | URL event details description. | 
-| CiscoESA.URLDetail.hostName | String | Email Gateway Hostname. | 
+| CiscoESA.URLDetail.hostName | String | Email gateway hostname. | 
 | CiscoESA.URLDetail.direction | String | Message direction, incoming or outgoing. | 
 | CiscoESA.URLDetail.messageStatus | String | Message delivery status. | 
 | CiscoESA.URLDetail.senderGroup | String | Matched sender group. | 
 | CiscoESA.URLDetail.subject | String | Email message subject. | 
-| CiscoESA.URLDetail.sdrCategory | String | Sender Domain Reputation Category. | 
+| CiscoESA.URLDetail.sdrCategory | String | Sender domain reputation category. | 
 | CiscoESA.URLDetail.mid | Number | Message ID. | 
-| CiscoESA.URLDetail.smtpAuthId | String | SMTP auth ID. | 
+| CiscoESA.URLDetail.smtpAuthId | String | SMTP authorization ID. | 
 | CiscoESA.URLDetail.midHeader | String | Message ID header. | 
 | CiscoESA.URLDetail.timestamp | String | Email message time. | 
 | CiscoESA.URLDetail.messageSize | String | Email message size. | 
-| CiscoESA.URLDetail.sdrThreatLevels | String | Sender Domain Reputation threat levels. | 
-| CiscoESA.URLDetail.sdrReputation | String | Sender Domain Reputation. | 
-| CiscoESA.URLDetail.recipient | String | Message recipient Email address. | 
-| CiscoESA.URLDetail.sender | String | Message sender Email address. | 
+| CiscoESA.URLDetail.sdrThreatLevels | String | Sender domain reputation threat levels. | 
+| CiscoESA.URLDetail.sdrReputation | String | Sender domain reputation. | 
+| CiscoESA.URLDetail.recipient | String | Message recipient email address. | 
+| CiscoESA.URLDetail.sender | String | Message sender email address. | 
 | CiscoESA.URLDetail.allIcid | Number | ICIDs list. | 
 | CiscoESA.URLDetail.headerFrom | String | Email header from. | 
 
@@ -1297,8 +1298,8 @@ Get message URL summary details.
 ### cisco-esa-report-get
 ***
 Get statistics reports.
-Please note, each report type is compatible with different arguments,
-please refer to Addendum for Cisco Secure Email Gateway ("Secure Email Reporting" sheet in the file), in order to view the dedicated arguments for each report type.
+Note that each report type is compatible with different arguments.
+Refer to Addendum for Cisco Secure Email Gateway ("Secure Email Reporting" sheet in the file), to view the dedicated arguments for each report type.
 https://www.cisco.com/c/dam/en/us/td/docs/security/esa/esa14-0/api/AsyncOS-14-0-API-Addendum.xlsx
 
 
@@ -1310,13 +1311,13 @@ https://www.cisco.com/c/dam/en/us/td/docs/security/esa/esa14-0/api/AsyncOS-14-0-
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | report_type | Report Type. Possible values are: mail_incoming_traffic_summary, reporting_system, mail_vof_threat_summary, mail_vof_specific_threat_summary, mail_amp_threat_summary. Default is mail_incoming_traffic_summary. | Optional | 
-| custom_report_type | Custom report type.<br/>Specify this argument in order to get a report that does not exist in the report_type argument. | Optional | 
-| start_date | Start date in ISO format or &lt;number&gt; &lt;time unit&gt;,<br/>e.g. 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | Required | 
-| end_date | End date in ISO format or &lt;number&gt; &lt;time unit&gt;,<br/>e.g. 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | Required | 
-| order_by | Specify the attribute by which to order the data in the response. For example, orderBy=total_clean_recipients. | Optional | 
-| order_dir | The report order direction. Specify sort direction. Possible values are: asc, desc. | Optional | 
-| top | Specify the number of records with the highest values to return. | Optional | 
-| filter_value | The filter value. The value to search for. | Optional | 
+| custom_report_type | Custom report type.<br/>Specify this argument to get a report that does not exist in the report_type argument. | Optional | 
+| start_date | Start date in ISO format or &lt;number&gt; &lt;time unit&gt;,<br/>e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | Required | 
+| end_date | End date in ISO format or &lt;number&gt; &lt;time unit&gt;,<br/>e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | Required | 
+| order_by | The attribute by which to order the data in the response. For example, orderBy=total_clean_recipients. | Optional | 
+| order_dir | The report sort order direction. Possible values are: asc, desc. | Optional | 
+| top | The number of records with the highest values to return. | Optional | 
+| filter_value | The filter value to search for. | Optional | 
 | filter_by | The filter field to use. Filter the data to be retrieved according to the filter property and value. | Optional | 
 | filter_operator | The filter operator. Filter the response data based on the value specified. Possible values are: begins_with, is. | Optional | 
 
