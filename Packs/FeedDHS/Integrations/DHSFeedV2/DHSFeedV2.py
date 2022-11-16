@@ -58,8 +58,10 @@ class Client(BaseClient):
         if 'objects_types' in params:
             params['match[type]'] = params.pop('objects_types')
 
+        time_before = time.time()
         response = self._http_request('GET', f'{self._api_root}/collections/{public_collection_id}/objects/',
-                                      params=params, cert=self._cert)
+                                      params=params, cert=self._cert, timeout=180)
+        demisto.log(f'running the request took {round(time.time() - time_before)}sec')
 
         return response
 
