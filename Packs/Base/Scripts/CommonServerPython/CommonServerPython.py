@@ -27,7 +27,6 @@ from abc import abstractmethod
 from distutils.version import LooseVersion
 from threading import Lock
 from inspect import currentframe
-import pytz
 
 import demistomock as demisto
 import warnings
@@ -38,9 +37,9 @@ def __line__():
     return cf.f_back.f_lineno
 
 
-# 43 - The line offset from the beggining of the file.
+# 42 - The line offset from the beggining of the file.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 43, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 42, 'end': float('inf')},
 }
 
 
@@ -1409,7 +1408,6 @@ class SmartGetDict(dict):
     :rtype: ``SmartGetDict``
 
     """
-
     def get(self, key, default=None):
         res = dict.get(self, key)
         if res is not None:
@@ -10292,9 +10290,6 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     else:
         last_run_time = dateparser.parse(last_run_time, settings={'TIMEZONE': 'UTC'})
 
-    # # Make sure both times are timezone aware
-    now = now.replace(tzinfo=pytz.UTC)
-    last_run_time = last_run_time.replace(tzinfo=pytz.UTC)
     if look_back > 0:
         if now - last_run_time < timedelta(minutes=look_back):
             last_run_time = now - timedelta(minutes=look_back)
