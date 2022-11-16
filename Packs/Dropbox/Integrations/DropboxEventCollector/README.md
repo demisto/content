@@ -10,10 +10,10 @@ This integration was integrated and tested with version 2 of Dropbox API
     | **Parameter** | **Description** | **Required** |
     |---|---|---|
     | Server URL | The endpoint to get the logs | True |
-    | App Key | The App key | True |
-    | App Secret | The App secret | True |
+    | App Key | The App key. See the Help section for information on how to create the App key. | True |
+    | App Secret | The App secret. See the Help section for information on how to create the App secret. | True |
     | First fetch in timestamp format | First fetch in timestamp format (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
-    | The maximum number of events per fetch |  | False |
+    | The maximum number of events per fetch | | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
