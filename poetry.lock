@@ -2036,7 +2036,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-python-dateutil"
-version = "2.8.19.3"
+version = "2.8.19.2"
 description = "Typing stubs for python-dateutil"
 category = "dev"
 optional = false
@@ -2293,7 +2293,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "49c4b261b33333f06d74ae73e800ebdf0384ce764e3e0d69e534e06c0e008ea0"
+content-hash = "98950b0d03c55f1c76500598667df5d668ca94cd1a027f8202a35ae0de4a5f60"
 
 [metadata.files]
 aiohttp = [
@@ -3827,8 +3827,8 @@ types-pymysql = [
     {file = "types_PyMySQL-1.0.19.1-py3-none-any.whl", hash = "sha256:6748b3d830b9fc0299bd85ebf0f4a29de8c51f452a11fee83690ee4b26deede8"},
 ]
 types-python-dateutil = [
-    {file = "types-python-dateutil-2.8.19.3.tar.gz", hash = "sha256:a313284df5ed3fd078303262edc0efde28998cd08e5061ef1ccc0bb5fef4d2da"},
-    {file = "types_python_dateutil-2.8.19.3-py3-none-any.whl", hash = "sha256:ce6af1bdf0aca6b7dc8815a664f0e8b55da91ff7851102cf87c87178e7c8e7ec"},
+    {file = "types-python-dateutil-2.8.19.2.tar.gz", hash = "sha256:e6e32ce18f37765b08c46622287bc8d8136dc0c562d9ad5b8fd158c59963d7a7"},
+    {file = "types_python_dateutil-2.8.19.2-py3-none-any.whl", hash = "sha256:3f4dbe465e7e0c6581db11fd7a4855d1355b78712b3f292bd399cd332247e9c0"},
 ]
 types-pytz = [
     {file = "types-pytz-2022.6.0.1.tar.gz", hash = "sha256:d078196374d1277e9f9984d49373ea043cf2c64d5d5c491fbc86c258557bd46f"},
