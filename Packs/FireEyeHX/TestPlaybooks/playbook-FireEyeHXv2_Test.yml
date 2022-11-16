@@ -341,10 +341,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: fdd210d1-1767-4e2d-8c1b-05b3fbbd636d
+    taskid: 66dee5e9-d6f9-460c-8f58-05102970f617
     type: regular
     task:
-      id: fdd210d1-1767-4e2d-8c1b-05b3fbbd636d
+      id: 66dee5e9-d6f9-460c-8f58-05102970f617
       version: -1
       name: fireeye-hx-host-containment
       description: Apply containment for a specific host, so that it no longer has
@@ -354,13 +354,14 @@ tasks:
       script: FireEyeHX v2|||fireeye-hx-host-containment
       type: regular
       iscommand: true
-      brand: ""
+      brand: FireEyeHX v2
     nexttasks:
       '#none#':
       - "7"
     scriptarguments:
       agentId:
         simple: Hqb2ns3oui1fpzg0BxI1Ch
+    continueonerror: true
     separatecontext: false
     view: |-
       {
