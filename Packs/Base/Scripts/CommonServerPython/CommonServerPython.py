@@ -10302,7 +10302,7 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
 
 def get_current_time(time_zone=0):
     """
-    Gets the current time in a given timezone.
+    Gets the current time in a given timezone, as time awared datetime.
 
     :type time_zone: ``int``
     :param time_zone: The time zone offset in hours.
