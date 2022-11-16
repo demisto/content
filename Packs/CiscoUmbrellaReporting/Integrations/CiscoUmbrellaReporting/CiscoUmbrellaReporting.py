@@ -207,7 +207,7 @@ def check_valid_indicator_value(indicator_type: str,
 
     elif indicator_type == IP_PARAM:
         if not is_ip_valid(indicator_value, accept_v6_ips=True):
-            raise ValueError(f'IP "{indicator_value}" is not valid')
+            raise ValueError(f'IP "{indicator_value}" is invalid')
 
     if indicator_type == SHA256_PARAM:
         if not re.match(sha256Regex, indicator_value):
@@ -816,15 +816,21 @@ def pagination(page: Optional[int], page_size: Optional[int]):
         limit (int): Records per page.
         offset (int): The number of records to be skipped.
     """
-    if page and page <= 0:
+    if page is None:
+        page = DEFAULT_OFFSET
+    elif page <= 0:
         raise DemistoException(PAGE_NUMBER_ERROR_MSG)
-    if page_size and page_size <= 0:
+    else:
+        page = page - 1
+
+    if page_size is None:
+        page_size = DEFAULT_PAGE_SIZE
+    elif page_size <= 0:
         raise DemistoException(PAGE_SIZE_ERROR_MSG)
 
-    page = DEFAULT_OFFSET if not page else page - 1
-    page_size = DEFAULT_PAGE_SIZE if not page_size else page_size
     limit = page_size
     offset = page * page_size
+
     return limit, offset
 
 
