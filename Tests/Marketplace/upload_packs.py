@@ -1159,7 +1159,7 @@ def main():
             continue
 
         # This is commented out because we are not using the returned modified files and not skipping the
-        # packs in this phase (CIAC-3755). TODO - Will handle this in the refactor task - CIAC-3559. 
+        # packs in this phase (CIAC-3755). TODO - Will handle this in the refactor task - CIAC-3559.
         # task_status, _ = pack.filter_modified_files_by_id_set(id_set, modified_rn_files_paths, marketplace)
 
         # if not task_status:
