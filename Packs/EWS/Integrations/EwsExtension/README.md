@@ -379,7 +379,7 @@ Displays the federation trust configured for the Exchange organization.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain_controller | The domain controller identified by its fully qualified domain name (FQDN). For example, dc01.contoso.com. This argument is available only in on-premises Exchange. | Optional | 
+| domain_controller | The domain controller identified by its fully qualified domain name (FQDN). For example, dc01.example.com. This argument is available only in on-premises Exchange. | Optional | 
 | identity | The federation trust ID. If not specified, the command returns all federation trusts configured for the Exchange organization. | Optional | 
 
 
