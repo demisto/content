@@ -3,7 +3,7 @@ This integration was integrated and tested with API version 0.6 of Alicloud Log 
 
 ## Configure Alibaba Action Trail Event Collector on Cortex XSOAR
 
-1. Navigate to **Settings** > **Configurations** > **Automation & Feed Integrations**.
+1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for Alibaba Action Trail Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
