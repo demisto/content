@@ -12,7 +12,7 @@ APP_USER_OUTPUT = {
 }
 
 USER_APP_DATA = IAMUserAppData("mock_id", "mock_user_name", is_active=True, app_data=APP_USER_OUTPUT)
-USER_APP_DATA2 = IAMUserAppData("mock_id", "mock_user_name", is_active=False, app_data=APP_USER_OUTPUT)
+USER_APP_DATA_DISABLED = IAMUserAppData("mock_id", "mock_user_name", is_active=False, app_data=APP_USER_OUTPUT)
 
 APP_DISABLED_USER_OUTPUT = {
     "user_id": "mock_id",
@@ -183,7 +183,7 @@ def test_enable_user_command__allow_enable(mocker):
     client = mock_client_ouath(mocker)
     args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com', 'givenname': 'mock_first_name'},
             'allow-enable': 'true'}
-    mocker.patch.object(client, 'get_user', return_value=USER_APP_DATA2)
+    mocker.patch.object(client, 'get_user', return_value=USER_APP_DATA_DISABLED)
     mocker.patch.object(client, 'enable_user', return_value=ENABLED_USER_APP_DATA)
 
     user_profile = IAMCommand().enable_user(client, args)

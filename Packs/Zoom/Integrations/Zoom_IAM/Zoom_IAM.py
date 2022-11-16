@@ -44,8 +44,10 @@ class Client(BaseClient):
         self.client_secret = client_secret
         is_jwt = api_key and api_secret and not (client_id and client_secret and account_id)
         if is_jwt:
+            # the user has chosen to use the JWT authentication method (deprecated)
             self.access_token = get_jwt_token(api_key, api_secret)  # type: ignore[arg-type]
         else:
+            # the user has chosen to use the OAUTH authentication method.
             self.access_token = self.get_oauth_token()
 
     def generate_oauth_token(self):
@@ -76,7 +78,7 @@ class Client(BaseClient):
             oauth_token = self.generate_oauth_token()
         else:
             generation_time = dateparser.parse(ctx.get('generation_time'))
-            if generation_time and now:
+            if generation_time:
                 time_passed = now - generation_time
             else:
                 time_passed = TOKEN_LIFE_TIME
@@ -269,17 +271,40 @@ def get_error_details(res: Dict[str, Any]) -> str:
 '''COMMAND FUNCTIONS'''
 
 
-def test_module(client: Client):
-    """ Tests connectivity with the client. """
+def test_module(
+    verify,
+    proxy,
+    api_key,
+    api_secret,
+    account_id,
+    client_id,
+    client_secret,
+):
+    """Tests connectivity with the client.
+    Takes as an argument all client arguments to create a new client
+    """
     try:
+        client = Client(
+            base_url=BASE_URL,
+            verify=verify,
+            proxy=proxy,
+            api_key=api_key,
+            api_secret=api_secret,
+            account_id=account_id,
+            client_id=client_id,
+            client_secret=client_secret,
+        )
         client.test()
-    except Exception as e:
-        error_message_index = str(e).find('"message":')
-        error_message = str(e)[error_message_index:]
+    except DemistoException as e:
+        error_message = e.message
         if 'Invalid access token' in error_message:
             error_message = 'Invalid API Key. Please verify that your API key is valid.'
-        if "The Token's Signature resulted invalid" in error_message:
+        elif "The Token's Signature resulted invalid" in error_message:
             error_message = 'Invalid API Secret. Please verify that your API Secret is valid.'
+        elif 'Invalid client_id or client_secret' in error_message:
+            error_message = 'Invalid Client ID or Client Secret. Please verify that your ID and Secret is valid.'
+        else:
+            error_message = f'Problem reaching Zoom API, check your credentials. Error message: {error_message}'
         return error_message
     return 'ok'
 
@@ -299,7 +324,6 @@ def main():
     client_id = params.get('credentials', {}).get('identifier')
     client_secret = params.get('credentials', {}).get('password')
     mapper_in = params.get('mapper_in', DEFAULT_INCOMING_MAPPER)
-    # mapper_out = params.get('mapper_out', DEFAULT_OUTGOING_MAPPER)
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     command = demisto.command()
@@ -318,38 +342,52 @@ def main():
                              mapper_out=None,
                              get_user_iam_attrs=['id', 'username', 'email']
                              )
-    client = Client(
-        base_url=BASE_URL,
-        verify=verify_certificate,
-        proxy=proxy,
-        api_key=api_key,
-        api_secret=api_secret,
-        account_id=account_id,
-        client_id=client_id,
-        client_secret=client_secret,
-        is_jwt=is_jwt,
-    )
-
-    demisto.debug(f'Command being called is {command}')
-
-    '''CRUD commands'''
-    if command == 'iam-disable-user':
-        user_profile = iam_command.disable_user(client, args)
-    elif command == 'iam-enable-user':
-        user_profile = iam_command.enable_user(client, args)
-    elif command == 'iam-get-user':
-        user_profile = iam_command.get_user(client, args)
-
-    if user_profile:
-        return_results(user_profile)
-
-    '''non-CRUD commands'''
-
     try:
+        if any((api_key, api_secret)) and any((account_id, client_id, client_secret)):
+            raise DemistoException("""To many fields where filled.
+                                   You shuld fill the Account ID, Client ID, and Client Secret fields (OAuth),
+                                   OR the API Key and API Secret fields (JWT - Deprecated)""")
+
         if command == 'test-module':
-            return_results(test_module(client))
-        elif command == 'get-mapping-fields':
+            return_results(test_module(
+                verify=verify_certificate,
+                proxy=proxy,
+                api_key=api_key,
+                api_secret=api_secret,
+                account_id=account_id,
+                client_id=client_id,
+                client_secret=client_secret,
+            ))
+
+        client = Client(
+            base_url=BASE_URL,
+            verify=verify_certificate,
+            proxy=proxy,
+            api_key=api_key,
+            api_secret=api_secret,
+            account_id=account_id,
+            client_id=client_id,
+            client_secret=client_secret,
+        )
+
+        demisto.debug(f'Command being called is {command}')
+
+        '''CRUD commands'''
+        if command == 'iam-disable-user':
+            user_profile = iam_command.disable_user(client, args)
+        if command == 'iam-enable-user':
+            user_profile = iam_command.enable_user(client, args)
+        if command == 'iam-get-user':
+            user_profile = iam_command.get_user(client, args)
+
+        if user_profile:
+            return_results(user_profile)
+
+        '''non-CRUD commands'''
+
+        if command == 'get-mapping-fields':
             return_results(get_mapping_fields(client))
+
     except Exception as e:
         # For any other integration command exception, return an error
         return_error(f'Failed to execute {command} command. Error: {str(e)}')
