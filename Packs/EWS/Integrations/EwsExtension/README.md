@@ -615,7 +615,7 @@ Retrieves the Exchange organization's federated organization identifier and rela
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain_controller | The fully qualified domain name (FQDN) of the domain controller. For example, dc01.contoso.com. This argument is available only in on-premises Exchange. | Optional | 
+| domain_controller | The fully qualified domain name (FQDN) of the domain controller. For example, dc01.example.com. This argument is available only in on-premises Exchange. | Optional | 
 | identity | The federation trust ID. If not specified, all federation trusts configured for the Exchange organization are returned. | Optional | 
 | include_extended_domain_info | The IncludeExtendedDomainInfo switch specifies that the command query Microsoft Federation Gateway for the status of each accepted domain that's federated. The status is returned with each domain in the Domains property. Possible values: "true" and "false". Possible values are: true, false. Default is false. | Optional | 
 
