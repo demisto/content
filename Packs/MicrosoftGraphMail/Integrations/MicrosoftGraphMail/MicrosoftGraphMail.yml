@@ -631,7 +631,7 @@ script:
       name: ran_once_flag
       required: false
     deprecated: false
-    description: Creates a new folder under specified the specified folder (parent).
+    description: Creates a new folder under the specified folder (parent).
     execution: false
     name: msgraph-mail-create-folder
     outputs:

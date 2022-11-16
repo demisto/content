@@ -1,5 +1,5 @@
 Microsoft Graph lets your app get authorized access to a user's Outlook mail data in a personal or organization account.
-This integration was integrated and tested with version xx of MicrosoftGraphMail.
+This integration was integrated and tested with version v1 of Microsoft Graph.
 
 ## Configure O365 Outlook Mail (Using Graph API) on Cortex XSOAR
 
@@ -8,8 +8,8 @@ This integration was integrated and tested with version xx of MicrosoftGraphMail
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL |  | True |
+    | --- |-------| --- |
+    | Server URL |  | True  |
     | Application ID or Client ID | See the Detailed Instructions section. | False |
     | Token or Tenant ID | See the Detailed Instructions section. | False |
     | Key or Client Secret | See the Detailed Instructions section. | False |
@@ -25,7 +25,7 @@ This integration was integrated and tested with version xx of MicrosoftGraphMail
     | Use system proxy settings |  | False |
     | Use a self deployed Azure application |  | False |
     | Incident type |  | False |
-    | Display the entire email body | Whether to fetch incidents with the entire email body, or just an email body preview, mark if the full email body is required. |  |
+    | Display the entire email body | Whether to fetch incidents with the entire email body, or just an email body preview, mark if the full email body is required. | False |
     | Advanced: Time in minutes to look back when fetching emails | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -276,7 +276,7 @@ Returns the folder list under the specified folder.
 
 ### msgraph-mail-create-folder
 ***
-Creates a new folder under specified the specified folder (parent).
+Creates a new folder under the specified folder (parent).
 
 
 #### Base Command

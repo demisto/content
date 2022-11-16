@@ -760,6 +760,7 @@ def create_issue_command():
 
 def edit_issue_command(issue_id, mirroring=False, headers=None, status=None, transition=None, **kwargs):
     issue = get_issue_fields(mirroring=mirroring, **kwargs)
+    demisto.debug(f"issue in edit after get: {issue}")
     if status and transition:
         return_error("Please provide only status or transition, but not both.")
     elif status:
@@ -1267,8 +1268,10 @@ def update_remote_system_command(args):
         if remote_args.delta and remote_args.incident_changed:
             demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update Jira '
                           f'incident {remote_id}')
+            demisto.debug(f'The entire delta: {remote_args.delta}')
             # take the val from data as it's the updated value
-            delta = {k: remote_args.data[k] for k in remote_args.delta.keys()}
+            delta = {k: remote_args.data.get(k) for k in remote_args.delta.keys()}
+            demisto.debug(f'delta sent to edit after changing to get: {delta}')
             edit_issue_command(remote_id, mirroring=True, **delta)
 
         else:
