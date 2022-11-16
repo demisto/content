@@ -1,8 +1,8 @@
 Enrich IP addresses using one or more integrations.
 
-- Resolve IP addresses to hostnames (DNS)
-- Provide threat information
-- Separate internal and external addresses
+- Resolve IP addresses to hostnames (DNS).
+- Provide threat information.
+- Separate internal and external addresses.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -11,16 +11,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* VirusTotal (API v3)
 * VirusTotal - Private API
 
 ### Scripts
-* IsIPInRanges
 * IPToHost
+* IsIPInRanges
 
 ### Commands
-* threat-crowd-ip
 * vt-private-get-ip-report
+* threat-crowd-ip
 * ip
 
 ## Playbook Inputs

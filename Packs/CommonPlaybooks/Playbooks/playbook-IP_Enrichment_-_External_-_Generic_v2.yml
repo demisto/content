@@ -5,9 +5,9 @@ fromversion: 5.0.0
 description: |-
   Enrich IP addresses using one or more integrations.
 
-  - Resolve IP addresses to hostnames (DNS)
-  - Provide threat information
-  - Separate internal and external addresses
+  - Resolve IP addresses to hostnames (DNS).
+  - Provide threat information.
+  - Separate internal and external addresses.
 starttaskid: "0"
 tasks:
   "0":
@@ -124,8 +124,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -390,
-          "y": 2160
+          "x": -600,
+          "y": 1860
         }
       }
     note: false
@@ -152,12 +152,13 @@ tasks:
       '#none#':
       - "36"
       - "41"
+      - "44"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 160,
-          "y": 1140
+          "x": 162.5,
+          "y": 1150
         }
       }
     note: false
@@ -374,8 +375,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -88,
-          "y": 1345
+          "x": 162.5,
+          "y": 1290
         }
       }
     note: false
@@ -437,8 +438,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -88,
-          "y": 1513
+          "x": 162.5,
+          "y": 1453
         }
       }
     note: false
@@ -465,7 +466,7 @@ tasks:
       brand: VirusTotal - Private API
     nexttasks:
       '#none#':
-      - "44"
+      - "24"
     scriptarguments:
       ip:
         complex:
@@ -487,8 +488,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -88,
-          "y": 1750
+          "x": 162.5,
+          "y": 1670
         }
       }
     note: false
@@ -518,8 +519,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 950
+          "x": -600,
+          "y": 970
         }
       }
     note: false
@@ -549,8 +550,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 390,
-          "y": 1345
+          "x": 640,
+          "y": 1290
         }
       }
     note: false
@@ -612,8 +613,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 390,
-          "y": 1523
+          "x": 640,
+          "y": 1453
         }
       }
     note: false
@@ -626,10 +627,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: bfa43e99-360c-4f84-8e09-77a8b7ca5b52
+    taskid: 017faa3e-752d-4339-8b22-5c35442bff75
     type: regular
     task:
-      id: bfa43e99-360c-4f84-8e09-77a8b7ca5b52
+      id: 017faa3e-752d-4339-8b22-5c35442bff75
       version: -1
       name: Get IP report from ThreatCrowd
       description: |
@@ -662,45 +663,77 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 390,
-          "y": 1750
+          "x": 640,
+          "y": 1670
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     continueonerrortype: ""
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 3607b68d-96db-4ed1-8324-e21009548cf8
+    taskid: 9bda4dfe-35b9-40ac-8d8c-c6973b2d1d40
+    type: title
+    task:
+      id: 9bda4dfe-35b9-40ac-8d8c-c6973b2d1d40
+      version: -1
+      name: Check Reputation Using All Available Integrations
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: d2baa447-e80c-4ea5-8a36-33fa609633a2
     type: regular
     task:
-      id: 3607b68d-96db-4ed1-8324-e21009548cf8
+      id: d2baa447-e80c-4ea5-8a36-33fa609633a2
       version: -1
-      name: Check the IP reputation
-      description: Checks the reputation of an IP address.
-      script: VirusTotal (API v3)|||ip
+      name: Check Reputation
+      description: Checks the reputation of an IP address using all available integrations.
+      script: '|||ip'
       type: regular
       iscommand: true
-      brand: VirusTotal (API v3)
+      brand: ""
     nexttasks:
       '#none#':
       - "24"
     scriptarguments:
       ip:
         complex:
-          root: inputs.IP
+          root: IP
+          accessor: Address
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -88,
-          "y": 1960
+          "x": -300,
+          "y": 1453
         }
       }
     note: false
@@ -719,15 +752,16 @@ view: |-
       "28_39_#default#": 0.35,
       "34_27_#default#": 0.49,
       "34_35_yes": 0.53,
-      "37_24_#default#": 0.42,
+      "37_24_#default#": 0.2,
       "37_38_yes": 0.52,
-      "42_24_#default#": 0.28
+      "42_24_#default#": 0.1,
+      "42_43_yes": 0.51
     },
     "paper": {
       "dimensions": {
-        "height": 2176,
-        "width": 1460,
-        "x": -560,
+        "height": 1876,
+        "width": 1620,
+        "x": -600,
         "y": 49
       }
     }
