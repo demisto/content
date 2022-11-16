@@ -156,7 +156,7 @@ def get_sapm_user_info_command(client: Client, device_ip: str) -> CommandResults
     response = client.get_sapm_user_info(device_ip)
     if isinstance(response, str):
         raise Exception(f"Error in Single Connect API call: {response}")
-    if isinstance(response, list) and len(response) > 0:
+    if isinstance(response, list):
         return CommandResults(
             outputs_prefix='SingleConnect.SapmAccount',
             outputs_key_field='dbId',
