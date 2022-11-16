@@ -148,7 +148,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 - Removers a delegate from a mailbox: **gmail-remove-delegated-mailbox**
 - Get details of a specific role: **gmail-get-role**
 - Creates a forwarding address: **gmail-forwarding-address-add**
-- Updates a forwarding address: **gmail-forwarding-address-update**
+- Updates the disposition in a forwarding address: **gmail-forwarding-address-update**
 - Get a list of forwarding addresses: **gmail-forwarding-address-list**
 - Gets a forwarding address: **gmail-forwarding-address-get**
 - Removes a forwarding address: **gmail-forwarding-address-remove**
@@ -5030,13 +5030,13 @@ Creates a forwarding address. If ownership verification is required, a message w
 | Gmail.ForwardingAddress.verificationStatus | String | Indicates whether this address has been verified and is usable for forwarding. | 
 
 #### Command example
-```!gmail-forwarding-address-add forwarding_email="admin@demistodev.com" user_id="me"```
+```!gmail-forwarding-address-add forwarding_email="test@gmail.com" user_id="me"```
 #### Context Example
 ```json
 {
     "Gmail": {
         "ForwardingAddress": {
-            "forwardingEmail": "admin@demistodev.com",
+            "forwardingEmail": "test@gmail.com",
             "userId": "me",
             "verificationStatus": "accepted"
         }
@@ -5049,7 +5049,7 @@ Creates a forwarding address. If ownership verification is required, a message w
 >### Forwarding addresses results for "me":
 >|forwardingEmail|userId|verificationStatus|
 >|---|---|---|
->| admin@demistodev.com | me | accepted |
+>| test@gmail.com | me | accepted |
 
 
 ### gmail-forwarding-address-update
@@ -5079,7 +5079,7 @@ Updates the auto-forwarding setting for the specified account. A verified forwar
 | Gmail.ForwardingAddress.Enabled | Boolean | Indicates whether all incoming mail is automatically forwarded to another address. | 
 
 #### Command example
-```!gmail-forwarding-address-update forwarding_email="admin@demistodev.com" user_id="me" disposition="archive"```
+```!gmail-forwarding-address-update forwarding_email="test@gmail.com" user_id="me" disposition="archive"```
 #### Context Example
 ```json
 {
@@ -5087,7 +5087,7 @@ Updates the auto-forwarding setting for the specified account. A verified forwar
         "ForwardingAddress": {
             "disposition": "archive",
             "enabled": true,
-            "forwardingEmail": "admin@demistodev.com",
+            "forwardingEmail": "test@gmail.com",
             "userId": "me"
         }
     }
@@ -5099,7 +5099,7 @@ Updates the auto-forwarding setting for the specified account. A verified forwar
 >### Forwarding addresses update results for "me":
 >|forwardingEmail|userId|disposition|enabled|
 >|---|---|---|---|
->| admin@demistodev.com | me | archive | true |
+>| test@gmail.com | me | archive | true |
 
 ### gmail-forwarding-address-get
 ***
@@ -5125,13 +5125,13 @@ Gets the specified forwarding address or a list of the forwarding addresses for 
 | Gmail.ForwardingAddress.forwardingEmail | String | An email address to which messages can be forwarded. | 
 
 #### Command example
-```!gmail-forwarding-address-get forwarding_email="admin@demistodev.com" user_id="me"```
+```!gmail-forwarding-address-get forwarding_email="test@gmail.com" user_id="me"```
 #### Context Example
 ```json
 {
     "Gmail": {
         "ForwardingAddress": {
-            "forwardingEmail": "admin@demistodev.com",
+            "forwardingEmail": "test@gmail.com",
             "userId": "me",
             "verificationStatus": "accepted"
         }
@@ -5144,7 +5144,7 @@ Gets the specified forwarding address or a list of the forwarding addresses for 
 >### Get forwarding address for: "me"
 >|forwardingEmail|verificationStatus|
 >|---|---|
->| admin@demistodev.com | accepted |
+>| test@gmail.com | accepted |
 
 
 ### gmail-forwarding-address-remove
@@ -5167,10 +5167,10 @@ Deletes the specified forwarding address and revokes any verification that may h
 
 There is no context output for this command.
 #### Command example
-```!gmail-forwarding-address-remove forwarding_email="admin@demistodev.com" user_id="me"```
+```!gmail-forwarding-address-remove forwarding_email="test@gmail.com" user_id="me"```
 #### Human Readable Output
 
->Forwarding address "admin@demistodev.com" for "me" was deleted successfully .
+>Forwarding address "test@gmail.com" for "me" was deleted successfully .
 
 ### gmail-forwarding-address-list
 ***
@@ -5203,7 +5203,7 @@ Lists the forwarding addresses for the specified account.
     "Gmail": {
         "ForwardingAddress": [
             {
-                "forwardingEmail": "admin@demistodev.com",
+                "forwardingEmail": "test@gmail.com",
                 "userId": "me",
                 "verificationStatus": "accepted"
             },
@@ -5232,7 +5232,7 @@ Lists the forwarding addresses for the specified account.
 >### Forwarding addresses list for: "me"
 >|forwardingEmail|verificationStatus|
 >|---|---|
->| admin@demistodev.com | accepted |
+>| test@gmail.com | accepted |
 >| test1@gmail.com | accepted |
 >| test2@gmail.com | accepted |
 >| test3@gmail.com | accepted |
