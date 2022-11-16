@@ -9,7 +9,6 @@ from contextlib import redirect_stderr, redirect_stdout
 from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR
 from demisto_sdk.commands.common.tools import find_type
-import contextlib
 
 PR_TEMPLATE = '### Pull Request created in Cortex XSOAR\n' \
               '**Created by:** {}\n' \
