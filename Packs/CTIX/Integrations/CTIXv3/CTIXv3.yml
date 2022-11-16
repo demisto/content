@@ -28,29 +28,29 @@ detaileddescription: |-
   ---
   [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/ctix-v3)
 configuration:
-- display: Endpoint URL
-  name: base_url
-  type: 0
-  required: true
-  additionalinfo: Enter the endpoint URL of your CTIX Instance.
-- display: Access Key
-  name: access_id
-  type: 4
-  required: true
-  additionalinfo: Enter the Access Key from the CTIX application.
-- display: Secret Key
-  name: secret_key
-  type: 4
-  required: true
-  additionalinfo: Enter the Secret Key from the CTIX application.
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
-  required: false
-- display: Use system proxy settings
-  name: proxy
-  type: 8
-  required: false
+  - display: Endpoint URL
+    name: base_url
+    type: 0
+    required: true
+    additionalinfo: Enter the endpoint URL of your CTIX Instance.
+  - display: Access Key
+    name: access_id
+    type: 4
+    required: true
+    additionalinfo: Enter the Access Key from the CTIX application.
+  - display: Secret Key
+    name: secret_key
+    type: 4
+    required: true
+    additionalinfo: Enter the Secret Key from the CTIX application.
+  - display: Trust any certificate (not secure)
+    name: insecure
+    type: 8
+    required: false
+  - display: Use system proxy settings
+    name: proxy
+    type: 8
+    required: false
 script:
   script: ""
   type: python
