@@ -10288,13 +10288,11 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     last_run_time = last_run and 'time' in last_run and last_run['time']
     now = get_current_time(timezone)
     if not last_run_time:
-        last_run_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'}) + timedelta(hours=timezone)
+        last_run_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True}) \
+            + timedelta(hours=timezone)
     else:
-        last_run_time = dateparser.parse(last_run_time, settings={'TIMEZONE': 'UTC'})
+        last_run_time = dateparser.parse(last_run_time, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
 
-    # # Make sure both times are timezone aware
-    now = now.replace(tzinfo=pytz.UTC)
-    last_run_time = last_run_time.replace(tzinfo=pytz.UTC)
     if look_back > 0:
         if now - last_run_time < timedelta(minutes=look_back):
             last_run_time = now - timedelta(minutes=look_back)
@@ -10312,7 +10310,7 @@ def get_current_time(time_zone=0):
     :return: The current time.
     :rtype: ``datetime``
     """
-    return datetime.utcnow() + timedelta(hours=time_zone)
+    return (datetime.utcnow() + timedelta(hours=time_zone)).replace(pytz.UTC)
 
 
 def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limit, id_field):
