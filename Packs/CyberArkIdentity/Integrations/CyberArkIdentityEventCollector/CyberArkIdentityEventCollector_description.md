@@ -22,5 +22,5 @@ Default is 3 days.
   
 **Maximum number of events per fetch**
   
-The number of items to retrieve per request from CyberArk's API.
+The maximum number of items to retrieve per request from CyberArk's API.
   
