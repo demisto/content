@@ -78,18 +78,6 @@ class Client(BaseClient):
         )
         return response
 
-    def auth_client_info_request(self, client_id: str):
-        response = self._http_request("GET", url_suffix=f"auth/clients/{client_id}", headers=self._headers, ok_codes=(200, 201))
-
-        return response
-
-    def auth_client_reset_request(self, client_id: str):
-        response = self._http_request(
-            "POST", url_suffix=f"auth/clients/{client_id}/secrets", headers=self._headers, ok_codes=(200, 201)
-        )
-
-        return response
-
     def refresh_token_request(self, client_id: str, client_secret: str, refresh_token: str):
         request_body = {
             "client_id": f"{client_id}",
@@ -1809,26 +1797,6 @@ def handle_auth_token_command(client: Client, args: Dict[str, Any]) -> CommandRe
     return command_results
 
 
-def auth_client_info_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    client_id = args.get("client_id", "")
-
-    response = client.auth_client_info_request(client_id)
-
-    command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".AuthClient",
-        outputs=response,
-        raw_response=response,
-        readable_output=tableToMarkdown(
-            name="OAUTH Client information",
-            t=response,
-            headers=["client_id", "client_name", "description", "client_secret_expires_at", "enabled", "expires_at"],
-            headerTransform=pascalToSpace,
-            date_fields=True,
-        ),
-    )
-    return command_results
-
-
 def auth_client_test_command(client: Client, args: Dict[str, Any]):
     message = test_connectivity(client)
     if message == "ok":
@@ -1839,17 +1807,6 @@ def auth_client_test_command(client: Client, args: Dict[str, Any]):
                 message = "Basic "
 
     return CommandResults(readable_output=message + "Authentication method connectivity verified.")
-
-
-def auth_client_reset_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    client_id = args.get("client_id", "")
-
-    client.auth_client_reset_request(client_id)
-
-    command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".AuthClient", readable_output="Command run successfully. OAuth Client secret refreshed."
-    )
-    return command_results
 
 
 def appliance_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -3761,9 +3718,7 @@ def main() -> None:
 
         commands = {
             "vd-auth-start": handle_auth_token_command,
-            "vd-auth-client-get": auth_client_info_command,
             "vd-auth-test": auth_client_test_command,
-            "vd-auth-reset": auth_client_reset_command,
             "vd-appliance-list": appliance_list_command,
             "vd-organization-list": organization_list_command,
             "vd-organization-appliance-list": appliances_list_by_organization_command,

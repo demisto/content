@@ -1,41 +1,16 @@
 # HEADING: --------------- COMMAND FUNCTIONS TESTS ARGUMENTS ---------------
 
 
-# Test function: test_get_access_token_fail_invalid_credentials
-# Arguments: (access_token_request_return_value, auth_credentials_request_return_value, expected_output)
-case_client_id_invalid = (
-    {"access_token": "123456"},
-    {"client_id": "", "client_secret": "abcde1234"},
-    "Auth process failed. invalid credentials returned from api.",
-)
-case_client_secrets_invalid = (
-    {"access_token": "123456"},
-    {"client_id": "1234", "client_secret": ""},
-    "Auth process failed. invalid credentials returned from api.",
-)
-get_access_token_args_fail_invalid_credentials = [case_client_id_invalid, case_client_secrets_invalid]
+# Test function: test_handle_auth_token_fail
+# Arguments: (status_code, args, expected_output)
+from VersaDirector import AUTH_EXISTING_TOKEN, AUTH_EXCEEDED_MAXIMUM, AUTH_INVALID_ACCESS_TOKEN, AUTH_BAD_CREDENTIALS
 
-
-# Test function: test_get_access_token_fail_status_code
-# Arguments: (status_code, expected_output)
-case_500 = (500, "Auth process failed. Existing Token found with the matching name.")
-case_404 = (404, "Auth process failed.")
-get_access_token_args_fail_status_code = [case_500, case_404]
-
-
-# Test function: test_complete_auth_fail
-# Arguments: (args, status_code, expected_output)
-case_invalid_token = (
-    {"client_id": "client_id", "client_secret": "client_secret"},
-    401,
-    "Auth process failed. Invalid access token passed in the request.",
-)
-case_bad_status_code = (
-    {"client_id": "client_id", "client_secret": "client_secret"},
-    500,
-    "Auth process failed. Please check client_id and client_secret validity.",
-)
-complete_auth_args_fail = [case_invalid_token, case_bad_status_code]
+case_500 = (500, {"token_name": "token_name_mock"}, AUTH_EXISTING_TOKEN)
+case_400 = (400, {"token_name": "token_name_mock"}, AUTH_EXCEEDED_MAXIMUM)
+case_no_args_general_error = (404, {"token_name": "token_name_mock"}, "Auth process failed.")
+case_401 = (401, {"client_id": "client_id_mock", "client_secret": "client_secret_mock"}, AUTH_INVALID_ACCESS_TOKEN)
+case_with_args_general_error = (404, {"client_id": "client_id_mock", "client_secret": "client_secret_mock"}, AUTH_BAD_CREDENTIALS)
+test_handle_auth_token_fail_args = [case_500, case_400, case_no_args_general_error, case_401, case_with_args_general_error]
 
 
 # Test function: test_template_access_policy_rule_create_command, test_template_access_policy_rule_edit_command

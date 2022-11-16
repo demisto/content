@@ -22,174 +22,79 @@ def client():
 # HEADING: """ COMMAND FUNCTIONS TESTS """
 
 
-@pytest.mark.parametrize(
-    "access_token_request_return_value, auth_credentials_request_return_value, expected_output",
-    [
-        (
-            {"access_token": "123456"},
-            {"client_id": "1234", "client_secret": "abcde1234"},
-            "To complete the Auth process, please copy the following values:\nclient_id: 1234\nclient_secret: abcde1234"
-            + "\nand use them as arguments to run command:'vd-auth-complete'.",
-        )
-    ],
-)
-def test_get_access_token(
-    mocker,
-    client,
-    access_token_request_return_value,
-    auth_credentials_request_return_value,
-    expected_output,
-):
+def test_handle_auth_token_command(mocker, client):
     """
     Given:
-        - All relevant parameters passed (Username, Password) are valid
+        - token_name argument is passed as argument
 
     When:
-        - get_access_token command is executed
+        - vd-auth-start command is executed
 
     Then:
-        - The http requests are called with the right arguments and CommandResults object returned is valid
+        - Create Auth Client
+        - Create Auth Token
+        - Return message to user
     """
+    from VersaDirector import handle_auth_token_command
 
-    from VersaDirector import create_auth_client
-
-    mocker.patch.object(client, "access_token_request", return_value=access_token_request_return_value)
+    mocker.patch.object(client, "access_token_request", return_value={"access_token": "access_token_mock"})
     mocker.patch.object(
-        client,
-        "auth_credentials_request",
-        return_value=auth_credentials_request_return_value,
+        client, "auth_credentials_request", return_value={"client_id": "client_id_mock", "client_secret": "client_secret_mock"}
     )
-    command_result = create_auth_client(client, args={})
-    assert command_result.readable_output == expected_output
+    command_result = handle_auth_token_command(client, args={"token_name": "token_name_mock"})
+    assert command_result.readable_output == (
+        "Auth Client Created Successfully.\nClient ID: client_id_mock, Auth Client Name: token_name_mock.\n\n"
+        + "Authentication request was successful, Auth Token was created and saved in the Integration Context.\n"
+        + "Please check the 'Use Auth Token' in the configuration screen.\n"
+        + "To ensure the authentication is valid, run the 'vd-auth-test' command."
+    )
 
 
-@pytest.mark.parametrize(
-    "access_token_request_return_value, auth_credentials_request_return_value ,expected_output",
-    input_data.get_access_token_args_fail_invalid_credentials,
-)
-def test_get_access_token_fail_invalid_credentials(
-    mocker,
-    client,
-    access_token_request_return_value,
-    auth_credentials_request_return_value,
-    expected_output,
-):
+def test_handle_auth_token_command_basic_credentials_fail(mocker, client):
     """
     Given:
-        - Invalid credentials are returned from http requests
+        - client._auth is invalid
 
     When:
-        - get_access_token command is executed
+        - vd-auth-start command is executed
 
     Then:
-        - Demisto Exception is raised
+        - Raise DemistoException with valid message
     """
-    from VersaDirector import create_auth_client
+    from VersaDirector import handle_auth_token_command, BASIC_CREDENTIALS_COULD_NOT_START
 
-    mocker.patch.object(client, "access_token_request", return_value=access_token_request_return_value)
-    mocker.patch.object(
-        client,
-        "auth_credentials_request",
-        return_value=auth_credentials_request_return_value,
-    )
+    client._auth = ()
     with pytest.raises(DemistoException) as e:
-        create_auth_client(client, args={})
-    assert str(e.value.message) == expected_output
+        handle_auth_token_command(client, args={})
+    assert str(e.value.message) == BASIC_CREDENTIALS_COULD_NOT_START
 
 
 @pytest.mark.parametrize(
-    "status_code, expected_output",
-    input_data.get_access_token_args_fail_status_code,
+    "status_code, args, expected_output",
+    input_data.test_handle_auth_token_fail_args,
 )
-def test_get_access_token_fail_status_code(mocker, client, status_code, expected_output):
+def test_handle_auth_token_fail(mocker, client, args, status_code, expected_output):
     """
     Given:
-        - bad status code return from from http requests
+        - An exception is thrown from one of the HTTP requests
 
     When:
-        - get_access_token command is executed
+        - vd-auth-start command is executed
 
     Then:
-        - Demisto Exception is raised
+        - Raise DemistoException with valid message
     """
-    from VersaDirector import create_auth_client
+    from VersaDirector import handle_auth_token_command
 
     status_code_response = Response()
     status_code_response.status_code = status_code
 
     mocker.patch.object(
-        client,
-        "access_token_request",
-        return_value={},
-        side_effect=DemistoException(message="", res=status_code_response),
-    )
-    mocker.patch.object(
-        client,
-        "auth_credentials_request",
-        return_value={},
-    )
-    with pytest.raises(DemistoException) as e:
-        create_auth_client(client, args={})
-    assert str(e.value.message) == expected_output
-
-
-@pytest.mark.parametrize(
-    "args, access_token_request_return_value, expected_output",
-    [
-        (
-            {"client_id": "client_id", "client_secret": "client_secret"},
-            {"access_token": "auth_token"},
-            "Auth request was successful.\nPlease copy Auth Token as input in the instance configuration"
-            + " along with the client_id and client_secret\n\nAuth Token:\nauth_token\n",
-        )
-    ],
-)
-def test_complete_auth(mocker, client, args, access_token_request_return_value, expected_output):
-    """
-    Given:
-        - All relevant arguments passed (client_id, client_secret) are valid
-
-    When:
-        - complete_auth command is executed
-
-    Then:
-        - The http request is called with the right arguments and CommandResults object returned is valid
-    """
-    from VersaDirector import obtain_auth_token
-
-    mocker.patch.object(client, "access_token_request", return_value=access_token_request_return_value)
-    command_result = obtain_auth_token(client, args=args)
-    assert command_result.readable_output == expected_output
-
-
-@pytest.mark.parametrize(
-    "args, status_code, expected_output",
-    input_data.complete_auth_args_fail,
-)
-def test_complete_auth_fail(mocker, client, args, status_code, expected_output):
-    """
-    Given:
-        - All relevant arguments passed (client_id, client_secret) are valid
-
-    When:
-        - complete_auth command is executed
-
-    Then:
-        - The http request is called with the right arguments and CommandResults object returned is valid
-    """
-    from VersaDirector import obtain_auth_token
-
-    status_code_response = Response()
-    status_code_response.status_code = status_code
-
-    mocker.patch.object(
-        client,
-        "access_token_request",
-        side_effect=DemistoException(message="", res=status_code_response),
+        client, "access_token_request", return_value={}, side_effect=DemistoException(message="", res=status_code_response)
     )
 
     with pytest.raises(DemistoException) as e:
-        obtain_auth_token(client, args=args)
+        handle_auth_token_command(client, args)
     assert str(e.value.message) == expected_output
 
 
@@ -1778,7 +1683,7 @@ def test_set_organization_fail():
 
         - A command that has the option to choose 'organization' argument is executed
     Then:
-        - Return preferred organization name
+        - Raise DemistoException with valid message
     """
     from VersaDirector import set_organization
 
@@ -1816,7 +1721,7 @@ def test_set_offset_fail(page, page_size):
     When:
         - A command that has 'page' and 'page_size' arguments is run
     Then:
-        - Raise valid Demisto Exception
+        - Raise DemistoException with valid message
     """
     from VersaDirector import set_offset
 

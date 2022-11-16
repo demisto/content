@@ -2260,22 +2260,7 @@ script:
       isArray: false
       secret: true
   - name: vd-auth-test
-    description: 'Run a connectivity test to verify that the oauth process worked.'
-  - name: vd-auth-client-get
-    description: 'Get Oauth Client information.'
-    arguments:
-    - name: client_id
-      description: 'Client ID for Token Authentication.'
-      required: true
-      isArray: false
-  - name: vd-auth-reset
-    description: 'Reset Oauth Client secret.'
-    arguments:
-    - name: client_id
-      description: 'Client ID for Token Authentication.'
-      required: true
-      isArray: false
-
+    description: 'Run a connectivity test to verify that the oauth process worked.'  
 
 
   isfetch: false
