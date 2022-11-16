@@ -133,3 +133,81 @@ def test_ticket_to_incident(mocker):
         'occurred': None,
         'rawJSON': '{"subject": "\\u2013"}',
     }
+
+
+def test_reformat_canned_response_context(mocker):
+    """
+    Given:
+        - a dictionary
+
+    When:
+        - running reformat_canned_response_context function
+
+    Then:
+        - Ensure dictionary was changed
+    """
+    mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
+    import FreshDesk
+    d = {
+        "Id": "1234",
+        "Html": "https://test.com"
+    }
+    FreshDesk.reformat_canned_response_context(d)
+    assert d == {
+        "ID": "1234",
+        "HTML": "https://test.com"
+    }
+
+
+def test_attachments_into_context(mocker):
+    """
+    Given:
+        - an api_response and a context dictionary
+
+    When:
+        - running attachments_into_context function
+
+    Then:
+        - Ensure context was changed
+    """
+    mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
+    import FreshDesk
+    d = {
+        "Id": "1234",
+        "Html": "https://test.com"
+    }
+    api_response = {'attachments': [{"id": "1234", "attachment_url": "https://test.com" }]}
+
+    FreshDesk.attachments_into_context(api_response, d)
+    assert d['Attachment'] == [{
+        "ID": "1234",
+        "AttachmentURL": "https://test.com"
+    }]
+
+
+def test_get_ticket_command(mocker):
+    """
+    Given:
+        - an api_response and a context dictionary
+
+    When:
+        - running attachments_into_context function
+
+    Then:
+        - Ensure context was changed
+    """
+    mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
+    mocker.patch.object(demisto, 'args', return_value={})
+    mocker.patch.object(demisto, 'results')
+    import FreshDesk
+    ticket = {
+        "requester": {"requestor": "TEST"},
+        "stats": {"stats": "TEST"},
+        "deleted": False,
+        "id": "1234"
+    }
+    mocker.patch('FreshDesk.get_ticket', return_value=ticket)
+
+    FreshDesk.get_ticket_command()
+    result = demisto.results.call_args[0]
+    assert result[0]['EntryContext']['Freshdesk.Ticket(val.ID && val.ID === obj.ID)']['ID'] == '1234'

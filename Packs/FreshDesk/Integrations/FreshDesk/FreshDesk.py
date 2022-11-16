@@ -80,7 +80,7 @@ def reformat_canned_response_context(context):
     returns:
         The reformatted context
     """
-    for key, val in context.items():
+    for key, val in list(context.items()):
         if 'Id' in key:
             new_key = key.replace('Id', 'ID')
             context[new_key] = val
@@ -159,7 +159,7 @@ def reformat_ticket_context(context):
         'UserID', 'BodyText', 'Category', 'Private', 'Incoming'
     ]
 
-    for key, val in context.items():
+    for key, val in list(context.items()):
         if key == 'Tags':
             new_key = key[:-1]
             context[new_key] = val
@@ -196,7 +196,7 @@ def reformat_ticket_context(context):
     new_context = {}
     new_context['AdditionalFields'] = context.get('AdditionalFields') if context.get('AdditionalFields') else {}
     additional_fields = {}
-    for key, val in context.items():
+    for key, val in list(context.items()):
         if key not in standard_context_outputs:
             if not ((isinstance(val, list) or isinstance(val, dict)) and len(val) == 0):
                 additional_fields[key] = val
@@ -1747,7 +1747,7 @@ def list_groups_command():
     for group in groups:
         # Parse individual group response in context
         context = {}
-        for key, val in group.items():
+        for key, val in list(group.items()):
             if val:
                 if key == 'agent_ids':
                     key = 'agent_id'
@@ -1804,7 +1804,7 @@ def list_agents_command():
     for agent in agents:
         # Parse the individual agent into context
         context = {}
-        for key, val in agent.items():
+        for key, val in list(agent.items()):
             if val:
                 if key == 'group_ids':
                     key = 'group_id'
