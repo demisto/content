@@ -3,30 +3,44 @@ commonfields:
   id: SecurityAndCompliance
   version: -1
 configuration:
-- defaultvalue: https://ps.compliance.protection.outlook.com
-  display: Search and Compliance URL
+- display: Exchange Online URL
   name: url
-  required: true
+  defaultvalue: https://outlook.office365.com
   type: 0
-- displaypassword: Certificate
+  required: true
+- display: ""
+  displaypassword: Certificate Password
   name: certificate
   type: 9
   required: true
+  hiddenusername: true
   additionalinfo: A pfx certificate encoded in Base64.
-  hiddenusername: true
-- displaypassword: Password
-  name: password
-  required: true
+- display: UPN/Email
+  displaypassword: Password
+  name: delegated_password
   type: 9
-  hiddenusername: true
+  required: false
 - display: The organization used in app-only authentication.
   name: organization
-  required: true
   type: 0
+  required: true
 - display: The application ID from the Azure portal
   name: app_id
-  required: true
   type: 0
+  required: true
+- display: UPN/Email
+  name: upn
+  type: 0
+  required: true
+- display: Insecure
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Tenant ID
+  name: tenant_id
+  type: 0
+  required: false
 description: This integration allows you to manage and interact with Microsoft security and compliance content search.
 display: O365 - Security And Compliance - Content Search
 name: SecurityAndCompliance
