@@ -4370,10 +4370,11 @@ def modify_appsec_config_selected_hosts_command(client: Client,
                                                                     config_version=config_version,
                                                                     hostname_list=hostname_dict_list,
                                                                     mode=mode
-                                                                    )
-
-    title = f'{INTEGRATION_NAME} - modify appsec config selected hosts'
-    human_readable = "Application Security Config selected hostname list has been modified"
+    )
+    if raw_response:
+        human_readable = "Application Security Config selected hostname list has been modified."
+    else:
+        human_readable = "Modify Application Security Config selected hostname list has failed."
     return human_readable, {}, raw_response
 
 
@@ -4454,12 +4455,13 @@ def update_appsec_config_version_notes_command(client: Client,
     """
 
     raw_response: Dict = client.update_appsec_config_version_notes(config_id=config_id,
-                                                                   config_version=config_version,
-                                                                   notes=notes,
-                                                                   )
-
-    title = f'{INTEGRATION_NAME} - Update application secuirty configuration version notes.'
-    human_readable = "Application Security Config version notes has been updated."
+                                                                    config_version=config_version,
+                                                                    notes=notes,
+    )
+   if raw_response:
+        human_readable = "Application Security Config version notes has been updated."
+    else:
+        human_readable = "Update Application Security Config version notes has failed."
     return human_readable, {}, raw_response
 
 
@@ -4638,26 +4640,27 @@ def get_papi_property_rule_command(client: Client,
     import json
 
     raw_response: Dict = client.get_papi_property_rule(contract_id=contract_id,
-                                                       group_id=group_id,
-                                                       property_id=property_id,
-                                                       property_version=property_version,
-                                                       validate_rules=validate_rules,
-                                                       )
-
-    title = f'{INTEGRATION_NAME} - get papi property default rule command'
-    entry_context = json.dumps(raw_response)
-    human_readable_ec = json.dumps(raw_response)
-    context_entry: Dict = {
-        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.DefaultRule": entry_context
-    }
-    # human_readable = tableToMarkdown(
-    #     name=title,
-    #     t=human_readable_ec,
-    #     removeNull=True,
-    # )
-    human_readable = json.dumps(raw_response)
-
-    return human_readable, context_entry, raw_response
+                                                         group_id=group_id,
+                                                         property_id=property_id,
+                                                         property_version=property_version,
+                                                         validate_rules=validate_rules,
+                                                         )
+   if raw_response:
+        title = f'{INTEGRATION_NAME} - get papi property default rule command'
+        entry_context = json.dumps(raw_response)
+        human_readable_ec = json.dumps(raw_response)
+        context_entry: Dict = {
+            f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.DefaultRule": entry_context
+        }
+        human_readable = tableToMarkdown(
+            name=title,
+            t=human_readable_ec,
+            removeNull=True,
+        )
+        return human_readable, context_entry, raw_response
+    else:
+        human_readable = f'{INTEGRATION_NAME} - get papi property default rule command has failed.'
+        return human_readable, {}, raw_response
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -4721,9 +4724,9 @@ def main():
         f'{INTEGRATION_COMMAND_NAME}-get-security-policy-id-by-name': get_security_policy_id_by_name_command,
         f'{INTEGRATION_COMMAND_NAME}-clone-appsec-config-version': clone_appsec_config_version_command,
         f'{INTEGRATION_COMMAND_NAME}-patch-papi-property-rule-httpmethods': patch_papi_property_rule_httpmethods_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-papi-property-activation-status-command': get_papi_property_activation_status_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-papi-edgehostname-creation-status-command': get_papi_edgehostname_creation_status_command,
-        f'{INTEGRATION_COMMAND_NAME}-acknowledge-warning-command': acknowledge_warning_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-papi-property-activation-status': get_papi_property_activation_status_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-papi-edgehostname-creation-status': get_papi_edgehostname_creation_status_command,
+        f'{INTEGRATION_COMMAND_NAME}-acknowledge-warning': acknowledge_warning_command,
         f'{INTEGRATION_COMMAND_NAME}-get-production-deployment': get_production_deployment_command,
         f'{INTEGRATION_COMMAND_NAME}-get-change-history': get_change_history_command,
         f'{INTEGRATION_COMMAND_NAME}-modify-appsec-config-selected-hosts': modify_appsec_config_selected_hosts_command,
