@@ -663,7 +663,7 @@ Gets the configuration information for the remote domains configured in your org
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain_controller | The fully qualified domain name (FQDN) of the domain controller. For example, dc01.contoso.com.<br/>This argument is available only in on-premises Exchange. | Optional | 
+| domain_controller | The fully qualified domain name (FQDN) of the domain controller. For example, dc01.example.com.<br/>This argument is available only in on-premises Exchange. | Optional | 
 | identity | The remote domain that you want to view. You can use the GUID, ID, or any other identifier. | Optional | 
 
 
