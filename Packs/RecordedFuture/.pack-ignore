@@ -1,9 +1,3 @@
-[file:RecordedFuture.yml]
-ignore=IN136,IN145
-
-[file:README.md]
-ignore=RM102
-
 [file:playbook-Recorded_Future_URL_Intelligence.yml]
 ignore=PB121
 
