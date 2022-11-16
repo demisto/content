@@ -117,13 +117,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: ID of SAPM Account
+      description: ID of SAPM account in the database (can be retrieved from single-connect-sapm-account-list-all
+        or single-connect-sapm-account-search-with-secret-name commands' output)
       isArray: false
       name: sapm_db_id
       required: true
       secret: false
     - default: false
-      description: The comment to access the password.
+      description: Leave a comment explaining why the password is accessed
       isArray: false
       name: comment
       required: true
@@ -144,7 +145,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: IP Address of the device
+      description: Full or partial IP address of device
       isArray: false
       name: device_ip
       required: true
@@ -216,7 +217,7 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: Name of the account in the SAPM
+      description: Full or partial account name of the SAPM account
       isArray: false
       name: secret_name
       required: true
