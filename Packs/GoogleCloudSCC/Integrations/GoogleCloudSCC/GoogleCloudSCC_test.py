@@ -7,7 +7,7 @@ import pytest
 from GoogleCloudSCC import ERROR_MESSAGES, GoogleSccClient, BaseGoogleClient, GooglePubSubClient, \
     GoogleCloudAssetClient, GoogleNameParser
 
-with open("TestData/service_account_json.txt") as f:
+with open("test_data/service_account_json.txt") as f:
     TEST_JSON = f.read()
 
 
@@ -216,7 +216,7 @@ def test_fetch_incidents(pubsub_client):
     - An incident made according to parameters and last_run is returned.
     """
     from GoogleCloudSCC import fetch_incidents
-    with open('TestData/fetch_incidents_data.json') as file:
+    with open('test_data/fetch_incidents_data.json') as file:
         mock_data = json.load(file)
 
     pubsub_client.pull_messages = Mock(return_value=mock_data)
@@ -375,9 +375,9 @@ def test_prepare_hr_and_ec_for_list_findings():
     - Ensure finding HR and EC.
     """
     from GoogleCloudSCC import prepare_hr_and_ec_for_list_findings
-    with open('./TestData/list_finding_response.json') as f:
+    with open('./test_data/list_finding_response.json') as f:
         finding_response = json.load(f)
-    with open('./TestData/list_finding_ec.json') as f:
+    with open('./test_data/list_finding_ec.json') as f:
         finding_ec = json.load(f)
 
     _, context = prepare_hr_and_ec_for_list_findings(finding_response)
@@ -415,11 +415,11 @@ def test_findings_list_command(client):
     - Ensure command should return proper outputs.
     """
     from GoogleCloudSCC import finding_list_command
-    with open('TestData/list_finding_response.json') as file:
+    with open('test_data/list_finding_response.json') as file:
         mock_data = json.load(file)
-    with open('./TestData/list_finding_ec.json') as f:
+    with open('./test_data/list_finding_ec.json') as f:
         finding_ec = json.load(f)
-    with open('TestData/list_finding_hr.md') as f:
+    with open('test_data/list_finding_hr.md') as f:
         hr_output = f.read()
     GoogleNameParser.get_organization_id = Mock(return_value='123')
     client.get_findings = Mock(return_value=mock_data)
@@ -473,9 +473,9 @@ def test_prepare_hr_and_ec_for_list_assets():
     - Ensure finding HR and EC.
     """
     from GoogleCloudSCC import prepare_outputs_for_list_assets
-    with open('./TestData/list_asset_response.json') as f:
+    with open('./test_data/list_asset_response.json') as f:
         asset_response = json.load(f)
-    with open('./TestData/list_asset_ec.json') as f:
+    with open('./test_data/list_asset_ec.json') as f:
         asset_ec = json.load(f)
 
     context, _ = prepare_outputs_for_list_assets(asset_response)
@@ -513,11 +513,11 @@ def test_asset_list_command(client):
     - Ensure command should return proper outputs.
     """
     from GoogleCloudSCC import asset_list_command
-    with open('TestData/list_asset_response.json') as file:
+    with open('test_data/list_asset_response.json') as file:
         mock_data = json.load(file)
-    with open('./TestData/list_asset_ec.json') as f:
+    with open('./test_data/list_asset_ec.json') as f:
         asset_ec = json.load(f)
-    with open('TestData/list_asset_hr.md') as f:
+    with open('test_data/list_asset_hr.md') as f:
         hr_output = f.read()
     GoogleNameParser.get_organization_id = Mock(return_value='123')
     client.get_assets = Mock(return_value=mock_data)
@@ -612,7 +612,7 @@ def test_prepare_hr_and_ec_for_update_finding():
     - Ensure finding HR is correct
     """
     from GoogleCloudSCC import prepare_hr_and_ec_for_update_finding
-    with open('./TestData/update_finding_response.json') as f:
+    with open('./test_data/update_finding_response.json') as f:
         finding_response = json.load(f)
 
     hr, _ = prepare_hr_and_ec_for_update_finding(finding_response)
@@ -633,10 +633,10 @@ def test_prepare_hr_and_ec_for_cloud_assets_list():
     - Ensure HR and entry context is correct
     """
     from GoogleCloudSCC import prepare_hr_and_ec_for_cloud_asset_list
-    with open('./TestData/cloud_assets_list_response.json') as f:
+    with open('./test_data/cloud_assets_list_response.json') as f:
         cloud_assets_response = json.load(f)
 
-    with open('./TestData/cloud_assets_list_ec.json') as f:
+    with open('./test_data/cloud_assets_list_ec.json') as f:
         cloud_assets_ec = json.load(f)
 
     hr, ec = prepare_hr_and_ec_for_cloud_asset_list(cloud_assets_response)
@@ -681,11 +681,11 @@ def test_cloud_asset_list_command(cloud_asset_client):
     - Ensure command should return proper outputs.
     """
     from GoogleCloudSCC import cloud_asset_list_command
-    with open('TestData/cloud_assets_list_response.json') as file:
+    with open('test_data/cloud_assets_list_response.json') as file:
         mock_data = json.load(file)
-    with open('./TestData/cloud_assets_list_ec.json') as f:
+    with open('./test_data/cloud_assets_list_ec.json') as f:
         asset_ec = json.load(f)
-    with open('TestData/cloud_assets_list_hr.md') as f:
+    with open('test_data/cloud_assets_list_hr.md') as f:
         hr_output = f.read()
     GoogleNameParser.get_organization_id = Mock(return_value='123')
     cloud_asset_client.get_assets = Mock(return_value=mock_data)
@@ -718,9 +718,9 @@ def test_cloud_asset_owner_get_command(cloud_asset_client, test_case, project_na
     - Ensure command should call the API expected times and return appropriate outputs.
     """
     from GoogleCloudSCC import cloud_asset_owner_get_command
-    with open('TestData/cloud_assets_owners_get_response.json') as file:
+    with open('test_data/cloud_assets_owners_get_response.json') as file:
         mock_data = json.load(file)['test-cases'][test_case]
-    with open('TestData/cloud_assets_owners_get_hr.json') as file:
+    with open('test_data/cloud_assets_owners_get_hr.json') as file:
         hr_output = json.load(file)['test-cases'][test_case]
     GoogleNameParser.get_organization_id = Mock(return_value='123')
     cloud_asset_client.get_assets = Mock(side_effect=mock_data['responses'])
@@ -749,11 +749,11 @@ def test_finding_update_command(client, mocker):
     - Ensure command should return proper outputs.
     """
     from GoogleCloudSCC import finding_update_command, demisto
-    with open('TestData/update_finding_response.json') as file:
+    with open('test_data/update_finding_response.json') as file:
         mock_data = json.load(file)
-    with open('./TestData/update_finding_ec.json') as f:
+    with open('./test_data/update_finding_ec.json') as f:
         finding_ec = json.load(f)
-    with open('./TestData/update_finding_hr.md') as f:
+    with open('./test_data/update_finding_hr.md') as f:
         hr_output = f.read()
     client.update_finding = Mock(return_value=mock_data)
     params = {
@@ -783,10 +783,10 @@ def test_prepare_hr_and_ec_for_cloud_asset_owners_get():
     - Ensure HR and entry context is correct
     """
     from GoogleCloudSCC import prepare_hr_and_ec_for_cloud_asset_owners_get
-    with open('./TestData/cloud_assets_owners_get_assets.json') as f:
+    with open('./test_data/cloud_assets_owners_get_assets.json') as f:
         cloud_assets_response = json.load(f)
 
-    with open('./TestData/cloud_assets_owners_get_ec.json') as f:
+    with open('./test_data/cloud_assets_owners_get_ec.json') as f:
         cloud_assets_ec = json.load(f)
 
     hr, ec = prepare_hr_and_ec_for_cloud_asset_owners_get(cloud_assets_response['assets'],
@@ -1055,11 +1055,11 @@ def test_finding_state_update_command(client):
     - Ensure command should return proper outputs.
     """
     from GoogleCloudSCC import finding_state_update_command
-    with open('TestData/update_finding_response.json') as file:
+    with open('test_data/update_finding_response.json') as file:
         mock_data = json.load(file)
-    with open('./TestData/update_finding_ec.json') as f:
+    with open('./test_data/update_finding_ec.json') as f:
         finding_ec = json.load(f)
-    with open('TestData/update_finding_hr.md') as f:
+    with open('test_data/update_finding_hr.md') as f:
         hr_output = f.read()
     GoogleNameParser.get_organization_id = Mock(return_value='123')
     client.update_state = Mock(return_value=mock_data)
