@@ -19,9 +19,9 @@ tasks:
       id: b22e1f46-1d21-4d45-849d-bed03a162b30
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -95,10 +95,10 @@ tasks:
       id: ab486425-3395-4ca0-8488-226cb3fac308
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -266,10 +266,10 @@ tasks:
       id: f47b67b4-c266-40df-817c-8a13d8657bbb
       version: -1
       name: URL Screenshots
+      description: ""
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "27"
@@ -297,10 +297,10 @@ tasks:
       id: bf6b144d-6347-4db7-8fc0-f55ee4ef8463
       version: -1
       name: URL Verification
+      description: ""
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "33"
@@ -413,10 +413,10 @@ tasks:
       id: 1371d97e-ab2a-47ff-848d-cdf20c1b54f8
       version: -1
       name: VirusTotal Private API Enrichment
+      description: ""
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "39"
@@ -444,10 +444,10 @@ tasks:
       id: d8c05ede-0753-4786-819a-3aaec99dea10
       version: -1
       name: No URLs
+      description: ""
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "24"

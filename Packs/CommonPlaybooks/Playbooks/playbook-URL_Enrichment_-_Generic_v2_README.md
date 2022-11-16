@@ -20,8 +20,8 @@ This playbook does not use any sub-playbooks.
 * URLSSLVerification
 
 ### Commands
-* url
 * rasterize
+* url
 
 ## Playbook Inputs
 ---
