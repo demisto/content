@@ -4517,6 +4517,10 @@
             "integrations": [
                 "Feodo Tracker IP Blocklist Feed",
                 "Feodo Tracker Hashes Feed"
+            ],
+            "instance_names": [
+                "feodo_tracker_ip_currently__active",
+                "feodo_tracker_ip_30_days"
             ]
         },
         {
@@ -5051,14 +5055,6 @@
             "memory_threshold": 900,
             "pid_threshold": 12,
             "is_mockable": false
-        },
-        {
-            "playbookID": "TAXII2 Indicator Performance Test",
-            "fromversion": "6.1.0"
-        },
-        {
-            "playbookID": "TAXII2 Performance Test - Concurrency",
-            "fromversion": "6.1.0"
         },
         {
             "integrations": "FortiSIEMV2",
