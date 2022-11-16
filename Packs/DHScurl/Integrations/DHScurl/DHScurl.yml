@@ -1,0 +1,47 @@
+category: Utilities
+commonfields:
+  id: DHScurl
+  version: -1
+configuration:
+- displaypassword: Key File as Text
+  additionalinfo: For more information, visit https://us-cert.cisa.gov/ais.
+  name: key
+  type: 9
+  required: false
+  hiddenusername: true
+- additionalinfo: For more information, visit https://us-cert.cisa.gov/ais.
+  display: Certificate File as Text
+  name: certificate
+  required: false
+  type: 12
+description: Run curl for DHS
+display: 'DHScurl'
+name: DHScurl
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Which curl to run
+      isArray: false
+      name: curl
+      predefined:
+      - all
+      - taxii2
+      - collections
+      - objects
+      required: true
+      secret: false
+    deprecated: false
+    description: Run the wanted curls to DHS
+    execution: false
+    name: dhscurl-run
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/netutils:1.0.0.6138
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
