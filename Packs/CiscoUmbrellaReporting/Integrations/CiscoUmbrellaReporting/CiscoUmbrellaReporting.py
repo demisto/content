@@ -184,38 +184,36 @@ def cisco_umbrella_error_handler(response: requests.Response):
 def check_valid_indicator_value(indicator_type: str,
                                 indicator_value: str) -> bool:
     """
-    Check valid indicator value
+    Check the validity of indicator values
     Args:
         indicator_type: Indicator type provided in the command
         indicator_value: Indicator value provided in the command
     Returns:
-        True if the provided indicator values are valid.
+        True if the provided indicator values are valid
     """
-    domain_regex = re.compile(
-        r"(?i)(?:(?:http|ftp|hxxp)s?(?:://|-3A__|%3A%2F%2F))?((?:["
-        r"^\\\.@\s\"',(\[:?=]+(?:\.|\[\.\]))+[a-zA-Z]{2,})(?:[_/\s\"',"
-        r")\]]|[.]\s|%2F|$)"
-    )
-
     if indicator_type == DOMAIN_PARAM:
         indicator_value_list = argToList(indicator_value)
         for domain in indicator_value_list:
-            if not re.match(domain_regex, domain):
+            if not re.match(domainRegex, domain):
                 raise ValueError(
                     f'Domain {domain} is invalid')
+
     elif indicator_type == URL_PARAM:
         indicator_value_list = argToList(indicator_value)
         for url in indicator_value_list:
             if not re.match(urlRegex, url):
                 raise ValueError(
                     f'URL {url} is invalid')
+
     elif indicator_type == IP_PARAM:
-        if not is_ip_valid(indicator_value, accept_v6_ips=True):  # check IP's validity
+        if not is_ip_valid(indicator_value, accept_v6_ips=True):
             raise ValueError(f'IP "{indicator_value}" is not valid')
+
     if indicator_type == SHA256_PARAM:
         if not re.match(sha256Regex, indicator_value):
             raise ValueError(
                 f'SHA256 value {indicator_value} is invalid')
+
     if indicator_type == INTRUSION_ACTION:
         intrusion_list = argToList(indicator_value)
         for intrusion in intrusion_list:
