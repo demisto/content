@@ -2030,9 +2030,6 @@ script:
     - contextPath: Gmail.ForwardingAddress.userId
       description: The user's email address.
       type: String
-    - contextPath: Gmail.ForwardingAddress.verificationStatus
-      description: Indicates whether this address has been verified and is usable for forwarding.
-      type: String
     - contextPath: Gmail.ForwardingAddress.Disposition
       description: The state that a message should be left in after it has been forwarded.
       type: String
