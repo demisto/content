@@ -242,8 +242,7 @@ class URLCheck(object):
 
                 if not self.inside_brackets:
                     if self.check_domain(host) and all([char in self.brackets for char in self.modified_url[index:]]):
-                        # Domain is valid with trailing "]" and other brackets, the formatter will allow it removing extra chars
-                        index = len(self.modified_url)
+                        # Domain is valid with trailing "]" and brackets, the formatter will remove the extra chars
                         self.done = True
                         return
 
