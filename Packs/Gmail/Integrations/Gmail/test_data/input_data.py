@@ -522,6 +522,7 @@ second_incident_result = [{'type': 'Gmail', 'name': 'HelloWorld1', 'details': 'h
                                      {'type': 'Email/Header/date', 'value': 'Wed, 9 Nov 2022 22:45:44 -0500'}], 'occurred': '2022-11-10T03:45:44Z', 'attachment': [], 'rawJSON': '{"Type": "Gmail", "Mailbox": null, "ID": "1845fa4c3a5618cb", "ThreadId": "1845fa4c3a5618cb", "Labels": "SENT", "Headers": [{"Name": "Received", "Value": "from 111111111111 named unknown by gmailapi.google.com with HTTPREST; Wed, 9 Nov 2022 22:45:44 -0500"}, {"Name": "Content-Type", "Value": "text/plain; charset=\\"utf-8\\""}, {"Name": "MIME-Version", "Value": "1.0"}, {"Name": "Content-Transfer-Encoding", "Value": "base64"}, {"Name": "to", "Value": "test@gmail.com"}, {"Name": "cc", "Value": ""}, {"Name": "bcc", "Value": ""}, {"Name": "from", "Value": "admin@demistodev.com"}, {"Name": "subject", "Value": "HelloWorld1"}, {"Name": "reply-to", "Value": ""}, {"Name": "Date", "Value": "Wed, 9 Nov 2022 22:45:44 -0500"}], "Attachments": "", "RawData": null, "Format": "text/plain", "Subject": "HelloWorld1", "From": "admin@demistodev.com", "To": "test@gmail.com", "Body": "helloworld\\r\\n", "Cc": "", "Bcc": "", "Date": "Wed, 09 Nov 2022 22:45:44 -0500", "Html": null}'}]
                       
 
+
 # test_forwarding_address_get_command #
 expected_result_forwarding_address_get_command_1 = {"raw_response": {'forwardingEmail': 'test@gmail.com',
                                                                      'verificationStatus': 'accepted',
@@ -536,3 +537,16 @@ expected_result_forwarding_address_get_command_2 = {"raw_response": {'forwarding
                                                     "readable_output": '### Get forwarding address for: "111"\n|forwardingEmail|verificationStatus|\n|---|---|\n| test@gmail.com | accepted |\n'}
 
 
+
+# test_forwarding_address_get_command #
+expected_result_forwarding_address_get_command_1 = {"raw_response": {'forwardingEmail': 'test@gmail.com',
+                                                                     'verificationStatus': 'accepted',
+                                                                     'userId': '111'},
+                                                    "outputs": {'forwardingEmail': 'test@gmail.com',
+                                                                'verificationStatus': 'accepted',
+                                                                'userId': '111'},
+                                                    "readable_output": '### Get forwarding address for: "111"\n|forwardingEmail|verificationStatus|\n|---|---|\n| test@gmail.com | accepted |\n'}
+
+expected_result_forwarding_address_get_command_2 = {"raw_response": {'forwardingEmail': 'test@gmail.com', 'verificationStatus': 'accepted', 'userId': '111'},
+                                                    "outputs": {'forwardingEmail': 'test@gmail.com', 'verificationStatus': 'accepted', 'userId': '111'},
+                                                    "readable_output": '### Get forwarding address for: "111"\n|forwardingEmail|verificationStatus|\n|---|---|\n| test@gmail.com | accepted |\n'}
