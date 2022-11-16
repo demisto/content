@@ -37,7 +37,7 @@ def return_error_mail_sender(data):
     Return error as result and exit
     """
     if SERVER:
-        try:  # quite may throw if the connection was closed already
+        try:  # quit may throw if the connection was closed already
             SERVER.quit()
         except Exception:
             pass
@@ -59,9 +59,7 @@ def guess_type(filename):
 def rewrite_recipients(to, cc, bcc):
     if bool(demisto.getParam('intercept_recipients')):
         to = argToList(demisto.getParam('replacement_recipient'))
-        cc = []
-        bcc = []
-        return to, cc, bcc
+        return to, [], []
     else:
         return to, cc, bcc
 
