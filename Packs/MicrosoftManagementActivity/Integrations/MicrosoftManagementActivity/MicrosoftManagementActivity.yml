@@ -85,7 +85,7 @@ configuration:
   name: timeout
   required: false
   type: 0
-  section: Collect
+  section: Connect
   advanced: true
 - display: Content types to fetch
   name: content_types_to_fetch
