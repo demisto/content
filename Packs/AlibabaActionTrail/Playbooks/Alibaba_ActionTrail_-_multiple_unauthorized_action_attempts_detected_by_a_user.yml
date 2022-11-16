@@ -8,7 +8,7 @@ description: |-
   * Enrichment for Verdict
   * Block IP - Generic v3
 
-  If you wish to link this playbook to the relevant alerts automatically, we recommend using the following filters when configuring the playbook triggers:
+  To link this playbook to the relevant alerts automatically, we recommend using the following filters when configuring the playbook triggers:
   Alert Source = Correlation
   Alert Name = Alibaba ActionTrail - multiple unauthorized action attempts detected by a user
 starttaskid: "0"
@@ -154,7 +154,7 @@ tasks:
       - "25"
     scriptarguments:
       closeNotes:
-        simple: The user confirmed he made these multiple unauthorized API call attempts.
+        simple: The user confirmed that he made these multiple unauthorized API call attempts.
       closeReason:
         simple: false  positive
     separatecontext: false
@@ -262,7 +262,7 @@ tasks:
       id: dae4ed4a-afd2-4f74-8b1a-dc0673bfb02a
       version: -1
       name: EmailAsk User
-      description: EmailAsk's the user to confirm the multiple unauthorized API call attempts.
+      description: EmailAsk asks the user to confirm the multiple unauthorized API call attempts.
       type: collection
       iscommand: false
       brand: ""
@@ -336,7 +336,7 @@ tasks:
       id: 090360c1-4876-422c-8de9-89b307901a11
       version: -1
       name: Continue Manual Investigation
-      description: "Continue investigating the alert manually and check if:\n1- Additional activities initiated from the IP address and user account.\n2- Were any successful API calls initiated by the user or IP address?\n3- Check if the Alibaba user account has high privileges. "
+      description: "Continue investigating the alert manually and check whether:\n1- Additional activities initiated from the IP address and user account.\n2- Any successful API calls initiated by the user or IP address?\n3- The Alibaba user account has high privileges. "
       type: regular
       iscommand: false
       brand: ""
@@ -367,7 +367,7 @@ tasks:
       id: 6a7ff31b-1051-454b-8536-3ca9b6198f93
       version: -1
       name: Enrichment for Verdict
-      description: This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then  returns the information needed to establish the alert's verdict.
+      description: This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then returns the information needed to establish the alert's verdict.
       playbookName: Enrichment for Verdict
       type: playbook
       iscommand: false
@@ -486,7 +486,7 @@ tasks:
       id: b8b32205-818f-4cfa-8137-6f1498497e88
       version: -1
       name: Block IP - Generic v3
-      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the Cortex XSOAR user (and set by default to outgoing).\nNote the following:\n- Some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
       playbookName: Block IP - Generic v3
       type: playbook
       iscommand: false
@@ -627,7 +627,7 @@ inputs:
 - key: InternalRange
   value: {}
   required: false
-  description: List of Internal IP ranges
+  description: List of internal IP ranges
   playbookInputQuery:
 outputs: []
 tests:
