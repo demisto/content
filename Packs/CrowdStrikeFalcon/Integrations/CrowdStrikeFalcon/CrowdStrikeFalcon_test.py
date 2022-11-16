@@ -2194,7 +2194,7 @@ class TestFetch:
             The `first_behavior_time` doesn't change and an `offset` of 2 is added.
 
         """
-        from CrowdStrikeFalcon import migrate_last_run
+        from CrowdStrikeFalcon import handle_last_run
         mocker.patch.object(demisto, 'getLastRun',
                             return_value={'first_behavior_detection_time': '2020-09-04T09:16:10Z',
                                           'detection_offset': 2,
@@ -2202,10 +2202,13 @@ class TestFetch:
                                           'last_fetched_incident': '3',
                                           'incident_offset': 4,
                                           })
-        migrate_last_run()
+        handle_last_run()
         assert demisto.setLastRun.mock_calls[0][1][0] == [{'time': '2020-09-04T09:16:10Z', 'offset': 2},
                                                           {'time': '2020-09-04T09:22:10Z', 'last_fetched_incident': '3',
                                                            'offset': 4}]
+        mocker.patch.object(demisto, 'getLastRun', return_value=None)
+        handle_last_run()
+        assert demisto.setLastRun.call_count == 1
 
     def test_new_fetch_with_offset(self, set_up_mocks, mocker):
         """

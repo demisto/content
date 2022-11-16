@@ -1992,10 +1992,7 @@ def get_fetch_times_and_offset(current_fetch_info: dict):
     return last_fetch_time, offset, prev_fetch, last_fetch_timestamp
 
 
-def migrate_last_run():
-    last_run = demisto.getLastRun()
-    if isinstance(last_run, list):
-        return
+def migrate_last_run(last_run: dict):
     updated_last_run_detections = {}
     if (detection_time := last_run.get('first_behavior_detection_time')) and (detection_time := dateparser.parse(detection_time)):
         updated_last_run_detections['time'] = detection_time.strftime(DATE_FORMAT)
@@ -2007,7 +2004,17 @@ def migrate_last_run():
     updated_last_run_incidents['last_fetched_incident'] = last_run.get('last_fetched_incident')
     updated_last_run_incidents['offset'] = last_run.get('incident_offset')
 
-    demisto.setLastRun([updated_last_run_detections, updated_last_run_incidents])
+    return [updated_last_run_detections, updated_last_run_incidents]
+
+
+def handle_last_run():
+    last_run = demisto.getLastRun()
+    demisto.debug(f'CrowdStrikeFalconMsg: Current last run object is {last_run}')
+
+    if not last_run or isinstance(last_run, list):
+        return
+
+    demisto.setLastRun(migrate_last_run(last_run))
 
 
 def fetch_incidents():
@@ -2019,13 +2026,12 @@ def fetch_incidents():
     current_fetch_info_incidents: dict = last_run[1]
     fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections')
     look_back = int(demisto.params().get('look_back', 0))
-    fetch_time = demisto.params().get('fetch_time')
     fetch_limit = INCIDENTS_PER_FETCH
 
-    demisto.debug("CrowdstrikeFalconMsg: Starting fetch incidents")
+    demisto.debug(f"CrowdstrikeFalconMsg: Starting fetch incidents with {fetch_incidents_or_detections}")
     if 'Detections' in fetch_incidents_or_detections:
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info_detections,
-                                                                    first_fetch=fetch_time,
+                                                                    first_fetch=FETCH_TIME,
                                                                     look_back=look_back)
 
         incident_type = 'detection'
@@ -2072,7 +2078,7 @@ def fetch_incidents():
 
     if 'Incidents' in fetch_incidents_or_detections:
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info_incidents,
-                                                                    first_fetch=fetch_time,
+                                                                    first_fetch=FETCH_TIME,
                                                                     look_back=look_back)
 
         incident_type = 'incident'
@@ -3867,11 +3873,11 @@ def main():
     args = demisto.args()
     try:
         if command == 'test-module':
-            migrate_last_run()
+            handle_last_run()
             result = test_module()
             return_results(result)
         elif command == 'fetch-incidents':
-            migrate_last_run()
+            handle_last_run()
             demisto.incidents(fetch_incidents())
 
         elif command in ('cs-device-ran-on', 'cs-falcon-device-ran-on'):
