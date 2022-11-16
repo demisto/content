@@ -2607,7 +2607,7 @@ This uses the instance parameters to create the AQL search query for the events.
 
 ### qradar-remote-network-cidr-create
 ***
-Create remote network cidrs
+Create remote network CIDRs.
 
 
 #### Base Command
@@ -2617,11 +2617,11 @@ Create remote network cidrs
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cidrs | An input list of CIDRs to add to Qradar (can be obtained from automatically from EDL integrations and playbook).<br>Multiple values in the same object are separated by commas.<br>One of the cidr or query is required. | Optional | 
-| query | The query for getting indicators from Cortex XSOAR.<br>One of the cidr or query is required. | Optional | 
-| name | A CIDRs (remote networks) name that will be displayed for all uploaded values in Qradar. | Required | 
-| description | Description that will be displayed and associated with all the newly uploaded CIDRs on Qradar. | Required | 
-| group | The exact name of the remote network group that CIDRs should be associated with as it appears in Qradar. A single group can be assigned to each create command.<br>A new remote network group can be created in Qradar by giving a new unique remote network group name (that does not already exist in Qradar remote networks). | Required | 
+| cidrs | An input list of CIDRs to add to QRadar (can be obtained automatically from the EDL integrations and playbook).<br>Multiple values in the same object are separated by commas.<br>A CIDR or query is required. | Optional | 
+| query | The query for getting indicators from Cortex XSOAR.<br>A CIDR or query is required. | Optional | 
+| name | A CIDR (remote network) name that will be displayed for all uploaded values in QRadar. | Required | 
+| description | Description that will be displayed and associated with all the newly uploaded CIDRs on QRadar. | Required | 
+| group | The exact name of the remote network group that CIDRs should be associated with as it appears in QRadar. A single group can be assigned to each create command.<br>A new remote network group can be created in QRadar by giving a new unique remote network group name (that does not already exist in QRadar remote networks). | Required | 
 | fields | Use this parameter to specify which fields you would like to get back in the response.<br>Fields that are not named are excluded from the output.<br>The possible fields are id, group, name, cidr, and description. | Optional | 
 
 
@@ -2675,10 +2675,10 @@ Retrieves a list of staged remote networks.
 | limit | The maximum number of results to return. The default is 50. | Optional |
 | page | The page number from which to start getting results. | Optional | 
 | page_size | The number of results to return per page. | Optional |
-| group | The name of the remote network group that CIDRs associated with, as it appears in Qradar. | Optional | 
+| group | The name of the remote network group that CIDRs are associated with, as it appears in QRadar. | Optional | 
 | id | Id of CIDR (remote network). | Optional | 
-| name | The name of CIDRs (remote network) appears in Qradar. | Required | 
-| filter | Additional options to filter results using a query_expression. | Optional | 
+| name | The name of the CIDRs (remote network) that appear in QRadar. | Required | 
+| filter | Additional options to filter results using a query expression. | Optional | 
 | fields | Use this parameter to specify which fields you would like to get back in the response.<br>Fields that are not named are excluded from the output.<br>The possible fields are id, group, name, cidr, and description. | Optional | 
 
 
@@ -2686,10 +2686,10 @@ Retrieves a list of staged remote networks.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| QRadar.RemoteNetworkCIDR | Number | Array of - A list of all the retrieved CIDRs. | 
-| QRadar.RemoteNetworkCIDR.id | Number |  Id of each CIDR remote network that is part of the group. | 
-| QRadar.RemoteNetworkCIDR.name | String | The associated CIDR name as appear in Qradar. | 
-| QRadar.RemoteNetworkCIDR.description | String | The associated CIDR description as appear in Qradar. | 
+| QRadar.RemoteNetworkCIDR | Number | A list of all the retrieved CIDRs. | 
+| QRadar.RemoteNetworkCIDR.id | Number |  ID of each CIDR remote network that is part of the group. | 
+| QRadar.RemoteNetworkCIDR.name | String | The associated CIDR name as it appears in QRadar. | 
+| QRadar.RemoteNetworkCIDR.description | String | The associated CIDR description as it appears in QRadar. | 
 
 
 #### Command example
@@ -2716,7 +2716,7 @@ Deletes an existing staged remote network.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | ID that is used to locate the staged remote network to remove from Qradar. | Required |  
+| id | ID that is used to locate the staged remote network to remove from QRadar. | Required |  
 
 
 #### Context Output
@@ -2755,11 +2755,11 @@ Updates an existing staged remote network.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The id that is associated with the CIDR object which needs to be modified. | Required |
-| name | The CIDR name in Qradar. If the CIDR name should be changed, it can be inserted here. | Required |
-| cidrs | An input list of CIDRs to add to Qradar (can be obtained from automatically from EDL integrations and playbook).<br>Multiple values in the same object are separated by commas.<br>One of the cidr or query is required. | Optional |
-| query | The query for getting indicators from Cortex XSOAR.<br>One of the cidr or query is required. | Optional |
-| description | CIDR associated description presented in Qradar.<br>If the CIDR description should be changed, it can be inserted here. | Required |
+| id | The ID that is associated with the CIDR object that needs to be modified. | Required |
+| name | The CIDR name in QRadar. If the CIDR name should be changed, it can be inserted here. | Required |
+| cidrs | An input list of CIDRs to add to QRadar (can be obtained automatically from the EDL integrations and playbook).<br>Multiple values in the same object are separated by commas.<br>A CIDR or query is required. | Optional |
+| query | The query for getting indicators from Cortex XSOAR.<br>A CIDR or query is required. | Optional |
+| description | CIDR associated description presented in QRadar.<br>If the CIDR description should be changed, it can be inserted here. | Required |
 | group | The remote network group that CIDRs should belong to.<br>If the CIDR-associated group should be changed, it can be inserted here. | Required |
 | fields | Use this parameter to specify which fields you would like to get back in the response.<br>Fields that are not named are excluded.<br>Specify subfields in brackets, and multiple fields in the same object are separated by commas.<br>The possible fields are id,group,name,cidr,description.  | Optional |
 
@@ -2768,8 +2768,8 @@ Updates an existing staged remote network.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| QRadar.RemoteNetworkCIDR | Number | Array of - A list of all the CIDR ranges that were changed. | 
-| QRadar.RemoteNetworkCIDR.id | Number |  The associated CIDR id. | 
+| QRadar.RemoteNetworkCIDR | Number | A list of all the CIDR ranges that were changed. | 
+| QRadar.RemoteNetworkCIDR.id | Number | The associated CIDR ID. | 
 | QRadar.RemoteNetworkCIDR.name | String | The associated CIDR name. | 
 | QRadar.RemoteNetworkCIDR.group | String | The group to which the remote network belongs. | 
 | QRadar.RemoteNetworkCIDR.description | String | The associated CIDR description. |
@@ -2807,7 +2807,7 @@ Updates an existing staged remote network.
 
 ### qradar-remote-network-deploy-execution
 ***
-Executes a deploy.
+Executes a deployment.
 
 
 #### Base Command
@@ -2817,9 +2817,9 @@ Executes a deploy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_ip | The IP of qradar console host. | Required |
-| status | TMust be in capital letters (“INITIATING”). | Optional |
-| deployment_type | Must be in capital letters (“INCREMENTAL” or “FULL”). | Required |
+| host_ip | The IP of the QRadar console host. | Required |
+| status | The deployment status. Must be in capital letters (“INITIATING”). | Optional |
+| deployment_type | The deployment type. Must be in capital letters (“INCREMENTAL” or “FULL”). | Required |
 
 
 #### Context Output
