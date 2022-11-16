@@ -9,6 +9,7 @@ from contextlib import redirect_stderr, redirect_stdout
 from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR
 from demisto_sdk.commands.common.tools import find_type
+import contextlib
 
 PR_TEMPLATE = '### Pull Request created in Cortex XSOAR\n' \
               '**Created by:** {}\n' \
@@ -290,7 +291,8 @@ def main():  # pragma: no cover
         incident_url = demisto.demistoUrls().get('investigation')
 
         # create the PR text
-        pr_body = template.format(username, pack_name, branch_name, incident_url, comment)
+        pr_body = template.format(f'{username}\n', f'{pack_name}\n', f'{branch_name}\n', f'{incident_url}\n',
+                                  f'{comment}\n')
         if new_files:
             pr_body = f'{pr_body}\n\n### New files\n- '
             pr_body = pr_body + '\n- '.join(new_files)
