@@ -110,7 +110,7 @@ script:
       description: The host name of the device.
       name: hostname
       predefined:
-      - ''
+      - 
     - auto: PREDEFINED
       description: 'The platform name of the device. Possible values are: Windows, Mac, and Linux.'
       name: platform_name
@@ -1991,6 +1991,12 @@ script:
     - description: The endpoint hostname.
       name: hostname
       secret: false
+    - default: true
+      description: ''
+      isArray: true
+      name: endpoint
+      required: true
+      secret: false
     description: Returns information about an endpoint.
     name: endpoint
     outputs:
@@ -2502,54 +2508,234 @@ script:
     description: Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection.
     name: update-remote-system
   - arguments:
-    - description: limit the vulnerabilities returned to specific properties. Each value must be enclosed in single quotes and placed immediately after the colon with no space. 
+    - description: limit the vulnerabilities returned to specific properties. Each value must be enclosed in single quotes and placed immediately after the colon with no space.
       name: filter
       required: false
     - description: Unique agent identifier (AID) of a sensor
-      name: aid 
+      name: aid
+      isArray: true
       required: false
     - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
       name: cve_id
+      isArray: true
       required: false
     - description: Severity of the CVE. Possible values CRITICAL, HIGH, MEDIUM, LOW, UNKNOWN, or NONE.
       name: cve_severity
+      isArray: true
       required: false
-    - description: Name of a tag assigned to a host. Retrieve tags from Host Tags APIs. 
+    - description: Name of a tag assigned to a host. Retrieve tags from Host Tags APIs.
       name: tags
+      isArray: true
       required: false
     - description: Status of a vulnerability. The value must be entered in all lowercase letters. This filter supports multiple values and negation.
       name: status
+      isArray: true
       required: false
     - description: Operating system platform. This filter supports negation.
       name: platform_name
       required: false
     - description: Unique system-assigned ID of a host group. Retrieve the host group ID from Host Group APIs.
       name: host_group
+      isArray: true
       required: false
     - description: Type of host a sensor is running on.
       name: host_type
+      isArray: true
       required: false
-    - description: Filter for vulnerabilities based on the number of days since a host last connected to Falcon. Enter a numeric value from 3 to 45 to indicate the number of days you want to look back. 
+    - description: Filter for vulnerabilities based on the number of days since a host last connected to Falcon. Enter a numeric value from 3 to 45 to indicate the number of days you want to look back.
       name: last_seen_within
       required: false
     - description: Indicates if the vulnerability is suppressed by a suppression rule or not
       name: is_suppressed
+      isArray: true
       required: false
-    - auto: PREDI
-      description: displaying remediation information
+    - auto: PREDEFINED
+      description: Display remediation information type of data to be returned for each vulnerability entity.
       default: true
       name: display_remediation_info
       required: false
-    - description: 
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Display logic information type of data to be returned for each vulnerability entity.
+      default: true
       name: display_evaluation_logic_info
       required: false
-    - description: 
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Display host information type of data to be returned for each vulnerability entity.
       name: display_host_info
       required: false
-    - description: 
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Maximum number of items to return (1-5000).
+      default: 50
       name: limit
       required: false
     name: cs-falcon-spotlight-search-vulnerability
+    outputs:
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.id
+      description: Unique system-assigned ID of the vulnerability.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cid
+      description: Unique system-generated customer identifier (CID) of the account.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.aid
+      description: Unique agent identifier (AID) of the sensor where the vulnerability was found.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.created_timestamp
+      description: UTC date and time that the vulnerability was created in Spotlight.
+      type: Date
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.updated_timestamp
+      description: UTC date and time of the last update made on the vulnerability.
+      type: Date
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.status
+      description: Vulnerability's current status. One of open, closed, reopen, or expired.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.apps.product_name_version
+      description: Name and version of the product associated with the vulnerability.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.apps.sub_status
+      description: Status of each product associated with the vulnerability. One of open, closed, or reopen.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.apps.remediation.ids
+      description: Remediation ID of each product associated with the vulnerability.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.hostname
+      description: Name of the machine
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.instance_id
+      description: Cloud instance ID of the host.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.service_provider_account_id
+      description: Cloud service provider account ID for the host.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.service_provider
+      description: Cloud service provider for the host.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.os_build
+      description: Operating system build.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.product_type_desc
+      description: Type of host a sensor is running on.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.local_ip
+      description: Device's local IP address
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.machine_domain
+      description: Active Directory domain name.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.os_version
+      description: Operating system version.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.ou
+      description: Active directory organizational unit name.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.site_name
+      description: Active directory site name.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.system_manufacturer
+      description: Name of the system manufacturer.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.groups.id
+      description: Array of host group IDs that the host is assigned to.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.groups.name
+      description: Array of host group names that the host is assigned to.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.tags
+      description: Name of a tag assigned to a host.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.platform
+      description: Operating system platform. This filter supports negation.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.remediation.entities.id
+      description: Unique ID of the remediation.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.remediation.entities.reference
+      description: Relevant reference for the remediation that can be used to get additional details for the remediation.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.remediation.entities.title
+      description: Short description of the remediation.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.remediation.entities.action
+      description: Expanded description of the remediation.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.remediation.entities.link
+      description: Link to the remediation page for the vendor. In certain cases, this field is null.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.id
+      description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD).
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.base_score
+      description:
+      type: Number
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.severity
+      description: CVSS severity rating of the vulnerability.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.exploit_status
+      description: Numeric value of the most severe known exploit.
+      type: Number
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.exprt_rating
+      description: ExPRT rating assigned by CrowdStrike's predictive AI rating system.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.description
+      description: Brief explanation of the CVE
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.published_date
+      description: UTC timestamp with the date and time the vendor published the CVE.
+      type: Date
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.vendor_advisory
+      description: Link to the vendor page where the CVE was disclosed.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.exploitability_score
+      description: Exploitability score of the CVE (float values from 1-4).
+      type: Number
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.impact_score
+      description: Impact score of the CVE (float values from 1-6).
+      type: Number
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.vector
+      description: Textual representation of the metric values used to score the vulnerability.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.remediation_level
+      description: CVSS remediation level of the vulnerability (U = Unavailable, or O = Official fix)
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.cisa_info.is_cisa_kev
+      description: Filter for vulnerabilities that are in the CISA Known Exploited Vulnerabilities (KEV) catalog.
+      type: Boolean
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.cisa_info.due_date
+      description: Date before which CISA mandates subject organizations to patch the vulnerability.
+      type: Date
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.spotlight_published_date
+      description: UTC timestamp with the date and time Spotlight enabled coverage for the vulnerability.
+      type: Date
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.actors
+      description: Adversaries associated with the vulnerability.
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.name
+      description: The vulnerability name.
+      type: String
+  - arguments:
+    - description: Maximum number of items to return (1-5000).
+      default: 50
+      name: limit
+      required: false
+    - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
+      name: cve_ids
+      isArray: true
+      required: false
+    - default: true
+      description: ''
+      isArray: true
+      name: cve
+      required: true
+      secret: false
+    name: cve
+    description:
     outputs:
     - contextPath: CrowdStrike.VulnerabilityHost.resources.id
       description: ''
@@ -2587,13 +2773,147 @@ script:
     - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.id
       description: ''
       type: String
-      dockerimage: demisto/python3:3.10.8.36650
-      isfetch: true
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.base_score
+      description: ''
+      type: Number
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.severity
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.exploit_status
+      description: ''
+      type: Number
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.exprt_rating
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.remediation_level
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.cisa_info.is_cisa_kev
+      description: ''
+      type: Boolean
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.cisa_info.due_date
+      description: ''
+      type: Date
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.spotlight_published_date
+      description: ''
+      type: Date
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.description
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.published_date
+      description: ''
+      type: Date
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.vendor_advisory
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.references
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.exploitability_score
+      description: ''
+      type: Number
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.impact_score
+      description: ''
+      type: Number
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.vector
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.actors
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.name
+      description: ''
+      type: String
+  - arguments:
+    - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
+      name: cve_id
+      isArray: true
+      required: true
+    name: cs-falcon-spotlight-list-host-by-vulnerability
+    description:
+    outputs:
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.id
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cid
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.aid
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.created_timestamp
+      description: ''
+      type: Date
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.updated_timestamp
+      description: ''
+      type: Date
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.status
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.apps.product_name_version
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.apps.sub_status
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.apps.remediation.ids
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.apps.evaluation_logic.id
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.suppression_info.is_suppressed
+      description: ''
+      type: Boolean
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.hostname
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.local_ip
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.machine_domain
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.os_version
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.ou
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.site_name
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.system_manufacturer
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.platform
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.instance_id
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.service_provider_account_id
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.service_provider
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.os_build
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.host_info.product_type_desc
+      description: ''
+      type: String
+    - contextPath: CrowdStrike.VulnerabilityHost.resources.cve.id
+      description: ''
+      type: String
+  dockerimage: demisto/python3:3.10.8.36650
+  isfetch: true
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
   runonce: false
-  script: ''
+  script:
   subtype: python3
   type: python
 fromversion: 5.0.0
