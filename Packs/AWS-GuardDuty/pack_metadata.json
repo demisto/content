@@ -13,6 +13,10 @@
     "tags": [
         "Data Source"
     ],
+    "itemPrefix": [
+        "AWS",
+        "AWS AWS GuardDuty"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

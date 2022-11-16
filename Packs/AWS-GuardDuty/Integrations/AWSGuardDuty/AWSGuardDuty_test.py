@@ -1,3 +1,4 @@
+import json
 from contextlib import nullcontext as does_not_raise
 import demistomock as demisto  # noqa: F401
 
@@ -838,13 +839,81 @@ def update_finding_id(finding, new_id, updated_at=None):
     return finding
 
 
-@pytest.mark.parametrize('xsoar_severity, gd_severity', [('Low', 1), ('Medium', 4), ('High', 7), ('Unknown', 1)])
-def test_fetch_events(mocker, xsoar_severity, gd_severity):
+''' FETCH CONSTANTS '''
+FINDING_1 = update_finding_id(FINDING.copy(), "finding_id1")
+FINDING_2 = update_finding_id(FINDING.copy(), "finding_id2")
+INCIDENT_1 = {'name': 'title', 'details': 'desc', 'occurred': '2022-11-08T14:24:52.908Z', 'severity': 0,
+              'rawJSON': json.dumps(FINDING_1, default=str)}
+INCIDENT_2 = {'name': 'title', 'details': 'desc', 'occurred': '2022-11-08T14:24:52.908Z', 'severity': 0,
+              'rawJSON': json.dumps(FINDING_2, default=str)}
+INCIDENTS_NEXT_RUN = {'latest_created_time': '2022-11-08T14:24:52.908000Z',
+                      'latest_updated_time': '2022-11-08T14:24:52.908000Z',
+                      'last_incidents_ids': ['finding_id1', 'finding_id2'],
+                      'last_next_token': ""}
+
+
+@pytest.mark.parametrize('gd_severity, '
+                         'last_run, fetch_limit, first_fetch_time,'
+                         'expected_incidents, expected_next_run, '
+                         'expected_criterion_conditions,'
+                         'mock_list_finding_res, mock_get_finding_res',
+                         [
+                             # case - 1: First run (no Last Run) should get all incident from 'First fetch timestamp'
+                             # field to current time.
+                             ("Medium",
+                              {}, 2, '2022-11-08T14:24:52.908Z',
+                              [INCIDENT_1, INCIDENT_2], INCIDENTS_NEXT_RUN,
+                              {'severity': {'Gte': 4}},
+                              {"FindingIds": ["finding_id1", "finding_id2"]},
+                              [FINDING_1, FINDING_2]),
+
+                             # case - 2: Second run should get all incidents from last run time to current time
+                             # without duplicates
+                             ("",
+                              {'last_incidents_ids': ["finding_id1"],
+                               'last_next_token': "",
+                               'latest_created_time': '2022-11-08T14:24:52.908000Z',
+                               'latest_updated_time': '2022-11-08T14:24:52.908000Z'}, 2, '3 days',
+                              [INCIDENT_2], INCIDENTS_NEXT_RUN,
+                              {'id': {'Neq': ['finding_id1']},
+                               'severity': {'Gte': 1},
+                               'updatedAt': {'Gte': 1667917492908}},
+                              {"FindingIds": ["finding_id2"], "NextToken": ""},
+                              [FINDING_2]),
+
+                             # case - 3: A run without new finding since last run, should not change the Last Run
+                             ("",
+                              INCIDENTS_NEXT_RUN, 2, '3 years',
+                              [], INCIDENTS_NEXT_RUN,
+                              {'severity': {'Gte': 1},
+                               'updatedAt': {'Gte': 1667917492908},
+                               'id': {'Neq': ['finding_id1', 'finding_id2']}},
+                              {"FindingIds": [], 'NextToken': ""},
+                              []),
+
+                             # case - 4: A run without incidents (all incidents has earlier time then the last run)
+                             # should get 0 incidents and should not change the Last Run
+                             # [incidents created time is 08.11 but latest created time is 16.11]
+                             ("",
+                              {'latest_created_time': '2022-11-16T14:24:52.908000Z',
+                               'latest_updated_time': '2022-11-06T14:24:52.908000Z'}, 2, '3 days',
+                              [], {'last_incidents_ids': [],
+                                   'last_next_token': "",
+                                   'latest_created_time': '2022-11-16T14:24:52.908000Z',
+                                   'latest_updated_time': '2022-11-08T14:24:52.908000Z'},
+                              {'severity': {'Gte': 1}, 'updatedAt': {'Gte': 1667744692908}},
+                              {"FindingIds": ["finding_id1", "finding_id2"], 'NextToken': ""},
+                              [FINDING_1, FINDING_2])
+                         ],
+                         ids=['case - 1', 'case - 2', 'case - 3', 'case - 4']
+                         )
+def test_fetch_incidents(mocker, gd_severity, last_run, fetch_limit, first_fetch_time,
+                         expected_incidents, expected_next_run, expected_criterion_conditions,
+                         mock_list_finding_res, mock_get_finding_res):
     """
     Given:
         AWSClient session
         list_detectors, list_finding_ids, get_finding_ids valid responses.
-        various sevirity levels of findings to get.
 
     When:
         Running fetch-incidents.
@@ -857,32 +926,25 @@ def test_fetch_events(mocker, xsoar_severity, gd_severity):
     list_detectors_mock = mocker.patch.object(MockedBoto3Client, 'list_detectors',
                                               side_effect=[{"DetectorIds": ["detector_id1"]}])
     list_findings_mock = mocker.patch.object(MockedBoto3Client, 'list_findings',
-                                             side_effect=[{"FindingIds": ["finding_id1", "finding_id2"]}])
+                                             return_value={"FindingIds": mock_list_finding_res})
     get_findings_mock = mocker.patch.object(MockedBoto3Client, 'get_findings',
-                                            side_effect=[{'Findings': [update_finding_id(FINDING.copy(), "finding_id1"),
-                                                                       update_finding_id(FINDING.copy(),
-                                                                                         "finding_id2")]}])
-    archive_findings_mock = mocker.patch.object(MockedBoto3Client, 'archive_findings', side_effect=[{}])
-    incidents_mock = mocker.patch.object(demisto, 'incidents', side_effect=[{}])
+                                            return_value={'Findings': mock_get_finding_res})
 
-    fetch_incidents(client=mocked_client, aws_gd_severity=xsoar_severity)
+    next_run, incidents = fetch_incidents(client=mocked_client, aws_gd_severity=gd_severity, last_run=last_run,
+                                          fetch_limit=fetch_limit, first_fetch_time=first_fetch_time)
 
-    list_detectors_mock.is_called_once_with({})
-    list_findings_mock.is_called_once_with({'DetectorId': 'detector_id1',
-                                            'FindingCriteria': {
-                                                'Criterion': {
-                                                    'service.archived': {'Eq': ['false', 'false']},
-                                                    'severity': {'Gt': gd_severity}}}})
-    get_findings_mock.is_called_once_with({'DetectorId': 'detector_id1', 'FindingIds': ["finding_id1", "finding_id2"]})
-    archive_findings_mock.is_called_once_with({'DetectorId': 'detector_id1',
-                                               'FindingIds': ["finding_id1", "finding_id2"]})
-    incidents_mock.is_called_once_with([])
+    assert list_detectors_mock.is_called_once
+    assert list_findings_mock.call_count == 1
+    assert get_findings_mock.call_count == 1
+    assert list_findings_mock.call_args[1]['FindingCriteria']['Criterion'] == expected_criterion_conditions
+    assert next_run == expected_next_run
+    assert incidents == expected_incidents
 
 
 @pytest.mark.parametrize('args, expected_results', [
-    ({}, (50, 50, None)),
-    ({'limit': "3"}, (3, 50, None)),
-    ({'page_size': "5", "page": "2"}, (10, 5, 2))])
+    ({}, (50, 50, None)),  # no pagination arguments
+    ({'limit': "3"}, (3, 50, None)),  # given limit argument
+    ({'page_size': "5", "page": "2"}, (10, 5, 2))])  # given page_size and page arguments
 def test_get_pagination_args(args, expected_results):
     """
        Given:

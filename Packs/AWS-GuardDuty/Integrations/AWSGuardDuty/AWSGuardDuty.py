@@ -439,14 +439,14 @@ def parse_finding(finding: dict):
     parsed_finding: dict = dict()
 
     # Common Fields
-    parsed_finding['Account ID'] = finding['AccountId']
-    parsed_finding['Occurred'] = finding['CreatedAt']
-    parsed_finding['Description'] = finding['Description']
-    parsed_finding['Region'] = finding['Region']
-    parsed_finding['Alert Id'] = finding['Id']
-    parsed_finding['Title'] = finding['Title']
-    parsed_finding['Severity'] = severity_mapping(finding['Severity'])
-    parsed_finding['Last Update Time'] = finding['UpdatedAt']
+    parsed_finding['Account ID'] = finding.get('AccountId')
+    parsed_finding['Occurred'] = finding.get('CreatedAt')
+    parsed_finding['Description'] = finding.get('Description')
+    parsed_finding['Region'] = finding.get('Region')
+    parsed_finding['Alert Id'] = finding.get('Id')
+    parsed_finding['Title'] = finding.get('Title')
+    parsed_finding['Severity'] = severity_mapping(finding.get('Severity'))
+    parsed_finding['Last Update Time'] = finding.get('UpdatedAt')
 
     # Custom Fields
     parsed_finding['AWS Arn'] = finding.get('Arn')
@@ -464,13 +464,7 @@ def parse_finding(finding: dict):
     parsed_finding['AWS GuardDuty Ebs Volume Details'] = demisto.get(finding, 'Resource.EbsVolumeDetails')
     parsed_finding['AWS GuardDuty Container Details'] = demisto.get(finding, 'Resource.ContainerDetails')
 
-    resource_instance_details = demisto.get(finding, 'Resource.InstanceDetails')
-    if resource_instance_details:
-        if 'IamInstanceProfile' in resource_instance_details:
-            parsed_finding['AWS GuardDuty Iam Instance Profile'] = resource_instance_details.pop('IamInstanceProfile')
-        if 'NetworkInterfaces' in resource_instance_details:
-            parsed_finding['AWS GuardDuty Network Interface'] = resource_instance_details.pop('NetworkInterfaces')
-        parsed_finding['AWS GuardDuty Instance Details'] = resource_instance_details
+    parsed_finding['AWS GuardDuty Instance Details'] = demisto.get(finding, 'Resource.InstanceDetails')
 
     # TODO MAYBE CHANGE THE DATETIME IN DIFFERENT WAY
     eks_cluster_details = json.dumps(demisto.get(finding, 'Resource.EksClusterDetails'), cls=DatetimeEncoder)
@@ -509,21 +503,21 @@ def get_findings(client: boto3.client, args: dict):
 
 def parse_incident_from_finding(finding: dict):
     incident: dict = dict()
-    incident['name'] = finding['Title']
-    incident['details'] = finding['Description']
-    incident['occurred'] = finding['CreatedAt']
-    incident['severity'] = severity_mapping(finding['Severity'])
+    incident['name'] = finding.get('Title')
+    incident['details'] = finding.get('Description')
+    incident['occurred'] = finding.get('CreatedAt')
+    incident['severity'] = severity_mapping(finding.get('Severity'))
     incident['rawJSON'] = json.dumps(finding, default=str)
     return incident
 
 
-def time_to_unix_epoch(date_time: str):
+def time_to_unix_epoch(date_time: datetime):
     """
     :param date_time: The time and date in '%Y-%m-%dT%H:%M:%S.%fZ' format
     :return: Timestamp in Unix Epoch millisecond format
-    example: date_time = '2017-02-10 00:09:35.000000+00:00' to 1486685375000
+    example: date_time = dateparser.parse('2017-02-10 00:09:35.000000+00:00') to 1486685375000
     """
-    return int(dateparser.parse(date_time).timestamp() * 1000)
+    return int(date_time.timestamp() * 1000)
 
 
 def fetch_incidents(client: boto3.client, aws_gd_severity: str, last_run: dict, fetch_limit: int,
@@ -550,7 +544,7 @@ def fetch_incidents(client: boto3.client, aws_gd_severity: str, last_run: dict, 
     latest_created_time = last_run.get('latest_created_time')
     last_incidents_ids = last_run.get('last_incidents_ids', [])
     last_next_token = last_run.get('last_next_token', "")
-    latest_updated_time = last_run.get('latest_updated_time', "")
+    latest_updated_time = dateparser.parse(last_run['latest_updated_time']) if last_run.get('latest_updated_time') else None
 
     # Handle first time fetch
     if latest_created_time is None:
@@ -563,59 +557,60 @@ def fetch_incidents(client: boto3.client, aws_gd_severity: str, last_run: dict, 
 
     created_time_to_ids = defaultdict(list)
     created_time_to_ids[latest_created_time] = last_incidents_ids
-    criterion_conditions = {'severity': {'Gt': gd_severity_mapping(aws_gd_severity)}}
-    if latest_updated_time and not last_next_token:
+
+    criterion_conditions = dict()  # Represents the criteria to be used in the filter for querying findings.
+    criterion_conditions['severity'] = {'Gte': gd_severity_mapping(aws_gd_severity)}
+    if not last_next_token and latest_updated_time:
         criterion_conditions['updatedAt'] = {'Gte': time_to_unix_epoch(latest_updated_time)}
     if last_incidents_ids:
-        criterion_conditions['id'] = {'Neq': last_incidents_ids}
+        criterion_conditions['id'] = {'Neq': last_incidents_ids[:]}
 
     demisto.info(f'Fetching Amazon GuardDuty findings for the {detector[0]} since: {str(latest_created_time)}')
 
     incidents: list[dict] = []
     while True:
         left_to_fetch = fetch_limit - len(incidents)
-        max_results = MAX_INCIDENTS_TO_FETCH if left_to_fetch > MAX_INCIDENTS_TO_FETCH else left_to_fetch
+        max_results = min(MAX_INCIDENTS_TO_FETCH, left_to_fetch)
 
-        list_findings = client.list_findings(
-            DetectorId=detector[0], FindingCriteria={
-                'Criterion': criterion_conditions},
+        list_findings_res = client.list_findings(
+            DetectorId=detector[0],
+            FindingCriteria={'Criterion': criterion_conditions},
             SortCriteria={'AttributeName': 'createdAt', 'OrderBy': 'ASC'},
             MaxResults=max_results,
             NextToken=last_next_token
         )
-        last_next_token = list_findings["NextToken"]
-        get_findings = client.get_findings(DetectorId=detector[0], FindingIds=list_findings['FindingIds'],
-                                           SortCriteria={'AttributeName': 'createdAt', 'OrderBy': 'ASC'})
+        last_next_token = list_findings_res.get("NextToken", "")
+        get_findings_res = client.get_findings(DetectorId=detector[0], FindingIds=list_findings_res['FindingIds'],
+                                               SortCriteria={'AttributeName': 'createdAt', 'OrderBy': 'ASC'})
 
-        for finding in get_findings['Findings']:
-            incident_created_time = dateparser.parse(finding['CreatedAt'])
-            incident_updated_time = finding['UpdatedAt']
-            incident_id = finding["Id"]
+        for finding in get_findings_res['Findings']:
+            incident_created_time = dateparser.parse(finding.get('CreatedAt'))
+            incident_updated_time = dateparser.parse(finding.get('UpdatedAt'))
+            incident_id = finding.get("Id")
 
-            # Update last run and add incident if the incident is newer than last fetch
+            # Update the latest_updated_time
+            if not latest_updated_time or incident_updated_time > latest_updated_time:
+                latest_updated_time = incident_updated_time
+
+            # Update last run (latest_created_time) and add incident if the incident is newer than last fetch
             if incident_created_time >= latest_created_time:
 
-                demisto.debug(f'Add Incident with ID {incident_id}, occured: {str(incident_created_time)}, '
-                              f'updated: {incident_updated_time}')
+                demisto.debug(f'Added Incident with ID {incident_id}, occured: {str(incident_created_time)}, '
+                              f'updated: {str(incident_updated_time)}')
 
-                # update the last run: latest_updated_time, latest_updated_time
                 latest_created_time = incident_created_time
-                if not latest_updated_time:
-                    latest_updated_time = incident_updated_time
-                elif dateparser.parse(incident_updated_time) > dateparser.parse(latest_updated_time):
-                    latest_updated_time = incident_updated_time
                 created_time_to_ids[latest_created_time].append(incident_id)
 
                 incident = parse_incident_from_finding(finding)
                 incidents.append(incident)
 
         # if there is no next_token, or we have reached the fetch_limit -> break
-        if fetch_limit - len(incidents) == 0 or not last_next_token:
+        if not last_next_token or fetch_limit - len(incidents) == 0:
             demisto.debug('fetch_limit has been reached or there is no next token')
             break
 
     next_run = {'latest_created_time': latest_created_time.strftime(DATE_FORMAT),
-                'latest_updated_time': latest_updated_time,
+                'latest_updated_time': latest_updated_time.strftime(DATE_FORMAT),
                 'last_incidents_ids': created_time_to_ids[latest_created_time],
                 'last_next_token': last_next_token}
 
