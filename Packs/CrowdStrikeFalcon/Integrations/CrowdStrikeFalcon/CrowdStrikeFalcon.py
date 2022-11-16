@@ -1992,15 +1992,15 @@ def get_fetch_times_and_offset(current_fetch_info: dict):
     return last_fetch_time, offset, prev_fetch, last_fetch_timestamp
 
 
-def migrate_last_run(last_run: dict):
-    updated_last_run_detections = {}
-    if (detection_time := last_run.get('first_behavior_detection_time')) and (detection_time := dateparser.parse(detection_time)):
-        updated_last_run_detections['time'] = detection_time.strftime(DATE_FORMAT)
+def migrate_last_run(last_run: dict[str, str]):
+    updated_last_run_detections: dict[str, str | None] = {}
+    if (detection_time := last_run.get('first_behavior_detection_time')) and (detection_time_date := dateparser.parse(detection_time)):
+        updated_last_run_detections['time'] = detection_time_date.strftime(DATE_FORMAT)
     updated_last_run_detections['offset'] = last_run.get('detection_offset')
 
-    updated_last_run_incidents = {}
-    if (incident_time := last_run.get('first_behavior_incident_time')) and (incident_time := dateparser.parse(incident_time)):
-        updated_last_run_incidents['time'] = incident_time.strftime(DATE_FORMAT)
+    updated_last_run_incidents: dict[str, str | None] = {}
+    if (incident_time := last_run.get('first_behavior_incident_time')) and (incident_time_date := dateparser.parse(incident_time)):
+        updated_last_run_incidents['time'] = incident_time_date.strftime(DATE_FORMAT)
     updated_last_run_incidents['last_fetched_incident'] = last_run.get('last_fetched_incident')
     updated_last_run_incidents['offset'] = last_run.get('incident_offset')
 
