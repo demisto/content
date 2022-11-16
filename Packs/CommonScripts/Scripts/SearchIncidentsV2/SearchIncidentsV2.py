@@ -104,7 +104,7 @@ def search_incidents(args: Dict):   # pragma: no cover
     data = add_incidents_link(data, platform)
     headers: List[str]
     if platform == 'x2':
-        headers = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed', 'alertLink']
+        headers = ['id', 'incident id', 'name', 'severity', 'details', 'hostname', 'initiatedby', 'status', 'owner', 'targetprocessname','username',  'alertLink']
         print(data)
         md = tableToMarkdown(name="Alerts found", t=data, headers=headers)
     else:
