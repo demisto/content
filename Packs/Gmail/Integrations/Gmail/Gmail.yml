@@ -47,8 +47,8 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
-  defaultvalue: "50"
-  additionalinfo: A maximum of 200 emails per fetch (even if a higher number is configured). Default is 50.
+  defaultvalue: "100"
+  additionalinfo: A maximum of 200 emails per fetch (even if a higher number is configured). Default is 100.
 description: Gmail API and user management (This integration replaces the Gmail functionality in the GoogleApps API and G Suite integration).
 display: Gmail
 name: Gmail
