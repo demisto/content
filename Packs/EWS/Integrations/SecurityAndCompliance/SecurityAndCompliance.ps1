@@ -238,22 +238,41 @@ function ParseSearchActionToEntryContext([psobject]$search_action, [int]$limit =
 }
 
 #### Security And Compliance client - OAUTH2.0 ####
-
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Scope='Class')]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Scope='Class')]
 class SecurityAndComplianceClient {
-    [string]$url
     [string]$app_id
     [string]$organization
-    [System.Security.Cryptography.X509Certificates.X509Certificate2]$certificate
+    [SecureString]$certificate_password
     [SecureString]$delegated_password
+    [System.Security.Cryptography.X509Certificates.X509Certificate2]$certificate
     [string]$upn
 
-    SecurityAndComplianceClient([string]$url, [string]$app_id, [string]$organization, [System.Security.Cryptography.X509Certificates.X509Certificate2]$certificate,
-                                [SecureString]$delegated_password, [string]$upn) {
-        $this.url = $url
+    SecurityAndComplianceClient([string]$app_id, [string]$organization, [string]$certificate_password,
+                                [string]$delegated_password, [string]$certificate,  [string]$upn) {
+        if ($certificate_password) {
+            $this.certificate_password = ConvertTo-SecureString $certificate_password -AsPlainText -Force
+        } else {
+            $this.certificate_password = $null
+        }
+
+        if ($delegated_password) {
+            $this.delegated_password = ConvertTo-SecureString $delegated_password -AsPlainText -Force
+        } else {
+            $this.delegated_password = $null
+        }
+
+        try
+        {
+            $ByteArray = [System.Convert]::FromBase64String($certificate)
+            $this.certificate = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($ByteArray, $certificate_password)
+        }
+        catch
+        {
+            throw "Could not decode the certificate. Try to re-enter it"
+        }
         $this.app_id = $app_id
         $this.organization = $organization
-        $this.certificate = $certificate
-        $this.delegated_password = $delegated_password
         $this.upn = $upn
     }
 
@@ -913,8 +932,6 @@ function ListSearchActionsCommand([SecurityAndComplianceClient]$client, [hashtab
 #### INTEGRATION COMMANDS MANAGER ####
 
 function Main {
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '')]
     $command = $Demisto.GetCommand()
     $command_arguments = $Demisto.Args()
     $integration_params = $Demisto.Params()
@@ -922,34 +939,12 @@ function Main {
     try {
         $Demisto.Debug("Command being called is $Command")
 
-        if ($integration_params.certificate.password) {
-            $certificate_password = ConvertTo-SecureString $integration_params.certificate.password -AsPlainText -Force
-        } else {
-            $certificate_password = $null
-        }
-
-        if ($integration_params.delegated_password) {
-            $delegated_password = ConvertTo-SecureString $integration_params.delegated_password.password -AsPlainText -Force
-        } else {
-            $delegated_password = $null
-        }
-
-        try
-        {
-            $ByteArray = [System.Convert]::FromBase64String($integration_params.certificate.credentials.sshkey)
-            $certificate = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($ByteArray, $certificate_password)
-        }
-        catch
-        {
-            throw "Could not decode the certificate. Try to re-enter it"
-        }
-
         $cs_client = [SecurityAndComplianceClient]::new(
-            $integration_params.url,
             $integration_params.app_id,
             $integration_params.organization,
-            $certificate,
-            $delegated_password,
+            $integration_params.certificate.password,
+            $integration_params.delegated_password.password,
+            $integration_params.certificate.credentials.sshkey,
             $integration_params.delegated_password.identifier
         )
 

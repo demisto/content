@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"Basic auth is no longer supported by Exchange. Please reconfigure your instance with a client certificate."}
