@@ -1,8 +1,9 @@
+from CommonServerPython import *  # noqa: F401
 import demistomock as demisto  # noqa: F401
 import urllib3
 import copy
 from operator import itemgetter
-from CommonServerPython import *  # noqa: F401
+
 from typing import Tuple, Callable
 
 # Disable insecure warnings
@@ -3447,8 +3448,9 @@ def args_to_request_filters(args):
 def add_tag_to_endpoints_command(client: CoreClient, args: Dict):
     endpoint_ids = argToList(args.get('endpoint_ids', []))
     tag = args.get('tag')
-
-    raw_response = client.add_tag_endpoint(endpoint_ids=endpoint_ids, tag=tag, args=args)
+    raw_response = {}
+    for b in batch(endpoint_ids, 1000):
+        raw_response.update(client.add_tag_endpoint(endpoint_ids=b, tag=tag, args=args))
 
     return CommandResults(
         readable_output=f'Successfully added tag {tag} to endpoint(s) {endpoint_ids}', raw_response=raw_response
@@ -3458,8 +3460,9 @@ def add_tag_to_endpoints_command(client: CoreClient, args: Dict):
 def remove_tag_from_endpoints_command(client: CoreClient, args: Dict):
     endpoint_ids = argToList(args.get('endpoint_ids', []))
     tag = args.get('tag')
-
-    raw_response = client.remove_tag_endpoint(endpoint_ids=endpoint_ids, tag=tag, args=args)
+    raw_response = {}
+    for b in batch(endpoint_ids, 1000):
+        raw_response.update(client.remove_tag_endpoint(endpoint_ids=b, tag=tag, args=args))
 
     return CommandResults(
         readable_output=f'Successfully removed tag {tag} from endpoint(s) {endpoint_ids}', raw_response=raw_response
