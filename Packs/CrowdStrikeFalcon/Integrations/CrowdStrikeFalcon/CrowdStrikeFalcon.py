@@ -1993,6 +1993,14 @@ def get_fetch_times_and_offset(current_fetch_info: dict):
 
 
 def migrate_last_run(last_run: dict[str, str]) -> list[dict]:
+    """This function migrated from old last run object to new last run object
+
+    Args:
+        last_run (dict[str, str]): Old last run object.
+
+    Returns:
+        list[dict]: New last run object.
+    """
     updated_last_run_detections: dict[str, str | None] = {}
     if (detection_time := last_run.get('first_behavior_detection_time')) and \
        (detection_time_date := dateparser.parse(detection_time)):
@@ -2010,6 +2018,9 @@ def migrate_last_run(last_run: dict[str, str]) -> list[dict]:
 
 
 def handle_last_run():
+    """
+    Prints the current last run object to `debug` and migrates to new form if needed.
+    """
     last_run = demisto.getLastRun()
     demisto.debug(f'CrowdStrikeFalconMsg: Current last run object is {last_run}')
 
