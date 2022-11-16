@@ -55,7 +55,8 @@
 		"KevinRose.vsc-python-indent",
 		"rangav.vscode-thunder-client",
 		"ms-python.black-formatter",
-		"LittleFoxTeam.vscode-python-test-adapter"
+		"LittleFoxTeam.vscode-python-test-adapter",
+		"ms-vscode.powershell"
 	],
 	"remoteEnv": {
 		"LOCAL_WORKSPACE_PATH": "${localWorkspaceFolder}",
