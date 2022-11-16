@@ -2139,7 +2139,7 @@ def parse_date_isoformat_server(dt: str) -> datetime:
 
 def fetch_incidents():
     params = demisto.params()
-    max_fetch = int(params.get('fetch_limit') or 50)
+    max_fetch = int(params.get('fetch_limit') or 100)
     user_key = 'me'
     query = '' if params['query'] is None else params['query']
     last_run = demisto.getLastRun()
