@@ -41,7 +41,10 @@ def test_create_or_query():
                            'createRelationships': False, "confidence": 0, "threat_assess_score": 0}, '', 'indicators'),
                           ({'indicator_active': True, "group_type": ['File'],
                            'createRelationships': False, "confidence": 0, "threat_assess_score": 0},
-                           'typeName IN ("File")', 'groups')])
+                           'typeName IN ("File")', 'groups'),
+                          ({'indicator_active': False, "group_type": ['Tool'],
+                           'createRelationships': False, "confidence": 50, "threat_assess_score": 80},
+                           'typeName IN ("Tool")', 'groups')])
 def test_set_tql_query(params, expected_result, endpoint):
     """
     Given:
