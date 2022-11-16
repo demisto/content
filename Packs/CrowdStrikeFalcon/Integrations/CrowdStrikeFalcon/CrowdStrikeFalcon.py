@@ -2000,7 +2000,8 @@ def migrate_last_run(last_run: dict[str, str]) -> list[dict]:
     updated_last_run_detections['offset'] = last_run.get('detection_offset')
 
     updated_last_run_incidents: dict[str, str | None] = {}
-    if (incident_time := last_run.get('first_behavior_incident_time')) and (incident_time_date := dateparser.parse(incident_time)):
+    if (incident_time := last_run.get('first_behavior_incident_time')) and \
+       (incident_time_date := dateparser.parse(incident_time)):
         updated_last_run_incidents['time'] = incident_time_date.strftime(DATE_FORMAT)
     updated_last_run_incidents['last_fetched_incident'] = last_run.get('last_fetched_incident')
     updated_last_run_incidents['offset'] = last_run.get('incident_offset')
