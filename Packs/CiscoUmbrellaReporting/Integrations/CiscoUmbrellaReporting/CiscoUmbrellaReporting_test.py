@@ -346,9 +346,9 @@ def test_get_activity_by_dns_traffic_type_command(mocker, raw_response,
     with pytest.raises(DemistoException) as e:
         args["ports"] = "443"
         get_activity_by_traffic_type_command(client, args)
-    assert e.value.args[0] == ('Invalid optional parameter is selected for traffic type dns. '
-                               'Supported optional parameters for dns traffic type are: traffic_type, limit, from, to, '
-                               'offset, domains, ip, verdict, threats, threat_types, identity_types, page, page_size.')
+    assert e.value.args[0] == ('Invalid optional parameter is selected for traffic type dns.\nSupported optional '
+                               'parameters for dns traffic type are: traffic_type, limit, from, to, offset,'
+                               ' domains, ip, verdict, threats, threat_types, identity_types, page, page_size.')
 
 
 @pytest.mark.parametrize('raw_response, expected', [(ACTIVITY_DNS_LIST_RESPONSE, ACTIVITY_DNS_LIST_RESPONSE)])
