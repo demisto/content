@@ -4372,10 +4372,12 @@ def modify_appsec_config_selected_hosts_command(client: Client,
                                                                     mode=mode
     )
     if raw_response:
-        human_readable = "Application Security Config selected hostname list has been modified."
+        human_readable = f'{INTEGRATION_NAME} - Application Security Config selected hostname list has been modified.'
+        return human_readable, {}, raw_response
     else:
-        human_readable = "Modify Application Security Config selected hostname list has failed."
-    return human_readable, {}, raw_response
+        human_readable = f'{INTEGRATION_NAME} - Modify Application Security Config selected hostname list has failed.'
+        return human_readable, {}, {}
+
 
 
 @logger
@@ -4458,12 +4460,13 @@ def update_appsec_config_version_notes_command(client: Client,
                                                                     config_version=config_version,
                                                                     notes=notes,
     )
-   if raw_response:
-        human_readable = "Application Security Config version notes has been updated."
-    else:
-        human_readable = "Update Application Security Config version notes has failed."
-    return human_readable, {}, raw_response
 
+    if raw_response:
+        human_readable = f'{INTEGRATION_NAME} - Application Security Config version notes has been updated.'
+        return human_readable, {}, raw_response
+    else:
+        human_readable = f'{INTEGRATION_NAME} - Update Application Security Config version notes has failed.'
+        return human_readable, {}, {}
 
 # created by D.S.
 @logger
@@ -4645,7 +4648,7 @@ def get_papi_property_rule_command(client: Client,
                                                          property_version=property_version,
                                                          validate_rules=validate_rules,
                                                          )
-   if raw_response:
+    if raw_response:
         title = f'{INTEGRATION_NAME} - get papi property default rule command'
         entry_context = json.dumps(raw_response)
         human_readable_ec = json.dumps(raw_response)
@@ -4660,7 +4663,7 @@ def get_papi_property_rule_command(client: Client,
         return human_readable, context_entry, raw_response
     else:
         human_readable = f'{INTEGRATION_NAME} - get papi property default rule command has failed.'
-        return human_readable, {}, raw_response
+        return human_readable, {}, {}
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
