@@ -1817,9 +1817,14 @@ def argToList(arg, separator=',', transform=None):
     if isinstance(arg, list):
         result = arg
     elif isinstance(arg, STRING_TYPES):
-        try:
-            result = json.loads(arg)
-        except Exception:
+        is_comma_separated = True
+        if arg[0] == '[' and arg[-1] == ']':
+            try:
+                result = json.loads(arg)
+                is_comma_separated = False
+            except Exception:
+                pass
+        if is_comma_separated:
             result = [s.strip() for s in arg.split(separator)]
     else:
         result = [arg]

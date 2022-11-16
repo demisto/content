@@ -1052,6 +1052,7 @@ def test_argToList():
     test6 = '1'
     test7 = True
     test8 = [1, 2, 3]
+    test9 = "[test.com]"
 
     results = [argToList(test1), argToList(test2), argToList(test2, ','), argToList(test3), argToList(test4, ';')]
 
@@ -1063,6 +1064,7 @@ def test_argToList():
     assert argToList(test6) == ['1']
     assert argToList(test7) == [True]
     assert argToList(test8, transform=str) == ['1', '2', '3']
+    assert argToList(test9) == ["[test.com]"]
 
 
 @pytest.mark.parametrize('args, field, expected_output', [
