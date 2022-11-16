@@ -5,16 +5,22 @@ Before you start, you need to get the tenant ID, app ID, username, and password.
 ## Configuration Parameters
 
 **Server URL**    
-The endpoint to get the logs. For example, ``https://{{tenant}}.my.idaptive.app/``.
+The endpoint to get the logs. For example, ``https://{{tenant}}.my.idaptive.app/``
 
 **App ID**  
 The application ID to fetch the logs from.
 
-**User name and Password**    
+**User name and Password** 
+
 The SIEM user name and password.
 
-**Vendor name**  
-The vendor corresponding to the integration that created the events. This affects the name of the dataset where these events will be inserted {vendor_product_raw}.
+**First fetch time**
 
-**Product name**  
-The product corresponding to the integration that created the events. This affects the name of the dataset where the events will be inserted {vendor_product_raw}.
+The period to retrieve events for.
+Format: <number> <time unit>, for example 12 hours, 1 day, 3 months.
+Default is 3 days.
+  
+**Maximum number of events per fetch**
+  
+The number of items to retrieve per request from CyberArk's API.
+  
