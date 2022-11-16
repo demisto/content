@@ -444,7 +444,7 @@ script:
       required: true
     - description: Property type.
       name: property_type
-      required: true	   
+      required: true
     - description: 'Static type - "CNAME" or "A".'
       name: static_type
     - description: Static server.
