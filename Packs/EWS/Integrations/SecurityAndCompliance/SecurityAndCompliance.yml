@@ -3,13 +3,15 @@ commonfields:
   id: SecurityAndCompliance
   version: -1
 configuration:
-- defaultvalue: https://outlook.office365.com
-  display: Exchange Online URL
-  name: url
-  required: true
-  type: 0
 - display: ""
   displaypassword: Certificate Password
+  name: certificate_pass
+  type: 9
+  required: true
+  hiddenusername: true
+  additionalinfo: The password used to sign the certificate.
+- display: ""
+  displaypassword: Certificate
   name: certificate
   type: 9
   required: true
@@ -17,7 +19,7 @@ configuration:
   additionalinfo: A pfx certificate encoded in Base64.
 - display: UPN/Email
   name: delegated_password
-  required: false
+  required: true
   type: 9
   displaypassword: Password
 - display: The organization used in app-only authentication.
@@ -26,10 +28,6 @@ configuration:
   required: true
 - display: The application ID from the Azure portal
   name: app_id
-  type: 0
-  required: true
-- display: UPN/Email
-  name: upn
   type: 0
   required: true
 - display: Trust any certificate (not secure)
