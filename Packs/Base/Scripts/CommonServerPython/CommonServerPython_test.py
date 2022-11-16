@@ -7613,7 +7613,7 @@ class TestFetchWithLookBack:
          {'limit': 3, 'time': INCIDENTS_TIME_AWARE[4]['created']}),
         ({'limit': 2, 'first_fetch': '2 hours'}, [INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2]], [INCIDENTS_TIME_AWARE[3],
                                                                                                       INCIDENTS_TIME_AWARE[4]],
-         {'limit': 2, 'time': INCIDENTS[2]['created']}),
+         {'limit': 2, 'time': INCIDENTS_TIME_AWARE[2]['created']}),
         ({'limit': 3, 'first_fetch': '2 hours'}, [INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
          [INCIDENTS_TIME_AWARE[4]],
          {'limit': 3, 'time': INCIDENTS_TIME_AWARE[3]['created']}),
