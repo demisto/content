@@ -10310,7 +10310,7 @@ def get_current_time(time_zone=0):
     :return: The current time.
     :rtype: ``datetime``
     """
-    return (datetime.utcnow() + timedelta(hours=time_zone)).replace(pytz.UTC)
+    return (datetime.utcnow() + timedelta(hours=time_zone)).replace(tzinfo=pytz.UTC)
 
 
 def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limit, id_field):
