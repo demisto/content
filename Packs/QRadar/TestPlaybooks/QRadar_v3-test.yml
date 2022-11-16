@@ -41,7 +41,7 @@ tasks:
     task:
       id: 2a59fbbb-9295-44e9-84c7-12159c765356
       version: -1
-      name: Delete Context
+      name: Delete Context - test
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
