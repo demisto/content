@@ -2,7 +2,6 @@ import demistomock as demisto
 import io
 import json
 
-
 MOCK_PARAMS = {
     'credentials': {
         'identifier': 'TEST',
@@ -176,7 +175,7 @@ def test_attachments_into_context(mocker):
         "Id": "1234",
         "Html": "https://test.com"
     }
-    api_response = {'attachments': [{"id": "1234", "attachment_url": "https://test.com" }]}
+    api_response = {'attachments': [{"id": "1234", "attachment_url": "https://test.com"}]}
 
     FreshDesk.attachments_into_context(api_response, d)
     assert d['Attachment'] == [{
@@ -188,13 +187,13 @@ def test_attachments_into_context(mocker):
 def test_get_ticket_command(mocker):
     """
     Given:
-        - an api_response and a context dictionary
+        - a ticket
 
     When:
-        - running attachments_into_context function
+        - running get_ticket_command function
 
     Then:
-        - Ensure context was changed
+        - Ensure EntryContext was changed
     """
     mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
     mocker.patch.object(demisto, 'args', return_value={})
