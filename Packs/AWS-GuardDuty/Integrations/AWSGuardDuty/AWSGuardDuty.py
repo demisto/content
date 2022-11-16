@@ -240,8 +240,8 @@ def list_ip_sets(client: boto3.client, args: dict):
     data.append({'DetectorId': args.get('detectorId')})
     for i, page_response in enumerate(response_iterator):
         if page is None or (page - 1) == i:
-            for IpSetId in page_response['IpSetIds']:
-                data.append({'IpSetId': IpSetId})
+            for ipSet in page_response['IpSetIds']:
+                data.append({'IpSetId': ipSet})
             if page:
                 break
 
@@ -325,8 +325,8 @@ def list_threat_intel_sets(client: boto3.client, args: dict):
     data.append({'DetectorId': args.get('detectorId')})
     for i, page_response in enumerate(response_iterator):
         if page is None or (page - 1) == i:
-            for detector in page_response['ThreatIntelSetIds']:
-                data.append({'ThreatIntelSetId': detector})
+            for threatIntelSet in page_response['ThreatIntelSetIds']:
+                data.append({'ThreatIntelSetId': threatIntelSet})
             if page:
                 break
 
@@ -694,8 +694,8 @@ def list_members(client: boto3.client, args: dict):
     data = []
     for i, page_response in enumerate(response_iterator):
         if page is None or (page - 1) == i:
-            for Member in page_response['Members']:
-                data.append({'Member': Member})
+            for member in page_response['Members']:
+                data.append({'Member': member})
             if page:
                 break
 

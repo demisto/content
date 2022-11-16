@@ -17,10 +17,10 @@
         "Skyhigh Security Threat",
         "ThreatConnect",
         "AWS Guard Duty EC2 Finding",
-		"AWS Guard Duty IAM Finding",
-		"AWS Guard Duty Kubernetes Finding",
-		"AWS Guard Duty Malware Protection",
-		"AWS Guard Duty S3 Finding"
+        "AWS Guard Duty IAM Finding",
+        "AWS Guard Duty Kubernetes Finding",
+        "AWS Guard Duty Malware Protection",
+        "AWS Guard Duty S3 Finding"
     ],
     "breachScript": "",
     "caseInsensitive": true,

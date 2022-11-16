@@ -6,7 +6,7 @@
         "AWS Guard Duty EC2 Finding": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "AWS Arn ": {
+                "AWS Arn": {
                     "simple": "Arn"
                 },
                 "AWS GuardDuty Confidence Score": {
@@ -205,7 +205,7 @@
         "AWS Guard Duty IAM Finding": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "AWS Arn ": {
+                "AWS Arn": {
                     "simple": "Arn"
                 },
                 "AWS GuardDuty Access Key Details": {
@@ -412,7 +412,7 @@
         "AWS Guard Duty Kubernetes Finding": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "AWS Arn ": {
+                "AWS Arn": {
                     "simple": "Arn"
                 },
                 "AWS GuardDuty Confidence Score": {
@@ -490,7 +490,7 @@
         "AWS Guard Duty Malware Protection": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "AWS Arn ": {
+                "AWS Arn": {
                     "simple": "Arn"
                 },
                 "AWS GuardDuty Confidence Score": {
@@ -568,7 +568,7 @@
         "AWS Guard Duty S3 Finding": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "AWS Arn ": {
+                "AWS Arn": {
                     "simple": "Arn"
                 },
                 "AWS GuardDuty Access Key Details": {
@@ -782,7 +782,7 @@
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "AWS Arn ": {
+                "AWS Arn": {
                     "simple": "Arn"
                 },
                 "AWS GuardDuty Confidence Score": {
