@@ -2513,3 +2513,6 @@ script:
 fromversion: 5.0.0
 tests:
 - Test - CrowdStrike Falcon
+defaultclassifier: CrowdStrike Falcon
+defaultmapperin: CrowdStrike Falcon-Mapper
+defaultmapperout: CrowdStrike Falcon - Outgoing Mapper
