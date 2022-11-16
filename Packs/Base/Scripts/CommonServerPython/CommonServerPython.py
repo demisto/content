@@ -231,7 +231,8 @@ entryTypes = {
 
 ENDPOINT_STATUS_OPTIONS = [
     'Online',
-    'Offline'
+    'Offline',
+    'Unknown'
 ]
 
 ENDPOINT_ISISOLATED_OPTIONS = [
