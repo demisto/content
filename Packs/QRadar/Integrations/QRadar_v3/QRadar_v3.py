@@ -1525,13 +1525,12 @@ def verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, grou
                 return f'{field} is not a valid field. Possible fields are: {possible_fields}.'
 
 
-def is_positive(*values):
+def is_positive(*values: int | None) -> bool:
     # checks if all values are positive or None but not a negative number
     for value in values:
         if value is not None and value < 1:
             return False
-    else:
-        return True
+    return True
 
 
 def verify_args_for_remote_network_cidr_list(limit, page, page_size, filter_, group, id_, name):
