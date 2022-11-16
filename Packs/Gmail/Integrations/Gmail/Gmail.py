@@ -2110,6 +2110,7 @@ def forwarding_address_update_command() -> list[CommandResults]:
             outputs_list_failure.append(error_details)
             demisto.debug(error_details)
         else:
+            result_forwarding_update['forwardingEmail'] = result_forwarding_update.pop('emailAddress')
             result_forwarding_update['userId'] = user_id
             outputs_list_success.append(result_forwarding_update)
 

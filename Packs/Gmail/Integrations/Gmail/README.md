@@ -5086,8 +5086,8 @@ Updates the auto-forwarding setting for the specified account. A verified forwar
     "Gmail": {
         "ForwardingAddress": {
             "disposition": "archive",
-            "emailAddress": "admin@demistodev.com",
             "enabled": true,
+            "forwardingEmail": "admin@demistodev.com",
             "userId": "me"
         }
     }
@@ -5097,10 +5097,9 @@ Updates the auto-forwarding setting for the specified account. A verified forwar
 #### Human Readable Output
 
 >### Forwarding addresses update results for "me":
->|userId|disposition|enabled|
->|---|---|---|
->| me | archive | true |
-
+>|forwardingEmail|userId|disposition|enabled|
+>|---|---|---|---|
+>| admin@demistodev.com | me | archive | true |
 
 ### gmail-forwarding-address-get
 ***

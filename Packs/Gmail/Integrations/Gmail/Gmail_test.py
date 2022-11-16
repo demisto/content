@@ -589,12 +589,13 @@ def test_forwarding_address_update(mocker):
     import Gmail
     mocker.patch.object(Gmail, 'forwarding_address_update', return_value=({'enabled': True, 'emailAddress': 'test@gmail.com',
                                                                            'disposition': 'markRead', 'userId': 'me'},
-                                                                          None, {'forwardingEmail': 'test@gmail.com',
+                                                                          None, {'emailAddress': 'test@gmail.com',
                                                                           'errorMessage': None, 'userId': 'me'}))
     mocker.patch.object(demisto, 'args', return_value={'user_id': 'me', 'forwarding_email': 'test@gmail.com',
                                                        'disposition': 'markRead'})
     result = forwarding_address_update_command()[0]
-    assert result.outputs == [{'enabled': True, 'emailAddress': 'test@gmail.com', 'disposition': 'markRead', 'userId': 'me'}]
-    assert result.readable_output == '### Forwarding addresses update results for "me":\n|userId|disposition|enabled|\n|\
----|---|---|\n| me | markRead | true |\n'
-    assert result.raw_response == [{'enabled': True, 'emailAddress': 'test@gmail.com', 'disposition': 'markRead', 'userId': 'me'}]
+    assert result.outputs == [{'enabled': True, 'forwardingEmail': 'test@gmail.com', 'disposition': 'markRead', 'userId': 'me'}]
+    assert result.readable_output == '### Forwarding addresses update results for "me":\n|forwardingEmail|userId|disposition|\
+enabled|\n|---|---|---|---|\n| test@gmail.com | me | markRead | true |\n'
+    assert result.raw_response == [{'enabled': True, 'forwardingEmail': 'test@gmail.com', 'disposition':
+                                    'markRead', 'userId': 'me'}]
