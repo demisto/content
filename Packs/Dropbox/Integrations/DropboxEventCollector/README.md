@@ -3,15 +3,15 @@ This integration was integrated and tested with version 2 of Dropbox API
 
 ## Configure Dropbox Event Collector on Cortex XSIAM
 
-1. Navigate to **Settings** > **Configurations** > **Automation and Feed Integrations**.
+1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation and Feed Integrations**.
 2. Search for Dropbox Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
     |---|---|---|
-    | Server URL | The endpoint to get the logs | True |
-    | App Key | The App key | True |
-    | App Secret | The App secret | True |
+    | Server URL | The endpoint from which to get the logs. | True |
+    | App Key | The App key (created in the Dropbox app console). | True |
+    | App Secret | The App secret (created in the Dropbox app console).  | True |
     | First fetch in timestamp format | First fetch in timestamp format (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
     | The maximum number of events per fetch |  | False |
     | Trust any certificate (not secure) |  | False |
