@@ -1817,9 +1817,9 @@ def argToList(arg, separator=',', transform=None):
     if isinstance(arg, list):
         result = arg
     elif isinstance(arg, STRING_TYPES):
-        if arg[0] == '[' and arg[-1] == ']':
+        try:
             result = json.loads(arg)
-        else:
+        except Exception:
             result = [s.strip() for s in arg.split(separator)]
     else:
         result = [arg]
