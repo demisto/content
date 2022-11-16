@@ -1,15 +1,15 @@
 id: Recorded Future Test Playbook
 name: Recorded Future Test Playbook
 version: -1
-fromversion: 5.0.0
+fromversion: 6.5.0
 starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: '0'
+    taskid: '27014617-b98d-43aa-8f32-addef7ef1a67'
     type: start
     task:
-      id: '0'
+      id: '27014617-b98d-43aa-8f32-addef7ef1a67'
       version: -1
       name: ''
       iscommand: false
@@ -25,10 +25,10 @@ tasks:
     ignoreworker: false
   '1':
     id: 1
-    taskid: '1'
+    taskid: '977fd976-c0f6-41ae-882f-77f79f541ac4'
     type: regular
     task:
-      id: '1'
+      id: '977fd976-c0f6-41ae-882f-77f79f541ac4'
       version: -1
       name: DeleteContext
       description: ''
@@ -50,10 +50,10 @@ tasks:
     skipunavailable: false
   '2':
     id: 2
-    taskid: '2'
+    taskid: '2febb8ae-a7c9-4682-b1e1-679a9c8c74fb'
     type: regular
     task:
-      id: '2'
+      id: '2febb8ae-a7c9-4682-b1e1-679a9c8c74fb'
       version: -1
       name: domain
       description: ''
@@ -75,10 +75,10 @@ tasks:
     skipunavailable: false
   '3':
     id: '3'
-    taskid: '3'
+    taskid: 'f0bdd05e-ed8a-49df-802e-56b1e1054eba'
     type: condition
     task:
-      id: '3'
+      id: 'f0bdd05e-ed8a-49df-802e-56b1e1054eba'
       version: -1
       name: Verify Outputs
       type: condition
@@ -179,10 +179,10 @@ tasks:
     skipunavailable: false
   '4':
     id: 4
-    taskid: '4'
+    taskid: 'bf97bb12-ef68-483a-9dd1-8660b7231e02'
     type: regular
     task:
-      id: '4'
+      id: 'bf97bb12-ef68-483a-9dd1-8660b7231e02'
       version: -1
       name: ip
       description: ''
@@ -204,10 +204,10 @@ tasks:
     skipunavailable: false
   '5':
     id: '5'
-    taskid: '5'
+    taskid: '383bbf09-c70a-45d3-b46b-d0c7fc509015'
     type: condition
     task:
-      id: '5'
+      id: '383bbf09-c70a-45d3-b46b-d0c7fc509015'
       version: -1
       name: Verify Outputs
       type: condition
@@ -313,10 +313,10 @@ tasks:
     skipunavailable: false
   '6':
     id: 6
-    taskid: '6'
+    taskid: 'ff47b884-92de-4f5c-bc72-9d313e95e08f'
     type: regular
     task:
-      id: '6'
+      id: 'ff47b884-92de-4f5c-bc72-9d313e95e08f'
       version: -1
       name: file
       description: ''
@@ -338,10 +338,10 @@ tasks:
     skipunavailable: false
   '7':
     id: '7'
-    taskid: '7'
+    taskid: 'fd1da4f8-44eb-473a-9d7e-325ac7d078aa'
     type: condition
     task:
-      id: '7'
+      id: 'fd1da4f8-44eb-473a-9d7e-325ac7d078aa'
       version: -1
       name: Verify Outputs
       type: condition
@@ -452,10 +452,10 @@ tasks:
     skipunavailable: false
   '8':
     id: 8
-    taskid: '8'
+    taskid: 'a3c46fac-0f96-4e3a-a10d-660b0213d375'
     type: regular
     task:
-      id: '8'
+      id: 'a3c46fac-0f96-4e3a-a10d-660b0213d375'
       version: -1
       name: cve
       description: ''
@@ -477,10 +477,10 @@ tasks:
     skipunavailable: false
   '9':
     id: '9'
-    taskid: '9'
+    taskid: '2f5d711c-730c-4131-afdc-af5a52f672d7'
     type: condition
     task:
-      id: '9'
+      id: '2f5d711c-730c-4131-afdc-af5a52f672d7'
       version: -1
       name: Verify Outputs
       type: condition
@@ -581,10 +581,10 @@ tasks:
     skipunavailable: false
   '10':
     id: 10
-    taskid: '10'
+    taskid: 'b41c91b1-15f2-40bc-a75d-fa717df77da5'
     type: regular
     task:
-      id: '10'
+      id: 'b41c91b1-15f2-40bc-a75d-fa717df77da5'
       version: -1
       name: url
       description: ''
@@ -606,10 +606,10 @@ tasks:
     skipunavailable: false
   '11':
     id: '11'
-    taskid: '11'
+    taskid: 'facca43d-a732-4a69-bfdc-864f63c92106'
     type: condition
     task:
-      id: '11'
+      id: 'facca43d-a732-4a69-bfdc-864f63c92106'
       version: -1
       name: Verify Outputs
       type: condition
@@ -710,10 +710,10 @@ tasks:
     skipunavailable: false
   '12':
     id: 12
-    taskid: '12'
+    taskid: '047978cd-7023-483b-b5cf-e5f895dc873c'
     type: regular
     task:
-      id: '12'
+      id: '047978cd-7023-483b-b5cf-e5f895dc873c'
       version: -1
       name: recordedfuture-threat-assessment
       description: ''
@@ -741,10 +741,10 @@ tasks:
     skipunavailable: false
   '13':
     id: '13'
-    taskid: '13'
+    taskid: 'c8fa2eb5-f129-40af-a072-90d1a5152781'
     type: condition
     task:
-      id: '13'
+      id: 'c8fa2eb5-f129-40af-a072-90d1a5152781'
       version: -1
       name: Verify Outputs
       type: condition
@@ -845,10 +845,10 @@ tasks:
     skipunavailable: false
   '14':
     id: 14
-    taskid: '14'
+    taskid: '9c8a6a93-f9bc-4b1f-9f69-7a85bbd26159'
     type: regular
     task:
-      id: '14'
+      id: '9c8a6a93-f9bc-4b1f-9f69-7a85bbd26159'
       version: -1
       name: recordedfuture-intelligence
       description: ''
@@ -876,10 +876,10 @@ tasks:
     skipunavailable: false
   '15':
     id: '15'
-    taskid: '15'
+    taskid: '5fc6787f-fbd1-4978-8259-074b78080d41'
     type: condition
     task:
-      id: '15'
+      id: '5fc6787f-fbd1-4978-8259-074b78080d41'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1055,10 +1055,10 @@ tasks:
     skipunavailable: false
   '20':
     id: 20
-    taskid: '20'
+    taskid: '65104c0d-2777-44a1-b1b3-f1d3568f5407'
     type: regular
     task:
-      id: '20'
+      id: '65104c0d-2777-44a1-b1b3-f1d3568f5407'
       version: -1
       name: recordedfuture-alerts
       description: ''
@@ -1078,10 +1078,10 @@ tasks:
     skipunavailable: false
   '21':
     id: '21'
-    taskid: '21'
+    taskid: 'c887a3e4-f07b-4d02-b9be-ea11c19f24c8'
     type: condition
     task:
-      id: '21'
+      id: 'c887a3e4-f07b-4d02-b9be-ea11c19f24c8'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1132,10 +1132,10 @@ tasks:
     skipunavailable: false
   '22':
     id: 22
-    taskid: '22'
+    taskid: '26e365cd-35f9-4c0e-88f4-31b8bac7517d'
     type: regular
     task:
-      id: '22'
+      id: '26e365cd-35f9-4c0e-88f4-31b8bac7517d'
       version: -1
       name: recordedfuture-alert-rules
       description: ''
@@ -1155,10 +1155,10 @@ tasks:
     skipunavailable: false
   '23':
     id: '23'
-    taskid: '23'
+    taskid: '71ec50c1-d66d-432a-a02f-6aebb3c6ce04'
     type: condition
     task:
-      id: '23'
+      id: '71ec50c1-d66d-432a-a02f-6aebb3c6ce04'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1189,10 +1189,10 @@ tasks:
     skipunavailable: false
   '28':
     id: 28
-    taskid: '28'
+    taskid: 'e70e2777-3cec-4c0a-b266-fa32ba9351e6'
     type: regular
     task:
-      id: '28'
+      id: 'e70e2777-3cec-4c0a-b266-fa32ba9351e6'
       version: -1
       name: recordedfuture-malware-search
       description: ''
@@ -1214,10 +1214,10 @@ tasks:
     skipunavailable: false
   '29':
     id: '29'
-    taskid: '29'
+    taskid: 'c95d6d1e-5984-4165-85d3-2e9ecd1428b0'
     type: condition
     task:
-      id: '29'
+      id: 'c95d6d1e-5984-4165-85d3-2e9ecd1428b0'
       version: -1
       name: Verify Outputs
       type: condition
@@ -1258,10 +1258,10 @@ tasks:
     skipunavailable: false
   '30':
     id: '30'
-    taskid: '30'
+    taskid: 'ccbd3d39-09da-4526-ac60-3f5444c66b9c'
     type: title
     task:
-      id: '30'
+      id: 'ccbd3d39-09da-4526-ac60-3f5444c66b9c'
       version: -1
       name: Test Done
       type: title
@@ -1277,3 +1277,4 @@ tasks:
 view: '{"linkLabelsPosition":{},"paper":{"dimensions":{"height":200,"width":380,"x":50,"y":50}}}'
 inputs: []
 outputs: []
+description: Test playbook for recorded future integartion
