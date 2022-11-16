@@ -1,28 +1,37 @@
 # Versa Director
 
-### Versa Director Authentication flow:
-**Versa Director Integration can work in 2 authentication modes: Basic or Auth Token.**
+## Versa Director Authentication flow:
 
-#### Basic Authentication:
-Basic authentication method based on Username and Password parameters.
+- **Versa Director Integration can work in 2 authentication methods: Basic or Auth Token.**
+- ***Username*** and ***Password*** parameters are required for both authentication methods. 
 
+### Basic Authentication:
+
+Basic authentication method based on ***Username*** and ***Password*** parameters.
+  
 **To use this method:**
 
-Enter required `Username` and `Password` parameters in the Versa Director instance configuration.
+1. Enter required ***Username*** and ***Password*** parameters in the Versa Director instance configuration.
+2. uncheck the ***Use Auth Token*** checkbox.
 
-#### Auth Token:
-`Client ID`, `Client Secret` and `Auth Token` will be required in the integration instance configuration.
+### Auth Token:
 
-**To use this method:**
+#### There are 3 methods to use Auth Token authentication:
 
-1. run `vd-auth-start` command.
+##### If an Auth Client already exists, and ***Client ID***, ***Client Secret*** are available:
+1. Run `vd-auth-start` command, passing ***Client ID*** and ***Client Secret*** as arguments to generate new Auth Token using the given Auth Client.
+2. The new Auth Token along with all of its relevant information will be saved in the integration context.
+3. Check the ***Use Auth Token*** checkbox.
 
-2. If command was successful, a message will display in War Room with `Client ID` and `Client Secret` values, copy both values.
+##### If am Auth Client does not exist, and ***Client ID***, ***Client Secret*** are not available:
+ 1. Run  `vd-auth-start` command, passing ***Token Name*** argument (if ***Token Name*** is not passed, a default name will be used - this may cause conflicts if an Auth Client already created with the same name).
+2. The command will create a new Auth Client, and will generate a new Auth Token using the newly created Auth Client, displaying ***Client ID*** and ***Client Name*** in a message for later use.
+3. Check the ***Use Auth Token*** checkbox.
+   
+##### If  If an Auth Client already exists, and ***Client ID***, ***Client Secret*** and ***Auth Token*** are available:
+1. Pass all of the said parameters inside the Instance Configuration.
+2. Check the ***Use Auth Token*** checkbox.
+3. This method requires a valid Auth Token. If the Auth Token is expired at any point, it cannot be refreshed.
 
-3. Run `vd-auth-complete` with `Client ID` and `Client Secret` values as arguments.
-
-4. If command was successful, a message will display in War Room with `Auth Token` value, copy this value.
-
-5. In the instance configuration, add `Auth Token`, `Client ID` and `Client Secret` in their corresponding parameters.
-
-6. Make sure that `Use Auth Token` checkbox is checked.
+##### NOTES: 
+1. If an Auth Token is created using `vd-auth-start`, a process is initiated every-time a command is run to check if the Auth Token is valid. If not, there will be an attempt to send a request for a new Auth Token using Refresh Token, If successful, the Integration Context will be updated.

@@ -19,7 +19,7 @@ configuration:
   type: 0
 - display: Username
   name: credentials
-  required: false
+  required: true
   hiddenusername: false
   type: 9
 - display: Use Auth Token
@@ -41,7 +41,7 @@ configuration:
   additionalinfo: "The Auth Token parameter is used for Auth authentication.\nAn Auth Token saved in the integration context take priority over an Auth Token passed as a parameter by default.\nIf a Refresh Token is given, a new Auth Token is generated when an existing Auth Token expires, and it is then saved in the integration context."
   name: access_token
   required: false
-  type: 4
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -2240,29 +2240,43 @@ script:
       description: 'Application branch ID'
       type: Number
   - name: vd-auth-start
-    description: 'Obtain Access token from api client.'
+    description: 'Obtain Access token from api client. If Client ID and Client Secret were not passed as parameters or arguments, a new Auth Client will be created.'
     arguments:
     - name: token_name
       description: 'Name of access token. If an excising token name will be given as argument, an error might occur.'
-      required: true
+      required: false
       isArray: false
     - name: description
       description: 'Description of access token.'
       required: false
       isArray: false
-  - name: vd-auth-complete
-    description: 'Obtain Auth token from the auth client.'
-    execution: true
-    arguments:
     - name: client_id
-      description: 'client id for Token Authentication.'
-      required: true
+      description: 'Client ID for Token Authentication. If already passed as a parameter it will be prioritized by default.'
+      required: false
       isArray: false
     - name: client_secret
-      description: 'client secret for Token Authentication.'
-      required: true
+      description: 'Client Secret for Token Authentication. If already passed as a parameter it will be prioritized by default.'
+      required: false
       isArray: false
       secret: true
+  - name: vd-auth-test
+    description: 'Run a connectivity test to verify that the oauth process worked.'
+  - name: vd-auth-client-get
+    description: 'Get Oauth Client information.'
+    arguments:
+    - name: client_id
+      description: 'Client ID for Token Authentication.'
+      required: true
+      isArray: false
+  - name: vd-auth-reset
+    description: 'Reset Oauth Client secret.'
+    arguments:
+    - name: client_id
+      description: 'Client ID for Token Authentication.'
+      required: true
+      isArray: false
+
+
 
   isfetch: false
   runonce: false

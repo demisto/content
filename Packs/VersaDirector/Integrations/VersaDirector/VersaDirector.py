@@ -33,7 +33,9 @@ BASIC_CREDENTIALS_COULD_NOT_START = (
 CLIENT_CREDENTIALS_COULD_NOT_START = (
     "Auth process could not start, missing client_id and client_secret command arguments or integration parameters."
 )
-AUTH_INVALID_ACCESS_TOKEN = "Auth process failed. Invalid access token passed in the request."
+AUTH_INVALID_ACCESS_TOKEN = (
+    "Client authentication failed (e.g., unknown client, no client authentication included, or unsupported authentication method"
+)
 AUTH_BAD_CREDENTIALS = "Auth process failed. Please check client_id and client_secret validity."
 
 """ CLIENT CLASS """
@@ -74,6 +76,18 @@ class Client(BaseClient):
             json_data=request_body,
             ok_codes=(200, 201),
         )
+        return response
+
+    def auth_client_info_request(self, client_id: str):
+        response = self._http_request("GET", url_suffix=f"auth/clients/{client_id}", headers=self._headers, ok_codes=(200, 201))
+
+        return response
+
+    def auth_client_reset_request(self, client_id: str):
+        response = self._http_request(
+            "POST", url_suffix=f"auth/clients/{client_id}/secrets", headers=self._headers, ok_codes=(200, 201)
+        )
+
         return response
 
     def refresh_token_request(self, client_id: str, client_secret: str, refresh_token: str):
@@ -1411,7 +1425,7 @@ def check_and_update_token(client: Client, client_id: str, client_secret: str, c
     """
 
     try:
-        test_module(client)  # send HTTP request to check if token is valid
+        test_connectivity(client)  # send HTTP request to check if token is valid
     except DemistoException as e:
         if e.res.status_code == 401 or "invalid_token" in str(e.message):
             if current_context:
@@ -1427,11 +1441,13 @@ def check_and_update_token(client: Client, client_id: str, client_secret: str, c
                 # integration context is updated with new access token and refresh token
                 response["client_id"] = client_id
                 response["client_secret"] = client_secret
-                set_integration_context(response)
+                update_integration_auth_context(response)
 
                 return auth_token
             else:
-                raise DemistoException("Auth Token Expired, Refresh Token is not found. Please create a new Auth Token.")
+                raise DemistoException(
+                    "Auth Token Expired, Refresh Token is not found. Please create a new Auth Token using 'vd-auth-start' command."
+                )
 
     return None
 
@@ -1673,59 +1689,101 @@ def create_sdwan_policy_rule_request_body(
     return request_body
 
 
+def update_integration_auth_context(obj: dict[Any, Any]) -> None:
+    # TODO: add docstring
+    temp_context = get_integration_context()
+    if temp_context.get("context"):
+        temp_context = temp_context.get("context")
+    temp_context.update(obj)
+    set_integration_context({"context": temp_context})
+
+
 # HEADING: """ COMMAND FUNCTIONS """
 
 
-def create_auth_client(client: Client, args: Dict[str, Any]) -> CommandResults:
+def handle_auth_token_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Creates Auth Clients and Auth tokens.
+
+    The function will first determine whether Client ID and Client Secret were passed as parameters (default) or arguments,
+    indicating an existing Auth Client.
+    If not, it will use the VOEA REST API (from the product's official API documentation) to create a new Auth Client.
+
+    When an Auth Client exists, the function will send a request to generate a new Auth Token.
+    If successful, All of the Token's relevant information will be saved in the
+    Integration Context for Later Use and Refresh Token requests.
+
+    Args:
+        client (Client): Client object
+        args (Dict[str, Any]): command arguments
+
+    Raises:
+        DemistoException: raises DemistoException errors related to bad arguments/parameters or
+                            failure in a specific step of the authentication process
+
+    Returns:
+        CommandResults: returns message in the War room if authentication process was successful
     """
-    Creates an Auth Client that later can generate Auth Tokens.
-    To generate an Auth Client, the function accepts token's name and description arguments, Username and Password parameters,
-    and a default Client ID and Client Secret parameters (from the product's official API documentation).
-    For more information about Auth Token flow check the the integration's confluence page.
-    """
+
     if not client._auth:
         raise DemistoException(message=BASIC_CREDENTIALS_COULD_NOT_START)
     username, password = client._auth
     token_name = args.get("token_name", OAUTH_CLIENT)
     token_description = args.get("description", OAUTH_CLIENT + " for Versa Director Integration")
-    client_id = CLIENT_ID
-    client_secret = CLIENT_CREDENTIALS
+    client_id = None
+    client_secret = None
+    _outputs = None
+    oauth_client_created_msg = ""
 
-    if client._base_url.endswith(PORT_CREDENTIALS):
-        client._base_url = client._base_url.replace(PORT_CREDENTIALS, PORT_AUTH)
-    try:
-        token_response = client.access_token_request(username, password, client_id, client_secret)
-        access_token = token_response.get("access_token", "")
+    # check if Client ID and Client Secret were passed as parameters
+    if client.client_id_param and client.client_secret_param:
+        client_id = client.client_id_param
+        client_secret = client.client_secret_param
 
-        response = client.auth_credentials_request(access_token, token_name, token_description)
+    # check if Client ID and Client Secret were passed as arguments
+    elif args.get("client_id") and args.get("client_secret"):
+        client_id = args.get("client_id")
+        client_secret = args.get("client_secret")
 
-    except DemistoException as e:
-        if e.res.status_code == 500:
-            raise DemistoException(message=AUTH_EXISTING_TOKEN, exception=e)
-        elif e.res.status_code == 400:
-            raise DemistoException(message=AUTH_EXCEEDED_MAXIMUM, exception=e)
-        else:
-            raise DemistoException(message="Auth process failed.", exception=e)
+    # if Client ID and Client Secret are not passed, create new Client ID and Client Secret (New Auth Client)
+    else:
+        client_id = CLIENT_ID
+        client_secret = CLIENT_CREDENTIALS
 
-    client_id = response.get("client_id")
-    client_secret = response.get("client_secret")
+        if client._base_url.endswith(PORT_CREDENTIALS):
+            client._base_url = client._base_url.replace(PORT_CREDENTIALS, PORT_AUTH)
+        try:
+            # stage 1: Obtain Access token from voae_rest client
+            token_response = client.access_token_request(username, password, client_id, client_secret)
+            access_token = token_response.get("access_token", "")
 
-    if not client_id or not client_secret:
-        raise DemistoException(message=AUTH_INVALID_CREDENTIALS)
-    command_results = CommandResults(
-        readable_output=f"To complete the Auth process, please copy the following values:\nclient_id: {client_id}\nclient_secret: {client_secret}\nand use them as arguments to run command:'vd-auth-complete'.",  # noqa: E501
-    )
-    return command_results
+            # stage 2: If successful, use the “Access_token” from the response as a “Bearer token”
+            # authorization to created the desired "Auth Client"
+            response = client.auth_credentials_request(access_token, token_name, token_description)
 
+        except DemistoException as e:
+            if e.res.status_code == 500:
+                raise DemistoException(message=AUTH_EXISTING_TOKEN, exception=e)
+            elif e.res.status_code == 400:
+                raise DemistoException(message=AUTH_EXCEEDED_MAXIMUM, exception=e)
+            else:
+                raise DemistoException(message="Auth process failed.", exception=e)
 
-def obtain_auth_token(client: Client, args: Dict[str, Any]) -> CommandResults:
-    username, password = client._auth
-    client_id = args.get("client_id") or client.client_id_param
-    client_secret = args.get("client_secret") or client.client_secret_param
+        # if "Auth Client" created successfully, Client ID and Client Secret would return
+        # in the response and saved in the Integration Context
+        client_id = response.get("client_id")
+        client_secret = response.get("client_secret")
 
-    if not client_id or not client_secret:
-        raise DemistoException(message=CLIENT_CREDENTIALS_COULD_NOT_START)
+        if not client_id or not client_secret:
+            raise DemistoException(message=AUTH_INVALID_CREDENTIALS)
 
+        _outputs = {"client_id": client_id, "client_name": token_name}
+        update_integration_auth_context(response)
+
+        oauth_client_created_msg = (
+            f"Auth Client Created Successfully.\nClient ID: {client_id}, Auth Client Name: {token_name}.\n\n"
+        )
+
+    # stage 3: create an Auth Token using the Auth Client
     try:
         response = client.access_token_request(username, password, client_id, client_secret)
     except DemistoException as e:
@@ -1734,16 +1792,62 @@ def obtain_auth_token(client: Client, args: Dict[str, Any]) -> CommandResults:
         else:
             raise DemistoException(message=AUTH_BAD_CREDENTIALS)
 
-    auth_token = response.get("access_token")
-    response["client_id"] = client_id
-    response["client_secret"] = client_secret
-    set_integration_context(response)
+    # save response with generated Auth Token, Refresh Token, Expiration Information and User Information
+    # in Integration Context (among other information).
+    response.update({"client_id": client_id, "client_secret": client_secret})
+    update_integration_auth_context(response)
 
     command_results = CommandResults(
-        outputs_prefix=VENDOR_NAME + ".Auth",
+        outputs_prefix=VENDOR_NAME + ".AuthClient",
+        outputs=_outputs if _outputs else {"client_id": client_id},
+        readable_output=oauth_client_created_msg
+        + "Authentication request was successful, Auth Token was created and saved in the Integration Context.\n"
+        + "Please check the 'Use Auth Token' in the configuration screen.\n"
+        + "To ensure the authentication is valid, run the 'vd-auth-test' command.",
+    )
+
+    return command_results
+
+
+def auth_client_info_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    client_id = args.get("client_id", "")
+
+    response = client.auth_client_info_request(client_id)
+
+    command_results = CommandResults(
+        outputs_prefix=VENDOR_NAME + ".AuthClient",
         outputs=response,
         raw_response=response,
-        readable_output=f"Auth request was successful.\nPlease copy Auth Token as input in the instance configuration along with the client_id and client_secret\n\nAuth Token:\n{auth_token}\n",  # noqa: E501
+        readable_output=tableToMarkdown(
+            name="OAUTH Client information",
+            t=response,
+            headers=["client_id", "client_name", "description", "client_secret_expires_at", "enabled", "expires_at"],
+            headerTransform=pascalToSpace,
+            date_fields=True,
+        ),
+    )
+    return command_results
+
+
+def auth_client_test_command(client: Client, args: Dict[str, Any]):
+    message = test_connectivity(client)
+    if message == "ok":
+        if headers := client._headers:
+            if "Bearer" in headers.get("Authorization"):
+                message = "Auth Token "
+            else:
+                message = "Basic "
+
+    return CommandResults(readable_output=message + "Authentication method connectivity verified.")
+
+
+def auth_client_reset_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    client_id = args.get("client_id", "")
+
+    client.auth_client_reset_request(client_id)
+
+    command_results = CommandResults(
+        outputs_prefix=VENDOR_NAME + ".AuthClient", readable_output="Command run successfully. OAuth Client secret refreshed."
     )
     return command_results
 
@@ -1782,7 +1886,7 @@ def organization_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
     response = client.organization_list_request(offset, limit)
 
-    # extract 'applianceuuid' list from 'appliances' dictionaty
+    # extract 'applianceuuid' list from 'appliances' dictionary
     appliances = []
     if response:
         for appliance in response[0].get("appliances", []):
@@ -3561,7 +3665,7 @@ def predefined_application_list_command(client: Client, args: Dict[str, Any]) ->
     return command_results
 
 
-def test_module(client: Client) -> str:
+def test_connectivity(client: Client) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -3583,10 +3687,29 @@ def test_module(client: Client) -> str:
         message = "ok"
     except DemistoException as e:
         if "Forbidden" in str(e) or "Authorization" in str(e):
-            message = "Authorization Error: make sure authentication credentials are correctly set."
+            message = "Authorization Error: make sure authentication parameters/arguments are correctly set."
         else:
             raise e
     return message
+
+
+def test_module(use_token: bool):
+    """
+    Performs basic GET request to check if the API is reachable and authentication is successful.
+    Returns ok if successful.
+    """
+    if use_token:
+        raise Exception(
+            "When using Auth Token authentication method, "
+            "Please input Auth Token Parameters OR run '!vd-auth-start' command with the necessary arguments.\n"
+            "Then run '!vd-auth-test' command to check valid connectivity using Auth Token authentication."
+        )
+    else:
+        raise Exception(
+            "When using Basic authentication method, "
+            "Please make sure Username and Password are passed as parameters.\n"
+            "Then run '!vd-auth-test' command to check valid connectivity using Basic authentication."
+        )
 
 
 # HEADING: """ MAIN FUNCTION """
@@ -3602,15 +3725,22 @@ def main() -> None:
     url = params.get("url", "")
     url = url[:-1] + f":{port}" if url.endswith("/") else url + f":{port}"
     context = get_integration_context()
+    if context.get("context"):
+        context = context.get("context")
     username = params.get("credentials", {}).get("identifier", "")
     password = params.get("credentials", {}).get("password", "")
-    client_id = params.get("client_id", "")
-    client_secret = params.get("client_secret", "")
-    access_token = context.get("access_token") or params.get("access_token", "")
+    client_id = params.get("client_id") or context.get("client_id")
+    client_secret = params.get("client_secret") or context.get("client_secret")
+    access_token = params.get("access_token") or context.get("access_token")
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
 
     try:
+        # test from instance configuration is disabled. test_module will print a message according to the
+        # authentication method chosen by the user and direct him to run the necessary commands/actions.
+        if command == "test-module":
+            return_results(test_module(use_token))
+
         auth, headers = create_client_header(use_token, username, password, client_id, client_secret, access_token)
 
         client = Client(
@@ -3620,8 +3750,8 @@ def main() -> None:
             proxy=proxy,
             auth=auth,
             organization_params=params.get("organization"),
-            client_id_param=client_id,
-            client_secret_param=client_secret,
+            client_id_param=params.get("client_id"),
+            client_secret_param=params.get("access_token"),
         )
 
         # check auth token validity and if a refresh token is needed to obtain new auth token
@@ -3630,8 +3760,10 @@ def main() -> None:
                 client._headers = {"Authorization": f"Bearer {new_token}"}
 
         commands = {
-            "vd-auth-start": create_auth_client,
-            "vd-auth-complete": obtain_auth_token,
+            "vd-auth-start": handle_auth_token_command,
+            "vd-auth-client-get": auth_client_info_command,
+            "vd-auth-test": auth_client_test_command,
+            "vd-auth-reset": auth_client_reset_command,
             "vd-appliance-list": appliance_list_command,
             "vd-organization-list": organization_list_command,
             "vd-organization-appliance-list": appliances_list_by_organization_command,
@@ -3683,9 +3815,7 @@ def main() -> None:
             "vd-appliance-user-modified-application-list": appliance_user_modified_application_list_command,
             "vd-predefined-application-list": predefined_application_list_command,
         }
-        if command == "test-module":
-            return_results(test_module(client))
-        elif command == "vd-template-change-commit":
+        if command == "vd-template-change-commit":
             return_results(commands[command](args, client))
         elif command in commands:
             return_results(commands[command](client, args))
