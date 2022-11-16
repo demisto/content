@@ -1,7 +1,7 @@
 [MODEL: dataset=paloaltonetworks_saassecurity_raw, content_id="PrismaSaasSecurity"]
 alter
     xdm.event.type = log_type,
-    xdm.source.ipv4 = _reporting_device_ip,
+    xdm.source.ipv4 = coalesce(ip, source_ip, _reporting_device_ip),
     xdm.event.operation_sub_type = coalesce(event_type, log_type)
     xdm.target.resource.type = item_type,
     xdm.target.resource.name = action,
