@@ -1052,7 +1052,7 @@ script:
       name: retries
       required: true
     description: Get PAPI property activation status until it is active.
-    name: akamai-get-papi-property-activation-status-command
+    name: akamai-get-papi-property-activation-status
   - arguments:
     - description: contract ID.
       name: contract_id
@@ -1073,8 +1073,8 @@ script:
       name: retries
       required: true
     description: Get PAPI edgehostname creation status command until it is created.
-    name: akamai-get-papi-edgehostname-creation-status-command
-  - name: akamai-acknowledge-warning-command
+    name: akamai-get-papi-edgehostname-creation-status
+  - name: akamai-acknowledge-warning
     arguments:
     - description: The path of the changed certificate.
       name: change_path
@@ -1096,17 +1096,17 @@ script:
       name: mode
       required: true
     description: Update the list of selected hostnames for a configuration version.
-    name: akamai-modify-appsec-config-selected-hosts-command
+    name: akamai-modify-appsec-config-selected-hosts
   - arguments:
     - name: enrollment_id
       required: true
     description: Get Production Deployment
-    name: akamai-get-production-deployment-command
+    name: akamai-get-production-deployment
   - arguments:
     - name: enrollment_id
       required: true
     description: Get change history
-    name: akamai-get-change-history-command
+    name: akamai-get-change-history
   - arguments:
     - description: Akamai contract Identity
       name: contract_id
