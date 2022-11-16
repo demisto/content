@@ -32,7 +32,7 @@ configuration:
   required: false
   type: 8
 description: Automate your AppID Adoption by using this integration together with your Palo Alto Networks Next-Generation Firewall or Panorama.
-display: PAN-OS Policy Optimizer
+display: PAN-OS Policy Optimizer (Beta)
 name: PAN-OS Policy Optimizer
 script:
   commands:
@@ -169,7 +169,7 @@ script:
     description: Gets a specific dynamic address group.
     execution: false
     name: pan-os-get-dag
-  dockerimage: demisto/python3:3.10.8.36650
+  dockerimage: demisto/python3:3.10.8.37233
   feed: false
   isfetch: false
   longRunning: false
@@ -181,3 +181,4 @@ script:
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
+beta: true

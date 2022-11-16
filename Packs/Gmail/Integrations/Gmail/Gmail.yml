@@ -1,4 +1,7 @@
 category: Email Gateway
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Gmail
   version: -1
@@ -8,41 +11,54 @@ configuration:
   name: adminEmail
   required: true
   type: 9
+  section: Connect
 - display: Immutable Google Apps Id
   name: gappsID
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: Events search query (e.g., "from:example@demisto.com")
   name: query
   required: false
   type: 0
   additionalinfo: Used for searching emails in the inbox. The query language follows the Gmail query specification. For example - "from:example@demisto.com is:unread".
+  section: Collect
 - display: Events user key (e.g., example@demisto.com)
   name: queryUserKey
   required: false
   type: 0
   additionalinfo: Use this to specify the email account to search for messages with the search query. By default, the integration uses the email address specified in the credentials.
+  section: Collect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - defaultvalue: 1 days
   display: First fetch timestamp, in days.
   name: fetch_time
   required: false
   type: 0
+  section: Collect
 description: Gmail API and user management (This integration replaces the Gmail functionality in the GoogleApps API and G Suite integration).
 display: Gmail
 name: Gmail
