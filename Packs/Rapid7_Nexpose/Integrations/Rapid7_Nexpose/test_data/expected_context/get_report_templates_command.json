@@ -1,0 +1,94 @@
+[
+    {
+        "builtin": true,
+        "sections": [
+            "CoverPage",
+            "ExecutiveSummary",
+            "ScanSettings",
+            "SystemOverview",
+            "VulnerabilityDetailListing",
+            "ServiceListing",
+            "UserGroupListing",
+            "DatabaseListing",
+            "FileSystemListing",
+            "PolicyEvaluation",
+            "SpideredWebsite"
+        ],
+        "Id": "audit-report",
+        "Name": "Audit Report",
+        "Description": "Provides comprehensive details about discovered assets, vulnerabilities, and users.",
+        "Type": "document"
+    },
+    {
+        "builtin": true,
+        "sections": [
+            "CoverPage",
+            "ExecutiveSummary",
+            "BaselineComparison"
+        ],
+        "Id": "baseline-comparison",
+        "Name": "Baseline Comparison",
+        "Description": "Compares current scan results to those of an earlier baseline scan.",
+        "Type": "document"
+    },
+    {
+        "builtin": true,
+        "sections": [
+            "CoverPage",
+            "ExecutiveSummary",
+            "BaselineComparison"
+        ],
+        "Id": "executive-overview",
+        "Name": "Executive Overview",
+        "Description": "Provides a high-level view of security data, including general results information and statistical charts.",
+        "Type": "document"
+    },
+    {
+        "builtin": true,
+        "sections": [
+            "CoverPage",
+            "TOC",
+            "HighestRiskVulnerabilities"
+        ],
+        "Id": "highest-risk-vulns",
+        "Name": "Highest Risk Vulnerabilities",
+        "Description": "Provides information and metrics about 10 discovered vulnerabilities with the highest risk scores.",
+        "Type": "document"
+    },
+    {
+        "builtin": true,
+        "sections": [
+            "CoverPage",
+            "PolicyEvaluation"
+        ],
+        "Id": "policy-eval",
+        "Name": "Policy Evaluation",
+        "Description": "Lists results for standard policy scans (AS/400, Oracle, Domino, Windows Group, CIFS/SMB account). Does not include Policy Manager results.",
+        "Type": "document"
+    },
+    {
+        "builtin": true,
+        "sections": [
+            "CoverPage",
+            "SystemOverview",
+            "RiskAssessment",
+            "RemediationPlan"
+        ],
+        "Id": "remediation-plan",
+        "Name": "Remediation Plan",
+        "Description": "Provides detailed remediation instructions for each discovered vulnerability.",
+        "Type": "document"
+    },
+    {
+        "builtin": true,
+        "sections": [
+            "CoverPage",
+            "VulnerabilityReportCardByNode",
+            "VulnerabilityIndex"
+        ],
+        "Id": "report-card",
+        "Name": "Report Card",
+        "Description": "Lists test results for each discovered vulnerability, including how it was verified.",
+        "Type": "document"
+    }
+]

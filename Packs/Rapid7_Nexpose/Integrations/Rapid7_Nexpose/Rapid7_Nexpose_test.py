@@ -185,7 +185,7 @@ def test_readable_duration_time(test_input: str, expected_output: float):
                              ({"a": "b", "c": "d", "e": "f"}, "a", {"c": "d", "e": "f"}),
                              (("a", {1: "b"}), 1, ("a", {})),
                              ([1, 2, {"a": "b", "test": "test"}], "test", [1, 2, {"a": "b"}]),
-                             ({"a": {"b": {"test": "x"}}}, "test", {"a": {"b": {"test": "x"}}}),
+                             ({"a": {"b": {"test": "x"}}}, "test", {'a': {'b': {}}}),
                          ])
 def test_remove_dict_key(test_input_data: IterableCollection, test_input_key: str, expected_output: IterableCollection):
     assert remove_dict_key(test_input_data, test_input_key) == expected_output
@@ -261,16 +261,16 @@ def test_create_vulnerability_exception_command(mocker, mock_client: Client, tes
            expected_output_context
 
 
-@pytest.mark.parametrize("api_mock_data_file, asset_vulnerability_api_mock_file, vulnerability_api_mock_file, "
+@pytest.mark.parametrize("asset_mock_file, asset_vulnerability_api_mock_file, vulnerability_api_mock_file, "
                          "expected_output_context_file",
                          [
-                             ("client_get_asset", "client_get_asset_vulnerabilities", "client_get_vulnerability",
-                              "get_asset_command")
+                             ("client_get_asset", "client_get_asset_vulnerabilities",
+                              "client_get_vulnerability-certificate-common-name-mismatch", "get_asset_command")
                          ])
-def test_get_asset_command(mocker, mock_client: Client, api_mock_data_file: str, asset_vulnerability_api_mock_file: str,
+def test_get_asset_command(mocker, mock_client: Client, asset_mock_file: str, asset_vulnerability_api_mock_file: str,
                            vulnerability_api_mock_file: str, expected_output_context_file: str):
-    api_mock_data = load_test_data("api_mock", api_mock_data_file)
-    mocker.patch.object(Client, "get_asset", return_value=api_mock_data)
+    asset_mock_data = load_test_data("api_mock", asset_mock_file)
+    mocker.patch.object(Client, "get_asset", return_value=asset_mock_data)
 
     mocker.patch.object(Client, "find_asset_site", return_value=Site(site_id="1", site_name="Test"))
 
@@ -290,13 +290,13 @@ def test_get_asset_command(mocker, mock_client: Client, api_mock_data_file: str,
         assert result[-1].outputs == expected_output_context
 
 
-@pytest.mark.parametrize("api_mock_data_file, expected_output_context_file",
+@pytest.mark.parametrize("assets_mock_file, expected_output_context_file",
                          [
                              ("client_get_assets", "get_assets_command")
                          ])
-def test_get_assets_command(mocker, mock_client: Client, api_mock_data_file: str, expected_output_context_file: str):
-    api_mock_data = load_test_data("api_mock", api_mock_data_file)
-    mocker.patch.object(Client, "get_assets", return_value=api_mock_data)
+def test_get_assets_command(mocker, mock_client: Client, assets_mock_file: str, expected_output_context_file: str):
+    assets_mock_data = load_test_data("api_mock", assets_mock_file)
+    mocker.patch.object(Client, "get_assets", return_value=assets_mock_data)
 
     mocker.patch.object(Client, "find_asset_site", return_value=Site(site_id="1", site_name="Test"))
 
@@ -304,3 +304,60 @@ def test_get_assets_command(mocker, mock_client: Client, api_mock_data_file: str
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
 
     assert [r.outputs for r in result] == expected_output_context
+
+
+@pytest.mark.parametrize("vulnerability_id, asset_vulnerability_mock_file, vulnerability_mock_file, "
+                         "asset_vulnerability_solution_mock_file, expected_output_context_file",
+                         [
+                             ("ssl-cve-2011-3389-beast", "client_get_asset_vulnerability-ssl-cve-2011-3389-beast",
+                              "client_get_vulnerability-ssl-cve-2011-3389-beast",
+                              "client_get_asset_vulnerability_solution-ssl-cve-2011-3389-beast",
+                              "get_asset_vulnerability_command")
+                         ])
+def test_get_asset_vulnerability_command(mocker, mock_client: Client, vulnerability_id: str,
+                                         asset_vulnerability_mock_file: str, vulnerability_mock_file: str,
+                                         asset_vulnerability_solution_mock_file: str,
+                                         expected_output_context_file: str):
+    asset_vulnerability_data = load_test_data("api_mock", asset_vulnerability_mock_file)
+    mocker.patch.object(Client, "get_asset_vulnerability", return_value=asset_vulnerability_data)
+
+    vulnerability_data = load_test_data("api_mock", vulnerability_mock_file)
+    mocker.patch.object(Client, "get_vulnerability", return_value=vulnerability_data)
+
+    asset_vulnerability_solution_data = load_test_data("api_mock", asset_vulnerability_solution_mock_file)
+    mocker.patch.object(Client, "get_asset_vulnerability_solution", return_value=asset_vulnerability_solution_data)
+
+    expected_output_context = load_test_data("expected_context", expected_output_context_file)
+
+    result = get_asset_vulnerability_command(client=mock_client, asset_id="1", vulnerability_id=vulnerability_id)
+    assert result[-1].outputs == expected_output_context
+
+
+@pytest.mark.parametrize("report_history_mock_file, expected_output_context_file",
+                         [
+                             ("client_get_report_history", "get_generated_report_status_command")
+                         ])
+def test_get_generated_report_status_command(mocker, mock_client: Client, report_history_mock_file: str,
+                                             expected_output_context_file: str):
+    report_history_data = load_test_data("api_mock", report_history_mock_file)
+    mocker.patch.object(Client, "get_report_history", return_value=report_history_data)
+
+    expected_output_context = load_test_data("expected_context", expected_output_context_file)
+
+    result = get_generated_report_status_command(client=mock_client, report_id="1", instance_id="latest")
+    assert result.outputs == expected_output_context
+
+
+@pytest.mark.parametrize("report_templates_mock_file, expected_output_context_file",
+                         [
+                             ("client_get_report_templates", "get_report_templates_command")
+                         ])
+def test_get_report_templates_command(mocker, mock_client: Client, report_templates_mock_file: str,
+                                      expected_output_context_file: str):
+    report_templates_data = load_test_data("api_mock", report_templates_mock_file)
+    mocker.patch.object(Client, "get_report_templates", return_value=report_templates_data)
+
+    expected_output_context = load_test_data("expected_context", expected_output_context_file)
+
+    result = get_report_templates_command(client=mock_client)
+    assert result.outputs == expected_output_context

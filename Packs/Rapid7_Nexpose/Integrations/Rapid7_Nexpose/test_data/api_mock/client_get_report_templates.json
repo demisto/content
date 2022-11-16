@@ -4,12 +4,6 @@
             "builtin": true,
             "description": "Provides comprehensive details about discovered assets, vulnerabilities, and users.",
             "id": "audit-report",
-            "links": [
-                {
-                    "href": "https://nexpose.local/api/3/report_templates/audit-report",
-                    "rel": "self"
-                }
-            ],
             "name": "Audit Report",
             "sections": [
                 "CoverPage",
@@ -30,12 +24,6 @@
             "builtin": true,
             "description": "Compares current scan results to those of an earlier baseline scan.",
             "id": "baseline-comparison",
-            "links": [
-                {
-                    "href": "https://nexpose.local/api/3/report_templates/baseline-comparison",
-                    "rel": "self"
-                }
-            ],
             "name": "Baseline Comparison",
             "sections": [
                 "CoverPage",
@@ -48,12 +36,6 @@
             "builtin": true,
             "description": "Provides a high-level view of security data, including general results information and statistical charts.",
             "id": "executive-overview",
-            "links": [
-                {
-                    "href": "https://nexpose.local/api/3/report_templates/executive-overview",
-                    "rel": "self"
-                }
-            ],
             "name": "Executive Overview",
             "sections": [
                 "CoverPage",
@@ -66,12 +48,6 @@
             "builtin": true,
             "description": "Provides information and metrics about 10 discovered vulnerabilities with the highest risk scores.",
             "id": "highest-risk-vulns",
-            "links": [
-                {
-                    "href": "https://nexpose.local/api/3/report_templates/highest-risk-vulns",
-                    "rel": "self"
-                }
-            ],
             "name": "Highest Risk Vulnerabilities",
             "sections": [
                 "CoverPage",
@@ -84,12 +60,6 @@
             "builtin": true,
             "description": "Lists results for standard policy scans (AS/400, Oracle, Domino, Windows Group, CIFS/SMB account). Does not include Policy Manager results.",
             "id": "policy-eval",
-            "links": [
-                {
-                    "href": "https://nexpose.local/api/3/report_templates/policy-eval",
-                    "rel": "self"
-                }
-            ],
             "name": "Policy Evaluation",
             "sections": [
                 "CoverPage",
@@ -101,12 +71,6 @@
             "builtin": true,
             "description": "Provides detailed remediation instructions for each discovered vulnerability.",
             "id": "remediation-plan",
-            "links": [
-                {
-                    "href": "https://nexpose.local/api/3/report_templates/remediation-plan",
-                    "rel": "self"
-                }
-            ],
             "name": "Remediation Plan",
             "sections": [
                 "CoverPage",
@@ -120,12 +84,6 @@
             "builtin": true,
             "description": "Lists test results for each discovered vulnerability, including how it was verified.",
             "id": "report-card",
-            "links": [
-                {
-                    "href": "https://nexpose.local/api/3/report_templates/report-card",
-                    "rel": "self"
-                }
-            ],
             "name": "Report Card",
             "sections": [
                 "CoverPage",
@@ -133,12 +91,6 @@
                 "VulnerabilityIndex"
             ],
             "type": "document"
-        }
-    ],
-    "links": [
-        {
-            "href": "https://nexpose.local/api/3/report_templates",
-            "rel": "self"
         }
     ]
 }
