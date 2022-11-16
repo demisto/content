@@ -194,17 +194,17 @@ expected_result_test_sent_mail_to_entry = {"expected_human_readable": expected_h
 
 
 # test_filters_to_entry #
-list_filters_mock_result = [{'id': 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', 'criteria': {'from': 'test1@gmail.com'},
+list_filters_mock_result = [{'id': 'AAAA', 'criteria': {'from': 'test1@gmail.com'},
                              'action': {'addLabelIds': ['TRASH']}},
-                            {'id': 'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB', 'criteria': {'from': 'test2@gmail.com'},
+                            {'id': 'BBBB', 'criteria': {'from': 'test2@gmail.com'},
                              'action': {'addLabelIds': ['TRASH']}}]
-except_contents = [{'ID': 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', 'Mailbox': '1111111',
+except_contents = [{'ID': 'AAAA', 'Mailbox': '1111111',
                     'Criteria': {'from': 'test1@gmail.com'}, 'Action': {'addLabelIds': ['TRASH']}},
-                   {'ID': 'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB', 'Mailbox': '1111111',
+                   {'ID': 'BBBB', 'Mailbox': '1111111',
                    'Criteria': {'from': 'test2@gmail.com'}, 'Action': {'addLabelIds': ['TRASH']}}]
 expected_human_readable_test_filters_to_entry = '### filters:\n|ID|Criteria|Action|\n\
-|---|---|---|\n| AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA | from: test1@gmail.com | addLabelIds: TRASH |\n|\
- BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB | from: test2@gmail.com | addLabelIds: TRASH |\n'
+|---|---|---|\n| AAAA | from: test1@gmail.com | addLabelIds: TRASH |\n|\
+ BBBB | from: test2@gmail.com | addLabelIds: TRASH |\n'
 
 expected_result_test_filters_to_entry = {"expected_human_readable": expected_human_readable_test_filters_to_entry,
                                          "except_contents": except_contents}
@@ -270,3 +270,16 @@ except_contents_test_emails_to_entry = [{'id': '183c702bfdbb3fc2',
                                          'internalDate': '1665491175000'}]
 expected_result_test_emails_to_entry = {"expected_human_readable": expected_human_readable_test_emails_to_entry,
                                         "except_contents": except_contents_test_emails_to_entry}
+
+# test_forwarding_address_get_command #
+expected_result_forwarding_address_get_command_1 = {"raw_response": {'forwardingEmail': 'test@gmail.com',
+                                                                     'verificationStatus': 'accepted',
+                                                                     'userId': '111'},
+                                                    "outputs": {'forwardingEmail': 'test@gmail.com',
+                                                                'verificationStatus': 'accepted',
+                                                                'userId': '111'},
+                                                    "readable_output": '### Get forwarding address for: "111"\n|forwardingEmail|verificationStatus|\n|---|---|\n| test@gmail.com | accepted |\n'}
+
+expected_result_forwarding_address_get_command_2 = {"raw_response": {'forwardingEmail': 'test@gmail.com', 'verificationStatus': 'accepted', 'userId': '111'},
+                                                    "outputs": {'forwardingEmail': 'test@gmail.com', 'verificationStatus': 'accepted', 'userId': '111'},
+                                                    "readable_output": '### Get forwarding address for: "111"\n|forwardingEmail|verificationStatus|\n|---|---|\n| test@gmail.com | accepted |\n'}
