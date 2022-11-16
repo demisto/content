@@ -2017,24 +2017,15 @@ def migrate_last_run(last_run: dict[str, str]) -> list[dict]:
     return [updated_last_run_detections, updated_last_run_incidents]
 
 
-def handle_last_run():
-    """
-    Prints the current last run object to `debug` and migrates to new form if needed.
-    """
-    last_run = demisto.getLastRun()
-    demisto.debug(f'CrowdStrikeFalconMsg: Current last run object is {last_run}')
-
-    if not last_run or isinstance(last_run, list):
-        return
-
-    demisto.setLastRun(migrate_last_run(last_run))
-
-
 def fetch_incidents():
     incidents = []  # type:List
+
     last_run = demisto.getLastRun()
+    demisto.debug(f'CrowdStrikeFalconMsg: Current last run object is {last_run}')
     if not last_run:
         last_run = [{}, {}]
+    if not isinstance(last_run, list):
+        last_run = migrate_last_run(last_run)
     current_fetch_info_detections: dict = last_run[0]
     current_fetch_info_incidents: dict = last_run[1]
     fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections')
@@ -3579,10 +3570,7 @@ def test_module():
         return 'Connection Error: The URL or The API key you entered is probably incorrect, please try again.'
     if demisto.params().get('isFetch'):
         try:
-            last_run = demisto.getLastRun()
             fetch_incidents()
-            # do not modify last run in fetch
-            demisto.setLastRun(last_run)
         except ValueError:
             return 'Error: Something is wrong with the filters you entered for the fetch incident, please try again.'
     return 'ok'
@@ -3886,11 +3874,9 @@ def main():
     args = demisto.args()
     try:
         if command == 'test-module':
-            handle_last_run()
             result = test_module()
             return_results(result)
         elif command == 'fetch-incidents':
-            handle_last_run()
             demisto.incidents(fetch_incidents())
 
         elif command in ('cs-device-ran-on', 'cs-falcon-device-ran-on'):
