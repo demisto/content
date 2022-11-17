@@ -111,7 +111,7 @@ tasks:
         3. (optional) Get the results of the operation.
       id: b848db18-f1ef-4c37-8341-f44c1fb2fa84
       iscommand: false
-      name: GenericPolling
+      name: Poll Indicators
       playbookId: GenericPolling
       type: playbook
       version: -1
