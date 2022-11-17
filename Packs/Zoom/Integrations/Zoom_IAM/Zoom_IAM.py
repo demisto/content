@@ -12,6 +12,8 @@ urllib3.disable_warnings()
 
 DEFAULT_OUTGOING_MAPPER = "User Profile - SCIM (Outgoing)"
 DEFAULT_INCOMING_MAPPER = "User Profile - SCIM (Incoming)"
+# The token’s time to live is 1 hour,
+# two minutes were subtract for extra safety.
 TOKEN_LIFE_TIME = timedelta(minutes=58)
 ERROR_CODES_TO_SKIP = [
     404
@@ -72,7 +74,7 @@ class Client(BaseClient):
         """
         now = datetime.now()
         ctx = get_integration_context()
-        # ctx["generation_time"]
+
         if not ctx or not ctx.get('generation_time', force_gen_new_token):
             # new token is needed
             oauth_token = self.generate_oauth_token()
@@ -344,8 +346,8 @@ def main():
                              )
     try:
         if any((api_key, api_secret)) and any((account_id, client_id, client_secret)):
-            raise DemistoException("""To many fields where filled.
-                                   You shuld fill the Account ID, Client ID, and Client Secret fields (OAuth),
+            raise DemistoException("""Too many fields were filled.
+                                   You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
                                    OR the API Key and API Secret fields (JWT - Deprecated)""")
 
         if command == 'test-module':

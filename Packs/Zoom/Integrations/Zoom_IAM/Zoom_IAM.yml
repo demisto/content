@@ -3,21 +3,21 @@ commonfields:
   id: Zoom_IAM Dev
   version: -1
 configuration:
-  - display: Account ID
+  - display: Account ID (OAuth)
     name: account_id
     type: 0
     required: false
-  - display: Client ID
-    displaypassword: Client Secret
+  - display: Client ID (OAuth)
+    displaypassword: Client Secret (OAuth)
     name: credentials
     type: 9
     required: false
-  - display: API Key (Deprecated)
+  - display: API Key (JWT-Deprecated)
     name: api_key
     type: 4
     required: false
     additionalinfo: This authentication method is deprecated
-  - display: API Secret (Deprecated)
+  - display: API Secret (JWT-Deprecated)
     name: api_secret
     type: 4
     required: false
@@ -55,7 +55,10 @@ script:
   commands:
     - arguments:
         - default: false
-          description: A User Profile indicator.
+          description: >
+            A User Profile indicator.
+
+            For example: `{"email": "john.doe@example.com"}`
           isArray: false
           name: user-profile
           required: true
