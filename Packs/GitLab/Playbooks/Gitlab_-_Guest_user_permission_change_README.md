@@ -1,4 +1,4 @@
-This playbook investigates a "User Persmission Changed” alert by gathering user and IP information  and performs remediation based on the information gathered and received from the user.
+This playbook investigates a "User Persmission Changed” alert by gathering user and IP information  and performs remediation based on the information gathered and received from the user.  If you wish to link this playbook to the relevant alerts automatically, we recommend using the following filters when configuring the playbook triggers: Alert Source = Correlation AND Alert Name = Gitlab - Guest user permission change
 
 Used Sub-playbooks:
 * Enrichment for Verdict
@@ -22,8 +22,8 @@ This playbook does not use any integrations.
 This playbook does not use any scripts.
 
 ### Commands
-* closeInvestigation
 * setAlert
+* closeInvestigation
 
 ## Playbook Inputs
 ---
@@ -39,4 +39,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Gitlab - User Permission Changed Alert](../doc_files/Gitlab_-_User_Permission_Changed_Alert.png)
+![Gitlab - Guest user permission change](../doc_files/Gitlab_-_Guest_user_permission_change.png)

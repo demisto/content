@@ -11,7 +11,7 @@
     remote_ip: xdm.source.ipv4
     remote_port: null
     username: xdm.target.resource.name
-  alert_name: Gitlab - User Permission change from guest to owner
+  alert_name: Gitlab - Guest user permission change
   crontab: null
   dataset: alerts
   description: Alert for change in user's permissions change from Guest to Owner

@@ -1,8 +1,8 @@
-id: Gitlab - User Permission Changed Alert
+id: Gitlab - Guest user permission change
 version: -1
-name: Gitlab - User Permission Changed Alert
+name: Gitlab - Guest user permission change
 description: |+
-  This playbook investigates a "User Persmission Changed” alert by gathering user and IP information  and performs remediation based on the information gathered and received from the user.
+  This playbook investigates a "User Persmission Changed” alert by gathering user and IP information  and performs remediation based on the information gathered and received from the user.  If you wish to link this playbook to the relevant alerts automatically, we recommend using the following filters when configuring the playbook triggers: Alert Source = Correlation AND Alert Name = Gitlab - Permission change from guest to owner
 
   Used Sub-playbooks:
   * Enrichment for Verdict
@@ -657,4 +657,5 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
+marketplaces: ["marketplacev2"]
 fromversion: 6.5.0
