@@ -49,12 +49,13 @@ NOT_FORMAT_TO_FORMAT = [  # Start of http:/ replacements.
 ]
 
 BRACKETS_URL_TO_FORMAT = [
-    ('https://test1.test-api.com/test1/test2/s.testing]', 'https://test1.test-api.com/test1/test2/s.testing'),
-    ('https://test1.test-api.com/test1/test2/s]testing]', 'https://test1.test-api.com/test1/test2/s]testing'),
-    ('https://test1.test-api.com/test1/test2/s]testing', 'https://test1.test-api.com/test1/test2/s]testing'),
-    ('https://test1.test-api.com]', 'https://test1.test-api.com'),
-    ('https://test1.test-api.com[', 'https://test1.test-api.com'),
-    ('https://test1.test-api.com', 'https://test1.test-api.com'),
+    ('{[https://test1.test-api.com/test1/test2/s.testing]}', 'https://test1.test-api.com/test1/test2/s.testing'),
+    ('"https://test1.test-api.com"', 'https://test1.test-api.com'),
+    ('[[https://test1.test-api.com]]', 'https://test1.test-api.com'),
+    ('[https://www.test.com]', 'https://www.test.com'),
+    ('https://www.test.com]', 'https://www.test.com'),
+    ('[https://www.test.com', 'https://www.test.com'),
+    ('[[https://www.test.com', 'https://www.test.com'),
 ]
 
 ATP_REDIRECTS = [
@@ -213,7 +214,7 @@ FAILS = [
 
 REDIRECT_TEST_DATA = ATP_REDIRECTS + PROOF_POINT_REDIRECTS + FIREEYE_REDIRECT + TRENDMICRO_REDIRECT
 
-FORMAT_TESTS = (FORMAT_USERINFO + FORMAT_PORT + FORMAT_IPv4 + FORMAT_IPv6 + FORMAT_PATH + FORMAT_QUERY
+FORMAT_TESTS = (BRACKETS_URL_TO_FORMAT + FORMAT_USERINFO + FORMAT_PORT + FORMAT_IPv4 + FORMAT_IPv6 + FORMAT_PATH + FORMAT_QUERY
                 + FORMAT_FRAGMENT + FORMAT_NON_ASCII + FORMAT_PUNYCODE + FORMAT_HEX)
 
 FORMAT_URL_TEST_DATA = NOT_FORMAT_TO_FORMAT + FORMAT_TESTS
