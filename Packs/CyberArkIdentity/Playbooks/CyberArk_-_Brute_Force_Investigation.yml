@@ -9,6 +9,8 @@ description: |+
   * Block IP - Generic v3
   * Block Account - Generic v2
 
+  If you wish to link this playbook to the relevant alerts automatically, we recommend using the following filters when configuring the playbook triggers: Alert Source = Correlation AND Alert Name = CyberArk Failed Logins
+
 starttaskid: "0"
 tasks:
   "0":
