@@ -1408,6 +1408,7 @@ class SmartGetDict(dict):
     :rtype: ``SmartGetDict``
 
     """
+
     def get(self, key, default=None):
         res = dict.get(self, key)
         if res is not None:
@@ -10287,9 +10288,10 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     last_run_time = last_run and 'time' in last_run and last_run['time']
     now = get_current_time(timezone)
     if not last_run_time:
-        last_run_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'}) + timedelta(hours=timezone)
+        last_run_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True}) \
+            + timedelta(hours=timezone)
     else:
-        last_run_time = dateparser.parse(last_run_time, settings={'TIMEZONE': 'UTC'})
+        last_run_time = dateparser.parse(last_run_time, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
 
     if look_back > 0:
         if now - last_run_time < timedelta(minutes=look_back):
@@ -10300,7 +10302,7 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
 
 def get_current_time(time_zone=0):
     """
-    Gets the current time in a given timezone.
+    Gets the current time in a given timezone, as time awared datetime.
 
     :type time_zone: ``int``
     :param time_zone: The time zone offset in hours.
@@ -10308,7 +10310,13 @@ def get_current_time(time_zone=0):
     :return: The current time.
     :rtype: ``datetime``
     """
-    return datetime.utcnow() + timedelta(hours=time_zone)
+    now = datetime.utcnow() + timedelta(hours=time_zone)
+    try:
+        import pytz
+        return now.replace(tzinfo=pytz.UTC)
+    except ImportError:
+        demisto.debug('pytz is missing, will not return timeaware object.')
+        return now
 
 
 def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limit, id_field):
