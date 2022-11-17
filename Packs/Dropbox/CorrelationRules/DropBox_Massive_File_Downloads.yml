@@ -22,10 +22,10 @@
   drilldown_query_timeframe: ALERT
   execution_mode: SCHEDULED
   global_rule_id: 205317b6-c494-4836-ac31-f80c8204cf4e
-  investigation_query_link: 'datamodel dataset in(dropbox_dropbox_raw)
+  investigation_query_link: 'datamodel
 
     | filter xdm.event.type = "file_operations" and xdm.event.operation_sub_type =
-    "file_download"
+    "file_download" and xdm.observer.product = "dropbox" and xdm.observer.vendor = "dropbox"
 
     | alter user = coalesce(xdm.source.user.username, xdm.target.user.username)
 
@@ -42,10 +42,10 @@
   suppression_fields: null
   user_defined_category: null
   user_defined_severity: null
-  xql_query: 'datamodel dataset in(dropbox_dropbox_raw)
+  xql_query: 'datamodel
 
     | filter xdm.event.type = "file_operations" and xdm.event.operation_sub_type =
-    "file_download"
+    "file_download" and xdm.observer.product = "dropbox" and xdm.observer.vendor = "dropbox"
 
     | alter user = coalesce(xdm.source.user.username, xdm.target.user.username)
 
