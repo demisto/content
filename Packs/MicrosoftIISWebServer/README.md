@@ -29,7 +29,6 @@ Copy and paste the content of the following YAML file in the *Filebeat Configura
 
 ```commandline
 filebeat.modules:
-
 - module: iis
   access:
     enabled: true
@@ -37,5 +36,4 @@ filebeat.modules:
   error:
     enabled: true
     var.paths: ["C:/Windows/System32/LogFiles/HTTPERR/*.log"]
-
 ```

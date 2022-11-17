@@ -16,19 +16,32 @@ URL_EXTRACTION_REGEX = (
     r"(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+"
     r"[-\w\d]+(?::\d+)?(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?"
 )
-INTEGRATION_NAME = "ReadPDFFileV2"
+INTEGRATION_NAME = 'ReadPDFFileV2'
 DEFAULT_NUM_IMAGES = 20
 
 
 class PdfPermissionsException(Exception):
+    """
+    Every exception class that is in charge of catching errors that occur when trying to
+    extract data from the PDF must inherit this class
+    """
     pass
 
 
-class PdfCopyingException(PdfPermissionsException):
+class PdfCopyingProtectedException(PdfPermissionsException):
+    """
+    This class is in charge of catching errors that occur when we try to extract data from
+    a `copy-protected` file (Copy-protected files are files that prevent us from copy its content)
+    This is relevant since we run a command that copies the content of the pdf file into a text file.
+    """
     pass
 
 
-class PdfCredentialsException(PdfPermissionsException):
+class PdfInvalidCredentialsException(PdfPermissionsException):
+    """
+    This class is in charge of catching errors that occur when we try to decrypt an encrypted
+    pdf file with the wrong password.
+    """
     pass
 
 
@@ -70,12 +83,10 @@ def handle_error_read_only(fun, path, exp) -> None:
 
 
 def create_file_instance(entry_id: str, path: str, file_name: str, score: int | None) -> Common.File:
-    # TODO Should I add file_type?
-    # TODO What to put in indicator?
     dbot_score = Common.DBotScore(
         indicator=entry_id,
         indicator_type=DBotScoreType.FILE,
-        integration_name=INTEGRATION_NAME,
+        integration_name='PDFx',
         score=score,
     )
     file = Common.File(
@@ -91,41 +102,16 @@ def create_file_instance(entry_id: str, path: str, file_name: str, score: int | 
 def mark_suspicious(suspicious_reason: str, entry_id: str, path: str, file_name: str) -> None:
     """Missing EOF, file may be corrupted or suspicious file"""
 
-    # dbot = {
-    #     "DBotScore": {
-    #         "Indicator": entry_id,
-    #         "Type": "file",
-    #         "Vendor": "PDFx",
-    #         "Score": 2,
-    #     }
-    # }
     human_readable = (
         f'{suspicious_reason}\nFile marked as suspicious for entry id: {entry_id}'
     )
-    LOG(suspicious_reason)
-    file = create_file_instance(
+    file_instance = create_file_instance(
         entry_id=entry_id,
         path=path,
         file_name=file_name,
         score=Common.DBotScore.SUSPICIOUS,
     )
-    # TODO No use for command results?
-    # command_results = CommandResults(readable_output=human_readable, indicator=file)
-    return_warning(message=human_readable, outputs=file.to_context())
-    # return_warning(message=human_readable, outputs=command_results)
-
-
-# def return_error_without_exit(message):
-#     """Same as return_error, without the sys.exit"""
-#     LOG(message)
-#     LOG.print_log()
-#     demisto.results(
-#         {
-#             "Type": entryTypes["error"],
-#             "ContentsFormat": formats["text"],
-#             "Contents": str(message),
-#         }
-#     )
+    return_warning(message=human_readable, outputs=file_instance.to_context())
 
 
 def run_shell_command(command: str, *args) -> bytes:
@@ -138,10 +124,10 @@ def run_shell_command(command: str, *args) -> bytes:
     if exit_codes != 0:
         error_string = completed_process.stderr.decode('utf-8')
         if "Incorrect password" in error_string:
-            raise PdfCredentialsException(
+            raise PdfInvalidCredentialsException(
                 'Incorrect password. Please provide the correct password.')
         if 'Copying of text from this document is not allowed' in error_string:
-            raise PdfCopyingException(
+            raise PdfCopyingProtectedException(
                 'Copying is not permitted')
         raise ShellException(
             f'Failed with the following error code: {exit_codes}.\n'
@@ -210,23 +196,21 @@ def get_pdf_metadata(file_path: str, user_password: str | None = None) -> dict:
 
 
 def bypass_copy_protected_limitations(pdf_file: str) -> None:
-    """ This function is in charge of bypassing the limitations of `copy-protected` files """
+    """
+    This function is in charge of handling the situation when a pdf is `copy-protected`.
+    Copy protected files prevent us from extracting content from the file, therefore we need a way to bypass this limitation.
+    """
     with Pdf.open(pdf_file, allow_overwriting_input=True) as pdf:
         pdf.save(pdf_file)
 
 
 def get_pdf_text(file_path: str, pdf_text_output_path: str) -> str:
     """Creates a txt file from the pdf in the pdf_text_output_path and returns the content of the txt file"""
-    # pdf = Pdf.open(file_path)
-    # pdf.save(pdf_text_output_path)
     try:
         run_shell_command("pdftotext", file_path, pdf_text_output_path)
-    except PdfCopyingException:
+    except PdfCopyingProtectedException:
         bypass_copy_protected_limitations(pdf_file=file_path)
-        # pdf = Pdf.open(file_path, allow_overwriting_input=True)
-        # pdf.save(file_path)
         run_shell_command("pdftotext", file_path, pdf_text_output_path)
-    # run_shell_command("pdftotext", file_path, pdf_text_output_path)
     text = ""
     with open(pdf_text_output_path, "rb") as f:
         for line in f:
@@ -237,13 +221,10 @@ def get_pdf_text(file_path: str, pdf_text_output_path: str) -> str:
 def get_pdf_htmls_content(pdf_path: str, output_folder: str) -> str:
     """Creates an html file and images from the pdf in output_folder and returns the text content of the html files"""
     pdf_html_output_path = f'{output_folder}/PDF_html'
-    # run_shell_command("pdftohtml", pdf_path, output_folder)
     try:
         run_shell_command("pdftohtml", pdf_path, pdf_html_output_path)
-    except PdfCopyingException:
+    except PdfCopyingProtectedException:
         bypass_copy_protected_limitations(pdf_file=pdf_path)
-        # pdf = Pdf.open(pdf_path, allow_overwriting_input=True)
-        # pdf.save(pdf_path)
         run_shell_command("pdftohtml", pdf_path, pdf_html_output_path)
     html_file_names = get_files_names_in_path(output_folder, "*.html")
     html_content = ""
@@ -323,7 +304,6 @@ def build_readpdf_entry_object(entry_id: str, metadata: dict, text: str, urls: l
             "EntryContext": ec,
         }
     )
-    # TODO Should I add file indicator?
     return results
 
 
@@ -479,7 +459,7 @@ def get_urls_and_emails_from_pdf_annots(file_path: str) -> Tuple[set, set]:
     all_emails: Set[str] = set()
 
     with open(file_path, 'rb') as pdf_file:
-        pdf = PyPDF2.PdfFileReader(pdf_file, strict=False)
+        pdf = PyPDF2.PdfReader(pdf_file, strict=False)
         pages_len = len(pdf.pages)
 
         # Goes over the PDF, page by page, and extracts urls and emails:
@@ -511,7 +491,7 @@ def get_urls_and_emails_from_pdf_annots(file_path: str) -> Tuple[set, set]:
     return all_urls, all_emails
 
 
-def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str) -> Tuple[set, set]:
+def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str) -> Tuple[list, list]:
     """
     Extract URLs and Emails from the PDF file.
     Args:
@@ -529,43 +509,49 @@ def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str) ->
     annots_urls, annots_emails = get_urls_and_emails_from_pdf_annots(file_path)
     html_urls, html_emails = get_urls_and_emails_from_pdf_html_content(file_path, output_folder)
 
-    # This url is always generated with the pdf html file, and that's why we remove it
+    # This url might be generated with the pdf html file, if so, we remove it
     html_urls.discard('http://www.w3.org/1999/xhtml')
 
     # Unify urls:
     urls_set = annots_urls.union(html_urls, binary_file_urls)
     emails_set = annots_emails.union(html_emails)
 
-    return urls_set, emails_set
+    urls_ec = []
+    emails_ec = []
+    for url in urls_set:
+        urls_ec.append({"Data": url})
+    for email in emails_set:
+        emails_ec.append(email)
+
+    return urls_ec, emails_ec
 
 
-def handling_pdf_credentials(cpy_file_path: str, dec_file_path: str, user_password: str = '') -> str:
+def handling_pdf_credentials(cpy_file_path: str, dec_file_path: str, encrypted: str = '',
+                             user_password: str = '') -> str:
     """
-    This function is in charge of decrypting the pdf if needed,
-    and handling the case where the pdf is `copy-protected` (remove this limitation)
+    This function decrypts the pdf if needed.
     """
     try:
-        if user_password:
+        if user_password or 'yes' in encrypted:
             with Pdf.open(cpy_file_path, allow_overwriting_input=True, password=user_password) as pdf:
                 pdf.save(dec_file_path)
                 return dec_file_path
     except PasswordError:
-        raise PdfCredentialsException('Incorrect password. Please provide the correct password.')
+        raise PdfInvalidCredentialsException('Incorrect password. Please provide the correct password.')
     return cpy_file_path
 
 
 def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_images: int | None, working_dir: str) -> None:
     max_images = max_images if max_images else DEFAULT_NUM_IMAGES
-    # URLS
-    urls_ec = []
-    emails_ec = []
     if path:
         cpy_file_path = f'{working_dir}/WorkingReadPDF.pdf'
         shutil.copy(path, cpy_file_path)
         metadata = get_pdf_metadata(path, user_password)
+        encrypted = metadata.get('Encrypted', '')
 
         cpy_file_path = handling_pdf_credentials(cpy_file_path=cpy_file_path,
                                                  dec_file_path=f'{working_dir}/DecWorkingReadPDF.pdf',
+                                                 encrypted=encrypted,
                                                  user_password=user_password)
 
         # Get text:
@@ -573,12 +559,7 @@ def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_imag
         text = get_pdf_text(cpy_file_path, pdf_text_output_path)
 
         # Get URLS + emails:
-        urls_set, emails_set = extract_urls_and_emails_from_pdf_file(cpy_file_path, working_dir)
-        # urls_set, emails_set, images = extract_urls_emails_images(cpy_file_path, working_dir)
-        for url in urls_set:
-            urls_ec.append({"Data": url})
-        for email in emails_set:
-            emails_ec.append(email)
+        urls_ec, emails_ec = extract_urls_and_emails_from_pdf_file(cpy_file_path, working_dir)
 
         # Get images:
         images = get_images_paths_in_path(working_dir)
@@ -590,7 +571,7 @@ def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_imag
                                                           images,
                                                           max_images=max_images)
 
-        demisto.results(readpdf_entry_object)
+        return_results(readpdf_entry_object)
     else:
         raise Exception(f"EntryID {entry_id} path could not be found")
 
@@ -603,7 +584,6 @@ def main():  # pragma: no cover
             """ Check if the working directory does not exist and create it """
             os.makedirs(working_dir)
         entry_id = args.get('entryID')
-        file_name = demisto.getFilePath(entry_id).get('name')
         user_password = str(args.get('userPassword', ''))
         max_images = arg_to_number(args.get('maxImages', None))
         path = demisto.getFilePath(entry_id).get('path')
@@ -613,8 +593,9 @@ def main():  # pragma: no cover
     except PdfPermissionsException as e:
         return_warning(str(e))
     except ShellException as e:
+        file_name = demisto.getFilePath(entry_id).get('name')
         mark_suspicious(
-            suspicious_reason=f'The script {INTEGRATION_NAME} failed due to an error: {str(e)}',
+            suspicious_reason=f'The script {INTEGRATION_NAME} failed due to an error\n{str(e)}',
             entry_id=entry_id,
             path=path,
             file_name=file_name,
@@ -622,10 +603,6 @@ def main():  # pragma: no cover
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(str(e))
-        # return_error(f'The script failed read PDF file due to an error: {str(e)}')
-        # return_error_without_exit(
-        #     f"The script failed read PDF file due to an error: {str(e)}"
-        # )
     finally:
         os.chdir(ROOT_PATH)
         shutil.rmtree(working_dir, onerror=handle_error_read_only)

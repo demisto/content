@@ -97,7 +97,7 @@ configuration:
   required: false
   type: 0
 description: Microsoft Cloud App Security is a multimode Cloud Access Security Broker (CASB). It provides rich visibility, control over data travel, and sophisticated analytics to identify and combat cyber threats across all your cloud services. Use the integration to view and resolve alerts, view activities, view files, and view user accounts.
-display: Microsoft Cloud App Security
+display: Microsoft Defender for Cloud Apps
 name: MicrosoftCloudAppSecurity
 script:
   commands:
@@ -575,8 +575,8 @@ script:
       isArray: false
       name: is_scan
       predefined:
-        - 'false'
-        - 'true'
+      - 'false'
+      - 'true'
       required: false
       secret: false
     - default: false

@@ -2,7 +2,7 @@ import demistomock as demisto
 import os
 
 import pytest
-from ReadPDFFileV2 import PdfCredentialsException, PdfPermissionsException
+from ReadPDFFileV2 import PdfInvalidCredentialsException, PdfPermissionsException
 
 CWD = os.getcwd() if os.getcwd().endswith('test_data') else f'{os.getcwd()}/test_data'
 
@@ -70,12 +70,13 @@ def test_incorrect_authentication():
     file_path = f'{CWD}/encrypted.pdf'
     dec_file_path = f'{CWD}/decrypted.pdf'
 
-    with pytest.raises(PdfCredentialsException) as e:
+    with pytest.raises(PdfInvalidCredentialsException) as e:
         get_pdf_metadata(file_path=file_path, user_password='12')
     assert 'Incorrect password' in str(e)
 
-    with pytest.raises(PdfCredentialsException) as e:
-        handling_pdf_credentials(cpy_file_path=file_path, dec_file_path=dec_file_path, user_password='12')
+    with pytest.raises(PdfInvalidCredentialsException) as e:
+        handling_pdf_credentials(cpy_file_path=file_path, dec_file_path=dec_file_path, encrypted='yes',
+                                 user_password='12')
     assert 'Incorrect password' in str(e)
 
 
@@ -151,7 +152,8 @@ def test_get_pdf_text_with_encrypted(tmp_path):
     from ReadPDFFileV2 import get_pdf_text, handling_pdf_credentials
     file_path = f'{CWD}/encrypted.pdf'
     dec_file_path = f'{CWD}/decrypted.pdf'
-    dec_file_path = handling_pdf_credentials(cpy_file_path=file_path, user_password='1234', dec_file_path=dec_file_path)
+    dec_file_path = handling_pdf_credentials(cpy_file_path=file_path, user_password='1234',
+                                             dec_file_path=dec_file_path, encrypted='yes')
     text = get_pdf_text(dec_file_path, f'{tmp_path}/encrypted.txt')
     expected = "XSL FO Sample Copyright © 2002-2005 Antenna House, Inc. All rights reserved.\n\n" \
                "Links in PDF\nPDF link is classified into two parts, link to the specified position in the PDF " \
@@ -175,7 +177,7 @@ def test_get_pdf_text_without_encrypted(tmp_path):
     try:
         get_pdf_text(f'{CWD}/encrypted.pdf', f'{tmp_path}/encrypted.txt')
         raise Exception("Incorrect password exception should've been thrown")
-    except PdfCredentialsException as e:
+    except PdfInvalidCredentialsException as e:
         assert 'Incorrect password' in str(e)
 
     # assert not warnings are raised
@@ -202,7 +204,8 @@ def test_get_pdf_htmls_content_with_encrypted(mocker, tmp_path):
     from ReadPDFFileV2 import get_pdf_htmls_content, get_images_paths_in_path, handling_pdf_credentials
     file_path = f'{CWD}/encrypted.pdf'
     dec_file_path = f'{CWD}/decrypted.pdf'
-    dec_file_path = handling_pdf_credentials(cpy_file_path=file_path, user_password='1234', dec_file_path=dec_file_path)
+    dec_file_path = handling_pdf_credentials(cpy_file_path=file_path, user_password='1234',
+                                             dec_file_path=dec_file_path, encrypted='yes')
     # to_html_output_folder = f'{tmp_path}/PDF_html'
     html_text = get_pdf_htmls_content(dec_file_path, tmp_path)
     expected = 'If you are end user who wishes to use XSL Formatter yourself, you may purchase ' \
@@ -285,7 +288,8 @@ def test_get_urls_and_emails_from_pdf_annots_with_encrypt(file_path):
     file_path = f'{CWD}/{file_path}'
     dec_file_path = handling_pdf_credentials(cpy_file_path=file_path,
                                              user_password='123456',
-                                             dec_file_path=dec_file_path)
+                                             dec_file_path=dec_file_path,
+                                             encrypted='')
     # decrypt_pdf_file(file_path, '1234', dec_file_path)
 
     # Extract URLs and Emails:
@@ -371,7 +375,8 @@ def test_get_urls_and_emails_from_pdf_file_with_encrypt(tmp_path):
     # Decrypt the PDF:
     file_path = f'{CWD}/URLs_Extraction_Test_PDF_Encoding_LibreOffice_protected.pdf'
     dec_file_path = f'{CWD}/decrypted.pdf'
-    dec_file_path = handling_pdf_credentials(cpy_file_path=file_path, user_password='123456', dec_file_path=dec_file_path)
+    dec_file_path = handling_pdf_credentials(cpy_file_path=file_path, user_password='123456',
+                                             dec_file_path=dec_file_path, encrypted='')
     # decrypt_pdf_file(file_path, '123456', dec_file_path)
 
     # Extract URLs and Emails:
@@ -381,8 +386,8 @@ def test_get_urls_and_emails_from_pdf_file_with_encrypt(tmp_path):
     if os.path.exists(dec_file_path):
         os.remove(dec_file_path)
 
-    assert urls == expected_urls
-    assert emails == expected_emails
+    assert set(url_data['Data'] for url_data in urls) == expected_urls
+    assert set(emails) == expected_emails
 
 
 def test_get_urls_and_emails_from_pdf_file_without_encrypt(tmp_path):
@@ -411,8 +416,8 @@ def test_get_urls_and_emails_from_pdf_file_without_encrypt(tmp_path):
     # Extract URLs and Emails:
     urls, emails = extract_urls_and_emails_from_pdf_file(file_path, tmp_path)
 
-    assert urls == expected_urls
-    assert emails == expected_emails
+    assert set(emails) == expected_emails
+    assert set(url_data['Data'] for url_data in urls) == expected_urls
 
 
 def test_handle_error_read_only(mocker):
