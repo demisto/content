@@ -62,7 +62,7 @@ configuration:
   required: false
   type: 8
 description: Microsoft 365 Defender Event Collector integration.
-display: Microsoft 365 Defender Event Collector
+display: Microsoft Defender for Endpoint Event Collector
 name: Microsoft 365 Defender Event Collector
 script:
   commands:
@@ -100,7 +100,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/pydantic-jwt3:1.0.0.32858
+  dockerimage: demisto/pydantic-jwt3:1.0.0.33550
 fromversion: 6.8.0
 marketplaces:
 - marketplacev2
