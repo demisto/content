@@ -1,5 +1,6 @@
+name: BoxEventCollector Parsing Rule
+id: BoxEventCollector Parsing Rule
 fromversion: 6.10.0
-id: BoxEventCollector
-name: BoxEventCollector
+tags: []
 rules: ''
-schema: ''
+samples: ''
