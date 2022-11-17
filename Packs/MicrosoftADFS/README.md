@@ -48,12 +48,11 @@ Copy and paste the following content in the *Filebeat Configuration File* sectio
 winlogbeat.event_logs:
   - name: Security
     event_id: 510, 1200, 1201, 1202, 1203, 1204, 1205, 1206, 1207
-  - name: AD FS/Admin
-  processors:
-    - add_fields:
-        fields:
-          vendor: msft
-          product: adfs
+    processors:
+      - add_fields:
+          fields:
+            vendor: microsoft
+            product: windows
 ```
 ​
 **Note**: The above configuration uses the default location of the logs. 
