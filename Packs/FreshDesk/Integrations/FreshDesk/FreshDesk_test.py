@@ -137,7 +137,7 @@ def test_ticket_to_incident(mocker):
 def test_reformat_canned_response_context(mocker):
     """
     Given:
-        - a dictionary
+        - a dictionary with two keys: 'Id' and 'Html'
 
     When:
         - running reformat_canned_response_context function
