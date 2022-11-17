@@ -20,7 +20,7 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "AWS Guard Duty Malware Protection"
+        "AWS Guard Duty Malware Protection Finding"
     ],
     "associatedToAll": false,
     "unmapped": false,

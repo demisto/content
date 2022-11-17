@@ -357,17 +357,16 @@ def update_threat_intel_set(client: boto3.client, args: dict):
                         f"Response was: {response}")
 
 
-def severity_mapping(severity: int):
-    if severity <= 3.9:
-        demistoSevirity = 1
-    elif severity >= 4 and severity <= 6.9:
-        demistoSevirity = 2
-    elif severity >= 7 and severity <= 8.9:
-        demistoSevirity = 3
-    else:
-        demistoSevirity = 0
-
-    return demistoSevirity
+def severity_mapping(severity: Optional[int]):
+    demisto_severity = 0
+    if severity:
+        if severity <= 3.9:
+            demisto_severity = 1
+        elif 4 <= severity <= 6.9:
+            demisto_severity = 2
+        elif 7 <= severity <= 8.9:
+            demisto_severity = 3
+    return demisto_severity
 
 
 def gd_severity_mapping(severity: str):
@@ -430,7 +429,7 @@ def get_pagination_args(args: dict):
         raise Exception(f'page_size argument must be between 1 to {MAX_RESULTS_RESPONSE}')
 
     if page:
-        limit = page * page_size
+        limit = page * page_size  # type: ignore
 
     return limit, page_size, page
 
@@ -466,18 +465,12 @@ def parse_finding(finding: dict):
 
     parsed_finding['AWS GuardDuty Instance Details'] = demisto.get(finding, 'Resource.InstanceDetails')
 
-    # TODO MAYBE CHANGE THE DATETIME IN DIFFERENT WAY
-    eks_cluster_details = json.dumps(demisto.get(finding, 'Resource.EksClusterDetails'), cls=DatetimeEncoder)
-    if eks_cluster_details != 'null':
-        parsed_finding['AWS GuardDuty Eks Cluster Details'] = json.loads(eks_cluster_details)
-
-    ecs_cluster_details = json.dumps(demisto.get(finding, 'Resource.EcsClusterDetails'), cls=DatetimeEncoder)
-    if ecs_cluster_details != 'null':
-        parsed_finding['AWS GuardDuty Ecs Cluster Details'] = json.loads(ecs_cluster_details)
-
-    s3_bucket_details = json.dumps(demisto.get(finding, 'Resource.S3BucketDetails'), cls=DatetimeEncoder)
-    if s3_bucket_details != 'null':
-        parsed_finding['AWS GuardDuty S3 Bucket Details'] = json.loads(s3_bucket_details)
+    parsed_finding['AWS GuardDuty Eks Cluster Details'] = \
+        json.loads(json.dumps(demisto.get(finding, 'Resource.EksClusterDetails'), cls=DatetimeEncoder))
+    parsed_finding['AWS GuardDuty Ecs Cluster Details'] = \
+        json.loads(json.dumps(demisto.get(finding, 'Resource.EcsClusterDetails'), cls=DatetimeEncoder))
+    parsed_finding['AWS GuardDuty S3 Bucket Details'] = \
+        json.loads(json.dumps(demisto.get(finding, 'Resource.S3BucketDetails'), cls=DatetimeEncoder))
 
     return parsed_finding
 
@@ -530,7 +523,7 @@ def fetch_incidents(client: boto3.client, aws_gd_severity: str, last_run: dict, 
         aws_gd_severity: Guard Duty Severity level
         last_run (dict): {'latest_created_time' (string): The greatest incident created_time we fetched from last fetch,
                           'latest_updated_time' (string): The greatest incident updated_time we fetched from last fetch,
-                          'last_incidents_ids' (set): The last incidents ids of the latest_created_time,
+                          'last_incidents_ids' (list): The last incidents ids of the latest_created_time,
                           'last_next_token' (string): The value of NextToken from the previous response to continue listing data.}
         fetch_limit (int): Maximum numbers of incidents per fetch
         first_fetch_time (str): If last_fetch is None then fetch all incidents since first_fetch_time
@@ -584,8 +577,8 @@ def fetch_incidents(client: boto3.client, aws_gd_severity: str, last_run: dict, 
                                                SortCriteria={'AttributeName': 'createdAt', 'OrderBy': 'ASC'})
 
         for finding in get_findings_res['Findings']:
-            incident_created_time = dateparser.parse(finding.get('CreatedAt'))
-            incident_updated_time = dateparser.parse(finding.get('UpdatedAt'))
+            incident_created_time = dateparser.parse(finding.get('CreatedAt', ""))
+            incident_updated_time = dateparser.parse(finding.get('UpdatedAt', ""))
             incident_id = finding.get("Id")
 
             # Update the latest_updated_time
@@ -835,7 +828,7 @@ def main():  # pragma: no cover
 
         elif demisto.command() == 'fetch-incidents':
             next_run, incidents = fetch_incidents(client, aws_gd_severity, last_run=demisto.getLastRun(),
-                                                  fetch_limit=fetch_limit,
+                                                  fetch_limit=fetch_limit,  # type: ignore
                                                   first_fetch_time=first_fetch_time)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)

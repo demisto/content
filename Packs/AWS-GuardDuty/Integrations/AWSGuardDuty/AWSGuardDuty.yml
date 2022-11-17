@@ -102,10 +102,6 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
 description: Amazon Web Services Guard Duty Service (gd)
 display: AWS - GuardDuty
 name: AWS - GuardDuty
@@ -274,7 +270,7 @@ script:
     - contextPath: AWS.GuardDuty.Detectors.UpdatedAt
       description: The time a resource was last updated.
       type: string
-    - contextPath: AWS.GuardDuty.Detectors.CloudTrailStatus   # TODO
+    - contextPath: AWS.GuardDuty.Detectors.CloudTrailStatus
       description: Describes whether CloudTrail is enabled as a data source for the detector.
       type: string
     - contextPath: AWS.GuardDuty.Detectors.DNSLogsStatus
@@ -1122,10 +1118,79 @@ script:
     description: Describes Amazon GuardDuty findings specified by finding IDs.
     execution: false
     name: aws-gd-get-findings
-#    outputs: TODO
-#      - contextPath: AWS.GuardDuty.Findings.FindingId
-#        description: The unique identifier for the Finding
-#        type: string
+    outputs:
+    - contextPath: 'AWS.GuardDuty.Findings.Account ID'
+      description: The ID of the account in which the finding was generated.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Occurred'
+      description: The time and date when the finding was created.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Description'
+      description: The description of the finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Region'
+      description: The Region where the finding was generated.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Alert Id'
+      description: The ID of the finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Title'
+      description: The title of the finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Severity'
+      description: The severity of the finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Last Update Time'
+      description: The time and date when the finding was last updated.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.AWS Arn'
+      description: The ARN of the finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.AWS GuardDuty Confidence Score'
+      description: The confidence score for the finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.AWS GuardDuty Partition'
+      description: The partition associated with the finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.AWS GuardDuty Resource Type'
+      description: The type of Amazon Web Services resource.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.AWS GuardDuty Type'
+      description: The type of finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.AWS GuardDuty Schema Version'
+      description: The version of the schema used for the finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.AWS GuardDuty Access Key Details'
+      description: The IAM access key details (IAM user information) of a user that engaged in the activity that prompted GuardDuty to generate a finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.AWS GuardDuty Instance Details'
+      description: The information about the EC2 instance associated with the activity that prompted GuardDuty to generate a finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.AWS GuardDuty Eks Cluster Details'
+      description: Details about the EKS cluster involved in a Kubernetes finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.AWS GuardDuty Kubernetes User Details'
+      description: Details about the Kubernetes user involved in a Kubernetes finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.AWS GuardDuty Kubernetes Workload Details'
+      description: Details about the Kubernetes workload involved in a Kubernetes finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.AWS GuardDuty Ebs Volume Details'
+      description: Contains list of scanned and skipped EBS volumes with details.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.AWS GuardDuty Ecs Cluster Details'
+      description: Contains information about the details of the ECS Cluster.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.AWS GuardDuty Container Details'
+      description: Details of a container.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.AWS GuardDuty S3 Bucket Details'
+      description: Contains information on the S3 bucket.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.AWS GuardDuty Service'
+      description: Contains additional information about the generated finding.
+      type: string
   - arguments:
     - default: false
       description: The ID of the detector to create sample findings for.
@@ -1422,7 +1487,7 @@ script:
     - contextPath: AWS.GuardDuty.Members.UpdatedAt
       description: The time a member was last updated.
       type: string
-  dockerimage: demisto/boto3py3:1.0.0.37472
+  dockerimage: demisto/boto3py3:1.0.0.37533
   feed: false
   isfetch: true
   longRunning: false
