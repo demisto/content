@@ -383,7 +383,6 @@ script:
       defaultValue: 'True'
       description: Network Configuration - Dns Name Settings - Clone DNS Names
       name: clone_dns_names
-      required: true
     - defaultValue: 'False'
       description: Third Party - Exclude Sans
       name: exclude_sans
