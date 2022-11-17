@@ -14,6 +14,7 @@ filter
     xdm.source.application.name = AppId,
     xdm.observer.vendor=_vendor,
     xdm.observer.product=_product;
+    
 filter  EventType not in ("Cloud.Core.OAuthToken.Create", "Cloud.Core.Logout", "Cloud.Core.MfaSummary", "Cloud.Core.StartImpersonate","Cloud.Core.Login", "Cloud.Core.LoginFail", "Cloud.Core.Logout", "Cloud.Core.OAuthToken.InvalidClient" )
  |   alter
     xdm.target.resource.name = coalesce(ObjectName, Role, Alias, ProfileName, TargetUser, DSName, ImpersonateTargetName, Cname, AffectedTenant, OU, DeviceName, ApplicationName, AppName, EntityName),
