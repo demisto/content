@@ -456,6 +456,10 @@ view: |-
 inputs:
 - key: URL
   value:
+    simple: "True"
+  required: false
+- key: URL
+  value:
     complex:
       root: URL
       accessor: Data
