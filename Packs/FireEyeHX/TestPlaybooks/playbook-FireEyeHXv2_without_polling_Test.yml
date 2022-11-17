@@ -361,7 +361,6 @@ tasks:
     scriptarguments:
       agentId:
         simple: Hqb2ns3oui1fpzg0BxI1Ch
-    continueonerror: true
     separatecontext: false
     view: |-
       {
