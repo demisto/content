@@ -1,4 +1,4 @@
-This playbook investigates “Massive File Alterations” and “DropBox - Massive File Downloads” incidents by gathering user and IP information and performing remediation based on the information gathered and received from the user.
+This playbook investigates “Massive File Alterations” and “DropBox - Massive File Downloads” alerts by gathering user and IP information and performing remediation based on the information gathered and received from the user.
 
 Used Sub-playbooks:
 * Enrichment for Verdict
