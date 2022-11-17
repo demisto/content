@@ -439,7 +439,10 @@ def test_fetch_last_emails_max_fetch(max_fetch, expected_result):
 
         def order_by(self, *args):
             # Return a list of emails
-            return [Message(), Message(), Message(), Message(), Message()]
+            class MockQuerySet:
+                def __iter__(self):
+                    return (t for t in [Message(), Message(), Message(), Message(), Message()] )
+            return MockQuerySet
 
     def mock_get_folder_by_path(path, account=None, is_public=False):
         return MockObject()
