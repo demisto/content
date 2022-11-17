@@ -41,7 +41,7 @@ tasks:
     task:
       id: 2a59fbbb-9295-44e9-84c7-12159c765356
       version: -1
-      name: Delete Context - test
+      name: Delete Context
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
@@ -209,7 +209,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9820
+          "y": 11045
         }
       }
     note: false
@@ -2376,7 +2376,7 @@ tasks:
       brand: ''
     nexttasks:
       yes:
-      - '4'
+      - '68'
     separatecontext: false
     conditions:
     - label: yes
@@ -2446,12 +2446,306 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 83de3bc7-d642-4239-8a8c-8464cb7f69f8
+    type: regular
+    task:
+      id: 83de3bc7-d642-4239-8a8c-8464cb7f69f8
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 24ed78e2-9435-43d0-8464-79c258e65ab2
+    type: regular
+    task:
+      id: 24ed78e2-9435-43d0-8464-79c258e65ab2
+      version: -1
+      name: Create Remote network cidrs
+      description: Create remote network cidrs
+      script: '|||qradar-remote-network-cidr-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      cidrs:
+        simple: 127.0.0.1/32
+      description:
+        simple: playbook-test
+      group:
+        simple: playbook-test-group
+      name:
+        simple: playbook-test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: a24df768-3af5-4080-80a9-0538bfabeed5
+    type: regular
+    task:
+      id: a24df768-3af5-4080-80a9-0538bfabeed5
+      version: -1
+      name: Remote network cidrs List
+      description: Retrieves the list of staged remote networks.
+      script: '|||qradar-remote-network-cidr-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      group:
+        simple: playbook-test-group
+      name:
+        simple: playbook-test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: c4706deb-4823-4422-8459-e68f3a8557d9
+    type: condition
+    task:
+      id: c4706deb-4823-4422-8459-e68f3a8557d9
+      version: -1
+      name: Validate Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "72"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: QRadar.RemoteNetworkCIDR.name
+            iscontext: true
+          right:
+            value:
+              simple: playbook-test
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: ebbdd2d7-e72a-4409-8157-a62bd7508d28
+    type: regular
+    task:
+      id: ebbdd2d7-e72a-4409-8157-a62bd7508d28
+      version: -1
+      name: Update Remote network cidrs
+      description: Updates an existing staged remote network.
+      script: '|||qradar-remote-network-cidr-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "73"
+    scriptarguments:
+      cidrs:
+        simple: 127.0.0.1/32,1.2.3.4/8
+      description:
+        simple: playbook-test-updated
+      group:
+        simple: playbook-test-group-updated
+      id:
+        simple: ${QRadar.RemoteNetworkCIDR.id}
+      name:
+        simple: playbook-test-updated
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: e87160cc-365e-4553-8c7d-4bc467a24c44
+    type: condition
+    task:
+      id: e87160cc-365e-4553-8c7d-4bc467a24c44
+      version: -1
+      name: Validate Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "74"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: QRadar.RemoteNetworkCIDR.name
+            iscontext: true
+          right:
+            value:
+              simple: playbook-test-updated
+      - - operator: isEqualString
+          left:
+            value:
+              simple: QRadar.RemoteNetworkCIDR.group
+            iscontext: true
+          right:
+            value:
+              simple: playbook-test-group-updated
+      - - operator: isEqualString
+          left:
+            value:
+              simple: QRadar.RemoteNetworkCIDR.description
+            iscontext: true
+          right:
+            value:
+              simple: playbook-test-updated
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: a932c269-8176-433f-8adc-3a3e723e054a
+    type: regular
+    task:
+      id: a932c269-8176-433f-8adc-3a3e723e054a
+      version: -1
+      name: Delete Remote network cidrs
+      description: Deletes an existing staged remote network.
+      script: '|||qradar-remote-network-cidr-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      id:
+        simple: ${QRadar.RemoteNetworkCIDR.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 9835,
+        "height": 11060,
         "width": 380,
         "x": 50,
         "y": 50
