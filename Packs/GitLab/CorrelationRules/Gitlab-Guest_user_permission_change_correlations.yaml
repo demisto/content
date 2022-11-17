@@ -36,7 +36,7 @@
   suppression_fields: null
   user_defined_category: null
   user_defined_severity: null
-  xql_query: "datamodel dataset in(gitlab_gitlab_raw )\r\n| fields _time\r\n,xdm.event.id\
+  xql_query: "datamodel\r\n| filter xdm.observer.vendor = \"gitlab\" and xdm.observer.product = \"gitlab\"\r\n| fields _time\r\n,xdm.event.id\
     \ \r\n,xdm.source.user.identifier \r\n,xdm.target.resource.id \r\n,xdm.target.resource.type\
     \ \r\n,xdm.source.user.username \r\n,xdm.target.resource.sub_type \r\n,xdm.target.resource.name\
     \ \r\n,xdm.event.description \r\n,xdm.source.ipv4 \r\n,xdm.target.resource_before.value\
