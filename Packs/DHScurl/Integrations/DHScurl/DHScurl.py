@@ -6,15 +6,15 @@ import tempfile
 
 
 def call_curl(curl: str = None):
-    demisto.log('curl{}'.format(curl))
+    demisto.log('curl={}'.format(curl))
     # curl = 'apt-get update && apt-get install curl -y'
     # process = subprocess.Popen(curl, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     # stdout, stderr = process.communicate()
     time_before = time.time()
-    completed_process = subprocess.run(curl, shell=True, capture_output=True, timeout=180, encoding='utf-8')
+    completed_process = subprocess.run(curl, shell=True, capture_output=True, timeout=1800, encoding='utf-8')
     demisto.log('running the curl took {}sec'.format(round(time.time() - time_before)))
-    demisto.log('completed_process.stdout{}'.format(completed_process.stdout))
-    demisto.log('completed_process.stderr{}'.format(completed_process.stderr))
+    demisto.log('completed_process.stdout={}'.format(completed_process.stdout))
+    demisto.log('completed_process.stderr={}'.format(completed_process.stderr))
     return completed_process.stdout, completed_process.stderr
 
 
@@ -27,6 +27,7 @@ def call_curls(curls: List[str]):
 
 def dhscurl_run_command(curl_to_run, key_tempfile_name, certificate_tempfile_name):
     cert_key_to_curl = ' --cert {} --key {}'.format(certificate_tempfile_name, key_tempfile_name)
+    # curl makes sure the cert and key match, and raises an error if not
 
     curl_get_production_collection_endpoints = 'curl -X GET ' \
                                                'https://ais2.cisa.dhs.gov/taxii2/ ' \
@@ -39,13 +40,24 @@ def dhscurl_run_command(curl_to_run, key_tempfile_name, certificate_tempfile_nam
                                        '-H "Content-Type: application/taxii+json" ' \
                                        '--noproxy "*" -k' + cert_key_to_curl
     collection_id = ''
-    curl_get_public_objects_info = 'curl -X GET ' \
+    curl_get_public_objects_info = 'curl -v -X GET ' \
                                    '"https://ais2.cisa.dhs.gov/public/collections/{}/objects/' \
-                                   '?limit=10' \
-                                   '&added_after=2022-10-18T13%3A10%3A50.84906Z"' \
+                                   '?limit=3&added_after=2022-11-15T08:00:00Z"' \
                                    ' -H "Accept: application/taxii+json;version=2.1" ' \
                                    '-H "Content-Type: application/taxii+json" ' \
                                    '--noproxy "*" -k'.format(collection_id) + cert_key_to_curl
+    curl_get_public_objects_info_close_time = 'curl -v -X GET ' \
+                                              '"https://ais2.cisa.dhs.gov/public/collections/{}/objects/' \
+                                              '?limit=3&added_after=2022-11-19T11:00:00Z"' \
+                                              ' -H "Accept: application/taxii+json;version=2.1" ' \
+                                              '-H "Content-Type: application/taxii+json" ' \
+                                              '--noproxy "*" -k'.format(collection_id) + cert_key_to_curl
+    curl_get_public_objects_info_close_time_with_dot = 'curl -v -X GET ' \
+                                                       '"https://ais2.cisa.dhs.gov/public/collections/{}/objects/' \
+                                                       '?limit=3&added_after=2022-11-19T11:00:00.0Z"' \
+                                                       ' -H "Accept: application/taxii+json;version=2.1" ' \
+                                                       '-H "Content-Type: application/taxii+json" ' \
+                                                       '--noproxy "*" -k'.format(collection_id) + cert_key_to_curl
 
     response_stdout, response_stderr = '', ''
     if curl_to_run == 'all':
@@ -58,6 +70,10 @@ def dhscurl_run_command(curl_to_run, key_tempfile_name, certificate_tempfile_nam
         response_stdout, response_stderr = call_curl(curl_get_public_collections_info)
     elif curl_to_run == 'objects':
         response_stdout, response_stderr = call_curl(curl_get_public_objects_info)
+    elif curl_to_run == 'objects_closer_time':
+        response_stdout, response_stderr = call_curl(curl_get_public_objects_info_close_time)
+    elif curl_to_run == 'objects_other_time_format':
+        response_stdout, response_stderr = call_curl(curl_get_public_objects_info_close_time_with_dot)
 
     return response_stdout
 

@@ -30,6 +30,8 @@ script:
       - taxii2
       - collections
       - objects
+      - objects_closer_time
+      - objects_other_time_format
       required: true
       secret: false
     deprecated: false
