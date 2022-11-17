@@ -2434,7 +2434,7 @@ def sub_main():
             return_outputs(*output)
 
     except Exception as e:
-        demisto.debug(f"got an err, {str(e)} {e.with_traceback()} {e.__traceback__}")
+        demisto.error(f'got exception {e}')
         start_logging()
         debug_log = log_stream.getvalue()  # type: ignore[union-attr]
         error_message_simple = ""
