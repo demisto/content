@@ -3947,7 +3947,7 @@ def get_report_templates_command(client: Client) -> CommandResults:
     )
 
 
-def get_scan_command(client: Client, scan_ids: str | list[str]) -> CommandResults | list[CommandResults]:
+def get_scan_command(client: Client, scan_ids: str) -> CommandResults | list[CommandResults]:
     """
     Retrieve information about a specific or multiple scans.
 
@@ -3955,12 +3955,11 @@ def get_scan_command(client: Client, scan_ids: str | list[str]) -> CommandResult
         client (Client): Client to use for API requests.
         scan_ids (str | list): ID of the scan to retrieve.
     """
-    if isinstance(scan_ids, str):
-        scan_ids = [scan_ids]
+    scan_ids_list = argToList(scan_ids)
 
     scans = []
 
-    for scan_id in scan_ids:
+    for scan_id in scan_ids_list:
         try:
             scan_data = client.get_scan(scan_id)
 
@@ -5467,7 +5466,7 @@ def main():
         elif command == "nexpose-get-scan":
             results = get_scan_command(
                 client=client,
-                scan_ids=argToList(args["id"]),
+                scan_ids=args["id"]
             )
         elif command == "nexpose-get-scans":
             results = get_scans_command(
