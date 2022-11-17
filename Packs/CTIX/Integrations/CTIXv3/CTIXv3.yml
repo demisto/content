@@ -1160,9 +1160,6 @@ script:
         - contextPath: DBotScore.Score
           description: The actual score.
           type: Number
-        - contextPath: DBotScore.Reliability
-          description: Reliability of the source providing the intelligence data.
-          type: String
         - contextPath: Domain.Name
           description: 'The domain name, for example: "google.com".'
           type: String
