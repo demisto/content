@@ -1,4 +1,4 @@
-This playbook investigates an “Alibaba ActionTrail - multiple unauthorized action attempts detected by a user” incident by gathering user and IP information and performing remediation based on the information gathered and received from the user.
+This playbook investigates an “Alibaba ActionTrail - multiple unauthorized action attempts detected by a user” alert by gathering user and IP information and performing remediation based on the information gathered and received from the user.
 
 Used Sub-playbooks:
 * Enrichment for Verdict

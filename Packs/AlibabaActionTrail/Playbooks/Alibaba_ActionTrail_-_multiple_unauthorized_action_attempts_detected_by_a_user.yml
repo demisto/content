@@ -2,7 +2,7 @@ id: Alibaba ActionTrail - multiple unauthorized action attempts detected by a us
 version: -1
 name: Alibaba ActionTrail - multiple unauthorized action attempts detected by a user
 description: |-
-  This playbook investigates an “Alibaba ActionTrail - multiple unauthorized action attempts detected by a user” incident by gathering user and IP information and performing remediation based on the information gathered and received from the user.
+  This playbook investigates an “Alibaba ActionTrail - multiple unauthorized action attempts detected by a user” alert by gathering user and IP information and performing remediation based on the information gathered and received from the user.
 
   Used Sub-playbooks:
   * Enrichment for Verdict
@@ -633,3 +633,4 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+marketplaces: ["marketplacev2"]
