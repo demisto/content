@@ -1041,7 +1041,7 @@ script:
       name: retries
       required: true
     description: Get PAPI property activation status until it is active.
-    name: akamai-get-papi-property-activation-status
+    name: akamai-get-papi-property-activation-status-command
   - arguments:
     - description: contract ID.
       name: contract_id
@@ -1062,8 +1062,8 @@ script:
       name: retries
       required: true
     description: Get PAPI edgehostname creation status command until it is created.
-    name: akamai-get-papi-edgehostname-creation-status
-  - name: akamai-acknowledge-warning
+    name: akamai-get-papi-edgehostname-creation-status-command
+  - name: akamai-acknowledge-warning-command
     arguments:
     - description: The path of the changed certificate.
       name: change_path
