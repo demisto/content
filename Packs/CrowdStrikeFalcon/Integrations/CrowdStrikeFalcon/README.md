@@ -3951,3 +3951,23 @@ Gets the detections for a specific incident.
 >| ind:0bde2c4645294245aca522971ccc44c4:162597577534-10305-6712576 | ldt:0bde2c4645294245aca522971ccc44c4:38658614774 | inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593 |
 >| ind:0bde2c4645294245aca522971ccc44c4:162589633341-10303-6705920 | ldt:0bde2c4645294245aca522971ccc44c4:38655034604 | inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593 |
 
+### Spotlight
+# About CrowdStrike APIs
+This guide provides use cases and example requests and responses for interacting with a specific set of our OAuth2-based APIs. For general info about CrowdStrike APIs, see CrowdStrike OAuth2-Based APIs, which includes:
+* Details on getting started, such as authentication
+* Links to our API specification (Swagger) by cloud
+* Domains used in base URLs by cloud
+
+# Using Spotlight APIs
+The Spotlight API features 7 endpoints. Use these endpoints to find and get detailed info about vulnerabilities in your environment and integrate Spotlight into your organization's other ticketing or risk management tools. Vulnerabilities are known security risks in an operating system, application, hardware, firmware, or other part of a computing stack. Spotlight tracks vulnerabilities by industry-standard frameworks like Common Vulnerabilities and Exposures (CVE). Spotlight identifies and gives info about specific vulnerabilities on your hosts using the Falcon sensor.
+For more info about managing vulnerabilities in Falcon, see Falcon Spotlight.
+
+# Required API client scope
+To access the Spotlight API, your API client must be assigned the spotlight-vulnerabilities:read scope. For more info, see API clients.
+Validating API data
+The Falcon sensor continuously monitors hosts for any changes and reports them as they occur. Depending on the timing of requests, Spotlight APIs can return values that are different from those shown by the Falcon console or an external source.
+There are other factors that can cause differences between API responses and other data sources.
+
+# API query syntax
+If an API query doesn’t exactly match the query used on the Spotlight Vulnerabilities page, the values might differ.
+
