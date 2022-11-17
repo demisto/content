@@ -7,8 +7,9 @@ import io
 import os
 from unittest import mock
 import pytest
+from CommonServerPython import *
 from CheckPointSandBlast import Client,\
-    file_command, query_command, quota_command, upload_command, download_command
+    file_command, query_command, quota_command, upload_command, download_command, get_dbotscore
 
 
 HOST = 'https://te.checkpoint.com'
@@ -218,3 +219,10 @@ def test_download_command(requests_mock, mock_client):
     assert 'ContentsFormat' in response
     assert 'Type' in response
     assert 'FileID' in response
+
+
+def test_dbot_score():
+    """
+    """
+    response = {"response":{"av":{"malware_info":{"confidence":0,"severity":0,"signature_name":""},"status":{"code":1001,"label":"FOUND","message":"We have found your request"}},"features":["te","av","extraction"],"file_name":"demo.doc","file_type":"html","md5":"53cdfe8f91592584a61dbc1cd9de6999","sha1":"616812943a0f701b94cb2d2fdfd5b96224bfc21d","sha256":"152a51abf9cd94db0c9f4d2b96ab9347799205fe0b3644f06c3f671e4b134e68","status":{"code":1001,"label":"FOUND","message":"We have found your request"},"te":{"combined_verdict":"Benign","confidence":0,"images":[{"id":"5e5de275-a103-4f67-b55b-47532918fa59","report":{"verdict":"Benign"},"revision":1,"status":"found"},{"id":"e50e99f3-5963-4573-af9e-e3f4750b55e2","report":{"verdict":"Benign"},"revision":1,"status":"found"}],"score":-2147483648,"severity":0,"status":{"code":1001,"label":"FOUND","message":"We have found your request"},"summary_report":""}}}
+    assert get_dbotscore(response) == Common.DBotScore.GOOD
