@@ -1,4 +1,4 @@
-- alert_category: PRIVILEGE_ESCALATION
+  alert_category: PRIVILEGE_ESCALATION
   alert_description: User's permissions has changed from Guest to Owner
   alert_fields:
     actor_image: null
