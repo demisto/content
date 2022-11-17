@@ -1,5 +1,5 @@
 {
-    "name": "MITRE ATT&CK - Courses of Action - Public",
+    "name": "MITRE ATT&CK - Courses of Action",
     "description": "Looking for actionable intelligence? This intelligence-driven Pack provides manual or automated remediation of MITRE ATT&CK techniques.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
