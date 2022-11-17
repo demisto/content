@@ -161,13 +161,13 @@ def test_reformat_canned_response_context(mocker):
 def test_attachments_into_context(mocker):
     """
     Given:
-        - an api_response and a context dictionary
+        - an api_response and the context dictionary that will be modified and returned to the war room
 
     When:
         - running attachments_into_context function
 
     Then:
-        - Ensure context was changed
+        - ensure that the context was modified properly and "AttachmentURL" field was changed to "https://test.com"
     """
     mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
     import FreshDesk
@@ -193,7 +193,7 @@ def test_get_ticket_command(mocker):
         - running get_ticket_command function
 
     Then:
-        - Ensure EntryContext was changed
+        - Ensure EntryContext was changed and "ID" field was changed to "1234"
     """
     mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
     mocker.patch.object(demisto, 'args', return_value={})
