@@ -1,9 +1,5 @@
 from typing import Dict, Tuple, List
 import urllib3
-
-import requests
-from CommonServerUserPython import *
-
 from CommonServerPython import *
 
 # Disable insecure warnings
