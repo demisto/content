@@ -16,6 +16,12 @@ configuration:
   name: credentials
   required: true
   type: 9
+- display: The amount of time (in seconds) that a request will wait for a client to
+    establish a connection to a remote machine before a timeout occurs.
+  name: timeout
+  defaultvalue: "10"
+  type: 0
+  required: false
 - display: Indicator Threshold. Minimum malicious confidence from Falcon Intel to
     consider the indicator malicious.
   name: threshold
