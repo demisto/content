@@ -12,11 +12,12 @@ from enum import Enum
 from pydantic import BaseConfig, BaseModel, AnyUrl, validator  # type: ignore[E0611, E0611, E0611]
 from requests.auth import HTTPBasicAuth
 import requests
+import urllib3.util
 
 from MicrosoftApiModule import *
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 MAX_ALERTS_PAGE_SIZE = 1000
