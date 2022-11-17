@@ -1063,7 +1063,7 @@ class Client(BaseClient):
         Returns:
             list[dict]: A list of all scans (up to a limit, if set).
         """
-        params = {"active": active}
+        params = {"active": active} if active is not None else {}
 
         return self._paged_http_request(
             url_suffix="/scans",
@@ -3915,7 +3915,7 @@ def get_scans_command(client: Client, active: str | None = None, page_size: str 
     limit_int = arg_to_number(limit, required=False)
 
     scans_data = client.get_scans(
-        active=argToBoolean(active),
+        active=argToBoolean(active) if active is not None else None,
         page_size=page_size_int,
         page=page_int,
         sort=sort,
