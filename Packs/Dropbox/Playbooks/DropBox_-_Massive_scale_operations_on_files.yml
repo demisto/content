@@ -1,7 +1,7 @@
 id: DropBox - Massive scale operations on files
 version: -1
 name: DropBox - Massive scale operations on files
-description: "This playbook investigates “Massive File Alterations” and “DropBox - Massive File Downloads” incidents by gathering user and IP information and performing remediation based on the information gathered and received from the user.\n\nUsed Sub-playbooks:\n* Enrichment for Verdict\n* Block Indicators - Generic v3\n* Block IP - Generic v3\n* Block Account - Generic v2\n\nIf you wish to link this playbook to the relevant alerts automatically, we recommend using the following filters when configuring the playbook triggers: Alert Source = Correlation \nAlert Name = DropBox - Massive File Alterations, DropBox - Massive File Downloads"
+description: "This playbook investigates “Massive File Alterations” and “DropBox - Massive File Downloads” alerts by gathering user and IP information and performing remediation based on the information gathered and received from the user.\n\nUsed Sub-playbooks:\n* Enrichment for Verdict\n* Block Indicators - Generic v3\n* Block IP - Generic v3\n* Block Account - Generic v2\n\nIf you wish to link this playbook to the relevant alerts automatically, we recommend using the following filters when configuring the playbook triggers: Alert Source = Correlation \nAlert Name = DropBox - Massive File Alterations, DropBox - Massive File Downloads"
 starttaskid: "0"
 tasks:
   "0":
@@ -962,3 +962,4 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+marketplaces: ["marketplacev2"]
