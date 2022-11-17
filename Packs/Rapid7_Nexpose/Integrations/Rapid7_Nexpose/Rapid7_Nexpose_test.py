@@ -362,3 +362,34 @@ def test_get_report_templates_command(mocker, mock_client: Client, report_templa
 
     result = get_report_templates_command(client=mock_client)
     assert result.outputs == expected_output_context
+
+
+@pytest.mark.parametrize("scan_mock_file, ids_input, expected_output_context_file",
+                         [
+                             ("client_get_scan", "1", "get_scan_command")
+                         ])
+def test_get_scan_command(mocker, mock_client: Client, scan_mock_file: str, ids_input: str,
+                          expected_output_context_file: str):
+    scan_data = load_test_data("api_mock", scan_mock_file)
+    mocker.patch.object(Client, "get_scan", return_value=scan_data)
+
+    expected_output_context = load_test_data("expected_context", expected_output_context_file)
+
+    result = get_scan_command(client=mock_client, scan_ids=ids_input)
+
+    assert result.outputs == expected_output_context
+
+
+@pytest.mark.parametrize("sites_mock_file, expected_output_context_file",
+                         [
+                             ("client_get_sites", "get_sites_command")
+                         ])
+def test_get_sites_command(mocker, mock_client: Client, sites_mock_file: str, expected_output_context_file: str):
+    sites_data = load_test_data("api_mock", sites_mock_file)
+    mocker.patch.object(Client, "get_sites", return_value=sites_data)
+
+    expected_output_context = load_test_data("expected_context", expected_output_context_file)
+
+    result = get_sites_command(client=mock_client)
+
+    assert result.outputs == expected_output_context
