@@ -8,15 +8,10 @@
     "email": "support@agari.com",
     "created": "2020-11-06T08:37:53Z",
     "categories": [
-        "Email Gateway"
+        "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "Email",
-        "Security"
-    ],
-    "useCases": [
-        "Phishing"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "phishing",
         "defense",

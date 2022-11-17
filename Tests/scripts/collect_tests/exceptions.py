@@ -91,7 +91,7 @@ class NothingToCollectException(Exception):
 
 class IncompatibleMarketplaceException(NothingToCollectException):
     def __init__(self, content_path: Path, expected_marketplace: MarketplaceVersions):
-        super().__init__(content_path, f'is not compatible with {expected_marketplace=}')
+        super().__init__(content_path, f'is not compatible with expected marketplace {expected_marketplace.name}')
 
 
 class InvalidTestException(Exception):

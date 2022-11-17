@@ -27,6 +27,7 @@ from abc import abstractmethod
 from distutils.version import LooseVersion
 from threading import Lock
 from inspect import currentframe
+import pytz
 
 import demistomock as demisto
 import warnings
@@ -37,9 +38,9 @@ def __line__():
     return cf.f_back.f_lineno
 
 
-# 42 - The line offset from the beggining of the file.
+# 43 - The line offset from the beggining of the file.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 42, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 43, 'end': float('inf')},
 }
 
 
@@ -510,7 +511,6 @@ class FeedIndicatorType(object):
     AS = "ASN"
     MUTEX = "Mutex"
     Malware = "Malware"
-
 
     @staticmethod
     def is_valid_type(_type):
@@ -1409,6 +1409,7 @@ class SmartGetDict(dict):
     :rtype: ``SmartGetDict``
 
     """
+
     def get(self, key, default=None):
         res = dict.get(self, key)
         if res is not None:
@@ -7340,7 +7341,16 @@ class CommandRunner:
             full_errors.extend(errors)
 
         summary_md = CommandRunner.get_results_summary(full_results, full_errors)
-        command_results = [res.result for res in full_results]
+
+        command_results = []
+        for res in full_results:
+            if isinstance(res.result, dict) and res.result.get('HumanReadable'):
+                res.result['HumanReadable'] = "***{brand} ({instance})***\n{human_readable}".format(
+                    brand=res.brand,
+                    instance=res.instance,
+                    human_readable=res.result.get('HumanReadable'))
+            command_results.append(res.result)
+
         if not command_results:
             if full_errors:  # no results were given but there are errors
                 errors = ["{instance}: {msg}".format(instance=err.instance, msg=err.result) for err in full_errors]
@@ -7369,11 +7379,12 @@ class CommandRunner:
             res.args.pop('using-brand', None)
             command = {'command': res.command,
                        'args': res.args}
+            comment = res.result.get('Contents', 'No contents found, see entry.') if isinstance(res.result, dict) else None
             results_summary_table.append({'Instance': '***{brand}***: {instance}'.format(brand=res.brand,
                                                                                          instance=res.instance),
                                           'Command': command,
                                           'Result': 'Success',
-                                          'Comment': None})
+                                          'Comment': comment})
 
         for err in errors:
             # don't care about using arg in command
@@ -7528,6 +7539,7 @@ ipv6cidrRegex = r'^s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]
 emailRegex = r'''(?:[a-z0-9!#$%&'*+/=?^_\x60{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_\x60{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])'''  # noqa: E501
 hashRegex = r'\b[0-9a-fA-F]+\b'
 urlRegex = r'(?i)((?:(?:https?|ftps?|hxxps?|sftp|meows):\/\/|www\[?\.\]?|ftp\[?\.\]?|(?:(?:https?|ftps?|hxxps?|sftp|meows):\/\/www\[?\.\]?))(((25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)(\[?\.\]?[A-Za-z]{2,6})?)|(([A-Za-z0-9\S]\.|[A-Za-z0-9][A-Za-z0-9-]{0,61}[A-Za-z0-9]\[?\.\]?){1,3}[A-Za-z]{2,6})|(0\[?x\]?[0-9a-fA-F]{8})|([0-7]{4}\.[0-7]{4}\.[0-7]{4}\.[0-7]{4})|([0-9]{1,10}))($|\/\S+|\/$|:[0-9]{1,5}($|\/\S*))|^(((25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?))(\/([0-9]|[12][0-9]|3[0-2])\/\S+|\/[A-Za-z]\S*|\/([3-9]{2}|[0-9]{3,})\S*|(:[0-9]{1,5}\/\S+))$)|(([A-Za-z0-9\S]\.|[A-Za-z0-9][A-Za-z0-9-]{0,61}[A-Za-z0-9]\[?\.\]?){1,3}[A-Za-z]{2,6}(((\/\S+))|(:[0-9]{1,5}\/\S+))$)|\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b((\/([0-9]|[1-5][0-9]|6[0-4])\/\S+|\/[A-Za-z]\S*|\/((6[5-9]|[7-9][0-9])|[0-9]{3,}|65)\S*|(:[0-9]{1,5}\/\S+))$))'  # noqa: E501
+domainRegex = r"(?i)(?:(?:http|ftp|hxxp)s?(?:://|-3A__|%3A%2F%2F))?((?:[^\\\.@\s\"',(\[:?=]+(?:\.|\[\.\]))+[a-zA-Z]{2,})(?:[_/\s\"',)\]]|[.]\s|%2F|$)"
 cveRegex = r'(?i)^cve-\d{4}-([1-9]\d{4,}|\d{4})$'
 md5Regex = re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags)
 sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
@@ -7874,12 +7886,29 @@ def is_demisto_version_ge(version, build_number=''):
     :return: True if running within a Server version greater or equal than the passed version
     :rtype: ``bool``
     """
+
+    def versionzfill(v):
+        """ Split version on . and zfill. So we can compare 6.10 to 6.5 properly.
+
+        :type v: ``srt``
+        :param v: Version str to fill
+
+        :return: Version with zfill
+        :rtype: ``str``
+        """
+        vzfill = []
+        for ver in v.split("."):
+            vzfill.append(ver.zfill(8))
+        return tuple(vzfill)
+
     server_version = {}
     try:
         server_version = get_demisto_version()
-        if server_version.get('version') > version:
+        server_zfill = versionzfill(server_version.get('version'))
+        ver_zfill = versionzfill(version)
+        if server_zfill > ver_zfill:
             return True
-        elif server_version.get('version') == version:
+        elif server_zfill == ver_zfill:
             if build_number:
                 return int(server_version.get('buildNumber')) >= int(build_number)  # type: ignore[arg-type]
             return True  # No build number
@@ -8527,16 +8556,7 @@ if 'requests' in sys.modules:
                     if error_handler:
                         error_handler(res)
                     else:
-                        err_msg = 'Error in API call [{}] - {}' \
-                            .format(res.status_code, res.reason)
-                        try:
-                            # Try to parse json error response
-                            error_entry = res.json()
-                            err_msg += '\n{}'.format(json.dumps(error_entry))
-                            raise DemistoException(err_msg, res=res)
-                        except ValueError:
-                            err_msg += '\n{}'.format(res.text)
-                            raise DemistoException(err_msg, res=res)
+                        self.client_error_handler(res)
 
                 if not empty_valid_codes:
                     empty_valid_codes = [204]
@@ -8611,6 +8631,23 @@ if 'requests' in sys.modules:
             if status_codes:
                 return response.status_code in status_codes
             return response.ok
+
+        def  client_error_handler(self, res):
+            """Generic handler for API call error
+            Constructs and throws a proper error for the API call response.
+
+            :type response: ``requests.Response``
+            :param response: Response from API after the request for which to check the status.
+            """
+            err_msg = 'Error in API call [{}] - {}'.format(res.status_code, res.reason)
+            try:
+                # Try to parse json error response
+                error_entry = res.json()
+                err_msg += '\n{}'.format(json.dumps(error_entry))
+                raise DemistoException(err_msg, res=res)
+            except ValueError:
+                err_msg += '\n{}'.format(res.text)
+                raise DemistoException(err_msg, res=res)
 
 
 def batch(iterable, batch_size=1):
@@ -10252,9 +10289,10 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     last_run_time = last_run and 'time' in last_run and last_run['time']
     now = get_current_time(timezone)
     if not last_run_time:
-        last_run_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'}) + timedelta(hours=timezone)
+        last_run_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True}) \
+            + timedelta(hours=timezone)
     else:
-        last_run_time = dateparser.parse(last_run_time, settings={'TIMEZONE': 'UTC'})
+        last_run_time = dateparser.parse(last_run_time, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
 
     if look_back > 0:
         if now - last_run_time < timedelta(minutes=look_back):
@@ -10265,7 +10303,7 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
 
 def get_current_time(time_zone=0):
     """
-    Gets the current time in a given timezone.
+    Gets the current time in a given timezone, as time awared datetime.
 
     :type time_zone: ``int``
     :param time_zone: The time zone offset in hours.
@@ -10273,7 +10311,7 @@ def get_current_time(time_zone=0):
     :return: The current time.
     :rtype: ``datetime``
     """
-    return datetime.utcnow() + timedelta(hours=time_zone)
+    return (datetime.utcnow() + timedelta(hours=time_zone)).replace(tzinfo=pytz.UTC)
 
 
 def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limit, id_field):
@@ -10699,7 +10737,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
         'content-encoding': 'gzip'
     }
 
-    header_msg = 'Error sending new events into XSIAM. \n'
+    header_msg = 'Error sending new events into XSIAM.\n'
 
     def events_error_handler(res):
         """
@@ -10713,14 +10751,18 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
                 error += ": " + xsiam_server_err_msg
 
         except ValueError:
-            error = '\n{}'.format(res.text)
+            if res.text:
+                error = '\n{}'.format(res.text)
+            else:
+                error = "Received empty response from the server"
 
         api_call_info = (
             'Parameters used:\n'
             '\tURL: {xsiam_url}\n'
             '\tHeaders: {headers}\n\n'
+            'Response status code: {status_code}\n'
             'Error received:\n\t{error}'
-        ).format(xsiam_url=xsiam_url, headers=json.dumps(headers, indent=4), error=error)
+        ).format(xsiam_url=xsiam_url, headers=json.dumps(headers, indent=8), status_code=res.status_code, error=error)
 
         demisto.error(header_msg + api_call_info)
         raise DemistoException(header_msg + error, DemistoException)

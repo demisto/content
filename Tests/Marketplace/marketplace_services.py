@@ -8,7 +8,10 @@ import shutil
 import stat
 import subprocess
 import urllib.parse
+import fileinput
 import warnings
+import requests
+
 from datetime import datetime, timedelta
 from distutils.util import strtobool
 
@@ -16,6 +19,7 @@ from packaging.version import Version
 from pathlib import Path
 from typing import Tuple, Any, Union, List, Dict, Optional
 from zipfile import ZipFile, ZIP_DEFLATED
+from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
 
 import git
 import google.auth
@@ -26,8 +30,8 @@ from google.cloud import storage
 import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
     PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, PACK_FOLDERS_TO_ID_SET_KEYS, \
-    RN_HEADER_BY_PACK_FOLDER, CONTENT_ROOT_PATH, XSOAR_MP, XSIAM_MP, TAGS_BY_MP, CONTENT_ITEM_NAME_MAPPING, \
-    ITEMS_NAMES_TO_DISPLAY_MAPPING
+    CONTENT_ROOT_PATH, XSOAR_MP, XSIAM_MP, TAGS_BY_MP, CONTENT_ITEM_NAME_MAPPING, \
+    ITEMS_NAMES_TO_DISPLAY_MAPPING, RN_HEADER_TO_ID_SET_KEYS
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -48,7 +52,7 @@ class Pack(object):
         CHANGELOG_JSON (str): changelog json full name, may be changed in the future.
         README (str): pack's readme file name.
         METADATA (str): pack's metadata file name, the one that will be deployed to cloud storage.
-        USER_METADATA (str); user metadata file name, the one that located in content repo.
+        USER_METADATA (str); pack metadata file name, the one that located in content repo.
         EXCLUDE_DIRECTORIES (list): list of directories to excluded before uploading pack zip to storage.
         AUTHOR_IMAGE_NAME (str): author image file name.
         RELEASE_NOTES (str): release notes folder name.
@@ -88,7 +92,9 @@ class Pack(object):
         self._create_date = None  # initialized in enhance_pack_attributes function
         self._update_date = None  # initialized in enhance_pack_attributes function
         self._uploaded_author_image = False  # whether the pack author image was uploaded or not
+        self._reademe_images = []
         self._uploaded_integration_images = []  # the list of all integration images that were uploaded for the pack
+        self._uploaded_preview_images = []  # list of all preview images that were uploaded for the pack
         self._support_details = None  # initialized in enhance_pack_attributes function
         self._author = None  # initialized in enhance_pack_attributes function
         self._certification = None  # initialized in enhance_pack_attributes function
@@ -355,6 +361,22 @@ class Pack(object):
         """ str: the list of uploaded integration images
         """
         return self._uploaded_integration_images
+
+    @property
+    def uploaded_preview_images(self):
+        """ str: the list of uploaded integration images
+        """
+        return self._uploaded_preview_images
+
+    @property
+    def uploaded_readme_images(self):
+        return self._reademe_images
+
+    @uploaded_readme_images.setter
+    def uploaded_readme_images(self, uploaded_readme_images):
+        """ bool: whether the pack readme images were uploaded or not.
+        """
+        self._reademe_images = uploaded_readme_images
 
     @property
     def is_missing_dependencies(self):
@@ -716,7 +738,8 @@ class Pack(object):
 
     def _get_updated_changelog_entry(self, changelog: dict, version: str, release_notes: str = None,
                                      version_display_name: str = None, build_number_with_prefix: str = None,
-                                     released_time: str = None, pull_request_numbers=None, marketplace: str = 'xsoar'):
+                                     released_time: str = None, pull_request_numbers=None, marketplace: str = 'xsoar',
+                                     id_set: dict = None):
         """
         Args:
             changelog (dict): The changelog from the production bucket.
@@ -728,6 +751,8 @@ class Pack(object):
             marketplace (str): The marketplace to which the upload is made.
 
         """
+        id_set = id_set if id_set else {}
+
         changelog_entry = changelog.get(version)
         if not changelog_entry:
             raise Exception('The given version is not a key in the changelog')
@@ -737,14 +762,19 @@ class Pack(object):
             build_number_with_prefix if build_number_with_prefix else \
             changelog_entry[Changelog.DISPLAY_NAME].split('-')[1]
 
-        changelog_entry[Changelog.RELEASE_NOTES] = self.filter_release_notes_by_tags(
-            release_notes or changelog_entry[Changelog.RELEASE_NOTES], marketplace)
+        changelog_entry[Changelog.RELEASE_NOTES] = release_notes
+        changelog_entry, _ = self.filter_changelog_entries(
+            changelog_entry=changelog_entry,
+            version=version,
+            marketplace=marketplace,
+            id_set=id_set
+        )
         changelog_entry[Changelog.DISPLAY_NAME] = f'{version_display_name} - {build_number_with_prefix}'
         changelog_entry[Changelog.RELEASED] = released_time if released_time else changelog_entry[Changelog.RELEASED]
         changelog_entry[Changelog.PULL_REQUEST_NUMBERS] = pull_request_numbers
         return changelog_entry
 
-    def _create_changelog_entry(self, release_notes, version_display_name, build_number, modified_files_data=None,
+    def _create_changelog_entry(self, release_notes, version_display_name, build_number,
                                 new_version=True, initial_release=False, pull_request_numbers=None,
                                 marketplace='xsoar', id_set=None):
         """ Creates dictionary entry for changelog.
@@ -753,15 +783,14 @@ class Pack(object):
             release_notes (str): release notes md.
             version_display_name (str): display name version.
             build_number (srt): current build number.
-            modified_files_data (dict): The data of the modified files given from id-set.
             new_version (bool): whether the entry is new or not. If not new, R letter will be appended to build number.
             initial_release (bool): whether the entry is an initial release or not.
+            id_set (dict): The content id set dict.
         Returns:
             dict: release notes entry of changelog
             bool: Whether the pack is not updated
 
         """
-        modified_files_data = modified_files_data if modified_files_data else {}
         id_set = id_set if id_set else {}
         entry_result = {}
 
@@ -788,7 +817,6 @@ class Pack(object):
             return self.filter_changelog_entries(
                 entry_result,
                 version_display_name,
-                modified_files_data,
                 marketplace, id_set
             )
 
@@ -1072,7 +1100,7 @@ class Pack(object):
         finally:
             return task_status, modified_rn_files_paths
 
-    def filter_modified_files_by_id_set(self, id_set: dict, modified_rn_files_paths: list):
+    def filter_modified_files_by_id_set(self, id_set: dict, modified_rn_files_paths: list, marketplace):
         """
         Checks if the pack modification is relevant for the current marketplace.
 
@@ -1088,7 +1116,6 @@ class Pack(object):
             bool: whether the operation succeeded and changes are relevant for marketplace.
             dict: data from id set for the modified files.
         """
-
         logging.debug(f"Starting to filter modified files of pack {self._pack_name} by the id set")
 
         task_status = False
@@ -1097,9 +1124,14 @@ class Pack(object):
         for pack_folder, modified_file_paths in self._modified_files.items():
             modified_entities = []
             for path in modified_file_paths:
-                if id_set_entity := get_id_set_entity_by_path(Path(path), pack_folder, id_set):
-                    logging.debug(f"The entity with the path {path} is present in the id set")
-                    modified_entities.append(id_set_entity)
+                if id_set:
+                    if id_set_entity := get_id_set_entity_by_path(Path(path), pack_folder, id_set):
+                        logging.debug(f"The entity with the path {path} is present in the id set")
+                        modified_entities.append(id_set_entity)
+                else:
+                    if entity := get_graph_entity_by_path(Path(path), marketplace):
+                        logging.debug(f"The entity with the path {path} is present in the content graph")
+                        modified_entities.append(entity)
 
             if modified_entities:
                 modified_files_data[pack_folder] = modified_entities
@@ -1367,6 +1399,7 @@ class Pack(object):
                 with open(os.path.join(release_notes_dir, rn_filename), 'r') as rn_file:
                     rn_lines = rn_file.read()
                 modified_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
+                logging.debug(f"Cleaned release notes from: {rn_lines} to: {modified_versions_dict[version]}")
             # The case where the version is not a key in the changelog file or it is a key of aggregated content
             else:
                 logging.debug(f'The "{version}" version is not a key in the changelog file or it is a key of'
@@ -1501,7 +1534,7 @@ class Pack(object):
         return modified_rn_files
 
     def prepare_release_notes(self, index_folder_path, build_number, modified_rn_files_paths=None,
-                              modified_files_data=None, marketplace='xsoar', id_set=None):
+                              marketplace='xsoar', id_set=None):
         """
         Handles the creation and update of the changelog.json files.
 
@@ -1509,7 +1542,6 @@ class Pack(object):
             index_folder_path (str): Path to the unzipped index json.
             build_number (str): circleCI build number.
             modified_rn_files_paths (list): list of paths of the pack's modified file
-            modified_files_data (dict): data from id set of the modified files.
             marketplace (str): The marketplace to which the upload is made.
 
         Returns:
@@ -1521,7 +1553,6 @@ class Pack(object):
         release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
 
         modified_rn_files_paths = modified_rn_files_paths if modified_rn_files_paths else []
-        modified_files_data = modified_files_data if modified_files_data else {}
         id_set = id_set if id_set else {}
 
         try:
@@ -1563,7 +1594,6 @@ class Pack(object):
                                 release_notes=release_notes_lines,
                                 version_display_name=latest_release_notes,
                                 build_number=build_number,
-                                modified_files_data=modified_files_data,
                                 new_version=False,
                                 pull_request_numbers=prs_for_version,
                                 marketplace=marketplace,
@@ -1576,7 +1606,6 @@ class Pack(object):
                                 release_notes=release_notes_lines,
                                 version_display_name=latest_release_notes,
                                 build_number=build_number,
-                                modified_files_data=modified_files_data,
                                 new_version=True,
                                 pull_request_numbers=prs_for_version,
                                 marketplace=marketplace,
@@ -1587,15 +1616,21 @@ class Pack(object):
                             changelog[latest_release_notes] = version_changelog
 
                         if modified_release_notes_lines_dict:
-                            logging.info("Updating changelog entries for modified release notes")
+                            logging.info(f"Updating changelog entries for modified release notes: "
+                                         f"{modified_release_notes_lines_dict}")
                             for version, modified_release_notes_lines in modified_release_notes_lines_dict.items():
                                 versions, _ = self.get_same_block_versions(release_notes_dir, version, changelog)
                                 all_relevant_pr_nums_for_unified = list({pr_num for version in versions.keys()
                                                                         for pr_num in version_to_prs[version]})
                                 logging.debug(f"{all_relevant_pr_nums_for_unified=}")
                                 updated_entry = self._get_updated_changelog_entry(
-                                    changelog, version, release_notes=modified_release_notes_lines,
-                                    pull_request_numbers=all_relevant_pr_nums_for_unified, marketplace=marketplace)
+                                    changelog=changelog,
+                                    version=version,
+                                    release_notes=modified_release_notes_lines,
+                                    pull_request_numbers=all_relevant_pr_nums_for_unified,
+                                    marketplace=marketplace,
+                                    id_set=id_set
+                                )
                                 changelog[version] = updated_entry
 
                 else:
@@ -1614,7 +1649,6 @@ class Pack(object):
                             release_notes=self.description,
                             version_display_name=first_key_in_changelog,
                             build_number=build_number,
-                            modified_files_data=modified_files_data,
                             initial_release=True,
                             new_version=False,
                             marketplace=marketplace,
@@ -1640,7 +1674,6 @@ class Pack(object):
                     release_notes=self.description,
                     version_display_name=self._current_version,
                     build_number=build_number,
-                    modified_files_data=modified_files_data,
                     new_version=True,
                     initial_release=True,
                     marketplace=marketplace,
@@ -1670,8 +1703,7 @@ class Pack(object):
         finally:
             return task_status, not_updated_build
 
-    def filter_changelog_entries(self, changelog_entry: dict, version: str, modified_files_data: dict,
-                                 marketplace: str, id_set: dict):
+    def filter_changelog_entries(self, changelog_entry: dict, version: str, marketplace: str, id_set: dict):
         """
         Filters the changelog entries by the entities that are given from id-set.
         This is to avoid RN entries/changes/messages that are not relevant to the current marketplace.
@@ -1685,8 +1717,8 @@ class Pack(object):
         Args:
             changelog_entry: The version changelog object.
             version: The changelog's version.
-            modified_files_data: The data from id_set for the modified entities.
             marketplace: The marketplace to which the upload is made.
+            id_set: The id set dict.
 
         Returns:
             (dict) The filtered changelog entry.
@@ -1708,8 +1740,7 @@ class Pack(object):
             return changelog_entry, False
 
         filtered_release_notes_from_tags = self.filter_headers_without_entries(release_notes_dict)  # type: ignore[arg-type]
-        filtered_release_notes = self.filter_release_notes_by_entities_display_name(filtered_release_notes_from_tags,
-                                                                                    modified_files_data, id_set)
+        filtered_release_notes = self.filter_entries_by_display_name(filtered_release_notes_from_tags, id_set, marketplace)
 
         # if not filtered_release_notes and self.are_all_changes_relevant_to_more_than_one_marketplace(modified_files_data):
         #     # In case all release notes were filtered out, verify that it also makes sense - by checking that the
@@ -1751,38 +1782,8 @@ class Pack(object):
 
         return True
 
-    def filter_release_notes_by_entities_display_name(self, release_notes, modified_files_data, id_set):
-        """
-        Filters the RN entries by the modified files display names given from id-set.
-
-        Args:
-            release_notes (dict): The release notes in a dict object.
-            modified_files_data (dict): The modified files data that are given from id-set.
-
-        Return:
-            (dict) The filtered release notes.
-        """
-        filtered_release_notes: dict = {}
-        for pack_folder, entities_data in modified_files_data.items():
-
-            rn_header = RN_HEADER_BY_PACK_FOLDER[pack_folder]
-
-            # This might be if the entity was filtered by the tags
-            if rn_header not in release_notes:
-                continue
-
-            # Filters the RN entries by the entity display name
-            display_names = [list(entity.values())[0]['display_name'] for entity in entities_data]
-            filtered_release_notes_entries = self.filter_entries_by_display_name(release_notes, display_names, rn_header,
-                                                                                 pack_folder, id_set)
-
-            if filtered_release_notes_entries:
-                filtered_release_notes[rn_header] = filtered_release_notes_entries
-
-        return filtered_release_notes
-
     @staticmethod
-    def filter_entries_by_display_name(release_notes: dict, display_names: list, rn_header: str, pack_folder: str, id_set: dict):
+    def filter_entries_by_display_name(release_notes: dict, id_set: dict, marketplace="xsoar"):
         """
         Filters the entries by display names and also handles special entities that their display name is not an header.
 
@@ -1794,26 +1795,38 @@ class Pack(object):
         Returns:
             (dict) The filtered release notes entries.
         """
-        filtered_entries: dict = {}
-        for display_name, rn_entry in release_notes[rn_header].items():
+        filtered_release_notes: dict = {}
+        for content_type, content_type_rn_entries in release_notes.items():
+            content_type_to_filtered_entries: dict = {}
 
-            logging.debug(f"Searching display name '{display_name}' in '{display_names}'.")
-            # TODO: The third condition should be removed after the refactoring. (Also the function)
-            if display_name != '[special_msg]' and display_name.replace("New: ", "") not in display_names \
-                    and not get_id_set_entity_by_display_name(display_name.replace("New: ", ""),
-                                                              pack_folder, id_set):
-                continue
+            for content_item_display_name, content_item_rn_notes in content_type_rn_entries.items():
 
-            if display_name == '[special_msg]':
-                extracted_names_from_rn = SPECIAL_DISPLAY_NAMES_PATTERN.findall(rn_entry)
+                logging.debug(f"Searching display name '{content_item_display_name}' with rn header "
+                              f"'{content_type}' in in id set.")
+                if content_item_display_name != '[special_msg]' and not is_content_item_in_id_set(
+                        content_item_display_name.replace("New: ", ""), content_type, id_set, marketplace):
+                    continue
 
-                for name in extracted_names_from_rn:
-                    if name not in display_names:
-                        rn_entry = rn_entry.replace(f'- **{name}**', '')
+                if content_item_display_name == '[special_msg]':
+                    extracted_names_from_rn = SPECIAL_DISPLAY_NAMES_PATTERN.findall(content_item_rn_notes)
 
-            filtered_entries[display_name] = rn_entry
+                    for name in extracted_names_from_rn:
+                        if not is_content_item_in_id_set(name.replace("New: ", ""), content_type, id_set, marketplace):
+                            content_item_rn_notes = content_item_rn_notes.replace(f'- **{name}**', '').strip()
 
-        return filtered_entries
+                    if not content_item_rn_notes:
+                        continue
+
+                content_type_to_filtered_entries[content_item_display_name] = content_item_rn_notes
+
+            if content_type_to_filtered_entries:
+                filtered_release_notes[content_type] = content_type_to_filtered_entries
+
+        if not filtered_release_notes:
+            logging.debug(f"Didn't find relevant release notes entries after filtering by display name.\n \
+                            Release notes: {release_notes}")
+
+        return filtered_release_notes
 
     @staticmethod
     def filter_headers_without_entries(release_notes_dict: dict):
@@ -2179,46 +2192,58 @@ class Pack(object):
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
-                    elif current_directory == PackFolders.PARSING_RULES.value:
+                    elif current_directory == PackFolders.PARSING_RULES.value and pack_file_name.startswith("parsingrule-"):
                         self.add_pack_type_tags(content_item, 'ParsingRule')
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
+                            'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
                         })
 
-                    elif current_directory == PackFolders.MODELING_RULES.value:
+                    elif current_directory == PackFolders.MODELING_RULES.value and pack_file_name.startswith("modelingrule-"):
                         self.add_pack_type_tags(content_item, 'ModelingRule')
+                        schema: Dict[str, Any] = json.loads(content_item.get('schema') or '{}')
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
+                            'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
+                            'datasets': list(schema.keys()),
                         })
 
-                    elif current_directory == PackFolders.CORRELATION_RULES.value:
+                    elif current_directory == PackFolders.CORRELATION_RULES.value and pack_file_name.startswith("external-"):
                         self.add_pack_type_tags(content_item, 'CorrelationRule')
                         folder_collected_items.append({
                             'id': content_item.get('global_rule_id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
+                            'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
                         })
 
-                    elif current_directory == PackFolders.XSIAM_DASHBOARDS.value:
-                        folder_collected_items.append({
+                    elif current_directory == PackFolders.XSIAM_DASHBOARDS.value and pack_file_name.startswith("external-"):
+                        preview = self.get_preview_image_gcp_path(pack_file_name, PackFolders.XSIAM_DASHBOARDS.value)
+                        dashboard = {
                             'id': content_item.get('dashboards_data', [{}])[0].get('global_id', ''),
                             'name': content_item.get('dashboards_data', [{}])[0].get('name', ''),
                             'description': content_item.get('dashboards_data', [{}])[0].get('description', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                        })
+                            'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
+                        }
 
-                    elif current_directory == PackFolders.XSIAM_REPORTS.value:
-                        folder_collected_items.append({
+                        if preview:
+                            dashboard.update({"preview": preview})
+                        folder_collected_items.append(dashboard)
+
+                    elif current_directory == PackFolders.XSIAM_REPORTS.value and pack_file_name.startswith("external-"):
+                        preview = self.get_preview_image_gcp_path(pack_file_name, PackFolders.XSIAM_REPORTS.value)
+                        report = {
                             'id': content_item.get('templates_data', [{}])[0].get('global_id', ''),
                             'name': content_item.get('templates_data', [{}])[0].get('report_name', ''),
                             'description': content_item.get('templates_data', [{}])[0].get('report_description', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                        })
+                            'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
+                        }
+
+                        if preview:
+                            report.update({"preview": preview})
+                        folder_collected_items.append(report)
 
                     elif current_directory == PackFolders.TRIGGERS.value:
                         folder_collected_items.append({
@@ -2237,6 +2262,17 @@ class Pack(object):
                             'fromVersion': content_item.get('fromVersion', ''),
                             'toVersion': content_item.get('toVersion', ''),
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
+                        })
+
+                    elif current_directory == PackFolders.XDRC_TEMPLATES.value and pack_file_name.startswith("external-"):
+                        self.add_pack_type_tags(content_item, 'XDRCTemplate')
+                        folder_collected_items.append({
+                            'id': content_item.get('content_global_id', ''),
+                            'content_global_id': content_item.get('content_global_id', ''),
+                            'name': content_item.get('name', ''),
+                            'os_type': content_item.get('os_type', ''),
+                            'profile_type': content_item.get('profile_type', ''),
+                            'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
                         })
 
                     else:
@@ -2520,11 +2556,15 @@ class Pack(object):
         first_level_dependencies = pack_dependencies_mapping.get(Metadata.DEPENDENCIES, {})
         all_levels_dependencies = pack_dependencies_mapping.get(Metadata.ALL_LEVELS_DEPENDENCIES, [])
         displayed_images_dependent_on_packs = pack_dependencies_mapping.get(Metadata.DISPLAYED_IMAGES, [])
+        logging.debug(f'(0) {first_level_dependencies=}')
+        logging.debug(f'(0) {all_levels_dependencies=}')
 
         # filter out packs that are not a part of the marketplace this upload is for
         first_level_dependencies = {k: v for k, v in first_level_dependencies.items() if k in packs_dict}
         all_levels_dependencies = [k for k in all_levels_dependencies if k in packs_dict]
         displayed_images_dependent_on_packs = [k for k in displayed_images_dependent_on_packs if k in packs_dict]
+        logging.debug(f'(1) {first_level_dependencies=}')
+        logging.debug(f'(1) {all_levels_dependencies=}')
 
         if Metadata.DISPLAYED_IMAGES not in self._user_metadata:
             self._user_metadata[Metadata.DISPLAYED_IMAGES] = displayed_images_dependent_on_packs
@@ -2535,13 +2575,17 @@ class Pack(object):
         if self._pack_name != GCPConfig.BASE_PACK:
             # add base as a mandatory pack dependency, by design for all packs
             first_level_dependencies.update(BASE_PACK_DEPENDENCY_DICT)
+            logging.debug(f'(2) {first_level_dependencies=}')
 
         # update the calculated dependencies with the hardcoded dependencies
         first_level_dependencies.update(self.user_metadata[Metadata.DEPENDENCIES])
+        logging.debug(f'(3) {first_level_dependencies=}')
 
         # If it is a core pack, check that no new mandatory packs (that are not core packs) were added
         # They can be overridden in the user metadata to be not mandatory so we need to check there as well
         core_packs = GCPConfig.get_core_packs(marketplace)
+        logging.debug(f'{core_packs=}')
+
         if self._pack_name in core_packs:
             mandatory_dependencies = [k for k, v in first_level_dependencies.items()
                                       if v.get(Metadata.MANDATORY, False) is True
@@ -2984,7 +3028,216 @@ class Pack(object):
             logging.info(f"No added/modified author image was detected in {self._pack_name} pack.")
             return True
 
-    def upload_images(self, index_folder_path, storage_bucket, storage_base_path, diff_files_list, override_all_packs):
+    def copy_readme_images(self, production_bucket, build_bucket, images_data, storage_base_path,
+                           build_bucket_base_path):
+        """ Copies pack's readme_images from the build bucket to the production bucket
+
+        Args:
+            production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
+            build_bucket (google.cloud.storage.bucket.Bucket): The build bucket
+            images_data (dict): The images data structure from Prepare Content step
+            storage_base_path (str): The target destination of the upload in the target bucket.
+            build_bucket_base_path (str): The path of the build bucket in gcp.
+        Returns:
+            bool: Whether the operation succeeded.
+        """
+        task_status = True
+        err_msg = f"Failed copying {self._pack_name} pack readme images."
+        pc_uploaded_readme_images = images_data.get(self._pack_name, {}).get(BucketUploadFlow.README_IMAGES, False)
+
+        if not pc_uploaded_readme_images:
+            logging.info(f"No added/modified readme images were detected in {self._pack_name} pack.")
+            return task_status
+
+        for readme_image_name in pc_uploaded_readme_images:
+            logging.info(f'copying image {readme_image_name}')
+            build_bucket_readme_image_path = os.path.join(build_bucket_base_path, self._pack_name,
+                                                          BucketUploadFlow.README_IMAGES, readme_image_name)
+            build_bucket_image_blob = build_bucket.blob(build_bucket_readme_image_path)
+
+            if not build_bucket_image_blob.exists():
+                logging.error(f"Found changed/added readme image in pack {self._pack_name} in content repo but "
+                              f"{build_bucket_image_blob} does not exist in build bucket")
+                task_status = False
+            else:
+                logging.info(f"Copying {self._pack_name} pack readme {readme_image_name} image")
+                try:
+                    copied_blob = build_bucket.copy_blob(
+                        blob=build_bucket_image_blob, destination_bucket=production_bucket,
+                        new_name=os.path.join(storage_base_path, self._pack_name, BucketUploadFlow.README_IMAGES,
+                                              readme_image_name)
+                    )
+                    if not copied_blob.exists():
+                        logging.error(
+                            f"Copy {self._pack_name} integration readme image: {build_bucket_image_blob.name} "
+                            f"blob to {copied_blob.name} blob failed.")
+                        task_status = False
+
+                except Exception as e:
+                    logging.exception(f"{err_msg}. Additional Info: {str(e)}")
+                    return False
+
+        if not task_status:
+            logging.error(err_msg)
+        else:
+            logging.success(f"Copied readme images for {self._pack_name} pack.")
+
+        return task_status
+
+    def upload_readme_images(self, storage_bucket, storage_base_path, diff_files_list=None, detect_changes=False,
+                             marketplace='xsoar'):
+        """ Downloads pack readme links to images, and upload them to gcs.
+
+            Searches for image links in pack readme.
+            In case no images links were found does nothing
+
+            Args:
+                storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where readme image will be uploaded.
+                storage_base_path (str): the path under the bucket to upload to.
+                diff_files_list (list): The list of all modified/added files found in the diff
+                detect_changes (bool): Whether to detect changes or upload the readme images in any case.
+                marketplace (str): The marketplace the upload is made for.
+            Returns:
+                bool: whether the operation succeeded.
+        """
+        task_status = True
+
+        try:
+            pack_readme_path = os.path.join(self._pack_path, Pack.README)  # disable-secrets-detection
+
+            if not os.path.exists(pack_readme_path):
+                return True
+
+            storage_pack_path = os.path.join(storage_base_path, self._pack_name)  # disable-secrets-detection
+
+            if not detect_changes or any(self.is_raedme_file(file.a_path) for file in diff_files_list):
+                # detect added/modified integration readme files
+                logging.info(f'found a pack: {self._pack_name} with changes in README')
+                readme_images_storage_paths = self.collect_images_from_readme_and_replace_with_storage_path(
+                    pack_readme_path, storage_pack_path, marketplace)
+
+                # no external image urls were found in the readme file
+                if not readme_images_storage_paths:
+                    logging.info(f'no image links were found in {self._pack_name} readme file')
+                    return task_status
+
+                for image_info in readme_images_storage_paths:
+                    readme_original_url = image_info.get('original_read_me_url')
+                    gcs_storage_path = str(image_info.get('new_gcs_image_path'))
+                    image_name = str(image_info.get('image_name'))
+
+                    task_status = self.download_readme_image_from_url_and_upload_to_gcs(readme_original_url,
+                                                                                        gcs_storage_path,
+                                                                                        image_name, storage_bucket)
+                    self._reademe_images.append(image_name)
+
+        except Exception:
+            logging.exception(f"Failed uploading {self._pack_name} pack readme image.")
+            task_status = False
+        finally:
+            return task_status
+
+    def collect_images_from_readme_and_replace_with_storage_path(self, pack_readme_path, gcs_pack_path, marketplace):
+        """
+        Replaces inplace all images links in the pack README.md with their new gcs location
+
+        Args:
+            pack_readme_path (str): A path to the pack README file.
+            gcs_pack_path (str): A path to the pack in gcs
+            marketplace (str): The marketplace this pack is going to be uploaded to.
+
+        Returns:
+            A list of dicts of all the image urls found in the README.md file with all related data
+            (original_url, new_gcs_path, image_name)
+        """
+        if marketplace == 'xsoar':
+            marketplace_bucket = "marketplace-dist"
+        else:
+            marketplace_bucket = "marketplace-v2-dist"
+
+        google_api_readme_images_url = f'https://storage.googleapis.com/{marketplace_bucket}/content/packs/{self.name}'
+        url_regex = r"^!\[(.*)\]\((?P<url>.*)\)"
+        urls_list = []
+
+        for line in fileinput.input(pack_readme_path, inplace=True):
+            res = re.search(url_regex, line)
+            # we found a matching url and we want to modify the readme line.
+            if res:
+                url = res.group('url')
+
+                parse_url = urllib.parse.urlparse(url)
+                path = parse_url.path
+                url_path = Path(path)
+                image_name = url_path.name
+
+                image_gcp_path = Path(gcs_pack_path, BucketUploadFlow.README_IMAGES, image_name)
+                url_to_replace_linking_to_dist = os.path.join(google_api_readme_images_url,
+                                                              BucketUploadFlow.README_IMAGES, image_name)
+
+                line = line.replace(url, str(url_to_replace_linking_to_dist))
+
+                urls_list.append({
+                    'original_read_me_url': url,
+                    'new_gcs_image_path': image_gcp_path,
+                    'image_name': image_name
+                })
+
+            print(line, end='')
+
+        return urls_list
+
+    @staticmethod
+    def download_readme_image_from_url_and_upload_to_gcs(readme_original_url: str, gcs_storage_path: str,
+                                                         image_name: str, storage_bucket):
+        """
+        Download the image from the endpoint url and save locally.
+        Upload The image to gcs.
+        Remove the Temp file.
+
+        Args:
+             readme_original_url (str): The original url that was in the readme file
+             gcs_storage_path (str): The path to save the image on gcp (was calculated in collect_images_from_readme_
+             and_replace_with_storage_path)
+             image_name(str): The name of the image we want to save
+             storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where images will be uploaded.
+
+        """
+        # Open the url image, set stream to True, this will return the stream content.
+        readme_original_url = urllib.parse.urlparse(readme_original_url)
+        try:
+            r = requests.get(readme_original_url.geturl(), stream=True)
+
+            # Check if the image was retrieved successfully
+            if r.status_code == 200:
+                # Set decode_content value to True, otherwise the downloaded image file's size will be zero.
+                r.raw.decode_content = True
+
+                with open(image_name, 'wb') as f:
+                    shutil.copyfileobj(r.raw, f)
+
+                # init the blob with the correct path to save the image on gcs
+                readme_image = storage_bucket.blob(gcs_storage_path)
+
+                # load the file from local memo to the gcs
+                with open(image_name, "rb") as image_file:
+                    readme_image.upload_from_file(image_file)
+
+                # remove local saved image
+                os.remove(image_name)
+
+                logging.info(f'Image sucessfully Downloaded: {image_name}')
+                return True
+            else:
+                logging.error(f'Image {image_name} could not be retreived status code {r.status_code}')
+                return False
+        except Exception as e:
+            logging.error(
+                f'Failed downloading the image in url {readme_original_url}. '
+                f'or failed uploading it to GCP error message {e}')
+            return False
+
+    def upload_images(self, index_folder_path, storage_bucket, storage_base_path, diff_files_list, override_all_packs,
+                      marketplace='xsoar'):
         """
         Upload the images related to the pack.
         The image is uploaded in the case it was modified, OR if this is the first time the current pack is being
@@ -2995,6 +3248,7 @@ class Pack(object):
             storage_base_path (str): the path under the bucket to upload to.
             diff_files_list (list): The list of all modified/added files found in the diff
             override_all_packs (bool): Whether to override all packs without checking for changes
+            marketplace (str): the marketplace the upload is made for
         Returns:
             True if the images were successfully uploaded, false otherwise.
 
@@ -3019,6 +3273,13 @@ class Pack(object):
         task_status = self.upload_author_image(storage_bucket, storage_base_path, diff_files_list, detect_changes)
         if not task_status:
             self._status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
+            self.cleanup()
+            return False
+
+        task_status = self.upload_readme_images(storage_bucket, storage_base_path, diff_files_list, detect_changes,
+                                                marketplace)
+        if not task_status:
+            self._status = PackStatus.FAILED_README_IMAGE_UPLOAD.name
             self.cleanup()
             return False
 
@@ -3079,6 +3340,15 @@ class Pack(object):
             bool: True if the file is an author image or False otherwise
         """
         return file_path == os.path.join(PACKS_FOLDER, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
+
+    def is_raedme_file(self, file_path: str):
+        """ Indicates whether a file_path is an pack readme
+        Args:
+            file_path (str): The file path
+        Returns:
+            bool: True if the file is a pack readme or False otherwise
+        """
+        return file_path == os.path.join(PACKS_FOLDER, self._pack_name, Pack.README)
 
     def is_unified_integration(self, file_path: str):
         """ Indicates whether a file_path is a unified integration yml file or not
@@ -3299,6 +3569,141 @@ class Pack(object):
 
         return versions_dict
 
+    def get_preview_image_gcp_path(self, pack_file_name: str, folder_name: str) -> Optional[str]:
+        """ Genrate the preview image path as it stored in the gcp
+        Args:
+            pack_file_name: File name.
+            folder_name: Folder name.
+
+        Returns:
+            The preview image path as it stored in the gcp if preview image exists, or None otherwise.
+        """
+        preview_image_name = self.find_preview_image_path(pack_file_name)
+        try:
+            preview_image_path = os.path.join(self.path, folder_name, preview_image_name)  # disable-secrets-detection
+            if os.path.exists(preview_image_path):
+                if not self._current_version:
+                    self._current_version = ''
+                return urllib.parse.quote(os.path.join(GCPConfig.CONTENT_PACKS_PATH, self.name,
+                                                       self.current_version, folder_name, preview_image_name))
+        except Exception:
+            logging.exception(f"Failed uploading {self.name} pack preview image.")
+        return None
+
+    def upload_preview_images(self, storage_bucket, storage_base_path, diff_files_list):
+        """ Uploads pack preview images to gcs.
+        Args:
+            storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where image will be uploaded.
+            storage_base_path (str): The target destination of the upload in the target bucket.
+            diff_files_list (list): The list of all modified/added files found in the diff
+        Returns:
+            bool: whether the operation succeeded.
+        """
+        pack_storage_root_path = os.path.join(storage_base_path, self.name, self.current_version)
+
+        try:
+            for file in diff_files_list:
+                if self.is_preview_image(file.a_path):
+                    logging.info(f"adding preview image {file.a_path} to pack preview images")
+                    image_folder = os.path.dirname(file.a_path).split('/')[-1] or ''
+                    image_name = os.path.basename(file.a_path)
+                    image_storage_path = os.path.join(pack_storage_root_path, image_folder, image_name)
+                    pack_image_blob = storage_bucket.blob(image_storage_path)
+                    with open(file.a_path, "rb") as image_file:
+                        pack_image_blob.upload_from_file(image_file)
+                    self._uploaded_preview_images.append(file.a_path)
+            return True
+        except Exception as e:
+            logging.exception(f"Failed uploading {self.name} pack preview image. Additional info: {e}")
+            return False
+
+    def copy_preview_images(self, production_bucket, build_bucket, images_data, storage_base_path, build_bucket_base_path):
+        """ Copies pack's preview image from the build bucket to the production bucket
+
+        Args:
+            production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
+            build_bucket (google.cloud.storage.bucket.Bucket): The build bucket
+            images_data (dict): The images data structure from Prepare Content step
+            storage_base_path (str): The target destination of the upload in the target bucket.
+            build_bucket_base_path (str): The path of the build bucket in gcp.
+        Returns:
+            bool: Whether the operation succeeded.
+
+        """
+        task_status = True
+        num_copied_images = 0
+        err_msg = f"Failed copying {self._pack_name} pack preview images."
+        pc_uploaded_preview_images = images_data.get(self._pack_name, {}).get(BucketUploadFlow.PREVIEW_IMAGES, [])
+
+        for image_name in pc_uploaded_preview_images:
+            image_pack_path = Path(image_name).parts[-2:]
+            build_bucket_image_path = os.path.join(build_bucket_base_path, self._pack_name,
+                                                   self.current_version, *image_pack_path)
+            build_bucket_image_blob = build_bucket.blob(build_bucket_image_path)
+
+            if not build_bucket_image_blob.exists():
+                logging.error(f"Found changed/added preview image {image_name} in content repo but "
+                              f"{build_bucket_image_path} does not exist in build bucket")
+                task_status = False
+            else:
+                logging.info(f"Copying {self._pack_name} pack preview image: {image_name}")
+                try:
+                    copied_blob = build_bucket.copy_blob(
+                        blob=build_bucket_image_blob, destination_bucket=production_bucket,
+                        new_name=os.path.join(storage_base_path, self._pack_name, self.current_version,
+                                              *image_pack_path)
+                    )
+                    if not copied_blob.exists():
+                        logging.error(f"Copy {self._pack_name} preview image: {build_bucket_image_blob.name} "
+                                      f"blob to {copied_blob.name} blob failed.")
+                        task_status = False
+                    else:
+                        num_copied_images += 1
+
+                except Exception as e:
+                    logging.exception(f"{err_msg}. Additional Info: {str(e)}")
+                    return False
+
+        if not task_status:
+            logging.error(err_msg)
+        else:
+            if num_copied_images == 0:
+                logging.info(f"No added/modified preview images were detected in {self._pack_name} pack.")
+            else:
+                logging.success(f"Copied {num_copied_images} images for {self._pack_name} pack.")
+
+        return task_status
+
+    def is_preview_image(self, file_path: str) -> bool:
+        """ Indicates whether a file_path is a preview image or not
+        Args:
+            file_path (str): The file path
+        Returns:
+            bool: True if the file is a preview image or False otherwise
+        """
+        return all([
+            file_path.startswith(os.path.join(PACKS_FOLDER, self.name)),
+            file_path.endswith('.png'),
+            '_image' in os.path.basename(file_path.lower()),
+            (PackFolders.XSIAM_DASHBOARDS.value in file_path or PackFolders.XSIAM_REPORTS.value in file_path)
+        ])
+
+    @staticmethod
+    def find_preview_image_path(file_name: str) -> str:
+        """ Generate preview image file name according to related file.
+        Args:
+            file_name: File name.
+
+        Returns:
+            Preview image file path.
+        """
+        prefixes = ['xsiamdashboard', 'xsiamreport']
+        file_name = file_name.replace('external-', '')
+        for prefix in prefixes:
+            file_name = file_name.replace(f'{prefix}-', '')
+        image_file_name = os.path.splitext(file_name)[0] + '_image.png'
+        return image_file_name
+
 
 # HELPER FUNCTIONS
 
@@ -3397,6 +3802,7 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
         logging.debug(f"Successful private packs {successful_private_packs_dict}")
 
     if images_data:
+        # adds a list with all the packs that were changed with images
         packs_results[stage].update({BucketUploadFlow.IMAGES: images_data})
         logging.debug(f"Images data {images_data}")
 
@@ -3764,6 +4170,11 @@ def get_last_commit_from_index(service_account):
     return index_json.get('commit')
 
 
+def get_graph_entity_by_path(entity_path: Path, marketplace):
+    with Neo4jContentGraphInterface() as content_graph_interface:
+        return content_graph_interface.search(marketplace, path=entity_path)[0]
+
+
 def get_id_set_entity_by_path(entity_path: Path, pack_folder: str, id_set: dict):
     """
     Get the full entity dict from the id set of the entity given as a path, if it does not exist in the id set
@@ -3797,31 +4208,36 @@ def get_id_set_entity_by_path(entity_path: Path, pack_folder: str, id_set: dict)
     return {}
 
 
-def get_id_set_entity_by_display_name(display_name: str, pack_folder: str, id_set: dict):
+def is_content_item_in_graph(display_name: str, content_type, marketplace) -> bool:
+    with Neo4jContentGraphInterface() as interface:
+        res = interface.search(content_type=content_type, marketplace=marketplace, name=display_name)
+        return bool(res)
+
+
+def is_content_item_in_id_set(display_name: str, rn_header: str, id_set: dict, marketplace="xsoar"):
     """
     Get the full entity dict from the id set of the entity given it's display name, if it does not exist in the id set
     return None.
 
     Args:
-        display_name: The display name of the entity (content item)
-        pack_folder: containing folder of that item
-        id_set: id set dict
+        display_name: The display name of the entity (content item).
+        rn_header: The release notes header of the entity.
+        id_set: id set dict.
 
     Returns:
-        id set dict entity if exists, otherwise None
+        (bool) True if the item exists in id set, otherwise False.
     """
     logging.debug(f"Checking if the entity with the display name {display_name} is present in the id set")
 
     if not id_set:
-        return None
+        content_type = RN_HEADER_TO_ID_SET_KEYS[rn_header].capitalize()[:-1]
+        return is_content_item_in_graph(display_name=display_name,
+                                        content_type=content_type,
+                                        marketplace=marketplace)
 
-    for id_set_entity in id_set[PACK_FOLDERS_TO_ID_SET_KEYS[pack_folder]]:
+    for id_set_entity in id_set[RN_HEADER_TO_ID_SET_KEYS[rn_header]]:
 
         if list(id_set_entity.values())[0]['display_name'] == display_name:
-            return id_set_entity
+            return True
 
-    if pack_folder == PackFolders.CLASSIFIERS.value:  # For Classifiers, check also in Mappers
-        for id_set_entity in id_set['Mappers']:
-            if list(id_set_entity.values())[0]['display_name'] == display_name:
-                return id_set_entity
-    return None
+    return False
