@@ -1,4 +1,4 @@
-  alert_category: EXECUTION
+- alert_category: EXECUTION
   alert_description: This alert will trigger in an event where multiple attempts of
     unauthorized actions were detected
   alert_fields:
@@ -20,7 +20,7 @@
     actions were detected  in the Alibaba ActionTrail account
   drilldown_query_timeframe: ALERT
   execution_mode: SCHEDULED
-  global_rule_id: c2810c8e-65e7-4b4a-953e-c57835033442
+  global_rule_id: bb268634-30a7-4989-90b6-cb833b5591cf
   investigation_query_link: null
   mapping_strategy: CUSTOM
   mitre_defs: {}
@@ -33,8 +33,9 @@
   suppression_fields: null
   user_defined_category: null
   user_defined_severity: null
-  xql_query: "datamodel dataset in (alibaba_action_trail_raw)\r\n|filter  xdm.event.type=\"\
-    ApiCall\"\r\n|filter xdm.event.outcome in (\"This API is not authorized for caller.\"\
-    ,\"no permission\",\"The user has no permission\",\"caller has no permission\"\
-    )\r\n|comp count() as TotalCount by xdm.source.user.username, xdm.source.ipv4,\
-    \ xdm.source.user.user_type\r\n|filter TotalCount > 5"
+  xql_query: "datamodel \r\n|filter xdm.observer.vendor=\"alibaba\" and  xdm.observer.product=\"\
+    action-trail\"\r\n|filter  xdm.event.type=\"ApiCall\"\r\n|filter xdm.event.outcome\
+    \ in (\"This API is not authorized for caller.\",\"no permission\",\"The user\
+    \ has no permission\",\"caller has no permission\")\r\n|comp count() as TotalCount\
+    \ by xdm.source.user.username, xdm.source.ipv4, xdm.source.user.user_type\r\n\
+    |filter TotalCount > 5"
