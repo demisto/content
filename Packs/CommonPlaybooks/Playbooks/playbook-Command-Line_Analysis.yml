@@ -1605,21 +1605,7 @@ outputs:
   description: The domain object.
   type: unknown
 tests:
-- Calculate Severity - Generic v2 - Test
-- Wait Until Datetime - Test
-- Calculate Severity - Standard - Test
-- Extract Indicators From File - Generic v2 - Test
-- URL Enrichment - Generic v2 - Test
-- File Enrichment - Generic v2 - Test
-- Domain Enrichment - Generic v2 - Test
-- Account Enrichment - Generic v2.1 - Test
-- IP Enrichment - Generic v2 - Test
-- Detonate URL - Generic Test
-- Email Address Enrichment - Generic v2.1 - Test
-- Generic Polling Test
-- Detonate File - No Files test
-- Detonate File - Generic Test
-- Endpoint Enrichment - Generic v2.1 - Test
+  - No tests
 fromversion: 6.0.0
 contentitemexportablefields:
   contentitemfields: {}
