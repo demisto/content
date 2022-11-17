@@ -3809,6 +3809,9 @@ def get_detection_for_incident_command(incident_id: str) -> CommandResults:
                           raw_response=detection_res)
 
 
+def cs_falcon_spotlight_search_vulnerability_command(args: dict):
+    pass
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is {}'.format(demisto.command()))
@@ -3971,6 +3974,13 @@ def main():
             return_results(update_remote_system_command(args))
         elif demisto.command() == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
+        elif demisto.command() == 'cs-falcon-spotlight-search-vulnerability':
+            return()
+        elif demisto.command() == 'cs-falcon-spotlight-list-host-by-vulnerability':
+            return()
+        elif demisto.command() == 'cve':
+            return()
+        
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')
