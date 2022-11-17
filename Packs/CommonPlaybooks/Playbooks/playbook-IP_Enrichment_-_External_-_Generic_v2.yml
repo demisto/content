@@ -814,6 +814,6 @@ outputs:
   description: Endpoint domain name.
   type: string
 tests:
-- No tests (auto formatted)
+- IP Enrichment - Generic v2 - Test
 contentitemexportablefields:
   contentitemfields: {}
