@@ -16,6 +16,7 @@
  "neverSetAsRequired": false,
  "isReadOnly": false,
  "selectValues": [
+  "",
   "Pass",
   "Undetermined",
   "Suspicious",

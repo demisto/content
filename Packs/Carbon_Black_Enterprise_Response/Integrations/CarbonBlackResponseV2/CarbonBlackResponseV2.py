@@ -1,12 +1,13 @@
 import struct
 import dateparser
+import urllib3
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *  # noqa
 from typing import Callable, Dict, List, Any, Union, Tuple
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 INTEGRATION_NAME = 'Carbon Black EDR'
@@ -830,7 +831,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     if status:
         for current_status in argToList(status):
             demisto.debug(f'{INTEGRATION_NAME} - Fetching incident from Server with status: {current_status}')
-            query_params['status'] = current_status
+            query_params['status'] = f'"{current_status}"'
             # we create a new query containing params since we do not allow both query and params.
             res = client.get_alerts(query=_create_query_string(query_params), limit=max_results)
             alerts += res.get('results', [])
