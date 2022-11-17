@@ -4,7 +4,9 @@ commonfields:
 name: CheckIndicatorValue
 script: ''
 type: python
-tags: []
+tags:
+- evaluation
+- polling
 comment: Check if indicators exist in the Threat Intel DB.
 enabled: true
 args:
