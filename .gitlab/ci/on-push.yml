@@ -89,7 +89,7 @@ create-instances:
     policy: pull-push
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
-    KUBERNETES_CPU_REQUEST: 1000m
+    KUBERNETES_CPU_REQUEST: 2000m
     KUBERNETES_MEMORY_REQUEST: 256Mi
   needs: []
   stage: create-instances
@@ -150,7 +150,7 @@ prepare-testing-bucket-mpv2:
     policy: pull-push
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
-    KUBERNETES_CPU_REQUEST: 1000m
+    KUBERNETES_CPU_REQUEST: 2000m
     KUBERNETES_MEMORY_REQUEST: 256Mi
   needs: []
   stage: create-instances
