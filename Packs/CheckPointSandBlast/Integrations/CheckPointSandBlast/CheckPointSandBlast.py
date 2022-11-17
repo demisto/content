@@ -64,6 +64,11 @@ QUOTA_HEADERS = [
     'QuotaExpiration',
     'Action',
 ]
+DBOT_SCORE_TRANSLATOR_DICT = {
+    1: "Benign",
+    2: "Suspicious",
+    3: "Malicious"
+}
 
 
 ''' CLIENT CLASS '''
@@ -319,19 +324,21 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
                 command_results.append(CommandResults(readable_output=f'File not found: "{file_hash}"\n{message}'))
                 continue
 
-            malicious_description = {
+            file_indicator = get_file_indicator(file_hash, hash_type, raw_response, client.reliability)
+            verdict_str = DBOT_SCORE_TRANSLATOR_DICT.get(file_indicator.dbot_score.score)
+
+            score_description = {
                 'confidence': dict_safe_get(raw_response, ['response', 'te', 'confidence']),
                 'severity': dict_safe_get(raw_response, ['response', 'te', 'severity']),
                 'signature_name': dict_safe_get(raw_response, ['response', 'av', 'malware_info', 'signature_name'])
             }
-
             outputs = remove_empty_elements({
                 'MD5': dict_safe_get(raw_response, ['response', 'md5']),
                 'SHA1': dict_safe_get(raw_response, ['response', 'sha1']),
                 'SHA256': dict_safe_get(raw_response, ['response', 'sha256']),
-                'Malicious': {
+                verdict_str: {
                     'Vendor': 'CheckPointSandBlast',
-                    'Description': malicious_description
+                    'Description': score_description
                 }
             })
             readable_output = tableToMarkdown(
@@ -341,10 +348,9 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
                     'MD5',
                     'SHA1',
                     'SHA256',
-                    'Malicious',
+                    verdict_str,
                 ]
             )
-            file_indicator = get_file_indicator(file_hash, hash_type, raw_response, client.reliability)
 
             command_results.append(CommandResults(
                 readable_output=readable_output,
@@ -846,7 +852,7 @@ def get_dbotscore(response: Dict[str, Any]) -> int:
     te_combined_verdict = dict_safe_get(response, ['response', 'te', 'combined_verdict'])
 
     if av_confidence == 0 and av_severity == 0 and \
-            te_combined_verdict == 'benign' and te_severity is None and (te_confidence == 1 or te_confidence is None):
+            te_combined_verdict == 'benign' and te_severity is None and (te_confidence <= 1 or te_confidence is None):
         score = Common.DBotScore.GOOD
 
     elif te_severity == 1:
