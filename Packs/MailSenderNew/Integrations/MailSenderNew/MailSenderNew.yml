@@ -166,5 +166,5 @@ script:
   subtype: python2
   dockerimage: demisto/python:2.7.18.27799
 tests:
-- No tests
+- Mail Sender (New) Test
 fromversion: 5.0.0
