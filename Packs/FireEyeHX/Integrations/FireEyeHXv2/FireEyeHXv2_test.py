@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 
 import pytest
+from CommonServerPython import DemistoException
 
 
 def util_load_json(path):
@@ -753,8 +754,12 @@ UPSERT_COMMAND_DATA_CASES_GET_INDICATOR_RESULT = [
         'File'
     ),
     (
-        {'event_type': 'test'},
+        {'event_type': 'ipv4NetworkEvent'},
         'Ip'
+    ),
+    (
+        {'event_type': 'Unknown'},
+        None
     )
 ]
 
@@ -1904,3 +1909,23 @@ def test_create_static_host_request_body(mocker):
     result = client.create_static_host_request_body(host_set_name, host_ids_to_add, host_ids_to_remove)
     assert result == {'changes': [{'add': 'host_ids_to_add', 'command': 'change', 'remove': 'host_ids_to_remove'}],
                       'name': 'host_set_name'}
+
+
+def test_informative_error_in_get_token(mocker):
+    """
+    Given:
+        - 401 error occured in get_token
+
+    When:
+        - init the client and the get token was called
+    Then:
+        - ensure informative message returned
+    """
+
+    from FireEyeHXv2 import Client
+    mocker.patch.object(Client, '_http_request', side_effect=DemistoException('Incorrect user id or password'))
+
+    with pytest.raises(Exception) as err:
+        Client('test_client')
+
+    assert str(err.value) == 'Unauthorized - Incorrect user id or password'
