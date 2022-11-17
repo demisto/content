@@ -2259,6 +2259,10 @@ script:
       required: false
       isArray: false
       secret: true
+    outputs:
+    - contextPath: VersaDirector.AuthClient
+      description: 'Auth Client Credentials.'
+      type: String
   - name: vd-auth-test
     description: 'Run a connectivity test to verify that the oauth process worked.'  
 

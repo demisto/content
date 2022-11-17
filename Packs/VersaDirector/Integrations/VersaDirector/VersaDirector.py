@@ -60,6 +60,16 @@ class Client(BaseClient):
 
     # HEADING: """ REQUEST FUNCTIONS """
 
+    def test_organization_name_request(self, organization_name: str):
+        try:
+            self._http_request(
+                "GET",
+                url_suffix=f"nextgen/deviceGroup?organization={organization_name}",
+                headers=self._headers,
+            )
+        except DemistoException as e:
+            raise DemistoException("Organization Name parameter OR arguments is invalid.", exception=e.exception)
+
     def access_token_request(self, username: str, password: str, client_id: str, client_secret: str):
         request_body = {
             "client_id": f"{client_id}",
@@ -1434,7 +1444,8 @@ def check_and_update_token(client: Client, client_id: str, client_secret: str, c
                 return auth_token
             else:
                 raise DemistoException(
-                    "Auth Token Expired, Refresh Token is not found. Please create a new Auth Token using 'vd-auth-start' command."
+                    "Auth Token Expired, Refresh Token is not found."
+                    + "Please create a new Auth Token using 'vd-auth-start' command."
                 )
 
     return None
@@ -1788,6 +1799,7 @@ def handle_auth_token_command(client: Client, args: Dict[str, Any]) -> CommandRe
     command_results = CommandResults(
         outputs_prefix=VENDOR_NAME + ".AuthClient",
         outputs=_outputs if _outputs else {"client_id": client_id},
+        raw_response=_outputs if _outputs else {"client_id": client_id},
         readable_output=oauth_client_created_msg
         + "Authentication request was successful, Auth Token was created and saved in the Integration Context.\n"
         + "Please check the 'Use Auth Token' in the configuration screen.\n"
@@ -1797,7 +1809,12 @@ def handle_auth_token_command(client: Client, args: Dict[str, Any]) -> CommandRe
     return command_results
 
 
-def auth_client_test_command(client: Client, args: Dict[str, Any]):
+def auth_test_command(client: Client, args: Dict[str, Any]):
+    # test organization name if provided
+    organization_name = client.organization_params or args.get("organization")
+    if organization_name:
+        client.test_organization_name_request(organization_name)
+    # test connectivity with chosen authentication method
     message = test_connectivity(client)
     if message == "ok":
         if headers := client._headers:
@@ -3718,7 +3735,7 @@ def main() -> None:
 
         commands = {
             "vd-auth-start": handle_auth_token_command,
-            "vd-auth-test": auth_client_test_command,
+            "vd-auth-test": auth_test_command,
             "vd-appliance-list": appliance_list_command,
             "vd-organization-list": organization_list_command,
             "vd-organization-appliance-list": appliances_list_by_organization_command,

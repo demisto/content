@@ -24,6 +24,75 @@ This integration was integrated and tested with version 1.0.0 of VersaDirector
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### vd-auth-start
+***
+Obtain Access token from api client. If Client ID and Client Secret were not passed as parameters or arguments, a new Auth Client will be created.
+
+
+#### Base Command
+
+`vd-auth-start`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| token_name | Name of access token. If an excising token name will be given as argument, an error might occur. | Optional | 
+| description | Description of access token. | Optional | 
+| client_id | Client ID for Token Authentication. If already passed as a parameter it will be prioritized by default. | Optional | 
+| client_secret | Client Secret for Token Authentication. If already passed as a parameter it will be prioritized by default. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| VersaDirector.AuthClient | String | Auth Client Credentials. | 
+
+#### Command example
+```!vd-auth-start token_name=example_token description="example token"```
+#### Context Example
+```json
+{
+    "VersaDirector": {
+        "AuthClient": {
+            "client_id": "example_client_id",
+            "client_name": "example_token"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Auth Client Created Successfully.
+>Client ID: example_client_id, Auth Client Name: example_token.
+>
+>Authentication request was successful, Auth Token was created and saved in the Integration Context.
+>Please check the 'Use Auth Token' in the configuration screen.
+>To ensure the authentication is valid, run the 'vd-auth-test' command.
+
+### vd-auth-test
+***
+Run a connectivity test to verify that the oauth process worked.
+
+
+#### Base Command
+
+`vd-auth-test`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!vd-auth-test```
+#### Human Readable Output
+
+>Auth Token Authentication method connectivity verified.
+
 ### vd-predefined-application-list
 ***
 List all user predefined application objects.
