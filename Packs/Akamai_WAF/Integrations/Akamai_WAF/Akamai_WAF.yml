@@ -379,8 +379,7 @@ script:
       name: org_address_line_one
       required: true
       type: textArea
-    - default: true
-      defaultValue: 'True'
+    - defaultValue: 'True'
       description: Network Configuration - Dns Name Settings - Clone DNS Names
       name: clone_dns_names
     - defaultValue: 'False'
