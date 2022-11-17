@@ -17,15 +17,15 @@ For more details about the authentication used in this integration, see [Microso
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Host URL |  | True |
-    | Application ID or Client ID | See the Detailed Instructions section. | True |
-    | Token or Tenant ID | See the Detailed Instructions section. | True |
-    | Key or Client Secret | See the Detailed Instructions section. | False |
+    | Host URL | The host URL | True |
+    | Application ID or Client ID | The app registration ID | True |
+    | Token or Tenant ID | The tenant ID | True |
+    | Key or Client Secret | The app registarion secret | False |
     | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
     | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | Use a self-deployed Azure application |  | False |
+    | Use a self-deployed Azure application | Rather to use a selp-deployed application | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
     | First fetch time range | &lt;number&gt; &lt;time unit&gt;, for example 1 hour, 30 minutes | False |

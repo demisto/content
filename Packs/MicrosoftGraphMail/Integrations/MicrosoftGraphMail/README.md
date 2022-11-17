@@ -9,10 +9,10 @@ This integration was integrated and tested with version v1 of Microsoft Graph.
 
     | **Parameter** | **Description** | **Required** |
     | --- |-------| --- |
-    | Server URL |  | True  |
-    | Application ID or Client ID | See the Detailed Instructions section. | False |
-    | Token or Tenant ID | See the Detailed Instructions section. | False |
-    | Key or Client Secret | See the Detailed Instructions section. | False |
+    | Server URL | The host URL | True  |
+    | Application ID or Client ID | The app registration ID | False |
+    | Token or Tenant ID | The tenant ID | False |
+    | Key or Client Secret | The app registarion secret | False |
     | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
     | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
     | Fetch incidents |  | False |
@@ -23,7 +23,7 @@ This integration was integrated and tested with version v1 of Microsoft Graph.
     | Maximum number of emails to pull per fetch |  | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | Use a self deployed Azure application |  | False |
+    | Use a self deployed Azure application | Rather to use a selp-deployed application | False |
     | Incident type |  | False |
     | Display the entire email body | Whether to fetch incidents with the entire email body, or just an email body preview, mark if the full email body is required. | False |
     | Advanced: Time in minutes to look back when fetching emails | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |

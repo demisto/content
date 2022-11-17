@@ -28,14 +28,14 @@ Moreover, enter your client secret as the “Key” parameter and your client ID
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Base URL |  | False |
-    | Application ID or Client ID | See the Detailed Instructions section. | False |
-    | Key or Client Secret | See the Detailed Instructions section. | False |
-    | Token or Tenant ID | See the Detailed Instructions section. | False |
+    | Base URL | The host URL | False |
+    | Application ID or Client ID | The app registration ID | False |
+    | Key or Client Secret | The app registarion secret | False |
+    | Token or Tenant ID | The tenant ID | False |
     | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
     | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
-    | Use a self-deployed Azure application |  | False |
-    | Application redirect URI (for self-deployed mode) |  | False |
+    | Use a self-deployed Azure application | Rather to use a selp-deployed application | False |
+    | Application redirect URI (for self-deployed mode) | The app registration redirect URI | False |
     | The authentication code you got for the service | For instructions on how to receive it, see the Detailed Instructions section. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
