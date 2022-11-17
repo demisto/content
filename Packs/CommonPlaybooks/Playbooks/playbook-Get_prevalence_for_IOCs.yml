@@ -932,7 +932,7 @@ outputs:
   description: The prevalence of the Cmd.
 tests:
 - No tests (auto formatted)
-fromversion: 6.5.0
+fromversion: 6.6.0
 
 
 
