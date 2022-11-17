@@ -53,7 +53,7 @@ class TestNormalCommands:
             self.folder = ""
             self.is_public_folder = ""
             self.request_timeout = ""
-            self.max_fetch = ""
+            self.max_fetch = 50
             self.self_deployed = ""
             self.insecure = ""
             self.proxy = ""
@@ -241,7 +241,10 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
 
         def order_by(self, *args):
             # Return a list of emails
-            return messages
+            class MockQuerySet:
+                def __iter__(self):
+                    return (t for t in messages)
+            return MockQuerySet()
 
     def mock_get_folder_by_path(path, account=None, is_public=False):
         return MockObject()
@@ -392,7 +395,10 @@ def test_fetch_last_emails(mocker, since_datetime, filter_arg, expected_result):
             return self
 
         def order_by(self, *args):
-            return [Message(), Message(), Message(), Message(), Message()]
+            class MockQuerySet:
+                def __iter__(self):
+                    return (t for t in [Message(), Message(), Message(), Message(), Message()])
+            return MockQuerySet()
 
     def mock_get_folder_by_path(path, account=None, is_public=False):
         return MockObject()
@@ -441,8 +447,8 @@ def test_fetch_last_emails_max_fetch(max_fetch, expected_result):
             # Return a list of emails
             class MockQuerySet:
                 def __iter__(self):
-                    return (t for t in [Message(), Message(), Message(), Message(), Message()] )
-            return MockQuerySet
+                    return (t for t in [Message(), Message(), Message(), Message(), Message()])
+            return MockQuerySet()
 
     def mock_get_folder_by_path(path, account=None, is_public=False):
         return MockObject()

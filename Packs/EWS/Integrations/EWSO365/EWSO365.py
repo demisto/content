@@ -2551,7 +2551,7 @@ def main():
 
 def log_memory():
     if is_debug_mode():
-        demisto.debug(f'memstat\n{subprocess.check_output(["ps", "-opid,comm,rss,vsz"])}')
+        demisto.debug(f'memstat\n{str(subprocess.check_output(["ps", "-opid,comm,rss,vsz"]))}')
 
 
 from MicrosoftApiModule import *  # noqa: E402
