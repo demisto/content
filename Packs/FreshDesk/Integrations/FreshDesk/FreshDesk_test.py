@@ -143,7 +143,7 @@ def test_reformat_canned_response_context(mocker):
         - running reformat_canned_response_context function
 
     Then:
-        - Ensure dictionary was changed
+        - Ensure the dictionary keys were changed to 'ID' and 'HTML'
     """
     mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
     import FreshDesk
