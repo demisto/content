@@ -88,7 +88,7 @@ class Client(BaseClient):
 
     def __init__(self, bpa_token: str, verify: bool, proxy: bool):
         headers = {'Authorization': f'Token {bpa_token}'}
-        super().__init__(base_url=BPA_URL, verify=verify, headers=headers)
+        super().__init__(base_url=BPA_URL, verify=verify, headers=headers, proxy=proxy)
         self.token = bpa_token
         if proxy:
             self.proxies = handle_proxy()
