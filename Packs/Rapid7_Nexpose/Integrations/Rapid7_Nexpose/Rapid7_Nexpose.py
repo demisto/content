@@ -5209,491 +5209,335 @@ def main():
             results = create_asset_command(
                 client=client,
                 site=Site(
-                    site_id=args.get("site_id"),
-                    site_name=args.get("site_name"),
-                    client=client,
+                    site_id=args.pop("site_id", None),
+                    site_name=args.pop("site_name", None),
+                    client=client
                 ),
-                date=args.get("date"),
-                ip_address=args.get("ip"),
-                hostname=args.get("host_name"),
-                hostname_source=args.get("host_name_source"),
+                date=args.pop("date", None),
+                ip_address=args.pop("ip", None),
+                hostname=args.pop("host_name", None),
+                hostname_source=args.pop("host_name_source", None),
             )
         elif command == "nexpose-create-assets-report":
             results = create_assets_report_command(
                 client=client,
-                asset_ids=args["assets"],
-                template_id=args.get("template"),
-                report_name=args.get("name"),
-                report_format=args.get("format"),
-                download_immediately=args.get("download_immediately"),
+                asset_ids=args.pop("assets"),
+                template_id=args.pop("template", None),
+                report_name=args.pop("name", None),
+                report_format=args.pop("format", None),
+                download_immediately=args.pop("download_immediately", None),
             )
         elif command == "nexpose-create-scan-report":
             results = create_scan_report_command(
                 client=client,
-                scan_id=args["scan"],
-                template_id=args.get("template"),
-                report_name=args.get("name"),
-                report_format=args.get("format"),
-                download_immediately=args.get("download_immediately"),
+                scan_id=args.pop("scan"),
+                template_id=args.pop("template", None),
+                report_name=args.pop("name", None),
+                report_format=args.pop("format", None),
+                download_immediately=args.pop("download_immediately", None),
             )
         elif command == "nexpose-create-scan-schedule":
             results = create_scan_schedule_command(
                 client=client,
                 site=Site(
-                    site_id=args.get("site_id"),
-                    site_name=args.get("site_name"),
-                    client=client,
+                    site_id=args.pop("site_id", None),
+                    site_name=args.pop("site_name", None),
+                    client=client
                 ),
-                repeat_behaviour=args["on_scan_repeat"],
-                start_date=args["start"],
-                excluded_asset_groups=args.get("excluded_asset_groups"),
-                excluded_targets=args.get("excluded_targets"),
-                included_asset_groups=args.get("included_asset_groups"),
-                included_targets=args.get("included_targets"),
-                duration_days=args.get("duration_days"),
-                duration_hours=args.get("duration_hours"),
-                duration_minutes=args.get("duration_minutes"),
-                enabled=args.get("enabled"),
-                frequency=args.get("frequency"),
-                interval=args.get("interval"),
-                date_of_month=args.get("date_of_month"),
-                scan_name=args.get("scan_name"),
-                scan_template_id=args.get("scan_template_id"),
+                repeat_behaviour=args.pop("on_scan_repeat"),
+                start_date=args.pop("start"),
+                **args
             )
         elif command == "nexpose-create-shared-credential":
             results = create_shared_credential_command(
                 client=client,
-                name=args["name"],
-                site_assignment=args["site_assignment"],
-                service=args["service"],
-                database_name=args.get("database"),
-                description=args.get("description"),
-                domain=args.get("domain"),
-                host_restriction=args.get("host_restriction"),
-                http_realm=args.get("http_realm"),
-                notes_id_password=args.get("notes_id_password"),
-                ntlm_hash=args.get("ntlm_hash"),
-                oracle_enumerate_sids=args.get("oracle_enumerate_sids"),
-                oracle_listener_password=args.get("oracle_listener_password"),
-                oracle_sid=args.get("oracle_sid"),
-                password=args.get("password"),
-                port_restriction=args.get("port_restriction"),
-                sites=args.get("sites"),
-                snmp_community_name=args.get("community_name"),
-                snmpv3_authentication_type=args.get("authentication_type"),
-                snmpv3_privacy_password=args.get("privacy_password"),
-                snmpv3_privacy_type=args.get("privacy_type"),
-                ssh_key_pem=args.get("ssh_key_pem"),
-                ssh_permission_elevation=args.get("ssh_permission_elevation"),
-                ssh_permission_elevation_password=args.get("ssh_permission_elevation_password"),
-                ssh_permission_elevation_username=args.get("ssh_permission_elevation_username"),
-                ssh_private_key_password=args.get("ssh_private_key_password"),
-                use_windows_authentication=args.get("use_windows_authentication"),
-                username=args.get("username"),
+                database_name=args.pop("database", None),
+                snmp_community_name=args.pop("community_name", None),
+                snmpv3_authentication_type=args.pop("authentication_type", None),
+                snmpv3_privacy_password=args.pop("privacy_password", None),
+                snmpv3_privacy_type=args.pop("privacy_type", None),
+                **args
             )
         elif command == "nexpose-create-site":
             results = create_site_command(
                 client=client,
-                name=args["name"],
-                description=args.get("description"),
-                assets=args.get("assets"),
-                site_importance=args.get("importance"),
-                template_id=args.get("scanTemplateId"),
+                site_importance=args.pop("importance", None),
+                template_id=args.pop("scanTemplateId", None),
+                **args
             )
         elif command == "nexpose-create-sites-report":
             results = create_sites_report_command(
                 client=client,
-                site_ids=args.get("sites"),
-                site_names=args.get("site_names"),
-                template_id=args.get("template"),
-                report_name=args.get("name"),
-                report_format=args.get("format"),
-                download_immediately=args.get("download_immediately"),
+                site_ids=args.pop("sites", None),
+                template_id=args.pop("template", None),
+                report_name=args.pop("name", None),
+                report_format=args.pop("format", None),
+                **args
             )
         elif command == "nexpose-create-site-scan-credential":
             results = create_site_scan_credential_command(
                 client=client,
                 site=Site(
-                    site_id=args.get("site_id"),
-                    site_name=args.get("site_name"),
-                    client=client,
+                    site_id=args.pop("site_id", None),
+                    site_name=args.pop("site_name", None),
+                    client=client
                 ),
-                name=args["name"],
-                service=args["service"],
-                database_name=args.get("database"),
-                description=args.get("description"),
-                domain=args.get("domain"),
-                host_restriction=args.get("host_restriction"),
-                http_realm=args.get("http_realm"),
-                notes_id_password=args.get("notes_id_password"),
-                ntlm_hash=args.get("ntlm_hash"),
-                oracle_enumerate_sids=args.get("oracle_enumerate_sids"),
-                oracle_listener_password=args.get("oracle_listener_password"),
-                oracle_sid=args.get("oracle_sid"),
-                password=args.get("password"),
-                port_restriction=args.get("port_restriction"),
-                snmp_community_name=args.get("community_name"),
-                snmpv3_authentication_type=args.get("authentication_type"),
-                snmpv3_privacy_password=args.get("privacy_password"),
-                snmpv3_privacy_type=args.get("privacy_type"),
-                ssh_key_pem=args.get("ssh_key_pem"),
-                ssh_permission_elevation=args.get("ssh_permission_elevation"),
-                ssh_permission_elevation_password=args.get("ssh_permission_elevation_password"),
-                ssh_permission_elevation_username=args.get("ssh_permission_elevation_username"),
-                ssh_private_key_password=args.get("ssh_private_key_password"),
-                use_windows_authentication=args.get("use_windows_authentication"),
-                username=args.get("username"),
+                database_name=args.pop("database", None),
+                snmp_community_name=args.pop("community_name", None),
+                snmpv3_authentication_type=args.pop("authentication_type", None),
+                snmpv3_privacy_password=args.pop("privacy_password", None),
+                snmpv3_privacy_type=args.pop("privacy_type", None),
+                **args
             )
         elif command == "nexpose-create-vulnerability-exception":
-            results = create_vulnerability_exception_command(
-                client=client,
-                vulnerability_id=args["vulnerability_id"],
-                scope_type=args["scope_type"],
-                state=args["state"],
-                reason=args["reason"],
-                scope_id=args.get("scope_id"),
-                expires=args.get("expires"),
-                comment=args.get("comment"),
-            )
+            results = create_vulnerability_exception_command(client=client, **args)
         elif command == "nexpose-delete-asset":
             results = delete_asset_command(
                 client=client,
-                asset_id=args["id"],
+                asset_id=args.pop("id"),
             )
         elif command == "nexpose-delete-scan-schedule":
             results = delete_scheduled_scan_command(
                 client=client,
                 site=Site(
-                    site_id=args.get("site_id"),
-                    site_name=args.get("site_name"),
-                    client=client,
+                    site_id=args.pop("site_id", None),
+                    site_name=args.pop("site_name", None),
+                    client=client
                 ),
-                scheduled_scan_id=args["schedule_id"],
+                scheduled_scan_id=args.pop("schedule_id"),
             )
         elif command == "nexpose-delete-shared-credential":
             results = delete_shared_credential_command(
                 client=client,
-                shared_credential_id=args["id"],
+                shared_credential_id=args.pop("id"),
             )
         elif command == "nexpose-delete-site-scan-credential":
             results = delete_site_scan_credential_command(
                 client=client,
                 site=Site(
-                    site_id=args.get("site_id"),
-                    site_name=args.get("site_name"),
-                    client=client,
+                    site_id=args.pop("site_id", None),
+                    site_name=args.pop("site_name", None),
+                    client=client
                 ),
-                site_credential_id=args["credential_id"],
+                site_credential_id=args.pop("credential_id"),
             )
         elif command == "nexpose-delete-vulnerability-exception":
             results = delete_vulnerability_exception_command(
                 client=client,
-                vulnerability_exception_id=args["id"],
+                vulnerability_exception_id=args.pop("id"),
             )
         elif command == "nexpose-delete-site":
             results = delete_site_command(
                 client=client,
                 site=Site(
-                    site_id=args.get("id"),
-                    site_name=args.get("site_name"),
-                    client=client,
+                    site_id=args.pop("site_id", None),
+                    site_name=args.pop("site_name", None),
+                    client=client
                 ),
             )
         elif command == "nexpose-disable-shared-credential":
             results = set_assigned_shared_credential_status_command(
                 client=client,
                 site=Site(
-                    site_id=args.get("site_id"),
-                    site_name=args.get("site_name"),
-                    client=client,
+                    site_id=args.pop("site_id", None),
+                    site_name=args.pop("site_name", None),
+                    client=client
                 ),
-                shared_credential_id=args["credential_id"],
+                shared_credential_id=args.pop("credential_id"),
                 enabled=False,
             )
         elif command == "nexpose-download-report":
             report_format = None
 
             if args.get("format"):
-                report_format = ReportFileFormat[args["format"]]
+                report_format = ReportFileFormat[args.pop("format")]
 
             results = download_report_command(
                 client=client,
-                report_id=args["report_id"],
-                instance_id=args["instance_id"],
-                report_name=args.get("name"),
+                report_name=args.pop("name", None),
                 report_format=report_format,
+                **args
             )
         elif command == "nexpose-enable-shared-credential":
             results = set_assigned_shared_credential_status_command(
                 client=client,
                 site=Site(
-                    site_id=args.get("site_id"),
-                    site_name=args.get("site_name"),
-                    client=client,
+                    site_id=args.pop("site_id", None),
+                    site_name=args.pop("site_name", None),
+                    client=client
                 ),
-                shared_credential_id=args["credential_id"],
+                shared_credential_id=args.pop("credential_id"),
                 enabled=True,
             )
         elif command == "nexpose-get-asset":
             results = get_asset_command(
                 client=client,
-                asset_id=args["id"]
+                asset_id=args.pop("id")
             )
         elif command == "nexpose-get-asset-vulnerability":
             results = get_asset_vulnerability_command(
                 client=client,
-                asset_id=args["id"],
-                vulnerability_id=args["vulnerabilityId"],
+                asset_id=args.pop("id"),
+                vulnerability_id=args.pop("vulnerabilityId"),
             )
         elif command == "nexpose-get-assets":
-            results = get_assets_command(
-                client=client,
-                page=args.get("page"),
-                page_size=args.get("page_size"),
-                sort=args.get("sort"),
-                limit=args.get("limit"),
-            )
+            results = get_assets_command(client=client, **args)
         elif command == "nexpose-get-report-templates":
-            results = get_report_templates_command(
-                client=client,
-            )
+            results = get_report_templates_command(client=client)
         elif command == "nexpose-get-report-status":
-            results = get_generated_report_status_command(
-                client=client,
-                report_id=args["report_id"],
-                instance_id=args["instance_id"]
-            )
+            results = get_generated_report_status_command(client=client, **args)
         elif command == "nexpose-get-scan":
             results = get_scan_command(
                 client=client,
-                scan_ids=args["id"]
+                scan_ids=args.pop("id")
             )
         elif command == "nexpose-get-scans":
-            results = get_scans_command(
-                client=client,
-                active=args.get("active"),
-                page=args.get("page"),
-                page_size=args.get("page_size"),
-                sort=args.get("sort"),
-                limit=args.get("limit"),
-            )
+            results = get_scans_command(client=client, **args)
         elif command == "nexpose-get-sites":
-            results = get_sites_command(
-                client=client,
-                page=args.get("page"),
-                page_size=args.get("page_size"),
-                sort=args.get("sort"),
-                limit=args.get("limit"),
-            )
+            results = get_sites_command(client=client, **args)
         elif command == "nexpose-list-assigned-shared-credential":
             results = list_assigned_shared_credential_command(
                 client=client,
                 site=Site(
-                    site_id=args.get("site_id"),
-                    site_name=args.get("site_name"),
-                    client=client,
+                    site_id=args.pop("site_id", None),
+                    site_name=args.pop("site_name", None),
+                    client=client
                 ),
-                limit=args.get("limit"),
+                limit=args.pop("limit", None),
             )
         elif command == "nexpose-list-site-scan-credential":
             results = list_site_scan_credential_command(
                 client=client,
                 site=Site(
-                    site_id=args.get("site_id"),
-                    site_name=args.get("site_name"),
-                    client=client,
+                    site_id=args.pop("site_id", None),
+                    site_name=args.pop("site_name", None),
+                    client=client
                 ),
-                credential_id=args.get("credential_id"),
-                limit=args.get("limit"),
+                **args
             )
         elif command == "nexpose-list-vulnerability":
             results = list_vulnerability_command(
                 client=client,
-                vulnerability_id=args.get("id"),
-                page=args.get("page"),
-                page_size=args.get("page_size"),
-                limit=args.get("limit"),
+                vulnerability_id=args.pop("id", None),
+                **args
             )
         elif command == "nexpose-list-vulnerability-exceptions":
             results = list_vulnerability_exceptions_command(
                 client=client,
-                vulnerability_exception_id=args.get("id"),
-                page=args.get("page"),
-                page_size=args.get("page_size"),
-                sort=args.get("sort"),
-                limit=args.get("limit"),
+                vulnerability_exception_id=args.pop("id", None),
+                **args
             )
         elif command == "nexpose-list-scan-schedule":
             results = list_scan_schedule_command(
                 client=client,
                 site=Site(
-                    site_id=args.get("site_id"),
-                    site_name=args.get("site_name"),
-                    client=client,
+                    site_id=args.pop("site_id", None),
+                    site_name=args.pop("site_name", None),
+                    client=client
                 ),
-                schedule_id=args.get("schedule_id"),
-                limit=args.get("limit"),
+                **args
             )
         elif command == "nexpose-list-shared-credential":
             results = list_shared_credential_command(
                 client=client,
-                credential_id=args.get("id"),
-                limit=args.get("limit"),
+                credential_id=args.pop("id", None),
+                limit=args.pop("limit", None),
             )
         elif command == "nexpose-pause-scan":
             results = update_scan_command(
                 client=client,
-                scan_id=args["id"],
+                scan_id=args.pop("id"),
                 scan_status=ScanStatus.PAUSE,
             )
         elif command == "nexpose-resume-scan":
             results = update_scan_command(
                 client=client,
-                scan_id=args["id"],
+                scan_id=args.pop("id"),
                 scan_status=ScanStatus.RESUME,
             )
         elif command == "nexpose-update-shared-credential":
             results = update_shared_credential_command(
                 client=client,
-                shared_credential_id=args["id"],
-                name=args["name"],
-                site_assignment=args["site_assignment"],
-                service=args["service"],
-                database_name=args.get("database"),
-                description=args.get("description"),
-                domain=args.get("domain"),
-                host_restriction=args.get("host_restriction"),
-                http_realm=args.get("http_realm"),
-                notes_id_password=args.get("notes_id_password"),
-                ntlm_hash=args.get("ntlm_hash"),
-                oracle_enumerate_sids=args.get("oracle_enumerate_sids"),
-                oracle_listener_password=args.get("oracle_listener_password"),
-                oracle_sid=args.get("oracle_sid"),
-                password=args.get("password"),
-                port_restriction=args.get("port_restriction"),
-                sites=args.get("sites"),
-                snmp_community_name=args.get("community_name"),
-                snmpv3_authentication_type=args.get("authentication_type"),
-                snmpv3_privacy_password=args.get("privacy_password"),
-                snmpv3_privacy_type=args.get("privacy_type"),
-                ssh_key_pem=args.get("ssh_key_pem"),
-                ssh_permission_elevation=args.get("ssh_permission_elevation"),
-                ssh_permission_elevation_password=args.get("ssh_permission_elevation_password"),
-                ssh_permission_elevation_username=args.get("ssh_permission_elevation_username"),
-                ssh_private_key_password=args.get("ssh_private_key_password"),
-                use_windows_authentication=args.get("use_windows_authentication"),
-                username=args.get("username"),
+                shared_credential_id=args.pop("id"),
+                snmp_community_name=args.pop("community_name", None),
+                snmpv3_authentication_type=args.pop("authentication_type", None),
+                snmpv3_privacy_password=args.pop("privacy_password", None),
+                snmpv3_privacy_type=args.pop("privacy_type", None),
+                **args
             )
         elif command == "nexpose-update-site-scan-credential":
             results = update_site_scan_credential_command(
                 client=client,
                 site=Site(
-                    site_id=args.get("site_id"),
-                    site_name=args.get("site_name"),
-                    client=client,
+                    site_id=args.pop("site_id", None),
+                    site_name=args.pop("site_name", None),
+                    client=client
                 ),
-                credential_id=args["credential_id"],
-                name=args["name"],
-                service=args["service"],
-                database_name=args.get("database"),
-                description=args.get("description"),
-                domain=args.get("domain"),
-                host_restriction=args.get("host_restriction"),
-                http_realm=args.get("http_realm"),
-                notes_id_password=args.get("notes_id_password"),
-                ntlm_hash=args.get("ntlm_hash"),
-                oracle_enumerate_sids=args.get("oracle_enumerate_sids"),
-                oracle_listener_password=args.get("oracle_listener_password"),
-                oracle_sid=args.get("oracle_sid"),
-                password=args.get("password"),
-                port_restriction=args.get("port_restriction"),
-                snmp_community_name=args.get("community_name"),
-                snmpv3_authentication_type=args.get("authentication_type"),
-                snmpv3_privacy_password=args.get("privacy_password"),
-                snmpv3_privacy_type=args.get("privacy_type"),
-                ssh_key_pem=args.get("ssh_key_pem"),
-                ssh_permission_elevation=args.get("ssh_permission_elevation"),
-                ssh_permission_elevation_password=args.get("ssh_permission_elevation_password"),
-                ssh_permission_elevation_username=args.get("ssh_permission_elevation_username"),
-                ssh_private_key_password=args.get("ssh_private_key_password"),
-                use_windows_authentication=args.get("use_windows_authentication"),
-                username=args.get("username"),
+                snmp_community_name=args.pop("community_name", None),
+                snmpv3_authentication_type=args.pop("authentication_type", None),
+                snmpv3_privacy_password=args.pop("privacy_password", None),
+                snmpv3_privacy_type=args.pop("privacy_type", None),
+                **args
             )
         elif command == "nexpose-update-scan-schedule":
             results = update_scan_schedule_command(
                 client=client,
                 site=Site(
-                    site_id=args.get("site_id"),
-                    site_name=args.get("site_name"),
-                    client=client,
+                    site_id=args.pop("site_id", None),
+                    site_name=args.pop("site_name", None),
+                    client=client
                 ),
-                scan_schedule_id=args["schedule_id"],
-                repeat_behaviour=args["on_scan_repeat"],
-                start_date=args["start"],
-                excluded_asset_groups=args.get("excluded_asset_groups"),
-                excluded_targets=args.get("excluded_targets"),
-                included_asset_groups=args.get("included_asset_groups"),
-                included_targets=args.get("included_targets"),
-                duration_days=args.get("duration_days"),
-                duration_hours=args.get("duration_hours"),
-                duration_minutes=args.get("duration_minutes"),
-                enabled=args.get("enabled"),
-                frequency=args.get("frequency"),
-                interval=args.get("interval"),
-                date_of_month=args["date_of_month"],
-                scan_name=args.get("scan_name"),
-                scan_template_id=args.get("scan_template_id"),
+                scan_schedule_id=args.pop("schedule_id"),
+                repeat_behaviour=args.pop("on_scan_repeat"),
+                start_date=args.pop("start"),
+                **args
             )
         elif command == "nexpose-update-vulnerability-exception-expiration":
             results = update_vulnerability_exception_expiration_command(
                 client=client,
-                vulnerability_exception_id=args["id"],
-                expiration_date=args["expiration"],
+                vulnerability_exception_id=args.pop("id"),
+                expiration_date=args.pop("expiration"),
             )
         elif command == "nexpose-update-vulnerability-exception-status":
             results = update_vulnerability_exception_status_command(
                 client=client,
-                vulnerability_exception_id=args["id"],
-                status=args["status"],
+                vulnerability_exception_id=args.pop("id"),
+                status=args.pop("status"),
             )
         elif command == "nexpose-search-assets":
             results = search_assets_command(
                 client=client,
-                filter_query=args.get("query"),
-                ip_addresses=args.get("ipAddressIs"),
-                hostnames=args.get("hostNameIs"),
-                risk_score=args.get("riskScoreHigherThan"),
-                vulnerability_title=args.get("vulnerabilityTitleContains"),
-                site_ids=args.get("siteIdIn"),
-                site_names=args.get("siteNameIn"),
-                match=args.get("match"),
-                page_size=args.get("page_size"),
-                page=args.get("page"),
-                sort=args.get("sort"),
-                limit=args.get("limit"),
+                filter_query=args.pop("query", None),
+                ip_addresses=args.pop("ipAddressIs", None),
+                hostnames=args.pop("hostNameIs", None),
+                risk_score=args.pop("riskScoreHigherThan", None),
+                vulnerability_title=args.pop("vulnerabilityTitleContains", None),
+                site_ids=args.pop("siteIdIn", None),
+                site_names=args.pop("siteNameIn", None),
+                **args
             )
         elif command == "nexpose-start-assets-scan":
             results = start_assets_scan_command(
                 client=client,
-                ip_addresses=args.get("IPs"),
-                hostnames=args.get("hostNames"),
-                scan_name=args.get("name"),
+                ip_addresses=args.pop("IPs", None),
+                hostnames=args.pop("hostNames", None),
+                scan_name=args.pop("name", None),
             )
         elif command == "nexpose-start-site-scan":
             results = start_site_scan_command(
                 client=client,
                 site=Site(
-                    site_id=args.get("site"),
-                    site_name=args.get("site_name"),
-                    client=client,
+                    site_id=args.pop("site_id", None),
+                    site_name=args.pop("site_name", None),
+                    client=client
                 ),
-                scan_name=args.get("name"),
-                hosts=args.get("hosts"),
+                scan_name=args.pop("name", None),
+                hosts=args.pop("hosts", None),
             )
         elif command == "nexpose-stop-scan":
             results = update_scan_command(
                 client=client,
-                scan_id=args["id"],
+                scan_id=args.pop("id"),
                 scan_status=ScanStatus.STOP,
             )
         else:
