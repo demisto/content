@@ -70,7 +70,7 @@ configuration:
   type: 8
   required: false
 script:
-  dockerimage: demisto/python3:3.10.8.36650
+  dockerimage: demisto/python3:3.10.8.37233
   type: python
   subtype: python3
   script: '-'
