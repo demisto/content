@@ -875,34 +875,61 @@ def test_access_token(requests_mock):
     assert e.value.args[0] == 'Error: something went wrong, please try again.'
 
 
-def test_check_valid_indicator_value():
+@pytest.mark.parametrize('indicator_type, indicator_value, expected_result', [
+    ('domains', 'google.com', True),
+    ('domains', 'google.com, facebook.com', True),
+    ('urls', 'https://www.facebook.com', True),
+    ('ip', '1.1.1.1', True),
+    ('sha256', '532eaabd9574880dbf76b9b8cc00832c20a6ec113d682299550d7a6e0f345e25', True),  # ‘This is a test value of SHA256’
+    ('intrusion_action', 'would_block', True),
+    ('intrusion_action', 'would_block, blocked', True)
+])
+def test_check_valid_indicator_value(indicator_type, indicator_value, expected_result):
     """
         Tests the check_valid_indicator_value function.
 
             Given:
-                - no argument required.
+                indicator_type - type of indicator
+                indicator_value - Value of indicator
 
             When:
                 - Running the 'check_valid_indicator_value function'.
 
             Then:
-                - Checks the output of the command function with the expected output.
+                - Checks the output of the command function with the expected result.
     """
-    indicator = {
-        'domains': 'google.com',
-        'ip': '1.1.1.1',
-        'urls': 'http://www.google.com',
-        'intrusion_action': 'would_block'
-    }
-    for indicator_type, indicator_value in indicator.items():
-        result = check_valid_indicator_value(indicator_type, indicator_value)
-        assert result
-    with pytest.raises(ValueError):
-        indicator_value = "abcd23r, google.com"
-        check_valid_indicator_value('domains', indicator_value)
-    with pytest.raises(ValueError):
-        indicator_value = "dummy_sha256"
-        check_valid_indicator_value('sha256', indicator_value)
+    actual_result = check_valid_indicator_value(indicator_type, indicator_value)
+    assert actual_result == expected_result
+
+
+@pytest.mark.parametrize('indicator_type, indicator_value, expected_err_msg', [
+    ('domains', 'abcd123', 'Domain abcd123 is invalid'),
+    ('domains', 'google.com, abcd1234', 'Domain abcd1234 is invalid'),
+    ('urls', '123245', 'URL 123245 is invalid'),
+    ('ip', 'google.1234', 'IP "google.1234" is invalid'),
+    ('sha256', 'abcde34', 'SHA256 value abcde34 is invalid'),
+    ('intrusion_action', 'block_would',
+        "Invalid input Error: supported values for intrusion_action are: 'would_block', 'blocked' and 'detected'."),
+    ('intrusion_action', 'block_would, block',
+        "Invalid input Error: supported values for intrusion_action are: 'would_block', 'blocked' and 'detected'.")
+])
+def test_check_valid_indicator_value_wrong_input(indicator_type, indicator_value, expected_err_msg):
+    """
+        Tests the check_valid_indicator_value function.
+
+            Given:
+                indicator_type - type of indicator.
+                indicator_value - Value of indicator massage.
+
+            When:
+                - Running the 'check_valid_indicator_value function'.
+
+            Then:
+                - Checks the output of the command function with the expected error message.
+    """
+    with pytest.raises(ValueError) as e:
+        check_valid_indicator_value(indicator_type, indicator_value)
+    assert e.value.args[0] == expected_err_msg
 
 
 @pytest.mark.parametrize('sub_context, page, page_size, expected_title', [

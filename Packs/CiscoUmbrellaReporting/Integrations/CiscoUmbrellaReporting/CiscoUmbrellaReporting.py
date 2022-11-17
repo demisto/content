@@ -2,7 +2,6 @@ import demistomock as demisto
 
 from CommonServerPython import *
 from typing import Dict, List, Optional
-from requests.auth import HTTPBasicAuth
 from datetime import datetime
 import requests
 import urllib3
@@ -98,14 +97,14 @@ class Client(BaseClient):
             "grant_type": 'client_credentials'
         }
 
-        token_response = requests.post(url=self.token_url, auth=HTTPBasicAuth(
-            username=self.client_key, password=self.secret_key), data=payload)
-        if token_response.status_code == 401:
-            raise DemistoException(INVALID_CREDENTIALS_ERROR_MSG)
-        elif token_response.status_code >= 400:
-            raise DemistoException('Error: something went wrong, please try again.')
-
-        return token_response.json().get('access_token')
+        token_response = self._http_request(
+            method='POST',
+            full_url=self.token_url,
+            auth=(self.client_key, self.secret_key),
+            data=payload,
+            error_handler=cisco_umbrella_access_token_error_handler
+        )
+        return token_response.get('access_token')
 
     def query_cisco_umbrella_api(self, end_point: str, params: dict) -> Dict:
         """
@@ -162,6 +161,20 @@ class Client(BaseClient):
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def cisco_umbrella_access_token_error_handler(response: requests.Response):
+    """
+    Error Handler for Cisco Umbrella access_token
+    Args:
+        response (response): Cisco Umbrella Token url response
+    Raise:
+         DemistoException
+    """
+    if response.status_code == 401:
+        raise DemistoException(INVALID_CREDENTIALS_ERROR_MSG)
+    elif response.status_code >= 400:
+        raise DemistoException('Error: something went wrong, please try again.')
 
 
 def cisco_umbrella_error_handler(response: requests.Response):
