@@ -11,6 +11,7 @@ python = "^3.8,<3.11"
 [tool.poetry.group.dev.dependencies]
 demisto-sdk = "1.7.8"
 requests = "^2.22.0"
+pre-commit = "^2.20.0"
 
 [tool.poetry.group.linters.dependencies]
 mypy = "^0.982"
