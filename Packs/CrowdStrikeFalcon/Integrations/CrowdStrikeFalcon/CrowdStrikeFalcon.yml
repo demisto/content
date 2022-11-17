@@ -2901,7 +2901,7 @@ script:
     - contextPath: CrowdStrike.VulnerabilityHost.cve.id
       description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD).
       type: String
-  dockerimage: demisto/python3:3.10.8.36650
+  dockerimage: demisto/python3:3.10.8.37233
   isfetch: true
   ismappable: true
   isremotesyncin: true
@@ -2913,3 +2913,6 @@ script:
 fromversion: 5.0.0
 tests:
 - Test - CrowdStrike Falcon
+defaultclassifier: CrowdStrike Falcon
+defaultmapperin: CrowdStrike Falcon-Mapper
+defaultmapperout: CrowdStrike Falcon - Outgoing Mapper
