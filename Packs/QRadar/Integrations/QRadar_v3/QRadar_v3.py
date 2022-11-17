@@ -1526,7 +1526,7 @@ def verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, grou
 
 
 def is_positive(*values: int | None) -> bool:
-    # checks if all values are positive or None but not a negative number
+    # checks if all values are positive or None but not a negative numbers
     for value in values:
         if value is not None and value < 1:
             return False
