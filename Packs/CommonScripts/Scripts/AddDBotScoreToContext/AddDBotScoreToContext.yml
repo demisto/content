@@ -22,12 +22,11 @@ args:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-comment: Add DBot score to context for indicators with custom vendor, score, reliability,
-  and type.
+comment: Add DBot score to context for indicators with custom vendor, score, reliability, and type.
 commonfields:
   id: AddDBotScoreToContext
   version: -1
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.8.37233
 enabled: true
 name: AddDBotScoreToContext
 runas: DBotWeakRole
@@ -40,3 +39,6 @@ type: python
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
