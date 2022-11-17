@@ -1825,7 +1825,7 @@
             "timeout": 500
         },
         {
-            "integrations": ["EWS v2", "EWSO365"],
+            "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
             "instance_names": "ewv2_regular",
             "is_mockable": false

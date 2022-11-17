@@ -1244,7 +1244,6 @@ script:
   subtype: python3
   type: python
 tests:
-- pyEWS_Test
 - EWS search-mailbox test
 fromversion: 5.0.0
 defaultclassifier: EWS v2
