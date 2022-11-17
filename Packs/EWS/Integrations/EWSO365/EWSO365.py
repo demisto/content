@@ -2032,7 +2032,7 @@ def parse_incident_from_item(item):
     """
     incident = {}
     labels = []
-    demisto.debug("starting parse to incident")
+    demisto.debug("starting to parse the email into an incident")
     log_memory()
     try:
         incident["details"] = item.text_body or item.body
@@ -2204,11 +2204,11 @@ def parse_incident_from_item(item):
         labels.append({"type": "Email/ConversionID", "value": item.conversation_id.id})
 
     incident["labels"] = labels
-    demisto.debug("before generating rawJSON for incident")
+    demisto.debug("Starting to generate rawJSON for incident")
     log_memory()
     incident["rawJSON"] = json.dumps(parse_item_as_dict(item, None), ensure_ascii=False)
     log_memory()
-    demisto.debug("after rawjson")
+    demisto.debug("FInshed generatiing rawjson")
 
     return incident
 
@@ -2302,7 +2302,7 @@ def fetch_last_emails(
     :return: list of exchangelib.Items
     """
     qs = client.get_folder_by_path(folder_name, is_public=client.is_public_folder)
-    demisto.debug("finished folder get")
+    demisto.debug("Finished getting the folder by path")
     log_memory()
     if since_datetime:
         qs = qs.filter(datetime_received__gte=since_datetime)
@@ -2421,7 +2421,7 @@ def sub_main():
         elif command == "fetch-incidents":
             last_run = demisto.getLastRun()
             incidents = fetch_emails_as_incidents(client, last_run)
-            demisto.debug(f"returning incidents with size {sys.getsizeof(incidents)}")
+            demisto.debug(f"Saving incidents with size {sys.getsizeof(incidents)}")
             demisto.incidents(incidents)
 
         # special outputs commands
