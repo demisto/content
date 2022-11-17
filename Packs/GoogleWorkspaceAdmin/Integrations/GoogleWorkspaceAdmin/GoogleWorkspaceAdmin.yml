@@ -68,7 +68,15 @@ script:
           description: ""
           required: false
           isArray: false
-        - name: maxresults
+        - name: limit
+          description: ""
+          required: false
+          isArray: false
+        - name: page
+          description: ""
+          required: false
+          isArray: false
+        - name: page_size
           description: ""
           required: false
           isArray: false
