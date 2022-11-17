@@ -5174,6 +5174,7 @@
         }
     ],
     "skipped_tests": {
+        "Test XDR Playbook": "Issue CIAC-4624",
         "Cortex Data Lake Test": "Issue CRTX-67423",
         "playbook-CheckPointSandBlast_Test" : "Checkpoint playbook no license",
         "playbook-BmcITSM-Test" : "issue with license CIAC-3776",
