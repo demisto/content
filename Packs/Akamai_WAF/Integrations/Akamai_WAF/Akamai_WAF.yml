@@ -814,7 +814,6 @@ script:
       type: textArea
     - description: activation note
       name: note
-      required: true
     description: Activate a PAPI property.
     name: akamai-activate-papi-property
     outputs:
