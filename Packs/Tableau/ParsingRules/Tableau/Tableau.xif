@@ -1,0 +1,5 @@
+[INGEST:vendor="tableau", product="tableau", target_dataset="tableau_log_raw"]
+alter event_time = arrayindex(regextract(_raw_log ,"^(\d{4}-\d+\-\d+\s+\d+\:\d+\:\d+)"),0),
+    time_zone = arrayindex(regextract(_raw_log ,"\s([\-|\+]\d{2}\d{2})"),0)
+| alter full_event_time = concat(event_time ," ",time_zone)
+| alter _time = parse_timestamp("%Y-%m-%d %H:%M:%S %z",full_event_time);
