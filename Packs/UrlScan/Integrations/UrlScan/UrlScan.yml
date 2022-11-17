@@ -149,6 +149,14 @@ script:
       defaultValue: 'false'
     - name: useragent
       description: User agent to perform request
+    - name: use_url_as_name
+      default: false
+      description: Whether to use the URL as the file name.
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      defaultValue: "false"
     deprecated: true
     description: Deprecated. Use the url command instead.
     name: urlscan-submit
