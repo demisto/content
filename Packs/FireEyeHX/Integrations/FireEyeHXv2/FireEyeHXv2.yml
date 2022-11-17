@@ -1588,6 +1588,7 @@ script:
       secret: false
     description: Start a data acquisition process to gather artifacts from the system disk and memory. The data is fetched as a MANS file.
     name: fireeye-hx-data-acquisition
+    polling: true
     outputs:
     - contextPath: FireEyeHX.Acquisitions.Data._id
       description: The unique ID of the acquisition.

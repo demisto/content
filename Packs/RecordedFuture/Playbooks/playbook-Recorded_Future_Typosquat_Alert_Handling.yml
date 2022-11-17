@@ -1,0 +1,497 @@
+id: Recorded Future Typosquat Alert Handling
+version: -1
+name: Recorded Future Typosquat Alert Handling
+description: "Template playbook showing suggested steps to triage typo squat alerts. Classifier/Mapper are available to ingest Recorded Future Typo squat Alerts."
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0b8663a1-e5c8-4ed5-874f-e02655bd2e03
+    type: start
+    task:
+      id: 0b8663a1-e5c8-4ed5-874f-e02655bd2e03
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: abaa4761-bfc6-426d-8f09-6ee92d669062
+    type: regular
+    task:
+      id: abaa4761-bfc6-426d-8f09-6ee92d669062
+      version: -1
+      name: Dig Command - Check 'A' Record
+      description: "DNS lookup utility to provide 'A' and 'PTR' record"
+      scriptName: Dig
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "19"
+        - "21"
+    scriptarguments:
+      name:
+        simple: ${inputs.domain}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 8834d06e-b1c9-4523-8fb5-7637d47d59ed
+    type: regular
+    task:
+      id: 8834d06e-b1c9-4523-8fb5-7637d47d59ed
+      version: -1
+      name: Research any certificates (censys.io search)
+      description: Return previews of hosts matching a specified search query or a
+        list of certificates that match the given query.
+      script: CensysV2|||cen-search
+      type: regular
+      iscommand: true
+      brand: CensysV2
+    nexttasks:
+      '#none#':
+        - "11"
+    scriptarguments:
+      index:
+        simple: certificates
+      query:
+        simple: ${inputs.domain}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 6077ba02-46d2-4121-82c9-4604cccbc839
+    type: regular
+    task:
+      id: 6077ba02-46d2-4121-82c9-4604cccbc839
+      version: -1
+      name: Utilize DomainTools (domain-profile)
+      description: ""
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "9"
+        - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 70692cf6-21dd-4104-8f65-d25dca7f135a
+    type: regular
+    task:
+      id: 70692cf6-21dd-4104-8f65-d25dca7f135a
+      version: -1
+      name: Check for website brand abuse (urlscan.io)
+      description: Submits a URL to scan.
+      script: urlscan.io|||url
+      type: regular
+      iscommand: true
+      brand: urlscan.io
+    nexttasks:
+      '#none#':
+        - "12"
+    scriptarguments:
+      continue_on_blacklisted_urls:
+        simple: "true"
+      scan_visibility:
+        simple: private
+      url:
+        simple: ${inputs.domain}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 687a915d-1bf6-4360-8a3b-a47d4cad5b3f
+    type: condition
+    task:
+      id: 687a915d-1bf6-4360-8a3b-a47d4cad5b3f
+      version: -1
+      name: Suspicious Based on Evidence?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+        - "25"
+      "YES":
+        - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: bb3341fe-8e6d-4c74-8d16-c0c479cd6c45
+    type: regular
+    task:
+      id: bb3341fe-8e6d-4c74-8d16-c0c479cd6c45
+      version: -1
+      name: Initiate Takedown / Prevent MX Communication
+      description: ""
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 557c722a-dad0-4ee5-84fb-7760258ea42d
+    type: regular
+    task:
+      id: 557c722a-dad0-4ee5-84fb-7760258ea42d
+      version: -1
+      name: Whois Lookup (ip)
+      description: Provides data enrichment for ips.
+      script: Whois|||ip
+      type: regular
+      iscommand: true
+      brand: Whois
+    nexttasks:
+      '#none#':
+        - "20"
+    scriptarguments:
+      ip:
+        simple: ${digresults.resolvedaddresses}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 4a8d7fe4-cf7e-4d5d-8ef3-a859e85436cd
+    type: regular
+    task:
+      id: 4a8d7fe4-cf7e-4d5d-8ef3-a859e85436cd
+      version: -1
+      name: IP Reputation lookup
+      description: Gets a quick indicator of the risk associated with an IP address.
+      script: Recorded Future v2|||ip
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+        - "22"
+    scriptarguments:
+      ip:
+        simple: ${digresults.resolvedaddresses}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 2eb1c499-3c5a-452a-8e24-329706d1383b
+    type: regular
+    task:
+      id: 2eb1c499-3c5a-452a-8e24-329706d1383b
+      version: -1
+      name: Whois Lookup (domain)
+      description: Provides data enrichment for domains.
+      script: Whois|||whois
+      type: regular
+      iscommand: true
+      brand: Whois
+    nexttasks:
+      '#none#':
+        - "10"
+    scriptarguments:
+      query:
+        simple: ${inputs.domain}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 161041d3-b7e2-4d73-86e0-b0c5263749a6
+    type: regular
+    task:
+      id: 161041d3-b7e2-4d73-86e0-b0c5263749a6
+      version: -1
+      name: Technical Links
+      description: Get Insikt Group Research Links for an IP, Domain, CVE, URL or File.
+      script: Recorded Future v2|||recordedfuture-links
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+        - "25"
+    scriptarguments:
+      entity:
+        simple: ${digresults.resolvedaddresses}
+      entity_type:
+        simple: ip
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 68924b24-6686-4ba7-8b7f-883980e5b3a9
+    type: regular
+    task:
+      id: 68924b24-6686-4ba7-8b7f-883980e5b3a9
+      version: -1
+      name: Review any parent/sibling domains
+      description: ""
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 1474a8f5-b416-47f0-85a1-b386ac110c0e
+    type: regular
+    task:
+      id: 1474a8f5-b416-47f0-85a1-b386ac110c0e
+      version: -1
+      name: Enrich parent/sibling domains
+      description: Gets a quick indicator of the risk associated with a domain.
+      type: regular
+      iscommand: false
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+        - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: e14b4d9f-1c45-41b5-8e94-942aa61af92e
+    type: title
+    task:
+      id: e14b4d9f-1c45-41b5-8e94-942aa61af92e
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_14_YES": 0.51
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1575,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+  - key: domain
+    value:
+      complex:
+        root: incident.recordedfuturealertentities
+        accessor: name
+    required: false
+    description: ""
+    playbookInputQuery: null
+outputs: [ ]
+tests:
+  - No tests
+fromversion: 6.5.0
