@@ -778,7 +778,7 @@ script:
         - Global
         - Site
         - Asset
-        - Asset-Group
+        - Asset Group
 #          - Instance  # We had issues with this option, so it's not currently supported
       required: true
       secret: false
@@ -791,7 +791,7 @@ script:
         - Expired
         - Approved
         - Rejected
-        - Under-Review
+        - Under Review
       required: true
       secret: false
     - default: false
@@ -806,10 +806,10 @@ script:
       isArray: false
       name: reason
       predefined:
-        - False-Positive
-        - Compensating-Control
-        - Acceptable-Use
-        - Acceptable-Risk
+        - False Positive
+        - Compensating Control
+        - Acceptable Use
+        - Acceptable Risk
         - Other
       required: true
       secret: false

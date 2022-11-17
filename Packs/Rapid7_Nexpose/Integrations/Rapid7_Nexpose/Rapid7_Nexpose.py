@@ -63,33 +63,6 @@ class CredentialService(Enum, metaclass=FlexibleEnum):
     TELNET = "telnet"
 
 
-class HostnameSource(Enum, metaclass=FlexibleEnum):
-    """An Enum of possible hostname source values."""
-    USER = "user"
-    DNS = "dns"
-    NETBIOS = "netbios"
-    DCE = "dce"
-    EPSC = "epsc"
-    LDAP = "ldap"
-    OTHER = "other"
-
-
-class ReportFileFormat(Enum, metaclass=FlexibleEnum):
-    """An Enum of possible file formats to use for reports."""
-    PDF = "pdf"
-    RTF = "rtf"
-    XML = "xml"
-    HTML = "html"
-    TEXT = "text"
-
-
-class RepeatBehaviour(Enum, metaclass=FlexibleEnum):
-    """An Enum of possible repeat behaviours for scheduled scans to use when repeating a scan that was paused
-    due to reaching its maximum duration."""
-    RESTART_SCAN = "restart-scan"
-    RESUME_SCAN = "resume-scan"
-
-
 class RepeatFrequencyType(Enum, metaclass=FlexibleEnum):
     """An Enum of possible repeat frequency for scheduled scans."""
     HOUR = "hour"
@@ -103,15 +76,6 @@ class SharedCredentialSiteAssignment(Enum, metaclass=FlexibleEnum):
     """An Enum of possible site assignment values for shared credentials."""
     ALL_SITES = "all-sites"
     SPECIFIC_SITES = "specific-sites"
-
-
-class SiteImportance(Enum, metaclass=FlexibleEnum):
-    """An Enum of possible site importance values."""
-    VERY_LOW = "very_low"
-    LOW = "low"
-    NORMAL = "normal"
-    HIGH = "high"
-    VERY_HIGH = "very_high"
 
 
 class SNMPv3AuthenticationType(Enum, metaclass=FlexibleEnum):
@@ -142,15 +106,6 @@ class SSHElevationType(Enum, metaclass=FlexibleEnum):
     PRIVILEGED_EXEC = "privileged-exec"
 
 
-class VulnerabilityExceptionReason(Enum, metaclass=FlexibleEnum):
-    """An Enum of possible vulnerability exception reason values."""
-    FALSE_POSITIVE = "False Positive"
-    COMPENSATING_CONTROL = "Compensating Control"
-    ACCEPTABLE_USE = "Acceptable Use"
-    ACCEPTABLE_RISK = "Acceptable Risk"
-    OTHER = "Other"
-
-
 class VulnerabilityExceptionScopeType(Enum, metaclass=FlexibleEnum):
     """An Enum of possible vulnerability exception scope type values.
        Note: The API has another option, "Instance", which we had issues with, so it's not currently supported."""
@@ -159,21 +114,6 @@ class VulnerabilityExceptionScopeType(Enum, metaclass=FlexibleEnum):
     ASSET = "Asset"
     ASSET_GROUP = "Asset Group"
     # INSTANCE = "Instance"
-
-
-class VulnerabilityExceptionState(Enum, metaclass=FlexibleEnum):
-    """An Enum of possible vulnerability exception state values."""
-    DELETED = "Deleted"
-    EXPIRED = "Expired"
-    APPROVED = "Approved"
-    REJECTED = "Rejected"
-
-
-class VulnerabilityExceptionStatus(Enum, metaclass=FlexibleEnum):
-    """An Enum of possible vulnerability exception status values."""
-    RECALL = "recall"
-    APPROVE = "approve"
-    REJECT = "reject"
 
 
 class Client(BaseClient):
@@ -303,7 +243,7 @@ class Client(BaseClient):
         return result
 
     def create_asset(self, site_id: str, date: str, ip_address: str | None = None, hostname: str | None = None,
-                     hostname_source: HostnameSource | None = None) -> dict:
+                     hostname_source: str | None = None) -> dict:
         """
         | Create a new asset on a site.
         |
@@ -318,7 +258,7 @@ class Client(BaseClient):
             date (str): The date the data was collected on the asset.
             ip_address (str | None, optional): IP address of the asset to create.
             hostname (str | None, optional): Hostname of the asset to create.
-            hostname_source (HostnameSource | None, optional): Source of the hostname.
+            hostname_source (str | None, optional): Source of the hostname.
 
         Returns:
             dict: API response with information about the newly generated asset.
@@ -334,7 +274,7 @@ class Client(BaseClient):
             post_data["hostName"] = {"name": hostname}
 
             if hostname_source is not None:
-                post_data["hostName"]["source"] = hostname_source.value
+                post_data["hostName"]["source"] = hostname_source.lower()
 
         return self._http_request(
             method="POST",
@@ -362,7 +302,7 @@ class Client(BaseClient):
         )
 
     def create_report_config(self, scope: dict[str, Any], template_id: str,
-                             report_name: str, report_format: ReportFileFormat) -> dict:
+                             report_name: str, report_format: str) -> dict:
         """
         | Create a new report configuration.
         |
@@ -372,7 +312,7 @@ class Client(BaseClient):
             scope (dict[str, Any]): Scope of the report, see Nexpose's documentation for more details.
             template_id (str): ID of report template to use.
             report_name (str): Name for the report that will be generated.
-            report_format (ReportFileFormat): Format of the report that will be generated.
+            report_format (str): Format of the report that will be generated.
 
         Returns:
             dict: API response with information about the newly created report configuration.
@@ -381,7 +321,7 @@ class Client(BaseClient):
             "scope": scope,
             "template": template_id,
             "name": report_name,
-            "format": report_format.value,
+            "format": report_format.lower(),
         }
 
         return self._http_request(
@@ -502,7 +442,7 @@ class Client(BaseClient):
                                   excluded_targets: list[str] | None = None,
                                   included_asset_groups: list[int] | None = None,
                                   included_targets: list[str] | None = None, duration: str | None = None,
-                                  repeat_behaviour: RepeatBehaviour | None = None,
+                                  repeat_behaviour: str | None = None,
                                   frequency: RepeatFrequencyType | None = None,
                                   interval: int | None = None, date_of_month: int | None = None,
                                   scan_name: str | None = None, scan_template_id: str | None = None) -> dict:
@@ -526,7 +466,7 @@ class Client(BaseClient):
                 ipv6 address, or CIDR notation.
             duration (str | None, optional): An ISO 8601 formatted duration string that Specifies the maximum duration
                 the scheduled scan is allowed to run.
-            repeat_behaviour (RepeatBehaviour | None, optional): The desired behavior of a repeating scheduled scan
+            repeat_behaviour (str | None, optional): The desired behavior of a repeating scheduled scan
                 when the previous scan was paused due to reaching its maximum duration.
             frequency (RepeatFrequencyType | None, optional): Frequency for the schedule to repeat.
                 Required if using other repeat settings.
@@ -573,7 +513,7 @@ class Client(BaseClient):
             assets=assets,
             duration=duration,
             enabled=enabled,
-            onScanRepeat=repeat_behaviour.value if repeat_behaviour is not None else None,
+            onScanRepeat=repeat_behaviour.lower() if repeat_behaviour is not None else None,
             repeat=repeat,
             scanName=scan_name,
             scanTemplateId=scan_template_id,
@@ -588,7 +528,7 @@ class Client(BaseClient):
         )
 
     def create_site(self, name: str, description: str | None = None, assets: list[str] | None = None,
-                    site_importance: SiteImportance | None = None, template_id: str | None = None) -> dict:
+                    site_importance: str | None = None, template_id: str | None = None) -> dict:
         """
         | Create a new site.
         |
@@ -598,7 +538,7 @@ class Client(BaseClient):
             name (str): Name of the site. Must be unique.
             description (str | None, optional): Description of the site. Defaults to None.
             assets (list[str] | None, optional): List of asset IDs to be included in site scans. Defaults to None.
-            site_importance (SiteImportance | None, optional): Importance of the site.
+            site_importance (str | None, optional): Importance of the site.
                 Defaults to None (results in using API's default - "normal").
             template_id (str | None, optional): The identifier of a scan template.
                 Defaults to None (results in using default scan template).
@@ -606,12 +546,10 @@ class Client(BaseClient):
         Returns:
             dict: API response with information about the newly created site.
         """
-        importance: str | None = site_importance.value if site_importance else None
-
         post_data = find_valid_params(
             name=name,
             description=description,
-            importance=importance,
+            importance=site_importance.lower() if site_importance else None,
             scanTemplateId=template_id,
         )
 
@@ -732,9 +670,8 @@ class Client(BaseClient):
         )
 
     def create_vulnerability_exception(self, vulnerability_id: str, scope_type: VulnerabilityExceptionScopeType,
-                                       state: VulnerabilityExceptionState, reason: VulnerabilityExceptionReason,
-                                       scope_id: int | None = None, expires: str | None = None,
-                                       comment: str | None = None) -> dict:
+                                       state: str, reason: str,  scope_id: int | None = None,
+                                       expires: str | None = None, comment: str | None = None) -> dict:
         """
         | Create a new vulnerability exception.
         |
@@ -744,8 +681,8 @@ class Client(BaseClient):
         Args:
             vulnerability_id (str): ID of the vulnerability to create an exception for.
             scope_type (VulnerabilityExceptionScopeType): The type of the exception scope.
-            state (VulnerabilityExceptionState): The state of the vulnerability exception.
-            reason (VulnerabilityExceptionReason): The reason the vulnerability exception was submitted.
+            state (str): The state of the vulnerability exception.
+            reason (str): The reason the vulnerability exception was submitted.
                 Can be one of: "False Positive", "Compensating Control", "Acceptable Use",
                 "Acceptable Risk", and "Other".
             scope_id (int): ID of the chosen `scope_type` (site ID, asset ID, etc.).
@@ -763,14 +700,14 @@ class Client(BaseClient):
         }
 
         submit_obj = find_valid_params(
-            reason=reason.value,
+            reason=reason,
             comment=comment,
         )
 
         post_data = find_valid_params(
             expires=expires,
             scope=scope_obj,
-            state=state.value,
+            state=state,
             submit=submit_obj,
         )
 
@@ -1749,7 +1686,7 @@ class Client(BaseClient):
                                   excluded_targets: list[str] | None = None,
                                   included_asset_groups: list[int] | None = None,
                                   included_targets: list[str] | None = None, duration: str | None = None,
-                                  repeat_behaviour: RepeatBehaviour | None = None,
+                                  repeat_behaviour: str | None = None,
                                   frequency: RepeatFrequencyType | None = None,
                                   interval: int | None = None, date_of_month: int | None = None,
                                   scan_name: str | None = None, scan_template_id: str | None = None) -> dict:
@@ -1774,7 +1711,7 @@ class Client(BaseClient):
                 ipv6 address, or CIDR notation.
             duration (str | None, optional): An ISO 8601 formatted duration string that Specifies the maximum duration
                 the scheduled scan is allowed to run.
-            repeat_behaviour (RepeatBehaviour | None, optional): The desired behavior of a repeating scheduled scan
+            repeat_behaviour (str | None, optional): The desired behavior of a repeating scheduled scan
                 when the previous scan was paused due to reaching its maximum duration.
             frequency (RepeatFrequencyType | None, optional): Frequency for the schedule to repeat.
                 Required if using other repeat settings.
@@ -1824,7 +1761,7 @@ class Client(BaseClient):
             assets=assets,
             duration=duration,
             enabled=enabled,
-            onScanRepeat=repeat_behaviour.value if repeat_behaviour is not None else None,
+            onScanRepeat=repeat_behaviour.lower() if repeat_behaviour is not None else None,
             repeat=repeat,
             scanName=scan_name,
             scanTemplateId=scan_template_id,
@@ -1838,8 +1775,7 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def update_vulnerability_exception_status(self, vulnerability_exception_id: str,
-                                              status: VulnerabilityExceptionStatus) -> dict:
+    def update_vulnerability_exception_status(self, vulnerability_exception_id: str, status: str) -> dict:
         """
         | Update the status of a vulnerability exception.
         |
@@ -1848,13 +1784,13 @@ class Client(BaseClient):
 
         Args:
             vulnerability_exception_id (str): ID of the vulnerability exception to update.
-            status (VulnerabilityExceptionStatus): Status to set the vulnerability exception to.
+            status (str): Status to set the vulnerability exception to.
 
         Returns:
             dict: API response with information about the updated vulnerability exception.
         """
         return self._http_request(
-            url_suffix=f"/vulnerability_exceptions/{vulnerability_exception_id}/{status.value}",
+            url_suffix=f"/vulnerability_exceptions/{vulnerability_exception_id}/{status.lower()}",
             method="POST",
             resp_type="json",
         )
@@ -2249,7 +2185,7 @@ def create_credential_creation_body(service: CredentialService, database_name: s
 
 
 def create_report(client: Client, scope: dict[str, Any], template_id: str | None = None,
-                  report_name: str | None = None, report_format: ReportFileFormat | None = None,
+                  report_name: str | None = None, report_format: str | None = None,
                   download_immediately: bool | None = None) -> dict | CommandResults:
     """
     Create a report and optionally download it.
@@ -2260,7 +2196,7 @@ def create_report(client: Client, scope: dict[str, Any], template_id: str | None
         template_id (str | None, optional): ID of report template to use.
             Defaults to None (will result in using the first available template)
         report_name (str | None, optional): Name for the report that will be generated. Uses "report {date}" by default.
-        report_format (ReportFileFormat | None, optional): Format of the report that will be generated. Defaults to PDF.
+        report_format (str | None, optional): Format of the report that will be generated. Defaults to PDF.
         download_immediately: (bool | None, optional) = Whether to download the report automatically after creation.
             Defaults to True.
     """
@@ -2279,7 +2215,7 @@ def create_report(client: Client, scope: dict[str, Any], template_id: str | None
         report_name = "report " + str(datetime.now())
 
     if report_format is None:
-        report_format = ReportFileFormat.PDF
+        report_format = "pdf"
 
     if download_immediately is None:
         download_immediately = True
@@ -2288,7 +2224,7 @@ def create_report(client: Client, scope: dict[str, Any], template_id: str | None
         scope=scope,
         template_id=template_id,
         report_name=report_name,
-        report_format=report_format,
+        report_format=report_format.lower(),
     )
 
     instance_data = client.create_report(report_data["id"])
@@ -2297,7 +2233,7 @@ def create_report(client: Client, scope: dict[str, Any], template_id: str | None
         "Name": report_name,
         "ID": report_data["id"],
         "InstanceID": instance_data["id"],
-        "Format": report_format.value,
+        "Format": report_format.lower(),
     }
     hr = tableToMarkdown("Report Information", context)
 
@@ -2714,17 +2650,12 @@ def create_asset_command(client: Client, site: Site, date: str, ip_address: str 
         hostname (str | None, optional): The hostname of the asset.
         hostname_source (str | None, optional): The source of the hostname.
     """
-    hostname_source_enum = None
-
-    if hostname_source is not None:
-        hostname_source_enum = HostnameSource[hostname_source]
-
     response_data = client.create_asset(
         site_id=site.id,
         date=date,
         ip_address=ip_address,
         hostname=hostname,
-        hostname_source=hostname_source_enum,
+        hostname_source=hostname_source,
     )
 
     return CommandResults(
@@ -2752,13 +2683,9 @@ def create_assets_report_command(client: Client, asset_ids: str, template_id: st
         download_immediately: (str | None, optional) = Whether to download the report automatically after creation.
             Defaults to True.
     """
-    report_format_enum = None
     download_immediately_bool = None
 
     asset_ids_list: list[str] = argToList(asset_ids)
-
-    if report_format is not None:
-        report_format_enum = ReportFileFormat[report_format]
 
     if download_immediately is not None:
         download_immediately_bool = argToBoolean(download_immediately)
@@ -2770,7 +2697,7 @@ def create_assets_report_command(client: Client, asset_ids: str, template_id: st
         scope=scope,
         template_id=template_id,
         report_name=report_name,
-        report_format=report_format_enum,
+        report_format=report_format,
         download_immediately=download_immediately_bool,
     )
 
@@ -2791,11 +2718,7 @@ def create_scan_report_command(client: Client, scan_id: str, template_id: str | 
         download_immediately: (str | None, optional) = Whether to download the report automatically after creation.
             Defaults to True.
     """
-    report_format_enum = None
     download_immediately_bool = None
-
-    if report_format is not None:
-        report_format_enum = ReportFileFormat[report_format]
 
     if download_immediately is not None:
         download_immediately_bool = argToBoolean(download_immediately)
@@ -2807,7 +2730,7 @@ def create_scan_report_command(client: Client, scan_id: str, template_id: str | 
         scope=scope,
         template_id=template_id,
         report_name=report_name,
-        report_format=report_format_enum,
+        report_format=report_format,
         download_immediately=download_immediately_bool,
     )
 
@@ -2896,7 +2819,7 @@ def create_scan_schedule_command(client: Client, site: Site, repeat_behaviour: s
     response_data = client.create_site_scan_schedule(
         site_id=site.id,
         enabled=enabled_bool,
-        repeat_behaviour=RepeatBehaviour[repeat_behaviour],
+        repeat_behaviour=repeat_behaviour,
         start_date=start_date,
         excluded_asset_groups=excluded_asset_groups_list,
         excluded_targets=excluded_targets_list,
@@ -3053,19 +2976,15 @@ def create_site_command(client: Client, name: str, description: str | None = Non
             Defaults to None (results in using default scan template).
     """
     assets_list = None
-    site_importance_enum = None
 
     if assets is not None:
         assets_list = argToList(assets)
-
-    if site_importance is not None:
-        site_importance_enum = SiteImportance[site_importance]
 
     response_data = client.create_site(
         name=name,
         description=description,
         assets=assets_list,
-        site_importance=site_importance_enum,
+        site_importance=site_importance,
         template_id=template_id
     )
 
@@ -3103,11 +3022,7 @@ def create_sites_report_command(client: Client, site_ids: str, site_names: str, 
     if len(sites_list) == 0:
         raise Exception("At least one site ID or site name must be provided.")
 
-    report_format_enum = None
     download_immediately_bool = None
-
-    if report_format is not None:
-        report_format_enum = ReportFileFormat[report_format]
 
     if download_immediately is not None:
         download_immediately_bool = argToBoolean(download_immediately)
@@ -3119,7 +3034,7 @@ def create_sites_report_command(client: Client, site_ids: str, site_names: str, 
         scope=scope,
         template_id=template_id,
         report_name=report_name,
-        report_format=report_format_enum,
+        report_format=report_format,
         download_immediately=download_immediately_bool,
     )
 
@@ -3254,8 +3169,6 @@ def create_vulnerability_exception_command(client: Client, vulnerability_id: str
         comment (str | None, optional): A comment from the submitter as to why the exception was submitted.
     """
     scope_type_enum = VulnerabilityExceptionScopeType[scope_type]
-    state_enum = VulnerabilityExceptionState[state]
-    reason_enum = VulnerabilityExceptionReason[reason]
 
     if scope_type_enum != VulnerabilityExceptionScopeType.GLOBAL and scope_id is None:
         raise ValueError(f"\"scope_id\" must be set when using scopes different than "
@@ -3264,8 +3177,8 @@ def create_vulnerability_exception_command(client: Client, vulnerability_id: str
     response_data = client.create_vulnerability_exception(
         vulnerability_id=vulnerability_id,
         scope_type=scope_type_enum,
-        state=state_enum,
-        reason=reason_enum,
+        state=state,
+        reason=reason,
         scope_id=int(scope_id) if scope_id is not None else None,
         expires=expires,
         comment=comment,
@@ -3389,7 +3302,7 @@ def delete_vulnerability_exception_command(client: Client, vulnerability_excepti
     )
 
 
-def download_report_command(client: Client, report_id: str, instance_id: str, report_format: ReportFileFormat | None,
+def download_report_command(client: Client, report_id: str, instance_id: str, report_format: str | None,
                             report_name: str | None = None) -> dict:
     """
     Download a report file.
@@ -3404,7 +3317,7 @@ def download_report_command(client: Client, report_id: str, instance_id: str, re
         client (Client): Client to use for API requests.
         report_id (str): ID of the report to download.
         instance_id (str): ID of the report instance.
-        report_format (ReportFileFormat | None, optional): File format to use for the generated report.
+        report_format (str | None, optional): File format to use for the generated report.
             Defaults to None (results in using PDF).
         report_name (str | None, optional): Name to give the generated report file.
             Defaults to None (results in using a "report <date>" format as a name).
@@ -3416,7 +3329,7 @@ def download_report_command(client: Client, report_id: str, instance_id: str, re
         report_name = f"report {str(datetime.now())}"
 
     if report_format is None:
-        report_format = ReportFileFormat.PDF
+        report_format = "pdf"
 
     report_data = client.download_report(
         report_id=report_id,
@@ -3424,7 +3337,7 @@ def download_report_command(client: Client, report_id: str, instance_id: str, re
     )
 
     return fileResult(
-        filename=f"{report_name}.{report_format.value}",
+        filename=f"{report_name}.{report_format.lower()}",
         data=report_data,
         file_type=entryTypes["entryInfoFile"],
     )
@@ -3982,8 +3895,7 @@ def get_scan_command(client: Client, scan_ids: str) -> CommandResults | list[Com
 
 
 def get_scans_command(client: Client, active: str | None = None, page_size: str | None = None,
-                      page: str | None = None, sort: str | None = None,
-                      limit: str | None = None) -> CommandResults:
+                      page: str | None = None, sort: str | None = None, limit: str | None = None) -> CommandResults:
     """
     Retrieve a list of all scans.
 
@@ -5119,7 +5031,7 @@ def update_scan_schedule_command(client: Client, site: Site, scan_schedule_id: i
         site_id=site.id,
         scan_schedule_id=scan_schedule_id,
         enabled=enabled_bool,
-        repeat_behaviour=RepeatBehaviour[repeat_behaviour],
+        repeat_behaviour=repeat_behaviour,
         start_date=start_date,
         excluded_asset_groups=excluded_asset_groups_list,
         excluded_targets=excluded_targets_list,
@@ -5172,11 +5084,9 @@ def update_vulnerability_exception_status_command(client: Client, vulnerability_
         vulnerability_exception_id (str): ID of the vulnerability exception to update.
         status (str): Status to set for the vulnerability exception.
     """
-    status_enum = VulnerabilityExceptionStatus[status]
-
     response = client.update_vulnerability_exception_status(
         vulnerability_exception_id=vulnerability_exception_id,
-        status=status_enum,
+        status=status,
     )
 
     return CommandResults(
@@ -5347,15 +5257,10 @@ def main():
                 enabled=False,
             )
         elif command == "nexpose-download-report":
-            report_format = None
-
-            if args.get("format"):
-                report_format = ReportFileFormat[args.pop("format")]
-
             results = download_report_command(
                 client=client,
                 report_name=args.pop("name", None),
-                report_format=report_format,
+                report_format=args.pop("format"),
                 **args
             )
         elif command == "nexpose-enable-shared-credential":
