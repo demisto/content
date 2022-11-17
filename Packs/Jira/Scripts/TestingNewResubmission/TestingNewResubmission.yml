@@ -1,0 +1,19 @@
+commonfields:
+  id: Testing-New-Resubmission
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.8.37233
+enabled: true
+name: Testing-New-Resubmission
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
