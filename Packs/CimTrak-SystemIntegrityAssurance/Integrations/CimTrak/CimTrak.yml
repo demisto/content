@@ -1,4 +1,4 @@
-category: File Integrity Management
+category: Forensics & Malware Analysis
 commonfields:
   id: CimTrak
   version: -1
