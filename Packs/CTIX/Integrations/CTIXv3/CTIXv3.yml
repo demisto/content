@@ -1148,6 +1148,22 @@ script:
           isArray: true
           default: true
       description: Lookup domain threat data
+      outputs:
+        - contextPath: DBotScore.Indicator
+          description: The indicator that was tested.
+          type: String
+        - contextPath: DBotScore.Type
+          description: The indicator type.
+          type: String
+        - contextPath: DBotScore.Vendor
+          description: The vendor used to calculate the score.
+          type: String
+        - contextPath: DBotScore.Score
+          description: The actual score.
+          type: Number
+        - contextPath: Domain.Name
+          description: 'The domain name, for example: "google.com".'
+          type: String
     - name: ip
       arguments:
         - name: ip
@@ -1156,6 +1172,22 @@ script:
           isArray: true
           default: true
       description: Lookup ip threat data
+      outputs:
+        - contextPath: DBotScore.Indicator
+          description: The indicator that was tested.
+          type: String
+        - contextPath: DBotScore.Type
+          description: The indicator type.
+          type: String
+        - contextPath: DBotScore.Vendor
+          description: The vendor used to calculate the score.
+          type: String
+        - contextPath: DBotScore.Score
+          description: The actual score.
+          type: Number
+        - contextPath: IP.Address
+          description: 'The IP address, for example: 1.2.3.4.'
+          type: String
     - name: file
       arguments:
         - name: file
@@ -1163,6 +1195,28 @@ script:
           required: true
           isArray: true
           default: true
+      outputs:
+        - contextPath: DBotScore.Indicator
+          description: The indicator that was tested.
+          type: String
+        - contextPath: DBotScore.Type
+          description: The indicator type.
+          type: String
+        - contextPath: DBotScore.Vendor
+          description: The vendor used to calculate the score.
+          type: String
+        - contextPath: DBotScore.Score
+          description: The actual score.
+          type: Number
+        - contextPath: File.MD5
+          description: The MD5 hash of the file.
+          type: String
+        - contextPath: File.SHA1
+          description: The SHA1 hash of the file.
+          type: String
+        - contextPath: File.SHA256
+          description: The SHA256 hash of the file.
+          type: String
       description: Lookup file threat data
     - name: url
       arguments:
@@ -1171,6 +1225,19 @@ script:
           required: true
           isArray: true
           default: true
+      outputs:
+        - contextPath: DBotScore.Indicator
+          description: The indicator that was tested.
+          type: String
+        - contextPath: DBotScore.Type
+          description: The indicator type.
+          type: String
+        - contextPath: DBotScore.Vendor
+          description: The vendor used to calculate the score.
+          type: String
+        - contextPath: DBotScore.Score
+          description: The actual score.
+          type: Number
       description: Lookup url threat data
   dockerimage: demisto/python3:3.10.8.37233
   runonce: false
