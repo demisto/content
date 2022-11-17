@@ -44,4 +44,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![URL Enrichment - Generic v2](../doc_files/URL_Enrichment_-_Generic_v2.png)
+![URL Enrichment - Generic v2](https://raw.githubusercontent.com/demisto/content/c77aaa9044079d1151f3177df40bfa602e895240/Packs/CommonPlaybooks/doc_files/URL_Enrichment_-_Generic_v2.png)
