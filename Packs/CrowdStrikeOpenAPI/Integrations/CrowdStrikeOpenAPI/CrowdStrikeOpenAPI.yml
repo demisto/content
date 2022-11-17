@@ -1691,7 +1691,7 @@ script:
     - description: ''
       isArray: true
       name: domain_batchexecutecommandrequest_optional_hosts
-      required: true
+      required: false
     - description: ''
       isArray: false
       name: domain_batchexecutecommandrequest_persist_all
@@ -1726,7 +1726,7 @@ script:
     - description: ''
       isArray: true
       name: domain_batchexecutecommandrequest_optional_hosts
-      required: true
+      required: false
     - description: ''
       isArray: false
       name: domain_batchexecutecommandrequest_persist_all
@@ -1761,7 +1761,7 @@ script:
     - description: ''
       isArray: true
       name: domain_batchexecutecommandrequest_optional_hosts
-      required: true
+      required: false
     - description: ''
       isArray: false
       name: domain_batchexecutecommandrequest_persist_all
@@ -1792,7 +1792,7 @@ script:
     - description: ''
       isArray: true
       name: domain_batchgetcommandrequest_optional_hosts
-      required: true
+      required: false
     description: Batch executes `get` command across hosts to retrieve files. After
       this call is made `GET /real-time-response/combined/batch-get-command/v1` is
       used to query for the results.
