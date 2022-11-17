@@ -815,5 +815,3 @@ outputs:
   type: string
 tests:
 - IP Enrichment - Generic v2 - Test
-contentitemexportablefields:
-  contentitemfields: {}
