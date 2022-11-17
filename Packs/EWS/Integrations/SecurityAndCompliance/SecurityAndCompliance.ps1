@@ -942,9 +942,9 @@ function Main {
         $cs_client = [SecurityAndComplianceClient]::new(
             $integration_params.app_id,
             $integration_params.organization,
-            $integration_params.certificate.credentials.password,
+            $integration_params.certificate_password,
             $integration_params.delegated_auth.password,
-            $integration_params.certificate.credentials.sshkey,
+            $integration_params.certificate,
             $integration_params.delegated_auth.identifier
         )
 

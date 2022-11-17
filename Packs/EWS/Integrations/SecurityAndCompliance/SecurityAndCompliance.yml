@@ -3,13 +3,17 @@ commonfields:
   id: SecurityAndCompliance
   version: -1
 configuration:
-- display: ""
-  displaypassword: Certificate
+- additionalinfo: UPassword used to sign the certificate.
+  display: Certificate Password
+  name: certificate_password
+  required: false
+  type: 14
+- additionalinfo: A pfx certificate encoded in Base64.
+  display: Certificate
   name: certificate
-  type: 9
-  required: true
+  required: false
+  type: 14
   hiddenusername: true
-  additionalinfo: A pfx certificate encoded in Base64.
 - display: UPN/Email
   name: delegated_auth
   required: true
