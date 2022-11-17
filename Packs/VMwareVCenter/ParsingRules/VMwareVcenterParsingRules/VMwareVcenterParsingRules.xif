@@ -1,0 +1,5 @@
+[INGEST:vendor="vmware", product="vcenter", target_dataset="vmware_vcenter_raw", no_hit=drop]
+alter date_part = arraystring(regextract(_raw_log, "^[a-zA-Z0-9\W]{0,10}\s(\d{4}\-\d{2}\-\d{2})T"), ""),
+    time_part = arraystring(regextract(_raw_log, "^[a-zA-Z0-9\W]{0,10}\s\d{4}\-\d{2}\-\d{2}T(\d{2}\:\d{2}\:\d{2})"), "")
+| alter time_format = arraystring(arraycreate(date_part, time_part), " ")
+| alter _time = parse_timestamp("%Y-%m-%d %H:%M:%S", time_format);
