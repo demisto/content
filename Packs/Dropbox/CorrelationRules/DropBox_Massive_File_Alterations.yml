@@ -44,7 +44,7 @@
   suppression_fields: null
   user_defined_category: null
   user_defined_severity: null
-  xql_query: 'datamodel dataset in(dropbox_dropbox_raw)
+  xql_query: 'datamodel
 
     | filter xdm.event.type = "file_operations" and xdm.event.operation_sub_type =
     "file_edit" and xdm.observer.product = "dropbox" and xdm.observer.vendor = "dropbox"
