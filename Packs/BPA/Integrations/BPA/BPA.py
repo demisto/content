@@ -1,4 +1,5 @@
 from typing import Dict, Tuple, List
+import urllib3
 
 import requests
 from CommonServerUserPython import *
@@ -6,7 +7,8 @@ from CommonServerUserPython import *
 from CommonServerPython import *
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
+
 
 ''' GLOBALS/PARAMS '''
 BPA_HOST = 'https://bpa.paloaltonetworks.com'
