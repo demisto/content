@@ -387,32 +387,23 @@ script:
     - defaultValue: 'False'
       description: Third Party - Exclude Sans
       name: exclude_sans
-      required: true
     - defaultValue: 'False'
       name: change_management
-      required: true
     - defaultValue: core
       name: network_configuration_geography
-      required: true
       type: textArea
     - defaultValue: third-party
       name: ra
-      required: true
     - defaultValue: third-party
       name: validation_type
-      required: true
     - defaultValue: 'False'
       name: enable_multi_stacked_certificates
-      required: true
     - defaultValue: 'True'
       name: network_configuration_quic_enabled
-      required: true
     - defaultValue: enhanced-tls
       name: network_configuration_secure_network
-      required: true
     - defaultValue: 'True'
       name: network_configuration_sni_only
-      required: true
     description: Create a new enrollment.
     name: akamai-create-enrollment
     outputs:
