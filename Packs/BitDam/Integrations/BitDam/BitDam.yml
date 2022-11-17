@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: BitDam
 display: BitDam
-category: Email Gateway
+category: IT Services
 description: BitDam secure email gateway protects from advanced content-borne threats with the most accurate prevention of known and unknown threats, at their source.
 configuration:
 - display: BitDam API URL

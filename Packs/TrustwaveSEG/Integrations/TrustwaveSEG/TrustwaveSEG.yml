@@ -1,4 +1,4 @@
-category: Email Gateway
+category: Network Security
 commonfields:
   id: trustwave secure email gateway
   version: -1

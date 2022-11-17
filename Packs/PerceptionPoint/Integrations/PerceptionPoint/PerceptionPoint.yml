@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: PerceptionPoint
 display: PerceptionPoint
-category: Email Gateway
+category: Network Security
 description: Loads incidents from Perception Point and releases falsely quarantined emails.
 configuration:
 - display: Token to use Perception Point's API

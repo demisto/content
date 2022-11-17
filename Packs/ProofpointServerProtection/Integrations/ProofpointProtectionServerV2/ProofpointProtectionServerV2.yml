@@ -1,4 +1,4 @@
-category: Email Gateway
+category: Network Security
 commonfields:
   id: Proofpoint Protection Server v2
   version: -1

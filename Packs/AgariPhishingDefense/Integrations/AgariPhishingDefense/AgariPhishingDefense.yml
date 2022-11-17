@@ -1,4 +1,4 @@
-category: Email Gateway
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Agari Phishing Defense
   version: -1
