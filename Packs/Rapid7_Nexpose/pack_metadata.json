@@ -1,6 +1,6 @@
 {
     "name": "Rapid7 Nexpose",
-    "description": "Rapid7's on-premise vulnerability management solution, Nexpose, helps you reduce your threat exposure by enabling you to assess and respond to changes in your environment real time and prioritizing risk across vulnerabilities, configurations, and controls.",
+    "description": "Nexpose is Rapid7’s on-premises option for vulnerability management, real-time exposures monitoring, and threat adaptation.",
     "support": "xsoar",
     "currentVersion": "1.1.6",
     "author": "Cortex XSOAR",

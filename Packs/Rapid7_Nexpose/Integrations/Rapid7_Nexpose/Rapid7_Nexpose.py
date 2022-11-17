@@ -670,7 +670,7 @@ class Client(BaseClient):
         )
 
     def create_vulnerability_exception(self, vulnerability_id: str, scope_type: VulnerabilityExceptionScopeType,
-                                       state: str, reason: str,  scope_id: int | None = None,
+                                       state: str, reason: str, scope_id: int | None = None,
                                        expires: str | None = None, comment: str | None = None) -> dict:
         """
         | Create a new vulnerability exception.
@@ -2240,7 +2240,7 @@ def create_report(client: Client, scope: dict[str, Any], template_id: str | None
     if download_immediately:
         try:
             # Wait for the report to be completed
-            time.sleep(REPORT_DOWNLOAD_WAIT_TIME)
+            time.sleep(REPORT_DOWNLOAD_WAIT_TIME)  # pylint: disable=E9003
 
             return download_report_command(
                 client=client,

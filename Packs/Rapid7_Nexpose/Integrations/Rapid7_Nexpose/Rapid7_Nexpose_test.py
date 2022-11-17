@@ -36,16 +36,17 @@ def load_test_data(folder: str, file_name: str) -> dict:
                          [
                              (["risk-score is-greater-than 1000.5", "vulnerability-title contains 7zip"],
                               [
-                                  {
-                                      "field": "risk-score",
-                                      "operator": "is-greater-than",
-                                      "value": 1000.5
-                                  },
-                                  {
-                                      "field": "vulnerability-title",
-                                      "operator": "contains",
-                                      "value": "7zip"
-                                  }])
+                                 {
+                                     "field": "risk-score",
+                                     "operator": "is-greater-than",
+                                     "value": 1000.5
+                                 },
+                                 {
+                                     "field": "vulnerability-title",
+                                     "operator": "contains",
+                                     "value": "7zip"
+                                 }
+                             ])
                          ])
 def test_convert_asset_search_filters(test_input: list[str], expected_output: list[dict]):
     assert convert_asset_search_filters(test_input) == expected_output
@@ -54,12 +55,12 @@ def test_convert_asset_search_filters(test_input: list[str], expected_output: li
 @pytest.mark.parametrize("test_input, expected_output",
                          [
                              (
-                                "2022-01-01T00:00:00Z",
-                                strptime("2022-01-01T00:00:00Z", "%Y-%m-%dT%H:%M:%SZ")
+                                 "2022-01-01T00:00:00Z",
+                                 strptime("2022-01-01T00:00:00Z", "%Y-%m-%dT%H:%M:%SZ")
                              ),
                              (
-                                "2022-01-01T00:00:00.000Z",
-                                strptime("2022-01-01T00:00:00.000Z", "%Y-%m-%dT%H:%M:%S.%fZ")
+                                 "2022-01-01T00:00:00.000Z",
+                                 strptime("2022-01-01T00:00:00.000Z", "%Y-%m-%dT%H:%M:%S.%fZ")
                              ),
                          ])
 def test_convert_datetime_str(test_input: str, expected_output: struct_time):
@@ -70,81 +71,81 @@ def test_convert_datetime_str(test_input: str, expected_output: struct_time):
 @pytest.mark.parametrize("test_input_kwargs, expected_output",
                          [
                              ({
-                                  "service": CredentialService.CIFSHASH, "domain": "Test1", "username": "Test2",
-                                  "password": "Test3", "ntlm_hash": "Test4"
-                              },
-                              {
-                                  "service": "cifshash", "username": "Test2", "password": "Test3", "domain": "Test1",
-                                  "ntlmHash": "Test4"
-                              }),
+                                 "service": CredentialService.CIFSHASH, "domain": "Test1", "username": "Test2",
+                                 "password": "Test3", "ntlm_hash": "Test4"
+                             },
+                                 {
+                                 "service": "cifshash", "username": "Test2", "password": "Test3", "domain": "Test1",
+                                 "ntlmHash": "Test4"
+                             }),
                              ({
-                                  "service": CredentialService.HTTP, "http_realm": "Test1", "username": "Test2",
-                                  "password": "Test3"
-                              },
-                              {
-                                  "service": "http", "username": "Test2", "password": "Test3", "realm": "Test1"
-                              }),
+                                 "service": CredentialService.HTTP, "http_realm": "Test1", "username": "Test2",
+                                 "password": "Test3"
+                             },
+                                 {
+                                 "service": "http", "username": "Test2", "password": "Test3", "realm": "Test1"
+                             }),
                              ({
-                                  "service": CredentialService.MS_SQL, "database_name": "Test1", "username": "Test2",
-                                  "password": "Test3", "use_windows_authentication": True, "domain": "Test4"
-                              },
-                              {
-                                  "service": "ms-sql", "username": "Test2", "password": "Test3",
-                                  "useWindowsAuthentication": True, "domain": "Test4", "database": "Test1"
-                              }),
+                                 "service": CredentialService.MS_SQL, "database_name": "Test1", "username": "Test2",
+                                 "password": "Test3", "use_windows_authentication": True, "domain": "Test4"
+                             },
+                                 {
+                                 "service": "ms-sql", "username": "Test2", "password": "Test3",
+                                 "useWindowsAuthentication": True, "domain": "Test4", "database": "Test1"
+                             }),
                              ({
-                                  "service": CredentialService.NOTES, "notes_id_password": "Test1"
-                              },
-                              {
-                                  "service": "notes", "notesIDPassword": "Test1"
-                              }),
+                                 "service": CredentialService.NOTES, "notes_id_password": "Test1"
+                             },
+                                 {
+                                 "service": "notes", "notesIDPassword": "Test1"
+                             }),
                              ({
-                                  "service": CredentialService.ORACLE, "oracle_sid": "Test1", "username": "Test2",
-                                  "password": "Test3", "oracle_enumerate_sids": True,
-                                  "oracle_listener_password": "Test4"
-                              },
-                              {
-                                  "service": "oracle", "username": "Test2", "password": "Test3", "sid": "Test1",
-                                  "enumerateSids": True, "oracleListenerPassword": "Test4"
-                              }),
+                                 "service": CredentialService.ORACLE, "oracle_sid": "Test1", "username": "Test2",
+                                 "password": "Test3", "oracle_enumerate_sids": True,
+                                 "oracle_listener_password": "Test4"
+                             },
+                                 {
+                                 "service": "oracle", "username": "Test2", "password": "Test3", "sid": "Test1",
+                                 "enumerateSids": True, "oracleListenerPassword": "Test4"
+                             }),
                              ({
-                                  "service": CredentialService.SNMP, "snmp_community_name": "Test1"
-                              },
-                              {
-                                  "service": "snmp", "community": "Test1"
-                              }),
+                                 "service": CredentialService.SNMP, "snmp_community_name": "Test1"
+                             },
+                                 {
+                                 "service": "snmp", "community": "Test1"
+                             }),
                              ({
-                                  "service": CredentialService.SNMPV3,
-                                  "snmpv3_authentication_type": SNMPv3AuthenticationType.SHA,
-                                  "username": "Test1", "password": "Test2"
-                              },
-                              {
-                                  "service": "snmpv3", "username": "Test1", "authenticationType": "sha",
-                                  "password": "Test2"
-                              }),
+                                 "service": CredentialService.SNMPV3,
+                                 "snmpv3_authentication_type": SNMPv3AuthenticationType.SHA,
+                                 "username": "Test1", "password": "Test2"
+                             },
+                                 {
+                                 "service": "snmpv3", "username": "Test1", "authenticationType": "sha",
+                                 "password": "Test2"
+                             }),
                              ({
-                                  "service": CredentialService.SSH, "username": "Test1", "password": "Test2",
-                                  "ssh_permission_elevation": SSHElevationType.PRIVILEGED_EXEC,
-                                  "ssh_permission_elevation_username": "Test3",
-                                  "ssh_permission_elevation_password": "Test4"
-                              },
-                              {
-                                  "service": "ssh", "username": "Test1", "password": "Test2",
-                                  "permissionElevation": "privileged-exec", "permissionElevationUsername": "Test3",
-                                  "permissionElevationPassword": "Test4"
-                              }),
+                                 "service": CredentialService.SSH, "username": "Test1", "password": "Test2",
+                                 "ssh_permission_elevation": SSHElevationType.PRIVILEGED_EXEC,
+                                 "ssh_permission_elevation_username": "Test3",
+                                 "ssh_permission_elevation_password": "Test4"
+                             },
+                                 {
+                                 "service": "ssh", "username": "Test1", "password": "Test2",
+                                 "permissionElevation": "privileged-exec", "permissionElevationUsername": "Test3",
+                                 "permissionElevationPassword": "Test4"
+                             }),
                              ({
-                                  "service": CredentialService.SSH_KEY, "ssh_key_pem": "Test1",
-                                  "ssh_private_key_password": "Test2", "username": "Test3",
-                                  "ssh_permission_elevation": SSHElevationType.SUDO,
-                                  "ssh_permission_elevation_username": "Test4",
-                                  "ssh_permission_elevation_password": "Test5"
-                              },
-                              {
-                                  "service": "ssh-key", "username": "Test3", "permissionElevation": "sudo",
-                                  "permissionElevationUsername": "Test4", "permissionElevationPassword": "Test5",
-                                  "pemKey": "Test1"
-                              }),
+                                 "service": CredentialService.SSH_KEY, "ssh_key_pem": "Test1",
+                                 "ssh_private_key_password": "Test2", "username": "Test3",
+                                 "ssh_permission_elevation": SSHElevationType.SUDO,
+                                 "ssh_permission_elevation_username": "Test4",
+                                 "ssh_permission_elevation_password": "Test5"
+                             },
+                                 {
+                                 "service": "ssh-key", "username": "Test3", "permissionElevation": "sudo",
+                                 "permissionElevationUsername": "Test4", "permissionElevationPassword": "Test5",
+                                 "pemKey": "Test1"
+                             }),
                          ])
 def test_create_credential_creation_body(test_input_kwargs: dict, expected_output: dict):
     assert create_credential_creation_body(**test_input_kwargs) == expected_output
@@ -258,7 +259,7 @@ def test_create_vulnerability_exception_command(mocker, mock_client: Client, tes
     mocker.patch.object(Client, "_http_request", return_value=api_mock_data)
 
     assert create_vulnerability_exception_command(client=mock_client, **test_input_kwargs).outputs == \
-           expected_output_context
+        expected_output_context
 
 
 @pytest.mark.parametrize("asset_mock_file, asset_vulnerability_api_mock_file, vulnerability_api_mock_file, "
