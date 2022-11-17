@@ -61,7 +61,7 @@ tasks:
       - "31"
     scriptarguments:
       value:
-        simple: inputs.url
+        simple: inputs.URL
     separatecontext: false
     conditions:
     - label: "yes"
@@ -458,6 +458,7 @@ inputs:
   value:
     simple: "True"
   required: false
+  description: URLs to enrich.
 - key: URL
   value:
     complex:
