@@ -10318,6 +10318,7 @@ def get_current_time(time_zone=0):
         demisto.debug('pytz is missing, will not return timeaware object.')
         return now
 
+
 def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limit, id_field):
     """
     Removes duplicate incidents from response and returns the incidents till limit.
