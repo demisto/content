@@ -178,6 +178,7 @@ class EWSClient:
         client_id = kwargs.get('client_id') or kwargs.get('_client_id')
         tenant_id = kwargs.get('tenant_id') or kwargs.get('_tenant_id')
         client_secret = kwargs.get('client_secret') or (kwargs.get('credentials') or {}).get('password')
+        access_type = kwargs.get('access_type', IMPERSONATION) or IMPERSONATION
 
         if not client_secret:
             raise Exception('Key / Application Secret must be provided.')
@@ -201,7 +202,7 @@ class EWSClient:
         )
         self.folder_name = folder
         self.is_public_folder = is_public_folder
-        self.access_type = (kwargs.get('access_type', IMPERSONATION) or IMPERSONATION).lower()
+        self.access_type = (access_type[0] if isinstance(access_type, list) else access_type).lower()
         self.max_fetch = min(MAX_INCIDENTS_PER_FETCH, int(max_fetch))
         self.last_run_ids_queue_size = 500
         self.client_id = client_id
