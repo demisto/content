@@ -17,7 +17,7 @@ The user that was created in CyberArk for XSIAM integration.
 **First fetch time**
 
 The period to retrieve events for.
-Format: <number> <time unit>, for example 12 hours, 1 day, 3 months.
+Format: `number` `time unit`, for example 12 hours, 1 day, 3 months.
 Default is 3 days.
   
 **Maximum number of events per fetch**
