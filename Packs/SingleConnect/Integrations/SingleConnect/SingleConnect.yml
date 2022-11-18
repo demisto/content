@@ -21,13 +21,12 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Single Connect is an SAPM product that enables enterprises to remove
-  static passwords stored in applications by instead keeping passwords in a secure
-  password vault. Single Connect provides a token-based authentication for 3rd party
-  applications when accessing the password vault. This authentication process verifies
-  the application identity and gives secure access to the password associated with
-  that identity.
-display: SingleConnect
+description: Single Connect is a PAM product that enables enterprises to remove static
+  passwords stored in applications by instead keeping passwords in a secure password
+  vault. Single Connect provides a token-based authentication for 3rd party applications
+  when accessing the password vault. This authentication process verifies the application
+  identity and gives secure access to the password associated with that identity.
+display: Single Connect
 name: SingleConnect
 script:
   commands:
