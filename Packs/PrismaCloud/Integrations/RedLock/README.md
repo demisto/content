@@ -155,11 +155,11 @@ Gets the details of an alert based on alert ID
 | Redlock.Alert.Policy.Remediable  | boolean  | Whether or not the policy is remediable                                                       |
 | Redlock.Alert.RiskDetail.Rating  | string   | The risk rating                                                                               |
 | Redlock.Alert.RiskDetail.Score   | string   | The risk score                                                                                |
-| RedLock.Alert.Resource.ID        | string   | The Resource ID of the cloud resource                                                         |
-| RedLock.Alert.Resource.Name      | string   | The Resource Name of the cloud resource                                                       |
-| RedLock.Alert.Resource.Account   | string   | The cloud account name where the resource resides                                             |
-| RedLock.Alert.Resource.AccountID | string   | The cloud account ID where the resource resides                                               |
-| RedLock.Alert.Resource.Data      | json     | Additional keys from Resource.Data.  Only appears when *resource_keys* argument is specified. |
+| Redlock.Alert.Resource.ID        | string   | The Resource ID of the cloud resource                                                         |
+| Redlock.Alert.Resource.Name      | string   | The Resource Name of the cloud resource                                                       |
+| Redlock.Alert.Resource.Account   | string   | The cloud account name where the resource resides                                             |
+| Redlock.Alert.Resource.AccountID | string   | The cloud account ID where the resource resides                                               |
+| Redlock.Alert.Resource.Data      | json     | Additional keys from Resource.Data.  Only appears when *resource_keys* argument is specified. |
 
 
 #### Command Example
