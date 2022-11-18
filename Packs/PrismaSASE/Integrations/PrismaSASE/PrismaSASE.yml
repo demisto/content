@@ -770,11 +770,11 @@ script:
     - contextPath: PrismaAccess.FoundAddressObjects.ip_netmask
       description: 'Address ip netmask'
       type: String
-  dockerimage: demisto/python3:3.10.8.36650
+  dockerimage: demisto/python3:3.10.8.37233
   runonce: false
   script: ''
   subtype: python3
   type: python
-fromversion: 6.2.0
+fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
