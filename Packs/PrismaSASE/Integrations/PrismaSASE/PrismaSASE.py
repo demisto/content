@@ -77,9 +77,6 @@ class Client(BaseClient):
                         val = argToList(field_value)
                         rule[key] = {'group': val}
                     if key == 'source_user':
-                        #if type(field_value) == list:
-                        #    rule[key] = field_value   # type: ignore
-                        #else:
                         val = argToList(field_value, ';')
                         rule[key] = val
                     elif isinstance(SECURITYRULE_FIELDS.get(key), str):
