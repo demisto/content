@@ -4640,18 +4640,16 @@ def get_papi_property_rule_command(client: Client,
         human readable (markdown format), entry context and raw response
     """
 
-    import json
-
-    raw_response: Dict = client.get_papi_property_rule(contract_id=contract_id,
+   raw_response: Dict = client.get_papi_property_rule(contract_id=contract_id,
                                                          group_id=group_id,
                                                          property_id=property_id,
                                                          property_version=property_version,
                                                          validate_rules=validate_rules,
                                                          )
-    if raw_response:
+   if raw_response:
         title = f'{INTEGRATION_NAME} - get papi property default rule command'
-        entry_context = json.dumps(raw_response)
-        human_readable_ec = json.dumps(raw_response)
+        entry_context = raw_response
+        human_readable_ec = raw_response
         context_entry: Dict = {
             f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.DefaultRule": entry_context
         }
@@ -4664,7 +4662,6 @@ def get_papi_property_rule_command(client: Client,
     else:
         human_readable = f'{INTEGRATION_NAME} - get papi property default rule command has failed.'
         return human_readable, {}, {}
-
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
