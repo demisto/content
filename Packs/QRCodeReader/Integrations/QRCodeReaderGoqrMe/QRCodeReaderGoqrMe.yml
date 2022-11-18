@@ -17,8 +17,7 @@ script:
     - description: Entry ID of image file
       name: entry_id
       required: true
-    description: Upload a PNG, GIF or JP(E)G image which is smaller than 1 MiB via
-      the entry_id of the image file.
+    description: Upload a PNG, GIF or JP(E)G image which is smaller than 1 MiB via the entry_id of the image file.
     name: goqr-read-qr-code-from-file
     outputs:
     - contextPath: GoQRCodeData.data
@@ -27,7 +26,7 @@ script:
       description: Errors reading QR code
     - contextPath: GoQRCodeData.seq
       description: sequence numbers read from code
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.5.31928
   runonce: false
   script: ''
   subtype: python3

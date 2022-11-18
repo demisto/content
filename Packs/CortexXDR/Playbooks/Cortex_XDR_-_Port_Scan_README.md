@@ -8,19 +8,17 @@ Investigates a Cortex XDR incident containing internal port scan alerts. The pla
 - Blocks IPs associated with the malware
 - Isolates the attacking endpoint
 - Allows manual blocking of ports that were used for host login following the port scan
-Supported Cortex XSOAR versions: 5.0.0 and later.
-
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Isolate Endpoint - Generic
-* Block File - Generic v2
-* PANW - Hunting and threat detection by indicator type V2
-* Block IP - Generic v2
-* Calculate Severity - Generic v2
 * IP Enrichment - Internal - Generic v2
+* Isolate Endpoint - Generic
+* Block IP - Generic v3
+* PANW - Hunting and threat detection by indicator type V2
+* Block File - Generic v2
+* Calculate Severity - Generic v2
 
 ### Integrations
 * CortexXDRIR
@@ -33,11 +31,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * SetAndHandleEmpty
 
 ### Commands
-* setIncident
-* closeInvestigation
 * xdr-update-incident
+* setIncident
 * xdr-get-endpoints
 * send-mail
+* closeInvestigation
 
 ## Playbook Inputs
 ---
@@ -60,3 +58,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
+
+## Playbook Image
+---
+![Cortex XDR - Port Scan](../doc_files/Cortex_XDR_-_Port_Scan.png)

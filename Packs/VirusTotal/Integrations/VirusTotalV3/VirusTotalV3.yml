@@ -457,6 +457,9 @@ script:
       description: For malicious IPs, the vendor that made the decision.
     - contextPath: IP.Malicious.Description
       description: For malicious IPs, the reason that the vendor made the decision.
+    - contextPath: IP.ASOwner
+      description: The autonomous system owner of the IP.
+      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
     - contextPath: DBotScore.Type
@@ -951,6 +954,7 @@ script:
       - url
       - domain
       - file
+      - hash
     - name: limit
       description: Maximum comments to fetch.
       defaultValue: 10
@@ -1413,7 +1417,7 @@ script:
       type: String
 
   runonce: false
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.8.36650
 tests:
 - VirusTotalV3-test
 - VirusTotal (API v3) Detonate Test

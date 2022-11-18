@@ -38,62 +38,62 @@
                     "complex": null,
                     "simple": "note"
                 },
-				"Wiz Issue Projects": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "projects",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Wiz Issue URL": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "id",
-						"transformers": [
-							{
-								"args": {
-									"prefix": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": "https://app.wiz.io/issues#~(issue~'"
-										}
-									},
-									"suffix": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": ")"
-										}
-									}
-								},
-								"operator": "concat"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"Wiz Project Owners": {
-					"complex": {
-						"accessor": "projectOwners",
-						"filters": [],
-						"root": "projects",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Wiz Project Security Champions": {
-					"complex": {
-						"accessor": "securityChampions",
-						"filters": [],
-						"root": "projects",
-						"transformers": []
-					},
-					"simple": ""
-				},
+                "Wiz Issue Projects": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "projects",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Wiz Issue URL": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "id",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "https://app.wiz.io/issues#~(issue~'"
+                                        }
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ")"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Wiz Project Owners": {
+                    "complex": {
+                        "accessor": "projectOwners",
+                        "filters": [],
+                        "root": "projects",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Wiz Project Security Champions": {
+                    "complex": {
+                        "accessor": "securityChampions",
+                        "filters": [],
+                        "root": "projects",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
                 "Wiz Resource ID": {
                     "complex": null,
                     "simple": "entitySnapshot.id"
@@ -117,6 +117,15 @@
                 "severity": {
                     "complex": null,
                     "simple": "issue.severity"
+                },
+                "Wiz Issue Resolution Recommendation": {
+                    "complex": {
+                        "accessor": "resolutionRecommendation",
+                        "filters": [],
+                        "root": "control",
+                        "transformers": []
+                    },
+                    "simple": ""
                 }
             }
         },

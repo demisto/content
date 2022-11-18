@@ -2,7 +2,7 @@ import json
 import logging
 import time
 
-import requests
+import urllib3
 
 import demistomock as demisto
 import resilient
@@ -12,7 +12,7 @@ from CommonServerPython import *
 logging.basicConfig()
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 try:
     # disable 'warning' logs from 'resilient.co3'
     logging.getLogger('resilient.co3').setLevel(logging.ERROR)
@@ -128,7 +128,7 @@ def prettify_incidents(client, incidents):
     phases = get_phases(client)['entities']
     for incident in incidents:
         incident['id'] = str(incident['id'])
-        if isinstance(incident['description'], unicode):
+        if isinstance(incident['description'], str):
             incident['description'] = incident['description'].replace('<div>', '').replace('</div>', '')
         incident['discovered_date'] = normalize_timestamp(incident['discovered_date'])
         incident['created_date'] = normalize_timestamp(incident['create_date'])
@@ -146,7 +146,7 @@ def prettify_incidents(client, incidents):
                 incident.pop('phase_id', None)
                 break
         if incident['severity_code']:
-            incident['severity'] = SEVERITY_CODE_DICT[incident['severity_code']]
+            incident['severity'] = SEVERITY_CODE_DICT.get(incident['severity_code'], incident['severity_code'])
             incident.pop('severity_code', None)
         start_date = incident.get('start_date')
         if start_date:
@@ -161,7 +161,7 @@ def prettify_incidents(client, incidents):
             incident.pop('negative_pr_likely', None)
         exposure_type_id = incident.get('exposure_type_id')
         if exposure_type_id:
-            incident['exposure_type'] = EXP_TYPE_ID_DICT[exposure_type_id]
+            incident['exposure_type'] = EXP_TYPE_ID_DICT.get(exposure_type_id, exposure_type_id)
             incident.pop('exposure_type_id', None)
         nist_attack_vectors = incident.get('nist_attack_vectors')
         if nist_attack_vectors:
@@ -379,7 +379,7 @@ def extract_data_form_other_fields_argument(other_fields, incident, changes):
 
 
 def update_incident_command(client, args):
-    if len(args.keys()) == 1:
+    if len(list(args.keys())) == 1:
         raise Exception('No fields to update were given')
     incident_id = args['incident-id']
     incident = get_incident(client, incident_id, True)
@@ -528,7 +528,7 @@ def get_incident_command(client, incident_id):
                    'nist_attack_vectors']
     pretty_incident = dict((k, incident[k]) for k in wanted_keys if k in incident)
     if incident['resolution_id']:
-        pretty_incident['resolution'] = RESOLUTION_DICT[incident['resolution_id']]
+        pretty_incident['resolution'] = RESOLUTION_DICT.get(incident['resolution_id'], incident['resolution_id'])
     if incident['resolution_summary']:
         pretty_incident['resolution_summary'] = incident['resolution_summary'].replace('<div>', '').replace('</div>',
                                                                                                             '')
@@ -1053,7 +1053,7 @@ def fetch_incidents(client):
                 attachments = incident_attachments(client, str(incident.get('id', '')))
                 if attachments:
                     incident['attachments'] = attachments
-                if isinstance(incident.get('description'), unicode):
+                if isinstance(incident.get('description'), str):
                     incident['description'] = incident['description'].replace('<div>', '').replace('</div>', '')
 
                 incident['discovered_date'] = normalize_timestamp(incident.get('discovered_date'))
@@ -1164,7 +1164,7 @@ def main():
             demisto.results(add_artifact_command(client, args['incident-id'], args['artifact-type'],
                                                  args['artifact-value'], args.get('artifact-description')))
     except Exception as e:
-        LOG(e.message)
+        LOG(str(e))
         LOG.print_log()
         raise
 

@@ -8,12 +8,12 @@
     "email": "",
     "created": "2020-05-25T11:48:45Z",
     "categories": [
-        "Network Security"
+        "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
-    "useCases": [
-        "Brute Force"
+    "tags": [
+        "Use Case"
     ],
+    "useCases": [],
     "keywords": [],
     "dependencies": {
         "GmailSingleUser": {

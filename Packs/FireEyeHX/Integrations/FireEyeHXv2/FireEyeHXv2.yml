@@ -1588,6 +1588,7 @@ script:
       secret: false
     description: Start a data acquisition process to gather artifacts from the system disk and memory. The data is fetched as a MANS file.
     name: fireeye-hx-data-acquisition
+    polling: true
     outputs:
     - contextPath: FireEyeHX.Acquisitions.Data._id
       description: The unique ID of the acquisition.
@@ -1828,6 +1829,7 @@ script:
       - 'false'
       required: false
       secret: false
+      defaultValue: 'true'
     - default: false
       defaultValue: '60'
       description: The interval in seconds between each poll.
@@ -1837,6 +1839,7 @@ script:
       secret: false
     description: Acquires a specific file as a password protected zip file. The password for unlocking the zip file is 'unzip-me'.
     name: fireeye-hx-file-acquisition
+    polling: true
     outputs:
     - contextPath: FireEyeHX.Acquisitions.Files._id
       description: The acquisition unique ID.
@@ -2405,7 +2408,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.8.37233
   feed: false
   longRunning: false
   longRunningPort: false

@@ -34,16 +34,6 @@ XDR_INCIDENT_FIELDS = {
                         "xsoar_field_name": "severity"},
 }
 
-XDR_RESOLVED_STATUS_TO_XSOAR = {
-    'resolved_known_issue': 'Other',
-    'resolved_duplicate': 'Duplicate',
-    'resolved_false_positive': 'False Positive',
-    'resolved_true_positive': 'Resolved',
-    'resolved_security_testing': 'Other',
-    'resolved_other': 'Other',
-    'resolved_auto': 'Resolved'
-}
-
 XSOAR_RESOLVED_STATUS_TO_XDR = {
     'Other': 'resolved_other',
     'Duplicate': 'resolved_duplicate',
@@ -745,12 +735,12 @@ def handle_incoming_closing_incident(incident_data):
             'Contents': {
                 'dbotIncidentClose': True,
                 'closeReason': XDR_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status")),
-                'closeNotes': incident_data.get('resolve_comment')
+                'closeNotes': incident_data.get('resolve_comment', '')
             },
             'ContentsFormat': EntryFormat.JSON
         }
-        incident_data['closeReason'] = XDR_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status"))
-        incident_data['closeNotes'] = f'{MIRROR_IN_CLOSE_REASON}\n{incident_data.get("resolve_comment")}'
+        incident_data['closeReason'] = closing_entry['Contents']['closeReason']
+        incident_data['closeNotes'] = closing_entry['Contents']['closeNotes']
 
         if incident_data.get('status') == 'resolved_known_issue':
             close_notes = f'Known Issue.\n{incident_data.get("closeNotes", "")}'
@@ -1224,6 +1214,18 @@ def main():  # pragma: no cover
 
         elif command == 'xdr-quarantine-files':
             return_results(quarantine_files_command(client, args))
+
+        elif command == 'xdr-file-quarantine':
+            return_results(run_polling_command(client=client,
+                                               args=args,
+                                               cmd="xdr-file-quarantine",
+                                               command_function=quarantine_files_command,
+                                               command_decision_field="action_id",
+                                               results_function=action_status_get_command,
+                                               polling_field="status",
+                                               polling_value=["PENDING",
+                                                              "IN_PROGRESS",
+                                                              "PENDING_ABORT"]))
 
         elif command == 'core-quarantine-files':
             polling_args = {

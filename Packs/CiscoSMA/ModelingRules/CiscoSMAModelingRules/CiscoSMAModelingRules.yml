@@ -1,6 +1,7 @@
-name: Cisco
-id: Cisco_Security_Management_Appliance
 fromversion: 6.8.0
-tags: Cisco Security Management Appliance
+id: Cisco_Security_Management_Appliance
+name: Cisco
 rules: ''
 schema: ''
+tags: Cisco Security Management Appliance
+toversion: 6.9.9

@@ -35,6 +35,12 @@ lookback
 InfoFile
 params
 README
+ampersand
+concat
+CMDB
+BypassAddRecord
+closeReason
+closeNotes
 
 [file:classifier-ServiceNow.json]
 ignore=BA101

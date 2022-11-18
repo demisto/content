@@ -297,7 +297,7 @@ tasks:
     scriptarguments:
       data:
         complex:
-          root: commandline
+          root: commandline.original
       group:
         simple: "1"
       regex:
@@ -704,7 +704,7 @@ tasks:
           left:
             value:
               complex:
-                root: commandline
+                root: commandline.original
             iscontext: true
           right:
             value:
@@ -714,7 +714,7 @@ tasks:
           left:
             value:
               complex:
-                root: commandline
+                root: commandline.original
             iscontext: true
           right:
             value:
@@ -724,7 +724,7 @@ tasks:
           left:
             value:
               complex:
-                root: commandline
+                root: commandline.original
             iscontext: true
           right:
             value:
@@ -1185,7 +1185,7 @@ tasks:
             args:
               item:
                 value:
-                  simple: inputs.CommandLine
+                  simple: inputs.Commandline
                 iscontext: true
     reputationcalc: 2
     separatecontext: false
@@ -1226,7 +1226,7 @@ tasks:
         simple: commandline.decoded
       value:
         complex:
-          root: inputs.CommandLine
+          root: inputs.Commandline
           transformers:
           - operator: replaceMatch
             args:
@@ -1557,8 +1557,11 @@ outputs:
 - contextPath: Indicators
   description: Indicators extracted from the command line
   type: unknown
-- contextPath: commandline
-  description: The command line
+- contextPath: commandline.original
+  description: The original command line
+  type: unknown
+- contextPath: commandline.decoded
+  description: The decoded command line
   type: unknown
 - contextPath: CommandlineVerdict
   description: The command line verdict
