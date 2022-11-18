@@ -18,10 +18,11 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Default Tenant Services Group ID to use for API calls.
+- display: Tenant Services Group ID
   name: tsg_id
   required: false
   type: 0
+  additionalinfo: "Default Tenant Services Group ID to use for API calls. Example: 1234567890"
 - defaultvalue: https://auth.apps.paloaltonetworks.com/am/oauth2/access_token
   display: Prisma API OAUTH URL
   name: oauth_url
@@ -110,49 +111,49 @@ script:
     - contextPath: PrismaAccess.CreatedSecurityRule
       description: Created security rule
     - contextPath: PrismaAccess.CreatedSecurityRule.action
-      description: ''
+      description: 'Security rule action'
       type: String
     - contextPath: PrismaAccess.CreatedSecurityRule.application
-      description: ''
+      description: 'Security rule application'
       type: String
     - contextPath: PrismaAccess.CreatedSecurityRule.category
-      description: ''
+      description: 'Security rule category'
       type: String
     - contextPath: PrismaAccess.CreatedSecurityRule.description
-      description: ''
+      description: 'Security rule description'
       type: String
     - contextPath: PrismaAccess.CreatedSecurityRule.destination
-      description: ''
+      description: 'Security rule destination'
       type: String
     - contextPath: PrismaAccess.CreatedSecurityRule.folder
-      description: ''
+      description: 'Security rule folder'
       type: String
     - contextPath: PrismaAccess.CreatedSecurityRule.from
-      description: ''
+      description: 'Security rule from'
       type: String
     - contextPath: PrismaAccess.CreatedSecurityRule.id
-      description: ''
+      description: 'Security rule id'
       type: String
     - contextPath: PrismaAccess.CreatedSecurityRule.name
-      description: ''
+      description: 'Security rule name'
       type: String
     - contextPath: PrismaAccess.CreatedSecurityRule.position
-      description: ''
+      description: 'Security rule position'
       type: String
     - contextPath: PrismaAccess.CreatedSecurityRule.profile_setting.group
-      description: ''
+      description: 'Security rule group'
       type: String
     - contextPath: PrismaAccess.CreatedSecurityRule.service
-      description: ''
+      description: 'Security rule service'
       type: String
     - contextPath: PrismaAccess.CreatedSecurityRule.source
-      description: ''
+      description: 'Security rule source'
       type: String
     - contextPath: PrismaAccess.CreatedSecurityRule.source_user
-      description: ''
+      description: 'Security rule source_user'
       type: String
     - contextPath: PrismaAccess.CreatedSecurityRule.to
-      description: ''
+      description: 'Security rule to'
       type: String
   - arguments:
     - description: Prisma Access Folder Location for the Rule
@@ -181,55 +182,55 @@ script:
     - contextPath: PrismaAccess.FoundSecurityRule
       description: Found security rule
     - contextPath: PrismaAccess.FoundSecurityRule.action
-      description: ''
+      description: 'Security rule action'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.application
-      description: ''
+      description: 'Security rule application'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.category
-      description: ''
+      description: 'Security rule category'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.description
-      description: ''
+      description: 'Security rule description'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.destination
-      description: ''
+      description: 'Security rule destination'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.folder
-      description: ''
+      description: 'Security rule folder'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.from
-      description: ''
+      description: 'Security rule from'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.id
-      description: ''
+      description: 'Security rule id'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.log_setting
-      description: ''
+      description: 'Security rule log_setting'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.name
-      description: ''
+      description: 'Security rule name'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.position
-      description: ''
+      description: 'Security rule position'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.service
-      description: ''
+      description: 'Security rule service'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.source
-      description: ''
+      description: 'Security rule source'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.source_user
-      description: ''
+      description: 'source_user'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.tag
-      description: ''
+      description: 'Security rule tag'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.to
-      description: ''
+      description: 'Security rule to'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.negate_destination
-      description: ''
+      description: 'Security rule netgate_destination'
       type: Boolean
   - arguments:
     - description: Comma separated list of targets (Remote Networks, Mobile Users, Service Connections)
@@ -245,13 +246,13 @@ script:
     - contextPath: PrismaAccess.ConfigPush
       description: Config Job info
     - contextPath: PrismaAccess.ConfigPush.job_id
-      description: ''
+      description: 'Config job id'
       type: String
     - contextPath: PrismaAccess.ConfigPush.message
-      description: ''
+      description: 'Config job message'
       type: String
     - contextPath: PrismaAccess.ConfigPush.success
-      description: ''
+      description: 'Config job success'
       type: Boolean
   - arguments:
     - description: ID of the rule to be changed
@@ -313,53 +314,53 @@ script:
       name: negate_source
     - description: Negate destination
       name: negate_destination
-    description: Edit or edit existing security rule
+    description: Edit an existing security rule
     name: prisma-access-edit-security-rule
     outputs:
     - contextPath: PrismaAccess.EditedSecurityRule
       description: Edited security rule
 
     - contextPath: PrismaAccess.UpdatedSecurityRule.action
-      description: ''
+      description: 'Security rule action'
       type: String
     - contextPath: PrismaAccess.UpdatedSecurityRule.application
-      description: ''
+      description: 'Security rule application'
       type: String
     - contextPath: PrismaAccess.UpdatedSecurityRule.category
-      description: ''
+      description: 'Security rule category'
       type: String
     - contextPath: PrismaAccess.UpdatedSecurityRule.description
-      description: ''
+      description: 'Security rule description'
       type: String
     - contextPath: PrismaAccess.UpdatedSecurityRule.destination
-      description: ''
+      description: 'Security rule destination'
       type: String
     - contextPath: PrismaAccess.UpdatedSecurityRule.folder
-      description: ''
+      description: 'Security rule folder'
       type: String
     - contextPath: PrismaAccess.UpdatedSecurityRule.from
-      description: ''
+      description: 'Security rule from'
       type: String
     - contextPath: PrismaAccess.UpdatedSecurityRule.id
-      description: ''
+      description: 'Security rule id'
       type: String
     - contextPath: PrismaAccess.UpdatedSecurityRule.name
-      description: ''
+      description: 'Security rule name'
       type: String
     - contextPath: PrismaAccess.UpdatedSecurityRule.profile_setting.group
-      description: ''
+      description: 'Security rule profile setting'
       type: String
     - contextPath: PrismaAccess.UpdatedSecurityRule.service
-      description: ''
+      description: 'Security rule service'
       type: String
     - contextPath: PrismaAccess.UpdatedSecurityRule.source
-      description: ''
+      description: 'Security rule source'
       type: String
     - contextPath: PrismaAccess.UpdatedSecurityRule.source_user
-      description: ''
+      description: 'Security rule source user'
       type: String
     - contextPath: PrismaAccess.UpdatedSecurityRule.to
-      description: ''
+      description: 'Security rule to'
       type: String
   - arguments:
     - description: Tenant services group ID
@@ -375,7 +376,7 @@ script:
     - contextPath: PrismaSASE.AggregateQueryResponse
       description: Aggregate Query Response
     - contextPath: PrismaSASE.AggregateQueryResponse.header.dataCount
-      description: ''
+      description: 'Query response data count'
       type: Number
   - arguments:
     - description: 'Name of security rule to search '
@@ -398,49 +399,49 @@ script:
     - contextPath: PrismaAccess.FoundSecurityRule
       description: Found security rule
     - contextPath: PrismaAccess.FoundSecurityRule.action
-      description: ''
+      description: 'Security rule action'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.application
-      description: ''
+      description: 'Security rule application'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.category
-      description: ''
+      description: 'Security rule category'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.description
-      description: ''
+      description: 'Security rule description'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.destination
-      description: ''
+      description: 'Security rule destination'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.folder
-      description: ''
+      description: 'Security rule folder'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.from
-      description: ''
+      description: 'Security rule from'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.id
-      description: ''
+      description: 'Security rule id'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.name
-      description: ''
+      description: 'Security rule name'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.position
-      description: ''
+      description: 'Security rule position'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.profile_setting.group
-      description: ''
+      description: 'Security rule profile setting'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.service
-      description: ''
+      description: 'Security rule service'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.source
-      description: ''
+      description: 'Security rule source'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.source_user
-      description: ''
+      description: 'Security rule source user'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.to
-      description: ''
+      description: 'Security rule to'
       type: String
   - arguments:
     - description: Comma separated list of Job IDs
@@ -449,79 +450,79 @@ script:
       required: true
     - description: Tenant services group ID
       name: tsg_id
-    description: Get specific config job by the jobid
+    description: Get a specific config job by the job id
     name: prisma-access-get-config-jobs-by-id
     outputs:
     - contextPath: PrismaAccess.ConfigJob
       description: Config job details
     - contextPath: PrismaAccess.ConfigJob.details
-      description: ''
+      description: 'Config job details'
       type: String
     - contextPath: PrismaAccess.ConfigJob.end_ts
-      description: ''
+      description: 'Config job end timestamp'
       type: Date
     - contextPath: PrismaAccess.ConfigJob.id
-      description: ''
+      description: 'Config job id'
       type: String
     - contextPath: PrismaAccess.ConfigJob.insert_ts
-      description: ''
+      description: 'Config job insert timestamp'
       type: Date
     - contextPath: PrismaAccess.ConfigJob.job_result
-      description: ''
+      description: 'Config job result'
       type: String
     - contextPath: PrismaAccess.ConfigJob.job_status
-      description: ''
+      description: 'Config job status'
       type: String
     - contextPath: PrismaAccess.ConfigJob.job_type
-      description: ''
+      description: 'Config job type'
       type: String
     - contextPath: PrismaAccess.ConfigJob.last_update
-      description: ''
+      description: 'Config job last update'
       type: Date
     - contextPath: PrismaAccess.ConfigJob.opaque_int
-      description: ''
+      description: 'Config job opaque int'
       type: String
     - contextPath: PrismaAccess.ConfigJob.opaque_str
-      description: ''
+      description: 'Config job opaque str'
       type: String
     - contextPath: PrismaAccess.ConfigJob.owner
-      description: ''
+      description: 'Config job owner'
       type: String
     - contextPath: PrismaAccess.ConfigJob.parent_id
-      description: ''
+      description: 'Config job parent id'
       type: String
     - contextPath: PrismaAccess.ConfigJob.percent
-      description: ''
+      description: 'Config job percent'
       type: String
     - contextPath: PrismaAccess.ConfigJob.result_i
-      description: ''
+      description: 'Config job result i'
       type: String
     - contextPath: PrismaAccess.ConfigJob.result_str
-      description: ''
+      description: 'Config job str'
       type: String
     - contextPath: PrismaAccess.ConfigJob.session_id
-      description: ''
+      description: 'Config job session id'
       type: String
     - contextPath: PrismaAccess.ConfigJob.start_ts
-      description: ''
+      description: 'Config job start timestamp'
       type: Date
     - contextPath: PrismaAccess.ConfigJob.status_i
-      description: ''
+      description: 'Config job status i'
       type: String
     - contextPath: PrismaAccess.ConfigJob.status_str
-      description: ''
+      description: 'Config job status str'
       type: String
     - contextPath: PrismaAccess.ConfigJob.summary
-      description: ''
+      description: 'Config job summary'
       type: String
     - contextPath: PrismaAccess.ConfigJob.type_i
-      description: ''
+      description: 'Config job type i'
       type: String
     - contextPath: PrismaAccess.ConfigJob.type_str
-      description: ''
+      description: 'Config job type str'
       type: String
     - contextPath: PrismaAccess.ConfigJob.uname
-      description: ''
+      description: 'Config job uname'
       type: String
   - arguments:
     - description: Tenant services group ID
@@ -537,46 +538,46 @@ script:
     - contextPath: PrismaAccess.ConfigJob
       description: Config job details
     - contextPath: PrismaAccess.ConfigJob.description
-      description: ''
+      description: 'Config job description'
       type: String
     - contextPath: PrismaAccess.ConfigJob.end_ts
-      description: ''
+      description: 'Config job end timestamp'
       type: Date
     - contextPath: PrismaAccess.ConfigJob.id
-      description: ''
+      description: 'Config job id'
       type: String
     - contextPath: PrismaAccess.ConfigJob.job_result
-      description: ''
+      description: 'Config job result'
       type: String
     - contextPath: PrismaAccess.ConfigJob.job_status
-      description: ''
+      description: 'Config job status'
       type: String
     - contextPath: PrismaAccess.ConfigJob.job_type
-      description: ''
+      description: 'Config job type'
       type: String
     - contextPath: PrismaAccess.ConfigJob.parent_id
-      description: ''
+      description: 'Config job parent id'
       type: String
     - contextPath: PrismaAccess.ConfigJob.percent
-      description: ''
+      description: 'Config job precent'
       type: String
     - contextPath: PrismaAccess.ConfigJob.result_str
-      description: ''
+      description: 'Config job result str'
       type: String
     - contextPath: PrismaAccess.ConfigJob.start_ts
-      description: ''
+      description: 'Config job start timestamp'
       type: Date
     - contextPath: PrismaAccess.ConfigJob.status_str
-      description: ''
+      description: 'Config job status str'
       type: String
     - contextPath: PrismaAccess.ConfigJob.summary
-      description: ''
+      description: 'Config job summary'
       type: String
     - contextPath: PrismaAccess.ConfigJob.type_str
-      description: ''
+      description: 'Config job type str'
       type: String
     - contextPath: PrismaAccess.ConfigJob.uname
-      description: ''
+      description: 'Config job uname'
       type: String
   - arguments:
     - description: Rule ID of the rule to be deleted
@@ -584,52 +585,52 @@ script:
       required: true
     - description: Tenant services group ID
       name: tsg_id
-    description: Delete security rule
+    description: Delete a security rule
     name: prisma-access-delete-security-rule
     outputs:
     - contextPath: PrismaAccess.DeletedSecurityRule
       description: Deleted security rule info
     - contextPath: PrismaAccess.DeletedSecurityRule.action
-      description: ''
+      description: 'Security rule action'
       type: String
     - contextPath: PrismaAccess.DeletedSecurityRule.application
-      description: ''
+      description: 'Security rule application'
       type: String
     - contextPath: PrismaAccess.DeletedSecurityRule.category
-      description: ''
+      description: 'Security rule category'
       type: String
     - contextPath: PrismaAccess.DeletedSecurityRule.description
-      description: ''
+      description: 'Security rule description'
       type: String
     - contextPath: PrismaAccess.DeletedSecurityRule.destination
-      description: ''
+      description: 'Security rule destination'
       type: String
     - contextPath: PrismaAccess.DeletedSecurityRule.folder
-      description: ''
+      description: 'Security rule folder'
       type: String
     - contextPath: PrismaAccess.DeletedSecurityRule.from
-      description: ''
+      description: 'Security rule from'
       type: String
     - contextPath: PrismaAccess.DeletedSecurityRule.id
-      description: ''
+      description: 'Security rule id'
       type: String
     - contextPath: PrismaAccess.DeletedSecurityRule.name
-      description: ''
+      description: 'Security rule name'
       type: String
     - contextPath: PrismaAccess.DeletedSecurityRule.profile_setting.group
-      description: ''
+      description: 'Security rule profile setting'
       type: String
     - contextPath: PrismaAccess.DeletedSecurityRule.service
-      description: ''
+      description: 'Security rule service'
       type: String
     - contextPath: PrismaAccess.DeletedSecurityRule.source
-      description: ''
+      description: 'Security rule source'
       type: String
     - contextPath: PrismaAccess.DeletedSecurityRule.source_user
-      description: ''
+      description: 'Security rule source user'
       type: String
     - contextPath: PrismaAccess.DeletedSecurityRule.to
-      description: ''
+      description: 'Security rule to'
       type: String
   - arguments:
     - description: Prisma Access Folder Location for the Object
@@ -654,19 +655,19 @@ script:
     - contextPath: PrismaAccess.CreatedAddressObject
       description: Created Address Object
     - contextPath: PrismaAccess.CreatedAddress.description
-      description: ''
+      description: 'Address description'
       type: String
     - contextPath: PrismaAccess.CreatedAddress.folder
-      description: ''
+      description: 'Address folder'
       type: String
     - contextPath: PrismaAccess.CreatedAddress.id
-      description: ''
+      description: 'Address id'
       type: String
     - contextPath: PrismaAccess.CreatedAddress.ip_netmask
-      description: ''
+      description: 'Address ip netmask'
       type: String
     - contextPath: PrismaAccess.CreatedAddress.name
-      description: ''
+      description: 'Address name'
       type: String
   - arguments:
     - description: ID of the Address Object to edit
@@ -691,19 +692,19 @@ script:
     - contextPath: PrismaAccess.EditedAddressObject
       description: Edited Address Object
     - contextPath: PrismaAccess.EditedAddress.description
-      description: ''
+      description: 'Address description'
       type: String
     - contextPath: PrismaAccess.EditedAddress.folder
-      description: ''
+      description: 'Address folder'
       type: String
     - contextPath: PrismaAccess.EditedAddress.id
-      description: ''
+      description: 'Address id'
       type: String
     - contextPath: PrismaAccess.EditedAddress.ip_netmask
-      description: ''
+      description: 'Address ip netmask'
       type: String
     - contextPath: PrismaAccess.EditedAddress.name
-      description: ''
+      description: 'Address name'
       type: String
   - arguments:
     - description: ID of the Address Object to delete
@@ -717,19 +718,19 @@ script:
     - contextPath: PrismaAccess.DeletedAddressObject
       description: Deleted Address Object
     - contextPath: PrismaAccess.DeletedAddress.description
-      description: ''
+      description: 'Address description'
       type: String
     - contextPath: PrismaAccess.DeletedAddress.folder
-      description: ''
+      description: 'Address folder'
       type: String
     - contextPath: PrismaAccess.DeletedAddress.id
-      description: ''
+      description: 'id'
       type: String
     - contextPath: PrismaAccess.DeletedAddress.ip_netmask
-      description: ''
+      description: 'Address ip netmask'
       type: String
     - contextPath: PrismaAccess.DeletedAddress.name
-      description: ''
+      description: 'Address name'
       type: String
   - arguments:
     - description: Prisma Access Folder Location for the Object
@@ -752,22 +753,22 @@ script:
       description: Found security rule
 
     - contextPath: PrismaAccess.FoundAddressObjects.description
-      description: ''
+      description: 'Address description'
       type: String
     - contextPath: PrismaAccess.FoundAddressObjects.folder
-      description: ''
+      description: 'Address folder'
       type: String
     - contextPath: PrismaAccess.FoundAddressObjects.fqdn
-      description: ''
+      description: 'Address fqdn'
       type: String
     - contextPath: PrismaAccess.FoundAddressObjects.id
-      description: ''
+      description: 'Address id'
       type: String
     - contextPath: PrismaAccess.FoundAddressObjects.name
-      description: ''
+      description: 'Address name'
       type: String
     - contextPath: PrismaAccess.FoundAddressObjects.ip_netmask
-      description: ''
+      description: 'Address ip netmask'
       type: String
   dockerimage: demisto/python3:3.10.8.36650
   runonce: false

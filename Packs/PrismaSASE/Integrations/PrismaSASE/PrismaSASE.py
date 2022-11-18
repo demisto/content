@@ -52,11 +52,12 @@ class Client(BaseClient):
 
     def __init__(self, base_url: str, client_id: str,
                  client_secret: str, oauth_url: str, verify: bool, proxy: bool, headers: dict, **kwargs):
+
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers, **kwargs)
+
         self.client_id = client_id
         self.client_secret = client_secret
         self.oauth_url = oauth_url
-
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers, **kwargs)
 
     @staticmethod
     def build_security_rule(args: Dict[str, Any]):
@@ -71,15 +72,22 @@ class Client(BaseClient):
         for key in SECURITYRULE_FIELDS:
             if key in keys:
                 field_value = args.get(key)
-                if field_value != "" and field_value != "None":
+                if field_value and field_value != "None":
                     if key == 'profile_setting':
                         val = argToList(field_value)
                         rule[key] = {'group': val}
+                    if key == 'source_user':
+                        if type(field_value) == list:
+                            rule[key] = field_value   # type: ignore
+                        else:
+                            val = argToList(field_value, ';')
+                            rule[key] = val
                     elif isinstance(SECURITYRULE_FIELDS.get(key), str):
                         rule[key] = field_value   # type: ignore
                     elif isinstance(SECURITYRULE_FIELDS.get(key), list):
                         val = argToList(field_value)
                         rule[key] = val   # type: ignore
+
         return rule
 
     def create_security_rule(self, rule: dict, folder: str, position: str, tsg_id: str):
@@ -377,7 +385,7 @@ class Client(BaseClient):
         Else request a new access token for the provided TSG and store it in the integration context and add the TSG ID
         as a prefix.
         """
-        previous_token = get_integration_context()
+
         integration_context = get_integration_context()
         tsg_access_token = f'{tsg_id}.access_token'
         tsg_expiry_time = f'{tsg_id}.expiry_time'
@@ -410,8 +418,8 @@ class Client(BaseClient):
                                            exception)
 
                 if access_token := res.get('access_token'):
-                    expiry_time = date_to_timestamp(datetime.now(), date_format='%Y-%m-%dT%H:%M:%S')
-                    expiry_time += res.get('expires_in') * 1000 - 10
+                    expiry_time = date_to_timestamp(datetime.now(), date_format=DATE_FORMAT)
+                    expiry_time += res.get('expires_in') - 10
                     new_token = {
                         tsg_access_token: access_token,
                         tsg_expiry_time: expiry_time
@@ -429,7 +437,7 @@ class Client(BaseClient):
                                        f' configuration.\n\n{e}')
 
 
-def test_module(client: Client, default_tsg_id: str) -> CommandResults:
+def test_module(client: Client, args: Dict[str, Any], default_tsg_id: str) -> CommandResults:
     """Test command to determine if integration is working correctly.
     Args:
         client: Client object with request
@@ -442,11 +450,8 @@ def test_module(client: Client, default_tsg_id: str) -> CommandResults:
     uri = f'{CONFIG_URI_PREFIX}config-versions?limit=1'
 
     access_token = client.get_access_token(default_tsg_id)
-    headers = {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': f"Bearer {access_token}"
-    }
+    headers = client._headers
+    headers['Authorization'] = f"Bearer {access_token}"
 
     client._http_request(method='GET', url_suffix=uri, headers=headers)
     return CommandResults(
@@ -475,7 +480,7 @@ def create_security_rule_command(client: Client, args: Dict[str, Any], default_t
         outputs_prefix=f'{PA_OUTPUT_PREFIX}CreatedSecurityRule',
         outputs_key_field='id',
         outputs=outputs,
-        readable_output=tableToMarkdown('Security Rule Created', outputs),
+        readable_output=tableToMarkdown('Security Rule Created', outputs, headerTransform=string_to_table_header),
         raw_response=raw_response
     )
 
@@ -510,7 +515,7 @@ def create_address_object_command(client: Client, args: Dict[str, Any], default_
         outputs_prefix=f'{PA_OUTPUT_PREFIX}CreatedAddress',
         outputs_key_field='id',
         outputs=outputs,
-        readable_output=tableToMarkdown('Address Object Created', outputs),
+        readable_output=tableToMarkdown('Address Object Created', outputs, headerTransform=string_to_table_header),
         raw_response=raw_response
     )
 
@@ -543,7 +548,7 @@ def edit_address_object_command(client: Client, args: Dict[str, Any], default_ts
         outputs_prefix=f'{PA_OUTPUT_PREFIX}EditedAddress',
         outputs_key_field='id',
         outputs=outputs,
-        readable_output=tableToMarkdown('Address Object Edited', outputs),
+        readable_output=tableToMarkdown('Address Object Edited', outputs, headerTransform=string_to_table_header),
         raw_response=raw_response
     )
 
@@ -567,7 +572,7 @@ def delete_address_object_command(client: Client, args: Dict[str, Any], default_
         outputs_prefix=f'{PA_OUTPUT_PREFIX}DeletedAddress',
         outputs_key_field='id',
         outputs=outputs,
-        readable_output=tableToMarkdown('Address Object Deleted', outputs),
+        readable_output=tableToMarkdown('Address Object Deleted', outputs, headerTransform=string_to_table_header),
         raw_response=raw_response
     )
 
@@ -605,7 +610,8 @@ def list_address_objects_command(client: Client, args: Dict[str, Any], default_t
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Address Objects', outputs, headers=[
-                                        'name', 'description', 'ip_netmask', 'fqdn'], removeNull=True),
+                                        'name', 'description', 'ip_netmask', 'fqdn'],
+                                        headerTransform=string_to_table_header, removeNull=True),
         raw_response=raw_response
     )
 
@@ -630,7 +636,7 @@ def delete_security_rule_command(client: Client, args: Dict[str, Any], default_t
         outputs_prefix=f'{PA_OUTPUT_PREFIX}DeletedSecurityRule',
         outputs_key_field='id',
         outputs=outputs,
-        readable_output=tableToMarkdown('Security Rule Deleted', outputs),
+        readable_output=tableToMarkdown('Security Rule Deleted', outputs, headerTransform=string_to_table_header),
         raw_response=raw_response
     )
 
@@ -651,8 +657,12 @@ def query_agg_monitor_api_command(client: Client, args: Dict[str, Any], default_
 
     tsg_id = args.get('tsg_id') or default_tsg_id
 
-    if args.get('query_data'):
-        query = json.loads(args.get('query_data'))  # type: ignore
+    if query_data := args.get('query_data'):
+        try:
+            query = json.loads(query_data)  # type: ignore
+        except ValueError as exception:
+            raise DemistoException('Failed to parse query data.  Please check syntax.',
+                                   exception)
     else:
         query = None
 
@@ -686,7 +696,7 @@ def edit_security_rule_command(client: Client, args: Dict[str, Any], default_tsg
         outputs_prefix=f'{PA_OUTPUT_PREFIX}EditedSecurityRule',
         outputs_key_field='id',
         outputs=outputs,
-        readable_output=tableToMarkdown('Security Rule Updated', outputs),
+        readable_output=tableToMarkdown('Security Rule Updated', outputs, headerTransform=string_to_table_header),
         raw_response=raw_response
     )
 
@@ -712,7 +722,7 @@ def push_candidate_config_command(client: Client, args: Dict[str, Any], default_
         outputs_prefix=f'{PA_OUTPUT_PREFIX}ConfigPush',
         outputs_key_field='id',
         outputs=outputs,
-        readable_output=tableToMarkdown('Configuration Push Requested', outputs),
+        readable_output=tableToMarkdown('Configuration Push Requested', outputs, headerTransform=string_to_table_header),
         raw_response=raw_response
     )
 
@@ -750,6 +760,7 @@ def list_security_rules_command(client: Client, args: Dict[str, Any], default_ts
         outputs=outputs,
         readable_output=tableToMarkdown('Security Rules', outputs, headers=[
                                         'id', 'name', 'description', 'action', 'destination', 'folder'],
+                                        headerTransform=string_to_table_header,
                                         removeNull=True),
         raw_response=raw_response
     )
@@ -814,7 +825,8 @@ def get_config_jobs_by_id_command(client: Client, args: Dict[str, Any], default_
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Config Jobs', outputs, headers=[
-                                        'id', 'type_str', 'description', 'summary'], removeNull=True),
+                                        'id', 'type_str', 'description', 'summary'],
+                                        headerTransform=string_to_table_header, removeNull=True),
         raw_response=raw_response
     )
 
@@ -846,7 +858,8 @@ def list_config_jobs_command(client: Client, args: Dict[str, Any], default_tsg_i
         outputs_prefix=f'{PA_OUTPUT_PREFIX}ConfigJob',
         outputs_key_field='id',
         outputs=outputs,
-        readable_output=tableToMarkdown('Config Job', outputs, headers=['id', 'type_str', 'description', 'summary']),
+        readable_output=tableToMarkdown('Config Job', outputs, headers=['id', 'type_str', 'description', 'summary'],
+                                        headerTransform=string_to_table_header),
         raw_response=raw_response
     )
 
@@ -864,7 +877,7 @@ def main():
     client_secret = params.get('credentials', {}).get('password')
     oauth_url = params.get('oauth_url')
     default_tsg_id = params.get('tsg_id')
-
+    handle_proxy()
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
 
