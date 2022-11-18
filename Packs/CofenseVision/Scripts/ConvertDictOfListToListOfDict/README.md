@@ -7,13 +7,14 @@ Converts dictionary of lists to list of dictionaries.
 | --- | --- |
 | Script Type | python3 |
 | Tags | transformer |
+| Cortex XSOAR Version | 6.2.0 |
 
 ## Inputs
 ---
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| key |  |
+| key | Object Key. |
 
 ## Outputs
 ---

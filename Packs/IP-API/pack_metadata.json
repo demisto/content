@@ -7,7 +7,9 @@
     "url": "",
     "email": "",
     "created": "2021-09-09T12:34:56Z",
-    "categories": [],
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],

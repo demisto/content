@@ -17,6 +17,33 @@ configuration:
     additionalinfo:
     displaypassword: Client Secret
     hiddenusername: false
+  - name: threat_levels_good
+    display: Threat levels to be marked as Good
+    required: false
+    defaultvalue:
+    type: 0
+    additionalinfo: |-
+      Mapping of Cofense Vision threat level to XSOAR DbotScore.
+      For 'Good', DbotScore will be 1 and default threat level value is 'low'.
+      Comma separated values are supported.
+  - name: threat_levels_suspicious
+    display: Threat levels to be marked as Suspicious
+    required: false
+    defaultvalue:
+    type: 0
+    additionalinfo: |-
+      Mapping of Cofense Vision threat level to XSOAR DbotScore.
+      For 'Suspicious', DbotScore will be 2 and default threat level values are 'suspicious', 'moderate', 'substantial'.
+      Comma separated values are supported.
+  - name: threat_levels_bad
+    display: Threat levels to be marked as Bad
+    required: false
+    defaultvalue:
+    type: 0
+    additionalinfo: |-
+      Mapping of Cofense Vision threat level to XSOAR DbotScore.
+      For 'Bad', DbotScore will be 3 and default threat level values are 'malicious', 'severe', 'critical', 'high'.
+      Comma separated values are supported.
   - name: insecure
     display: Trust any certificate (not secure)
     required: false
@@ -1430,6 +1457,57 @@ script:
     - contextPath: Cofense.IOC.deleted
       description: Indicates whether the IOC is deleted or not.
       type: Boolean
+    - contextPath: DBotScore.Indicator
+      type: String
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      type: String
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      type: String
+      description: The vendor used to calculate the score.
+    - contextPath: DBotScore.Score
+      type: Number
+      description: The actual score.
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: A description of the malicious domain.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: The vendor who reported the domain as malicious.
+      type: String
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: A description of the malicious URL.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: The vendor who reported the URL as malicious.
+      type: String
+    - contextPath: Email.Address
+      description: The sender of the email.
+      type: String
+    - contextPath: Email.Malicious.Description
+      description: A description of the malicious email.
+      type: String
+    - contextPath: Email.Malicious.Vendor
+      description: The vendor who reported the email as malicious.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Malicious.Description
+      description: A description explaining why the file was determined to be malicious.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: The vendor who reported the file as malicious.
+      type: String
   - arguments:
     - default: false
       description: |-
@@ -1920,6 +1998,57 @@ script:
     - contextPath: Cofense.IOC.metadata.quarantine.wildcard
       description: Whether the wildcard matching is set (true) or not (false).
       type: Boolean
+    - contextPath: DBotScore.Indicator
+      type: String
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      type: String
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      type: String
+      description: The vendor used to calculate the score.
+    - contextPath: DBotScore.Score
+      type: Number
+      description: The actual score.
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: A description of the malicious domain.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: The vendor who reported the domain as malicious.
+      type: String
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: A description of the malicious URL.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: The vendor who reported the URL as malicious.
+      type: String
+    - contextPath: Email.Address
+      description: The sender of the email.
+      type: String
+    - contextPath: Email.Malicious.Description
+      description: A description of the malicious email.
+      type: String
+    - contextPath: Email.Malicious.Vendor
+      description: The vendor who reported the email as malicious.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Malicious.Description
+      description: A description explaining why the file was determined to be malicious.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: The vendor who reported the file as malicious.
+      type: String
   - arguments:
     - default: false
       description: |-
@@ -2114,6 +2243,57 @@ script:
       - contextPath: Cofense.IOC.metadata.quarantine.wildcard
         type: Boolean
         description: Whether the wildcard matching is set (true) or not (false).
+      - contextPath: DBotScore.Indicator
+        type: String
+        description: The indicator that was tested.
+      - contextPath: DBotScore.Type
+        type: String
+        description: The indicator type.
+      - contextPath: DBotScore.Vendor
+        type: String
+        description: The vendor used to calculate the score.
+      - contextPath: DBotScore.Score
+        type: Number
+        description: The actual score.
+      - contextPath: Domain.Name
+        description: The domain name.
+        type: String
+      - contextPath: Domain.Malicious.Description
+        description: A description of the malicious domain.
+        type: String
+      - contextPath: Domain.Malicious.Vendor
+        description: The vendor who reported the domain as malicious.
+        type: String
+      - contextPath: URL.Data
+        description: The URL.
+        type: String
+      - contextPath: URL.Malicious.Description
+        description: A description of the malicious URL.
+        type: String
+      - contextPath: URL.Malicious.Vendor
+        description: The vendor who reported the URL as malicious.
+        type: String
+      - contextPath: Email.Address
+        description: The sender of the email.
+        type: String
+      - contextPath: Email.Malicious.Description
+        description: A description of the malicious email.
+        type: String
+      - contextPath: Email.Malicious.Vendor
+        description: The vendor who reported the email as malicious.
+        type: String
+      - contextPath: File.SHA256
+        description: The SHA256 hash of the file.
+        type: String
+      - contextPath: File.MD5
+        description: The MD5 hash of the file.
+        type: String
+      - contextPath: File.Malicious.Description
+        description: A description explaining why the file was determined to be malicious.
+        type: String
+      - contextPath: File.Malicious.Vendor
+        description: The vendor who reported the file as malicious.
+        type: String
   - arguments:
     - default: false
       description: |-
@@ -2202,6 +2382,57 @@ script:
       - contextPath: Cofense.IOC.metadata.quarantine.wildcard
         type: Boolean
         description: Whether the wildcard matching is set (true) or not (false).
+      - contextPath: DBotScore.Indicator
+        type: String
+        description: The indicator that was tested.
+      - contextPath: DBotScore.Type
+        type: String
+        description: The indicator type.
+      - contextPath: DBotScore.Vendor
+        type: String
+        description: The vendor used to calculate the score.
+      - contextPath: DBotScore.Score
+        type: Number
+        description: The actual score.
+      - contextPath: Domain.Name
+        description: The domain name.
+        type: String
+      - contextPath: Domain.Malicious.Description
+        description: A description of the malicious domain.
+        type: String
+      - contextPath: Domain.Malicious.Vendor
+        description: The vendor who reported the domain as malicious.
+        type: String
+      - contextPath: URL.Data
+        description: The URL.
+        type: String
+      - contextPath: URL.Malicious.Description
+        description: A description of the malicious URL.
+        type: String
+      - contextPath: URL.Malicious.Vendor
+        description: The vendor who reported the URL as malicious.
+        type: String
+      - contextPath: Email.Address
+        description: The sender of the email.
+        type: String
+      - contextPath: Email.Malicious.Description
+        description: A description of the malicious email.
+        type: String
+      - contextPath: Email.Malicious.Vendor
+        description: The vendor who reported the email as malicious.
+        type: String
+      - contextPath: File.SHA256
+        description: The SHA256 hash of the file.
+        type: String
+      - contextPath: File.MD5
+        description: The MD5 hash of the file.
+        type: String
+      - contextPath: File.Malicious.Description
+        description: A description explaining why the file was determined to be malicious.
+        type: String
+      - contextPath: File.Malicious.Vendor
+        description: The vendor who reported the file as malicious.
+        type: String
   - arguments:
     - default: false
       description: |- 
@@ -2320,6 +2551,57 @@ script:
     - contextPath: Cofense.IOC.metadata.quarantine.expired
       description: Whether the IOC is expired (true) or not expired (false).
       type: Boolean
+    - contextPath: DBotScore.Indicator
+      type: String
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      type: String
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      type: String
+      description: The vendor used to calculate the score.
+    - contextPath: DBotScore.Score
+      type: Number
+      description: The actual score.
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: A description of the malicious domain.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: The vendor who reported the domain as malicious.
+      type: String
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: A description of the malicious URL.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: The vendor who reported the URL as malicious.
+      type: String
+    - contextPath: Email.Address
+      description: The sender of the email.
+      type: String
+    - contextPath: Email.Malicious.Description
+      description: A description of the malicious email.
+      type: String
+    - contextPath: Email.Malicious.Vendor
+      description: The vendor who reported the email as malicious.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Malicious.Description
+      description: A description explaining why the file was determined to be malicious.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: The vendor who reported the file as malicious.
+      type: String
   - arguments:
     - default: false
       description: |-
@@ -2409,6 +2691,57 @@ script:
       - contextPath: Cofense.IOC.metadata.quarantine.wildcard
         type: Boolean
         description: Whether the wildcard matching is set (true) or not (false).
+      - contextPath: DBotScore.Indicator
+        type: String
+        description: The indicator that was tested.
+      - contextPath: DBotScore.Type
+        type: String
+        description: The indicator type.
+      - contextPath: DBotScore.Vendor
+        type: String
+        description: The vendor used to calculate the score.
+      - contextPath: DBotScore.Score
+        type: Number
+        description: The actual score.
+      - contextPath: Domain.Name
+        description: The domain name.
+        type: String
+      - contextPath: Domain.Malicious.Description
+        description: A description of the malicious domain.
+        type: String
+      - contextPath: Domain.Malicious.Vendor
+        description: The vendor who reported the domain as malicious.
+        type: String
+      - contextPath: URL.Data
+        description: The URL.
+        type: String
+      - contextPath: URL.Malicious.Description
+        description: A description of the malicious URL.
+        type: String
+      - contextPath: URL.Malicious.Vendor
+        description: The vendor who reported the URL as malicious.
+        type: String
+      - contextPath: Email.Address
+        description: The sender of the email.
+        type: String
+      - contextPath: Email.Malicious.Description
+        description: A description of the malicious email.
+        type: String
+      - contextPath: Email.Malicious.Vendor
+        description: The vendor who reported the email as malicious.
+        type: String
+      - contextPath: File.SHA256
+        description: The SHA256 hash of the file.
+        type: String
+      - contextPath: File.MD5
+        description: The MD5 hash of the file.
+        type: String
+      - contextPath: File.Malicious.Description
+        description: A description explaining why the file was determined to be malicious.
+        type: String
+      - contextPath: File.Malicious.Vendor
+        description: The vendor who reported the file as malicious.
+        type: String
   - deprecated: false
     description: Retrieves a list of configured header keys that can be used to create a message search.
     execution: false

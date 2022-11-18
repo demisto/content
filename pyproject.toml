@@ -9,8 +9,9 @@ license = "MIT"
 python = "^3.8,<3.11"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = "1.7.7"
+demisto-sdk = "1.7.8"
 requests = "^2.22.0"
+pre-commit = "^2.20.0"
 
 [tool.poetry.group.linters.dependencies]
 mypy = "^0.982"
@@ -23,8 +24,9 @@ pytest-mock = "^3.7.0"
 freezegun = "^1.1.0"
 mock-open = "^1.4.0"
 
+# If mypy requires for a `types-*` package, add it here with `poetry add --group typing <package>`
 [tool.poetry.group.typing.dependencies]
-# If mypy requires for a `typed-*` package, add it here with `poetry add --group typing <package>`
+types-python-dateutil = "^2.8.19.3"
 
 
 [tool.poetry.group.ci]
