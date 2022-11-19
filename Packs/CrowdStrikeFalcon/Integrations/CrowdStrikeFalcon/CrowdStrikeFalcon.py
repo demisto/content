@@ -1413,6 +1413,7 @@ def search_device(filter_operator='AND'):
     device_ids = raw_res.get('resources')
     if not device_ids:
         return None
+    demisto.debug(f"number of devices returned from the api call is: {len(device_ids)}")
     return http_request('GET', '/devices/entities/devices/v2', params={'ids': device_ids})
 
 
@@ -2427,6 +2428,7 @@ def search_device_command():
 
     command_results = []
     for single_device in devices:
+        # demisto.debug(f"single device info: {single_device}")
         # status, is_isolated = generate_status_fields(single_device.get('status'), single_device.get("device_id"))
         endpoint = Common.Endpoint(
             id=single_device.get('device_id'),
