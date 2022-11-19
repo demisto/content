@@ -32,5 +32,8 @@
  "fieldCalcScript": "",
  "selectValues": null,
  "validationRegex": "",
+ "marketplaces": [
+    "xsoar"
+],
  "sla": 0
 }
