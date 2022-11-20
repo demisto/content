@@ -1,11 +1,4 @@
-This playbook investigates a "User Persmission Changed” alert by gathering user and IP information  and performs remediation based on the information gathered and received from the user.  If you wish to link this playbook to the relevant alerts automatically, we recommend using the following filters when configuring the playbook triggers: Alert Source = Correlation AND Alert Name = Gitlab - Guest user permission change
-
-Used Sub-playbooks:
-* Enrichment for Verdict
-* Block IP - Generic v3
-* Block Account - Generic v2
-
-
+This playbook investigates a "User Permissions Changed” alert by gathering user and IP information and performs remediation based on the information gathered and received from the user. To link this playbook to the relevant alerts automatically, we recommend using the following filters when configuring the playbook triggers: Alert Source = Correlation AND Alert Name = Gitlab - Guest user permission change
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -30,7 +23,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| InternalRange | List of Internal IP ranges |  | Optional |
+| InternalRange | List of internal IP ranges. |  | Optional |
 | UserVerification | Whether to provide user verification for blocking those IPs. <br/>False - No prompt will be displayed to the user.<br/>True - The server will ask the user for blocking verification and will display the blocking list. | True | Optional |
 
 ## Playbook Outputs
