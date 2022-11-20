@@ -32,7 +32,6 @@
         "Unit 42",
         "Best Practices"
     ],
-    "price": 3,
     "dependencies": {
         "PAN-OS": {
             "display_name": "PAN-OS",
