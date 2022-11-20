@@ -486,7 +486,6 @@ def mail_to_incident(msg, service, user_key):
             'name': attachment['Name'],
         })
     # date in the incident itself is set to GMT time, the correction to local time is done in Demisto
-    # gmt_time = move_to_gmt(parsed_msg['Date'])
 
     incident = {
         'type': 'Gmail',
@@ -2390,8 +2389,9 @@ def forwarding_address_list_command() -> CommandResults:
 
 def fetch_incidents():
     params = demisto.params()
+    user_key = params.get('queryUserKey')
+    user_key = user_key if user_key else ADMIN_EMAIL
     max_fetch = int(params.get('fetch_limit') or 50)
-    user_key = 'me'
     query = '' if params['query'] is None else params['query']
     last_run = demisto.getLastRun()
     demisto.debug(f'last run: {last_run}')

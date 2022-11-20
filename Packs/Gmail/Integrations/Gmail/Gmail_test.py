@@ -1,6 +1,7 @@
+import demistomock as demisto
 import pytest
 from test_data import input_data
-import demistomock as demisto
+import datetime
 
 MOCK_MAIL_NO_LABELS = {
     u'internalDate': u'1572251535000',
@@ -471,8 +472,8 @@ def test_forwarding_address_list_command(mocker):
             -the raw_response,outputs and readable_output are valid.
     """
 
-    from Gmail import forwarding_address_list_command
     import Gmail
+    from Gmail import forwarding_address_list_command
     mocker.patch.object(demisto, 'args', return_value={'user_id': '111', 'forwarding_email': 'test@gmail.com'})
     mocker.patch.object(Gmail, 'forwarding_address_list',
                         return_value={'forwardingAddresses': [{'forwardingEmail': 'test1@gmail.com',
@@ -504,8 +505,8 @@ def test_forwarding_address_remove_command(mocker):
             -the raw_response,outputs and readable_output are valid.
     """
 
-    from Gmail import forwarding_address_remove_command
     import Gmail
+    from Gmail import forwarding_address_remove_command
     mocker.patch.object(demisto, 'args', return_value={'user_id': '111', 'forwarding_email': 'test@gmail.com'})
     mocker.patch.object(Gmail, 'forwarding_address_remove', return_value='')
 
@@ -530,8 +531,8 @@ def test_forwarding_address_get_command(mocker, return_value_from_mocker_args, e
             -the raw_response,outputs and readable_output are valid.
     """
 
-    from Gmail import forwarding_address_get_command
     import Gmail
+    from Gmail import forwarding_address_get_command
     mocker.patch.object(demisto, 'args', return_value=return_value_from_mocker_args)
     mocker.patch.object(Gmail, 'forwarding_address_get',
                         return_value={'forwardingEmail': 'test@gmail.com', 'verificationStatus': 'accepted'})
@@ -560,8 +561,8 @@ def test_forwarding_address_add(mocker):
             -the raw_response,outputs and readable_output are valid.
     """
 
-    from Gmail import forwarding_address_add_command
     import Gmail
+    from Gmail import forwarding_address_add_command
     mocker.patch.object(Gmail, 'forwarding_address_add', return_value=({'forwardingEmail': 'test@gmail.com',
                                                                         'verificationStatus': 'accepted', 'userId': 'me'},
                                                                        False,
@@ -586,8 +587,8 @@ def test_forwarding_address_update(mocker):
             -the raw_response,outputs and readable_output are valid.
     """
 
-    from Gmail import forwarding_address_update_command
     import Gmail
+    from Gmail import forwarding_address_update_command
     mocker.patch.object(Gmail, 'forwarding_address_update', return_value=({'enabled': True, 'emailAddress': 'test@gmail.com',
                                                                            'disposition': 'markRead', 'userId': 'me'},
                                                                           None, {'emailAddress': 'test@gmail.com',
@@ -603,7 +604,17 @@ enabled|\n|---|---|---|---|\n| test@gmail.com | me | markRead | true |\n'
 
 
 def test_no_date_mail():
+    """
+    Tests get_email_context function.
+        Given:
+             - An email without a valid date header.
+        When:
+            - executing get_email_context function.
+        Then:
+            -the 'Date' is valid.
+    """
     from email.utils import parsedate_to_datetime
+
     from Gmail import get_email_context
     context_gmail, _, _, occurred, is_valid = get_email_context(input_data.email_without_date, "some_mail")
     # check that the x-received date was usd
@@ -668,20 +679,89 @@ class MockService:
 ])
 def test_fetch_incidents(mocker, return_value_get_last_run, expected_result):
     """
-    Tests emails_to_entry function.
+    Tests fetch_incidents function.
         Given:
-             - gmail get message list api response (from search_command function).
+             - lastRun object.
         When:
-            - executing emails_to_entry function.
+            - executing fetch_incidents function.
         Then:
-            -the contents and human readable are valid.
+            - the incidents are valid.
     """
 
-    from Gmail import fetch_incidents
     import Gmail
+    from Gmail import fetch_incidents
     service = MockService()
     mocker.patch.object(Gmail, 'get_service', return_value=service)
     mocker.patch.object(demisto, 'params', return_value={'queryUserKey': '111', 'query': '', 'fetch_limit': '1'})
     mocker.patch.object(demisto, 'getLastRun', return_value=return_value_get_last_run)
-    result = fetch_incidents()
-    assert result == expected_result
+    incidents = fetch_incidents()
+    assert incidents == expected_result
+
+
+def test_get_occurred_date():
+    """
+    Tests test_get_occurred_date function.
+        Given:
+             - an email message without date header.
+        When:
+            - executing test_get_occurred_date function.
+        Then:
+            - the occurred date is valid and corresponding to the date in the email.
+    """
+    from Gmail import get_occurred_date
+    occurred, occurred_is_valid = get_occurred_date(input_data.email_without_date)
+    assert str(occurred) == '2020-12-21 12:11:57-08:00'
+    assert occurred == datetime.datetime(2020, 12, 21, 12, 11, 57,
+                                         tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=57600)))
+    assert occurred_is_valid is True
+
+
+def test_get_date_from_email_header():
+    """
+    Tests test_get_occurred_date function.
+        Given:
+             - an email header with a date.
+        When:
+            - executing get_date_from_email_header function.
+        Then:
+            - the date is valid and corresponding to the date in the header.
+    """
+
+    from Gmail import get_date_from_email_header
+    result = get_date_from_email_header('by 2002:a9d:4b03:: with SMTP id q3mr13206164otf.88.1608581517297;\
+            Mon, 21 Dec 2020 12:11:57 -0800 (PST)')
+    assert str(result) == '2020-12-21 12:11:57-08:00'
+    assert result == datetime.datetime(2020, 12, 21, 12, 11, 57,
+                                       tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=57600)))
+
+
+def test_get_date_isoformat_server():
+    """
+    Tests test_get_occurred_date function.
+        Given:
+             - a datetime object.
+        When:
+            - executing test_get_date_isoformat_server function.
+        Then:
+            - the date string is valid.
+    """
+    from Gmail import get_date_isoformat_server
+    date = get_date_isoformat_server(datetime.datetime(2022, 11, 9, 22, 45, 44,
+                                                       tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=68400))))
+    assert date == '2022-11-10T03:45:44Z'
+
+
+def test_parse_date_isoformat_server():
+    """
+    Tests parse_date_isoformat_server function.
+        Given:
+             - a string that represents a date.
+        When:
+            - executing parse_date_isoformat_server function.
+        Then:
+            - the datetime is valid.
+    """
+    from Gmail import parse_date_isoformat_server
+    date = parse_date_isoformat_server('2017-10-24T14:13:20Z')
+    assert date == datetime.datetime(2017, 10, 24, 14, 13, 20, tzinfo=datetime.timezone.utc)
+    assert str(date) == '2017-10-24 14:13:20+00:00'
