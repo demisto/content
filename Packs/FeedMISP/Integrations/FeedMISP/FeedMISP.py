@@ -387,7 +387,7 @@ def fetch_indicators(client: Client,
 
         update_indicator_fields(indicator_obj, tlp_color, raw_type, feed_tags)
         galaxy_indicators = build_indicators_from_galaxies(indicator_obj, reputation)
-        (indicator_obj, galaxy_indicators)
+        create_and_add_relationships(indicator_obj, galaxy_indicators)
 
         indicators.append(indicator_obj)
 
@@ -414,7 +414,7 @@ def build_indicators_from_galaxies(indicator_obj: Dict[str, Any], reputation: Op
     return galaxy_indicators
 
 
-def create_and_add_relationscreate_and_add_relationshipships(indicator_obj: Dict[str, Any], galaxy_indicators: List[Dict[str, Any]]) -> None:
+def create_and_add_relationships(indicator_obj: Dict[str, Any], galaxy_indicators: List[Dict[str, Any]]) -> None:
     """
     Creates relationships between the indicators created from the attributes and
     the indicators created from the galaxies
@@ -425,10 +425,6 @@ def create_and_add_relationscreate_and_add_relationshipships(indicator_obj: Dict
     """
     indicator_obj_type = indicator_obj['type']
     relationships_indicators = []
-
-    demisto.debug(f'This is the indicator_obj: {indicator_obj}')
-    demisto.debug(f'This is the galaxy_indicators: {galaxy_indicators}')
-
     for galaxy_indicator in galaxy_indicators:
         galaxy_indicator_type = galaxy_indicator['type']
 
