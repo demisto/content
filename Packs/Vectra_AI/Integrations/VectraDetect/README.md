@@ -1,10 +1,10 @@
-This integration allows to create incidents based on Vectra Accounts/Hosts/Detections objects
-This integration was integrated and tested with version 7.0 of Vectra_Detect
+This integration allows to create incidents based on Vectra Accounts/Hosts/Detections objects.
+This integration was integrated and tested with version 7.1 of Vectra Detect
 
-## Configure Vectra Detect (Beta) on Cortex XSOAR
+## Configure Vectra Detect on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Vectra Detect (Beta).
+2. Search for Vectra Detect.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -153,8 +153,8 @@ Returns a list of Detection objects. All search attributes will be cummulative u
 | Vectra.Detection.Category | String | Detection category \(Lateral, Exfil, ...\) | 
 | Vectra.Detection.CertaintyScore | Number | Detection certainty score | 
 | Vectra.Detection.Description | String | Detection description | 
-| vectra.Detection.DestinationIPs | String | Detection destination IPs | 
-| vectra.Detection.DestinationPorts | String | Detection destination ports | 
+| Vectra.Detection.DestinationIPs | String | Detection destination IPs | 
+| Vectra.Detection.DestinationPorts | String | Detection destination ports | 
 | Vectra.Detection.FirstTimestamp | String | First time this detection has been seen | 
 | Vectra.Detection.ID | Number | Detection ID \(unique\) | 
 | Vectra.Detection.IsTargetingKeyAsset | Boolean | Whether this detection is targeting a key asset | 
@@ -172,6 +172,93 @@ Returns a list of Detection objects. All search attributes will be cummulative u
 | Vectra.Detection.TriageRuleID | String | Triage rule ID related to this detection | 
 | Vectra.Detection.Type | String | Detection type \(Brute Force, Port Sweep, ...\) | 
 | Vectra.Detection.URL | String | Detection URL to pivot to Vectra UI | 
+
+### vectra-search-assignments
+***
+Return a list of assignments. By default already resolved assignment are not returned.
+
+
+#### Base Command
+
+`vectra-search-assignments`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_ids | Filters by accounts IDs. | Optional | 
+| assignee_ids | Filters by assignees IDs. | Optional | 
+| host_ids | Filters by hosts IDs. | Optional | 
+| outcome_ids | Filters by outcomes IDs. | Optional | 
+| resolved | Filters by resolution state. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Vectra.Assignment.AccountID | Number | Account ID this assignment is linked to | 
+| Vectra.Assignment.AssignedBy | String | Who lastly assigned this assignment | 
+| Vectra.Assignment.AssignedDate | String | When this assignment was lastly assigned | 
+| Vectra.Assignment.AssignedTo | String | To who this assignment is assigned | 
+| Vectra.Assignment.HostID | String | Host ID this assignment is linked to | 
+| Vectra.Assignment.ID | Number | Assignment ID \(unique\) | 
+| Vectra.Assignment.IsResolved | Boolean | Is this assignment resolved | 
+| Vectra.Assignment.OutcomeCategory | String | Assignment Outcome category | 
+| Vectra.Assignment.OutcomeTitle | String | Assignment Outcome title | 
+| Vectra.Assignment.TriagedDetections | String | List of Detection that have been triaged with the resolution | 
+| Vectra.Assignment.TriagedAs | String | Name of the triage rule if any | 
+| Vectra.Assignment.ResolvedBy | String | Who resolved this assignment | 
+| Vectra.Assignment.ResolvedDate | string | When this assignment was resolved | 
+
+### vectra-search-users
+***
+Returns a list of Vectra Users. All search attributes will be cummulative.
+
+
+#### Base Command
+
+`vectra-search-users`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | Filters by user name. | Optional | 
+| role | Filters by user role. | Optional | 
+| type | Filters by type ('Local', 'SAML', ...). Possible values are: local, SAML. | Optional | 
+| last_login_datetime | Filters for Users that logged in since the given datetime. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Vectra.User.Email | String | User's email address | 
+| Vectra.User.ID | Number | User ID \(unique\) | 
+| Vectra.User.Role | String | User's role | 
+| Vectra.User.Type | String | User type \('Local', 'SAML', ...\) | 
+| Vectra.User.Username | String | Username | 
+| Vectra.User.LastLoginDate | String | User's last login datetime | 
+
+### vectra-search-outcomes
+***
+Returns a list of assignment outcomes.
+
+
+#### Base Command
+
+`vectra-search-outcomes`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Vectra.Outcome.IsBuiltIn | String | Is this Outcome a builtin Outcome | 
+| Vectra.Outcome.Category | String | Outcome's category \('False Positive', 'Benign True Positive', 'Malicious True Positive'\) | 
+| Vectra.Outcome.ID | Number | Outcome ID \(unique\) | 
+| Vectra.Outcome.Title | String | Outcome title | 
 
 ### vectra-account-describe
 ***
@@ -347,8 +434,8 @@ Returns a single detection details
 | Vectra.Detection.Category | String | Detection category \(Lateral, Exfil, ...\) | 
 | Vectra.Detection.CertaintyScore | Number | Detection certainty score | 
 | Vectra.Detection.Description | String | Detection description | 
-| vectra.Detection.DestinationIPs | String | Detection destination IPs | 
-| vectra.Detection.DestinationPorts | String | Detection destination ports | 
+| Vectra.Detection.DestinationIPs | String | Detection destination IPs | 
+| Vectra.Detection.DestinationPorts | String | Detection destination ports | 
 | Vectra.Detection.FirstTimestamp | String | First time this detection has been seen | 
 | Vectra.Detection.ID | Number | Detection ID \(unique\) | 
 | Vectra.Detection.IsTargetingKeyAsset | Boolean | Whether this detection is targeting a key asset | 
@@ -442,3 +529,184 @@ Delete tags from a Detection
 #### Context Output
 
 There is no context output for this command.
+### vectra-outcome-describe
+***
+Returns a single outcome details
+
+
+#### Base Command
+
+`vectra-outcome-describe`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Outcome ID you want to get details on. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Vectra.Outcome.IsBuiltIn | String | Is this Outcome a builtin Outcome | 
+| Vectra.Outcome.Category | String | Outcome's category \('False Positive', 'Benign True Positive', 'Malicious True Positive'\) | 
+| Vectra.Outcome.ID | Number | Outcome ID \(unique\) | 
+| Vectra.Outcome.Title | String | Outcome title | 
+
+### vectra-outcome-create
+***
+Creates a new assignment outcome
+
+
+#### Base Command
+
+`vectra-outcome-create`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| title | Outcome title (will be visible in the UI). | Optional | 
+| category | Outcome category (one of the 3). Possible values are: Benign True Positive, Malicious True Positive, False Positive. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Vectra.Outcome.IsBuiltIn | String | Is this Outcome a builtin Outcome | 
+| Vectra.Outcome.Category | String | Outcome's category \('False Positive', 'Benign True Positive', 'Malicious True Positive'\) | 
+| Vectra.Outcome.ID | Number | Outcome ID \(unique\) | 
+| Vectra.Outcome.Title | String | Outcome title | 
+
+### vectra-assignment-describe
+***
+Returns a single assignment details
+
+
+#### Base Command
+
+`vectra-assignment-describe`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Assignment ID you want to get details on. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Vectra.Assignment.AccountID | Number | Account ID this assignment is linked to | 
+| Vectra.Assignment.AssignedBy | String | Who lastly assigned this assignment | 
+| Vectra.Assignment.AssignedDate | String | When this assignment was lastly assigned | 
+| Vectra.Assignment.AssignedTo | String | To who this assignment is assigned | 
+| Vectra.Assignment.HostID | String | Host ID this assignment is linked to | 
+| Vectra.Assignment.ID | Number | Assignment ID \(unique\) | 
+| Vectra.Assignment.IsResolved | Boolean | Is this assignment resolved | 
+| Vectra.Assignment.OutcomeCategory | String | Assignment Outcome category | 
+| Vectra.Assignment.OutcomeTitle | String | Assignment Outcome title | 
+| Vectra.Assignment.TriagedDetections | String | List of Detection that have been triaged with the resolution | 
+| Vectra.Assignment.TriagedAs | String | Name of the triage rule if any | 
+| Vectra.Assignment.ResolvedBy | String | Who resolved this assignment | 
+| Vectra.Assignment.ResolvedDate | string | When this assignment was resolved | 
+
+### vectra-assignment-assign
+***
+Assigns an Account/Host entity to a Vectra User for investigation. If an assignment already exists on this entity, it will be reassigned
+
+
+#### Base Command
+
+`vectra-assignment-assign`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| assignee_id | Assignee's ID (Vectra User ID). | Optional | 
+| assignment_id | Assignment ID if an assignment already exists for the given entity. | Optional | 
+| account_id | Account ID. | Optional | 
+| host_id | Host ID. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Vectra.Assignment.AccountID | Number | Account ID this assignment is linked to | 
+| Vectra.Assignment.AssignedBy | String | Who lastly assigned this assignment | 
+| Vectra.Assignment.AssignedDate | String | When this assignment was lastly assigned | 
+| Vectra.Assignment.AssignedTo | String | To who this assignment is assigned | 
+| Vectra.Assignment.HostID | String | Host ID this assignment is linked to | 
+| Vectra.Assignment.ID | Number | Assignment ID \(unique\) | 
+| Vectra.Assignment.IsResolved | Boolean | Is this assignment resolved | 
+| Vectra.Assignment.OutcomeCategory | String | Assignment Outcome category | 
+| Vectra.Assignment.OutcomeTitle | String | Assignment Outcome title | 
+| Vectra.Assignment.TriagedDetections | String | List of Detection that have been triaged with the resolution | 
+| Vectra.Assignment.TriagedAs | String | Name of the triage rule if any | 
+| Vectra.Assignment.ResolvedBy | String | Who resolved this assignment | 
+| Vectra.Assignment.ResolvedDate | string | When this assignment was resolved | 
+
+### vectra-assignment-resolve
+***
+Resolves an assignment by selecting resolution scheme. Could be 'resolving only' or 'resolving by filtering detections'
+
+
+#### Base Command
+
+`vectra-assignment-resolve`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| assignment_id | Assignment's ID. | Optional | 
+| outcome_id | Assignment Outcome's ID. | Optional | 
+| note | A note to add to this resolution. | Optional | 
+| detections_filter | Do you want to filter detections when resolving this assignment ? [Default is None]. Possible values are: None, Filter Rule. | Optional | 
+| filter_rule_name | Filter rule's name (when using filter_detections="Filter Rule"). | Optional | 
+| detections_list | Detection IDs list you want to filter. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Vectra.Assignment.AccountID | Number | Account ID this assignment is linked to | 
+| Vectra.Assignment.AssignedBy | String | Who lastly assigned this assignment | 
+| Vectra.Assignment.AssignedDate | String | When this assignment was lastly assigned | 
+| Vectra.Assignment.AssignedTo | String | To who this assignment is assigned | 
+| Vectra.Assignment.HostID | String | Host ID this assignment is linked to | 
+| Vectra.Assignment.ID | Number | Assignment ID \(unique\) | 
+| Vectra.Assignment.IsResolved | Boolean | Is this assignment resolved | 
+| Vectra.Assignment.OutcomeCategory | String | Assignment Outcome category | 
+| Vectra.Assignment.OutcomeTitle | String | Assignment Outcome title | 
+| Vectra.Assignment.TriagedDetections | String | List of Detection that have been triaged with the resolution | 
+| Vectra.Assignment.TriagedAs | String | Name of the triage rule if any | 
+| Vectra.Assignment.ResolvedBy | String | Who resolved this assignment | 
+| Vectra.Assignment.ResolvedDate | string | When this assignment was resolved | 
+
+### vectra-user-describe
+***
+Returns a single Vectra User details
+
+
+#### Base Command
+
+`vectra-user-describe`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | User ID you want to get details on. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Vectra.User.Email | String | User's email address | 
+| Vectra.User.ID | Number | User ID \(unique\) | 
+| Vectra.User.Role | String | User's role | 
+| Vectra.User.Type | String | User type \('Local', 'SAML', ...\) | 
+| Vectra.User.Username | String | Username | 
+| Vectra.User.LastLoginDate | String | User's last login datetime | 
