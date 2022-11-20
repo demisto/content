@@ -2390,7 +2390,7 @@ def forwarding_address_list_command() -> CommandResults:
 
 def fetch_incidents():
     params = demisto.params()
-    max_fetch = int(params.get('fetch_limit') or 100)
+    max_fetch = int(params.get('fetch_limit') or 50)
     user_key = 'me'
     query = '' if params['query'] is None else params['query']
     last_run = demisto.getLastRun()
