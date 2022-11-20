@@ -661,8 +661,11 @@ def extract_from_xml(xml, path):
 def generate_field_contents(client, fields_values, level_fields):
     if fields_values and not isinstance(fields_values, dict):
         demisto.debug(f"fields values are: {fields_values}")
+        fields_values = fields_values.replace("\\", "\\\\")
+        fields_values = fields_values.replace('\\\\"', "")
+        demisto.debug(f"fields now: {fields_values}")
         try:
-            fields_values = json.loads(fields_values.replace("\\", "\\\\"))
+            fields_values = json.loads(fields_values)
         except Exception:
             raise Exception('Failed to parse fields-values argument')
 
