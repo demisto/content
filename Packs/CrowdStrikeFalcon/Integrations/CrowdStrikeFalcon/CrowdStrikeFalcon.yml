@@ -2501,7 +2501,7 @@ script:
   - arguments: []
     description: Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection.
     name: update-remote-system
-  dockerimage: demisto/python3:3.10.8.36650
+  dockerimage: demisto/python3:3.10.8.37233
   isfetch: true
   ismappable: true
   isremotesyncin: true
@@ -2513,3 +2513,6 @@ script:
 fromversion: 5.0.0
 tests:
 - Test - CrowdStrike Falcon
+defaultclassifier: CrowdStrike Falcon
+defaultmapperin: CrowdStrike Falcon-Mapper
+defaultmapperout: CrowdStrike Falcon - Outgoing Mapper
