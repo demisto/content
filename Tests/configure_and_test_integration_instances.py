@@ -11,7 +11,6 @@ import zipfile
 from abc import abstractmethod
 from datetime import datetime
 
-from demisto_sdk.commands.test_content.GoogleSecretManagerModule import GoogleSecreteManagerModule
 from packaging.version import Version
 from enum import IntEnum
 from pprint import pformat
@@ -32,6 +31,7 @@ from demisto_sdk.commands.test_content.TestContentClasses import BuildContext
 from demisto_sdk.commands.validate.validate_manager import ValidateManager
 from ruamel import yaml
 
+from Tests.GoogleSecretManagerModule import GoogleSecreteManagerModule
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
     upload_zipped_packs, install_all_content_packs_for_nightly
 from Tests.Marketplace.marketplace_constants import Metadata
