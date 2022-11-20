@@ -3810,6 +3810,42 @@ def get_detection_for_incident_command(incident_id: str) -> CommandResults:
 
 
 def cs_falcon_spotlight_search_vulnerability_command(args: dict):
+    """
+        Get a list of vulnerability by spotlight
+        : args: filter which include params or filter param.
+        : return: a list of vulnerabilities according to the user.
+    """
+    endpoint_url = '/spotlight/combined/vulnerabilities/v1'
+    if len(args) == 0:
+        raise ValueError('Must insert at least one filter param or filter string')
+    elif args.get('filter'):
+        body = json.dumps({'filter': args.get('filter')})
+    else:
+        body = json.dumps({
+            'aid': args.get('aid'),
+            'cve_id': args.get('cve_id'),
+            'cve_severity': args.get('cve_severity'),
+            'tags': args.get('tags'),
+            'status': args.get('status'),
+            'platform_name': args.get('platform_name'),
+            'host_group': args.get('host_group'),
+            'host_type': args.get('host_type'),
+            'last_seen_within': args.get('last_seen_within'),
+            'is_suppressed': args.get('is_suppressed'),
+            'display_remediation_info': args.get('display_remediation_info'),
+            'display_evaluation_logic_info': args.get('display_evaluation_logic_info'),
+            'display_host_info': args.get('display_host_info'),
+            'limit': args.get('limit')
+        })
+    response = http_request('GET', endpoint_url, data=body)
+    print('response')
+    human_readable = ''  #  tableToMarkdown('')
+    human_readable += get_human_readable_for_failed_command(outputs, host_ids, "HostID")
+    return CommandResults(raw_response=response, readable_output=human_readable, outputs=outputs,
+                          outputs_prefix="CrowdStrike.Command.rm", outputs_key_field="HostID")
+
+
+def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict):
     pass
 
 
@@ -3976,11 +4012,11 @@ def main():
             return_results(update_remote_system_command(args))
         elif demisto.command() == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
-        elif demisto.command() == 'cs-falcon-spotlight-search-vulnerability':
+        elif command == 'cs-falcon-spotlight-search-vulnerability':
+            return_results(cs_falcon_spotlight_search_vulnerability_command(args))
+        elif command == 'cs-falcon-spotlight-list-host-by-vulnerability':
             return()
-        elif demisto.command() == 'cs-falcon-spotlight-list-host-by-vulnerability':
-            return()
-        elif demisto.command() == 'cve':
+        elif command == 'cve':
             return()
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
