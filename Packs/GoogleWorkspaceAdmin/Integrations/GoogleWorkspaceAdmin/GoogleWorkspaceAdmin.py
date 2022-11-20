@@ -111,17 +111,15 @@ class Client(BaseClient):
             json_data=json_body, headers=headers, resp_type='response')
         return response
 
-    def google_mobile_device_list_request(self, projection: str | None = None, max_results: int = DEFAULT_LIMIT,
-                                          order_by: str | None = None, sort_order: str | None = None,
-                                          page_token: str | None = None, query: str | None = None) -> dict:
-        params = assign_params(projection=projection, query=query, orderBy=order_by,
-                               sortOrder=sort_order, pageToken=page_token, maxResults=3 if max_results > 3 else max_results)
+    def google_mobile_device_list_request(self, query_params: dict) -> dict:
+        # params = assign_params(projection=projection, query=query, orderBy=order_by,
+        #                        sortOrder=sort_order, pageToken=page_token, maxResults=3 if max_results > 3 else max_results)
         scopes = ['https://www.googleapis.com/auth/admin.directory.device.mobile.readonly']
         token = self._get_oauth_token(scopes=scopes)
         headers = self._headers | {'Authorization': f'Bearer {token}'}
         response = self.http_request(
             method='GET', url_suffix=f'admin/directory/v1/customer/{self._customer_id}/devices/mobile',
-            params=params, headers=headers
+            params=query_params, headers=headers
         )
         return response
 
@@ -180,20 +178,98 @@ def google_mobile_device_action_command(client: Client, resource_id: str, action
     return command_results
 
 
-def mobile_device_list_to_context_data(response: dict) -> dict:
-    # TODO Should I add the nextPageToken?
-    return {'mobileListObjects': response.get('mobiledevices')}
+def device_list_manual_pagination(api_request: Callable, to_human_readable: Callable, query_params: dict, page: int,
+                                  page_size: int, table_headers: List[str], table_title: str,
+                                  response_devices_list_key: str, cd_devices_list_key: str) -> CommandResults:
+    """
+    Executes the command mobile-device-list using manual pagination, and returns a CommandResult
+    that holds the data to return to the user.
+    """
+    relevant_response = {}  # This will hold the relevant response that holds the page that was requested
+    context_data = {}  # This will hold the context data to return to the user
+    next_page_token: str | None = None
+    get_data_from_api = True  # This will decide if we should continue requesting from the API or that we should stop
+    current_page_number = 0
+    page_found = True  # This will tell us if the required page was found or not
+    while get_data_from_api:
+        response = api_request(query_params=query_params)
+        next_page_token = response.get('nextPageToken')
+        query_params['pageToken'] = next_page_token
+        current_page_number += 1
+        if(current_page_number == page):
+            get_data_from_api = False
+            context_data['resourceKind'] = response.get('kind')
+            context_data['ETag'] = response.get('etag')
+            context_data[cd_devices_list_key] = response.get(response_devices_list_key, [])
+            relevant_response = response
+        elif(not next_page_token):
+            get_data_from_api = False
+            page_found = False
+
+    markdown = ''
+    if not page_found:
+        markdown = (f'No results were found. The maximum number of pages is {current_page_number}'
+                    f' for page size of {page_size}')
+    else:
+        human_readable = to_human_readable(context_data=context_data)
+        markdown = tableToMarkdown(table_title, human_readable, headers=table_headers)
+
+    command_results = CommandResults(
+        outputs_prefix=f'{OUTPUT_PREFIX}.mobileEvent',
+        readable_output=markdown,
+        outputs=context_data,
+        raw_response=relevant_response,
+    )
+    return command_results
 
 
-def device_list_to_context_data(response: dict, device_list_type: Devices) -> dict:
-    context_data = {'resourceKind': response.get('kind'), 'ETag': response.get('etag')}
-    if device_list_type == Devices.CHROMEOS_DEVICE:
-        context_data |= chromeos_device_list_to_context_data(response=response)
+def device_list_automatic_pagination(api_request: Callable, to_human_readable: Callable, query_params: dict,
+                                     limit: int, table_headers: List[str], table_title: str,
+                                     response_devices_list_key: str, cd_devices_list_key) -> CommandResults:
+    """
+    Executes the command mobile-device-list using automatic pagination, and returns a CommandResult
+    that holds the data to return to the user.
+    """
+    results_limit = arg_to_number(limit)
+    results_limit = results_limit if results_limit else DEFAULT_LIMIT
+    context_data = {}  # This will hold the context data to return to the user
+    mobile_devices = []  # This will hold all aggregated mobile devices returned from the API requests
+    responses = []  # This will hold all the responses from the API requests
+    next_page_token: str | None = None
+    get_data_from_api = True  # This will decide if we should continue requesting from the API or that we should stop
+    while get_data_from_api:
+        query_params['maxResults'] = results_limit
+        response = api_request(query_params=query_params)
+        responses.append(response)
+        response_mobile_devices = response.get(response_devices_list_key, [])
+        next_page_token = response.get('nextPageToken')
+        query_params['pageToken'] = next_page_token
 
-    elif device_list_type == Devices.MOBILE_DEVICE:
-        context_data |= mobile_device_list_to_context_data(response=response)
+        mobile_devices.extend(response_mobile_devices)
+        results_limit -= len(response_mobile_devices)
+        if(results_limit <= 0 or not next_page_token):
+            context_data['resourceKind'] = response.get('kind')
+            context_data['ETag'] = response.get('etag')
+            context_data[cd_devices_list_key] = mobile_devices
+            get_data_from_api = False
+    human_readable = to_human_readable(context_data=context_data)
+    markdown = tableToMarkdown(table_title, human_readable, headers=table_headers)
+    command_results = CommandResults(
+        outputs_prefix=f'{OUTPUT_PREFIX}.mobileEvent',
+        readable_output=markdown,
+        outputs=context_data,
+        raw_response=responses,
+    )
+    return command_results
 
-    return context_data
+
+def mobile_device_list_create_query_parameters(args: dict) -> dict:
+    query_params = assign_params(projection=args.get('projection', None),
+                                 query=args.get('query', None),
+                                 orderBy=args.get('order_by', None),
+                                 sortOrder=args.get('sort_order', None),
+                                 )
+    return query_params
 
 
 def mobile_device_list_to_human_readable(context_data: dict) -> List[dict]:
@@ -210,153 +286,97 @@ def mobile_device_list_to_human_readable(context_data: dict) -> List[dict]:
     return human_readable
 
 
-def mobile_device_list_manual_pagination(client: Client, projection: str | None = None, query: str | None = None,
-                                         order_by: str | None = None, sort_order: str | None = None,
-                                         page: str | None = None, page_size: str | None = None):
-    """
-    Executes the command mobile-device-list using manual pagination, and returns a CommandResult
-    that holds the data to return to the user.
-    """
-    page_number = arg_to_number(page)
-    if not page_number:
-        return_error(message='Please insert a page number')
-    page_size_number = arg_to_number(page_size)
-    page_size_number = page_size_number if page_size_number else DEFAULT_PAGE_SIZE
-
-    relevant_response = {}  # This will hold the relevant response that holds the page that was requested
-    context_data = {}  # This will hold the context data to return to the user
-    next_page_token: str | None = None
-    get_data_from_api = True  # This will decide if we should continue requesting from the API or that we should stop
-    current_page_number = 0
-    page_found = True  # This will tell us if the required page was found or not
-    while get_data_from_api:
-        response = client.google_mobile_device_list_request(projection=projection, query=query, order_by=order_by,
-                                                            sort_order=sort_order, page_token=next_page_token,
-                                                            max_results=page_size_number,
-                                                            )
-        next_page_token = response.get('nextPageToken')
-
-        current_page_number += 1
-        if(current_page_number == page_number):
-            get_data_from_api = False
-            context_data['resourceKind'] = response.get('kind')
-            context_data['ETag'] = response.get('etag')
-            context_data['mobileListObjects'] = response.get('mobiledevices', [])
-            relevant_response = response
-        elif(not next_page_token):
-            get_data_from_api = False
-            page_found = False
-
-    markdown = ''
-    if not page_found:
-        markdown = (f'No results were found. The maximum number of pages is {current_page_number}'
-                    f' for page size of {page_size_number}')
-    else:
-        human_readable = mobile_device_list_to_human_readable(context_data=context_data)
-        markdown = tableToMarkdown(f'{INTEGRATION_NAME} - Mobile Devices List', human_readable,
-                                   headers=['Serial Number', 'User Names', 'Model Name',
-                                            'OS', 'Type', 'Status'])
-    command_results = CommandResults(
-        outputs_prefix=f'{OUTPUT_PREFIX}.mobileEvent',
-        readable_output=markdown,
-        outputs=context_data,
-        raw_response=relevant_response,
-    )
-    return command_results
-
-
-def mobile_device_list_automatic_pagination(client: Client, projection: str | None = None, query: str | None = None,
-                                            order_by: str | None = None, sort_order: str | None = None,
-                                            limit: str | None = None) -> CommandResults:
-    """
-    Executes the command mobile-device-list using automatic pagination, and returns a CommandResult
-    that holds the data to return to the user.
-    """
-    results_limit = arg_to_number(limit)
-    results_limit = results_limit if results_limit else DEFAULT_LIMIT
-    context_data = {}  # This will hold the context data to return to the user
-    mobile_devices = []  # This will hold all aggregated mobile devices returned from the API requests
-    responses = []  # This will hold all the responses from the API requests
-    next_page_token: str | None = None
-    get_data_from_api = True  # This will decide if we should continue requesting from the API or that we should stop
-    while get_data_from_api:
-        response = client.google_mobile_device_list_request(projection=projection, query=query, order_by=order_by,
-                                                            sort_order=sort_order, page_token=next_page_token,
-                                                            max_results=results_limit,
-                                                            )
-        responses.append(response)
-        response_mobile_devices = response.get('mobiledevices', [])
-        next_page_token = response.get('nextPageToken')
-
-        mobile_devices.extend(response_mobile_devices)
-        results_limit -= len(response_mobile_devices)
-        if(results_limit <= 0 or not next_page_token):
-            context_data['resourceKind'] = response.get('kind')
-            context_data['ETag'] = response.get('etag')
-            context_data['mobileListObjects'] = mobile_devices
-            get_data_from_api = False
-
-    human_readable = mobile_device_list_to_human_readable(context_data=context_data)
-    markdown = tableToMarkdown(f'{INTEGRATION_NAME} - Mobile Devices List', human_readable,
-                               headers=['Serial Number', 'User Names', 'Model Name',
-                                        'OS', 'Type', 'Status'])
-    command_results = CommandResults(
-        outputs_prefix=f'{OUTPUT_PREFIX}.mobileEvent',
-        readable_output=markdown,
-        outputs=context_data,
-        raw_response=responses,
-    )
-    return command_results
-
-
 def google_mobile_device_list_command(client: Client, **kwargs) -> CommandResults:
-    return mobile_device_list_automatic_pagination(client=client, **kwargs)
-    # human_readable = mobile_device_list_to_human_readable(context_data=context_data)
-    # markdown = tableToMarkdown(f'{INTEGRATION_NAME} - Mobile Devices List', human_readable,
-    #                            headers=['Serial Number', 'User Names', 'Model Name',
-    #                                     'OS', 'Type', 'Status'])
-    # command_results = CommandResults(
-    #     outputs_prefix=f'{OUTPUT_PREFIX}.mobileEvent',
-    #     readable_output=markdown,
-    #     outputs=context_data,
-    #     raw_response=responses,
-    # )
-    # return command_results
-    # response = client.google_mobile_device_list_request(projection=projection, query=query, order_by=order_by,
-    #                                                     sort_order=sort_order, page_token=page_token,
-    #                                                     max_results=arg_to_number(limit))
-    # context_data = device_list_to_context_data(response=response, device_list_type=Devices.MOBILE_DEVICE)
-    # human_readable = mobile_device_list_to_human_readable(response=response)
-    # markdown = tableToMarkdown(f'{INTEGRATION_NAME} - Mobile Devices List', human_readable,
-    #                            headers=['Serial Number', 'User Names', 'Model Name',
-    #                                     'OS', 'Type', 'Status'])
-    # command_results = CommandResults(
-    #     outputs_prefix=f'{OUTPUT_PREFIX}.mobileEvent',
-    #     readable_output=markdown,
-    #     outputs=context_data,
-    #     raw_response=response,
-    # )
-    # return command_results
+    query_params = mobile_device_list_create_query_parameters(kwargs)
+    table_headers = ['Serial Number', 'User Names', 'Model Name', 'OS', 'Type', 'Status']
+    table_title = f'{INTEGRATION_NAME} - Mobile Devices List'
+    response_devices_list_key = 'mobiledevices'
+    cd_devices_list_key = 'mobileListObjects'
+    if('page' in kwargs or 'page_size' in kwargs):
+        if('limit' in kwargs):
+            return_error(('In order to use pagination, please supply either the argument `limit`,'
+                          ' or the arguments `page` and `page_size` together'))
+        page = kwargs.get('page', None)
+        if not page:
+            return_error(message='Please insert a page number')
+        page_size = arg_to_number(kwargs.get('page_size', None))
+        page_size = page_size if page_size else DEFAULT_PAGE_SIZE
+        query_params['maxResults'] = page_size
+        return device_list_manual_pagination(api_request=client.google_mobile_device_list_request,
+                                             to_human_readable=mobile_device_list_to_human_readable,
+                                             table_headers=table_headers,
+                                             table_title=table_title,
+                                             response_devices_list_key=response_devices_list_key,
+                                             cd_devices_list_key=cd_devices_list_key,
+                                             query_params=query_params, page=page, page_size=page_size)
+
+    limit = arg_to_number(kwargs.get('limit', None))
+    limit = limit if limit else DEFAULT_LIMIT
+    return device_list_automatic_pagination(api_request=client.google_mobile_device_list_request,
+                                            to_human_readable=mobile_device_list_to_human_readable,
+                                            table_headers=table_headers,
+                                            table_title=table_title,
+                                            response_devices_list_key=response_devices_list_key,
+                                            cd_devices_list_key=cd_devices_list_key,
+                                            query_params=query_params, limit=limit)
 
 
-# def google_mobile_device_list_command(client: Client, projection: str | None = None, query: str | None = None,
-#                                       order_by: str | None = None, sort_order: str | None = None,
-#                                       limit: str | None = None, page_token: str | None = None) -> CommandResults:
-#     response = client.google_mobile_device_list_request(projection=projection, query=query, order_by=order_by,
-#                                                         sort_order=sort_order, page_token=page_token,
-#                                                         max_results=arg_to_number(limit))
-#     context_data = device_list_to_context_data(response=response, device_list_type=Devices.MOBILE_DEVICE)
-#     human_readable = mobile_device_list_to_human_readable(response=response)
-#     markdown = tableToMarkdown(f'{INTEGRATION_NAME} - Mobile Devices List', human_readable,
-#                                headers=['Serial Number', 'User Names', 'Model Name',
-#                                         'OS', 'Type', 'Status'])
-#     command_results = CommandResults(
-#         outputs_prefix=f'{OUTPUT_PREFIX}.mobileEvent',
-#         readable_output=markdown,
-#         outputs=context_data,
-#         raw_response=response,
-#     )
-#     return command_results
+def chromeos_device_list_create_query_parameters(args: dict) -> dict:
+    query_params = assign_params(projection=args.get('projection', None),
+                                 query=args.get('query', None),
+                                 orderBy=args.get('order_by', None),
+                                 sortOrder=args.get('sort_order', None),
+                                 orgUnitPath=args.get('org_unit_path', None)
+                                 )
+    return query_params
+
+
+def chromeos_device_list_to_human_readable(context_data: dict) -> List[dict]:
+    human_readable: List[dict] = []
+    for mobile_device in context_data.get('chromeosListObjects', []):
+        human_readable.append({'Serial Number': mobile_device.get('serialNumber'),
+                               'User Name': mobile_device.get('annotatedUser'),
+                               'Model': mobile_device.get('model'),
+                               'OS': mobile_device.get('osVersion'),
+                               'Status': mobile_device.get('status')
+                               })
+
+    return human_readable
+
+
+def google_chromeos_device_list_command(client: Client, **kwargs) -> CommandResults:
+    query_params = mobile_device_list_create_query_parameters(kwargs)
+    table_headers = ['Serial Number', 'User Name', 'Model Name', 'OS', 'Status']
+    table_title = f'{INTEGRATION_NAME} - ChromeOs Devices List'
+    response_devices_list_key = 'chromeosdevices'
+    cd_devices_list_key = 'chromeosListObjects'
+    if('page' in kwargs or 'page_size' in kwargs):
+        if('limit' in kwargs):
+            return_error(('In order to use pagination, please supply either the argument `limit`,'
+                          ' or the arguments `page` and `page_size` together'))
+        page = kwargs.get('page', None)
+        if not page:
+            return_error(message='Please insert a page number')
+        page_size = arg_to_number(kwargs.get('page_size', None))
+        page_size = page_size if page_size else DEFAULT_PAGE_SIZE
+        query_params['maxResults'] = page_size
+        return device_list_manual_pagination(api_request=client.google_chromeos_device_list_request,
+                                             to_human_readable=chromeos_device_list_to_human_readable,
+                                             table_headers=table_headers,
+                                             table_title=table_title,
+                                             response_devices_list_key=response_devices_list_key,
+                                             cd_devices_list_key=cd_devices_list_key,
+                                             query_params=query_params, page=page, page_size=page_size)
+
+    limit = arg_to_number(kwargs.get('limit', None))
+    limit = limit if limit else DEFAULT_LIMIT
+    return device_list_automatic_pagination(api_request=client.google_mobile_device_list_request,
+                                            to_human_readable=chromeos_device_list_to_human_readable,
+                                            table_headers=table_headers,
+                                            table_title=table_title,
+                                            response_devices_list_key=response_devices_list_key,
+                                            cd_devices_list_key=cd_devices_list_key,
+                                            query_params=query_params, limit=limit)
 
 
 def google_chromeos_device_action_command(client: Client, resource_id: str, action: str,
@@ -374,45 +394,6 @@ def google_chromeos_device_action_command(client: Client, resource_id: str, acti
         outputs_prefix=f'{OUTPUT_PREFIX}.chromeOSAction',
         readable_output=readable_output,
         outputs={'Response': readable_output},
-    )
-    return command_results
-
-
-def chromeos_device_list_to_context_data(response: dict) -> dict:
-    # TODO Should I add the nextPageToken?
-    return {'chromeosListObjects': response.get('chromeosdevices')}
-
-
-def chromeos_device_list_to_human_readable(response: dict) -> List[dict]:
-    human_readable: List[dict] = []
-    for mobile_device in response.get('chromeosdevices', []):
-        human_readable.append({'Serial Number': mobile_device.get('serialNumber'),
-                               'User Name': mobile_device.get('annotatedUser'),
-                               'Model': mobile_device.get('model'),
-                               'OS': mobile_device.get('osVersion'),
-                               'Status': mobile_device.get('status')
-                               })
-
-    return human_readable
-
-
-def google_chromeos_device_list_command(client: Client, projection: str | None = None, query: str | None = None,
-                                        order_by: str | None = None, sort_order: str | None = None,
-                                        org_unit_path: str | None = None, limit: str | None = None,
-                                        page_token: str | None = None):
-    response = client.google_chromeos_device_list_request(projection=projection, query=query, order_by=order_by,
-                                                          sort_order=sort_order, page_token=page_token,
-                                                          org_unit_path=org_unit_path, max_results=arg_to_number(limit))
-    context_data = device_list_to_context_data(response=response, device_list_type=Devices.CHROMEOS_DEVICE)
-    human_readable = chromeos_device_list_to_human_readable(response=response)
-    markdown = tableToMarkdown(f'{INTEGRATION_NAME} - ChromeOs Devices List', human_readable,
-                               headers=['Serial Number', 'User Name', 'Model Name',
-                                        'OS', 'Status'])
-    command_results = CommandResults(
-        outputs_prefix=f'{OUTPUT_PREFIX}.chromeosEvent',
-        readable_output=markdown,
-        outputs=context_data,
-        raw_response=response,
     )
     return command_results
 
