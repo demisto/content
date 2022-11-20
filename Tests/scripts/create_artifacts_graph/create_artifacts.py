@@ -23,8 +23,6 @@ def create_zips(content_dto: ContentDTO, output: Path, marketplace: str, zip: bo
 def create_dependencies(content_dto: ContentDTO, output: Path):
     pack_dependencies = {}
     for pack in content_dto.packs:
-        with open(pack.path / PACK_METADATA) as f:
-            excluded_dependencies = set(json.load(f).get('excluded_dependencies', []))
         dependencies = pack.depends_on
         first_level_dependencies = {}
         all_level_dependencies = []

@@ -538,6 +538,8 @@ class Pack(object):
         parsed_result = {}
 
         for dependency_id, dependency_data in dependencies_metadata_dict.items():
+            if dependency_id in Metadata.EXCLUDED_DEPENDENCIES:
+                continue
             parsed_result[dependency_id] = {
                 "mandatory": first_level_dependencies.get(dependency_id, {}).get('mandatory', True),
                 "minVersion": dependency_data.get(Metadata.CURRENT_VERSION, Pack.PACK_INITIAL_VERSION),
@@ -676,6 +678,7 @@ class Pack(object):
             Metadata.USE_CASES: self._use_cases,
             Metadata.KEY_WORDS: self._keywords,
             Metadata.DEPENDENCIES: self._parsed_dependencies,
+            Metadata.EXCLUDED_DEPENDENCIES: self.user_metadata.get(Metadata.EXCLUDED_DEPENDENCIES, []),
             Metadata.MARKETPLACES: self._marketplaces,
             Metadata.VIDEOS: self.user_metadata.get(Metadata.VIDEOS) or [],
         }
