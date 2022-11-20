@@ -12,7 +12,7 @@ graph-create-instances:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     KUBERNETES_CPU_REQUEST: 2000m
-    KUBERNETES_MEMORY_REQUEST: 256Mi
+    KUBERNETES_MEMORY_REQUEST: 512Mi
   allow_failure: true
 
   needs: []
@@ -73,7 +73,7 @@ graph-prepare-testing-bucket-mpv2:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     KUBERNETES_CPU_REQUEST: 2000m
-    KUBERNETES_MEMORY_REQUEST: 256Mi
+    KUBERNETES_MEMORY_REQUEST: 512Mi
   needs: []
   stage: create-instances
   allow_failure: true

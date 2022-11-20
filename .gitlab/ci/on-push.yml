@@ -90,7 +90,7 @@ create-instances:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     KUBERNETES_CPU_REQUEST: 2000m
-    KUBERNETES_MEMORY_REQUEST: 256Mi
+    KUBERNETES_MEMORY_REQUEST: 512Mi
   needs: []
   stage: create-instances
   script:
@@ -151,7 +151,7 @@ prepare-testing-bucket-mpv2:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     KUBERNETES_CPU_REQUEST: 2000m
-    KUBERNETES_MEMORY_REQUEST: 256Mi
+    KUBERNETES_MEMORY_REQUEST: 512Mi
   needs: []
   stage: create-instances
   script:
