@@ -397,14 +397,20 @@ def module_test_command(client: Client, args):  # pragma: no cover
         dict: Operation raw response - Empty.
     """
     url = '/api/v3/groups?resultLimit=2'
-    response, status = client.make_request(Method.GET, url)
-    if status == 'Success':
-        return "ok", {}, {}
-    else:
-        demisto.debug(response)
-        return_error('Error from the API: ' + response.get('message',
-                                                           'An error has occurred, if it persist please contact your '
-                                                           'local help desk'))
+    try:
+        response, status = client.make_request(Method.GET, url)
+        if status == 'Success':
+            return "ok", {}, {}
+        else:
+            return_error('Error from the API: ' + response.get('message',
+                                                               'An error has occurred, if it persist, please contact your '
+                                                               'local help desk'))
+    except Exception as e:
+        exception_text = str(e).lower()
+        if 'resource not found' in exception_text:
+            return "ok", {}, {}
+        else:
+            return_error(str(e))
 
 
 def fetch_indicators_command(client: Client, params, last_run) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
@@ -501,14 +507,17 @@ def should_send_request(params, endpoint):
 def set_tql_query(from_date, params, endpoint):
     """Creating tql query to add information to the API response"""
     owners = f'AND ({create_or_query("ownerName", params.get("owners"))}) '
-    tags = f'AND ({create_or_query("tags", params.get("tags"))}) '
+    tags = f'AND ({create_or_query("tag", params.get("tags"))}) '
     status = f'AND ({create_or_query("status", params.get("status"))}) '
-    confidence = f'AND confidence GT {params.get("confidence")} ' if int(params.get("confidence")) != 0 else ''
-    threat_score = f'AND threatAssessScore GT {params.get("threat_assess_score")} ' \
-                   if int(params.get("threat_assess_score")) != 0 else ''
+
+    confidence = ''
     active_only = ''
+    threat_score = ''
     if endpoint == 'indicators':
         active_only = 'AND indicatorActive EQ True ' if argToBoolean(params.get("indicator_active")) else ''
+        confidence = f'AND confidence GT {params.get("confidence")} ' if int(params.get("confidence")) != 0 else ''
+        threat_score = f'AND threatAssessScore GT {params.get("threat_assess_score")} ' \
+                       if int(params.get("threat_assess_score")) != 0 else ''
 
     type_name_query = create_types_query(params, endpoint)
     type_names = f'AND {type_name_query}' if type_name_query else ''
