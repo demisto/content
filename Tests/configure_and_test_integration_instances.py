@@ -1176,7 +1176,7 @@ def set_integration_params(build,
                     f'Configuring integration "{integration["name"]}" with proxy=False')
         else:
             logging.debug(
-                f'Could not fined the secret config fo "{integration["name"]}" with secret {secret}__{instance}')
+                f'Could not fined the secret config fo "{integration["name"]}" with secret ')
             return False
 
     return True
