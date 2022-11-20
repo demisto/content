@@ -2997,16 +2997,17 @@ def create_site_command(client: Client, name: str, description: str | None = Non
     )
 
 
-def create_sites_report_command(client: Client, site_ids: str, site_names: str, template_id: str | None = None,
-                                report_name: str | None = None, report_format: str | None = None,
+def create_sites_report_command(client: Client, site_ids: str | None = None, site_names: str | None = None,
+                                template_id: str | None = None, report_name: str | None = None,
+                                report_format: str | None = None,
                                 download_immediately: str | None = None) -> dict | CommandResults:
     """
     Create a report about specific sites.
 
     Args:
         client (Client): Client to use for API requests.
-        site_ids (str): List of site IDs to create the report about.
-        site_names (str): List of site names to create the report about.
+        site_ids (str | None, optional): List of site IDs to create the report about.
+        site_names (str | None, optional): List of site names to create the report about.
         template_id (str | None, optional): ID of report template to use.
             Defaults to None (will result in using the first available template)
         report_name (str | None, optional): Name for the report that will be generated. Uses "report {date}" by default.
