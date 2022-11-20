@@ -241,9 +241,10 @@ class URLCheck(object):
             elif self.modified_url[index] == "]":
 
                 if not self.inside_brackets:
-                    if index == len(self.modified_url) - 1:
-                        # Special case where domain is valid with a trailing "]" the formatter will aloow it removing the last "]"
-                        index += 1
+                    if self.check_domain(host) and all([char in self.brackets for char in self.modified_url[index:]]):
+                        # Domain is valid with trailing "]" and brackets, the formatter will remove the extra chars
+                        self.done = True
+                        return
 
                     else:
                         raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
@@ -630,7 +631,11 @@ class URLFormatter(object):
 
 
 def main():
-    raw_urls = demisto.args().get('input').split()
+    raw_urls = demisto.args().get('input')
+
+    if isinstance(raw_urls, str):
+        raw_urls = raw_urls.split(",")
+
     formatted_urls: List[str] = []
 
     for url in raw_urls:
