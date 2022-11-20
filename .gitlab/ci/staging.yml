@@ -11,7 +11,7 @@ graph-create-instances:
     policy: pull
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
-    KUBERNETES_CPU_REQUEST: 2000m
+    KUBERNETES_CPU_REQUEST: 1000m
     KUBERNETES_MEMORY_REQUEST: 512Mi
   allow_failure: true
 
