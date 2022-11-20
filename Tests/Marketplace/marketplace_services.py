@@ -538,7 +538,7 @@ class Pack(object):
         parsed_result = {}
 
         for dependency_id, dependency_data in dependencies_metadata_dict.items():
-            if dependency_id in Metadata.EXCLUDED_DEPENDENCIES:
+            if dependency_id in dependency_data.get(Metadata.EXCLUDED_DEPENDENCIES, []):
                 continue
             parsed_result[dependency_id] = {
                 "mandatory": first_level_dependencies.get(dependency_id, {}).get('mandatory', True),
