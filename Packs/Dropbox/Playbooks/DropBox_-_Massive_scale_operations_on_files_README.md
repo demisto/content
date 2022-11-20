@@ -1,13 +1,9 @@
 This playbook investigates “Massive File Alterations” and “DropBox - Massive File Downloads” alerts by gathering user and IP information and performing remediation based on the information gathered and received from the user.
 
-Used Sub-playbooks:
-* Enrichment for Verdict
-* Block Indicators - Generic v3
-* Block IP - Generic v3
-* Block Account - Generic v2
+If you wish to link this playbook to the relevant alerts automatically, we recommend using the following filters when configuring the playbook triggers: 
 
-If you wish to link this playbook to the relevant alerts automatically, we recommend using the following filters when configuring the playbook triggers: Alert Source = Correlation 
-Alert Name = DropBox - Massive File Alterations, DropBox - Massive File Downloads
+- Alert Source = Correlation 
+- Alert Name = DropBox - Massive File Alterations, DropBox - Massive File Downloads
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -33,7 +29,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| InternalRange | List of Internal IP ranges |  | Optional |
+| InternalRange | List of Internal IP ranges. |  | Optional |
 
 ## Playbook Outputs
 ---
