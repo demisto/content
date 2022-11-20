@@ -1090,8 +1090,7 @@ def main():
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     # this is a list of all packs from `content_packs.zip`
     content_packs = [Pack(pack_name, os.path.join(extract_destination_path, pack_name))
-                     for pack_name in os.listdir(extract_destination_path)
-                     if os.path.exists(os.path.join(extract_destination_path, pack_name))]
+                     for pack_name in os.listdir(extract_destination_path)]
 
     # this is a list of packs given to this script
     packs_list = list(filter(lambda x: x.name in pack_names, content_packs))
