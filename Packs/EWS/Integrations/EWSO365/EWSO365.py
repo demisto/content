@@ -2089,7 +2089,8 @@ def parse_incident_from_item(item):
 
                         # save the attachment
                         file_name = get_attachment_name(attachment.name)
-                        demisto.debug(f"saving content number {attachment_counter}, of size {sys.getsizeof(attachment.content)}, of email with id {item.id}")
+                        demisto.debug(f"saving content number {attachment_counter}, "
+                                      f"of size {sys.getsizeof(attachment.content)}, of email with id {item.id}")
                         file_result = fileResult(file_name, attachment.content)
 
                         # check for error
