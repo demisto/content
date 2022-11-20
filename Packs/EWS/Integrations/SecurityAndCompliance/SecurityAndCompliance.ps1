@@ -262,21 +262,24 @@ class SecurityAndComplianceClient {
             $this.delegated_password = $null
         }
 
-        try
-        {
-            $ByteArray = [System.Convert]::FromBase64String($certificate)
-            $this.certificate = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($ByteArray, $certificate_password)
-        }
-        catch
-        {
+        if ($certificate -ne $null) {
+            try {
+                $ByteArray = [System.Convert]::FromBase64String($certificate)
+                $this.certificate = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($ByteArray, $certificate_password)
+            } catch {
             throw "Could not decode the certificate. Try to re-enter it"
+            }
         }
+
         $this.app_id = $app_id
         $this.organization = $organization
         $this.upn = $upn
     }
 
     CreateSession(){
+        if ($null -eq $this.certificate) {
+            ReturnError "Error: For this command, a Certificate is required." | Out-Null
+        }
         $cmd_params = @{
             "AppID" = $this.app_id
             "Organization" = $this.organization
@@ -286,6 +289,9 @@ class SecurityAndComplianceClient {
     }
 
     CreateDelegatedSession(){
+        if ($null -eq $this.delegated_password) {
+            ReturnError "Error: For this command, delegated access is required." | Out-Null
+        }
         $delegated_cred = New-Object System.Management.Automation.PSCredential ($this.upn, $this.delegated_password)
         Connect-IPPSSession -Credential $delegated_cred -WarningAction:SilentlyContinue | Out-Null
     }

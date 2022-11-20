@@ -3,16 +3,16 @@ commonfields:
   id: SecurityAndCompliance
   version: -1
 configuration:
-- additionalinfo: UPassword used to sign the certificate.
-  display: Certificate Password
+- display: Certificate Password
   name: certificate_password
   required: false
   type: 14
-- additionalinfo: A pfx certificate encoded in Base64.
-  display: Certificate
+  additionalinfo: Password used to sign the certificate.
+- display: Certificate
   name: certificate
-  required: false
   type: 14
+  required: false
+  additionalinfo: A pfx certificate encoded in Base64.
   hiddenusername: true
 - display: UPN/Email
   name: delegated_auth
@@ -975,7 +975,7 @@ script:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId
       description: Security and compliance search action Tenant ID.
       type: String
-  dockerimage: demisto/pwsh-exchange:1.0.0.22307
+  dockerimage: demisto/pwsh-exchange:1.0.0.34118
   isfetch: false
   longRunning: false
   longRunningPort: false
