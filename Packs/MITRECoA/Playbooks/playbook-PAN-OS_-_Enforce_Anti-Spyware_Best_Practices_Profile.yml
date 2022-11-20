@@ -562,9 +562,6 @@ tasks:
         simple: Spyware Best Practices - XSOAR
       profile_type:
         simple: spyware
-      rule_name:
-        complex:
-          root: inputs.rule_name
       tag:
         complex:
           root: inputs.tag
@@ -1056,7 +1053,7 @@ tasks:
       brand: ""
       id: be78f7b7-5fa6-4173-8aae-7d56844ffbbb
       iscommand: false
-      name: 629bfb7f-d719-4b74-8f1b-7f5a97b816db
+      name: Palo Alto Networks BPA - Submit Scan
       playbookId: 629bfb7f-d719-4b74-8f1b-7f5a97b816db
       type: playbook
       version: -1
