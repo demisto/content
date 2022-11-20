@@ -1,0 +1,1054 @@
+id: Courses of Action - Initial Access
+name: Courses of Action - Initial Access
+description: "This playbook handles MITRE ATT&CK Techniques using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team. It utilizes each of the sub-playbooks for specific techniques that belong to this phase (tactic) according to the MITRE ATT&CK kill chain. The sub-playbook called depends on the technique input.\n \n***Disclaimer: This playbook does not simulate an attack using the specified techniques, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\n \nTactic:\n- TA0001: Initial Access\n\nMITRE ATT&CK Description: \nThe adversary is trying to get into your network.\n\nInitial Access consists of techniques that use various entry vectors to gain their initial foothold within a network. Techniques used to gain a foothold include targeted spearphishing and exploiting weaknesses on public-facing web servers. Footholds gained through initial access may allow for continued access, like valid accounts and use of external remote services, or may be limited-use due to changing passwords.\n\nPossible playbook triggers:\n- The playbook can be used as a part of the “Courses of Action - Collection” playbook to remediate techniques based on kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, that can be triggered by different sources and accepts the technique MITRE ATT&CK ID as an input.\n"
+inputs:
+- description: Mitre ATT&CK ID of a technique
+  key: technique
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Template name to enforce WildFire best practices profile.
+  key: template
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances.
+  key: pre_post
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The device group for which to return addresses (Panorama instances).
+  key: device-group
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Tag for which to filter the rules.
+  key: tag
+  playbookInputQuery:
+  required: false
+  value: {}
+outputs:
+- contextPath: Handled.Techniques
+  description: The techniques handled in this playbook
+  type: string
+- contextPath: InitialAccess.ProductList
+  description: Products used for remediation.
+  type: unknown
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+      - "14"
+      - "15"
+      - "11"
+      - "12"
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2a74bce9-551b-4848-8cb3-c5d50bda5aca
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 2a74bce9-551b-4848-8cb3-c5d50bda5aca
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 1287.5,
+          "y": 50
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8820062a-1d3f-4210-83ca-ebb10fee34e5
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 8820062a-1d3f-4210-83ca-ebb10fee34e5
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1287.5,
+          "y": 1210
+        }
+      }
+  "10":
+    conditions:
+    - condition:
+      - - left:
+            value:
+              simple: T1133
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.technique
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ','
+                  operator: split
+      label: "yes"
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "21"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b0f73144-6044-4fcb-83fd-ba3bb4dc996e
+      iscommand: false
+      name: External Remote Services
+      description: ""
+      type: condition
+      version: -1
+    taskid: b0f73144-6044-4fcb-83fd-ba3bb4dc996e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - left:
+            value:
+              simple: T1199
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.technique
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ','
+                  operator: split
+      label: "yes"
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d9aee512-2229-47c5-8835-682787132331
+      iscommand: false
+      name: Trusted Relationship
+      description: ""
+      type: condition
+      version: -1
+    taskid: d9aee512-2229-47c5-8835-682787132331
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1512.5,
+          "y": 195
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - left:
+            value:
+              simple: T1189
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.technique
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ','
+                  operator: split
+      label: "yes"
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 634b5301-8cf1-48a0-872f-b7ff6522ed7d
+      iscommand: false
+      name: Drive-by Compromise
+      description: ""
+      type: condition
+      version: -1
+    taskid: 634b5301-8cf1-48a0-872f-b7ff6522ed7d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1962.5,
+          "y": 195
+        }
+      }
+  "13":
+    conditions:
+    - condition:
+      - - left:
+            value:
+              simple: T1078
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.technique
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ','
+                  operator: split
+      label: "yes"
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 854b65ae-ca6e-49cd-8e9d-13f22333e450
+      iscommand: false
+      name: Valid Accounts
+      description: ""
+      type: condition
+      version: -1
+    taskid: 854b65ae-ca6e-49cd-8e9d-13f22333e450
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 2412.5,
+          "y": 195
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - left:
+            value:
+              simple: T1193
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.technique
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ','
+                  operator: split
+        - left:
+            value:
+              simple: T1566.001
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.technique
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ','
+                  operator: split
+      label: "yes"
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 346ea5b3-5d00-4fc7-8237-cfaf3720f7b4
+      iscommand: false
+      name: Spear-Phishing Attachment
+      description: ""
+      type: condition
+      version: -1
+    taskid: 346ea5b3-5d00-4fc7-8237-cfaf3720f7b4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 195
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            value:
+              simple: T1566
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.technique
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ','
+                  operator: split
+      label: "yes"
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "19"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0cf0567d-d1ab-4c03-8be0-d86dcc4dfb88
+      iscommand: false
+      name: Phishing
+      description: ""
+      type: condition
+      version: -1
+    taskid: 0cf0567d-d1ab-4c03-8be0-d86dcc4dfb88
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 195
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre_post:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8375f529-ff96-4303-8e03-66c673b1a39e
+      iscommand: false
+      name: MITRE ATT&CK CoA - T1078 - Valid Accounts
+      playbookId: MITRE ATT&CK CoA - T1078 - Valid Accounts
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 8375f529-ff96-4303-8e03-66c673b1a39e
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 2412.5,
+          "y": 370
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre_post:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+      template:
+        complex:
+          root: inputs.template
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1254ba96-d3ee-480d-8efe-18fafc37d04f
+      iscommand: false
+      name: MITRE ATT&CK CoA - T1189 - Drive-by Compromise
+      playbookId: MITRE ATT&CK CoA - T1189 - Drive-by Compromise
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 1254ba96-d3ee-480d-8efe-18fafc37d04f
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1962.5,
+          "y": 370
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b6526849-6ce1-4aa6-84dc-f0e1e9f219de
+      iscommand: false
+      name: MITRE ATT&CK CoA - T1199 - Trusted Relationship
+      playbookId: MITRE ATT&CK CoA - T1199 - Trusted Relationship
+      type: playbook
+      version: -1
+      description: ''
+    taskid: b6526849-6ce1-4aa6-84dc-f0e1e9f219de
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1512.5,
+          "y": 370
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre_post:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+      template:
+        complex:
+          root: inputs.template
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3816bdaf-2ea9-44a9-8354-ad8731ace6d9
+      iscommand: false
+      name: MITRE ATT&CK CoA - T1566 - Phishing
+      playbookId: MITRE ATT&CK CoA - T1566 - Phishing
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 3816bdaf-2ea9-44a9-8354-ad8731ace6d9
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 370
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre_post:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+      template:
+        complex:
+          root: inputs.template
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 00861e9d-7456-497f-8d46-7b84174135c8
+      iscommand: false
+      name: MITRE ATT&CK CoA - T1566.001 - Spear-Phishing Attachment
+      playbookId: MITRE ATT&CK CoA - T1566.001 - Spear-Phishing Attachment
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 00861e9d-7456-497f-8d46-7b84174135c8
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 370
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre_post:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 375833bb-fc1f-4154-85aa-825af60070d7
+      iscommand: false
+      name: MITRE ATT&CK CoA - T1133 - External Remote Services
+      playbookId: MITRE ATT&CK CoA - T1133 - External Remote Services
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 375833bb-fc1f-4154-85aa-825af60070d7
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: InitialAccess.Products
+      value:
+        simple: '["Cortex XSOAR","PAN-OS"]'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: dc6fd1ee-a660-43fe-895d-5ece5c092583
+      iscommand: false
+      name: Set remediation products
+      script: Set
+      type: regular
+      version: -1
+    taskid: dc6fd1ee-a660-43fe-895d-5ece5c092583
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2412.5,
+          "y": 540
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: InitialAccess.Products
+      value:
+        simple: PAN-OS
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 2c35c341-fb76-4a24-8136-8f7109575c9f
+      iscommand: false
+      name: Set remediation products
+      script: Set
+      type: regular
+      version: -1
+    taskid: 2c35c341-fb76-4a24-8136-8f7109575c9f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1962.5,
+          "y": 540
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: InitialAccess.Products
+      value:
+        simple: PAN-OS
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: ab0667a0-eb8f-4bc0-88d8-df72499316e6
+      iscommand: false
+      name: Set remediation products
+      script: Set
+      type: regular
+      version: -1
+    taskid: ab0667a0-eb8f-4bc0-88d8-df72499316e6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1512.5,
+          "y": 540
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: InitialAccess.Products
+      value:
+        simple: '["Cortex XSOAR","PAN-OS","Cortex XDR"]'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 2751c072-388e-4fdc-8ec3-7f251522c0aa
+      iscommand: false
+      name: Set remediation products
+      script: Set
+      type: regular
+      version: -1
+    taskid: 2751c072-388e-4fdc-8ec3-7f251522c0aa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 540
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: InitialAccess.Products
+      value:
+        simple: '["PAN-OS","Cortex XDR"]'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 9175d50b-803e-4de2-8316-d838e96a7c9f
+      iscommand: false
+      name: Set remediation products
+      script: Set
+      type: regular
+      version: -1
+    taskid: 9175d50b-803e-4de2-8316-d838e96a7c9f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 540
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: InitialAccess.Products
+      value:
+        simple: '["PAN-OS","Cortex XDR"]'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 5508ea1d-bc35-4b83-81c1-c42c38388c44
+      iscommand: false
+      name: Set remediation products
+      script: Set
+      type: regular
+      version: -1
+    taskid: 5508ea1d-bc35-4b83-81c1-c42c38388c44
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 540
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "29"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      initialaccessremediationproducts:
+        complex:
+          root: InitialAccess
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 3a07dde9-b7cd-49de-8eae-649b39bd022c
+      iscommand: true
+      name: Set Initial Access Remediation products to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 3a07dde9-b7cd-49de-8eae-649b39bd022c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 710
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4ec4f1ba-3914-4a4d-8dbe-d2bbecac6a3d
+      iscommand: false
+      name: Set techniques information to the layout
+      description: ""
+      type: title
+      version: -1
+    taskid: 4ec4f1ba-3914-4a4d-8dbe-d2bbecac6a3d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 890
+        }
+      }
+  "30":
+    fieldMapping:
+    - incidentfield: Remediated Techniques
+      output:
+        complex:
+          root: Handled
+          transformers:
+          - args:
+              title: {}
+            operator: JsonToTable
+    - incidentfield: Techniques to Handle
+      output:
+        complex:
+          root: Unhandled
+          transformers:
+          - args:
+              title: {}
+            operator: JsonToTable
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: Unhandled.Techniques
+      stringify: {}
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: TechniquesList
+              operator: notIn
+              right:
+                iscontext: true
+                value:
+                  simple: Handled.Techniques
+          root: TechniquesList
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      id: cf52482e-48bc-4b06-89d3-306bb2468aaf
+      iscommand: false
+      name: Set techniques information to the layout
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: cf52482e-48bc-4b06-89d3-306bb2468aaf
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 1040
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_3_#default#": 0.19,
+      "11_3_#default#": 0.38,
+      "12_3_#default#": 0.29,
+      "13_3_#default#": 0.18,
+      "14_3_#default#": 0.29,
+      "15_3_#default#": 0.37
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1225,
+        "width": 2630,
+        "x": 162.5,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
