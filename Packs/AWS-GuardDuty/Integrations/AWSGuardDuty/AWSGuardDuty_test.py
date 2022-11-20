@@ -905,7 +905,7 @@ INCIDENTS_NEXT_RUN = {'latest_created_time': '2022-11-08T14:24:52.908000Z',
                              # validate the latest_updated_time is not used
                              ("",
                               {'last_incidents_ids': [],
-                               'last_next_token': "1660634559891-1662558480000-8ac152c43ac9b1a2137be7ed9bf0ff73",
+                               'last_next_token': "test",
                                'latest_created_time': '2022-11-08T14:24:52.908000Z',
                                'latest_updated_time': '2022-11-11T14:24:52.908000Z'}, 2, '3 days',
                               [INCIDENT_1, INCIDENT_2], {'last_incidents_ids': ['finding_id1', 'finding_id2'],
