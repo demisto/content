@@ -28,6 +28,6 @@ outputs:
   description: The ads count on the URL
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: devdemisto/py3-master:8.1.0.37385
+dockerimage: devdemisto/py3-primary:8.1.0.37610
 tests:
 - No tests (auto formatted)

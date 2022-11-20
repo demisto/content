@@ -41,6 +41,6 @@ dependson:
   - netwitness-im-add-events-to-incident
 timeout: 0s
 fromversion: 5.0.0
-dockerimage: devdemisto/py3-master:8.1.0.37385
+dockerimage: devdemisto/py3-primary:8.1.0.37610
 tests:
 - No tests (auto formatted)

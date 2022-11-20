@@ -150,7 +150,7 @@ tags:
 - incidents
 timeout: 300ns
 type: python
-dockerimage: devdemisto/py3-master:8.1.0.37385
+dockerimage: devdemisto/py3-primary:8.1.0.37610
 runonce: false
 tests:
 - Dedup - Generic v3

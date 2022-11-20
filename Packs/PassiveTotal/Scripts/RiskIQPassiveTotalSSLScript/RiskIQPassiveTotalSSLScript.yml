@@ -21,7 +21,7 @@ dependson:
   must:
   - '|||pt-ssl-cert-search'
 runonce: false
-dockerimage: devdemisto/py3-master:8.1.0.37385
+dockerimage: devdemisto/py3-primary:8.1.0.37610
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

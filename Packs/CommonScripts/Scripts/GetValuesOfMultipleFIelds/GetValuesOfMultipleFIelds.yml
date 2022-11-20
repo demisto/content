@@ -17,7 +17,7 @@ name: GetValuesOfMultipleFields
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: devdemisto/py3-master:8.1.0.37385
+dockerimage: devdemisto/py3-primary:8.1.0.37610
 runas: DBotWeakRole
 script: '-'
 system: false

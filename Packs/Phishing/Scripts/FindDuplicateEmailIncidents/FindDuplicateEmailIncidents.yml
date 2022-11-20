@@ -192,7 +192,7 @@ tags:
 - phishing
 timeout: 600ns
 type: python
-dockerimage: devdemisto/py3-master:8.1.0.37385
+dockerimage: devdemisto/py3-primary:8.1.0.37610
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0

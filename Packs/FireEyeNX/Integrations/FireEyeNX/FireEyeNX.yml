@@ -1278,7 +1278,7 @@ script:
     - contextPath: FireEyeNX.Event.IncidentId
       description: The incident ID of the event on FireEye.
       type: Number
-  dockerimage: devdemisto/py3-master:8.1.0.37385
+  dockerimage: devdemisto/py3-primary:8.1.0.37610
   feed: false
   isfetch: true
   longRunning: false

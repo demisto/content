@@ -2608,7 +2608,7 @@ script:
       call-limit, the command will reset the limit cache.
     execution: false
     name: cdl-reset-authentication-timeout
-  dockerimage: devdemisto/py3-master:8.1.0.37385
+  dockerimage: devdemisto/py3-primary:8.1.0.37610
   feed: false
   isfetch: true
   longRunning: false
