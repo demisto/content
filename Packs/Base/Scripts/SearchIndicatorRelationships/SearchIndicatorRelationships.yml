@@ -200,7 +200,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: devdemisto/py3-master:8.1.0.37385
+dockerimage: devdemisto/python3-ubi:3.10.8.37604
 fromversion: 6.2.0
 tests:
 - Relationships scripts - Test
