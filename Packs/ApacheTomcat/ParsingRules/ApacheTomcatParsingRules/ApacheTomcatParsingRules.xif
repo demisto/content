@@ -1,0 +1,5 @@
+[INGEST:vendor="apache", product="tomcat", target_dataset="apache_tomcat_raw", no_hit=drop]
+alter get_date =  arrayindex(regextract(_raw_log, "\[(\d+\/\w{3}\/\d{4})\:"), 0),
+    get_time = arrayindex(regextract(_raw_log, "\:(\d{2}\:\d{2}\:\d{2})\s"), 0)
+| alter timestamp = arraystring(arraycreate(get_date, get_time), " ")
+| alter _time = parse_timestamp("%d/%b/%Y %H:%M:%S", timestamp);

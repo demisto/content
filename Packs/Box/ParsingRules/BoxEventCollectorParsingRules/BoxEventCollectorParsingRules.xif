@@ -1,0 +1,2 @@
+[INGEST:vendor="box", product="box", target_dataset="box_box_raw", no_hit=drop]
+alter _time = created_at;
