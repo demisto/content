@@ -28,22 +28,22 @@ Moreover, enter your client secret as the “Key” parameter and your client ID
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Base URL | The host URL | False |
-    | Application ID or Client ID | The app registration ID | False |
-    | Key or Client Secret | The app registarion secret | False |
-    | Token or Tenant ID | The tenant ID | False |
-    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
+    | Base URL | The host URL. | False |
+    | Application ID or Client ID | The app registration ID. | False |
+    | Key or Client Secret | The app registration secret. | False |
+    | Token or Tenant ID | The tenant ID. | False |
+    | Certificate Thumbprint | Used for certificate authentication as it appears in the "Certificates & secrets" page of the app. | False |
     | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
-    | Use a self-deployed Azure application | Rather to use a selp-deployed application | False |
-    | Application redirect URI (for self-deployed mode) | The app registration redirect URI | False |
-    | The authentication code you got for the service | For instructions on how to receive it, see the Detailed Instructions section. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | First fetch time range | &lt;number&gt; &lt;time unit&gt;, for example 1 hour, 30 minutes | False |
+    | Use a self-deployed Azure application | Whether to use a selp-deployed application. | False |
+    | Application redirect URI (for self-deployed mode) | The app registration redirect URI. | False |
+    | The authentication code you got for the service | For instructions on how to receive it, see the Help tab. | False |
+    | Trust any certificate (not secure) | Whether to trust any certificate. If set to True, is not secure. | False |
+    | Use system proxy settings | Whether to use system proxy settings. | False |
+    | First fetch time range | &lt;number&gt; &lt;time unit&gt;, for example 1 hour, 30 minutes. | False |
     | Timeout | The default timeout (in seconds) for API calls. Default is 15 seconds. | False |
-    | Content types to fetch |  | False |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
+    | Content types to fetch | The content types to fetch. | False |
+    | Fetch incidents | Whether to fetch incidents. | False |
+    | Incident type | The incident type to apply. | False |
     | Record types to fetch | A comma-separated list of the record types you want to fetch. Content records with a record type that is not specified will not be fetched. If this field is left empty, all record types will be fetched. | False |
     | Workloads to fetch | A comma-separated list of the workloads you want to fetch. Content records with a workload that is not specified will not be fetched. If this field is left empty, all workloads will be fetched. | False |
     | Operations to fetch | A comma-separated list of the operations you want to fetch. Content records with an operation that is not specified will not be fetched. If this field is left empty, all operations will be fetched. | False |
