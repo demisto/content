@@ -16,6 +16,9 @@ INDICATOR_TO_GALAXY_RELATION_DICT: Dict[str, Any] = {
     ThreatIntel.ObjectsNames.ATTACK_PATTERN: {
         FeedIndicatorType.File: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.IP: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.CIDR: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.IPv6: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.IPv6CIDR: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.Domain: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.URL: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.Email: EntityRelationship.Relationships.INDICATOR_OF,
@@ -28,6 +31,9 @@ INDICATOR_TO_GALAXY_RELATION_DICT: Dict[str, Any] = {
     ThreatIntel.ObjectsNames.MALWARE: {
         FeedIndicatorType.File: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.IP: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.CIDR: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.IPv6: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.IPv6CIDR: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.Domain: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.URL: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.Email: EntityRelationship.Relationships.INDICATOR_OF,
@@ -40,6 +46,9 @@ INDICATOR_TO_GALAXY_RELATION_DICT: Dict[str, Any] = {
     ThreatIntel.ObjectsNames.TOOL: {
         FeedIndicatorType.File: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.IP: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.CIDR: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.IPv6: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.IPv6CIDR: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.Domain: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.URL: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.Email: EntityRelationship.Relationships.INDICATOR_OF,
@@ -52,6 +61,9 @@ INDICATOR_TO_GALAXY_RELATION_DICT: Dict[str, Any] = {
     ThreatIntel.ObjectsNames.INTRUSION_SET: {
         FeedIndicatorType.File: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.IP: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.CIDR: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.IPv6: EntityRelationship.Relationships.INDICATOR_OF,
+        FeedIndicatorType.IPv6CIDR: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.Domain: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.URL: EntityRelationship.Relationships.INDICATOR_OF,
         FeedIndicatorType.Email: EntityRelationship.Relationships.INDICATOR_OF,
@@ -64,6 +76,9 @@ INDICATOR_TO_GALAXY_RELATION_DICT: Dict[str, Any] = {
     ThreatIntel.ObjectsNames.COURSE_OF_ACTION: {
         FeedIndicatorType.File: EntityRelationship.Relationships.RELATED_TO,
         FeedIndicatorType.IP: EntityRelationship.Relationships.RELATED_TO,
+        FeedIndicatorType.CIDR: EntityRelationship.Relationships.RELATED_TO,
+        FeedIndicatorType.IPv6: EntityRelationship.Relationships.RELATED_TO,
+        FeedIndicatorType.IPv6CIDR: EntityRelationship.Relationships.RELATED_TO,
         FeedIndicatorType.Domain: EntityRelationship.Relationships.RELATED_TO,
         FeedIndicatorType.URL: EntityRelationship.Relationships.RELATED_TO,
         FeedIndicatorType.Email: EntityRelationship.Relationships.RELATED_TO,
@@ -246,18 +261,10 @@ def get_ip_type(ip_attribute: Dict[str, Any]) -> str:
         ip_attribute: the ip attribute
     Returns: FeedIndicatorType
     """
-    indicator_value = ip_attribute['value']
-    if re.match(ipv4cidrRegex, indicator_value):
-        return FeedIndicatorType.CIDR
-
-    if re.match(ipv6cidrRegex, indicator_value):
-        return FeedIndicatorType.IPv6CIDR
-
-    if re.match(ipv4Regex, indicator_value):
-        return FeedIndicatorType.IP
-
-    if re.match(ipv6Regex, indicator_value):
+    if ':' in ip_attribute['value']:
         return FeedIndicatorType.IPv6
+    else:
+        return FeedIndicatorType.IP
 
 
 def get_attribute_indicator_type(attribute: Dict[str, Any]) -> Optional[str]:
@@ -268,8 +275,6 @@ def get_attribute_indicator_type(attribute: Dict[str, Any]) -> Optional[str]:
         attribute: Dictionary containing information about the attribute
     Returns: The matching indicator type or None if the attribute type is not supported
     """
-    demisto.debug(f'This is the attribute: {attribute}')
-
     attribute_type = attribute['type']
     if attribute_type == 'ip-src' or attribute_type == 'ip-dst':
         return get_ip_type(attribute)
@@ -356,7 +361,6 @@ def fetch_indicators(client: Client,
         params_dict = build_params_dict(tags, attribute_type)
 
     response = client.search_query(params_dict)
-    demisto.debug(f'The length of the response is: {len(response)}')
     indicators_iterator = build_indicators_iterator(response, url)
     added_indicators_iterator = update_indicators_iterator(indicators_iterator, params_dict, is_fetch)
     indicators = []
@@ -383,7 +387,7 @@ def fetch_indicators(client: Client,
 
         update_indicator_fields(indicator_obj, tlp_color, raw_type, feed_tags)
         galaxy_indicators = build_indicators_from_galaxies(indicator_obj, reputation)
-        create_and_add_relationships(indicator_obj, galaxy_indicators)
+        (indicator_obj, galaxy_indicators)
 
         indicators.append(indicator_obj)
 
@@ -410,7 +414,7 @@ def build_indicators_from_galaxies(indicator_obj: Dict[str, Any], reputation: Op
     return galaxy_indicators
 
 
-def create_and_add_relationships(indicator_obj: Dict[str, Any], galaxy_indicators: List[Dict[str, Any]]) -> None:
+def create_and_add_relationscreate_and_add_relationshipships(indicator_obj: Dict[str, Any], galaxy_indicators: List[Dict[str, Any]]) -> None:
     """
     Creates relationships between the indicators created from the attributes and
     the indicators created from the galaxies
@@ -421,6 +425,10 @@ def create_and_add_relationships(indicator_obj: Dict[str, Any], galaxy_indicator
     """
     indicator_obj_type = indicator_obj['type']
     relationships_indicators = []
+
+    demisto.debug(f'This is the indicator_obj: {indicator_obj}')
+    demisto.debug(f'This is the galaxy_indicators: {galaxy_indicators}')
+
     for galaxy_indicator in galaxy_indicators:
         galaxy_indicator_type = galaxy_indicator['type']
 
