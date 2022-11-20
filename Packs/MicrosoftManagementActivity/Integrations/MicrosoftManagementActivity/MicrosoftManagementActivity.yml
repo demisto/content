@@ -13,24 +13,24 @@ configuration:
   type: 0
   section: Connect
 - display: Application ID or Client ID
-  additionalinfo: See the Detailed Instructions section.
+  additionalinfo: See the Help tab.
   name: auth_id
   required: false
   type: 4
   section: Connect
 - display: Key or Client Secret
-  additionalinfo: See the Detailed Instructions section.
+  additionalinfo: See the Help tab.
   name: enc_key
   required: false
   type: 4
   section: Connect
 - display: Token or Tenant ID
-  additionalinfo: See the Detailed Instructions section.
+  additionalinfo: See the Help tab.
   name: refresh_token
   required: false
   type: 4
   section: Connect
-- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+- additionalinfo: Used for certificate authentication as it appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
@@ -55,7 +55,7 @@ configuration:
   section: Connect
   advanced: true
 - display: The authentication code you got for the service
-  additionalinfo: For instructions on how to receive it, see the Detailed Instructions section.  
+  additionalinfo: For instructions on how to receive it, see the Help tab.  
   name: auth_code
   required: false
   type: 4
