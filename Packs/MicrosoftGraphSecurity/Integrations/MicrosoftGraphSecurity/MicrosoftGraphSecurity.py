@@ -1,3 +1,4 @@
+import urllib3
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -5,7 +6,7 @@ from CommonServerUserPython import *
 from typing import Dict, List, Any
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 APP_NAME = 'ms-graph-security'
 
