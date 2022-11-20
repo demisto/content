@@ -6,9 +6,7 @@
 		"Breach",
 		"Breach Simulation",
 		"Core",
-		"COVID-19",
 		"Compliance",
-		"Crisis",
 		"Dark Web",
 		"Data Source",
 		"Email",
@@ -27,7 +25,6 @@
 		"Network",
 		"PII",
 		"Palo Alto Networks Products",
-		"Pandemic",
 		"Pcap",
 		"Scam",
 		"Security",
@@ -47,7 +44,6 @@
 		"New",
 		"Trending",
 		"Relationship",
-		"Elasticsearch",
-		"Iron Bank"
+		"Elasticsearch"
 	]
 }
