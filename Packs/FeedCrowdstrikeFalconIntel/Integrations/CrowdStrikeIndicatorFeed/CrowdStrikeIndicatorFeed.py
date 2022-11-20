@@ -109,13 +109,14 @@ class Client(CrowdStrikeClient):
         )
         return response
 
-    def fetch_indicators(self, limit: Optional[int], offset: Optional[int] = 0, fetch_command=False) -> list:
+    def fetch_indicators(self, limit: Optional[int], offset: Optional[int] = 0, fetch_command=False, use_last_run=False) -> list:
         """ Get indicators from CrowdStrike API
 
         Args:
             limit(int): number of indicators to return
             offset: indicators offset
             fetch_command: In order not to update last_run time if it is not fetch command
+            use_last_run: Wether to use the last_run when calling crowdstrike-indicators-list command.
 
         Returns:
             (list): parsed indicators
@@ -131,6 +132,9 @@ class Client(CrowdStrikeClient):
             filter = f"{filter}+({malicious_confidence_fql})" if filter else f'({malicious_confidence_fql})'
 
         if fetch_command:
+            offset = demisto.getIntegrationContext().get('offset', 0)
+
+        if fetch_command or use_last_run:
             if last_run := self.get_last_run():
                 filter = f'{filter}+({last_run})' if filter else f'({last_run})'
             elif self.first_fetch:
@@ -147,6 +151,11 @@ class Client(CrowdStrikeClient):
         response = self.get_indicators(params=params)
         timestamp = self.set_last_run()
 
+        if fetch_command and response.get('resources', [])[-1].get('last_updated') == demisto.getIntegrationContext().get('last_modified_time'):
+            offset = demisto.getIntegrationContext().get('offset', 0) + limit
+        else:
+            offset = 0
+
         # need to fetch all indicators after the limit
         if pagination := response.get('meta', {}).get('pagination'):
             pagination_offset = pagination.get('offset', 0)
@@ -158,6 +167,7 @@ class Client(CrowdStrikeClient):
         if response.get('meta', {}).get('pagination', {}).get('total', 0) and fetch_command:
             ctx = demisto.getIntegrationContext()
             ctx.update({'last_modified_time': timestamp})
+            ctx.update({'offset': offset})
             demisto.setIntegrationContext(ctx)
             demisto.info(f'set last_run: {timestamp}')
 
@@ -345,10 +355,12 @@ def crowdstrike_indicators_list_command(client: Client, args: dict) -> CommandRe
 
     offset = arg_to_number(args.get('offset', 0))
     limit = arg_to_number(args.get('limit', 50))
+    use_last_run = argToBoolean(args.get('use_last_run'))
     parsed_indicators = client.fetch_indicators(
         limit=limit,
         offset=offset,
-        fetch_command=False
+        fetch_command=False,
+        use_last_run=use_last_run
     )
     if outputs := copy.deepcopy(parsed_indicators):
         for indicator in outputs:

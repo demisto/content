@@ -181,6 +181,12 @@ script:
       name: offset
       required: false
       secret: false
+    - default: false
+      description: Use the same last_run as the fetch-indicator command.
+      isArray: false
+      name: use_last_run
+      required: false
+      secret: false
     deprecated: false
     description: Gets indicators from the CrowdStrike Falcon Intel Feed.
     execution: false
