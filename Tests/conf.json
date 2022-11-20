@@ -3546,6 +3546,7 @@
         {
             "integrations": "QRadar v3",
             "playbookID": "QRadar_v3-test",
+            "is_mockable": false,
             "fromversion": "6.0.0"
         },
         {
@@ -5439,7 +5440,8 @@
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
-        "LogRhythm": "The integration is deprecated"
+        "LogRhythm": "The integration is deprecated",
+        "QRadar v3": "Test"
     },
     "nightly_integrations": [
     ],
