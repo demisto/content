@@ -1,5 +1,5 @@
   alert_category: PRIVILEGE_ESCALATION
-  alert_description: User's permissions has changed from Guest to Owner
+  alert_description: User''s permissions have changed from Guest to Owner
   alert_fields:
     actor_image: null
     actor_path: null
@@ -14,7 +14,7 @@
   alert_name: Gitlab - Guest user permission change
   crontab: null
   dataset: alerts
-  description: Alert for change in user's permissions change from Guest to Owner
+  description: Alert for change in user''s permissions change from Guest to Owner.
   drilldown_query_timeframe: ALERT
   execution_mode: REAL_TIME
   global_rule_id: 1ed16048-8af4-4ff6-a7df-665a08390b45
