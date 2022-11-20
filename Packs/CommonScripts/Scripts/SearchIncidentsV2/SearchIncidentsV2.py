@@ -1,8 +1,25 @@
+from enum import Enum
 from typing import Dict, List
 import demistomock as demisto
 from CommonServerPython import *
 
 special = ['n', 't', '\\', '"', '\'', '7', 'r']
+
+
+class IncidentSeverity(Enum):
+    UNKNOWN = 0
+    INFO = 0.5
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+    CRITICAL = 4
+
+
+class IncidentStatus(Enum):
+    PENDING = 0
+    ACTIVE = 1
+    DONE = 2
+    ARCHIVE = 3
 
 
 def check_if_found_incident(res: List):
@@ -73,12 +90,14 @@ def add_incidents_link(data: List, platform: str):
     return data
 
 
-def transform_to_alert_data(incidents: List):
+def transform_to_alert_data(incidents: List):  # pragma: no cover
     for incident in incidents:
         incident['hostname'] = incident.get('CustomFields', {}).get('hostname')
         incident['initiatedby'] = incident.get('CustomFields', {}).get('initiatedby')
         incident['targetprocessname'] = incident.get('CustomFields', {}).get('targetprocessname')
         incident['username'] = incident.get('CustomFields', {}).get('username')
+        incident['status'] = IncidentStatus(incident.get('status')).name
+        incident['severity'] = IncidentSeverity(incident.get('severity')).name
 
     return incidents
 
