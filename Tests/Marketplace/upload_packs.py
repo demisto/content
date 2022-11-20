@@ -1158,12 +1158,13 @@ def main():
             pack.cleanup()
             continue
 
-        if is_bucket_upload_flow:
-            task_status, _ = pack.filter_modified_files_by_id_set(id_set, modified_rn_files_paths, marketplace)
+        # This is commented out because we are not using the returned modified files and not skipping the
+        # packs in this phase (CIAC-3755). TODO - Will handle this in the refactor task - CIAC-3559.
+        # task_status, _ = pack.filter_modified_files_by_id_set(id_set, modified_rn_files_paths, marketplace)
 
-            # if not task_status:
-            #     pack.status = PackStatus.CHANGES_ARE_NOT_RELEVANT_FOR_MARKETPLACE.name
-            #     continue
+        # if not task_status:
+        #     pack.status = PackStatus.CHANGES_ARE_NOT_RELEVANT_FOR_MARKETPLACE.name
+        #     continue
 
         task_status, is_missing_dependencies = pack.format_metadata(index_folder_path,
                                                                     packs_dependencies_mapping, build_number,
@@ -1182,19 +1183,18 @@ def main():
             pack.cleanup()
             continue
 
-        if is_bucket_upload_flow:
-            task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number,
-                                                                        modified_rn_files_paths,
-                                                                        marketplace, id_set)
+        task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number,
+                                                                    modified_rn_files_paths,
+                                                                    marketplace, id_set)
 
-            if not task_status:
-                pack.status = PackStatus.FAILED_RELEASE_NOTES.name
-                pack.cleanup()
-                continue
+        if not task_status:
+            pack.status = PackStatus.FAILED_RELEASE_NOTES.name
+            pack.cleanup()
+            continue
 
-            if not_updated_build:
-                pack.status = PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name
-                continue
+        if not_updated_build:
+            pack.status = PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name
+            continue
 
         sign_and_zip_pack(pack, signature_key, remove_test_playbooks)
         shutil.copyfile(pack.zip_path, uploaded_packs_dir / f"{pack.name}.zip")
