@@ -1027,13 +1027,6 @@
         },
         {
             "integrations": "Generic SQL",
-            "playbookID": "generic-sql",
-            "instance_names": "Microsoft SQL Server - MS ODBC Driver",
-            "fromversion": "5.0.0",
-            "has_api": false
-        },
-        {
-            "integrations": "Generic SQL",
             "playbookID": "generic-sql-oracle",
             "instance_names": "Oracle instance",
             "fromversion": "5.0.0",
@@ -1273,11 +1266,11 @@
         },
         {
             "playbookID": "URL Enrichment - Generic v2 - Test",
+            "instance_names": "virus_total_v3",
             "integrations": [
-                "Rasterize",
-                "VirusTotal - Private API"
+                "VirusTotal (API v3)",
+                "Rasterize"
             ],
-            "instance_names": "virus_total_private_api_general",
             "timeout": 500,
             "pid_threshold": 12
         },
@@ -1388,7 +1381,8 @@
                 "Gmail"
             ],
             "playbookID": "Gmail Single User - Test",
-            "fromversion": "4.5.0"
+            "fromversion": "4.5.0",
+            "memory_threshold": 150
         },
         {
             "integrations": "EWS v2",
@@ -1428,7 +1422,8 @@
         },
         {
             "playbookID": "Gmail Convert Html Test",
-            "integrations": "Gmail"
+            "integrations": "Gmail",
+            "memory_threshold": 150
         },
         {
             "playbookID": "reputations.json Test",
@@ -1485,7 +1480,8 @@
             "playbookID": "Mail Sender (New) Test",
             "instance_names": [
                 "Mail_Sender_(New)_STARTTLS"
-            ]
+            ],
+            "memory_threshold": 100
         },
         {
             "playbookID": "buildewsquery_test"
@@ -1920,12 +1916,6 @@
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test self deployed",
             "instance_names": "microsoft_defender_atp_dev_self_deployed"
-        },
-        {
-            "integrations": "Microsoft Defender Advanced Threat Protection",
-            "playbookID": "Microsoft Defender - ATP - Indicators Test",
-            "instance_names": "microsoft_defender_atp_dev",
-            "is_mockable": false
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -4525,6 +4515,10 @@
             "integrations": [
                 "Feodo Tracker IP Blocklist Feed",
                 "Feodo Tracker Hashes Feed"
+            ],
+            "instance_names": [
+                "feodo_tracker_ip_currently__active",
+                "feodo_tracker_ip_30_days"
             ]
         },
         {
@@ -4922,9 +4916,11 @@
         {
             "playbookID": "Get Original Email - Gmail v2 - test",
             "fromversion": "6.1.0",
+            "memory_threshold": 150,
             "integrations": [
                 "Gmail"
             ]
+            
         },
         {
             "playbookID": "Get Original Email - EWS v2 - test",
@@ -5061,14 +5057,6 @@
             "is_mockable": false
         },
         {
-            "playbookID": "TAXII2 Indicator Performance Test",
-            "fromversion": "6.1.0"
-        },
-        {
-            "playbookID": "TAXII2 Performance Test - Concurrency",
-            "fromversion": "6.1.0"
-        },
-        {
             "integrations": "FortiSIEMV2",
             "playbookID": "playbook-FortiSIEMV2_Test",
             "fromversion": "6.0.0"
@@ -5157,13 +5145,6 @@
             "fromversion": "6.2.0"
         },
         {
-            "playbookID": "PAN-OS Create Or Edit Rule Test",
-            "fromversion": "6.1.0",
-            "integrations": [
-                "Panorama"
-            ]
-        },
-        {
             "playbookID": "GridFieldSetup_test"
         },
         {
@@ -5181,10 +5162,11 @@
         }
     ],
     "skipped_tests": {
+        "PaloAltoNetworks_IoT-Test": "Issue CRTX-67960",
+        "Cortex Data Lake Test": "Issue CRTX-67423",
         "playbook-CheckPointSandBlast_Test" : "Checkpoint playbook no license",
         "playbook-BmcITSM-Test" : "issue with license CIAC-3776",
         "Panorama Query Logs - Test": "issues with firewall environment configuration - CIAC-3459",
-        "PAN-OS Create Or Edit Rule Test": "this test should run only when running palo_alto_panorama_test_pb and not on its own",
         "palo_alto_firewall_test_pb": "issues with firewall environment configuration - CIAC-3459",
         "PAN-OS - Block IP and URL - External Dynamic List v2 Test": "uses deprecated integration, un-skip when playbook is updated",
         "Test - CrowdStrike Falcon": "to merge https://github.com/demisto/content/pull/19250",
@@ -5242,7 +5224,6 @@
         "Detonate Remote File From URL -McAfee-ATD - Test": "Issue 33407",
         "Test Playbook McAfee ATD Upload File": "Issue 33408",
         "Trend Micro Apex - Test": "Issue 27280",
-        "Microsoft Defender - ATP - Indicators Test": "Issue 29279",
         "Test-BPA": "Issue 28406",
         "Test-BPA_Integration": "Issue 28236",
         "TestTOPdeskPlaybook": "Issue 35412",

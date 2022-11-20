@@ -15,12 +15,12 @@ from CommonServerUserPython import *
 
 import dateparser
 import json
-import requests
 import traceback
 from typing import Any, Dict, List, Optional
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
@@ -33,8 +33,11 @@ DEFAULT_MAX_FETCH: int = 50
 API_VERSION_URL = '/api/v2.3'
 
 API_ENDPOINT_ACCOUNTS = '/accounts'
+API_ENDPOINT_ASSIGNMENT = '/assignments'
+API_ENDPOINT_OUTCOMES = '/assignment_outcomes'
 API_ENDPOINT_DETECTIONS = '/detections'
 API_ENDPOINT_HOSTS = '/hosts'
+API_ENDPOINT_USERS = '/users'
 
 API_SEARCH_ENDPOINT_ACCOUNTS = '/search/accounts'
 API_SEARCH_ENDPOINT_DETECTIONS = '/search/detections'
@@ -51,9 +54,19 @@ DEFAULT_ORDERING = {
     'detections': {'ordering': 'last_timestamp'},
     'hosts': {'ordering': 'last_detection_timestamp'},
 }
-DEFAULT_STATE = {'state': 'active'}
+DEFAULT_STATE = {
+    'state': 'active',
+    'resolved': 'false'
+}
 
 ENTITY_TYPES = ('Accounts', 'Hosts', 'Detections')
+
+OUTCOME_CATEGORIES = {
+    'benign_true_positive': 'Benign True Positive',
+    'malicious_true_positive': 'Malicious True Positive',
+    'false_positive': 'False Positive'
+}
+ASSIGNMENT_ENTITY_TYPES = ('account', 'host')
 
 
 ''' GLOBALS '''
@@ -304,6 +317,131 @@ class Client(BaseClient):
             url_suffix=f'{API_SEARCH_ENDPOINT_HOSTS}'
         )
 
+    def search_assignments(self,
+                           id=None,
+                           account_ids=None, host_ids=None,
+                           assignee_ids=None,
+                           outcome_ids=None,
+                           resolved=None) -> Dict[str, Any]:
+        """
+        Gets Assignments using the 'assignment' API endpoint
+
+        :return: dict containing all Assignments details
+        :rtype: ``Dict[str, Any]``
+        """
+
+        # Default params
+        # Assignment endpoint doesn't support pagination
+        query_params: Dict[str, Any] = {}
+
+        url_addon = f'/{id}' if id else ''
+
+        # If id is specified, do not use other params
+        if not id:
+            if account_ids and host_ids:
+                raise VectraException("Cannot use 'account_ids' and 'host_ids' at the same time")
+
+            # Test Account IDs
+            account_ids_set = sanitize_str_ids_list_to_set(account_ids)
+            if account_ids_set is not None:
+                query_params['accounts'] = account_ids_set
+
+            # Test Host IDs
+            host_ids_set = sanitize_str_ids_list_to_set(host_ids)
+            if host_ids_set is not None:
+                query_params['hosts'] = host_ids_set
+
+            # Test Assignee IDs
+            assignee_ids_set = sanitize_str_ids_list_to_set(assignee_ids)
+            if assignee_ids_set is not None:
+                query_params['assignees'] = assignee_ids_set
+
+            # Test Outcome IDs
+            outcome_ids_set = sanitize_str_ids_list_to_set(outcome_ids)
+            if outcome_ids_set is not None:
+                query_params['resolution'] = outcome_ids_set
+
+            # Resolved
+            if resolved:
+                query_params['resolved'] = resolved
+            else:
+                query_params['resolved'] = DEFAULT_STATE['resolved']
+
+        # Execute request
+        return self._http_request(
+            method='GET',
+            params=query_params,
+            url_suffix=f'{API_ENDPOINT_ASSIGNMENT}{url_addon}'
+        )
+
+    def search_outcomes(self,
+                        id=None,
+                        max_results=None) -> Dict[str, Any]:
+        """
+        Gets Assignment outcomes using the 'assignment_outcomes' API endpoint
+
+        :return: dict containing all Outcomes details
+        :rtype: ``Dict[str, Any]``
+        """
+        # Default params
+        demisto.debug("Forcing 'page' and 'page_size' query arguments")
+        query_params: Dict[str, Any] = {
+            'page': 1
+        }
+        query_params['page_size'] = sanitize_max_results(max_results)
+
+        url_addon = f'/{id}' if id else ''
+
+        # Execute request
+        return self._http_request(
+            method='GET',
+            params=query_params,
+            url_suffix=f'{API_ENDPOINT_OUTCOMES}{url_addon}'
+        )
+
+    def search_users(self,
+                     id=None,
+                     last_login_datetime=None,
+                     role=None,
+                     type=None,
+                     username=None) -> Dict[str, Any]:
+        """
+        Gets Vectra Users using the 'assignment_outcomes' API endpoint
+
+        :return: dict containing all User details
+        :rtype: ``Dict[str, Any]``
+        """
+        # Default params
+        # Users endpoint doesn't support pagination
+        query_params: Dict[str, Any] = {}
+
+        url_addon = f'/{id}' if id else ''
+
+        # If id is specified, do not use other params
+        if not id:
+            # Test user name
+            if username:
+                query_params['username'] = username
+
+            # Test user role
+            if role:
+                query_params['role'] = role
+
+            # Test user type
+            if type:
+                query_params['account_type'] = type
+
+            # Test last login datetime
+            if last_login_datetime and convert_date(last_login_datetime) is not None:
+                query_params['last_login_gte'] = last_login_datetime
+
+        # Execute request
+        return self._http_request(
+            method='GET',
+            params=query_params,
+            url_suffix=f'{API_ENDPOINT_USERS}{url_addon}'
+        )
+
     def get_pcap_by_detection_id(self, id: str):
         """
         Gets a single detection PCAP file using the detection endpoint
@@ -411,6 +549,155 @@ class Client(BaseClient):
         return self._http_request(
             method='PATCH',
             url_suffix=f'{API_TAGGING}/{type}/{id}',
+            json_data=json_payload
+        )
+
+    def create_outcome(self, category: str, title: str):
+        """
+        Creates a new Outcome
+
+        - params:
+            - category: The Outcome category (one of "BTP,MTP,FP" in human readable format)
+            - title: A custom title for this new outcome
+        - returns:
+            Vectra API call result
+        """
+        raw_category = convert_outcome_category_text2raw(category)
+        if raw_category is None:
+            raise ValueError('"category" value is invalid')
+        raw_title = title.strip()
+        if raw_title == '':
+            raise ValueError('"title" cannot be empty')
+
+        json_payload = {
+            'title': raw_title,
+            'category': raw_category
+        }
+
+        # Execute request
+        return self._http_request(
+            method='POST',
+            url_suffix=API_ENDPOINT_OUTCOMES,
+            json_data=json_payload
+        )
+
+    def update_assignment(self, assignee_id: str, assignment_id: str = None, account_id: str = None, host_id: str = None):
+        """
+        Creates or updates an assignment
+
+        - params:
+            - assignee_id: The Vectra User ID who want to assign to
+            - assignment_id: The existing assignment ID associated with the targeted Entity, if there is any
+            - assignee_id: The Vectra User ID who want to assign to
+            - account_id: The Account ID
+            - host_id: The Host ID
+        - returns:
+            Vectra API call result
+        """
+        # Test Assignee ID
+        try:
+            validate_argument('min_id', assignee_id)
+        except ValueError:
+            raise ValueError('"assignee_id" value is invalid')
+
+        json_payload = {
+            'assign_to_user_id': assignee_id,
+        }
+
+        if assignment_id:  # Reassign an existing assignment
+            # Test Assignment ID
+            try:
+                validate_argument('min_id', assignment_id)
+            except ValueError:
+                raise ValueError('"assignment_id" value is invalid')
+
+            url_addon = f'/{assignment_id}'
+
+            return self._http_request(
+                method='PUT',
+                url_suffix=f'{API_ENDPOINT_ASSIGNMENT}{url_addon}',
+                json_data=json_payload
+            )
+        elif account_id:
+            # Test Entity ID
+            try:
+                validate_argument('min_id', account_id)
+            except ValueError:
+                raise ValueError('"account_id" value is invalid')
+
+            json_payload.update({
+                'assign_account_id': account_id
+            })
+
+            # Execute request
+            return self._http_request(
+                method='POST',
+                url_suffix=API_ENDPOINT_ASSIGNMENT,
+                json_data=json_payload
+            )
+        elif host_id:
+            # Test Entity ID
+            try:
+                validate_argument('min_id', host_id)
+            except ValueError:
+                raise ValueError('"host_id" value is invalid')
+
+            json_payload.update({
+                'assign_host_id': host_id
+            })
+
+            # Execute request
+            return self._http_request(
+                method='POST',
+                url_suffix=API_ENDPOINT_ASSIGNMENT,
+                json_data=json_payload
+            )
+
+    def resolve_assignment(self, assignment_id: str, outcome_id: str, note: str = None,
+                           rule_name: str = None, detections_list: str = None):
+        """
+        Creates or updates an assignment
+
+        - params:
+            - assignee_id: The Vectra User ID who want to assign to
+            - assignment_id: The existing assignment ID associated with the targeted Entity, if there is any
+            - assignee_id: The Vectra User ID who want to assign to
+            - account_id: The Account ID
+            - host_id: The Host ID
+        - returns:
+            Vectra API call result
+        """
+        # Test assignment ID
+        try:
+            validate_argument('min_id', assignment_id)
+        except ValueError:
+            raise ValueError('"assignment_id" value is invalid')
+
+        # Test outcome ID
+        try:
+            validate_argument('min_id', outcome_id)
+        except ValueError:
+            raise ValueError('"outcome_id" value is invalid')
+
+        json_payload: Dict[str, Any] = {
+            'outcome': outcome_id,
+            'note': note,
+        }
+
+        if rule_name:
+            detection_ids_set = sanitize_str_ids_list_to_set(detections_list)
+            if detection_ids_set is None:
+                raise ValueError('"detections_list" value is invalid')
+
+            json_payload.update({
+                'triage_as': rule_name,
+                'detection_ids': list(detection_ids_set)
+            })
+
+        # Execute request
+        return self._http_request(
+            method='PUT',
+            url_suffix=f'{API_ENDPOINT_ASSIGNMENT}/{assignment_id}/resolve',
             json_data=json_payload
         )
 
@@ -610,6 +897,32 @@ def validate_min_max(min_label: str = None, min_value: str = None, max_label: st
     return True
 
 
+def sanitize_str_ids_list_to_set(list: Optional[str]) -> Optional[Set[int]]:
+    """
+    Sanitize the given list to ensure all IDs are valid
+
+    - params:
+        - list: The list to sanitize
+    - returns:
+        Returns the sanitazed list (only valid IDs)
+    """
+    output: Set[int] = set()
+    if list is not None and isinstance(list, str):
+        ids_list = [id.strip() for id in list.split(',')]
+        for id in ids_list:
+            if id != '':
+                try:
+                    validate_argument('min_id', id)
+                except ValueError:
+                    raise ValueError(f'ID "{id}" is invalid')
+                output.add(int(id))
+
+    if len(output) > 0:
+        return output
+    else:
+        return None
+
+
 def build_search_query(object_type, params: dict) -> str:
     """
     Builds a Lucene syntax search query depending on the object type to search on (Account, Detection, Host)
@@ -792,6 +1105,83 @@ def extract_host_data(host: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+def extract_assignment_data(assignment: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Extracts useful information from Vectra Assignment object renaming attributes on the fly.
+
+    - params:
+        - assignment: The Vectra Assignment object
+    - returns:
+        The Assignment extracted data
+    """
+    assigned_by = assignment.get('assigned_by')
+    assigned_by_user = assigned_by.get('username') if assigned_by else None
+    assigned_to = assignment.get('assigned_to')
+    assigned_to_user = assigned_to.get('username') if assigned_to else None
+
+    outcome = assignment.get('outcome')
+    outcome_title = outcome.get('title') if outcome else None
+    outcome_category = outcome.get('category') if outcome else None
+
+    resolved_by = assignment.get('resolved_by')
+    resolved_by_user = resolved_by.get('username') if resolved_by else None
+
+    # assignment['events'][0]['context'] is always present
+    triaged_as = assignment['events'][0]['context'].get('triage_as')
+
+    return remove_empty_elements({
+        'AccountID'         : assignment.get('account_id'),                                  # noqa: E203
+        'AssignedBy'        : assigned_by_user,                                              # noqa: E203
+        'AssignedDate'      : convert_date(assignment.get('date_assigned')),                 # noqa: E203
+        'AssignedTo'        : assigned_to_user,                                              # noqa: E203
+        'HostID'            : assignment.get('host_id'),                                     # noqa: E203
+        'ID'                : assignment.get('id'),                                          # noqa: E203
+        'IsResolved'        : True if assignment.get('resolved_by') is not None else False,  # noqa: E203
+        'OutcomeCategory'   : convert_outcome_category_raw2text(outcome_category),           # noqa: E203
+        'OutcomeTitle'      : outcome_title,                                                 # noqa: E203
+        'TriagedDetections' : assignment.get('triaged_detections'),                          # noqa: E203
+        'TriagedAs'         : triaged_as,                                                    # noqa: E203
+        'ResolvedBy'        : resolved_by_user,                                              # noqa: E203
+        'ResolvedDate'      : convert_date(assignment.get('date_resolved')),                 # noqa: E203
+    })
+
+
+def extract_outcome_data(outcome: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Extracts useful information from Vectra Outcome object renaming attributes on the fly.
+
+    - params:
+        - outcome: The Vectra Outcome object
+    - returns:
+        The Outcome extracted data
+    """
+    return {
+        'Category'               : convert_outcome_category_raw2text(outcome.get('category')),  # noqa: E203
+        'ID'                     : outcome.get('id'),                                           # noqa: E203
+        'IsBuiltIn'              : outcome.get('builtin'),                                      # noqa: E203
+        'Title'                  : outcome.get('title')                                         # noqa: E203
+    }
+
+
+def extract_user_data(user: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Extracts useful information from Vectra User object renaming attributes on the fly.
+
+    - params:
+        - user: The Vectra User object
+    - returns:
+        The User extracted data
+    """
+    return {
+        'Email'         : user.get('email'),                    # noqa: E203
+        'ID'            : user.get('id'),                       # noqa: E203
+        'Role'          : user.get('role'),                     # noqa: E203
+        'Type'          : user.get('account_type'),             # noqa: E203
+        'Username'      : user.get('username'),                 # noqa: E203
+        'LastLoginDate' : convert_date(user.get('last_login'))  # noqa: E203
+    }
+
+
 def detection_to_incident(detection: Dict):
     """
     Creates an incident of a Detection.
@@ -824,7 +1214,8 @@ def detection_to_incident(detection: Dict):
     }
 
     incident_last_run = {
-        'last_timestamp': dateparser.parse(extracted_data.get('LastTimestamp'), settings={'TO_TIMEZONE': 'UTC'}).isoformat(),
+        'last_timestamp': dateparser.parse(extracted_data.get('LastTimestamp'),  # type: ignore[arg-type]
+                                           settings={'TO_TIMEZONE': 'UTC'}).isoformat(),  # type: ignore[union-attr]
         'id': extracted_data.get('ID')
     }
 
@@ -863,8 +1254,8 @@ def host_to_incident(host: Dict):
     }
 
     incident_last_run = {
-        'last_timestamp': dateparser.parse(extracted_data.get('LastDetectionTimestamp'),
-                                           settings={'TO_TIMEZONE': 'UTC'}).isoformat(),
+        'last_timestamp': dateparser.parse(extracted_data.get('LastDetectionTimestamp'),  # type: ignore[arg-type]
+                                           settings={'TO_TIMEZONE': 'UTC'}).isoformat(),  # type: ignore[union-attr]
         'id': extracted_data.get('ID')
     }
 
@@ -903,8 +1294,8 @@ def account_to_incident(account: Dict):
     }
 
     incident_last_run = {
-        'last_timestamp': dateparser.parse(extracted_data.get('LastDetectionTimestamp'),
-                                           settings={'TO_TIMEZONE': 'UTC'}).isoformat(),
+        'last_timestamp': dateparser.parse(extracted_data.get('LastDetectionTimestamp'),  # type: ignore[arg-type]
+                                           settings={'TO_TIMEZONE': 'UTC'}).isoformat(),  # type: ignore[union-attr]
         'id': extracted_data.get('ID')
     }
 
@@ -926,7 +1317,9 @@ def get_last_run_details(integration_params: Dict):
             if not last_run.get(entity_type):
                 demisto.debug(f"Last run is not set for '{entity_type}'. Using value from config : {fetch_first_time}")
                 # This will return a relative TZaware datetime (in UTC)
-                last_timestamp = dateparser.parse(fetch_first_time, settings={'TO_TIMEZONE': 'UTC'}).isoformat()
+                last_timestamp =\
+                    dateparser.parse(fetch_first_time,  # type: ignore[arg-type]
+                                     settings={'TO_TIMEZONE': 'UTC'}).isoformat()  # type: ignore[union-attr]
                 last_id = 0
                 output_last_run[entity_type] = {
                     'last_timestamp': last_timestamp,
@@ -980,6 +1373,32 @@ def unify_severity(severity: Optional[str]) -> str:
         output = 'Unknown'
 
     return output
+
+
+def convert_outcome_category_raw2text(category: Optional[str]) -> Optional[str]:
+    """
+    Convert outcome category from raw to human readable text
+
+    - params:
+        - category: The raw outcome category string
+    - returns:
+        The human readable outcome category string
+    """
+    return OUTCOME_CATEGORIES.get(category) if category else None
+
+
+def convert_outcome_category_text2raw(category: str) -> Optional[str]:
+    """
+    Convert outcome category from human readable text to raw
+
+    - params:
+        - category: The human readable outcome category string
+    - returns:
+        The raw outcome category string
+    """
+    # Inverting Key/Value
+    category_text = {v: k for k, v in OUTCOME_CATEGORIES.items()}
+    return category_text.get(category) if category else None
 
 
 class VectraException(Exception):
@@ -1125,7 +1544,7 @@ def fetch_incidents(client: Client, integration_params: Dict):
                 )
 
             if (api_response is None) or (api_response.get('count') is None):
-                raise VectraException("API issue")
+                raise VectraException("API issue - Response is empty or invalid")
 
             if api_response.get('count') == 0:
                 demisto.info(f"{entity_type} - No results")
@@ -1139,7 +1558,7 @@ def fetch_incidents(client: Client, integration_params: Dict):
 
                 # 1st pass
                 if api_response.get('results') is None:
-                    raise VectraException("API issue")
+                    raise VectraException("API issue - Response is empty or invalid")
 
                 api_results = api_response.get('results', {})
                 for event in api_results:
@@ -1227,14 +1646,14 @@ def vectra_search_accounts_command(client: Client, **kwargs) -> CommandResults:
 
     count = api_response.get('count')
     if count is None:
-        raise VectraException('API issue')
+        raise VectraException('API issue - Response is empty or invalid')
 
     accounts_data = list()
     if count == 0:
-        readable_output = 'Cannot find any Detection.'
+        readable_output = 'Cannot find any Account.'
     else:
         if api_response.get('results') is None:
-            raise VectraException('API issue')
+            raise VectraException('API issue - Response is empty or invalid')
 
         api_results = api_response.get('results', [])
 
@@ -1275,14 +1694,14 @@ def vectra_search_detections_command(client: Client, **kwargs) -> CommandResults
 
     count = api_response.get('count')
     if count is None:
-        raise VectraException('API issue')
+        raise VectraException('API issue - Response is empty or invalid')
 
     detections_data = list()
     if count == 0:
         readable_output = 'Cannot find any Detection.'
     else:
         if api_response.get('results') is None:
-            raise VectraException('API issue')
+            raise VectraException('API issue - Response is empty or invalid')
 
         api_results = api_response.get('results', [])
 
@@ -1330,14 +1749,14 @@ def vectra_search_hosts_command(client: Client, **kwargs) -> CommandResults:
 
     count = api_response.get('count')
     if count is None:
-        raise VectraException('API issue')
+        raise VectraException('API issue - Response is empty or invalid')
 
     hosts_data = list()
     if count == 0:
         readable_output = 'Cannot find any Host.'
     else:
         if api_response.get('results') is None:
-            raise VectraException('API issue')
+            raise VectraException('API issue - Response is empty or invalid')
 
         api_results = api_response.get('results', [])
 
@@ -1364,6 +1783,146 @@ def vectra_search_hosts_command(client: Client, **kwargs) -> CommandResults:
     return command_result
 
 
+def vectra_search_assignments_command(client: Client, **kwargs) -> CommandResults:
+    """
+    Returns several Assignment objects maching the search criterias passed as arguments
+
+    - params:
+        - client: Vectra Client
+        - kwargs: The different possible search query arguments
+    - returns
+        CommandResults to be used in War Room
+    """
+    api_response = client.search_assignments(**kwargs)
+
+    count = api_response.get('count')
+    if count is None:
+        raise VectraException('API issue - Response is empty or invalid')
+
+    assignments_data = list()
+    if count == 0:
+        readable_output = 'Cannot find any Assignments.'
+    else:
+        if api_response.get('results') is None:
+            raise VectraException('API issue - Response is empty or invalid')
+
+        api_results = api_response.get('results', [])
+
+        for assignment in api_results:
+            assignments_data.append(extract_assignment_data(assignment))
+
+        readable_output_keys = ['ID', 'IsResolved', 'AssignedTo', 'AccountID', 'HostID']
+        readable_output = tableToMarkdown(
+            name=f'Assignments table (Showing max {MAX_RESULTS} entries)',
+            t=assignments_data,
+            headers=readable_output_keys,
+            date_fields=['AssignedDate', 'ResolvedDate']
+        )
+
+    command_result = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Vectra.Assignment',
+        outputs_key_field='ID',
+        outputs=assignments_data,
+        raw_response=api_response
+    )
+
+    return command_result
+
+
+def vectra_search_outcomes_command(client: Client, **kwargs) -> CommandResults:
+    """
+    Returns several Assignment outcome objects maching the search criterias passed as arguments
+
+    - params:
+        - client: Vectra Client
+        - kwargs: The different possible search query arguments
+    - returns
+        CommandResults to be used in War Room
+    """
+    api_response = client.search_outcomes(**kwargs)
+
+    count = api_response.get('count')
+    if count is None:
+        raise VectraException('API issue - Response is empty or invalid')
+
+    outcomes_data = list()
+    if count == 0:
+        readable_output = 'Cannot find any Outcomes.'
+    else:
+        if api_response.get('results') is None:
+            raise VectraException('API issue - Response is empty or invalid')
+
+        api_results = api_response.get('results', [])
+
+        for outcome in api_results:
+            outcomes_data.append(extract_outcome_data(outcome))
+
+        readable_output_keys = ['ID', 'Title', 'Category', 'IsBuiltIn']
+        readable_output = tableToMarkdown(
+            name=f'Outcomes table (Showing max {MAX_RESULTS} entries)',
+            t=outcomes_data,
+            headers=readable_output_keys
+        )
+
+    command_result = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Vectra.Outcome',
+        outputs_key_field='ID',
+        outputs=outcomes_data,
+        raw_response=api_response
+    )
+
+    return command_result
+
+
+def vectra_search_users_command(client: Client, **kwargs) -> CommandResults:
+    """
+    Returns several Vectra Users objects maching the search criterias passed as arguments
+
+    - params:
+        - client: Vectra Client
+        - kwargs: The different possible search query arguments
+    - returns
+        CommandResults to be used in War Room
+    """
+    api_response = client.search_users(**kwargs)
+
+    count = api_response.get('count')
+    if count is None:
+        raise VectraException('API issue - Response is empty or invalid')
+
+    users_data = list()
+    if count == 0:
+        readable_output = 'Cannot find any Vectra Users.'
+    else:
+        if api_response.get('results') is None:
+            raise VectraException('API issue - Response is empty or invalid')
+
+        api_results = api_response.get('results', [])
+
+        for assignment in api_results:
+            users_data.append(extract_user_data(assignment))
+
+        readable_output_keys = ['ID', 'Role', 'Type', 'Username', 'LastLoginDate']
+        readable_output = tableToMarkdown(
+            name=f'Vectra Users table (Showing max {MAX_RESULTS} entries)',
+            t=users_data,
+            headers=readable_output_keys,
+            date_fields=['LastLoginDate']
+        )
+
+    command_result = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Vectra.User',
+        outputs_key_field='ID',
+        outputs=users_data,
+        raw_response=api_response
+    )
+
+    return command_result
+
+
 def vectra_get_account_by_id_command(client: Client, id: str) -> CommandResults:
     """
     Gets Account details using its ID
@@ -1384,7 +1943,7 @@ def vectra_get_account_by_id_command(client: Client, id: str) -> CommandResults:
 
     count = api_response.get('count')
     if count is None:
-        raise VectraException('API issue')
+        raise VectraException('API issue - Response is empty or invalid')
     if count > 1:
         raise VectraException('Multiple Accounts found')
 
@@ -1393,7 +1952,7 @@ def vectra_get_account_by_id_command(client: Client, id: str) -> CommandResults:
         readable_output = f'Cannot find Account with ID "{id}".'
     else:
         if api_response.get('results') is None:
-            raise VectraException('API issue')
+            raise VectraException('API issue - Response is empty or invalid')
 
         api_results = api_response.get('results', [])
         account_data = extract_account_data(api_results[0])
@@ -1436,7 +1995,7 @@ def vectra_get_detection_by_id_command(client: Client, id: str) -> CommandResult
 
     count = api_response.get('count')
     if count is None:
-        raise VectraException('API issue')
+        raise VectraException('API issue - Response is empty or invalid')
     if count > 1:
         raise VectraException('Multiple Detections found')
 
@@ -1445,7 +2004,7 @@ def vectra_get_detection_by_id_command(client: Client, id: str) -> CommandResult
         readable_output = f'Cannot find Detection with ID "{id}".'
     else:
         if api_response.get('results') is None:
-            raise VectraException('API issue')
+            raise VectraException('API issue - Response is empty or invalid')
 
         api_results = api_response.get('results', [])
         detection_data = extract_detection_data(api_results[0])
@@ -1488,7 +2047,7 @@ def vectra_get_host_by_id_command(client: Client, id: str) -> CommandResults:
 
     count = api_response.get('count')
     if count is None:
-        raise VectraException('API issue')
+        raise VectraException('API issue - Response is empty or invalid')
     if count > 1:
         raise VectraException('Multiple Hosts found')
 
@@ -1497,7 +2056,7 @@ def vectra_get_host_by_id_command(client: Client, id: str) -> CommandResults:
         readable_output = f'Cannot find Host with ID "{id}".'
     else:
         if api_response.get('results') is None:
-            raise VectraException('API issue')
+            raise VectraException('API issue - Response is empty or invalid')
 
         api_results = api_response.get('results', [])
         host_data = extract_host_data(api_results[0])
@@ -1564,6 +2123,264 @@ def mark_detection_as_fixed_command(client: Client, id: str, fixed: str) -> Comm
     # 404 API error will be raised by the Client class
     command_result = CommandResults(
         readable_output=f'Detection "{id}" successfully {"marked" if fixed_as_bool else "unmarked"} as fixed.',
+        raw_response=api_response
+    )
+
+    return command_result
+
+
+def vectra_get_assignment_by_id_command(client: Client, id: str) -> CommandResults:
+    """
+    GetsAssignment details using its ID
+
+    - params:
+        - client: Vectra Client
+        - id: The Assignment ID
+    - returns
+        CommandResults to be used in War Room
+    """
+    # Check args
+    if not id:
+        raise VectraException('"id" not specified')
+
+    api_response = client.search_assignments(id=id)
+
+    assignment_data = None
+    # Assignment doesn't follow classic describe behavior
+    obtained_assignment = api_response.get('assignment')
+    if obtained_assignment is None:
+        readable_output = f'Cannot find Assignment with ID "{id}".'
+    else:
+        assignment_data = extract_assignment_data(obtained_assignment)
+
+        readable_output = tableToMarkdown(
+            name=f'Assignment ID {id} details table',
+            t=assignment_data,
+            date_fields=['AssignedDate', 'ResolvedDate']
+        )
+
+    command_result = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Vectra.Assignment',
+        outputs_key_field='ID',
+        outputs=assignment_data,
+        raw_response=api_response
+    )
+
+    return command_result
+
+
+def vectra_assignment_assign_command(client: Client, assignee_id: str = None,
+                                     account_id: str = None, host_id: str = None,
+                                     assignment_id: str = None) -> CommandResults:
+    """
+    Assign or reassign an Account/Host
+
+    - params:
+        - client: Vectra Client
+        - assignee_id: The Vectra User ID who want to assign to
+        - account_id: The Account ID
+        - host_id: The Host ID
+        - assignment_id: The existing assignment ID associated with the targeted Entity, if there is any
+    - returns
+        CommandResults to be used in War Room
+    """
+    # Check args
+    if not assignee_id:
+        raise VectraException('"assignee_id" not specified')
+
+    if ((assignment_id is None) and (account_id is None) and (host_id is None)) \
+       or (account_id and host_id) \
+       or (assignment_id and (account_id or host_id)):
+        raise VectraException('You must specify one of "assignment_id", "account_id" or "host_id"')
+    if assignment_id is None:
+        api_response = client.update_assignment(assignee_id=assignee_id, account_id=account_id, host_id=host_id)
+    else:
+        api_response = client.update_assignment(assignee_id=assignee_id, assignment_id=assignment_id)
+
+    # 40x API error will be raised by the Client class
+    obtained_assignment = api_response.get('assignment')
+    assignment_data = extract_assignment_data(obtained_assignment)
+
+    readable_output = tableToMarkdown(
+        name='Assignment details table',
+        t=assignment_data
+    )
+
+    command_result = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Vectra.Assignment',
+        outputs_key_field='ID',
+        outputs=assignment_data,
+        raw_response=api_response
+    )
+
+    return command_result
+
+
+def vectra_assignment_resolve_command(client: Client,
+                                      assignment_id: str = None, outcome_id: str = None, note: str = None,
+                                      detections_filter: str = None, filter_rule_name: str = None, detections_list: str = None):
+    """
+    Resolve an existing assignment
+
+    - params:
+        - client: Vectra Client
+        - assignment_id: Assignment ID
+        - outcome_id: The Outcome ID
+        - detections_filter: Filter mode to use ('None' or 'Filter Rule') [Default: None]
+        - filter_rule_name: Filter rule name (when detections_filter equals 'Filter Rule')
+        - detections_list: List of the Detections to filter
+    - returns
+        CommandResults to be used in War Room
+    """
+    # Check args
+    if not assignment_id:
+        raise VectraException('"assignment_id" not specified')
+    if not outcome_id:
+        raise VectraException('"outcome_id" not specified')
+
+    if detections_filter == 'Filter Rule':
+        if not filter_rule_name:
+            raise VectraException('"filter_rule_name" not specified')
+        if not detections_list:
+            raise VectraException('"detections_list" not specified')
+        api_response = client.resolve_assignment(assignment_id=assignment_id, outcome_id=outcome_id, note=note,
+                                                 rule_name=filter_rule_name, detections_list=detections_list)
+    else:
+        api_response = client.resolve_assignment(assignment_id=assignment_id, outcome_id=outcome_id, note=note)
+
+    # 40x API error will be raised by the Client class
+    obtained_assignment = api_response.get('assignment')
+    assignment_data = extract_assignment_data(obtained_assignment)
+
+    readable_output = tableToMarkdown(
+        name='Assignment details table',
+        t=assignment_data
+    )
+
+    command_result = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Vectra.Assignment',
+        outputs_key_field='ID',
+        outputs=assignment_data,
+        raw_response=api_response
+    )
+
+    return command_result
+
+
+def vectra_get_outcome_by_id_command(client: Client, id: str) -> CommandResults:
+    """
+    Gets Outcome details using its ID
+
+    - params:
+        - client: Vectra Client
+        - id: The Outcome ID
+    - returns
+        CommandResults to be used in War Room
+    """
+    # Check args
+    if not id:
+        raise VectraException('"id" not specified')
+
+    api_response = client.search_outcomes(id=id)
+
+    outcome_data = None
+    obtained_id = api_response.get('id')
+    if obtained_id is None:
+        readable_output = f'Cannot find Outcome with ID "{id}".'
+    else:
+        outcome_data = extract_outcome_data(api_response)
+
+        readable_output = tableToMarkdown(
+            name=f'Outcome ID {id} details table',
+            t=outcome_data
+        )
+
+    command_result = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Vectra.Outcome',
+        outputs_key_field='ID',
+        outputs=outcome_data,
+        raw_response=api_response
+    )
+
+    return command_result
+
+
+def vectra_outcome_create_command(client: Client, category: str, title: str) -> CommandResults:
+    """
+    Creates a new Outcome
+
+    - params:
+        - client: Vectra Client
+        - category: The Outcome category (one of "BTP,MTP,FP")
+        - title: A custom title for this new outcome
+    - returns
+        CommandResults to be used in War Room
+    """
+    # Check args
+    if not category:
+        raise VectraException('"category" not specified')
+    if not title:
+        raise VectraException('"title" not specified')
+
+    api_response = client.create_outcome(category=category, title=title)
+
+    # 40x API error will be raised by the Client class
+    outcome_data = extract_outcome_data(api_response)
+
+    readable_output = tableToMarkdown(
+        name='Newly created Outcome details table',
+        t=outcome_data
+    )
+
+    command_result = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Vectra.Outcome',
+        outputs_key_field='ID',
+        outputs=outcome_data,
+        raw_response=api_response
+    )
+
+    return command_result
+
+
+def vectra_get_user_by_id_command(client: Client, id: str) -> CommandResults:
+    """
+    Gets Vectre User details using its ID
+
+    - params:
+        - client: Vectra Client
+        - id: The User ID
+    - returns
+        CommandResults to be used in War Room
+    """
+    # Check args
+    if not id:
+        raise VectraException('"id" not specified')
+
+    api_response = client.search_users(id=id)
+
+    user_data = None
+    obtained_id = api_response.get('id')
+    if obtained_id is None:
+        readable_output = f'Cannot find Vectra User with ID "{id}".'
+    else:
+        user_data = extract_user_data(api_response)
+
+        readable_output = tableToMarkdown(
+            name=f'Vectra User ID {id} details table',
+            t=user_data,
+            date_fields=['LastLoginDate']
+        )
+
+    command_result = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Vectra.User',
+        outputs_key_field='ID',
+        outputs=user_data,
         raw_response=api_response
     )
 
@@ -1706,6 +2523,13 @@ def main() -> None:  # pragma: no cover
         elif command == 'vectra-search-detections':
             return_results(vectra_search_detections_command(client, **kwargs))
 
+        elif command == 'vectra-search-assignments':
+            return_results(vectra_search_assignments_command(client, **kwargs))
+        elif command == 'vectra-search-outcomes':
+            return_results(vectra_search_outcomes_command(client, **kwargs))
+        elif command == 'vectra-search-users':
+            return_results(vectra_search_users_command(client, **kwargs))
+
         # ## Accounts centric commands
         elif command == 'vectra-account-describe':
             return_results(vectra_get_account_by_id_command(client, **kwargs))
@@ -1733,6 +2557,20 @@ def main() -> None:  # pragma: no cover
             return_results(add_tags_command(client, type="detection", **kwargs))
         elif command == 'vectra-detection-del-tags':
             return_results(del_tags_command(client, type="detection", **kwargs))
+
+        # ## Assignments / Assignment outcomes commands
+        elif command == 'vectra-assignment-describe':
+            return_results(vectra_get_assignment_by_id_command(client, **kwargs))
+        elif command == 'vectra-assignment-assign':
+            return_results(vectra_assignment_assign_command(client, **kwargs))
+        elif command == 'vectra-assignment-resolve':
+            return_results(vectra_assignment_resolve_command(client, **kwargs))
+        elif command == 'vectra-outcome-describe':
+            return_results(vectra_get_outcome_by_id_command(client, **kwargs))
+        elif command == 'vectra-outcome-create':
+            return_results(vectra_outcome_create_command(client, **kwargs))
+        elif command == 'vectra-user-describe':
+            return_results(vectra_get_user_by_id_command(client, **kwargs))
 
         else:
             raise NotImplementedError()
