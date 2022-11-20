@@ -27,7 +27,6 @@ from abc import abstractmethod
 from distutils.version import LooseVersion
 from threading import Lock
 from inspect import currentframe
-import pytz
 
 import demistomock as demisto
 import warnings
@@ -38,9 +37,9 @@ def __line__():
     return cf.f_back.f_lineno
 
 
-# 43 - The line offset from the beggining of the file.
+# 42 - The line offset from the beggining of the file.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 43, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 42, 'end': float('inf')},
 }
 
 
@@ -10311,7 +10310,13 @@ def get_current_time(time_zone=0):
     :return: The current time.
     :rtype: ``datetime``
     """
-    return (datetime.utcnow() + timedelta(hours=time_zone)).replace(tzinfo=pytz.UTC)
+    now = datetime.utcnow() + timedelta(hours=time_zone)
+    try:
+        import pytz
+        return now.replace(tzinfo=pytz.UTC)
+    except ImportError:
+        demisto.debug('pytz is missing, will not return timeaware object.')
+        return now
 
 
 def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limit, id_field):
