@@ -185,7 +185,7 @@ class Client(BaseClient):
             ok_codes=(200,),
         ).get("sessionID")
 
-    def _paged_http_request(self, page_size: int | None, page: int | None = None, sort: str | None = None,
+    def _paged_http_request(self, page_size: int | None = None, page: int | None = None, sort: str | None = None,
                             limit: int | None = None, **kwargs) -> list:
         """
         Run _http_request with pagination handling.
@@ -1366,7 +1366,7 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def search_assets(self, filters: list[dict] | None, match: str,
+    def search_assets(self, filters: list[dict] | None = None, match: str = MATCH_DEFAULT_VALUE,
                       page_size: int | None = DEFAULT_PAGE_SIZE, page: int | None = None, sort: str | None = None,
                       limit: int | None = None) -> list[dict]:
         """
@@ -4090,7 +4090,7 @@ def list_scan_schedule_command(client: Client, site: Site, schedule_id: str | No
     )
 
 
-def list_shared_credential_command(client: Client, credential_id: str | None,
+def list_shared_credential_command(client: Client, credential_id: str | None = None,
                                    limit: str | None = None) -> CommandResults:
     """
     Retrieve information about all or a specific vulnerability.
@@ -4267,7 +4267,7 @@ def list_site_scan_credential_command(client: Client, site: Site, credential_id:
     )
 
 
-def list_vulnerability_command(client: Client, vulnerability_id: str | None, page_size: str | None = None,
+def list_vulnerability_command(client: Client, vulnerability_id: str | None = None, page_size: str | None = None,
                                page: str | None = None, sort: str | None = None,
                                limit: str | None = None) -> CommandResults:
     """
@@ -4663,8 +4663,8 @@ def start_assets_scan_command(client: Client, ip_addresses: str | None = None,
     return get_scan_entry(client.get_scan(scan_response["id"]))
 
 
-def start_site_scan_command(client: Client, site: Site,
-                            scan_name: str | None, hosts: str | None) -> CommandResults:
+def start_site_scan_command(client: Client, site: Site, scan_name: str | None = None,
+                            hosts: str | None = None) -> CommandResults:
     """
     Start a scan for a specific site.
 
