@@ -767,7 +767,7 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
         if type(value) in [str, str, int, float, bool, Body, HTMLBody, None]:
             raw_dict[field] = value
     raw_dict["id"] = item.id
-    demisto.debug("checking for attachments")
+    demisto.debug(f"checking for attachments in email with id {item.id}")
     log_memory()
     if getattr(item, "attachments", None):
         raw_dict["attachments"] = [
@@ -2033,7 +2033,7 @@ def parse_incident_from_item(item):
     """
     incident = {}
     labels = []
-    demisto.debug("starting to parse the email into an incident")
+    demisto.debug(f"starting to parse the email with id {item.id} into an incident")
     log_memory()
     try:
         incident["details"] = item.text_body or item.body
@@ -2076,7 +2076,7 @@ def parse_incident_from_item(item):
         attachment_counter = 0
         for attachment in item.attachments:
             attachment_counter += 1
-            demisto.debug(f'retrieving attachment number {attachment_counter}')
+            demisto.debug(f'retrieving attachment number {attachment_counter} of email with id {item.id}')
             file_result = None
             label_attachment_type = None
             label_attachment_id_type = None
@@ -2089,7 +2089,7 @@ def parse_incident_from_item(item):
 
                         # save the attachment
                         file_name = get_attachment_name(attachment.name)
-                        demisto.debug(f"saving content of size {sys.getsizeof(attachment.content)}")
+                        demisto.debug(f"saving content number {attachment_counter}, of size {sys.getsizeof(attachment.content)}, of email with id {item.id}")
                         file_result = fileResult(file_name, attachment.content)
 
                         # check for error
@@ -2177,7 +2177,7 @@ def parse_incident_from_item(item):
             labels.append(
                 {"type": label_attachment_id_type, "value": attachment.attachment_id.id}
             )
-        demisto.debug(f'finished parsing attachment {attachment_counter}')
+        demisto.debug(f'finished parsing attachment {attachment_counter} of email with id {item.id}')
 
     # handle headers
     if item.headers:
@@ -2205,11 +2205,11 @@ def parse_incident_from_item(item):
         labels.append({"type": "Email/ConversionID", "value": item.conversation_id.id})
 
     incident["labels"] = labels
-    demisto.debug("Starting to generate rawJSON for incident")
+    demisto.debug(f"Starting to generate rawJSON for incident, from email with id {item.id}")
     log_memory()
     incident["rawJSON"] = json.dumps(parse_item_as_dict(item, None), ensure_ascii=False)
     log_memory()
-    demisto.debug("FInshed generatiing rawjson")
+    demisto.debug(f"FInshed generatiing rawjson from email with id {item.id}")
 
     return incident
 
@@ -2303,7 +2303,7 @@ def fetch_last_emails(
     :return: list of exchangelib.Items
     """
     qs = client.get_folder_by_path(folder_name, is_public=client.is_public_folder)
-    demisto.debug("Finished getting the folder by path")
+    demisto.debug(f"Finished getting the folder named {folder_name} by path")
     log_memory()
     if since_datetime:
         qs = qs.filter(datetime_received__gte=since_datetime)
@@ -2313,14 +2313,14 @@ def fetch_last_emails(
         assert first_fetch_datetime is not None
         first_fetch_ews_datetime = EWSDateTime.from_datetime(first_fetch_datetime.replace(tzinfo=tz))
         qs = qs.filter(last_modified_time__gte=first_fetch_ews_datetime)
-    qs = qs.filter().only(*[x.name for x in Message.FIELDS if x.name != 'mime_content'])
+    qs = qs.filter().only(*[x.name for x in Message.FIELDS if x.name.lower() != 'mime_content'])
     qs = qs.filter().order_by("datetime_received")
     result = []
     exclude_ids = exclude_ids if exclude_ids else set()
     demisto.debug(f'{APP_NAME} - Exclude ID list: {exclude_ids}')
     qs.chunk_size = min(client.max_fetch, 100)
     qs.page_size = min(client.max_fetch, 100)
-    demisto.debug("before iter")
+    demisto.debug("Before iterating on queryset")
     demisto.debug(f'Size of the queryset object in fetch-incidents:{sys.getsizeof(qs)}')
     for item in qs:
         demisto.debug("next iteration of the queryset in fetch-incidents")
