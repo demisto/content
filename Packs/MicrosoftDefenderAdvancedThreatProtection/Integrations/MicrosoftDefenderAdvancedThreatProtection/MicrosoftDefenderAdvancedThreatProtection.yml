@@ -4536,6 +4536,107 @@ script:
       description: The given CVE IDs related to this machine.
       type: Unknown
     polling: true
+  - arguments: []
+    deprecated: false
+    description: Gets an indicator by its ID.
+    name: microsoft-atp-list-machines-by-software
+    outputs:
+    - contextPath: MicrosoftATP.SoftwareMachine.id
+      description: ''
+      type: String
+    - contextPath: MicrosoftATP.SoftwareMachine.computerDnsName
+      description: ''
+      type: String
+    - contextPath: MicrosoftATP.SoftwareMachine.osPlatform
+      description: ''
+      type: String
+    - contextPath: MicrosoftATP.SoftwareMachine.rbacGroupName
+      description: ''
+      type: String
+    - contextPath: MicrosoftATP.SoftwareMachine.rbacGroupId
+      description: ''
+      type: Number
+  - arguments: []
+    deprecated: false
+    description: Gets an indicator by its ID.
+    name: microsoft-atp-list-missing-kb-by-software
+    outputs:
+    - contextPath: MicMicrosoftATP.SoftwareKB.id
+      description: ''
+      type: String
+    - contextPath: MicMicrosoftATP.SoftwareKB.name
+      description: ''
+      type: String
+    - contextPath: MicMicrosoftATP.SoftwareKB.productsNames
+      description: ''
+      type: String
+    - contextPath: MicMicrosoftATP.SoftwareKB.url
+      description: ''
+      type: String
+    - contextPath: MicMicrosoftATP.SoftwareKB.machineMissedOn
+      description: ''
+      type: Number
+    - contextPath: MicMicrosoftATP.SoftwareKB.cveAddressed
+      description: ''
+      type: Number
+  - arguments: []
+    deprecated: false
+    description: Gets an indicator by its ID.
+    name: microsoft-atp-list-vulnerabilities-by-software
+    outputs:
+    - contextPath: MicrosoftATP.SoftwareCVE.id
+      description: ''
+      type: String
+    - contextPath: MicrosoftATP.SoftwareCVE.name
+      description: ''
+      type: String
+    - contextPath: MicrosoftATP.SoftwareCVE.description
+      description: ''
+      type: String
+    - contextPath: MicrosoftATP.SoftwareCVE.severity
+      description: ''
+      type: String
+    - contextPath: MicrosoftATP.SoftwareCVE.cvssV3
+      description: ''
+      type: Number
+    - contextPath: MicrosoftATP.SoftwareCVE.exposedMachines
+      description: ''
+      type: Number
+    - contextPath: MicrosoftATP.SoftwareCVE.publishedOn
+      description: ''
+      type: Date
+    - contextPath: MicrosoftATP.SoftwareCVE.updatedOn
+      description: ''
+      type: Date
+    - contextPath: MicrosoftATP.SoftwareCVE.publicExploit
+      description: ''
+      type: Boolean
+    - contextPath: MicrosoftATP.SoftwareCVE.exploitVerified
+      description: ''
+      type: Boolean
+    - contextPath: MicrosoftATP.SoftwareCVE.exploitInKit
+      description: ''
+      type: Boolean
+    - contextPath: MicrosoftATP.SoftwareCVE.exploitTypes
+      description: ''
+      type: String
+    - contextPath: MicrosoftATP.SoftwareCVE.exploitUris
+      description: ''
+      type: String
+  - arguments: []
+    deprecated: false
+    description: Gets an indicator by its ID.
+    name: microsoft-atp-list-software-version-distribution
+    outputs:
+    - contextPath: MicrosoftATP.SoftwareVersion.version
+      description: ''
+      type: String
+    - contextPath: MicrosoftATP.SoftwareVersion.installations
+      description: ''
+      type: Number
+    - contextPath: MicrosoftATP.SoftwareVersion.vulnerabilities
+      description: ''
+      type: Number
   - arguments:
     - default: true
       description: A comma-separated list of file hashes (SHA1 or SHA256) used for getting the file information.

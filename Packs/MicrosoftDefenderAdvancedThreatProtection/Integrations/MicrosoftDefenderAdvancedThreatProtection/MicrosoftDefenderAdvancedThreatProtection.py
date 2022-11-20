@@ -4657,6 +4657,17 @@ def get_machine_alerts_command(client: MsClient, args: dict) -> CommandResults:
         raw_response=alerts_response,
     )
 
+def list_machines_by_software_command(client: MsClient, args: dict) -> CommandResults:
+    return CommandResults()
+
+def list_software_version_distribution_command(client: MsClient, args: dict) -> CommandResults:
+    return CommandResults()
+
+def list_missing_kb_by_software_command(client: MsClient, args: dict) -> CommandResults:
+    return CommandResults()
+
+def list_vulnerabilities_by_software_command(client: MsClient, args: dict) -> CommandResults:
+    return CommandResults()
 
 ''' EXECUTION CODE '''
 ''' LIVE RESPONSE CODE '''
@@ -5195,6 +5206,14 @@ def main():  # pragma: no cover
             return_results(get_machine_alerts_command(client, args))
         elif command == 'microsoft-atp-request-and-download-investigation-package':
             return_results(request_download_investigation_package_command(client, args))
+        elif command == 'microsoft-atp-list-software-version-distribution':
+            return_results(list_software_version_distribution_command(client, args))
+        elif command == 'microsoft-atp-list-machines-by-software':
+            return_results(list_machines_by_software_command(client, args))
+        elif command == 'microsoft-atp-list-missing-kb-by-software':
+            return_results(list_missing_kb_by_software_command(client, args))
+        elif command == 'microsoft-atp-list-vulnerabilities-by-software':
+            return_results(list_vulnerabilities_by_software_command(client, args))
     except Exception as err:
         return_error(str(err))
 
