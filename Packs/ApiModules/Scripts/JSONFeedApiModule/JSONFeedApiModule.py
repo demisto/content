@@ -250,6 +250,8 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
             if limit and len(indicators) >= limit:  # We have a limitation only when get-indicators command is
                 # called, and then we return for each service_name "limit" of indicators
                 break
+
+    indicators = deduplicate_indicators(indicators)
     return indicators, no_update
 
 
@@ -331,6 +333,50 @@ def determine_indicator_type(indicator_type, auto_detect, value):
     if auto_detect:
         indicator_type = auto_detect_indicator_type(value)
     return indicator_type
+
+
+def merge_indicators_service(first_indicator, second_indicator):
+    """
+    Gets two indicators with the same value and different services (tags) and merges them.
+    Args:
+        first_indicator: (dict) The first indicator.
+        second_indicator: (dict) The second indicator.
+    Returns:
+        A dict of the merged indicator.
+    """
+    first_indicator['rawJSON']['service'] += f", {second_indicator.get('rawJSON', {}).get('service', '')}"
+    return first_indicator
+
+
+def deduplicate_indicators(indicators):
+    """
+    Finds the indicators with the same value and different services and merge them.
+    Args:
+        indicators: (list) The all indicators fetched from the feed.
+    Returns:
+        A List of all unique indicators.
+    """
+    indicators_value_list = [indicator.get('value') for indicator in indicators]
+    indicators_value_set = set(indicators_value_list)
+
+    if len(indicators_value_set) < len(indicators_value_list):
+        unique_indicators = []
+        unique_indicators_indexes = {}
+
+        for indicator in indicators:
+            indicator_value = indicator.get('value')
+
+            if indicator_value in indicators_value_set:
+                unique_indicators_indexes[indicator_value] = len(unique_indicators)
+                unique_indicators.append(indicator)
+                indicators_value_set.remove(indicator_value)
+            else:
+                indicator_index = unique_indicators_indexes.get(indicator_value)
+                unique_indicators[indicator_index] = merge_indicators_service(unique_indicators[indicator_index], indicator)
+
+        return unique_indicators
+
+    return indicators
 
 
 def extract_all_fields_from_indicator(indicator: Dict, indicator_key: str, flat_with_prefix: bool = False) -> Dict:
