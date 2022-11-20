@@ -1,0 +1,571 @@
+description: "This playbook Remediates the Drive-by Compromise technique using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team.\n \n***Disclaimer: This playbook does not simulate an attack using the specified technique, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\nTechniques Handled:\n- T1189: Drive-by Compromise\n\nKill Chain phases:\n- Initial Access\n\nMITRE ATT&CK Description:\n\nAdversaries may gain access to a system through a user visiting a website over the normal course of browsing. With this technique, the user's web browser is typically targeted for exploitation, but adversaries may also use compromised websites for non-exploitation behavior such as acquiring Application Access Token.\n\nPossible playbook uses:\n- The playbook can be used independently to handle and remediate the specific technique.\n- The playbook can be used as a part of the “Courses of Action - Defense Evasion” playbook to remediate techniques based on the kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, which can be triggered by different sources and accepts the technique MITRE ATT&CK ID as an input."
+id: MITRE ATT&CK CoA - T1189 - Drive-by Compromise
+inputs:
+- description: Template name to enforce WildFire best practices profile.
+  key: template
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances.
+  key: pre_post
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The device group for which to return addresses (Panorama instances).
+  key: device-group
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Tag for which to filter the rules.
+  key: tag
+  playbookInputQuery:
+  required: false
+  value: {}
+name: MITRE ATT&CK CoA - T1189 - Drive-by Compromise
+outputs:
+- contextPath: Handled.Techniques
+  description: The techniques handled in this playbook
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7fa1a17a-6852-413c-8bea-b596083ad387
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 7fa1a17a-6852-413c-8bea-b596083ad387
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f261d0ff-97a9-47e9-867a-4f18096bc6f3
+      iscommand: false
+      name: Block all unknown and unauthorized applications
+      type: title
+      version: -1
+      description: ''
+    taskid: f261d0ff-97a9-47e9-867a-4f18096bc6f3
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 40757400-37e4-4a21-8a4c-f20f01ee8768
+      iscommand: false
+      name: Enable DNS Security in Anti-Spyware profile
+      type: title
+      version: -1
+      description: ''
+    taskid: 40757400-37e4-4a21-8a4c-f20f01ee8768
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 835
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: af416a1e-1af5-4168-8d25-3e8e01ce9b66
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: af416a1e-1af5-4168-8d25-3e8e01ce9b66
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2170
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre_post:
+        complex:
+          root: inputs.pre_post
+      tag:
+        complex:
+          root: inputs.tag
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d6c3eb38-2604-4019-821f-5d3d5aaca8cb
+      iscommand: false
+      name: PAN-OS - Block all unknown and unauthorized applications
+      playbookId: PAN-OS - Block all unknown and unauthorized applications
+      type: playbook
+      version: -1
+      description: ''
+    taskid: d6c3eb38-2604-4019-821f-5d3d5aaca8cb
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre-post-rulebase:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        This playbook enforces the Anti-Spyware Best Practices Profile as defined by Palo Alto Networks BPA.
+        The playbook performs the following tasks:
+        - Check for DNS Security license (If license is not activated, the playbook refers users to their Palo Alto Networks account manager for further instructions).
+        - Get the existing profile information.
+        - Get the best practices profile information.
+        - Check if the best practices profile set by Cortex XSOAR is enforced. (If not, the playbook allows the user to compare the existing profile with the best practices and decide on the action to take).
+        - Create best practices profile.
+        - Apply profile to policy rules on PAN-OS firewall or Panorama.
+      id: 59873349-be12-4206-83e0-c7b7a1a70321
+      iscommand: false
+      name: PAN-OS - Enforce Anti-Spyware Best Practices Profile
+      playbookId: PAN-OS - Enforce Anti-Spyware Best Practices Profile
+      type: playbook
+      version: -1
+    taskid: 59873349-be12-4206-83e0-c7b7a1a70321
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 980
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Handled.Techniques
+      stringify: {}
+      value:
+        simple: T1189
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: f4db8f64-8063-4602-8514-25c55ad6ea6b
+      iscommand: false
+      name: Set technique handled
+      script: Set
+      type: regular
+      version: -1
+    taskid: f4db8f64-8063-4602-8514-25c55ad6ea6b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1795
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre-post-rulebase:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 948ad793-e334-4456-8cb6-b21d044828f5
+      iscommand: false
+      name: PAN-OS - Enforce Vulnerability Protection Best Practices Profile
+      playbookId: PAN-OS - Enforce Vulnerability Protection Best Practices Profile
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 948ad793-e334-4456-8cb6-b21d044828f5
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 660
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5159855d-1e8f-4ae8-8ca7-9a73f33067e9
+      iscommand: false
+      name: Deploy Vulnerability Protection Profile for all low and high severity threats with block action
+      type: title
+      version: -1
+      description: ''
+    taskid: 5159855d-1e8f-4ae8-8ca7-9a73f33067e9
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre-post-rulebase:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2ea2173d-5676-4689-8222-5c3852b45ead
+      iscommand: false
+      name: PAN-OS - Enforce URL Filtering Best Practices Profile
+      playbookId: PAN-OS - Enforce URL Filtering Best Practices Profile
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 2ea2173d-5676-4689-8222-5c3852b45ead
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1300
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ccae770a-3e5f-4ba2-8417-6994cdee7587
+      iscommand: false
+      name: Control web access based on URL Category
+      type: title
+      version: -1
+      description: ''
+    taskid: ccae770a-3e5f-4ba2-8417-6994cdee7587
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1155
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre-post-rulebase:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+      template:
+        complex:
+          root: inputs.template
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 54fa5fe4-ca04-47db-8031-2f9dd15d72fe
+      iscommand: false
+      name: PAN-OS - Enforce WildFire Best Practices Profile
+      playbookId: PAN-OS - Enforce WildFire Best Practices Profile
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 54fa5fe4-ca04-47db-8031-2f9dd15d72fe
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1620
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 503f7522-0840-48da-8cd9-0b60c3d84b06
+      iscommand: false
+      name: Forward Files for WildFire Analysis
+      type: title
+      version: -1
+      description: ''
+    taskid: 503f7522-0840-48da-8cd9-0b60c3d84b06
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1475
+        }
+      }
+  "22":
+    continueonerror: true
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: technique
+      context_path:
+        simple: Handled.Techniques
+      grid_id:
+        simple: handledtechniques
+      keys: {}
+      overwrite: {}
+      sort_by: {}
+      unpack_nested_elements: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: b44faf5a-ef6d-45cf-8262-a974ecfba339
+      iscommand: false
+      name: Set grid field
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: b44faf5a-ef6d-45cf-8262-a974ecfba339
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1970
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2185,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
