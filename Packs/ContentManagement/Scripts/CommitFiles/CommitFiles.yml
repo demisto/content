@@ -31,7 +31,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: devdemisto/xsoar-tools:1.0.0.37404
+dockerimage: demisto/xsoar-tools:1.0.0.32456
 enabled: true
 name: CommitFiles
 outputs:
