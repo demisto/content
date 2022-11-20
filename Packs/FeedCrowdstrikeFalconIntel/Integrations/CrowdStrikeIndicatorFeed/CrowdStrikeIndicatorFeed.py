@@ -109,14 +109,14 @@ class Client(CrowdStrikeClient):
         )
         return response
 
-    def fetch_indicators(self, limit: Optional[int], offset: Optional[int] = 0, fetch_command=False, use_last_run=False) -> list:
+    def fetch_indicators(self, limit: Optional[int], offset: Optional[int] = 0, fetch_command=False, list_last_run=0) -> list:
         """ Get indicators from CrowdStrike API
 
         Args:
             limit(int): number of indicators to return
             offset: indicators offset
             fetch_command: In order not to update last_run time if it is not fetch command
-            use_last_run: Wether to use the last_run when calling crowdstrike-indicators-list command.
+            list_last_run: The minimum timestamp to fetch indicators by
 
         Returns:
             (list): parsed indicators
@@ -134,7 +134,10 @@ class Client(CrowdStrikeClient):
         if fetch_command:
             offset = demisto.getIntegrationContext().get('offset', 0)
 
-        if fetch_command or use_last_run:
+        if list_last_run:
+            filter = f'{filter}+(last_updated:>={list_last_run})' if filter else f'(last_updated:>={list_last_run})'
+
+        if fetch_command:
             if last_run := self.get_last_run():
                 filter = f'{filter}+({last_run})' if filter else f'({last_run})'
             elif self.first_fetch:
@@ -357,12 +360,12 @@ def crowdstrike_indicators_list_command(client: Client, args: dict) -> CommandRe
 
     offset = arg_to_number(args.get('offset', 0))
     limit = arg_to_number(args.get('limit', 50))
-    use_last_run = argToBoolean(args.get('use_last_run'))
+    last_run = arg_to_number(args.get('last_run', 0))
     parsed_indicators = client.fetch_indicators(
         limit=limit,
         offset=offset,
         fetch_command=False,
-        use_last_run=use_last_run
+        list_last_run=last_run
     )
     if outputs := copy.deepcopy(parsed_indicators):
         for indicator in outputs:

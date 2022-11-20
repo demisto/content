@@ -181,10 +181,10 @@ script:
       name: offset
       required: false
       secret: false
-    - default: false
-      description: Use the same last_run as the fetch-indicator command.
+    - default: 0
+      description: The minimum timestamp to fetch indicators by
       isArray: false
-      name: use_last_run
+      name: last_run
       required: false
       secret: false
     deprecated: false
