@@ -177,7 +177,7 @@ tasks:
       version: -1
       name: Verify Contents Output is a number as used by the Server
       description: Script to test RegPathReputationBasicList and see the proper Contents output is returned
-      scriptName: TestRegPathReputation
+      scriptName: TestRegPathReputationBasicLists
       type: regular
       iscommand: false
       brand: ""
