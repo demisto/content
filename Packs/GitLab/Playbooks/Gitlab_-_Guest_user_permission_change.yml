@@ -2,7 +2,7 @@ id: Gitlab - Guest user permission change
 version: -1
 name: Gitlab - Guest user permission change
 description: |+
-  This playbook investigates a "User Persmission Changed” alert by gathering user and IP information  and performs remediation based on the information gathered and received from the user.  If you wish to link this playbook to the relevant alerts automatically, we recommend using the following filters when configuring the playbook triggers: Alert Source = Correlation AND Alert Name = Gitlab - Permission change from guest to owner
+  This playbook investigates a "User Permissions Changed” alert by gathering user and IP information and performs remediation based on the information gathered and received from the user. To link this playbook to the relevant alerts automatically, we recommend using the following filters when configuring the playbook triggers: Alert Source = Correlation AND Alert Name = Gitlab - Permission change from guest to owner
 
   Used Sub-playbooks:
   * Enrichment for Verdict
@@ -152,7 +152,7 @@ tasks:
       - "25"
     scriptarguments:
       closeNotes:
-        simple: The user confirmed he made this change
+        simple: The user confirmed he made this change.
       closeReason:
         simple: false  positive
     separatecontext: false
@@ -322,7 +322,7 @@ tasks:
         tooltip: ""
         readonly: false
       title: Failed login attempts
-      description: 'We have identified several failed login attempts with your user ID. Please confirm or deny that you attempted these logins. '
+      description: 'We have identified several failed login attempts with your user ID. Please confirm or deny that you attempted these logins.'
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -369,7 +369,7 @@ tasks:
       id: a196af1b-fc4a-462d-8a6e-e2858d76e5f8
       version: -1
       name: Enrichment for Verdict
-      description: This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then  returns the information needed to establish the alert's verdict.
+      description: This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then returns the information needed to establish the alert's verdict.
       playbookName: Enrichment for Verdict
       type: playbook
       iscommand: false
@@ -485,7 +485,7 @@ tasks:
       id: d4aab4d8-e82b-4080-8291-9987697f8829
       version: -1
       name: Block IP - Generic v3
-      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the Cortex XSOAR user (and set by default to outgoing)\nNote the following:\n-  Some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- The appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
       playbookName: Block IP - Generic v3
       type: playbook
       iscommand: false
