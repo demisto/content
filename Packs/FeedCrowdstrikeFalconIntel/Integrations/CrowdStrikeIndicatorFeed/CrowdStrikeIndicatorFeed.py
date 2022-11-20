@@ -133,6 +133,7 @@ class Client(CrowdStrikeClient):
 
         if fetch_command:
             offset = demisto.getIntegrationContext().get('offset', 0)
+            demisto.info(f' current offset: {offset}')
 
         if list_last_run:
             filter = f'{filter}+(last_updated:>={list_last_run})' if filter else f'(last_updated:>={list_last_run})'
@@ -160,6 +161,8 @@ class Client(CrowdStrikeClient):
             offset = demisto.getIntegrationContext().get('offset', 0) + limit
         else:
             offset = 0
+        demisto.info(f' set new offset: {offset}')
+        
 
         # need to fetch all indicators after the limit
         if pagination := response.get('meta', {}).get('pagination'):
