@@ -300,7 +300,7 @@ def test_module(
     except DemistoException as e:
         error_message = e.message
         if 'Invalid access token' in error_message:
-            error_message = 'Invalid API Key. Please verify that your API key is valid.'
+            error_message = 'Invalid credentials. Please verify that your credentials are valid.'
         elif "The Token's Signature resulted invalid" in error_message:
             error_message = 'Invalid API Secret. Please verify that your API Secret is valid.'
         elif 'Invalid client_id or client_secret' in error_message:
