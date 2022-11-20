@@ -1824,7 +1824,7 @@ def argToList(arg, separator=',', transform=None):
                 result = json.loads(arg)
                 is_comma_separated = False
             except Exception:
-                pass
+                demisto.debug(f'Failed to load {arg} as JSON, trying to split')
         if is_comma_separated:
             result = [s.strip() for s in arg.split(separator)]
     else:
