@@ -784,7 +784,9 @@ inputs:
   required: false
   description: The source IP to iterate over.
   playbookInputQuery:
-outputs: []
+outputs:
+- contextPath: UserManagerEmail
+  description: The email of the user's manager.
 tests:
 - No tests (auto formatted)
 marketplaces: ["marketplacev2"]
