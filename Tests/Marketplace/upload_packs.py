@@ -201,7 +201,7 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
 
 
 def clean_non_existing_packs(index_folder_path: str, private_packs: list, storage_bucket: Any,
-                             storage_base_path: str, pack_list: List[Pack], marketplace: str = 'xsoar') -> bool:
+                             storage_base_path: str, content_packs: List[Pack], marketplace: str = 'xsoar') -> bool:
     """ Detects packs that are not part of content repo or from private packs bucket.
 
     In case such packs were detected, problematic pack is deleted from index and from content/packs/{target_pack} path.
@@ -223,7 +223,7 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
             (GCPConfig.PRODUCTION_BUCKET, GCPConfig.CI_BUILD_BUCKET)):
         logging.info("Skipping cleanup of packs in gcs.")  # skipping execution of cleanup in gcs bucket
         return True
-    valid_pack_names = {p.name for p in pack_list}
+    valid_pack_names = {p.name for p in content_packs}
     if marketplace == 'xsoar':
         private_packs_names = {p.get('id', '') for p in private_packs}
         valid_pack_names.update(private_packs_names)
@@ -1086,11 +1086,16 @@ def main():
                                                                         is_bucket_upload_flow, ci_branch)
 
     # detect packs to upload
-    pack_names = get_packs_names(target_packs, previous_commit_hash)  # list of the pack's ids
+    pack_names = get_packs_names(target_packs, previous_commit_hash)  # list of the pack's ids to upload
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
-    packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name))
-                  for pack_name in os.listdir(extract_destination_path)
-                  if os.path.exists(os.path.join(extract_destination_path, pack_name))]
+    # this is a list of all packs from `content_packs.zip`
+    content_packs = [Pack(pack_name, os.path.join(extract_destination_path, pack_name))
+                     for pack_name in os.listdir(extract_destination_path)
+                     if os.path.exists(os.path.join(extract_destination_path, pack_name))]
+
+    # this is a list of packs given to this script
+    packs_list = list(filter(lambda x: x.name in pack_names, content_packs))
+
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
 
     # taking care of private packs
@@ -1106,7 +1111,7 @@ def main():
     statistics_handler = StatisticsHandler(service_account, index_folder_path)
 
     # clean index and gcs from non existing or invalid packs
-    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, packs_list, marketplace)
+    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, content_packs, marketplace)
 
     # packs that depends on new packs that are not in the previous index.zip
     packs_with_missing_dependencies = []
