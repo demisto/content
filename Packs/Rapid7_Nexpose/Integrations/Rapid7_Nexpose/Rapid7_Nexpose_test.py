@@ -215,9 +215,9 @@ def test_replace_key_names(test_input_data: IterableCollection, name_mapping: di
 # --- Command & Client Functions Tests ---
 @pytest.mark.parametrize("test_input, expected_output",
                          [
-                             ("Test1", "1"),
-                             ("Test2", "2"),
-                             ("Test3", "3"),
+                             ("Test 1", "1"),
+                             ("Test 2", "2"),
+                             ("Test 3", "3"),
                              ("Site-That-Doesn't-Exist", None),
                          ])
 def test_find_site_id(mocker, mock_client: Client, test_input: str, expected_output: Union[str, None]):
@@ -334,14 +334,14 @@ def test_get_asset_vulnerability_command(mocker, mock_client: Client, vulnerabil
     assert result[-1].outputs == expected_output_context
 
 
-@pytest.mark.parametrize("report_history_mock_file, expected_output_context_file",
+@pytest.mark.parametrize("api_mock_file, expected_output_context_file",
                          [
                              ("client_get_report_history", "get_generated_report_status_command")
                          ])
-def test_get_generated_report_status_command(mocker, mock_client: Client, report_history_mock_file: str,
+def test_get_generated_report_status_command(mocker, mock_client: Client, api_mock_file: str,
                                              expected_output_context_file: str):
-    report_history_data = load_test_data("api_mock", report_history_mock_file)
-    mocker.patch.object(Client, "get_report_history", return_value=report_history_data)
+    api_data = load_test_data("api_mock", api_mock_file)
+    mocker.patch.object(Client, "get_report_history", return_value=api_data)
 
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
 
@@ -349,14 +349,14 @@ def test_get_generated_report_status_command(mocker, mock_client: Client, report
     assert result.outputs == expected_output_context
 
 
-@pytest.mark.parametrize("report_templates_mock_file, expected_output_context_file",
+@pytest.mark.parametrize("api_mock_file, expected_output_context_file",
                          [
                              ("client_get_report_templates", "get_report_templates_command")
                          ])
-def test_get_report_templates_command(mocker, mock_client: Client, report_templates_mock_file: str,
+def test_get_report_templates_command(mocker, mock_client: Client, api_mock_file: str,
                                       expected_output_context_file: str):
-    report_templates_data = load_test_data("api_mock", report_templates_mock_file)
-    mocker.patch.object(Client, "get_report_templates", return_value=report_templates_data)
+    api_data = load_test_data("api_mock", api_mock_file)
+    mocker.patch.object(Client, "get_report_templates", return_value=api_data)
 
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
 
@@ -364,14 +364,14 @@ def test_get_report_templates_command(mocker, mock_client: Client, report_templa
     assert result.outputs == expected_output_context
 
 
-@pytest.mark.parametrize("scan_mock_file, ids_input, expected_output_context_file",
+@pytest.mark.parametrize("api_mock_file, ids_input, expected_output_context_file",
                          [
                              ("client_get_scan", "1", "get_scan_command")
                          ])
-def test_get_scan_command(mocker, mock_client: Client, scan_mock_file: str, ids_input: str,
+def test_get_scan_command(mocker, mock_client: Client, api_mock_file: str, ids_input: str,
                           expected_output_context_file: str):
-    scan_data = load_test_data("api_mock", scan_mock_file)
-    mocker.patch.object(Client, "get_scan", return_value=scan_data)
+    api_data = load_test_data("api_mock", api_mock_file)
+    mocker.patch.object(Client, "get_scan", return_value=api_data)
 
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
 
@@ -380,16 +380,80 @@ def test_get_scan_command(mocker, mock_client: Client, scan_mock_file: str, ids_
     assert result.outputs == expected_output_context
 
 
-@pytest.mark.parametrize("sites_mock_file, expected_output_context_file",
+@pytest.mark.parametrize("api_mock_file, expected_output_context_file",
                          [
                              ("client_get_sites", "get_sites_command")
                          ])
-def test_get_sites_command(mocker, mock_client: Client, sites_mock_file: str, expected_output_context_file: str):
-    sites_data = load_test_data("api_mock", sites_mock_file)
-    mocker.patch.object(Client, "get_sites", return_value=sites_data)
+def test_get_sites_command(mocker, mock_client: Client, api_mock_file: str, expected_output_context_file: str):
+    api_data = load_test_data("api_mock", api_mock_file)
+    mocker.patch.object(Client, "get_sites", return_value=api_data)
 
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
 
     result = get_sites_command(client=mock_client)
+
+    assert result.outputs == expected_output_context
+
+
+@pytest.mark.parametrize("api_mock_file, expected_output_context_file",
+                         [
+                             ("client_get_shared_credentials", "list_shared_credential_command")
+                         ])
+def test_list_shared_credential_command(mocker, mock_client: Client, api_mock_file: str,
+                                        expected_output_context_file: str):
+    api_data = load_test_data("api_mock", api_mock_file)
+    mocker.patch.object(Client, "get_shared_credentials", return_value=api_data)
+
+    expected_output_context = load_test_data("expected_context", expected_output_context_file)
+
+    result = list_shared_credential_command(client=mock_client)
+
+    assert result.outputs == expected_output_context
+
+
+@pytest.mark.parametrize("api_mock_file, expected_output_context_file",
+                         [
+                             ("client_get_assigned_shared_credentials", "list_assigned_shared_credential_command")
+                         ])
+def test_list_assigned_shared_credential_command(mocker, mock_client: Client, api_mock_file: str,
+                                                 expected_output_context_file: str):
+    api_data = load_test_data("api_mock", api_mock_file)
+    mocker.patch.object(Client, "get_assigned_shared_credentials", return_value=api_data)
+
+    expected_output_context = load_test_data("expected_context", expected_output_context_file)
+
+    result = list_assigned_shared_credential_command(client=mock_client, site=Site(site_id="1"))
+
+    assert result.outputs == expected_output_context
+
+
+@pytest.mark.parametrize("api_mock_file, expected_output_context_file",
+                         [
+                             ("client_get_vulnerabilities", "list_vulnerability_command")
+                         ])
+def test_list_vulnerability_command(mocker, mock_client: Client, api_mock_file: str,
+                                    expected_output_context_file: str):
+    api_data = load_test_data("api_mock", api_mock_file)
+    mocker.patch.object(Client, "get_vulnerabilities", return_value=api_data)
+
+    expected_output_context = load_test_data("expected_context", expected_output_context_file)
+
+    result = list_vulnerability_command(client=mock_client)
+
+    assert result.outputs == expected_output_context
+
+
+@pytest.mark.parametrize("api_mock_file, expected_output_context_file",
+                         [
+                             ("client_get_vulnerability_exceptions", "list_vulnerability_exceptions_command")
+                         ])
+def test_list_vulnerability_exceptions_command(mocker, mock_client: Client, api_mock_file: str,
+                                               expected_output_context_file: str):
+    api_data = load_test_data("api_mock", api_mock_file)
+    mocker.patch.object(Client, "get_vulnerability_exceptions", return_value=api_data)
+
+    expected_output_context = load_test_data("expected_context", expected_output_context_file)
+
+    result = list_vulnerability_exceptions_command(client=mock_client)
 
     assert result.outputs == expected_output_context
