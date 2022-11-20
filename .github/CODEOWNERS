@@ -17,6 +17,8 @@
 /Tests/Marketplace/upload_packs.py @yaakovpraisler @ilaner
 /Tests/Marketplace/packs_dependencies.py @yaakovpraisler
 /Tests/Marketplace/search_and_install_packs.py @yaakovpraisler
+Tests/Marketplace/core_packs_list.json @demisto/content-leaders
+Tests/Marketplace/core_packs_mpv2_list.json @demisto/content-leaders
 /Tests/scripts/prepare_content_packs_for_testing.sh @yaakovpraisler
 /Utils/trigger_test_upload_flow.sh @yaakovpraisler
 /Utils/trigger_upload_packs_to_production.sh @yaakovpraisler
