@@ -9,24 +9,24 @@ This integration was integrated and tested with version v1 of Microsoft Graph.
 
     | **Parameter** | **Description** | **Required** |
     | --- |-------| --- |
-    | Server URL | The host URL | True  |
-    | Application ID or Client ID | The app registration ID | False |
-    | Token or Tenant ID | The tenant ID | False |
-    | Key or Client Secret | The app registarion secret | False |
-    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
+    | Server URL | The host URL. | True  |
+    | Application ID or Client ID | The app registration ID. | False |
+    | Token or Tenant ID | The tenant ID. | False |
+    | Key or Client Secret | The app registration secret. | False |
+    | Certificate Thumbprint | Used for certificate authentication, as it appears in the "Certificates & secrets" page of the app. | False |
     | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
-    | Fetch incidents |  | False |
+    | Fetch incidents | Whether to fetch incidents. | False |
     | Email address from which to fetch incidents | For example, "example@demisto.com" | False |
     | Name of the folder or sub-folder from which to fetch incidents | Supports folder ID and sub-folders, for example Inbox/Phishing. | False |
     | First fetch timestamp | &lt;number&gt; &lt;time unit&gt;, for example 12 hours, 7 days. | False |
     | HTTP Timeout | The timeout of the HTTP requests sent to Microsoft Graph API (in seconds). | False |
-    | Maximum number of emails to pull per fetch |  | False |
+    | Maximum number of emails to pull per fetch | The maximum number of emails to pull per fetch.  | False |
     | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Use a self deployed Azure application | Rather to use a selp-deployed application | False |
-    | Incident type |  | False |
-    | Display the entire email body | Whether to fetch incidents with the entire email body, or just an email body preview, mark if the full email body is required. | False |
-    | Advanced: Time in minutes to look back when fetching emails | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
+    | Use system proxy settings | Whether to use the system proxy settings. | False |
+    | Use a self deployed Azure application | Whether to use a selp-deployed application. | False |
+    | Incident type | The incident type to assign. | False |
+    | Display the entire email body | Whether to fetch incidents with the entire email body or just an email body preview. If True, displays the full email body. | False |
+    | Advanced: Time in minutes to look back when fetching emails | Determines how far back in time to search for incidents that were created before the last run time and did not match the query when they were created. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -169,7 +169,7 @@ Lists all of the attachments of given email
 | --- | --- | --- |
 | user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required | 
 | message_id | The unique ID of the mail. You cannot use the the 'MessageID' key in the form '&lt;message-id&gt;'. | Required | 
-| folder_id |  A comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box). . | Optional | 
+| folder_id |  A comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box). | Optional | 
 | ran_once_flag | Flag for rate limit retry. | Optional | 
 
 
@@ -480,9 +480,9 @@ Sends an email using Microsoft Graph.
 | bcc | A comma-separated list of email addresses for the 'bcc' field. | Optional | 
 | subject | The subject of the email. | Required | 
 | body | The contents (body) of the email. | Optional | 
-| bodyType | The body type of the email. Can be: "text", or "HTML". Possible values are: text, HTML. | Optional | 
-| flag | The flag value that indicates the status for the email. Can be: "notFlagged", "complete", or "flagged". Possible values are: notFlagged, complete, flagged. Default is notFlagged. | Optional | 
-| importance | The importance of the email. Can be: "Low", "Normal", or "High". Possible values are: Low, Normal, High. Default is Low. | Optional | 
+| bodyType | The body type of the email. Possible values are: text, HTML. | Optional | 
+| flag | The flag value that indicates the status for the email. Possible values are: notFlagged, complete, flagged. Default is notFlagged. | Optional | 
+| importance | The importance of the email. Possible values are: Low, Normal, High. Default is Low. | Optional | 
 | headers | A comma-separated list of additional headers in the format: headerName:headerValue. For example: "headerName1:headerValue1,headerName2:headerValue2". | Optional | 
 | attachIDs | A comma-separated list of War Room entry IDs that contain files, which are used to attach files for the email to send. For example, attachIDs=15@8,19@8. | Optional | 
 | attachNames | A comma-separated list of names of attachments to display in the email to send. Must be the same number of elements as attachIDs. | Optional | 
@@ -490,7 +490,7 @@ Sends an email using Microsoft Graph.
 | from | The email address from which to send the email. | Optional | 
 | htmlBody | The content (body) of the email (in HTML format). | Optional | 
 | replyTo | Email addresses that need to be used to reply to the message. Supports comma-separated values. | Optional | 
-| ran_once_flag | flag for rate limit retry. | Optional | 
+| ran_once_flag | Flag for rate limit retry. | Optional | 
 
 
 #### Context Output
