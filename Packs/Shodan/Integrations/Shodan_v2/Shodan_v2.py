@@ -217,7 +217,8 @@ def ip_command():
             'CountryName': res.get('country_name', ''),
             'Address': ip,
             'OS': res.get('os', ''),
-            'Port': res.get('ports', [])
+            'Port': res.get('ports', []),
+            'Vulnerabilities': res.get('vulns', [])
         }
 
         ec = {
