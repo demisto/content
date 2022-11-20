@@ -118,7 +118,7 @@ class PackTags(object):
     TIM = "TIM"
     USE_CASE = "Use Case"
     TRANSFORMER = "Transformer"
-    FILTER = "Filter"§
+    FILTER = "Filter"
     COLLECTION = "Collection"
 
 

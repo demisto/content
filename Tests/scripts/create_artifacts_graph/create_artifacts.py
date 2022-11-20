@@ -13,8 +13,6 @@ import json
 logging_setup(3)
 install_logging("create_artifacts.log", logger=logger)
 
-PACK_METADATA = "pack_metadata.json"
-
 
 def create_zips(content_dto: ContentDTO, output: Path, marketplace: str, zip: bool):
     content_dto.dump(output, marketplace, zip)
@@ -27,8 +25,6 @@ def create_dependencies(content_dto: ContentDTO, output: Path):
         first_level_dependencies = {}
         all_level_dependencies = []
         for dependency in dependencies:
-            if dependency.content_item.object_id in excluded_dependencies:
-                continue
             all_level_dependencies.append(dependency.content_item.object_id)
             if dependency.is_direct:
                 first_level_dependencies[dependency.content_item.object_id] = {
