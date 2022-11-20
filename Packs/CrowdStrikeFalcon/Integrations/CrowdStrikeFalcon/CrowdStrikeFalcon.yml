@@ -1153,6 +1153,7 @@ script:
     - defaultValue: '50'
       description: The maximum number of records to return. The minimum is 1 and the maximum is 500.
       name: limit
+      type: string
     - auto: PREDEFINED
       description: 'The order the results are returned in. Possible values are: "type.asc", "type.desc", "value.asc", "value.desc", "policy.asc", "policy.desc", "share_level.asc", "share_level.desc", "expiration_timestamp.asc", and "expiration_timestamp.desc".'
       name: sort
@@ -2078,6 +2079,7 @@ script:
       defaultValue: '50'
       description: Maximum number of results on a page.
       name: limit
+      type: string
     description: List the available host groups.
     name: cs-falcon-list-host-groups
     outputs:
@@ -2551,7 +2553,7 @@ script:
       required: false
     - auto: PREDEFINED
       description: Display remediation information type of data to be returned for each vulnerability entity.
-      default: true
+      defaultValue: true
       name: display_remediation_info
       required: false
       predefined:
@@ -2559,7 +2561,7 @@ script:
       - 'false'
     - auto: PREDEFINED
       description: Display logic information type of data to be returned for each vulnerability entity.
-      default: true
+      defaultValue: true
       name: display_evaluation_logic_info
       required: false
       predefined:
@@ -2568,14 +2570,17 @@ script:
     - auto: PREDEFINED
       description: Display host information type of data to be returned for each vulnerability entity.
       name: display_host_info
+      defaultValue: false
       required: false
       predefined:
       - 'true'
       - 'false'
     - description: Maximum number of items to return (1-5000).
-      default: 50
+      defaultValue: '50'
+      type: String
       name: limit
       required: false
+    description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter.
     name: cs-falcon-spotlight-search-vulnerability
     outputs:
     - contextPath: CrowdStrike.Vulnerability.id
@@ -2720,16 +2725,18 @@ script:
       description: The vulnerability name.
       type: String
   - arguments:
-    - description: Maximum number of items to return (1-5000).
-      default: 50
-      name: limit
-      required: false
     - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
-      name: cve_ids
+      name: cve_id
       isArray: true
-      required: false
+      required: true
+    - default: true
+      description: ''
+      isArray: true
+      name: cve
+      required: true
+      secret: false
+    description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter.
     name: cve
-    description:
     outputs:
     - contextPath: CrowdStrike.VulnerabilityCve.id
       description: Unique system-assigned ID of the vulnerability.
@@ -2819,12 +2826,16 @@ script:
       description: The vulnerability name.
       type: String
   - arguments:
+    - description: Maximum number of items to return (1-5000).
+      defaultValue: '50'
+      name: limit
+      required: false
     - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
-      name: cve_id
+      name: cve_ids
       isArray: true
-      required: true
+      required: false
+    description: Retrieve vulnerability details for a specific ID and host.
     name: cs-falcon-spotlight-list-host-by-vulnerability
-    description:
     outputs:
     - contextPath: CrowdStrike.VulnerabilityHost.id
       description: Unique system-assigned ID of the vulnerability.
@@ -2907,7 +2918,7 @@ script:
   isremotesyncin: true
   isremotesyncout: true
   runonce: false
-  script:
+  script: '-'
   subtype: python3
   type: python
 fromversion: 5.0.0

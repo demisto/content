@@ -3812,7 +3812,9 @@ def get_detection_for_incident_command(incident_id: str) -> CommandResults:
 def cs_falcon_spotlight_search_vulnerability_command(args: dict):
     pass
 
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
+
 
 LOG('Command being called is {}'.format(demisto.command()))
 
@@ -3980,7 +3982,6 @@ def main():
             return()
         elif demisto.command() == 'cve':
             return()
-        
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')
