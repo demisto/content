@@ -148,5 +148,5 @@ ignore=IF113
 [file:incidentfield-WildFire_Rules.json]
 ignore=IF113
 
-[known words]
+[known_words]
 BPA
