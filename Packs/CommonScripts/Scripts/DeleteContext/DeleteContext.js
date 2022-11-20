@@ -43,11 +43,11 @@ if (shouldDeleteAll) {
     var value;
     for (var i = 0; i < keysToKeep.length; i++) {
         value = dq(invContext, keysToKeep[i]);
-        if (value !== null && value !== undefined && !isNaN(value)) {
+        if (value !== null && value !== undefined) {
             // in case the original path has a reference to a list indexing of the form "root.[0].path" or "root.[1]" remove it.
             new_context_path = keysToKeep[i].replace(/\.\[\d+\]/g, '');
 
-            if (Array.isArray(value) && hasDuplicates(value)) {
+            if (Array.isArray(v alue) && hasDuplicates(value)) {
                 setContext(new_context_path, value);
                 continue;
             }
