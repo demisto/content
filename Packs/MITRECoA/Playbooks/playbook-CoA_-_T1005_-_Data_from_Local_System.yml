@@ -1,0 +1,249 @@
+description: "This playbook Remediates the Data from Local System technique using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team.\n \n***Disclaimer: This playbook does not simulate an attack using the specified technique, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\nTechniques Handled:\n- T1005: Data from Local System\n\nKill Chain phases:\n- Collection\n\nMITRE ATT&CK Description:\nAdversaries may search local system sources, such as file systems or local databases, to find files of interest and sensitive data prior to Exfiltration. Adversaries may do this using a Command and Scripting Interpreter, such as cmd, which has functionality to interact with the file system to gather information. Some adversaries may also use Automated Collection on the local system.\n\nPossible playbook uses:\n- The playbook can be used independently to handle and remediate the specific technique.\n- The playbook can be used as a part of the “Courses of Action - Defense Evasion” playbook to remediate techniques based on the kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, which can be triggered by different sources and accepts the technique MITRE ATT&CK ID as an input."
+id: MITRE ATT&CK CoA - T1005 - Data from Local System
+inputs: []
+name: MITRE ATT&CK CoA - T1005 - Data from Local System
+outputs:
+- contextPath: Handled.Techniques
+  description: The techniques handled in this playbook
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f780f37c-38f0-4056-8776-448abbd16d03
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: f780f37c-38f0-4056-8776-448abbd16d03
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Cortex XDR monitors for behavioral events and files associated with collection activities.
+      id: da5d7e82-eda0-491b-8306-b6ba160c6bfd
+      iscommand: false
+      name: Cortex XDR monitors for behavioral events and files associated with collection activities
+      type: regular
+      version: -1
+    taskid: da5d7e82-eda0-491b-8306-b6ba160c6bfd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 540
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a3db9a3c-ae6b-424c-8135-18eb9c7c3a01
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: a3db9a3c-ae6b-424c-8135-18eb9c7c3a01
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1080
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "1"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brandname:
+        simple: Cortex XDR - IR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      id: fefec216-b2d7-4194-8a61-c5445fdb9ba7
+      iscommand: false
+      name: Is Cortex XDR integration Enabled?
+      script: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: fefec216-b2d7-4194-8a61-c5445fdb9ba7
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Enable the Cortex XDR integration to follow this CoA.
+
+        If needed - please contact your Palo Alto Networks account manager for future guidance and assistance.
+      id: 907e6150-4ce5-4c94-8e52-2ee99b910453
+      iscommand: false
+      name: Manual - Enable Cortex XDR integration
+      type: regular
+      version: -1
+    taskid: 907e6150-4ce5-4c94-8e52-2ee99b910453
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 370
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Handled.Techniques
+      stringify: {}
+      value:
+        simple: T1005
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 6bccf5c1-46c5-4eb7-8c98-42fe819727ba
+      iscommand: false
+      name: Set technique handled
+      script: Set
+      type: regular
+      version: -1
+    taskid: 6bccf5c1-46c5-4eb7-8c98-42fe819727ba
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+  "6":
+    continueonerror: true
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: technique
+      context_path:
+        simple: Handled.Techniques
+      grid_id:
+        simple: handledtechniques
+      keys: {}
+      overwrite: {}
+      sort_by: {}
+      unpack_nested_elements: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: 65729393-a205-4e43-81d2-824573f146e3
+      iscommand: false
+      name: Set grid field
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: 65729393-a205-4e43-81d2-824573f146e3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 900
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1095,
+        "width": 655,
+        "x": 265,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
