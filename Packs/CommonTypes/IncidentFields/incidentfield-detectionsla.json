@@ -34,8 +34,5 @@
  "fieldCalcScript": "",
  "selectValues": [],
  "validationRegex": "",
- "marketplaces": [
-    "xsoar"
-],
  "sla": 20
 }

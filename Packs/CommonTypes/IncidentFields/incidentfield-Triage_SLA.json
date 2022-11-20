@@ -27,8 +27,5 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "marketplaces": [
-		"xsoar"
-	],
 	"fromVersion": "5.0.0"
 }

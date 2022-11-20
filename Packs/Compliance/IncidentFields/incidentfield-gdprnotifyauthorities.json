@@ -33,8 +33,5 @@
  "sla": 4500,
  "threshold": 72,
  "breachScript": "",
- "marketplaces": [
-    "xsoar"
-],
  "fromVersion": "5.0.0"
 }
