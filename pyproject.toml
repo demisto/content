@@ -52,6 +52,8 @@ boto3 = "^1.23.5"
 jsonschema = "^4.6.0"
 google-cloud-bigquery = "^3.2.0"
 db-dtypes = "^1.0.1"
+google-cloud-secret-manager = "^2.12.6"
+json5 = "^0.9.10"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

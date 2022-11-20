@@ -1,7 +1,6 @@
 import google
 from google.cloud import secretmanager
 import json5
-import json
 from datetime import datetime
 import os
 
