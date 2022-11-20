@@ -538,7 +538,7 @@ def fetch_incidents(client: boto3.client, aws_gd_severity: str, last_run: dict, 
 
     # Handle first time fetch
     if latest_created_time is None:
-        latest_created_time = dateparser.parse(dateparser.parse(first_fetch_time).strftime(DATE_FORMAT))
+        latest_created_time = dateparser.parse(dateparser.parse(first_fetch_time).strftime(DATE_FORMAT))  # type: ignore
     else:
         latest_created_time = dateparser.parse(latest_created_time)
 
@@ -579,11 +579,11 @@ def fetch_incidents(client: boto3.client, aws_gd_severity: str, last_run: dict, 
             incident_id = finding.get("Id")
 
             # Update the latest_updated_time
-            if not latest_updated_time or incident_updated_time > latest_updated_time:
+            if not latest_updated_time or (incident_updated_time and incident_updated_time > latest_updated_time):
                 latest_updated_time = incident_updated_time
 
             # Update last run (latest_created_time) and add incident if the incident is newer than last fetch
-            if incident_created_time >= latest_created_time:
+            if (incident_created_time and latest_created_time) and incident_created_time >= latest_created_time:
 
                 demisto.debug(f'Added Incident with ID {incident_id}, occured: {str(incident_created_time)}, '
                               f'updated: {str(incident_updated_time)}')
