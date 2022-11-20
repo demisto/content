@@ -523,8 +523,7 @@ class Pack(object):
     def _clean_release_notes(release_notes_lines):
         return re.sub(r'<\!--.*?-->', '', release_notes_lines, flags=re.DOTALL)
 
-    @staticmethod
-    def _parse_pack_dependencies(first_level_dependencies, dependencies_metadata_dict):
+    def _parse_pack_dependencies(self, dependencies_metadata_dict):
         """ Parses user defined dependencies and returns dictionary with relevant data about each dependency pack.
 
         Args:
@@ -537,8 +536,9 @@ class Pack(object):
         """
         parsed_result = {}
 
+        first_level_dependencies = self.user_metadata.get(Metadata.DEPENDENCIES, {})
         for dependency_id, dependency_data in dependencies_metadata_dict.items():
-            if dependency_id in dependency_data.get(Metadata.EXCLUDED_DEPENDENCIES, []):
+            if dependency_id in self.user_metadata.get(Metadata.EXCLUDED_DEPENDENCIES, []):
                 continue
             parsed_result[dependency_id] = {
                 "mandatory": first_level_dependencies.get(dependency_id, {}).get('mandatory', True),
@@ -2404,8 +2404,7 @@ class Pack(object):
             self._categories = input_to_list(input_data=self.user_metadata.get(Metadata.CATEGORIES),
                                              capitalize_input=True)
             self._keywords = input_to_list(self.user_metadata.get(Metadata.KEY_WORDS))
-        self._parsed_dependencies = self._parse_pack_dependencies(self.user_metadata.get(Metadata.DEPENDENCIES, {}),
-                                                                  dependencies_metadata_dict)
+        self._parsed_dependencies = self._parse_pack_dependencies(dependencies_metadata_dict)
 
         # ===== Pack Private Attributes =====
         if not format_dependencies_only:
