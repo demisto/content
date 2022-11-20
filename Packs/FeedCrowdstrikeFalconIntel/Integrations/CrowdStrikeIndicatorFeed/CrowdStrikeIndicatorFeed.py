@@ -162,7 +162,6 @@ class Client(CrowdStrikeClient):
         else:
             offset = 0
         demisto.info(f' set new offset: {offset}')
-        
 
         # need to fetch all indicators after the limit
         if pagination := response.get('meta', {}).get('pagination'):
