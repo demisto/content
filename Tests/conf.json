@@ -1027,13 +1027,6 @@
         },
         {
             "integrations": "Generic SQL",
-            "playbookID": "generic-sql",
-            "instance_names": "Microsoft SQL Server - MS ODBC Driver",
-            "fromversion": "5.0.0",
-            "has_api": false
-        },
-        {
-            "integrations": "Generic SQL",
             "playbookID": "generic-sql-oracle",
             "instance_names": "Oracle instance",
             "fromversion": "5.0.0",
@@ -1273,7 +1266,9 @@
         },
         {
             "playbookID": "URL Enrichment - Generic v2 - Test",
+            "instance_names": "virus_total_v3",
             "integrations": [
+                "VirusTotal (API v3)",
                 "Rasterize"
             ],
             "timeout": 500,
@@ -5174,6 +5169,7 @@
         }
     ],
     "skipped_tests": {
+        "PaloAltoNetworks_IoT-Test": "Issue CRTX-67960",
         "Cortex Data Lake Test": "Issue CRTX-67423",
         "playbook-CheckPointSandBlast_Test" : "Checkpoint playbook no license",
         "playbook-BmcITSM-Test" : "issue with license CIAC-3776",
