@@ -13,24 +13,24 @@ configuration:
   type: 0
   section: Connect
 - display: Application ID or Client ID
-  additionalinfo: See the Detailed Instructions section.
+  additionalinfo: See the Help tab.
   name: auth_id
   required: true
   type: 4
   section: Connect
 - display: Token or Tenant ID
-  additionalinfo: See the Detailed Instructions section.
+  additionalinfo: See the Help tab.
   name: tenant_id
   required: true
   type: 4
   section: Connect
 - display: Key or Client Secret
-  additionalinfo: See the Detailed Instructions section.
+  additionalinfo: See the Help tab.
   name: enc_key
   required: false
   type: 4
   section: Connect
-- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+- additionalinfo: Used for certificate authentication as it appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
@@ -266,8 +266,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Time at which the alert was closed in the following string format
-        - MM/DD/YYYY
+      description: Time the alert was closed in the string format MM/DD/YYYY.
       isArray: false
       name: closed_date_time
       required: false
@@ -304,20 +303,19 @@ script:
       secret: false
     - default: false
       description: User-definable labels that can be applied to an alert and can serve
-        as filter conditions, e.g.  "HVA", "SAW).
+        as filter conditions, for example "HVA", "SAW).
       isArray: false
       name: tags
       required: false
       secret: false
     - default: false
-      description: Details about the security service vendor, e.g. Microsoft
+      description: Details about the security service vendor, for example Microsoft.
       isArray: false
       name: vendor_information
       required: true
       secret: false
     - default: false
-      description: Details about the security service vendor, e.g. Windows Defender
-        ATP
+      description: Details about the security service vendor, for example Windows Defender ATP.
       isArray: false
       name: provider_information
       required: true
