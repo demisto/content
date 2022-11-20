@@ -1027,13 +1027,6 @@
         },
         {
             "integrations": "Generic SQL",
-            "playbookID": "generic-sql",
-            "instance_names": "Microsoft SQL Server - MS ODBC Driver",
-            "fromversion": "5.0.0",
-            "has_api": false
-        },
-        {
-            "integrations": "Generic SQL",
             "playbookID": "generic-sql-oracle",
             "instance_names": "Oracle instance",
             "fromversion": "5.0.0",
