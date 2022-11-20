@@ -609,7 +609,7 @@ script:
     - contextPath: Slack.Channel.IsPrivate
       description: Is the channel a private channel?
       type: Boolean
-  dockerimage: demisto/slack:1.0.0.28828
+  dockerimage: devdemisto/py3-primary:8.1.0.37610
   feed: false
   isfetch: false
   longRunning: true
