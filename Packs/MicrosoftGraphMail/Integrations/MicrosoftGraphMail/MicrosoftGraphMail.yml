@@ -13,21 +13,21 @@ configuration:
   type: 0
   section: Connect
 - displaypassword: Application ID or Client ID
-  additionalinfo: See the Detailed Instructions section.
+  additionalinfo: See the Help tab.
   hiddenusername: true
   name: creds_auth_id
   required: false
   type: 9
   section: Connect
 - displaypassword: Token or Tenant ID
-  additionalinfo: See the Detailed Instructions section.
+  additionalinfo: See the Help tab.
   hiddenusername: true
   name: creds_tenant_id
   required: false
   type: 9
   section: Connect
 - displaypassword: Key or Client Secret
-  additionalinfo: See the Detailed Instructions section.
+  additionalinfo: See the Help tab.
   name: credentials
   required: false
   type: 9
