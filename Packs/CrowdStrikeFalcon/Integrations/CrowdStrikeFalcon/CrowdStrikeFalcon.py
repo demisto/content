@@ -14,9 +14,11 @@ import requests
 from dateutil.parser import parse
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
+
 INTEGRATION_NAME = 'CrowdStrike Falcon'
 CLIENT_ID = demisto.params().get('client_id')
 SECRET = demisto.params().get('secret')
@@ -37,6 +39,8 @@ HEADERS = {
 # Note: True life time of token is actually 30 mins
 TOKEN_LIFE_TIME = 28
 INCIDENTS_PER_FETCH = int(demisto.params().get('incidents_per_fetch', 15))
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+
 # Remove proxy if not set to true in params
 handle_proxy()
 
@@ -1978,25 +1982,64 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
 ''' COMMANDS FUNCTIONS '''
 
 
-def get_fetch_times_and_offset(incident_type):
-    last_run = demisto.getLastRun()
-    last_fetch_time = last_run.get(f'first_behavior_{incident_type}_time')
-    offset = last_run.get(f'{incident_type}_offset', 0)
+def get_fetch_times_and_offset(current_fetch_info: dict):
+    last_fetch_time = current_fetch_info.get('time')
+    offset = current_fetch_info.get('offset', 0)
     if not last_fetch_time:
-        last_fetch_time, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
+        last_fetch_time, _ = parse_date_range(FETCH_TIME, date_format=DATE_FORMAT)
     prev_fetch = last_fetch_time
     last_fetch_timestamp = int(parse(last_fetch_time).timestamp() * 1000)
     return last_fetch_time, offset, prev_fetch, last_fetch_timestamp
 
 
+def migrate_last_run(last_run: dict[str, str]) -> list[dict]:
+    """This function migrated from old last run object to new last run object
+
+    Args:
+        last_run (dict[str, str]): Old last run object.
+
+    Returns:
+        list[dict]: New last run object.
+    """
+    updated_last_run_detections: dict[str, str | None] = {}
+    if (detection_time := last_run.get('first_behavior_detection_time')) and \
+       (detection_time_date := dateparser.parse(detection_time)):
+        updated_last_run_detections['time'] = detection_time_date.strftime(DATE_FORMAT)
+    updated_last_run_detections['offset'] = last_run.get('detection_offset')
+
+    updated_last_run_incidents: dict[str, str | None] = {}
+    if (incident_time := last_run.get('first_behavior_incident_time')) and \
+       (incident_time_date := dateparser.parse(incident_time)):
+        updated_last_run_incidents['time'] = incident_time_date.strftime(DATE_FORMAT)
+    updated_last_run_incidents['last_fetched_incident'] = last_run.get('last_fetched_incident')
+    updated_last_run_incidents['offset'] = last_run.get('incident_offset')
+
+    return [updated_last_run_detections, updated_last_run_incidents]
+
+
 def fetch_incidents():
     incidents = []  # type:List
-    current_fetch_info = demisto.getLastRun()
-    fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections')
 
+    last_run = demisto.getLastRun()
+    demisto.debug(f'CrowdStrikeFalconMsg: Current last run object is {last_run}')
+    if not last_run:
+        last_run = [{}, {}]
+    if not isinstance(last_run, list):
+        last_run = migrate_last_run(last_run)
+    current_fetch_info_detections: dict = last_run[0]
+    current_fetch_info_incidents: dict = last_run[1]
+    fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections')
+    look_back = int(demisto.params().get('look_back', 0))
+    fetch_limit = INCIDENTS_PER_FETCH
+
+    demisto.debug(f"CrowdstrikeFalconMsg: Starting fetch incidents with {fetch_incidents_or_detections}")
     if 'Detections' in fetch_incidents_or_detections:
+        start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info_detections,
+                                                                    first_fetch=FETCH_TIME,
+                                                                    look_back=look_back)
+
         incident_type = 'detection'
-        last_fetch_time, offset, prev_fetch, last_fetch_timestamp = get_fetch_times_and_offset(incident_type)
+        last_fetch_time, offset, prev_fetch, last_fetch_timestamp = get_fetch_times_and_offset(current_fetch_info_detections)
 
         fetch_query = demisto.params().get('fetch_query')
         if fetch_query:
@@ -2017,31 +2060,35 @@ def fetch_incidents():
 
                     incident_date_timestamp = int(parse(incident_date).timestamp() * 1000)
 
-                    # make sure that the two timestamps are in the same length
-                    if len(str(incident_date_timestamp)) != len(str(last_fetch_timestamp)):
-                        incident_date_timestamp, last_fetch_timestamp = timestamp_length_equalization(
-                            incident_date_timestamp, last_fetch_timestamp)
-
-                    # Update last run and add incident if the incident is newer than last fetch
-                    if incident_date_timestamp > last_fetch_timestamp:
-                        last_fetch_time = incident_date
-                        last_fetch_timestamp = incident_date_timestamp
-
                     incidents.append(incident)
 
             if len(incidents) == INCIDENTS_PER_FETCH:
-                current_fetch_info['first_behavior_detection_time'] = prev_fetch
-                current_fetch_info['detection_offset'] = offset + INCIDENTS_PER_FETCH
+                current_fetch_info_detections['offset'] = offset + INCIDENTS_PER_FETCH
             else:
-                current_fetch_info['first_behavior_detection_time'] = last_fetch_time
-                current_fetch_info['detection_offset'] = 0
+                current_fetch_info_detections['offset'] = 0
+            incidents = filter_incidents_by_duplicates_and_limit(incidents_res=incidents, last_run=current_fetch_info_detections,
+                                                                 fetch_limit=fetch_limit, id_field='name')
+
+            for incident in incidents:
+                occurred = dateparser.parse(incident["occurred"])
+                if occurred:
+                    incident["occurred"] = occurred.strftime(DATE_FORMAT)
+            last_run = update_last_run_object(last_run=current_fetch_info_detections, incidents=incidents,
+                                              fetch_limit=fetch_limit,
+                                              start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
+                                              look_back=look_back,
+                                              created_time_field='occurred', id_field='name', date_format=DATE_FORMAT)
+            current_fetch_info_detections.update(last_run)
 
     if 'Incidents' in fetch_incidents_or_detections:
+        start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info_incidents,
+                                                                    first_fetch=FETCH_TIME,
+                                                                    look_back=look_back)
+
         incident_type = 'incident'
 
-        last_fetch_time, offset, prev_fetch, last_fetch_timestamp = get_fetch_times_and_offset(incident_type)
-        last_run = demisto.getLastRun()
-        last_incident_fetched = last_run.get('last_fetched_incident')
+        last_fetch_time, offset, prev_fetch, last_fetch_timestamp = get_fetch_times_and_offset(current_fetch_info_incidents)
+        last_incident_fetched = current_fetch_info_incidents.get('last_fetched_incident')
         new_last_incident_fetched = ''
 
         fetch_query = demisto.params().get('incidents_fetch_query')
@@ -2064,14 +2111,8 @@ def fetch_incidents():
 
                     incident_date_timestamp = int(parse(incident_date).timestamp() * 1000)
 
-                    # make sure that the two timestamps are in the same length
-                    if len(str(incident_date_timestamp)) != len(str(last_fetch_timestamp)):
-                        incident_date_timestamp, last_fetch_timestamp = timestamp_length_equalization(
-                            incident_date_timestamp, last_fetch_timestamp)
-
                     # Update last run and add incident if the incident is newer than last fetch
                     if incident_date_timestamp > last_fetch_timestamp:
-                        last_fetch_time = incident_date
                         last_fetch_timestamp = incident_date_timestamp
                         new_last_incident_fetched = incident.get('incident_id')
 
@@ -2079,15 +2120,29 @@ def fetch_incidents():
                         incidents.append(incident_to_context)
 
             if len(incidents) == INCIDENTS_PER_FETCH:
-                current_fetch_info['first_behavior_incident_time'] = prev_fetch
-                current_fetch_info['incident_offset'] = offset + INCIDENTS_PER_FETCH
-                current_fetch_info['last_fetched_incident'] = new_last_incident_fetched
+                current_fetch_info_incidents['offset'] = offset + INCIDENTS_PER_FETCH
+                current_fetch_info_incidents['last_fetched_incident'] = new_last_incident_fetched
             else:
-                current_fetch_info['first_behavior_incident_time'] = last_fetch_time
-                current_fetch_info['incident_offset'] = 0
-                current_fetch_info['last_fetched_incident'] = new_last_incident_fetched
+                current_fetch_info_incidents['offset'] = 0
+                current_fetch_info_incidents['last_fetched_incident'] = new_last_incident_fetched
 
-    demisto.setLastRun(current_fetch_info)
+            incidents = filter_incidents_by_duplicates_and_limit(incidents_res=incidents, last_run=current_fetch_info_incidents,
+                                                                 fetch_limit=fetch_limit, id_field='name')
+            for incident in incidents:
+                occurred = dateparser.parse(incident["occurred"])
+                if occurred:
+                    incident["occurred"] = occurred.strftime(DATE_FORMAT)
+
+            last_run = update_last_run_object(last_run=current_fetch_info_incidents, incidents=incidents,
+                                              fetch_limit=fetch_limit,
+                                              start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
+                                              look_back=look_back,
+                                              created_time_field='occurred', id_field='name', date_format=DATE_FORMAT)
+            current_fetch_info_incidents.update(last_run)
+
+    demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch incidents. Fetched {len(incidents)}")
+
+    demisto.setLastRun([current_fetch_info_detections, current_fetch_info_incidents])
     return incidents
 
 
@@ -2287,13 +2342,13 @@ def upload_custom_ioc_command(
     """
     if action in {'prevent', 'detect'} and not severity:
         raise ValueError(f'Severity is required for action {action}.')
-    value = argToList(value)
+    values: list[str] = argToList(value)
     applied_globally = argToBoolean(applied_globally) if applied_globally else None
-    host_groups = argToList(host_groups)
+    host_groups: list[str] = argToList(host_groups)
     tags = argToList(tags)
-    platforms = argToList(platforms)
+    platforms_list = argToList(platforms)
 
-    iocs_json_batch = create_json_iocs_list(ioc_type, value, action, platforms, severity, source, description,
+    iocs_json_batch = create_json_iocs_list(ioc_type, values, action, platforms_list, severity, source, description,
                                             expiration, applied_globally, host_groups, tags)
     raw_res = upload_batch_custom_ioc(ioc_batch=iocs_json_batch)
     handle_response_errors(raw_res)
@@ -2977,14 +3032,17 @@ def run_script_command():
                 error_message = f'Could not run command\n{errors}'
             return_error(error_message)
         full_command = full_command.replace('`', '')
+        stderr = resource.get('stderr')
         output.append({
             'HostID': resource.get('aid'),
             'SessionID': resource.get('session_id'),
             'Stdout': resource.get('stdout'),
-            'Stderr': resource.get('stderr'),
+            'Stderr': stderr,
             'BaseCommand': resource.get('base_command'),
             'Command': full_command
         })
+        if stderr:
+            raise DemistoException(f"cs-falcon-run-script command failed with the following error: {stderr}")
 
     human_readable = tableToMarkdown(f'Command {full_command} results', output)
     entry_context = {

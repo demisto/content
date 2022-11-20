@@ -1,0 +1,75 @@
+{
+    "data": {
+        "resultIdToElementDataMap": {
+            "-1826875736.1198775089551518743": {
+                "simpleValues": {
+                    "elementDisplayName": {
+                        "totalValues": 1,
+                        "values": [
+                            "desktop-j60ivd0"
+                        ]
+                    }
+                },
+                "elementValues": {},
+                "suspicions": {},
+                "filterData": {
+                    "sortInGroupValue": "-1826875736.1198775089551518743",
+                    "groupByValue": "MachineRuntime:-1826875736.1198775089551518743 adCanonicalName=null , adCompany=null , adDNSHostName=null , adDepartment=null , adDescription=null , adDisplayName=null , adLocation=null , adMachineRole=null , adOU=null , adOrganization=null , adSid=null , computerName=desktop-j60ivd0 , "
+                },
+                "isMalicious": "False",
+                "suspicionCount": 0,
+                "guidString": "-1826875736.1198775089551518743",
+                "labelsIds": "None",
+                "malopPriority": "None",
+                "suspect": "False",
+                "malicious": "False"
+            }
+        },
+        "suspicionsMap": {},
+        "evidenceMap": {},
+        "totalPossibleResults": 1,
+        "guessedPossibleResults": 0,
+        "queryLimits": {
+            "totalResultLimit": 10000,
+            "perGroupLimit": 100,
+            "perFeatureLimit": 100,
+            "groupingFeature": {
+                "elementInstanceType": "Machine",
+                "featureName": "self"
+            },
+            "sortInGroupFeature": "None"
+        },
+        "queryTerminated": "False",
+        "pathResultCounts": [
+            {
+                "featureDescriptor": {
+                    "elementInstanceType": "Machine",
+                    "featureName": "None"
+                },
+                "count": 1
+            }
+        ],
+        "guids": [],
+        "paginationToken": "None",
+        "executionUUID": "None",
+        "quapiMeasurementData": {
+            "timeToGetGuids": [],
+            "timeToGetData": [],
+            "timeToGetAdditionalData": [],
+            "totalQuapiQueryTime": [],
+            "startTime": [],
+            "endTime": []
+        }
+    },
+    "status": "SUCCESS",
+    "hidePartialSuccess": "False",
+    "message": "",
+    "expectedResults": 1,
+    "failures": 0,
+    "failedServersInfo": {
+        "onlineFailedServers": [],
+        "offlineServers": [],
+        "onlineFailedServersPercentage": 0.0,
+        "totalFailedServersPercentage": 0.0
+    }
+}

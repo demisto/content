@@ -8,7 +8,9 @@ import sys
 import warnings
 
 import dateparser
+from freezegun import freeze_time
 import pytest
+import pytz
 import requests
 from pytest import raises, mark
 
@@ -19,7 +21,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode, parse_date_range, \
     return_outputs, \
-    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, batch, FeedIndicatorType, \
+    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, domainRegex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
@@ -3063,6 +3065,7 @@ class TestParseDateRange:
         assert abs(utc_start_time - utc_end_time).days == 2
 
     @staticmethod
+    @freeze_time("2022-11-03 13:40:00 UTC")
     def test_case_insensitive():
         utc_now = datetime.utcnow()
         utc_start_time, utc_end_time = parse_date_range('2 Days', utc=True)
@@ -3511,6 +3514,51 @@ def test_auto_detect_indicator_type_tldextract(mocker):
         assert 'cache_file' in res[1].keys()
 
 
+VALID_DOMAIN_INDICATORS = ['www.static.attackiqtes.com',
+                           'test.com',
+                           'www.testö.com',
+                           'hxxps://path.test.com/check',
+                           'https%3A%2F%2Ftwitter.com%2FPhilipsBeLux&data=02|01||cb2462dc8640484baf7608d638d2a698|1a407a2d7675' \
+                           '4d178692b3ac285306e4|0|0|636758874714819880&sdata=dnJiphWFhnAKsk5Ps0bj0p%2FvXVo8TpidtGZcW6t8lDQ%3' \
+                           'D&reserved=0%3E%5bcid:image003.gif@01CF4D7F.1DF62650%5d%3C',
+                           'https://emea01.safelinks.protection.outlook.com/',
+                           'good.good']
+
+@pytest.mark.parametrize('indicator_value', VALID_DOMAIN_INDICATORS)
+def test_valid_domain_indicator_types(indicator_value):
+    """
+    Given
+    - Valid Domain indicators.
+    When
+    - Trying to match those indicators with the Domain regex.
+    Then
+    - The indicators are classified as Domain indicators.
+    """
+    assert re.match(domainRegex, indicator_value)
+
+
+INVALID_DOMAIN_INDICATORS = ['aaa.2234',
+                             '1.1.1.1',
+                             'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad',
+                             '1.1',
+                             '2001 : db8: 3333 : 4444 : 5555',
+                             'test..com',
+                             'test/com',
+                             '3.21.32.65/path']
+
+@pytest.mark.parametrize('indicator_value', INVALID_DOMAIN_INDICATORS)
+def test_invalid_domain_indicator_types(indicator_value):
+    """
+    Given
+    - invalid Domain indicators.
+    When
+    - Trying to match those indicators with the Domain regex.
+    Then
+    - The indicators are not classified as Domain indicators.
+    """
+    assert not re.match(domainRegex, indicator_value)
+
+
 VALID_URL_INDICATORS = [
     '3.21.32.65/path',
     '19.117.63.253:28/other/path',
@@ -3710,7 +3758,6 @@ def test_invalid_url_indicator_types(indicator_value):
     - The indicators are not classified as URL indicators.
     """
     assert not re.match(urlRegex, indicator_value)
-
 
 def test_handle_proxy(mocker):
     os.environ['REQUESTS_CA_BUNDLE'] = '/test1.pem'
@@ -7527,14 +7574,28 @@ class TestFetchWithLookBack:
         }
     ]
 
-    def example_fetch_incidents(self):
+    INCIDENTS_TIME_AWARE = [
+        {
+            'incident_id': incident.get('incident_id'),
+            'created': incident.get('created') + 'Z'
+        } for incident in INCIDENTS
+    ]
+
+    NEW_INCIDENTS_TIME_AWARE = [
+        {
+            'incident_id': incident.get('incident_id'),
+            'created': incident.get('created') + 'Z'
+        } for incident in NEW_INCIDENTS
+    ]
+
+    def example_fetch_incidents(self, time_aware=False):
         """
         An example fetch for testing
         """
 
         from CommonServerPython import get_fetch_run_time_range, filter_incidents_by_duplicates_and_limit, \
             update_last_run_object
-
+        date_format = '%Y-%m-%dT%H:%M:%S' + ('Z' if time_aware else '')
         incidents = []
 
         params = demisto.params()
@@ -7547,10 +7608,10 @@ class TestFetchWithLookBack:
         fetch_limit = last_run.get('limit') or fetch_limit_param
 
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch,
-                                                                    look_back=look_back, timezone=time_zone)
+                                                                    look_back=look_back, timezone=time_zone, date_format=date_format)
 
         query = self.build_query(start_fetch_time, end_fetch_time, fetch_limit)
-        incidents_res = self.get_incidents_request(query)
+        incidents_res = self.get_incidents_request(query, date_format)
 
         incidents = filter_incidents_by_duplicates_and_limit(incidents_res=incidents_res, last_run=last_run,
                                                              fetch_limit=fetch_limit_param, id_field='incident_id')
@@ -7558,7 +7619,7 @@ class TestFetchWithLookBack:
         last_run = update_last_run_object(last_run=last_run, incidents=incidents, fetch_limit=fetch_limit_param,
                                           start_fetch_time=start_fetch_time,
                                           end_fetch_time=end_fetch_time, look_back=look_back,
-                                          created_time_field='created', id_field='incident_id')
+                                          created_time_field='created', id_field='incident_id', date_format=date_format)
 
         demisto.setLastRun(last_run)
         return incidents
@@ -7570,10 +7631,12 @@ class TestFetchWithLookBack:
             query['limit'] = limit
         return query
 
-    def get_incidents_request(self, query):
-        from_time = datetime.strptime(query['from'], '%Y-%m-%dT%H:%M:%S')
-        incidents = [inc for inc in self.INCIDENTS if
-                     datetime.strptime(inc['created'], '%Y-%m-%dT%H:%M:%S') > from_time]
+    def get_incidents_request(self, query, date_format):
+        time_aware = 'Z' in date_format
+        source_incidents = self.INCIDENTS_TIME_AWARE if time_aware else self.INCIDENTS
+        from_time = datetime.strptime(query['from'], date_format)
+        incidents = [inc for inc in source_incidents if
+                     datetime.strptime(inc['created'], date_format) > from_time]
         if query.get('limit') is not None:
             return incidents[:query['limit']]
         return incidents
@@ -7590,6 +7653,17 @@ class TestFetchWithLookBack:
          {'limit': 2, 'time': INCIDENTS[2]['created']}),
         ({'limit': 3, 'first_fetch': '2 hours'}, [INCIDENTS[1], INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
          {'limit': 3, 'time': INCIDENTS[3]['created']}),
+
+        ({'limit': 2, 'first_fetch': '40 minutes'}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]], [INCIDENTS_TIME_AWARE[4]],
+         {'limit': 2, 'time': INCIDENTS_TIME_AWARE[3]['created']}),
+        ({'limit': 3, 'first_fetch': '40 minutes'}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3], INCIDENTS_TIME_AWARE[4]], [],
+         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[4]['created']}),
+        ({'limit': 2, 'first_fetch': '2 hours'}, [INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2]], [INCIDENTS_TIME_AWARE[3],
+                                                                                                      INCIDENTS_TIME_AWARE[4]],
+         {'limit': 2, 'time': INCIDENTS_TIME_AWARE[2]['created']}),
+        ({'limit': 3, 'first_fetch': '2 hours'}, [INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
+         [INCIDENTS_TIME_AWARE[4]],
+         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[3]['created']}),
     ])
     def test_regular_fetch(self, mocker, params, result_phase1, result_phase2, expected_last_run):
         """
@@ -7606,6 +7680,7 @@ class TestFetchWithLookBack:
             # skip for python 2 - date
             assert True
             return
+        time_aware = 'Z' in expected_last_run['time']
 
         self.LAST_RUN = {}
 
@@ -7615,24 +7690,26 @@ class TestFetchWithLookBack:
         mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
 
         # Run first fetch
-        incidents_phase1 = self.example_fetch_incidents()
+        incidents_phase1 = self.example_fetch_incidents(time_aware)
 
         assert incidents_phase1 == result_phase1
         assert self.LAST_RUN == expected_last_run
 
         # Run second fetch
         mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
-        incidents_phase2 = self.example_fetch_incidents()
+        incidents_phase2 = self.example_fetch_incidents(time_aware)
 
         assert incidents_phase2 == result_phase2
 
     def mock_dateparser(self, date_string, settings):
+        time_aware = isinstance(date_string, str) and 'Z' in date_string
+        date_format = '%Y-%m-%dT%H:%M:%S' + ('Z' if time_aware else '')
         date_arr = date_string.split(' ')
         if len(date_arr) > 1 and date_arr[0].isdigit():
             return datetime(2022, 4, 1, 11, 0, 0) - timedelta(minutes=int(date_arr[0])) if date_arr[1] == 'minutes' \
                 else datetime(2022, 4, 1, 11, 0, 0) - timedelta(hours=int(date_arr[0]))
         return datetime(2022, 4, 1, 11, 0, 0) - (
-                    datetime(2022, 4, 1, 11, 0, 0) - datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S'))
+                    datetime(2022, 4, 1, 11, 0, 0) - datetime.strptime(date_string, date_format))
 
     @pytest.mark.parametrize(
         'params, result_phase1, result_phase2, result_phase3, expected_last_run_phase1, expected_last_run_phase2, new_incidents, index',
@@ -7665,6 +7742,38 @@ class TestFetchWithLookBack:
                     {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 3},
                     [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], 3
             ),
+
+            (
+                    {'limit': 2, 'first_fetch': '50 minutes', 'look_back': 15}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
+                    [NEW_INCIDENTS_TIME_AWARE[0], INCIDENTS_TIME_AWARE[4]], [],
+                    {'found_incident_ids': {3: '', 4: ''}, 'limit': 4},
+                    {'found_incident_ids': {3: '', 4: '', 5: '', 6: ''}, 'limit': 6},
+                    [NEW_INCIDENTS_TIME_AWARE[0]], 2
+            ),
+            (
+                    {'limit': 2, 'first_fetch': '20 minutes', 'look_back': 30}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
+                    [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], [INCIDENTS_TIME_AWARE[4]],
+                    {'found_incident_ids': {3: '', 4: ''}, 'limit': 4},
+                    {'found_incident_ids': {3: '', 4: '', 7: '', 8: ''}, 'limit': 6},
+                    [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], 3
+            ),
+            (
+                    {'limit': 3, 'first_fetch': '181 minutes', 'look_back': 15},
+                    [INCIDENTS_TIME_AWARE[0], INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2]], [NEW_INCIDENTS_TIME_AWARE[0],
+                                                                                                  INCIDENTS_TIME_AWARE[3],
+                                                                                                  INCIDENTS_TIME_AWARE[4]], [],
+                    {'found_incident_ids': {1: '', 2: '', 3: ''}, 'limit': 6},
+                    {'found_incident_ids': {1: '', 2: '', 3: '', 4: '', 5: '', 6: ''}, 'limit': 9},
+                    [NEW_INCIDENTS_TIME_AWARE[0]], 2
+            ),
+            (
+                    {'limit': 3, 'first_fetch': '20 minutes', 'look_back': 30},
+                    [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3], INCIDENTS_TIME_AWARE[4]],
+                    [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], [],
+                    {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 6},
+                    {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 3},
+                    [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], 3
+            ),
         ])
     def test_fetch_with_look_back(self, mocker, params, result_phase1, result_phase2, result_phase3,
                                   expected_last_run_phase1, expected_last_run_phase2, new_incidents, index):
@@ -7682,9 +7791,9 @@ class TestFetchWithLookBack:
             # skip for python 2 - date
             assert True
             return
-
+        time_aware = 'Z' in result_phase1[0]['created']
         self.LAST_RUN = {}
-        incidents = self.INCIDENTS[:]
+        incidents = self.INCIDENTS_TIME_AWARE[:] if time_aware else self.INCIDENTS[:] 
 
         mocker.patch.object(CommonServerPython, 'get_current_time', return_value=datetime(2022, 4, 1, 11, 0, 0))
         mocker.patch.object(dateparser, 'parse', side_effect=self.mock_dateparser)
@@ -7693,7 +7802,7 @@ class TestFetchWithLookBack:
         mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
 
         # Run first fetch
-        incidents_phase1 = self.example_fetch_incidents()
+        incidents_phase1 = self.example_fetch_incidents(time_aware)
 
         assert incidents_phase1 == result_phase1
         assert self.LAST_RUN['limit'] == expected_last_run_phase1['limit']
@@ -7702,11 +7811,14 @@ class TestFetchWithLookBack:
             assert inc['incident_id'] in self.LAST_RUN['found_incident_ids']
 
         next_run_phase1 = self.LAST_RUN['time']
-        self.INCIDENTS = incidents[:index] + new_incidents + incidents[index:]
-
+        source_incidents = incidents[:index] + new_incidents + incidents[index:]
+        if time_aware:
+            self.INCIDENTS_TIME_AWARE = source_incidents
+        else:
+            self.INCIDENTS = source_incidents
         # Run second fetch
         mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
-        incidents_phase2 = self.example_fetch_incidents()
+        incidents_phase2 = self.example_fetch_incidents(time_aware)
 
         assert incidents_phase2 == result_phase2
         assert self.LAST_RUN['limit'] == expected_last_run_phase2['limit']
@@ -7722,12 +7834,15 @@ class TestFetchWithLookBack:
 
         # Run third fetch
         mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
-        incidents_phase3 = self.example_fetch_incidents()
+        incidents_phase3 = self.example_fetch_incidents(time_aware)
 
         assert incidents_phase3 == result_phase3
 
         # Remove new incidents from self.INCIDENTS
-        self.INCIDENTS = incidents
+        if time_aware:
+            self.INCIDENTS_TIME_AWARE = incidents
+        else:
+            self.INCIDENTS = incidents
 
 
 class TestTracebackLineNumberAdgustment:
