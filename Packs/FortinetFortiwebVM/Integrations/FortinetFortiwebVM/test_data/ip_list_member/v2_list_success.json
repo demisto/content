@@ -1,0 +1,40 @@
+{
+    "results": [
+        {
+            "seq": 1,
+            "_id": 1,
+            "q_type": 0,
+            "id": "2",
+            "type": "black-ip",
+            "type_val": "1",
+            "ip": "1.2.3.89"
+        },
+        {
+            "seq": 2,
+            "_id": 2,
+            "q_type": 0,
+            "id": "3",
+            "type": "trust-ip",
+            "type_val": "0",
+            "ip": "1.2.3.87"
+        },
+        {
+            "seq": 3,
+            "_id": 3,
+            "q_type": 0,
+            "id": "4",
+            "type": "trust-ip",
+            "type_val": "0",
+            "ip": "1.2.3.80"
+        },
+        {
+            "seq": 4,
+            "_id": 4,
+            "q_type": 0,
+            "id": "1",
+            "type": "allow-only-ip",
+            "type_val": "2",
+            "ip": "1.2.3.4"
+        }
+    ]
+}

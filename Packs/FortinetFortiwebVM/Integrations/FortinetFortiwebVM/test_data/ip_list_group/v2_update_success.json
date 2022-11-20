@@ -1,0 +1,19 @@
+{
+    "results": {
+        "can_view": 0,
+        "q_ref": 0,
+        "can_clone": 1,
+        "q_type": 1,
+        "name": "ronhadad",
+        "action": "alert_deny",
+        "action_val": "6",
+        "block-period": 60,
+        "severity": "High",
+        "severity_val": "1",
+        "ignore-x-forwarded-for": "enable",
+        "ignore-x-forwarded-for_val": "1",
+        "trigger-policy": "",
+        "trigger-policy_val": "0",
+        "sz_members": 0
+    }
+}
