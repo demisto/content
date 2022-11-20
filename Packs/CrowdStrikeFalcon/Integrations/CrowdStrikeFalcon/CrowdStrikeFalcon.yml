@@ -1992,12 +1992,6 @@ script:
     - description: The endpoint hostname.
       name: hostname
       secret: false
-    - default: true
-      description: ''
-      isArray: true
-      name: endpoint
-      required: true
-      secret: false
     description: Returns information about an endpoint.
     name: endpoint
     outputs:
