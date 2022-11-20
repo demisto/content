@@ -6,14 +6,13 @@ configuration:
 - display: Certificate Password
   name: certificate_password
   required: false
-  type: 14
+  type: 4
   additionalinfo: Password used to sign the certificate.
 - display: Certificate
   name: certificate
-  type: 14
+  type: 4
   required: false
   additionalinfo: A pfx certificate encoded in Base64.
-  hiddenusername: true
 - display: UPN/Email
   name: delegated_auth
   required: true
@@ -975,7 +974,7 @@ script:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId
       description: Security and compliance search action Tenant ID.
       type: String
-  dockerimage: demisto/pwsh-exchange:1.0.0.34118
+  dockerimage: devdemisto/powershell-ubuntu:7.2.2.37611
   isfetch: false
   longRunning: false
   longRunningPort: false

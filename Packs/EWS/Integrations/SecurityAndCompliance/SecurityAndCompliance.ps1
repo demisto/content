@@ -262,7 +262,7 @@ class SecurityAndComplianceClient {
             $this.delegated_password = $null
         }
 
-        if ($certificate -ne $null) {
+        if ($null -ne $certificate) {
             try {
                 $ByteArray = [System.Convert]::FromBase64String($certificate)
                 $this.certificate = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($ByteArray, $certificate_password)
