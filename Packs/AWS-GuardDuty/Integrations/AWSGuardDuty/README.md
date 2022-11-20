@@ -1,6 +1,4 @@
 Amazon Web Services Guard Duty Service (gd)
-This integration was integrated and tested with version xx of AWS - GuardDuty
-
 Use this integration to detect and manage threats to your AWS system. We recommend that you use roles that have the following
 built-in AWS policies:
 
@@ -27,7 +25,7 @@ the [Amazon AWS Integrations Configuration Guide](https://xsoar.pan.dev/docs/ref
     | Incidents Fetch Interval | Time interval for fetching incidents. | False |
     | Fetch incidents |  | False |
     | How many incidents to fetch each time | Default 10 | False |
-    | First fetch timestamp | First fetch query '<number> <time unit>', e.g. '7 days'. Default '3 days'| False |
+    | First fetch timestamp | First fetch query `<number> <time unit>`, e.g. `7 days`. Default `3 days`| False |
     | Incident type | Incident type | False |
     | Role Session Name | A descriptive name for the assumed role session. For example, xsiam-IAM.integration-Role_SESSION | False |
     | Role Session Duration | The maximum length of each session in seconds. Default: 900 seconds. The XSOAR integration will have the permissions assigned only when the session is initiated and for the defined duration. | False |

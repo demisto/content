@@ -22,7 +22,6 @@ FINDING_FREQUENCY = {
 }
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
-MAX_INCIDENTS_TO_FETCH = 50
 MAX_RESULTS_RESPONSE = 50
 
 
@@ -437,7 +436,6 @@ def get_pagination_args(args: dict):
 def parse_finding(finding: dict):
     parsed_finding: dict = dict()
 
-    # Common Fields
     parsed_finding['Account ID'] = finding.get('AccountId')
     parsed_finding['Occurred'] = finding.get('CreatedAt')
     parsed_finding['Description'] = finding.get('Description')
@@ -447,7 +445,6 @@ def parse_finding(finding: dict):
     parsed_finding['Severity'] = severity_mapping(finding.get('Severity'))
     parsed_finding['Last Update Time'] = finding.get('UpdatedAt')
 
-    # Custom Fields
     parsed_finding['AWS Arn'] = finding.get('Arn')
     parsed_finding['AWS GuardDuty Confidence Score'] = finding.get('Confidence')
     parsed_finding['AWS GuardDuty Partition'] = finding.get('Partition')
@@ -563,7 +560,7 @@ def fetch_incidents(client: boto3.client, aws_gd_severity: str, last_run: dict, 
     incidents: list[dict] = []
     while True:
         left_to_fetch = fetch_limit - len(incidents)
-        max_results = min(MAX_INCIDENTS_TO_FETCH, left_to_fetch)
+        max_results = min(MAX_RESULTS_RESPONSE, left_to_fetch)
 
         list_findings_res = client.list_findings(
             DetectorId=detector[0],
@@ -602,8 +599,8 @@ def fetch_incidents(client: boto3.client, aws_gd_severity: str, last_run: dict, 
             demisto.debug('fetch_limit has been reached or there is no next token')
             break
 
-    next_run = {'latest_created_time': latest_created_time.strftime(DATE_FORMAT),
-                'latest_updated_time': latest_updated_time.strftime(DATE_FORMAT),
+    next_run = {'latest_created_time': latest_created_time.strftime(DATE_FORMAT) if latest_created_time else None,
+                'latest_updated_time': latest_updated_time.strftime(DATE_FORMAT) if latest_updated_time else None,
                 'last_incidents_ids': created_time_to_ids[latest_created_time],
                 'last_next_token': last_next_token}
 
