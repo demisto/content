@@ -18,7 +18,7 @@
     "group": 2,
     "hidden": false,
     "openEnded": false,
-    "description": "Analysis of the incident.",
+    "description": "Analysis of the the incident.",
     "associatedToAll": false,
     "associatedTypes": [
         "ACTI Intelligence Alert",
