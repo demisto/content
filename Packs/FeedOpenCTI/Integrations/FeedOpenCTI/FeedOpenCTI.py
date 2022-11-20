@@ -71,12 +71,15 @@ def get_indicators(client, indicator_type: List[str], limit: int, last_run_id: O
 
     indicators = []
     for item in observables.get('entities'):
+        indicator_tags = item.get('tags', [])
+        if indicator_tags:
+            indicator_tags = [tag.get('value') for tag in item.get('tags')]
         indicator = {
             "value": item['observable_value'],
             "type": XSOHR_TYPES.get(item['entity_type'], item['entity_type']),
             "rawJSON": item,
             "fields": {
-                "tags": [tag.get('value') for tag in item.get('tags')],
+                "tags": indicator_tags,
                 "description": item.get('description')
             }
         }
