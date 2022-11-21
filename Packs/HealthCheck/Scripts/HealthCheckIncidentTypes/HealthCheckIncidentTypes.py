@@ -6,6 +6,7 @@ def filter_non_locked(res):
     nonLockedTypes = list(filter(lambda x: x['locked'] is False or x['detached'] is True, res))
     return nonLockedTypes
 
+
 def main():
     incident = demisto.incidents()[0]
     account_name = incident.get('account')
