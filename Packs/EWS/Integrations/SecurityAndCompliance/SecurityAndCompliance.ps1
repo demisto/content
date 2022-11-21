@@ -276,7 +276,7 @@ class SecurityAndComplianceClient {
         $this.upn = $upn
     }
 
-    CreateSession(){
+    CreateSession([string]$CommandName){
         if ($null -eq $this.certificate) {
             ReturnError "Error: For this command, a Certificate is required." | Out-Null
         }
@@ -284,16 +284,17 @@ class SecurityAndComplianceClient {
             "AppID" = $this.app_id
             "Organization" = $this.organization
             "Certificate" = $this.certificate
+            "CommandName" = $CommandName
         }
         Connect-IPPSSession @cmd_params -WarningAction:SilentlyContinue | Out-Null
     }
 
-    CreateDelegatedSession(){
+    CreateDelegatedSession([string]$CommandName){
         if ($null -eq $this.delegated_password) {
             ReturnError "Error: For this command, delegated access is required." | Out-Null
         }
         $delegated_cred = New-Object System.Management.Automation.PSCredential ($this.upn, $this.delegated_password)
-        Connect-IPPSSession -Credential $delegated_cred -WarningAction:SilentlyContinue | Out-Null
+        Connect-IPPSSession -Credential $delegated_cred -CommandName $CommandName -WarningAction:SilentlyContinue | Out-Null
     }
 
     DisconnectSession(){
@@ -304,7 +305,7 @@ class SecurityAndComplianceClient {
                         [string[]]$exchange_location_exclusion, [string[]]$public_folder_location, [string[]]$share_point_location, [string[]]$share_point_location_exclusion) {
 
         # Establish session to remote
-        $this.CreateSession()
+        $this.CreateSession("New-ComplianceSearch")
         # Import and Execute command
         $cmd_params = @{
             "Name" = $search_name
@@ -375,7 +376,7 @@ class SecurityAndComplianceClient {
               [string[]]$remove_share_point_location_exclusion) {
 
         # Establish session to remote
-        $this.CreateSession()
+        $this.CreateSession("Set-ComplianceSearch")
         # Execute command
         $cmd_params = @{
             "Identity" = $search_name
@@ -452,7 +453,7 @@ class SecurityAndComplianceClient {
 
     RemoveSearch([string]$search_name) {
         # Establish session to remote
-        $this.CreateSession()
+        $this.CreateSession("Remove-ComplianceSearch")
         # Import and Execute command
         Remove-ComplianceSearch -Identity $search_name -Confirm:$false
 
@@ -476,7 +477,7 @@ class SecurityAndComplianceClient {
 
     [array]ListSearch() {
         # Establish session to remote
-        $this.CreateSession()
+        $this.CreateSession("Get-ComplianceSearch")
         # Execute command
         $response = Get-ComplianceSearch
 
@@ -502,7 +503,7 @@ class SecurityAndComplianceClient {
 
     [psobject]GetSearch([string]$search_name) {
         # Establish session to remote
-        $this.CreateSession()
+        $this.CreateSession("Get-ComplianceSearch")
         # Import and Execute command
         $response = Get-ComplianceSearch -Identity $search_name
 
@@ -530,7 +531,7 @@ class SecurityAndComplianceClient {
 
     StartSearch([string]$search_name) {
         # Establish session to remote
-        $this.CreateDelegatedSession()
+        $this.CreateDelegatedSession("Start-ComplianceSearch")
         # Execute command
         Start-ComplianceSearch -Identity $search_name -Confirm:$false -Force:$true
 
@@ -554,7 +555,7 @@ class SecurityAndComplianceClient {
     StopSearch([string]$search_name) {
 
         # Establish session to remote
-        $this.CreateSession()
+        $this.CreateSession("Stop-ComplianceSearch")
         # Execute command
         Stop-ComplianceSearch -Identity $search_name -Confirm:$false
 
@@ -578,7 +579,7 @@ class SecurityAndComplianceClient {
 
     [psobject]NewSearchAction([string]$search_name, [string]$action, [string]$purge_type) {
         # Establish session to remote
-        $this.CreateDelegatedSession()
+        $this.CreateDelegatedSession("New-ComplianceSearchAction")
         # Execute command
         $cmd_params = @{
             "SearchName" = $search_name
@@ -632,7 +633,7 @@ class SecurityAndComplianceClient {
 
     RemoveSearchAction([string]$search_action_name) {
         # Establish session to remote
-        $this.CreateSession()
+        $this.CreateSession("Remove-ComplianceSearchAction")
         # Execute command
         Remove-ComplianceSearchAction -Identity $search_action_name -Confirm:$false
         # Close session to remote
@@ -655,7 +656,7 @@ class SecurityAndComplianceClient {
 
     [array]ListSearchActions() {
         # Establish session to remote
-        $this.CreateSession()
+        $this.CreateSession("Get-ComplianceSearchAction")
         # Execute command
         $response = Get-ComplianceSearchAction
 
@@ -680,7 +681,7 @@ class SecurityAndComplianceClient {
 
     [psobject]GetSearchAction([string]$search_action_name) {
         # Establish session to remote
-        $this.CreateDelegatedSession()
+        $this.CreateDelegatedSession("Get-ComplianceSearchAction")
 
         # Execute command
         $response = Get-ComplianceSearchAction -Identity $search_action_name
