@@ -1,4 +1,4 @@
-This playbook is used as a subplaybook for the Playbook Search-all-mailboxes - Gmail, it should not be used.
+This playbook is used as a subplaybook for the Playbook Search all mailboxes - Gmail with polling, it should not be used.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
