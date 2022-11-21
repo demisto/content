@@ -216,7 +216,7 @@ class Configuration:
                 }
 
 
-def exist_list(list_name: str) -> bool:
+def list_exists(list_name: str) -> bool:
     res = demisto.executeCommand("getList", {"listName": list_name})[0]
     if res['Type'] == entryTypes['error'] and "Item not found" in res['Contents']:
         return False
