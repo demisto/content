@@ -7,6 +7,8 @@ from TAXII2ApiModule import *  # noqa: E402
 ''' CONSTANTS '''
 
 COMPLEX_OBSERVATION_MODE_SKIP = 'Skip indicators with more than a single observation'
+MAX_FETCH_INTERVAL = '48 hours'
+DEFAULT_FETCH_INTERVAL = '24 hours'
 
 ''' COMMAND FUNCTIONS '''
 
@@ -17,8 +19,18 @@ def command_test_module(client: Taxii2FeedClient):
     return 'Could not connect to server'
 
 
-def fetch_indicators_command(client: Taxii2FeedClient, limit: int, last_run_ctx: dict, initial_interval: str = '24 hours') \
-        -> Tuple[list, dict]:
+def get_limited_interval(given_interval: Union[str, datetime],
+                         fetch_interval: Optional[Union[str, datetime]] = MAX_FETCH_INTERVAL) -> datetime:
+    given_interval: datetime = given_interval if isinstance(given_interval, datetime) \
+        else dateparser.parse(given_interval, date_formats=[TAXII_TIME_FORMAT])  # type: ignore[assignment]
+    default_fetch_interval: datetime = fetch_interval if isinstance(fetch_interval, datetime) \
+        else dateparser.parse(fetch_interval or MAX_FETCH_INTERVAL,
+                              date_formats=[TAXII_TIME_FORMAT])  # type: ignore[assignment]
+    return max(given_interval, default_fetch_interval)
+
+
+def fetch_indicators_command(client: Taxii2FeedClient, limit: int, last_run_ctx: dict,
+                             initial_interval: str = DEFAULT_FETCH_INTERVAL) -> Tuple[list, dict]:
     """
     Fetch indicators from TAXII 2 server
     :param client: Taxii2FeedClient
@@ -27,7 +39,8 @@ def fetch_indicators_command(client: Taxii2FeedClient, limit: int, last_run_ctx:
     :param initial_interval: initial interval in human readable format
     :return: indicators in cortex TIM format, updated last_run_ctx
     """
-    initial_interval = dateparser.parse(initial_interval or '24 hours', date_formats=[TAXII_TIME_FORMAT])
+    initial_interval: datetime = get_limited_interval(
+        dateparser.parse(initial_interval or DEFAULT_FETCH_INTERVAL, date_formats=[TAXII_TIME_FORMAT]))  # type: ignore[arg-type]
 
     if client.collection_to_fetch:
         indicators, last_run_ctx = fetch_one_collection(client, limit, initial_interval, last_run_ctx)  # type: ignore[arg-type]
@@ -37,11 +50,12 @@ def fetch_indicators_command(client: Taxii2FeedClient, limit: int, last_run_ctx:
     return indicators, last_run_ctx
 
 
-def fetch_one_collection(client: Taxii2FeedClient, limit: int, initial_interval: Union[str, datetime],
+def fetch_one_collection(client: Taxii2FeedClient, limit: int, initial_interval: datetime,
                          last_run_ctx: Optional[dict] = None):
     demisto.debug('in fetch_one_collection')
     last_fetch_time = last_run_ctx.get(client.collection_to_fetch.id) if last_run_ctx else None
-    added_after = last_fetch_time or initial_interval
+    # initial_interval gets here limited so no need to check limitation with default value
+    added_after: datetime = get_limited_interval(initial_interval, last_fetch_time)
 
     indicators = client.build_iterator(limit, added_after=added_after)
     if last_run_ctx is not None:  # in case we got {}, we want to set it because we are in fetch incident run
@@ -52,7 +66,7 @@ def fetch_one_collection(client: Taxii2FeedClient, limit: int, initial_interval:
     return indicators, last_run_ctx
 
 
-def fetch_all_collections(client: Taxii2FeedClient, limit: int, initial_interval: Union[str, datetime],
+def fetch_all_collections(client: Taxii2FeedClient, limit: int, initial_interval: datetime,
                           last_run_ctx: Optional[dict] = None):
     indicators: list = []
     demisto.debug('in fetch_all_collections')
@@ -82,7 +96,8 @@ def get_indicators_command(client: Taxii2FeedClient, args: Dict[str, Any]) \
     :return: indicators in cortex TIM format
     """
     limit = arg_to_number(args.get('limit')) or 10
-    added_after = dateparser.parse(args.get('added_after', '20 days'), date_formats=[TAXII_TIME_FORMAT])
+    added_after: datetime = get_limited_interval(dateparser.parse(args.get('added_after', DEFAULT_FETCH_INTERVAL),
+                                                                  date_formats=[TAXII_TIME_FORMAT]))  # type: ignore[arg-type]
     raw = argToBoolean(args.get('raw', 'false'))
 
     if client.collection_to_fetch:
@@ -133,11 +148,11 @@ def main():  # pragma: no cover
     skip_complex_mode = COMPLEX_OBSERVATION_MODE_SKIP == params.get('observation_operator_mode')
     feed_tags = argToList(params.get('feedTags'))
     tlp_color = params.get('tlp_color', '')
-    objects_to_fetch = params.get('objects_to_fetch', '')
+    objects_to_fetch = params.get('objects_to_fetch', None)
     if isinstance(objects_to_fetch, list):
         objects_to_fetch = ','.join(objects_to_fetch)
 
-    initial_interval = params.get('initial_interval', '24 hours')
+    initial_interval = params.get('initial_interval', DEFAULT_FETCH_INTERVAL)
     limit = arg_to_number(params.get('limit')) or -1
     limit_per_request = arg_to_number(params.get('limit_per_request')) or DFLT_LIMIT_PER_REQUEST
     default_api_root = params.get('default_api_root', 'public')

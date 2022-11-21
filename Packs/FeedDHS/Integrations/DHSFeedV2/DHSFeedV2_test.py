@@ -1,3 +1,5 @@
+import pytest
+
 from DHSFeedV2 import *
 
 with open('test_data/results.json', 'r') as f:
@@ -139,3 +141,25 @@ def test_get_collections_function():
     result = get_collections_command(mock_client)
 
     assert result.outputs == [{"Name": "first name", "ID": "first id"}, {"Name": "second name", "ID": "second id"}]
+
+
+less_then_max = ('24 hours', None, '24 hours')
+a_bit_less_then_max = ('44 hours', None, '44 hours')
+more_then_max = ('57 hours', None, MAX_FETCH_INTERVAL)
+take_min_second_value = ('2 hours', '1 hour', '1 hour')
+take_min_first_value = ('1 hour', '2 hours', '1 hour')
+take_min_sent_with_value = (get_limited_interval('3 days' or DEFAULT_FETCH_INTERVAL), '50 hours', MAX_FETCH_INTERVAL)
+take_min_sent_without_value = (get_limited_interval(None or DEFAULT_FETCH_INTERVAL), '50 hours', DEFAULT_FETCH_INTERVAL)
+
+
+@pytest.mark.parametrize('given_interval, fetch_interval, expected_min_interval', [less_then_max,
+                                                                                   a_bit_less_then_max,
+                                                                                   more_then_max,
+                                                                                   take_min_second_value,
+                                                                                   take_min_first_value,
+                                                                                   take_min_sent_with_value,
+                                                                                   take_min_sent_without_value])
+def test_get_limited_interval(given_interval, fetch_interval, expected_min_interval):
+    returned_min_interval = get_limited_interval(given_interval, fetch_interval)
+    expected_min_interval = dateparser.parse(expected_min_interval, date_formats=[TAXII_TIME_FORMAT])
+    assert returned_min_interval.replace(microsecond=0) == expected_min_interval.replace(microsecond=0)
