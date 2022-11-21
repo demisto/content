@@ -1461,7 +1461,7 @@ class Client(BaseClient):
         return self._http_request(method='Post',
                                   url_suffix=f'appsec/v1/configs/{config_id}/versions',
                                   json_data=body,
-                                  timeout=(60,180),
+                                  timeout=(60, 180),
                                   retries=0,
                                   )
 
@@ -1661,7 +1661,8 @@ class Client(BaseClient):
         }
 
         return self._http_request(method='PUT',
-                                  url_suffix=f'appsec/v1/configs/{config_id}/versions/{config_version}/match-targets/{match_target_id}',
+                                  url_suffix=f'appsec/v1/configs/{config_id}/versions/{config_version}/'
+                                             f'match-targets/{match_target_id}',
                                   headers=headers,
                                   json_data=body
                                   )
@@ -1693,7 +1694,8 @@ class Client(BaseClient):
         }
 
         return self._http_request(method='GET',
-                                  url_suffix=f'papi/v1/properties/{property_id}/versions/{property_version}/rules?contractId={contract_id}'
+                                  url_suffix=f'papi/v1/properties/{property_id}/versions/{property_version}'
+                                             f'/rules?contractId={contract_id}'
                                   f'&groupId={group_id}&validateRules={validate_rules}',
                                   headers=headers,
                                   )
@@ -4370,14 +4372,13 @@ def modify_appsec_config_selected_hosts_command(client: Client,
                                                                     config_version=config_version,
                                                                     hostname_list=hostname_dict_list,
                                                                     mode=mode
-    )
+                                                                    )
     if raw_response:
         human_readable = f'{INTEGRATION_NAME} - Application Security Config selected hostname list has been modified.'
         return human_readable, {}, raw_response
     else:
         human_readable = f'{INTEGRATION_NAME} - Modify Application Security Config selected hostname list has failed.'
         return human_readable, {}, {}
-
 
 
 @logger
@@ -4457,9 +4458,9 @@ def update_appsec_config_version_notes_command(client: Client,
     """
 
     raw_response: Dict = client.update_appsec_config_version_notes(config_id=config_id,
-                                                                    config_version=config_version,
-                                                                    notes=notes,
-    )
+                                                                   config_version=config_version,
+                                                                   notes=notes
+                                                                   )
 
     if raw_response:
         human_readable = f'{INTEGRATION_NAME} - Application Security Config version notes has been updated.'
@@ -4467,6 +4468,7 @@ def update_appsec_config_version_notes_command(client: Client,
     else:
         human_readable = f'{INTEGRATION_NAME} - Update Application Security Config version notes has failed.'
         return human_readable, {}, {}
+
 
 # created by D.S.
 @logger
@@ -4560,16 +4562,16 @@ def new_or_renew_match_target_command(client: Client,
 
 @logger
 def patch_papi_property_rule_command(client: Client,
-                                            contract_id: str,
-                                            group_id: str,
-                                            property_id: str,
-                                            property_version: str,
-                                            validate_rules: str,
-                                            operation: str,
-                                            path: str,
-                                            value: str,
-                                            value_to_json: str,
-                                            ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+                                     contract_id: str,
+                                     group_id: str,
+                                     property_id: str,
+                                     property_version: str,
+                                     validate_rules: str,
+                                     operation: str,
+                                     path: str,
+                                     value: str,
+                                     value_to_json: str
+                                     ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         Generic JSON patch command for Papi Property default rule
     Args:
@@ -4593,10 +4595,10 @@ def patch_papi_property_rule_command(client: Client,
         {
             "op": operation,
             "path": path,
-            "value": json.loads(value) if value_to_json.lower() =="yes" else value
+            "value": json.loads(value) if value_to_json.lower() == "yes" else value
         }
     ]
-    
+
     raw_response: Dict = client.patch_papi_property_rule(contract_id=contract_id,
                                                          group_id=group_id,
                                                          property_id=property_id,
@@ -4662,6 +4664,7 @@ def get_papi_property_rule_command(client: Client,
     else:
         human_readable = f'{INTEGRATION_NAME} - get papi property default rule command has failed.'
         return human_readable, {}, {}
+
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
