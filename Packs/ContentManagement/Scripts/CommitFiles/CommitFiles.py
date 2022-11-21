@@ -164,7 +164,7 @@ def commit_content_item_bitbucket(branch_name: str, content_file: ContentFile):
                                f'{traceback.format_exc()}')
 
 
-def split_yml_file(content_file: ContentFile):
+def split_yml_file(content_file: ContentFile):  # pragma: no cover
     content_files = []
 
     if content_file.content_type == 'script':
@@ -238,7 +238,7 @@ def split_yml_file(content_file: ContentFile):
     return content_files
 
 
-def commit_git(git_integration: str, branch_name: str, content_file: ContentFile):
+def commit_git(git_integration: str, branch_name: str, content_file: ContentFile):  # pragma: no cover
     if git_integration == 'Gitlab':
         commit_content_item_gitlab(branch_name, content_file)
     elif git_integration == 'GitHub':
