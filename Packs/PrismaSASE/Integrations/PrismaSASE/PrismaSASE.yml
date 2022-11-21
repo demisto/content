@@ -129,7 +129,7 @@ script:
       description: 'Security rule folder'
       type: String
     - contextPath: PrismaAccess.CreatedSecurityRule.from
-      description: 'Security rule from'
+      description: 'Security rule from field (source zone(s))'
       type: String
     - contextPath: PrismaAccess.CreatedSecurityRule.id
       description: 'Security rule id'
@@ -153,7 +153,7 @@ script:
       description: 'Security rule source_user'
       type: String
     - contextPath: PrismaAccess.CreatedSecurityRule.to
-      description: 'Security rule to'
+      description: 'Security rule to field (destination zone(s))'
       type: String
   - arguments:
     - description: Prisma Access Folder Location for the Rule
@@ -200,7 +200,7 @@ script:
       description: 'Security rule folder'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.from
-      description: 'Security rule from'
+      description: 'Security rule from field (source zone(s))'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.id
       description: 'Security rule id'
@@ -227,7 +227,7 @@ script:
       description: 'Security rule tag'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.to
-      description: 'Security rule to'
+      description: 'Security rule to field (desintation zone(s))'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.negate_destination
       description: 'Security rule netgate_destination'
@@ -339,7 +339,7 @@ script:
       description: 'Security rule folder'
       type: String
     - contextPath: PrismaAccess.UpdatedSecurityRule.from
-      description: 'Security rule from'
+      description: 'Security rule from field (source zone(s))'
       type: String
     - contextPath: PrismaAccess.UpdatedSecurityRule.id
       description: 'Security rule id'
@@ -360,7 +360,7 @@ script:
       description: 'Security rule source user'
       type: String
     - contextPath: PrismaAccess.UpdatedSecurityRule.to
-      description: 'Security rule to'
+      description: 'Security rule to field (destination zone(s))'
       type: String
   - arguments:
     - description: Tenant services group ID
@@ -417,7 +417,7 @@ script:
       description: 'Security rule folder'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.from
-      description: 'Security rule from'
+      description: 'Security rule from field (source zone(s))'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.id
       description: 'Security rule id'
@@ -441,7 +441,7 @@ script:
       description: 'Security rule source user'
       type: String
     - contextPath: PrismaAccess.FoundSecurityRule.to
-      description: 'Security rule to'
+      description: 'Security rule to field (desintation zone(s))'
       type: String
   - arguments:
     - description: Comma separated list of Job IDs
@@ -609,7 +609,7 @@ script:
       description: 'Security rule folder'
       type: String
     - contextPath: PrismaAccess.DeletedSecurityRule.from
-      description: 'Security rule from'
+      description: 'Security rule from field (source zone(s))'
       type: String
     - contextPath: PrismaAccess.DeletedSecurityRule.id
       description: 'Security rule id'
@@ -630,7 +630,7 @@ script:
       description: 'Security rule source user'
       type: String
     - contextPath: PrismaAccess.DeletedSecurityRule.to
-      description: 'Security rule to'
+      description: 'Security rule to field (destination zone(s))'
       type: String
   - arguments:
     - description: Prisma Access Folder Location for the Object
