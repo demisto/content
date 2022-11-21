@@ -446,6 +446,5 @@ test_upload_flow:
     - section_start "Verify Created Testing Bucket"
     - test_upload_storage_base_path=upload-flow/builds
     - current_storage_base_path="$test_upload_storage_base_path/$branch/$pipeline_id/content/packs"
-    - python3 ./Utils/test_upload_flow/verify_bucket.py -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY -b 'marketplace-dist-dev' -sb $current_storage_base_path
-    - python3 ./Utils/test_upload_flow/verify_bucket.py -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY -b 'marketplace-v2-dist-dev' -sb $current_storage_base_path
+    - python3 ./Utils/test_upload_flow/verify_bucket.py -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY -sb $current_storage_base_path
     - section_end "Verify Created Testing Bucket"

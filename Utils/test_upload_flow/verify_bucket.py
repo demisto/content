@@ -133,11 +133,24 @@ class GCP:
         with open(item_path, 'r') as f:
             return f.read()
 
+
+class XsoarGCP(GCP):
+    def __init__(self, service_account, storage_base_path):
+        super().__init__(service_account, 'marketplace-dist-dev', storage_base_path)
+
+
+class XsiamGCP(GCP):
+    def __init__(self, service_account, storage_base_path):
+        super().__init__(service_account, 'marketplace-v2-dist-dev', storage_base_path)
+
+
 class BucketVerifier:
     def __init__(self, gcp: GCP, versions_dict):
         self.gcp = gcp
         self.versions = versions_dict
-        self.is_valid = True
+    
+    def is_bucket_valid(self):
+        pass
 
     @logger
     def verify_new_pack(self, pack_id, pack_items):
@@ -189,8 +202,8 @@ class BucketVerifier:
         """
         Verify readme content is parsed correctly, verify that there was no version bump if only readme was modified
         """
-        gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
-        return gcp.get_max_version(pack_id) and readme in self.gcp.get_pack_readme(pack_id), pack_id
+        self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
+        return self.gcp.get_max_version(pack_id) and readme in self.gcp.get_pack_readme(pack_id), pack_id
 
     @logger
     def verify_failed_pack(self, pack_id):
@@ -205,7 +218,7 @@ class BucketVerifier:
         Verify the path of the item is modified
         """
 
-        gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
+        self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
         return self.gcp.is_item_in_pack(pack_id, item_type, item_file_path), pack_id
 
     @logger
@@ -220,8 +233,79 @@ class BucketVerifier:
         """
         Verify the new image was uploaded
         """
-        image_in_bucket_path = gcp.download_image(pack_id)
+        image_in_bucket_path = self.gcp.download_image(pack_id)
         return open(image_in_bucket_path, "rb").read() == open(str(new_image_path), "rb").read(), pack_id
+    
+    def run_validations(self):
+        # Case 1: Verify new pack - TestUploadFlow
+        self.verify_new_pack('TestUploadFlow', items_dict.get('TestUploadFlow'))
+
+        # Case 2: Verify dependencies handling - Armis
+        self.verify_dependency('Armis', 'TestUploadFlow')
+
+        # Case 3: Verify new version - ZeroFox
+        expected_rn = 'testing adding new RN'
+        self.verify_new_version('ZeroFox', expected_rn)
+
+        # Case 4: Verify changed image - Armis
+        self.verify_new_image('Armis', Path(
+            __file__).parent / 'TestUploadFlow' / 'Integrations' / 'TestUploadFlow' / 'TestUploadFlow_image.png')
+
+        # Case 5: Verify modified existing release notes - Box
+        expected_rn = 'testing modifying existing RN'
+        self.verify_rn('Box', expected_rn)
+
+        # Case 6: Verify 1.0.0 rn was added - BPA
+        expected_rn = """\n#### Integrations\n##### BPA\nfirst release note\n"""
+        self.verify_rn('BPA', expected_rn)
+
+        # Case 7: Verify pack is set to hidden - Microsoft365Defender
+        # self.verify_hidden('Microsoft365Defender')  TODO: fix after hidden pack mechanism is fixed
+
+        # Case 8: Verify changed readme - Maltiverse
+        expected_readme = 'readme test upload flow'
+        self.verify_readme('Maltiverse', expected_readme)
+
+        # Case 9: Verify failing pack - Absolute
+        self.verify_failed_pack('Absolute')
+
+        # Case 10: Verify modified pack - Grafana
+        self.verify_modified_pack('Grafana', items_dict.get('Grafana'))
+
+
+class XSOARBucketVerifier(BucketVerifier):
+    
+    def __init__(self, gcp: XsoarGCP, versions_dict):
+        super().__init__(gcp, versions_dict)
+        self.is_valid = True
+
+    def is_bucket_valid(self):
+        logging.info(f"XSOAR bucket is {'valid' if self.is_valid else 'invalid'}.")
+        return self.is_valid
+    
+    def run_validations(self):
+        super().run_validations()
+
+
+class XSIAMBucketVerifier(BucketVerifier):
+    
+    def __init__(self, gcp: XsiamGCP, versions_dict):
+        super().__init__(gcp, versions_dict)
+        self.is_valid = True
+
+    def is_bucket_valid(self):
+        logging.info(f"XSIAM bucket is {'valid' if self.is_valid else 'invalid'}.")
+        return self.is_valid
+    
+    def run_validations(self):
+        super().run_validations()
+        
+        self.verify_modified_path('ModelingRule', 'AlibabaActionTrail',
+                                  os.path.join('AlibabaActionTrail', 'ModelingRule', 'Alibaba.yml'))
+        self.verify_modified_path('ModelingRule', 'AlibabaActionTrail',
+                                  os.path.join('AlibabaActionTrail', 'ModelingRule', 'Alibaba.jsom'))
+        self.verify_modified_path('ModelingRule', 'AlibabaActionTrail',
+                                  os.path.join('AlibabaActionTrail', 'ModelingRule', 'Alibaba.xif'))
 
 
 def get_items_dict(pack_path, pack_id):
@@ -256,55 +340,66 @@ if __name__ == "__main__":
     storage_bucket_name = args.bucket_name
     versions_dict = read_json(os.path.join(args.artifacts_path, 'versions_dict.json'))
     items_dict = read_json(os.path.join(args.artifacts_path, 'packs_items.json'))
-    gcp = GCP(service_account, storage_bucket_name, storage_base_path)
+    # gcp = GCP(service_account, storage_bucket_name, storage_base_path)
 
-    bv = BucketVerifier(gcp, versions_dict)
-    # Case 1: Verify new pack - TestUploadFlow
-    bv.verify_new_pack('TestUploadFlow', items_dict.get('TestUploadFlow'))
+    xsoar_gcp = XsoarGCP(service_account, storage_base_path)
+    xsiam_gcp = XsiamGCP(service_account, storage_base_path)
+    
+    xsoar_verifier = XSOARBucketVerifier(xsoar_gcp, versions_dict)
+    xsiam_verifier = XSIAMBucketVerifier(xsiam_gcp, versions_dict)
+    
+    xsoar_verifier.run_validations()
+    xsiam_verifier.run_validations()
 
-    # Case 2: Verify dependencies handling - Armis
-    bv.verify_dependency('Armis', 'TestUploadFlow')
+    # bv = BucketVerifier(gcp, versions_dict)
+    # # Case 1: Verify new pack - TestUploadFlow
+    # bv.verify_new_pack('TestUploadFlow', items_dict.get('TestUploadFlow'))
 
-    # Case 3: Verify new version - ZeroFox
-    expected_rn = 'testing adding new RN'
-    bv.verify_new_version('ZeroFox', expected_rn)
+    # # Case 2: Verify dependencies handling - Armis
+    # bv.verify_dependency('Armis', 'TestUploadFlow')
 
-    # Case 4: Verify changed image - Armis
-    bv.verify_new_image('Armis', Path(
-        __file__).parent / 'TestUploadFlow' / 'Integrations' / 'TestUploadFlow' / 'TestUploadFlow_image.png')
+    # # Case 3: Verify new version - ZeroFox
+    # expected_rn = 'testing adding new RN'
+    # bv.verify_new_version('ZeroFox', expected_rn)
 
-    # Case 5: Verify modified existing release notes - Box
-    expected_rn = 'testing modifying existing RN'
-    bv.verify_rn('Box', expected_rn)
+    # # Case 4: Verify changed image - Armis
+    # bv.verify_new_image('Armis', Path(
+    #     __file__).parent / 'TestUploadFlow' / 'Integrations' / 'TestUploadFlow' / 'TestUploadFlow_image.png')
 
-    # Case 6: Verify 1.0.0 rn was added - BPA
-    expected_rn = """\n#### Integrations\n##### BPA\nfirst release note\n"""
-    bv.verify_rn('BPA', expected_rn)
+    # # Case 5: Verify modified existing release notes - Box
+    # expected_rn = 'testing modifying existing RN'
+    # bv.verify_rn('Box', expected_rn)
 
-    # Case 7: Verify pack is set to hidden - Microsoft365Defender
-    # bv.verify_hidden('Microsoft365Defender')  TODO: fix after hidden pack mechanism is fixed
+    # # Case 6: Verify 1.0.0 rn was added - BPA
+    # expected_rn = """\n#### Integrations\n##### BPA\nfirst release note\n"""
+    # bv.verify_rn('BPA', expected_rn)
 
-    # Case 8: Verify changed readme - Maltiverse
-    expected_readme = 'readme test upload flow'
-    bv.verify_readme('Maltiverse', expected_readme)
+    # # Case 7: Verify pack is set to hidden - Microsoft365Defender
+    # # bv.verify_hidden('Microsoft365Defender')  TODO: fix after hidden pack mechanism is fixed
 
-    # Case 9: Verify failing pack - Absolute
-    bv.verify_failed_pack('Absolute')
+    # # Case 8: Verify changed readme - Maltiverse
+    # expected_readme = 'readme test upload flow'
+    # bv.verify_readme('Maltiverse', expected_readme)
 
-    # Case 10: Verify modified pack - Grafana
-    bv.verify_modified_pack('Grafana', items_dict.get('Grafana'))
+    # # Case 9: Verify failing pack - Absolute
+    # bv.verify_failed_pack('Absolute')
+
+    # # Case 10: Verify modified pack - Grafana
+    # bv.verify_modified_pack('Grafana', items_dict.get('Grafana'))
 
     # verify path modification
-    if 'v2' in gcp.storage_bucket.name:
-        bv.verify_modified_path('ModelingRule', 'AlibabaActionTrail', os.path.join('AlibabaActionTrail',
-                                                                                   'ModelingRule', 'Alibaba.yml'))
-        bv.verify_modified_path('ModelingRule', 'AlibabaActionTrail', os.path.join('AlibabaActionTrail',
-                                                                                   'ModelingRule', 'Alibaba.jsom'))
-        bv.verify_modified_path('ModelingRule', 'AlibabaActionTrail', os.path.join('AlibabaActionTrail',
-                                                                                   'ModelingRule', 'Alibaba.xif'))
+    # if 'v2' in gcp.storage_bucket.name:
+        # bv.verify_modified_path('ModelingRule', 'AlibabaActionTrail', os.path.join('AlibabaActionTrail',
+        #                                                                            'ModelingRule', 'Alibaba.yml'))
+        # bv.verify_modified_path('ModelingRule', 'AlibabaActionTrail', os.path.join('AlibabaActionTrail',
+        #                                                                            'ModelingRule', 'Alibaba.jsom'))
+        # bv.verify_modified_path('ModelingRule', 'AlibabaActionTrail', os.path.join('AlibabaActionTrail',
+        #                                                                            'ModelingRule', 'Alibaba.xif'))
 
-    is_valid = 'valid' if bv.is_valid else 'not valid'
-    logging.info(f'The bucket {gcp.storage_bucket.name}/{gcp.storage_base_path} was found as {is_valid}')
+    # is_valid = 'valid' if xsoar_verifier.is_valid and xsiam_verifier.is_valid else 'not valid'
+    # logging.info(f'The bucket {gcp.storage_bucket.name}/{gcp.storage_base_path} was found as {is_valid}')
 
-    if not bv.is_valid:
+    if not xsoar_verifier.is_bucket_valid() or not xsiam_verifier.is_bucket_valid():
         sys.exit(1)
+        
+    logging.success('XSOAR and XSIAM buckets are valid!')
