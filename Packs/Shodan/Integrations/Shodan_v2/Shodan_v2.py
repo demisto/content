@@ -188,6 +188,17 @@ def ip_command():
 
         location = f'{round(res.get("latitude", 0.0), 3)},{round(res.get("longitude", 0.0), 3)}'
 
+        relationships_list = []
+        vulns_list = res.get('vulns', [])
+        for v in vulns_list:
+            relationships_list.append(EntityRelationship(
+                entity_a=ip,
+                entity_a_type=FeedIndicatorType.IP,
+                name='related-to',
+                entity_b=v,
+                entity_b_type=FeedIndicatorType.CVE,
+                brand='ShodanV2'))
+
         ip_details = {
             'ASN': res.get('asn', ''),
             'Address': ip,
@@ -244,7 +255,8 @@ def ip_command():
             'ContentsFormat': formats['json'],
             'HumanReadable': human_readable,
             'HumanReadableFormat': formats['markdown'],
-            'EntryContext': ec
+            'EntryContext': ec,
+            'relationships': relationships_list
         })
 
 
