@@ -386,21 +386,29 @@ script:
       description: Third Party - Exclude Sans
       name: exclude_sans
     - defaultValue: 'False'
+      description: Enable this will stop CPS from deploying the certificate to the network
       name: change_management
     - defaultValue: core
+      description: Use core to specify worldwide (includes China and Russia), china+core to specify worldwide and China, and 'russia+core` to specify worldwide and Russia.
       name: network_configuration_geography
       type: textArea
     - defaultValue: third-party
+      description: The registration authority or certificate authority (CA) you want to use to obtain a certificate. 
       name: ra
     - defaultValue: third-party
+      description: Validation type, Either dv, ev, ov, or third-party.
       name: validation_type
     - defaultValue: 'False'
+      description: Enable Dual-Stacked certificate deployment for this enrollment.
       name: enable_multi_stacked_certificates
     - defaultValue: 'True'
+      description: Set to true to enable QUIC protocol.
       name: network_configuration_quic_enabled
     - defaultValue: enhanced-tls
+      description: Set the type of deployment network you want to use.
       name: network_configuration_secure_network
     - defaultValue: 'True'
+      description: SNI settings for your enrollment. Set to true to enable SNI-only for the enrollment.
       name: network_configuration_sni_only
     description: Create a new enrollment.
     name: akamai-create-enrollment
