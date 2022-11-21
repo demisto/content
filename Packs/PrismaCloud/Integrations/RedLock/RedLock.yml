@@ -401,7 +401,7 @@ script:
       secret: false
     - description: List of additional keys to return from the resource JSON, specified as a comma separated list (e.g. "key1,key2,key3").  To preview all available resource JSON data, run redlock-get-alert-details with the "raw-response=true" option.
       name: resource_keys
-      type: unknown
+      required: false
     deprecated: false
     description: Gets the details of an alert based on alert ID
     execution: false
