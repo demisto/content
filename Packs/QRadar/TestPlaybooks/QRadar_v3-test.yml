@@ -402,7 +402,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'API_user: engadmin'
+              simple: 'API_user: engadmin-M6IS5rhJ'
       - - operator: isEqualString
           left:
             value:
@@ -1288,10 +1288,10 @@ tasks:
       version: -1
       name: Delete Reference Set Value
       description: Remove a value from a reference set.
-      script: QRadar v3|||qradar-reference-set-value-delete
+      script: '|||qradar-reference-set-value-delete'
       type: regular
       iscommand: true
-      brand: QRadar v3
+      brand: ''
     nexttasks:
       '#none#':
       - '30'
@@ -2150,10 +2150,10 @@ tasks:
       version: -1
       name: 'create reference set with #'
       description: Creates a new reference set.
-      script: QRadar v3|||qradar-reference-set-create
+      script: '|||qradar-reference-set-create'
       type: regular
       iscommand: true
-      brand: QRadar v3
+      brand: ''
     nexttasks:
       '#none#':
       - '61'
@@ -2190,10 +2190,10 @@ tasks:
       version: -1
       name: 'set value to reference set that contains #'
       description: Adds or updates an element in a reference set.
-      script: QRadar v3|||qradar-reference-set-value-upsert
+      script: '|||qradar-reference-set-value-upsert'
       type: regular
       iscommand: true
-      brand: QRadar v3
+      brand: ''
     nexttasks:
       '#none#':
       - '62'
@@ -2226,10 +2226,10 @@ tasks:
       version: -1
       name: 'delete reference set with #'
       description: Removes a reference set or purges its contents.
-      script: QRadar v3|||qradar-reference-set-delete
+      script: '|||qradar-reference-set-delete'
       type: regular
       iscommand: true
-      brand: QRadar v3
+      brand: ''
     nexttasks:
       '#none#':
       - '52'
@@ -2260,10 +2260,10 @@ tasks:
       version: -1
       name: Get events with polling
       description: Polling command to search for events of a specific offense.
-      script: QRadar v3|||qradar-search-retrieve-events
+      script: '|||qradar-search-retrieve-events'
       type: regular
       iscommand: true
-      brand: QRadar v3
+      brand: ''
     nexttasks:
       '#none#':
       - '64'
@@ -2338,10 +2338,10 @@ tasks:
       version: -1
       name: get events with polling custom query
       description: Polling command to search for events of a specific offense.
-      script: QRadar v3|||qradar-search-retrieve-events
+      script: '|||qradar-search-retrieve-events'
       type: regular
       iscommand: true
-      brand: QRadar v3
+      brand: ''
     nexttasks:
       '#none#':
       - '66'

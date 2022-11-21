@@ -3546,7 +3546,6 @@
         {
             "integrations": "QRadar v3",
             "playbookID": "QRadar_v3-test",
-            "is_mockable": false,
             "fromversion": "6.0.0"
         },
         {
