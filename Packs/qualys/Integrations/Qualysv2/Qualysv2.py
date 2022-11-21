@@ -3,9 +3,11 @@ from typing import Callable, Dict, Tuple
 import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
+from urllib3 import disable_warnings
 
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
-""" CONSTANTS """
+disable_warnings()  # pylint: disable=no-member
+
+''' CONSTANTS '''
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
@@ -1419,10 +1421,64 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
             ],
         ],
     },
-    "qualys-schedule-scan-delete": {
-        "args": [
-            "id",
-        ]
+    'qualys-update-unix-record': {
+        'args': ['ids', 'add_ips'],
+    },
+    'qualys-asset-group-add': {
+        'args': ['title', 'network_id', 'ips', 'domains', 'dns_names', 'netbios_names', 'cvss_enviro_td',
+                 'cvss_enviro_cr', 'cvss_enviro_ir', 'cvss_enviro_ar', 'appliance_ids', ]
+    },
+    'qualys-asset-group-edit': {
+        'args': ['set_title', 'id', 'add_ips', 'set_ips', 'remove_ips', 'add_domains', 'remove_domains', 'set_domains',
+                 'add_dns_names', 'set_dns_names', 'remove_dns_names', 'add_netbios_names', 'set_netbios_names',
+                 'remove_netbios_names', 'set_cvss_enviro_td', 'set_cvss_enviro_cr', 'set_cvss_enviro_ir',
+                 'set_cvss_enviro_ar', 'add_appliance_ids', 'set_appliance_ids', 'remove_appliance_ids', ]
+    },
+    'qualys-asset-group-delete': {
+        'args': ['id']
+    },
+    'qualys-schedule-scan-create': {
+        'args': ['scan_title', 'asset_group_ids', 'asset_groups', 'ip', 'option_title', 'frequency_days', 'weekdays',
+                 'frequency_weeks', 'frequency_months', 'day_of_month', 'day_of_week', 'week_of_month', 'start_date',
+                 'start_hour', 'start_minute', 'time_zone_code', 'exclude_ip_per_scan', 'default_scanner',
+                 'scanners_in_ag', 'observe_dst', 'ip_network_id', 'option_id', 'end_after'],
+        'required_groups': [['asset_group_ids', 'asset_groups', 'ip', ],
+                            ['frequency_days', 'frequency_weeks', 'frequency_months', ],
+                            ['scanners_in_ag', 'default_scanner', ]],
+        'required_depended_args': {'day_of_month': 'frequency_months', 'day_of_week': 'frequency_months',
+                                   'week_of_month': 'frequency_months', 'weekdays': 'frequency_weeks', },
+        'default_added_depended_args': {'frequency_days': {'occurrence': 'daily', },
+                                        'frequency_weeks': {'occurrence': 'weekly', },
+                                        'frequency_months': {'occurrence': 'monthly', }},
+    },
+    'qualys-schedule-scan-update': {
+        'args': ['id', 'scan_title', 'asset_group_ids', 'asset_groups', 'ip', 'frequency_days', 'weekdays',
+                 'frequency_weeks', 'frequency_months', 'day_of_month', 'day_of_week', 'week_of_month', 'start_date',
+                 'start_hour', 'start_minute', 'time_zone_code', 'exclude_ip_per_scan', 'default_scanner',
+                 'scanners_in_ag', 'active', 'observe_dst', 'target_from', 'iscanner_name', 'ip_network_id',
+                 'option_id', 'end_after'],
+        'default_added_depended_args': {'frequency_days': {'occurrence': 'daily', },
+                                        'frequency_weeks': {'occurrence': 'weekly', },
+                                        'frequency_months': {'occurrence': 'monthly', },
+                                        'start_hour': {'set_start_time': 1, },
+                                        'start_minute': {'set_start_time': 1, },
+                                        'start_date': {'set_start_time': 1, },
+                                        'observe_dst': {'set_start_time': 1, },
+                                        'time_zone_code': {'set_start_time': 1, },
+                                        },
+        'required_depended_args': {'day_of_month': 'frequency_months', 'day_of_week': 'frequency_months',
+                                   'week_of_month': 'frequency_months', 'weekdays': 'frequency_weeks',
+                                   'start_hour': 'start_date', 'start_minute': 'start_date',
+                                   'time_zone_code': 'start_date', 'observe_dst': 'start_date', },
+        'at_most_one_groups': [['asset_group_ids', 'asset_groups', 'ip', ],
+                               ['frequency_days', 'frequency_weeks', 'frequency_months', ],
+                               ['scanners_in_ag', 'default_scanner', ], ],
+    },
+    'qualys-schedule-scan-delete': {
+        'args': ['id', ]
+    },
+    'qualys-time-zone-code': {
+        'args': []
     },
     "qualys-time-zone-code": {"args": []},
     "qualys-asset-tag-create": {"args": ["name", "child_name", "rule_type", "rule_text", "criticality_score"]},
