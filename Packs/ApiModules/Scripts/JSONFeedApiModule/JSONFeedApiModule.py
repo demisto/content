@@ -60,7 +60,7 @@ class Client:
         # Request related attributes
         self.url = url
         self.verify = not insecure
-        self.auth: Optional[tuple] = None
+        self.auth: Optional[tuple[str, str]] = None
         self.headers = self.parse_headers(headers)
 
         if credentials:
@@ -229,7 +229,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
         else:
             feeds_results[feed_name], no_update = client.build_iterator(feed, feed_name, **kwargs)
 
-    indicators_values = set()
+    indicators_values: Set[str] = set()
     indicators_values_indexes = {}
 
     for service_name, items in feeds_results.items():
