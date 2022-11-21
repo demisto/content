@@ -455,6 +455,7 @@ script:
     - description: Weight 2.
       name: weight_2
     - name: property_comments
+      description: GTM property comments
       type: textArea
     - description: Data center ID 1
       name: dc1_id
