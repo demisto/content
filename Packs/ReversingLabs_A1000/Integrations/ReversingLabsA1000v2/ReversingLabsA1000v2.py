@@ -389,7 +389,7 @@ def advanced_search(a1000):
     query = demisto.getArg('query')
 
     try:
-        limit = demisto.getArg("resultLimit")
+        limit = demisto.getArg("result_limit")
         if not isinstance(limit, int):
             limit = int(limit)
     except KeyError:
