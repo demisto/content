@@ -35,9 +35,9 @@ Disable an active user.
 `iam-disable-user`
 #### Input
 
-| **Argument Name** | **Description**                                                                      | **Required** |
-| ----------------- | ------------------------------------------------------------------------------------ | ------------ |
-| user-profile      | A User Profile indicator.<br/>For example: `{"email": "john.doe@example.com"}`<br/>. | Required     |
+| **Argument Name** | **Description**                                                                                                                     | **Required** |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| user-profile      | One of the three user profile attributs: "email" or "id" or "username". <br/>For example: `{"email": "john.doe@example.com"}`<br/>. | Required     |
 
 
 #### Context Output
