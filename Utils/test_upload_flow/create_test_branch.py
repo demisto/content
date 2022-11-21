@@ -181,6 +181,9 @@ def modify_pack(pack: Path, integration: str):
 
 @add_changed_pack
 def modify_modeling_rules(modeling_rule: Path, old_name: str, new_name: str):
+    """
+    Modify modeling rules path, in order to verify that the pack was uploaded again
+    """
     
     modify_item_path(modeling_rule / f'{old_name}.xif', f'{new_name}.xif', packs_path / 'AlibabaActionTrail')
     modify_item_path(modeling_rule / f'{old_name}.yml', f'{new_name}.yml', packs_path / 'AlibabaActionTrail')

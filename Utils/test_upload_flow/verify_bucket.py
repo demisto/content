@@ -306,5 +306,5 @@ if __name__ == "__main__":
     is_valid = 'valid' if bv.is_valid else 'not valid'
     logging.info(f'The bucket {gcp.storage_bucket.name}/{gcp.storage_base_path} was found as {is_valid}')
 
-    if not is_valid:
+    if not bv.is_valid:
         sys.exit(1)
