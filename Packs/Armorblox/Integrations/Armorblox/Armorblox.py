@@ -1,7 +1,7 @@
 import collections
 import json
 from datetime import timedelta
-
+import ast
 import requests
 from CommonServerPython import *  # noqa: F401
 from armorblox.client import Client as AbxBaseClient
@@ -137,7 +137,6 @@ def get_remediation_action(client, incident_id):
 
 def fetch_incidents_command(client):  # pragma: no coverage
     last_run = demisto.getLastRun()
-    demisto.debug(str(last_run))
     current_time = datetime.utcnow().replace(second=0)
     last_fetch_time = last_run.get("last_fetch_time", None)
     incidents = []
@@ -167,7 +166,6 @@ def fetch_incidents_command(client):  # pragma: no coverage
         incidents.append(curr_incident)
     # Save the next_run as a dict with the start_time key to be stored
     demisto.setLastRun({'last_fetch_time': last_fetch_time})
-    demisto.debug(str(len(incidents)))
     return incidents
 
 
@@ -184,6 +182,31 @@ def get_dlp_incidents(client, params):
 def get_abuse_incidents(client, params):
     abuse_incidents, next_page_token, total_count = client.abuse_incidents.list(params=params)
     return abuse_incidents
+
+
+def get_analysis(client, incident_id):
+    analysis = client.incidents.analysis(incident_id)
+    return analysis
+
+
+def get_senders(client, incident_id):
+    senders = client.incidents.senders(incident_id)
+    return senders
+
+
+def get_object_details(client, object_id):
+    object_details = client.incidents.mail(object_id)
+    return object_details
+
+
+def update_action(client, incident_id, policy_action_type, add_sender_to_exception, action_profile_id):
+    body = {
+        "policyActionType": policy_action_type,
+        "addSenderToException": ast.literal_eval(add_sender_to_exception),
+        "actionProfileId": action_profile_id
+    }
+    update_details, _ = client.incidents.update(incident_id, body=body)
+    return update_details
 
 
 def main():  # pragma: no coverage
@@ -212,6 +235,22 @@ def main():  # pragma: no coverage
             return_results(get_dlp_incidents(client, demisto.args()))
         if demisto.command() == "armorblox-get-abuse-incidents":
             return_results(get_abuse_incidents(client, demisto.args()))
+        if demisto.command() == "armorblox-get-incident-senders":
+            incident_id = demisto.args().get('incident_id')
+            return_results(get_senders(client, incident_id))
+        if demisto.command() == "armorblox-get-incident-analysis":
+            incident_id = demisto.args().get('incident_id')
+            return_results(get_analysis(client, incident_id))
+        if demisto.command() == "armorblox-get-object-details":
+            object_id = demisto.args().get('object_id')
+            return_results(get_object_details(client, object_id))
+        if demisto.command() == "armorblox-update-incident-action":
+            incident_id = demisto.args().get('incident_id')
+            policy_action_type = demisto.args().get('policy_action_type')
+            add_sender_to_exception = demisto.args().get('add_sender_to_exception')
+            action_profile_id = demisto.args().get('action_profile_id')
+            result = update_action(client, incident_id, policy_action_type, add_sender_to_exception, action_profile_id)
+            return_results(result)
         elif demisto.command() == 'test-module':
             result = test_module(client)
             return_results(result)

@@ -80,14 +80,14 @@ Get details of the incident
 #### Context Output
 
 There is no context output for this command.
-### armorblox-get-threat-incidents
+### armorblox-get-threats-incidents
 ***
 Get threat incidents
 
 
 #### Base Command
 
-`armorblox-get-threat-incidents`
+`armorblox-get-threats-incidents`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -141,6 +141,81 @@ Get abuse incidents
 | sortBy | Sorts the incidents. Possible values are: DATE, TITLE, PRIORITY. Default is DATE. | Optional | 
 | orderBy | Order the fetched incidents. Possible values are: ASC, DESC. Default is DESC. | Optional | 
 | priorityTypesFilter | Sets the severity to be fetched. Possible values are: HIGH, MEDIUM, LOW. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### armorblox-get-incident-analysis
+***
+Gets information about an incident's analysis data.
+
+
+#### Base Command
+
+`armorblox-get-incident-analysis`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | Incident id for which analysis is needed. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### armorblox-get-object-details
+***
+Gets information about an object associated with an incident.
+
+
+#### Base Command
+
+`armorblox-get-object-details`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_id | Get the object ID from Get Incident by Id's response, under .events[].object_id. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### armorblox-get-incident-senders
+***
+Gets information about an incident's sender data.
+
+
+#### Base Command
+
+`armorblox-get-incident-senders`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | The incident for which senders information is needed. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### armorblox-update-incident-action
+***
+Updates the action to be taken for an incident's objects.
+
+
+#### Base Command
+
+`armorblox-update-incident-action`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | The incident id for which action needs to be  updated. | Required | 
+| policy_action_type | Updated Action. Possible values are: DELETE, PERMANENTLY_DELETE, IGNORE, QUARANTINE, MARK_AS_SAFE. | Required | 
+| add_sender_to_exception | Add sender to exception. Possible values are: True, False. Default is False. | Optional | 
+| action_profile_id | Action Profile Id. | Optional | 
 
 
 #### Context Output

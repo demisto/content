@@ -10,11 +10,13 @@ More details: https://xsoar.pan.dev/docs/integrations/unit-testing
 You must add at least a Unit Test function for every XSOAR command
 you are implementing with your integration
 """
-from CommonServerPython import *
-from Armorblox import Client, get_incident_message_ids, get_remediation_action, get_incidents_list, \
-    get_threat_incidents, get_dlp_incidents, get_abuse_incidents
 import io
 import json
+
+from Armorblox import Client, get_incident_message_ids, get_remediation_action, get_incidents_list, \
+    get_threat_incidents, get_dlp_incidents, get_abuse_incidents, get_analysis, get_senders, get_object_details, \
+    update_action
+from CommonServerPython import *
 
 API_KEY = 'any-api-key'
 TENANT_NAME = 'TestIntegration'
@@ -168,7 +170,67 @@ def test_get_abuse_incidents(requests_mock):
 
     mock_response = util_load_json("test_data/test_get_abuse_incidents.json")
     requests_mock.get(url + '?incidentTypesFilter=ABUSE_INCIDENT_TYPE', json=mock_response)
-    # response for the incident_type , to populate dlp incidents.
+    # response for the incident_type , to populate abuse incidents.
     client = Client(api_key=API_KEY, instance_name=TENANT_NAME)
     response = get_abuse_incidents(client, params={})
     assert response == util_load_json("test_data/test_get_abuse_incidents.json")['incidents']
+
+
+def test_get_analysis(requests_mock):
+    """Tests the get_analysis command function.
+    Configures requests_mock instance to generate the appropriate
+    get_alert API response, loaded from a local JSON file. Checks
+    the output of the command function with the expected output."""
+
+    mock_response = util_load_json("test_data/test_get_analysis.json")
+    requests_mock.get(url + '/3875:getAnalysis', json=mock_response)
+    # response for the analysis of incidents for incident id.
+    client = Client(api_key=API_KEY, instance_name=TENANT_NAME)
+    response = get_analysis(client, "3875")
+    assert response == util_load_json("test_data/test_get_analysis.json")
+
+
+def test_get_senders(requests_mock):
+    """Tests the get_senders command function.
+    Configures requests_mock instance to generate the appropriate
+    get_alert API response, loaded from a local JSON file. Checks
+    the output of the command function with the expected output."""
+
+    mock_response = util_load_json("test_data/test_get_senders.json")
+    requests_mock.get(url + '/3875:getSenders', json=mock_response)
+    # response for the senders of incidents for incident id
+    client = Client(api_key=API_KEY, instance_name=TENANT_NAME)
+    response = get_senders(client, "3875")
+    assert response == util_load_json("test_data/test_get_senders.json")
+
+
+def test_get_object_details(requests_mock):
+    """Tests the get_object_details command function.
+    Configures requests_mock instance to generate the appropriate
+    get_alert API response, loaded from a local JSON file. Checks
+    the output of the command function with the expected output."""
+
+    mock_response = util_load_json("test_data/test_get_object_details.json")
+    object_url = url.replace('/incidents', '').replace('v1beta1', 'v1alpha1')
+    requests_mock.get(object_url + ':getPolicyViolationDetailsByObjectId?'
+                                   'objectId=2df7386744246ec5ce028abc77ff45565bdc40aef445517c2db5535bc02e2af1&'
+                                   'objectType=CONTENT_MAIL',
+                      json=mock_response)
+    # response for the object details for object id.
+    client = Client(api_key=API_KEY, instance_name=TENANT_NAME)
+    response = get_object_details(client, '2df7386744246ec5ce028abc77ff45565bdc40aef445517c2db5535bc02e2af1')
+    assert response == util_load_json("test_data/test_get_object_details.json")
+
+
+def test_update_action(requests_mock):
+    """Tests the get_update_action command function.
+    Configures requests_mock instance to generate the appropriate
+    get_alert API response, loaded from a local JSON file. Checks
+    the output of the command function with the expected output."""
+
+    mock_response = util_load_json("test_data/test_update_action.json")
+    requests_mock.patch(url + '/3875:updateAction', json=mock_response)
+    # response for update incident action.
+    client = Client(api_key=API_KEY, instance_name=TENANT_NAME)
+    response = update_action(client, "3875", "DELETE", "False", "")
+    assert response == util_load_json("test_data/test_update_action.json")

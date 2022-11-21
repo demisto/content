@@ -1,0 +1,16 @@
+{
+    "user_address": "f38b28199ef94d44400741e4771c8dfe58cd1098abd3e3e27b0da5c1c9869930",
+    "from_address": "angela_cameron@faketest-richard.com",
+    "date": "2022-06-09T06:50:27Z",
+    "subject": "This is 1094PAYROLL_FRAUD test 2022-06-09 12:22",
+    "mail_status": "DELETED",
+    "mail_header": {},
+    "from_user": "Todd Adams",
+    "sent_date_time": "seconds:1654757427",
+    "object_type": "CONTENT_MAIL",
+    "body_in_global": true,
+    "received_mailbox": {
+        "name": "james pardue",
+        "email": "james@armorblox.dev"
+    }
+}

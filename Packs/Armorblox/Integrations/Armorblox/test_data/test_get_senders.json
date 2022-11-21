@@ -1,0 +1,79 @@
+{
+    "domains": [
+        {
+            "domain": "fake-odessa.com",
+            "bcti_data": {
+                "first_seen_months": "0",
+                "reputation": "40",
+                "global_threat_history": "0"
+            },
+            "type": "FROM_DOMAIN"
+        },
+        {
+            "domain": "sendgrid.net",
+            "server_ip": "167.89.123.124",
+            "bcti_data": {
+                "category": "BUSINESS_AND_ECONOMY",
+                "country": "US",
+                "popularity": "TOP_100000",
+                "first_seen_months": "114",
+                "dns_lifetime_months": "163",
+                "reputation": "81",
+                "global_threat_history": "1"
+            },
+            "type": "RETURN_PATH_DOMAIN"
+        }
+    ],
+    "user": {
+        "analyses_list": [
+            {
+                "common": {
+                    "type": "IMPERSONATION",
+                    "priority": "15"
+                },
+                "analyses": [
+                    {
+                        "impersonation": {
+                            "common": {
+                                "type": "IMPERSONATION"
+                            },
+                            "display": {
+                                "display_name": "brandon romero"
+                            },
+                            "impersonator": {
+                                "impersonated_email": "zoey_russel@fake-odessa.com",
+                                "impersonator_name": "brandon romero"
+                            },
+                            "original": {
+                                "original_email": "brandon_romero9@armorblox.dev"
+                            },
+                            "nickname": {
+                                "is_nickname": false
+                            },
+                            "spoof_type": {
+                                "name_spoof_type": "EXACT_MATCH"
+                            },
+                            "in_global": true
+                        }
+                    }
+                ],
+                "date": "2022-04-04T12:54:38Z"
+            }
+        ],
+        "relationship_history": {
+            "edge_history": {
+                "all_time": {
+                    "emails": "1",
+                    "vips": "1",
+                    "suspicious": true
+                }
+            }
+        },
+        "user_info": {
+            "name": "brandon romero",
+            "email": "zoey_russel@fake-odessa.com",
+            "is_vip": false,
+            "in_global": true
+        }
+    }
+}

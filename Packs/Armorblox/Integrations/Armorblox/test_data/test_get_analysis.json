@@ -1,0 +1,43 @@
+{
+    "analyses_list": [
+        {
+            "common": {
+                "type": "UNUSUAL_PAYMENT_REQUEST",
+                "priority": "12"
+            },
+            "analyses": [
+                {
+                    "unusual_payment_request": {
+                        "common": {
+                            "type": "UNUSUAL_PAYMENT_REQUEST"
+                        },
+                        "user": {
+                            "suspicious_user_name": "brandon romero",
+                            "suspicious_user_email": "zoey_russel@fake-odessa.com"
+                        },
+                        "urgency": {
+                            "urgency": false
+                        },
+                        "ask": {
+                            "ask": true
+                        },
+                        "deadline": {
+                            "deadline": false
+                        },
+                        "financial": {
+                            "financial": true
+                        },
+                        "invoice": {
+                            "invoice": false
+                        }
+                    }
+                }
+            ],
+            "date": "2022-04-04T12:54:38Z",
+            "incident_id": "3875",
+            "compromise_type": "PRE_COMPROMISE",
+            "policy_name": "PAYMENT_FRAUD_INTERNAL"
+        }
+    ],
+    "total_count": "1"
+}

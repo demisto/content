@@ -1,0 +1,7 @@
+{
+    "update_by": "API",
+    "remediation_actions": [
+        "DELETE"
+    ],
+    "resolution_state": "RESOLVED_INCIDENT_RESOLUTION_STATE"
+}

@@ -159,7 +159,52 @@ script:
       - LOW
     description: Get abuse incidents
     name: armorblox-get-abuse-incidents
-  dockerimage: demisto/armorblox:1.0.0.35677
+  - arguments:
+    - description: Incident id for which analysis is needed.
+      name: incident_id
+      required: true
+    description: Gets information about an incident's analysis data.
+    name: armorblox-get-incident-analysis
+  - arguments:
+    - description: Get the object ID from Get Incident by Id's response, under .events[].object_id
+      name: object_id
+      required: true
+    description: Gets information about an object associated with an incident.
+    name: armorblox-get-object-details
+  - arguments:
+    - description: The incident for which senders information is needed
+      name: incident_id
+      required: true
+    description: Gets information about an incident's sender data.
+    name: armorblox-get-incident-senders
+  - arguments:
+    - description: The incident id for which action needs to be  updated
+      name: incident_id
+      required: true
+    - description: Updated Action
+      name: policy_action_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - DELETE
+        - PERMANENTLY_DELETE
+        - IGNORE
+        - QUARANTINE
+        - MARK_AS_SAFE
+      isArray: true
+    - description: Add sender to exception
+      name: add_sender_to_exception
+      auto: PREDEFINED
+      predefined:
+        - "True"
+        - "False"
+      isArray: true
+      defaultValue: "False"
+    - description: Action Profile Id
+      name: action_profile_id
+    description: Updates the action to be taken for an incident's objects.
+    name: armorblox-update-incident-action
+  dockerimage: demisto/armorblox:1.0.0.37538
   isfetch: true
   runonce: false
   script: ''
