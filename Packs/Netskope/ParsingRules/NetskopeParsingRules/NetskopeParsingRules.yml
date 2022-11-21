@@ -1,6 +1,6 @@
+name: Netskope Parsing Rule
+id: Netskope_Parsing_Rule
 fromversion: 6.10.0
-id: Netskope_Modeling_Rule
-name: Netskope Modeling Rule
+tags: []
 rules: ''
-schema: ''
-tags: netskope
+samples: ''

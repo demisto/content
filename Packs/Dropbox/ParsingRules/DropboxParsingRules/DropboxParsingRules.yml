@@ -1,6 +1,6 @@
-fromversion: 3.3.0
-id: DropboxEventCollector
-name: DropboxEventCollector
+name: DropboxEventCollector Parsing Rule
+id: DropboxEventCollector_Parsing_Rule
+fromversion: 6.10.0
+tags: []
 rules: ''
-schema: ''
-toversion: 6.9.9
+samples: ''
