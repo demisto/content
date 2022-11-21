@@ -1,12 +1,13 @@
 from CommonServerPython import *
 import demistomock as demisto
 
+
 ''' IMPORTS '''
 from typing import Callable
 import requests
 from google.oauth2 import service_account
 import google.auth.transport.requests
-from enum import Enum
+
 
 ''' CONSTANTS '''
 BASE_URL = 'https://admin.googleapis.com/'
@@ -24,9 +25,12 @@ DEFAULT_PAGE_SIZE = 50
 DEFAULT_LIMIT = 50
 
 
-class Devices(Enum):
-    CHROMEOS_DEVICE = 0
-    MOBILE_DEVICE = 1
+class ActionCommandIncorrectArguments(Exception):
+    """
+    This class is in charge of catching errors that occur when the user supplies incorrect arguments
+    to the commands that affect the device by supplying an action.
+    """
+    pass
 
 
 requests.packages.urllib3.disable_warnings()
@@ -100,7 +104,7 @@ class Client(BaseClient):
 
     def google_mobile_device_action_request(self, resource_id: str, action: str):
         if action not in MOBILE_DEVICE_ACTION:
-            raise DemistoException(
+            raise ActionCommandIncorrectArguments(
                 f'Unsupported argument value {action if action else "of empty string"} for action.')
         json_body = {'action': action}
         scopes = ['https://www.googleapis.com/auth/admin.directory.device.mobile.action']
@@ -114,6 +118,10 @@ class Client(BaseClient):
     def google_mobile_device_list_request(self, query_params: dict) -> dict:
         # params = assign_params(projection=projection, query=query, orderBy=order_by,
         #                        sortOrder=sort_order, pageToken=page_token, maxResults=3 if max_results > 3 else max_results)
+        # TODO Don't forget to delete the following lines (these are for testing purposes)
+        max_results = query_params['maxResults']
+        query_params['maxResults'] = 3 if max_results > 3 else max_results
+
         scopes = ['https://www.googleapis.com/auth/admin.directory.device.mobile.readonly']
         token = self._get_oauth_token(scopes=scopes)
         headers = self._headers | {'Authorization': f'Bearer {token}'}
@@ -126,14 +134,13 @@ class Client(BaseClient):
     def google_chromeos_device_action_request(self, resource_id: str, action: str, deprovision_reason: str = ''):
         json_body = {'action': action}
         if action not in CHROMEOS_DEVICE_ACTION:
-            raise DemistoException(
+            raise ActionCommandIncorrectArguments(
                 f'Unsupported argument value {action if action else "of empty string"} for action.')
         elif action == 'deprovision':
-            if not deprovision_reason:  # This means the string is empty
-                raise DemistoException('A reason is required if the action is deprovision')
-            elif deprovision_reason not in CHROMEOS_DEPROVISION_REASON:
-                raise DemistoException(
-                    f'Unsupported argument value {deprovision_reason} for deprovision_reason.')
+            if deprovision_reason not in CHROMEOS_DEPROVISION_REASON:
+                raise ActionCommandIncorrectArguments(
+                    (f'Unsupported argument value'
+                     f' {deprovision_reason if deprovision_reason else "of empty string"} for deprovision_reason.'))
             json_body['deprovisionReason'] = deprovision_reason
 
         scopes = ['https://www.googleapis.com/auth/admin.directory.device.chromeos']
@@ -144,43 +151,70 @@ class Client(BaseClient):
             json_data=json_body, headers=headers, resp_type='response')
         return response
 
-    def google_chromeos_device_list_request(self, projection: str | None = None, query: str | None = None,
-                                            order_by: str | None = None, sort_order: str | None = None,
-                                            org_unit_path: str | None = None, page_token: str | None = None,
-                                            max_results: int | None = None) -> dict:
-        params = assign_params(projection=projection, query=query, orderBy=order_by, orgUnitPath=org_unit_path,
-                               sortOrder=sort_order, pageToken=page_token, maxResults=max_results)
+    def google_chromeos_device_list_request(self, query_params: dict) -> dict:
+        # params = assign_params(projection=projection, query=query, orderBy=order_by, orgUnitPath=org_unit_path,
+        #                        sortOrder=sort_order, pageToken=page_token, maxResults=max_results)
         scopes = ['https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly']
         token = self._get_oauth_token(scopes=scopes)
         headers = self._headers | {'Authorization': f'Bearer {token}'}
         response = self.http_request(
             method='GET', url_suffix=f'admin/directory/v1/customer/{self._customer_id}/devices/chromeos',
-            params=params, headers=headers
+            params=query_params, headers=headers
         )
         return response
 
 
+def trim_extra_double_quotes_from_string(value: str) -> str:
+    value_length = len(value)
+    first_element = value[0]
+    last_element = value[value_length - 1]
+    if((first_element == '"' or first_element == "'") and (last_element == '"' or last_element == "'")):
+        return value[1:value_length - 1]
+    return value
+
+
 def google_mobile_device_action_command(client: Client, resource_id: str, action: str) -> CommandResults:
     readable_output = 'Success'
+    failure_reason = {}
     try:
         # We want to catch the exception that is thrown from a bad API call, so we can mark this
         # request as failure
         client.google_mobile_device_action_request(resource_id, action)
+    except ActionCommandIncorrectArguments as e:
+        readable_output = 'Failure'
+        failure_reason['Reason'] = str(e)
     except DemistoException as e:
         demisto.debug(f'An error has occurred when running the command:\n{str(e)}')
         readable_output = 'Failure'
-
+        # TODO Should I add the reason as str(e)?
+        # raise e
     command_results = CommandResults(
         outputs_prefix=f'{OUTPUT_PREFIX}.mobileAction',
         readable_output=readable_output,
-        outputs={'Response': readable_output},
+        outputs=failure_reason | {'Response': readable_output},
     )
     return command_results
 
 
-def device_list_manual_pagination(api_request: Callable, to_human_readable: Callable, query_params: dict, page: int,
+def device_list_manual_pagination(api_request: Callable, to_human_readable: Callable, query_params: dict, page: Optional[int],
                                   page_size: int, table_headers: List[str], table_title: str,
                                   response_devices_list_key: str, cd_devices_list_key: str) -> CommandResults:
+    """_summary_
+
+    Args:
+        api_request (Callable): _description_
+        to_human_readable (Callable): _description_
+        query_params (dict): _description_
+        page (int): _description_
+        page_size (int): _description_
+        table_headers (List[str]): _description_
+        table_title (str): _description_
+        response_devices_list_key (str): _description_
+        cd_devices_list_key (str): _description_
+
+    Returns:
+        CommandResults: _description_
+    """
     """
     Executes the command mobile-device-list using manual pagination, and returns a CommandResult
     that holds the data to return to the user.
@@ -192,14 +226,14 @@ def device_list_manual_pagination(api_request: Callable, to_human_readable: Call
     current_page_number = 0
     page_found = True  # This will tell us if the required page was found or not
     while get_data_from_api:
+        query_params['pageToken'] = next_page_token
         response = api_request(query_params=query_params)
         next_page_token = response.get('nextPageToken')
-        query_params['pageToken'] = next_page_token
         current_page_number += 1
         if(current_page_number == page):
             get_data_from_api = False
             context_data['resourceKind'] = response.get('kind')
-            context_data['ETag'] = response.get('etag')
+            context_data['ETag'] = trim_extra_double_quotes_from_string(value=response.get('etag'))
             context_data[cd_devices_list_key] = response.get(response_devices_list_key, [])
             relevant_response = response
         elif(not next_page_token):
@@ -226,12 +260,8 @@ def device_list_manual_pagination(api_request: Callable, to_human_readable: Call
 def device_list_automatic_pagination(api_request: Callable, to_human_readable: Callable, query_params: dict,
                                      limit: int, table_headers: List[str], table_title: str,
                                      response_devices_list_key: str, cd_devices_list_key) -> CommandResults:
-    """
-    Executes the command mobile-device-list using automatic pagination, and returns a CommandResult
-    that holds the data to return to the user.
-    """
-    results_limit = arg_to_number(limit)
-    results_limit = results_limit if results_limit else DEFAULT_LIMIT
+    # TODO add documentation
+    results_limit = limit
     context_data = {}  # This will hold the context data to return to the user
     mobile_devices = []  # This will hold all aggregated mobile devices returned from the API requests
     responses = []  # This will hold all the responses from the API requests
@@ -239,21 +269,22 @@ def device_list_automatic_pagination(api_request: Callable, to_human_readable: C
     get_data_from_api = True  # This will decide if we should continue requesting from the API or that we should stop
     while get_data_from_api:
         query_params['maxResults'] = results_limit
+        query_params['pageToken'] = next_page_token
         response = api_request(query_params=query_params)
         responses.append(response)
         response_mobile_devices = response.get(response_devices_list_key, [])
         next_page_token = response.get('nextPageToken')
-        query_params['pageToken'] = next_page_token
 
         mobile_devices.extend(response_mobile_devices)
         results_limit -= len(response_mobile_devices)
         if(results_limit <= 0 or not next_page_token):
             context_data['resourceKind'] = response.get('kind')
-            context_data['ETag'] = response.get('etag')
+            context_data['ETag'] = trim_extra_double_quotes_from_string(value=response.get('etag'))
             context_data[cd_devices_list_key] = mobile_devices
             get_data_from_api = False
     human_readable = to_human_readable(context_data=context_data)
-    markdown = tableToMarkdown(table_title, human_readable, headers=table_headers)
+    markdown = tableToMarkdown(table_title, human_readable, headers=table_headers,
+                               metadata=f'{len(context_data[cd_devices_list_key])} results were found')
     command_results = CommandResults(
         outputs_prefix=f'{OUTPUT_PREFIX}.mobileEvent',
         readable_output=markdown,
@@ -295,8 +326,8 @@ def google_mobile_device_list_command(client: Client, **kwargs) -> CommandResult
     if('page' in kwargs or 'page_size' in kwargs):
         if('limit' in kwargs):
             return_error(('In order to use pagination, please supply either the argument `limit`,'
-                          ' or the arguments `page` and `page_size` together'))
-        page = kwargs.get('page', None)
+                          ' or the argument `page`, or the arguments `page` and `page_size` together'))
+        page = arg_to_number(kwargs.get('page', None), arg_name='page', required=True)
         if not page:
             return_error(message='Please insert a page number')
         page_size = arg_to_number(kwargs.get('page_size', None))
@@ -345,7 +376,7 @@ def chromeos_device_list_to_human_readable(context_data: dict) -> List[dict]:
 
 
 def google_chromeos_device_list_command(client: Client, **kwargs) -> CommandResults:
-    query_params = mobile_device_list_create_query_parameters(kwargs)
+    query_params = chromeos_device_list_create_query_parameters(args=kwargs)
     table_headers = ['Serial Number', 'User Name', 'Model Name', 'OS', 'Status']
     table_title = f'{INTEGRATION_NAME} - ChromeOs Devices List'
     response_devices_list_key = 'chromeosdevices'
@@ -354,7 +385,7 @@ def google_chromeos_device_list_command(client: Client, **kwargs) -> CommandResu
         if('limit' in kwargs):
             return_error(('In order to use pagination, please supply either the argument `limit`,'
                           ' or the arguments `page` and `page_size` together'))
-        page = kwargs.get('page', None)
+        page = arg_to_number(kwargs.get('page', None), arg_name='page', required=True)
         if not page:
             return_error(message='Please insert a page number')
         page_size = arg_to_number(kwargs.get('page_size', None))
@@ -382,18 +413,23 @@ def google_chromeos_device_list_command(client: Client, **kwargs) -> CommandResu
 def google_chromeos_device_action_command(client: Client, resource_id: str, action: str,
                                           deprovision_reason: str = '') -> CommandResults:
     readable_output = 'Success'
+    failure_reason = {}
     try:
         # We want to catch the exception that is thrown from a bad API call, so we can mark this
         # request as failure
-        client.google_chromeos_device_action_request(
-            resource_id=resource_id, action=action, deprovision_reason=deprovision_reason)
+        client.google_chromeos_device_action_request(resource_id, action, deprovision_reason=deprovision_reason)
+    except ActionCommandIncorrectArguments as e:
+        readable_output = 'Failure'
+        failure_reason['Reason'] = str(e)
     except DemistoException as e:
         demisto.debug(f'An error has occurred when running the command:\n{str(e)}')
         readable_output = 'Failure'
+        # TODO Should I add the reason as str(e)?
+        # raise e
     command_results = CommandResults(
         outputs_prefix=f'{OUTPUT_PREFIX}.chromeOSAction',
         readable_output=readable_output,
-        outputs={'Response': readable_output},
+        outputs=failure_reason | {'Response': readable_output},
     )
     return command_results
 
@@ -403,7 +439,7 @@ def test_module(client: Client) -> str:
     return client.test_client_connection()
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()

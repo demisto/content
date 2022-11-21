@@ -29,17 +29,13 @@ script:
     - name: google-mobiledevice-action
       description: ""
       arguments:
-        - name: customerid
+        - name: resource_id
           description: ""
-          required: false
-          isArray: false
-        - name: resourceid
-          description: ""
-          required: false
+          required: true
           isArray: false
         - name: action
           description: ""
-          required: false
+          required: true
           isArray: false
     - name: google-mobiledevice-list
       description: ""
@@ -235,7 +231,15 @@ script:
     - name: google-chromeosdevice-action
       description: ""
       arguments:
-        - name: resourceid
+        - name: resource_id
+          description: ""
+          required: true
+          isArray: false
+        - name: action
+          description: ""
+          required: true
+          isArray: false
+        - name: deprovision_reason
           description: ""
           required: false
           isArray: false
