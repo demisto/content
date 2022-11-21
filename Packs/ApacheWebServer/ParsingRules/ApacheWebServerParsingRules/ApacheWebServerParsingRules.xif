@@ -1,0 +1,5 @@
+[INGEST:vendor="apache", product="httpd", target_dataset="apache_httpd_raw", no_hit=keep]
+alter Request_time = arrayindex(regextract(_raw_log, "\>(\w+\s\d+\s\d+\:\d+\:\d+)\s"), 0),
+ current_year = arrayindex(regextract(to_string(current_time()), "\d{4}"), 0)
+|alter timestamp = concat(current_year," ", Request_time)
+|alter _time = parse_timestamp("%Y %b %d %H:%M:%S", timestamp);
