@@ -254,6 +254,39 @@ def test_create_asset_command(mocker, mock_client: Client, test_input_kwargs: di
     assert create_asset_command(client=mock_client, **test_input_kwargs).outputs == expected_output_context
 
 
+@pytest.mark.parametrize("report_templates_mock_file, report_config_mock_data, report_mock_data, "
+                         "expected_output_context_file",
+                         [
+                             ("client_get_report_templates", {"id": 1}, {"id": 2}, "create_report_commands")
+                         ])
+def test_create_report_commands(mocker, mock_client: Client, report_templates_mock_file: str,
+                                report_config_mock_data: dict, report_mock_data: dict,
+                                expected_output_context_file: str):
+    report_templates_data = load_test_data("api_mock", report_templates_mock_file)
+    mocker.patch.object(Client, "get_report_templates", return_value=report_templates_data)
+    mocker.patch.object(Client, "create_report_config", return_value=report_config_mock_data)
+
+    mocker.patch.object(Client, "_http_request", return_value=report_mock_data)
+
+    expected_output_context = load_test_data("expected_context", expected_output_context_file)
+
+    assert create_assets_report_command(
+        client=mock_client,
+        asset_ids="1",
+        report_name="Test Report",
+        download_immediately="false").outputs == expected_output_context
+    assert create_scan_report_command(
+        client=mock_client,
+        scan_id="1",
+        report_name="Test Report",
+        download_immediately="false").outputs == expected_output_context
+    assert create_sites_report_command(
+        client=mock_client,
+        site_ids="1,2,3",
+        report_name="Test Report",
+        download_immediately="false").outputs == expected_output_context
+
+
 @pytest.mark.parametrize("test_input_kwargs, api_mock_data, expected_output_context",
                          [
                              ({"name": "Test", "site_assignment": "All-Sites", "service": "FTP", "username": "Test1",
@@ -263,7 +296,6 @@ def test_create_asset_command(mocker, mock_client: Client, test_input_kwargs: di
 def test_create_shared_credential_command(mocker, mock_client: Client, test_input_kwargs: dict,
                                           api_mock_data: dict, expected_output_context: dict):
     mocker.patch.object(Client, "_http_request", return_value=api_mock_data)
-
     assert create_shared_credential_command(client=mock_client, **test_input_kwargs).outputs == expected_output_context
 
 
@@ -275,7 +307,6 @@ def test_create_shared_credential_command(mocker, mock_client: Client, test_inpu
 def test_create_vulnerability_exception_command(mocker, mock_client: Client, test_input_kwargs: dict,
                                                 api_mock_data: dict, expected_output_context: dict):
     mocker.patch.object(Client, "_http_request", return_value=api_mock_data)
-
     assert create_vulnerability_exception_command(client=mock_client, **test_input_kwargs).outputs == \
         expected_output_context
 
@@ -309,19 +340,18 @@ def test_get_asset_command(mocker, mock_client: Client, asset_mock_file: str, as
         assert result[-1].outputs == expected_output_context
 
 
-@pytest.mark.parametrize("assets_mock_file, expected_output_context_file",
+@pytest.mark.parametrize("api_mock_file, expected_output_context_file",
                          [
                              ("client_get_assets", "get_assets_command")
                          ])
-def test_get_assets_command(mocker, mock_client: Client, assets_mock_file: str, expected_output_context_file: str):
-    assets_mock_data = load_test_data("api_mock", assets_mock_file)
+def test_get_assets_command(mocker, mock_client: Client, api_mock_file: str, expected_output_context_file: str):
+    assets_mock_data = load_test_data("api_mock", api_mock_file)
     mocker.patch.object(Client, "get_assets", return_value=assets_mock_data)
 
     mocker.patch.object(Client, "find_asset_site", return_value=Site(site_id="1", site_name="Test"))
 
     result = get_assets_command(client=mock_client)
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
-
     assert [r.outputs for r in result] == expected_output_context
 
 
@@ -394,7 +424,6 @@ def test_get_scan_command(mocker, mock_client: Client, api_mock_file: str, ids_i
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
 
     result = get_scan_command(client=mock_client, scan_ids=ids_input)
-
     assert result.outputs == expected_output_context
 
 
@@ -409,7 +438,6 @@ def test_get_sites_command(mocker, mock_client: Client, api_mock_file: str, expe
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
 
     result = get_sites_command(client=mock_client)
-
     assert result.outputs == expected_output_context
 
 
@@ -425,7 +453,6 @@ def test_list_shared_credential_command(mocker, mock_client: Client, api_mock_fi
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
 
     result = list_shared_credential_command(client=mock_client, limit="3")
-
     assert result.outputs == expected_output_context
 
 
@@ -441,7 +468,6 @@ def test_list_assigned_shared_credential_command(mocker, mock_client: Client, ap
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
 
     result = list_assigned_shared_credential_command(client=mock_client, site=Site(site_id="1"), limit="3")
-
     assert result.outputs == expected_output_context
 
 
@@ -457,7 +483,6 @@ def test_list_vulnerability_command(mocker, mock_client: Client, api_mock_file: 
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
 
     result = list_vulnerability_command(client=mock_client)
-
     assert result.outputs == expected_output_context
 
 
@@ -473,7 +498,6 @@ def test_list_vulnerability_exceptions_command(mocker, mock_client: Client, api_
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
 
     result = list_vulnerability_exceptions_command(client=mock_client)
-
     assert result.outputs == expected_output_context
 
 
