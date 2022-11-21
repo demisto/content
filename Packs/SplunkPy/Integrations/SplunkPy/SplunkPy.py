@@ -3,6 +3,7 @@ import io
 import json
 import re
 from datetime import datetime, timedelta
+import ssl
 
 import dateparser  # type: ignore
 import demistomock as demisto  # noqa: F401
@@ -1885,6 +1886,8 @@ def parse_notable(notable, to_dict=False):
 
 
 def httplib_handler(url, message, **kwargs):
+    if not CONNECTION:
+        return
     method = message['method'].lower()
     data = message.get('body', '') if method == 'post' else None
     headers = dict(message.get('headers', []))
@@ -1892,9 +1895,8 @@ def httplib_handler(url, message, **kwargs):
         response = CONNECTION.request(
             method,
             url,
-            data=data,
+            body=data,
             headers=headers,
-            verify=VERIFY_CERTIFICATE,
             **kwargs
         )
     except requests.exceptions.HTTPError as e:
@@ -2590,7 +2592,8 @@ def main():
     connection_args = get_connection_args()
 
     base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
-    CONNECTION = httplib.HTTPConnection(base_url)
+    context = ssl._create_unverified_context() if not VERIFY_CERTIFICATE else None
+    CONNECTION = httplib.HTTPSConnection(base_url, context=context)
     auth_token = None
     username = demisto.params()['authentication']['identifier']
     password = demisto.params()['authentication']['password']
