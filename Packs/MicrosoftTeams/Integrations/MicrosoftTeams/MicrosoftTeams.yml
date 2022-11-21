@@ -224,7 +224,7 @@ script:
     - contextPath: MicrosoftTeams.CreateMeeting.participantDisplayName
       description: The display name of the participants.
       type: String
-  dockerimage: demisto/teams:1.0.0.34356
+  dockerimage: demisto/teams:1.0.0.36534
   feed: false
   isfetch: false
   longRunning: true
