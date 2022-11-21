@@ -364,12 +364,6 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored.
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    - default: false
       description: A domain name or comma-separated list of domain names.
       isArray: false
       name: domains
@@ -440,15 +434,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The page number. Default is 1.
+      description: The page number (page size is 50 entries at max). Default is 1.
       isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: The number of requested results per page. Default is 50.
-      isArray: false
-      name: page_size
       required: false
       secret: false
     deprecated: false

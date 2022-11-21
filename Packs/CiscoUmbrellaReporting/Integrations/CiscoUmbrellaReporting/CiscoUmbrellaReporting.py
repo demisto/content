@@ -953,6 +953,9 @@ def get_categories_list_command(client: Client, args: Dict[str, Any]):
     """
     get_categories_list_command: List of categories ordered by the number of
         requests made matching the categories in descending order.
+
+    * Due to a bug in the API - the limit and page_size arguments are not supported in the get_categories_list_command.
+
     Args:
         client: Cisco Umbrella Reporting client to use.
         args: all command arguments, usually passed from ``demisto.args()``.
