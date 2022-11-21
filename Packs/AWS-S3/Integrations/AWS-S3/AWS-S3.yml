@@ -654,7 +654,7 @@ script:
       S3 bucket.
     execution: false
     name: aws-s3-put-public-access-block
-  dockerimage: devdemisto/py3-primary:8.1.0.37610
+  dockerimage: devdemisto/py3-primary:8.1.0.37698
   isfetch: false
   runonce: false
   script: ''

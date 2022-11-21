@@ -27,4 +27,4 @@ scripttarget: 0
 tests:
 - No test
 fromversion: 6.5.0
-dockerimage: devdemisto/py3-primary:8.1.0.37610
+dockerimage: devdemisto/py3-primary:8.1.0.37698

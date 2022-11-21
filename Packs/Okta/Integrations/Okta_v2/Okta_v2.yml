@@ -2150,7 +2150,7 @@ script:
     name: okta-assign-group-to-app
     deprecated: false
     execution: false
-  dockerimage: devdemisto/py3-primary:8.1.0.37610
+  dockerimage: devdemisto/py3-primary:8.1.0.37698
   runonce: false
   script: '-'
   subtype: python3

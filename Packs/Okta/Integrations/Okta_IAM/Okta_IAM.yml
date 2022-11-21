@@ -617,7 +617,7 @@ script:
     - contextPath: Okta.Logs.Events.target.displayName
       description: Display name of a target.
       type: String
-  dockerimage: devdemisto/py3-primary:8.1.0.37610
+  dockerimage: devdemisto/py3-primary:8.1.0.37698
   feed: false
   isfetch: true
   longRunning: false

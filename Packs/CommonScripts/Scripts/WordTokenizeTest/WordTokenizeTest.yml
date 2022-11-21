@@ -47,7 +47,7 @@ outputs:
   type: string
 scripttarget: 0
 runonce: true
-dockerimage: devdemisto/py3-primary:8.1.0.37610
+dockerimage: devdemisto/py3-primary:8.1.0.37698
 fromversion: 5.0.0
 tests:
 - No tests

@@ -1287,7 +1287,7 @@ script:
     description: Cancel operation by operation name.
     execution: false
     name: gcloud-operations-cancel
-  dockerimage: devdemisto/py3-primary:8.1.0.37610
+  dockerimage: devdemisto/py3-primary:8.1.0.37698
   feed: false
   isfetch: false
   longRunning: false

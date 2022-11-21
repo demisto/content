@@ -124,7 +124,7 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: devdemisto/py3-primary:8.1.0.37610
+dockerimage: devdemisto/py3-primary:8.1.0.37698
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0

@@ -20,4 +20,4 @@ type: python
 fromversion: 5.0.0
 tests:
 - No tests
-dockerimage: devdemisto/py3-primary:8.1.0.37610
+dockerimage: devdemisto/py3-primary:8.1.0.37698
