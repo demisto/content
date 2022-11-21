@@ -1,4 +1,7 @@
 category: Email Gateway
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Gmail
   version: -1
@@ -8,41 +11,54 @@ configuration:
   name: adminEmail
   required: true
   type: 9
+  section: Connect
 - display: Immutable Google Apps Id
   name: gappsID
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: Events search query (e.g., "from:example@demisto.com")
   name: query
   required: false
   type: 0
   additionalinfo: Used for searching emails in the inbox. The query language follows the Gmail query specification. For example - "from:example@demisto.com is:unread".
+  section: Collect
 - display: Events user key (e.g., example@demisto.com)
   name: queryUserKey
   required: false
   type: 0
   additionalinfo: Use this to specify the email account to search for messages with the search query. By default, the integration uses the email address specified in the credentials.
+  section: Collect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - defaultvalue: 1 days
   display: First fetch timestamp, in days.
   name: fetch_time
   required: false
   type: 0
+  section: Collect
 description: Gmail API and user management (This integration replaces the Gmail functionality in the GoogleApps API and G Suite integration).
 display: Gmail
 name: Gmail
@@ -1984,19 +2000,19 @@ script:
       type: String
   - arguments:
     - default: false
-      description: An email address to which messages can be forwarded.
-      isArray: false
+      description: A comma-separated list of emails addresses to which messages can be forwarded.
+      isArray: true
       name: forwarding_email
       required: true
       secret: false
     - default: false
-      description: User's email address.
+      description: The user email address or the user id, use the !gmail-list-users command, in order to get the user id.
       isArray: false
       name: user_id
       required: true
       secret: false
     deprecated: false
-    description: Creates a forwarding address. If ownership verification is required, a message will be sent to the recipient and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted. This method is only available to service account clients that have been delegated domain-wide authority.
+    description: Creates a forwarding address. If ownership verification is required, a message will be sent to the recipient and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted. This method is only available to service account clients that have been delegated domain-wide authority. The special value "me" can be used to indicate the authenticated user.
     name: gmail-forwarding-address-add
     outputs:
     - contextPath: Gmail.ForwardingAddress.forwardingEmail
@@ -2009,6 +2025,47 @@ script:
       description: Indicates whether this address has been verified and is usable for forwarding.
       type: String
     execution: false
+  - arguments:
+    - description: The state that a message should be left in after it has been forwarded.
+      isArray: false
+      name: disposition
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'archive'
+      - 'leaveInInbox'
+      - 'markRead'
+      - 'trash'
+    - default: false
+      description: A comma-separated list of emails addresses to which messages can be forwarded.
+      isArray: true
+      name: forwarding_email
+      required: true
+      secret: false
+    - default: false
+      description: The user email address or the user id, use the !gmail-list-users command, in order to get the user id.
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    deprecated: false
+    description: |-
+      Updates the auto-forwarding setting for the specified account. A verified forwarding address must be specified when auto-forwarding is enabled.
+    execution: false
+    name: gmail-forwarding-address-update
+    outputs:
+    - contextPath: Gmail.ForwardingAddress.forwardingEmail
+      description: An email address to which messages can be forwarded.
+      type: String
+    - contextPath: Gmail.ForwardingAddress.userId
+      description: The user's email address.
+      type: String
+    - contextPath: Gmail.ForwardingAddress.Disposition
+      description: The state that a message should be left in after it has been forwarded.
+      type: String
+    - contextPath: Gmail.ForwardingAddress.Enabled
+      description: Indicates whether all incoming mail is automatically forwarded to another address.
+      type: Boolean
   - arguments:
     - default: false
       description: The user's email address.
@@ -2148,6 +2205,70 @@ script:
       type: String
     - contextPath: Gmail.SendAs.replyToAddress
       description: A name that appears in the "From:" header for email sent using this alias.
+      type: String
+  - arguments:
+    - default: false
+      description: The user email address or the user id, use the !gmail-list-users command, in order to get the user id.
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    - default: false
+      description: The forwarding address to be retrieved.
+      isArray: false
+      name: forwarding_email
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets the specified forwarding address or a list of the forwarding addresses for the specified account.
+    execution: false
+    name: gmail-forwarding-address-get
+    outputs:
+    - contextPath: Gmail.ForwardingAddress.userId
+      description: The user email address or the user id, use the !gmail-list-users command, in order to get the user id.
+      type: String
+    - contextPath: Gmail.ForwardingAddress.forwardingEmail
+      description: An email address to which messages can be forwarded.
+      type: String
+  - arguments:
+    - default: false
+      description: The user email address or the user id, use the !gmail-list-users command, in order to get the user id.
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    - default: false
+      description: The forwarding address to be retrieved.
+      isArray: false
+      name: forwarding_email
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes the specified forwarding address and revokes any verification that may have been required. This method is only available to service account clients that have been delegated domain-wide authority.
+    execution: false
+    name: gmail-forwarding-address-remove
+  - arguments:
+    - default: false
+      description: The user email address or the user id, use the !gmail-list-users command, in order to get the user id. The special value "me" can be used to indicate the authenticated user.
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    - default: false
+      description: The maximum number of addresses to return. The default value is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    execution: false
+    description: Lists the forwarding addresses for the specified account.
+    name: gmail-forwarding-address-list
+    outputs:
+    - contextPath: Gmail.ForwardingAddress.forwardingEmail
+      description: An email address to which messages can be forwarded.
+      type: String
+    - contextPath: Gmail.ForwardingAddress.verificationStatus
+      description: Indicates whether this address has been verified and is usable for forwarding.
       type: String
   dockerimage: demisto/google-api-py3:1.0.0.36366
   isfetch: true

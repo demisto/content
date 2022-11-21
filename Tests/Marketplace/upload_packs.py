@@ -362,11 +362,11 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
         marketplace (str): the marketplace type of the bucket. possible options: xsoar, marketplace_v2
 
     """
-    marketplace_core_packs = GCPConfig.get_core_packs(marketplace)
+    required_core_packs = GCPConfig.get_core_packs(marketplace)
     core_packs_public_urls = []
-    found_core_packs = set()
+    bucket_core_packs = set()
     for pack in os.scandir(index_folder_path):
-        if pack.is_dir() and pack.name in marketplace_core_packs:
+        if pack.is_dir() and pack.name in required_core_packs:
             pack_metadata_path = os.path.join(index_folder_path, pack.name, Pack.METADATA)
 
             if not os.path.exists(pack_metadata_path):
@@ -386,13 +386,20 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
                 sys.exit(1)
 
             core_packs_public_urls.append(core_pack_public_url)
-            found_core_packs.add(pack.name)
+            bucket_core_packs.add(pack.name)
 
-    if len(found_core_packs) != len(marketplace_core_packs):
-        missing_core_packs = set(marketplace_core_packs) ^ found_core_packs
-        logging.critical(f"Number of defined core packs are: {len(marketplace_core_packs)}")
-        logging.critical(f"Actual number of found core packs are: {len(found_core_packs)}")
-        logging.critical(f"Missing core packs are: {missing_core_packs}")
+    missing_core_packs = set(required_core_packs).difference(bucket_core_packs)
+    unexpected_core_packs = set(bucket_core_packs).difference(required_core_packs)
+
+    if missing_core_packs:
+        logging.critical(
+            f"missing {len(missing_core_packs)} packs (expected in core_packs configuration, but not found in bucket): "
+            f"{','.join(sorted(missing_core_packs))}")
+    if unexpected_core_packs:
+        logging.critical(
+            f"unexpected {len(missing_core_packs)} packs in bucket (not in the core_packs configuration): "
+            f"{','.join(sorted(unexpected_core_packs))}")
+    if missing_core_packs or unexpected_core_packs:
         sys.exit(1)
 
     corepacks_json_path = os.path.join(artifacts_dir, GCPConfig.CORE_PACK_FILE_NAME)
@@ -883,6 +890,8 @@ def get_images_data(packs_list: list):
             pack_image_data[pack.name][BucketUploadFlow.INTEGRATIONS] = pack.uploaded_integration_images
         if pack.uploaded_preview_images:
             pack_image_data[pack.name][BucketUploadFlow.PREVIEW_IMAGES] = pack.uploaded_preview_images
+        if pack.uploaded_readme_images:
+            pack_image_data[pack.name][BucketUploadFlow.README_IMAGES] = pack.uploaded_readme_images
         if pack_image_data[pack.name]:
             images_data.update(pack_image_data)
 
@@ -1135,9 +1144,9 @@ def main():
             pack.cleanup()
             continue
 
-        # upload author and integration images
+        # upload author integration images and readme images
         if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list,
-                                  override_all_packs):
+                                  override_all_packs, marketplace):
             continue
 
         # detect if the pack is modified and return modified RN files
@@ -1149,12 +1158,13 @@ def main():
             pack.cleanup()
             continue
 
-        if is_bucket_upload_flow:
-            task_status, _ = pack.filter_modified_files_by_id_set(id_set, modified_rn_files_paths, marketplace)
+        # This is commented out because we are not using the returned modified files and not skipping the
+        # packs in this phase (CIAC-3755). TODO - Will handle this in the refactor task - CIAC-3559.
+        # task_status, _ = pack.filter_modified_files_by_id_set(id_set, modified_rn_files_paths, marketplace)
 
-            # if not task_status:
-            #     pack.status = PackStatus.CHANGES_ARE_NOT_RELEVANT_FOR_MARKETPLACE.name
-            #     continue
+        # if not task_status:
+        #     pack.status = PackStatus.CHANGES_ARE_NOT_RELEVANT_FOR_MARKETPLACE.name
+        #     continue
 
         task_status, is_missing_dependencies = pack.format_metadata(index_folder_path,
                                                                     packs_dependencies_mapping, build_number,
@@ -1173,19 +1183,18 @@ def main():
             pack.cleanup()
             continue
 
-        if is_bucket_upload_flow:
-            task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number,
-                                                                        modified_rn_files_paths,
-                                                                        marketplace, id_set)
+        task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number,
+                                                                    modified_rn_files_paths,
+                                                                    marketplace, id_set)
 
-            if not task_status:
-                pack.status = PackStatus.FAILED_RELEASE_NOTES.name
-                pack.cleanup()
-                continue
+        if not task_status:
+            pack.status = PackStatus.FAILED_RELEASE_NOTES.name
+            pack.cleanup()
+            continue
 
-            if not_updated_build:
-                pack.status = PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name
-                continue
+        if not_updated_build:
+            pack.status = PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name
+            continue
 
         sign_and_zip_pack(pack, signature_key, remove_test_playbooks)
         shutil.copyfile(pack.zip_path, uploaded_packs_dir / f"{pack.name}.zip")
