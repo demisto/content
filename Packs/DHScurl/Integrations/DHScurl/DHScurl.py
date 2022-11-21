@@ -74,6 +74,12 @@ def dhscurl_run_command(curl_to_run, key_tempfile_name, certificate_tempfile_nam
         response_stdout, response_stderr = call_curl(curl_get_public_objects_info_close_time)
     elif curl_to_run == 'objects_other_time_format':
         response_stdout, response_stderr = call_curl(curl_get_public_objects_info_close_time_with_dot)
+    else:
+        full_curl = 'curl -v -X GET {}' \
+                    ' -H "Accept: application/taxii+json;version=2.1" ' \
+                    '-H "Content-Type: application/taxii+json" ' \
+                    '--noproxy "*" -k'.format(curl_to_run) + cert_key_to_curl
+        response_stdout, response_stderr = call_curl(full_curl)
 
     return response_stdout
 
@@ -103,7 +109,7 @@ def main():
 
         if command == 'test-module':
             return_results('ok')
-        elif command == 'dhscurl-run':
+        elif command in ['dhscurl-run', 'dhscurl-run-url']:
             args = demisto.args()
             return_results(dhscurl_run_command(args['curl'], key_tempfile_name, certificate_tempfile_name))
     except Exception as e:

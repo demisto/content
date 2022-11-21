@@ -38,6 +38,17 @@ script:
     description: Run the wanted curls to DHS
     execution: false
     name: dhscurl-run
+  - arguments:
+    - default: false
+      description: Which curl to run
+      isArray: false
+      name: curl
+      required: true
+      secret: false
+    deprecated: false
+    description: Run the wanted curls to DHS
+    execution: true
+    name: dhscurl-run-url
   isfetch: false
   runonce: false
   script: '-'
