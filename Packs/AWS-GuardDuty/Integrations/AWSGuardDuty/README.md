@@ -34,7 +34,7 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
     | Secret Key | The secret key used for authentication, that was configured during IAM user configuration. If this is used, Role ARN is not required. | False |
     | Timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 second will be used. | False |
     | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
-    | How many incidents to fetch each time | Default 10 | False |
+    | How many incidents to fetch each time | Default `10` | False |
     | First fetch timestamp | First fetch query `<number> <time unit>`, e.g. `7 days`. Default `3 days`| False |
     | Guard Duty Severity level | The severity level or higher of findings to be fetched: Low, Medium, or High. For example, if you set the severity level to Medium, only findings with severity level Medium or High will be fetched. | False |
     | Archive findings After Fetch | You can set whether findings that are fetched will be moved to the GuardDuty archive. | False |
@@ -292,9 +292,9 @@ Action: _guardduty:ListDetectors_
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Number of total results to query. Default is "50". | Optional | 
+| limit | Number of total results to query. Default is `50`. | Optional | 
 | page | Specific page to query. | Optional | 
-| page_size | Number of total results in each page. Default is 50. | Optional | 
+| page_size | Number of total results in each page. Default is `50`. | Optional | 
 | region | The AWS Region, if not specified the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
@@ -405,9 +405,9 @@ Action: _guardduty:ListIPSet_
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
-| limit | Number of total results to query. Default is "50". | Optional | 
+| limit | Number of total results to query. Default is `50`. | Optional | 
 | page | Specific page to query. | Optional | 
-| page_size | Number of total results in each page. Default is 50. | Optional | 
+| page_size | Number of total results in each page. Default is `50`. | Optional | 
 
 
 #### Context Output
@@ -549,9 +549,9 @@ Action: _guardduty:ListThreatIntelSet_
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
-| limit | Number of total results to query. Default is "50". | Optional | 
+| limit | Number of total results to query. Default is `50`. | Optional | 
 | page | Specific page to query. | Optional | 
-| page_size | Number of total results in each page. Default is 50. | Optional | 
+| page_size | Number of total results in each page. Default is `50`. | Optional | 
 
 
 #### Context Output
@@ -620,9 +620,9 @@ Action: _guardduty:ListFindings_
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
-| limit | Number of total results to query. Default is "50". | Optional | 
+| limit | Number of total results to query. Default is `50`. | Optional | 
 | page | Specific page to query. | Optional | 
-| page_size | Number of total results in each page. Default is 50. | Optional | 
+| page_size | Number of total results in each page. Default is `50`. | Optional | 
 
 
 #### Context Output
@@ -675,7 +675,7 @@ Action: _guardduty:GetFindings_
 | AWS.GuardDuty.Findings.Arn | string | The ARN of the finding. | 
 | AWS.GuardDuty.Findings.Confidence | string | The confidence score for the finding. | 
 | AWS.GuardDuty.Findings.Partition | string | The partition associated with the finding. | 
-| AWS.GuardDuty.Findings.Resource.ResourceType | string | The type of Amazon Web Services resource. | 
+| AWS.GuardDuty.Findings.ResourceType | string | The type of Amazon Web Services resource. | 
 | AWS.GuardDuty.Findings.SchemaVersion | string | The version of the schema used for the finding. | 
 | AWS.GuardDuty.Findings.Resource.AccessKeyDetails | string | The IAM access key details \(IAM user information\) of a user that engaged in the activity that prompted GuardDuty to generate a finding. | 
 | AWS.GuardDuty.Findings.Resource.InstanceDetails.IamInstanceProfile | string | The profile information of the EC2 instance. | 
@@ -842,9 +842,9 @@ Action: _guardduty:ListMembers_
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
-| limit | Number of total results to query. Default is "50". | Optional | 
+| limit | Number of total results to query. Default is `50`. | Optional | 
 | page | Specific page to query. | Optional | 
-| page_size | Number of total results in each page. Default is 50. | Optional | 
+| page_size | Number of total results in each page. Default is `50`. | Optional | 
 
 
 #### Context Output
