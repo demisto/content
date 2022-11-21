@@ -9,7 +9,7 @@ start_time = time.time()
 
 incident = demisto.incidents()[0]
 accountName = incident.get('account')
-accountName = f"acc_{accountName}" if accountName != "" else ""
+accountName = f"acc_{accountName}" if accountName else ""
 
 res = demisto.executeCommand(
     "demisto-api-get",
