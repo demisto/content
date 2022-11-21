@@ -1,0 +1,33 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "MITRE ATT\u0026CK CoA"
+    ],
+    "caseInsensitive": true,
+    "cliName": "urlfilteringprofilename",
+    "closeForm": false,
+    "content": true,
+    "description": "URL Filtering best practices profile name.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_urlfilteringprofilename",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "URL Filtering Profile Name",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0"
+}
