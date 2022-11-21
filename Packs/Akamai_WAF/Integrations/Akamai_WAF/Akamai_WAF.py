@@ -4640,13 +4640,13 @@ def get_papi_property_rule_command(client: Client,
         human readable (markdown format), entry context and raw response
     """
 
-   raw_response: Dict = client.get_papi_property_rule(contract_id=contract_id,
-                                                         group_id=group_id,
-                                                         property_id=property_id,
-                                                         property_version=property_version,
-                                                         validate_rules=validate_rules,
-                                                         )
-   if raw_response:
+    raw_response: Dict = client.get_papi_property_rule(contract_id=contract_id,
+                                                       group_id=group_id,
+                                                       property_id=property_id,
+                                                       property_version=property_version,
+                                                       validate_rules=validate_rules
+                                                       )
+    if raw_response:
         title = f'{INTEGRATION_NAME} - get papi property default rule command'
         entry_context = raw_response
         human_readable_ec = raw_response
