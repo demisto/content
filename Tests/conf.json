@@ -5145,13 +5145,6 @@
             "fromversion": "6.2.0"
         },
         {
-            "playbookID": "PAN-OS Create Or Edit Rule Test",
-            "fromversion": "6.1.0",
-            "integrations": [
-                "Panorama"
-            ]
-        },
-        {
             "playbookID": "GridFieldSetup_test"
         },
         {
@@ -5170,12 +5163,12 @@
     ],
     "skipped_tests": {
         "Detonate URL - Generic Test": "Issue CRTX-67709 and CRTX-67708",
+        "Test XDR Playbook": "Issue CIAC-4624",
         "PaloAltoNetworks_IoT-Test": "Issue CRTX-67960",
         "Cortex Data Lake Test": "Issue CRTX-67423",
         "playbook-CheckPointSandBlast_Test" : "Checkpoint playbook no license",
         "playbook-BmcITSM-Test" : "issue with license CIAC-3776",
         "Panorama Query Logs - Test": "issues with firewall environment configuration - CIAC-3459",
-        "PAN-OS Create Or Edit Rule Test": "this test should run only when running palo_alto_panorama_test_pb and not on its own",
         "palo_alto_firewall_test_pb": "issues with firewall environment configuration - CIAC-3459",
         "PAN-OS - Block IP and URL - External Dynamic List v2 Test": "uses deprecated integration, un-skip when playbook is updated",
         "Test - CrowdStrike Falcon": "to merge https://github.com/demisto/content/pull/19250",
