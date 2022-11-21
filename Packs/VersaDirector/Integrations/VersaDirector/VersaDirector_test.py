@@ -45,7 +45,7 @@ def test_handle_auth_token_command(mocker, client):
     assert command_result.readable_output == (
         "Auth Client Created Successfully.\nClient ID: client_id_mock, Auth Client Name: token_name_mock.\n\n"
         + "Authentication request was successful, Auth Token was created and saved in the Integration Context.\n"
-        + "Please check the 'Use Auth Token' in the configuration screen.\n"
+        + "Please uncheck the 'Use Basic Authentication' checkbox in the configuration screen.\n"
         + "To ensure the authentication is valid, run the 'vd-auth-test' command."
     )
 
@@ -1731,12 +1731,12 @@ def test_set_offset_fail(page, page_size):
 
 
 @pytest.mark.parametrize(
-    "use_token, username, password, client_id, client_secret, access_token, expected_output",
+    "use_basic_auth, username, password, client_id, client_secret, access_token, expected_output",
     input_data.create_client_header_args,
 )
 def test_create_client_header(
     mocker,
-    use_token,
+    use_basic_auth,
     username,
     password,
     client_id,
@@ -1746,7 +1746,7 @@ def test_create_client_header(
 ):
     """
     Given:
-        - Parameters related to authentication (use_token, username, password, client_id, client_secret, access_token)
+        - Parameters related to authentication (use_basic_auth, username, password, client_id, client_secret, access_token)
     When:
         - Before creating Client object in main function
     Then:
@@ -1754,4 +1754,4 @@ def test_create_client_header(
     """
     from VersaDirector import create_client_header
 
-    assert create_client_header(use_token, username, password, client_id, client_secret, access_token) == expected_output
+    assert create_client_header(use_basic_auth, username, password, client_id, client_secret, access_token) == expected_output

@@ -19,29 +19,29 @@ configuration:
   type: 0
 - display: Username
   name: credentials
-  required: true
+  required: false
   hiddenusername: false
   type: 9
-- display: Use Auth Token
-  additionalinfo: "Check if Auth Token authentication method is used."
-  name: use_token
+- display: Use Basic Authentication
+  additionalinfo: "Check this checkbox to use the basic authentication method. Auth Token authentication will be used by default. To use basic authentication method, please enter Username and Password parameters."
+  name: use_basic_auth
   required: false
   type: 8
 - display: Client ID
-  additionalinfo: "The Client ID parameter is used for Auth authentication."
+  additionalinfo: "The Client ID parameter is used for Auth authentication. Used together with Client Secret parameter."
   name: client_id
   required: false
   type: 0
 - display: Client Secret
-  additionalinfo: "The Client Secret parameter is used for Auth authentication."
+  additionalinfo: "The Client Secret parameter is used for Auth authentication. Used together with Client ID parameter."
   name: client_secret
   required: false
-  type: 9
+  type: 4
 - display: Auth Token
-  additionalinfo: "The Auth Token parameter is used for Auth authentication.\nAn Auth Token saved in the integration context take priority over an Auth Token passed as a parameter by default.\nIf a Refresh Token is given, a new Auth Token is generated when an existing Auth Token expires, and it is then saved in the integration context."
+  additionalinfo: "The Auth Token parameter is used for Auth authentication.\nAn Auth Token passed as a parameter take priority over an Auth Token saved in the integration context by default.\nIf a Refresh Token is available, a new Auth Token is generated when an existing Auth Token expires, and it is then updated in the integration context."
   name: access_token
   required: false
-  type: 0
+  type: 4
 - display: Trust any certificate (not secure)
   name: insecure
   required: false

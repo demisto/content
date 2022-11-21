@@ -244,7 +244,7 @@ set_offset_args_fail = [
 # Test function: test_create_client_header
 # Arguments: (use_token, username, password, client_id, client_secret, access_token, (auth, headers))
 case_basic_auth = (
-    "",
+    "use_basic_auth",
     "username",
     "password",
     "",
@@ -252,8 +252,17 @@ case_basic_auth = (
     "",
     (("username", "password"), {"Authorization": "Basic dXNlcm5hbWU6cGFzc3dvcmQ="}),
 )
-case_auth_token_auth = (
-    "use_token",
+case_auth_token_only = (
+    "",
+    "",
+    "",
+    "",
+    "",
+    "access_token",
+    (None, {"Authorization": "Bearer access_token"}),
+)
+case_context_args_already_created = (
+    "",
     "",
     "",
     "client_id",
@@ -261,13 +270,4 @@ case_auth_token_auth = (
     "access_token",
     (None, {"Authorization": "Bearer access_token"}),
 )
-case_all_arguments_given = (
-    "use_token",
-    "username",
-    "password",
-    "client_id",
-    "client_secret",
-    "access_token",
-    (None, {"Authorization": "Bearer access_token"}),
-)
-create_client_header_args = [case_basic_auth, case_auth_token_auth, case_all_arguments_given]
+create_client_header_args = [case_basic_auth, case_auth_token_only, case_context_args_already_created]
