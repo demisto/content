@@ -2530,7 +2530,7 @@ def get_status(device_id):
     state = raw_res.get('resources')[0].get('state', '')
     if state == 'unknown':
         demisto.debug(f"Device with id: {device_id} returned an unknown state, which indicates that the host has not"
-                     f" been seen recently and we are not confident about its current state")
+                      f" been seen recently and we are not confident about its current state")
     return HOST_STATUS_DICT[state]
 
 
