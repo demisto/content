@@ -646,10 +646,10 @@ tasks:
     continueonerrortype: ""
   "44":
     id: "44"
-    taskid: f1d9cb8a-2bec-4277-8f21-3ee90c93ea93
+    taskid: 263e355a-c219-4c49-833f-5b67b66bdc17
     type: regular
     task:
-      id: f1d9cb8a-2bec-4277-8f21-3ee90c93ea93
+      id: 263e355a-c219-4c49-833f-5b67b66bdc17
       version: -1
       name: Get account info from AWS
       description: Retrieves information about the specified IAM user, including the user's creation date, path, unique ID, and ARN.
@@ -972,6 +972,194 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 285753ae-d884-4485-881c-3a99f77be4d0
+    type: title
+    task:
+      id: 285753ae-d884-4485-881c-3a99f77be4d0
+      version: -1
+      name: MSGraph Users
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "56"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2130,
+          "y": 105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: be533930-e327-4945-8fb7-c47ada329a2f
+    type: condition
+    task:
+      id: be533930-e327-4945-8fb7-c47ada329a2f
+      version: -1
+      name: Is Azure Active Directory Users integration enabled?
+      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "57"
+    scriptarguments:
+      brandname:
+        simple: Microsoft Graph User
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2130,
+          "y": 235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 28d31f65-2e71-4de8-82b3-82da75841c4b
+    type: regular
+    task:
+      id: 28d31f65-2e71-4de8-82b3-82da75841c4b
+      version: -1
+      name: Get account info from Azure Active Directory
+      description: |-
+        Retrieves the properties and relationships of a user object. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
+        Permissions: - User.Read (Delegated) - User.Read.All (Application)
+      script: '|||msgraph-user-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      user:
+        complex:
+          root: inputs.Username
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2130,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 0cc7d1db-2b59-42c7-846a-9859a3d851c9
+    type: condition
+    task:
+      id: 0cc7d1db-2b59-42c7-846a-9859a3d851c9
+      version: -1
+      name: Is there a manager?
+      description: Is there a manager?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Account.Manager
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2130,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: e5aab025-d489-4bc6-89d8-ffde4c23ac36
+    type: regular
+    task:
+      id: e5aab025-d489-4bc6-89d8-ffde4c23ac36
+      version: -1
+      name: Azure Active Directory - Get manager details
+      description: Retrieves the properties from the manager of a user.
+      script: '|||msgraph-user-get-manager'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      user:
+        complex:
+          root: MSGraphUser
+          accessor: ID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1880,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -981,12 +1169,14 @@ view: |-
       "33_3_#default#": 0.1,
       "43_3_#default#": 0.1,
       "4_3_#default#": 0.1,
-      "51_3_#default#": 0.1
+      "51_3_#default#": 0.1,
+      "56_3_#default#": 0.1,
+      "58_3_#default#": 0.1
     },
     "paper": {
       "dimensions": {
         "height": 1205,
-        "width": 3170,
+        "width": 3590,
         "x": -1080,
         "y": -200
       }

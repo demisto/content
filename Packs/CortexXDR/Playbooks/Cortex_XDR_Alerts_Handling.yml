@@ -24,7 +24,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 50
+          "y": 70
         }
       }
     note: false
@@ -47,6 +47,8 @@ tasks:
     nexttasks:
       '#default#':
       - "7"
+      Cloud:
+      - "11"
       Malware:
       - "9"
       Port Scan:
@@ -97,6 +99,19 @@ tasks:
           right:
             value:
               simple: Port Scan
+    - label: Cloud
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident.xdralerts
+                accessor: event_type
+            iscontext: true
+          right:
+            value:
+              simple: Cloud Audit Log
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -162,7 +177,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 195
+          "y": 210
         }
       }
     note: false
@@ -378,15 +393,183 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 819510f8-39d8-4237-82e5-fb57fd806749
+    type: playbook
+    task:
+      id: 819510f8-39d8-4237-82e5-fb57fd806749
+      version: -1
+      name: Cloud Cryptomining
+      playbookName: Cloud Cryptomining
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      SOCEmailAddress:
+        simple: analyst@xsoartemp.com
+      alert_id:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.name
+                iscontext: true
+              right:
+                value:
+                  simple: Unusual allocation of multiple cloud compute resources
+              ignorecase: true
+          accessor: alert_id
+      incident_id:
+        complex:
+          root: inputs.incident_id
+      requireAnalystReview:
+        simple: "True"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -560,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 0aa062ec-14be-440b-8606-a05efe27dd8f
+    type: playbook
+    task:
+      id: 0aa062ec-14be-440b-8606-a05efe27dd8f
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      Ids:
+        simple: ${incident.xdrincidentid}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: incident_id
+      PollingCommandName:
+        simple: 'xdr-get-incident-extra-data '
+      Timeout:
+        simple: "3"
+      dt:
+        simple: PaloAltoNetworksXDR.Incident.alerts.name(val.name!=='Unusual allocation of multiple cloud compute resources')
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -400,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 18ea3ba1-78ee-4ce3-844b-44853df600da
+    type: condition
+    task:
+      id: 18ea3ba1-78ee-4ce3-844b-44853df600da
+      version: -1
+      name: Is XCLOUD Cryptomining alert available?
+      description: Checks if there is an available cloud cryptomining alert.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                accessor: name
+            iscontext: true
+          right:
+            value:
+              simple: Unusual allocation of multiple cloud compute resources
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -400,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "12_5_#default#": 0.18,
+      "1_11_Cloud": 0.81,
+      "1_7_#default#": 0.63,
+      "1_9_Malware": 0.65
+    },
     "paper": {
       "dimensions": {
-        "height": 735,
-        "width": 1260,
-        "x": 40,
-        "y": 50
+        "height": 1065,
+        "width": 1860,
+        "x": -560,
+        "y": 70
       }
     }
   }
