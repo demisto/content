@@ -856,15 +856,17 @@ INCIDENTS_NEXT_RUN = {'latest_created_time': '2022-11-08T14:24:52.908000Z',
                          'last_run, fetch_limit, first_fetch_time,'
                          'expected_incidents, expected_next_run, '
                          'expected_criterion_conditions,'
-                         'mock_list_finding_res, mock_get_finding_res',
+                         'mock_list_finding_res, mock_get_finding_res, is_archive',
                          [
                              # case - 1: First run (no Last Run) should get all incident from 'First fetch timestamp'
                              # field to current time.
+                             # is_archive = True, should archive the findings and to get only unarchived findings.
                              ("Medium",
                               {}, 2, '2022-11-08T14:24:52.908Z',
                               [INCIDENT_1, INCIDENT_2], INCIDENTS_NEXT_RUN,
-                              {'severity': {'Gte': 4}},
-                              {"FindingIds": ["finding_id1", "finding_id2"], "NextToken": ""}, [FINDING_1, FINDING_2]),
+                              {'severity': {'Gte': 4}, 'service.archived': {'Eq': ['false']}},
+                              {"FindingIds": ["finding_id1", "finding_id2"], "NextToken": ""}, [FINDING_1, FINDING_2],
+                              True),
 
                              # case - 2: Second run should get all incidents from last run time to current time
                              # without duplicates
@@ -877,7 +879,7 @@ INCIDENTS_NEXT_RUN = {'latest_created_time': '2022-11-08T14:24:52.908000Z',
                               {'id': {'Neq': ['finding_id1']},
                                'severity': {'Gte': 1},
                                'updatedAt': {'Gte': 1667917492908}},
-                              {"FindingIds": ["finding_id2"], "NextToken": ""}, [FINDING_2]),
+                              {"FindingIds": ["finding_id2"], "NextToken": ""}, [FINDING_2], False),
 
                              # case - 3: A run without new finding since last run, should not change the Last Run
                              ("",
@@ -886,7 +888,7 @@ INCIDENTS_NEXT_RUN = {'latest_created_time': '2022-11-08T14:24:52.908000Z',
                               {'severity': {'Gte': 1},
                                'updatedAt': {'Gte': 1667917492908},
                                'id': {'Neq': ['finding_id1', 'finding_id2']}},
-                              {"FindingIds": [], 'NextToken': ""}, []),
+                              {"FindingIds": [], 'NextToken': ""}, [], False),
 
                              # case - 4: A run without incidents (all incidents has earlier time then the last run)
                              # should get 0 incidents and should not change the Last Run
@@ -899,7 +901,8 @@ INCIDENTS_NEXT_RUN = {'latest_created_time': '2022-11-08T14:24:52.908000Z',
                                    'latest_created_time': '2022-11-16T14:24:52.908000Z',
                                    'latest_updated_time': '2022-11-08T14:24:52.908000Z'},
                               {'severity': {'Gte': 1}, 'updatedAt': {'Gte': 1667744692908}},
-                              {"FindingIds": ["finding_id1", "finding_id2"], 'NextToken': ""}, [FINDING_1, FINDING_2]),
+                              {"FindingIds": ["finding_id1", "finding_id2"], 'NextToken': ""}, [FINDING_1, FINDING_2],
+                              False),
 
                              # case - 5: A run given last_next_token and latest_updated_time,
                              # validate the latest_updated_time is not used
@@ -913,11 +916,11 @@ INCIDENTS_NEXT_RUN = {'latest_created_time': '2022-11-08T14:24:52.908000Z',
                                                          'latest_created_time': '2022-11-08T14:24:52.908000Z',
                                                          'latest_updated_time': '2022-11-11T14:24:52.908000Z'},
                               {'severity': {'Gte': 1}},
-                              {"FindingIds": ["finding_id1", "finding_id2"], 'NextToken': ""}, [FINDING_1, FINDING_2])
+                              {"FindingIds": ["finding_id1", "finding_id2"], 'NextToken': ""}, [FINDING_1, FINDING_2], False)
                          ], ids=['case - 1', 'case - 2', 'case - 3', 'case - 4', 'case - 5'])
 def test_fetch_incidents(mocker, gd_severity, last_run, fetch_limit, first_fetch_time,
                          expected_incidents, expected_next_run, expected_criterion_conditions,
-                         mock_list_finding_res, mock_get_finding_res):
+                         mock_list_finding_res, mock_get_finding_res, is_archive):
     """
     Given:
         AWSClient session
@@ -937,14 +940,18 @@ def test_fetch_incidents(mocker, gd_severity, last_run, fetch_limit, first_fetch
                                              return_value=mock_list_finding_res)
     get_findings_mock = mocker.patch.object(MockedBoto3Client, 'get_findings',
                                             return_value={'Findings': mock_get_finding_res})
+    archive_findings_mock = mocker.patch.object(MockedBoto3Client, 'archive_findings', side_effect=[{}])
 
     next_run, incidents = fetch_incidents(client=mocked_client, aws_gd_severity=gd_severity, last_run=last_run,
-                                          fetch_limit=fetch_limit, first_fetch_time=first_fetch_time)
+                                          fetch_limit=fetch_limit, first_fetch_time=first_fetch_time, is_archive=is_archive)
 
     assert list_detectors_mock.is_called_once
     assert list_findings_mock.call_count == 1
     assert get_findings_mock.call_count == 1
     assert list_findings_mock.call_args[1]['FindingCriteria']['Criterion'] == expected_criterion_conditions
+    if is_archive:
+        assert archive_findings_mock.call_count == 1
+        assert archive_findings_mock.call_args[1]['FindingIds'] == mock_list_finding_res['FindingIds']
     assert next_run == expected_next_run
     assert incidents == expected_incidents
 

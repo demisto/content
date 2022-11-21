@@ -91,7 +91,8 @@ def get_detector(client: boto3.client, args: dict):
         'Tags': response.get('Tags'),
 
     })
-    readable_output = tableToMarkdown('AWS GuardDuty Detectors', data) if data else 'No result were found'
+    readable_output = tableToMarkdown('AWS GuardDuty Detectors', data,
+                                      removeNull=True) if data else 'No result were found'
     return CommandResults(readable_output=readable_output,
                           outputs=data,
                           outputs_prefix='AWS.GuardDuty.Detectors',
@@ -117,7 +118,7 @@ def update_detector(client: boto3.client, args: dict):
 
     response = client.update_detector(**kwargs)
     if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
-        return f"The Detector {args.get('detectorId')} has been Updated successfully"
+        return f"The Detector {args.get('detectorId')} has been updated successfully"
     else:
         raise Exception(f"Detector {args.get('detectorId')} failed to update. Response was: {response}")
 
@@ -436,39 +437,46 @@ def get_pagination_args(args: dict):
 def parse_finding(finding: dict):
     parsed_finding: dict = dict()
 
-    parsed_finding['Account ID'] = finding.get('AccountId')
-    parsed_finding['Occurred'] = finding.get('CreatedAt')
+    parsed_finding['AccountId'] = finding.get('AccountId')
+    parsed_finding['CreatedAt'] = finding.get('CreatedAt')
     parsed_finding['Description'] = finding.get('Description')
     parsed_finding['Region'] = finding.get('Region')
-    parsed_finding['Alert Id'] = finding.get('Id')
+    parsed_finding['Id'] = finding.get('Id')
     parsed_finding['Title'] = finding.get('Title')
-    parsed_finding['Severity'] = severity_mapping(finding.get('Severity'))
-    parsed_finding['Last Update Time'] = finding.get('UpdatedAt')
+    parsed_finding['Type'] = finding.get('Type')
+    parsed_finding['Severity'] = finding.get('Severity')
+    parsed_finding['UpdatedAt'] = finding.get('UpdatedAt')
 
-    parsed_finding['AWS Arn'] = finding.get('Arn')
-    parsed_finding['AWS GuardDuty Confidence Score'] = finding.get('Confidence')
-    parsed_finding['AWS GuardDuty Partition'] = finding.get('Partition')
-    parsed_finding['AWS GuardDuty Resource Type'] = demisto.get(finding, 'Resource.ResourceType')
-    parsed_finding['AWS GuardDuty Type'] = finding.get('Type')
-    parsed_finding['AWS GuardDuty Schema Version'] = finding.get('SchemaVersion')
-    parsed_finding['AWS GuardDuty Service'] = demisto.get(finding, 'Resource.Service')
-    parsed_finding['AWS GuardDuty Access Key Details'] = demisto.get(finding, 'Resource.AccessKeyDetails')
-    parsed_finding['AWS GuardDuty Kubernetes User Details'] = \
-        demisto.get(finding, 'Resource.KubernetesDetails.KubernetesUserDetails')
-    parsed_finding['AWS GuardDuty Kubernetes Workload Details'] = \
-        demisto.get(finding, 'Resource.KubernetesDetails.KubernetesWorkloadDetails')
-    parsed_finding['AWS GuardDuty Ebs Volume Details'] = demisto.get(finding, 'Resource.EbsVolumeDetails')
-    parsed_finding['AWS GuardDuty Container Details'] = demisto.get(finding, 'Resource.ContainerDetails')
+    parsed_finding['Arn'] = finding.get('Arn')
+    parsed_finding['Confidence'] = finding.get('Confidence')
+    parsed_finding['Partition'] = finding.get('Partition')
+    parsed_finding['SchemaVersion'] = finding.get('SchemaVersion')
+    parsed_finding['Service'] = json.dumps(finding.get('Service'), cls=DatetimeEncoder)
+    parsed_finding['ResourceType'] = demisto.get(finding, 'Resource.ResourceType')
 
-    parsed_finding['AWS GuardDuty Instance Details'] = demisto.get(finding, 'Resource.InstanceDetails')
+    get_resource = dict()
+    get_resource.update({'AccessKeyDetails': json.dumps(demisto.get(finding, 'Resource.AccessKeyDetails'))})
+    get_resource['KubernetesDetails'] = {'KubernetesUserDetails': json.dumps(  # type: ignore
+        demisto.get(finding, 'Resource.KubernetesDetails.KubernetesUserDetails'))}
+    get_resource['KubernetesDetails'].update(  # type: ignore
+        {'KubernetesWorkloadDetails': json.dumps(
+            demisto.get(finding, 'Resource.KubernetesDetails.KubernetesWorkloadDetails'))})
 
-    parsed_finding['AWS GuardDuty Eks Cluster Details'] = \
-        json.loads(json.dumps(demisto.get(finding, 'Resource.EksClusterDetails'), cls=DatetimeEncoder))
-    parsed_finding['AWS GuardDuty Ecs Cluster Details'] = \
-        json.loads(json.dumps(demisto.get(finding, 'Resource.EcsClusterDetails'), cls=DatetimeEncoder))
-    parsed_finding['AWS GuardDuty S3 Bucket Details'] = \
-        json.loads(json.dumps(demisto.get(finding, 'Resource.S3BucketDetails'), cls=DatetimeEncoder))
+    get_resource.update({'EbsVolumeDetails': json.dumps(demisto.get(finding, 'Resource.EbsVolumeDetails'))})
+    get_resource.update({'ContainerDetails': json.dumps(demisto.get(finding, 'Resource.ContainerDetails'))})
 
+    instance_details = demisto.get(finding, 'Resource.InstanceDetails')
+    if instance_details:
+        get_resource['InstanceDetails'] = {k: json.dumps(instance_details[k]) for k in instance_details}  # type: ignore
+
+    get_resource.update(
+        {'EksClusterDetails': json.dumps(demisto.get(finding, 'Resource.EksClusterDetails'), cls=DatetimeEncoder)})
+    get_resource.update(
+        {'EcsClusterDetails': json.dumps(demisto.get(finding, 'Resource.EcsClusterDetails'), cls=DatetimeEncoder)})
+    get_resource.update(
+        {'S3BucketDetails': json.dumps(demisto.get(finding, 'Resource.S3BucketDetails'), cls=DatetimeEncoder)})
+
+    parsed_finding['Resource'] = get_resource
     return parsed_finding
 
 
@@ -483,7 +491,10 @@ def get_findings(client: boto3.client, args: dict):
 
     output = json.dumps(response['Findings'], cls=DatetimeEncoder)
     raw = json.loads(output)
-    readable_output = tableToMarkdown('AWS GuardDuty Findings', data, removeNull=True) if data else 'No result were found'
+
+    headers = ['Id', 'Title', 'Description', 'Type', 'ResourceType', 'CreatedAt', 'AccountId', 'Arn']
+    readable_output = tableToMarkdown('AWS GuardDuty Findings', data, removeNull=True, headers=headers) \
+        if data else 'No result were found'
     return CommandResults(readable_output=readable_output,
                           raw_response=raw,
                           outputs=data,
@@ -511,7 +522,7 @@ def time_to_unix_epoch(date_time: datetime):
 
 
 def fetch_incidents(client: boto3.client, aws_gd_severity: str, last_run: dict, fetch_limit: int,
-                    first_fetch_time: str) -> Tuple[Dict[str, Any], List[dict]]:
+                    first_fetch_time: str, is_archive: bool) -> Tuple[Dict[str, Any], List[dict]]:
     """
     This function will execute each interval (default is 1 minute).
 
@@ -524,7 +535,7 @@ def fetch_incidents(client: boto3.client, aws_gd_severity: str, last_run: dict, 
                           'last_next_token' (string): The value of NextToken from the previous response to continue listing data.}
         fetch_limit (int): Maximum numbers of incidents per fetch
         first_fetch_time (str): If last_fetch is None then fetch all incidents since first_fetch_time
-
+        is_archive (bool): Archive findings After Fetch
     Returns:
         next_run: This will be last_run in the next fetch-incidents
         incidents: Incidents that will be created in Demisto
@@ -534,7 +545,8 @@ def fetch_incidents(client: boto3.client, aws_gd_severity: str, last_run: dict, 
     latest_created_time = last_run.get('latest_created_time')
     last_incidents_ids = last_run.get('last_incidents_ids', [])
     last_next_token = last_run.get('last_next_token', "")
-    latest_updated_time = dateparser.parse(last_run['latest_updated_time']) if last_run.get('latest_updated_time') else None
+    latest_updated_time = dateparser.parse(last_run['latest_updated_time']) if last_run.get(
+        'latest_updated_time') else None
 
     # Handle first time fetch
     if latest_created_time is None:
@@ -550,6 +562,9 @@ def fetch_incidents(client: boto3.client, aws_gd_severity: str, last_run: dict, 
 
     criterion_conditions = dict()  # Represents the criteria to be used in the filter for querying findings.
     criterion_conditions['severity'] = {'Gte': gd_severity_mapping(aws_gd_severity)}
+    if is_archive:
+        demisto.debug('Fetching Amazon GuardDuty with Archive')
+        criterion_conditions['service.archived'] = {'Eq': ['false']}
     if not last_next_token and latest_updated_time:
         criterion_conditions['updatedAt'] = {'Gte': time_to_unix_epoch(latest_updated_time)}
     if last_incidents_ids:
@@ -584,7 +599,6 @@ def fetch_incidents(client: boto3.client, aws_gd_severity: str, last_run: dict, 
 
             # Update last run (latest_created_time) and add incident if the incident is newer than last fetch
             if (incident_created_time and latest_created_time) and incident_created_time >= latest_created_time:
-
                 demisto.debug(f'Added Incident with ID {incident_id}, occured: {str(incident_created_time)}, '
                               f'updated: {str(incident_updated_time)}')
 
@@ -593,6 +607,11 @@ def fetch_incidents(client: boto3.client, aws_gd_severity: str, last_run: dict, 
 
                 incident = parse_incident_from_finding(finding)
                 incidents.append(incident)
+
+        if incidents and is_archive:
+            # Archive findings
+            demisto.debug('Archived ', len(list_findings_res['FindingIds']))
+            client.archive_findings(DetectorId=detector[0], FindingIds=list_findings_res['FindingIds'])
 
         # if there is no next_token, or we have reached the fetch_limit -> break
         if not last_next_token or fetch_limit - len(incidents) == 0:
@@ -734,6 +753,7 @@ def main():  # pragma: no cover
     retries = params.get('retries') or 5
     first_fetch_time = params.get('first_fetch_time', '10 minutes').strip()
     fetch_limit = arg_to_number(params.get('fetch_limit', 10))
+    is_archive = argToBoolean(params.get('is_archive', False))
 
     try:
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
@@ -826,7 +846,7 @@ def main():  # pragma: no cover
         elif demisto.command() == 'fetch-incidents':
             next_run, incidents = fetch_incidents(client, aws_gd_severity, last_run=demisto.getLastRun(),
                                                   fetch_limit=fetch_limit,  # type: ignore
-                                                  first_fetch_time=first_fetch_time)
+                                                  first_fetch_time=first_fetch_time, is_archive=is_archive)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
             sys.exit(0)

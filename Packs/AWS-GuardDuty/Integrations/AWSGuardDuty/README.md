@@ -12,6 +12,10 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 It is important that you familiarize yourself with and complete all steps detailed in
 the [Amazon AWS Integrations Configuration Guide](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication)
 
+
+Some changes have been made that might affect your existing content. 
+If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---aws-guardduty).
+
 ## Configure AWS - GuardDuty on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -22,10 +26,7 @@ the [Amazon AWS Integrations Configuration Guide](https://xsoar.pan.dev/docs/ref
     | --- |------| --- |
     | AWS Default Region | The AWS Region for this instance of the integration. For example, us-west-2 | True |
     | Role Arn | The Amazon Resource Name (ARN) role used for EC2 instance authentication. If this is used, an access key and secret key are not required. | False |
-    | Incidents Fetch Interval | Time interval for fetching incidents. | False |
     | Fetch incidents |  | False |
-    | How many incidents to fetch each time | Default 10 | False |
-    | First fetch timestamp | First fetch query `<number> <time unit>`, e.g. `7 days`. Default `3 days`| False |
     | Incident type | Incident type | False |
     | Role Session Name | A descriptive name for the assumed role session. For example, xsiam-IAM.integration-Role_SESSION | False |
     | Role Session Duration | The maximum length of each session in seconds. Default: 900 seconds. The XSOAR integration will have the permissions assigned only when the session is initiated and for the defined duration. | False |
@@ -33,7 +34,11 @@ the [Amazon AWS Integrations Configuration Guide](https://xsoar.pan.dev/docs/ref
     | Secret Key | The secret key used for authentication, that was configured during IAM user configuration. If this is used, Role ARN is not required. | False |
     | Timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 second will be used. | False |
     | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
+    | How many incidents to fetch each time | Default 10 | False |
+    | First fetch timestamp | First fetch query `<number> <time unit>`, e.g. `7 days`. Default `3 days`| False |
     | Guard Duty Severity level | The severity level or higher of findings to be fetched: Low, Medium, or High. For example, if you set the severity level to Medium, only findings with severity level Medium or High will be fetched. | False |
+    | Archive findings After Fetch | You can set whether findings that are fetched will be moved to the GuardDuty archive. | False |
+    | Incidents Fetch Interval | Time interval for fetching incidents. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
@@ -658,30 +663,32 @@ Action: _guardduty:GetFindings_
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.GuardDuty.Findings.Account ID | string | The ID of the account in which the finding was generated. | 
-| AWS.GuardDuty.Findings.Occurred | string | The time and date when the finding was created. | 
+| AWS.GuardDuty.Findings.AccountId | string | The ID of the account in which the finding was generated. | 
+| AWS.GuardDuty.Findings.CreatedAt | string | The time and date when the finding was created. | 
 | AWS.GuardDuty.Findings.Description | string | The description of the finding. | 
 | AWS.GuardDuty.Findings.Region | string | The Region where the finding was generated. | 
-| AWS.GuardDuty.Findings.Alert Id | string | The ID of the finding. | 
+| AWS.GuardDuty.Findings.Id | string | The ID of the finding. | 
 | AWS.GuardDuty.Findings.Title | string | The title of the finding. | 
 | AWS.GuardDuty.Findings.Severity | string | The severity of the finding. | 
-| AWS.GuardDuty.Findings.Last Update Time | string | The time and date when the finding was last updated. | 
-| AWS.GuardDuty.Findings.AWS Arn | string | The ARN of the finding. | 
-| AWS.GuardDuty.Findings.AWS GuardDuty Confidence Score | string | The confidence score for the finding. | 
-| AWS.GuardDuty.Findings.AWS GuardDuty Partition | string | The partition associated with the finding. | 
-| AWS.GuardDuty.Findings.AWS GuardDuty Resource Type | string | The type of Amazon Web Services resource. | 
-| AWS.GuardDuty.Findings.AWS GuardDuty Type | string | The type of finding. | 
-| AWS.GuardDuty.Findings.AWS GuardDuty Schema Version | string | The version of the schema used for the finding. | 
-| AWS.GuardDuty.Findings.AWS GuardDuty Access Key Details | string | The IAM access key details \(IAM user information\) of a user that engaged in the activity that prompted GuardDuty to generate a finding. | 
-| AWS.GuardDuty.Findings.AWS GuardDuty Instance Details | string | The information about the EC2 instance associated with the activity that prompted GuardDuty to generate a finding. | 
-| AWS.GuardDuty.Findings.AWS GuardDuty Eks Cluster Details | string | Details about the EKS cluster involved in a Kubernetes finding. | 
-| AWS.GuardDuty.Findings.AWS GuardDuty Kubernetes User Details | string | Details about the Kubernetes user involved in a Kubernetes finding. | 
-| AWS.GuardDuty.Findings.AWS GuardDuty Kubernetes Workload Details | string | Details about the Kubernetes workload involved in a Kubernetes finding. | 
-| AWS.GuardDuty.Findings.AWS GuardDuty Ebs Volume Details | string | Contains list of scanned and skipped EBS volumes with details. | 
-| AWS.GuardDuty.Findings.AWS GuardDuty Ecs Cluster Details | string | Contains information about the details of the ECS Cluster. | 
-| AWS.GuardDuty.Findings.AWS GuardDuty Container Details | string | Details of a container. | 
-| AWS.GuardDuty.Findings.AWS GuardDuty S3 Bucket Details | string | Contains information on the S3 bucket. | 
-| AWS.GuardDuty.Findings.AWS GuardDuty Service | string | Contains additional information about the generated finding. | 
+| AWS.GuardDuty.Findings.Type | string | The type of finding. | 
+| AWS.GuardDuty.Findings.UpdatedAt | string | The time and date when the finding was last updated. | 
+| AWS.GuardDuty.Findings.Arn | string | The ARN of the finding. | 
+| AWS.GuardDuty.Findings.Confidence | string | The confidence score for the finding. | 
+| AWS.GuardDuty.Findings.Partition | string | The partition associated with the finding. | 
+| AWS.GuardDuty.Findings.Resource.ResourceType | string | The type of Amazon Web Services resource. | 
+| AWS.GuardDuty.Findings.SchemaVersion | string | The version of the schema used for the finding. | 
+| AWS.GuardDuty.Findings.Resource.AccessKeyDetails | string | The IAM access key details \(IAM user information\) of a user that engaged in the activity that prompted GuardDuty to generate a finding. | 
+| AWS.GuardDuty.Findings.Resource.InstanceDetails.IamInstanceProfile | string | The profile information of the EC2 instance. | 
+| AWS.GuardDuty.Findings.Resource.InstanceDetails.NetworkInterfaces | string | The elastic network interface information of the EC2 instance. | 
+| AWS.GuardDuty.Findings.Resource.InstanceDetails | string | The information about the EC2 instance associated with the activity that prompted GuardDuty to generate a finding. | 
+| AWS.GuardDuty.Findings.Resource.EksClusterDetails | string | Details about the EKS cluster involved in a Kubernetes finding. | 
+| AWS.GuardDuty.Findings.Resource.KubernetesDetails.KubernetesUserDetails | string | Details about the Kubernetes user involved in a Kubernetes finding. | 
+| AWS.GuardDuty.Findings.Resource.KubernetesDetails.KubernetesWorkloadDetails | string | Details about the Kubernetes workload involved in a Kubernetes finding. | 
+| AWS.GuardDuty.Findings.Resource.EbsVolumeDetails | string | Contains list of scanned and skipped EBS volumes with details. | 
+| AWS.GuardDuty.Findings.Resource.EcsClusterDetails | string | Contains information about the details of the ECS Cluster. | 
+| AWS.GuardDuty.Findings.Resource.ContainerDetails | string | Details of a container. | 
+| AWS.GuardDuty.Findings.Resource.S3BucketDetails | string | Contains information on the S3 bucket. | 
+| AWS.GuardDuty.Findings.Resource.Service | string | Contains additional information about the generated finding. | 
 
 #### Command Example
 
@@ -897,5 +904,12 @@ Action: _guardduty:GetMembers_
 ```!aws-gd-get-members detectorIds=4f1fc7cd7dsg26sdf4328d8dc813 accountIds=1f3fc2cd1dag26sdf4338d8aa813```
 
 
+## Breaking changes from the previous version of this integration - AWS-GuardDuty
+The following sections list the changes in this version.
 
-
+#### Fetch incidents command - Findings that are fetched are no longer moved automatically to the GuardDuty archive.
+### Parameters
+#### The following parameters were added in this version:
+  - **How many incidents to fetch each time**
+  - **First fetch timestamp**
+  - **Archive findings After Fetch**
