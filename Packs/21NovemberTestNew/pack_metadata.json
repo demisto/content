@@ -1,0 +1,21 @@
+{
+    "name": "21 November test new",
+    "description": "",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "dansterenson",
+    "url": "",
+    "email": "",
+    "created": "2022-11-21T13:26:35Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "dansterenson"
+    ]
+}
