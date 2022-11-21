@@ -3,15 +3,15 @@ from CommonServerPython import *  # noqa: F401
 
 
 ''' IMPORTS '''
-import requests
 import base64
 import os
 import json
+import urllib3
 from urllib.parse import quote
 
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 
