@@ -32,6 +32,24 @@ def load_test_data(folder: str, file_name: str) -> dict:
 
 
 # --- Utility Functions Tests ---
+@pytest.mark.parametrize("mock_files_prefix, pages",
+                         [
+                             ("get_vulnerabilities", 4)
+                         ])
+def test_paged_http_request(mocker, mock_client: Client, mock_files_prefix: str, pages: int):
+    mock_data = [load_test_data("paged_http_request", mock_files_prefix + f"_{i}") for i in range(pages)]
+
+    def pagination_side_effect(**kwargs):
+        if kwargs.get("params") and kwargs["params"].get("page"):
+            return mock_data[int(kwargs["params"]["page"])]
+
+        return mock_data[0]
+
+    mocker.patch.object(Client, "_http_request", side_effect=pagination_side_effect)
+    assert mock_client._paged_http_request(page_size=3, limit=10) == \
+           load_test_data("paged_http_request", f"{mock_files_prefix}_output")
+
+
 @pytest.mark.parametrize("test_input, expected_output",
                          [
                              (["risk-score is-greater-than 1000.5", "vulnerability-title contains 7zip"],
@@ -341,7 +359,7 @@ def test_get_asset_vulnerability_command(mocker, mock_client: Client, vulnerabil
 def test_get_generated_report_status_command(mocker, mock_client: Client, api_mock_file: str,
                                              expected_output_context_file: str):
     api_data = load_test_data("api_mock", api_mock_file)
-    mocker.patch.object(Client, "get_report_history", return_value=api_data)
+    mocker.patch.object(Client, "_http_request", return_value=api_data)
 
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
 
@@ -356,7 +374,7 @@ def test_get_generated_report_status_command(mocker, mock_client: Client, api_mo
 def test_get_report_templates_command(mocker, mock_client: Client, api_mock_file: str,
                                       expected_output_context_file: str):
     api_data = load_test_data("api_mock", api_mock_file)
-    mocker.patch.object(Client, "get_report_templates", return_value=api_data)
+    mocker.patch.object(Client, "_http_request", return_value=api_data)
 
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
 
@@ -371,7 +389,7 @@ def test_get_report_templates_command(mocker, mock_client: Client, api_mock_file
 def test_get_scan_command(mocker, mock_client: Client, api_mock_file: str, ids_input: str,
                           expected_output_context_file: str):
     api_data = load_test_data("api_mock", api_mock_file)
-    mocker.patch.object(Client, "get_scan", return_value=api_data)
+    mocker.patch.object(Client, "_http_request", return_value=api_data)
 
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
 
@@ -386,7 +404,7 @@ def test_get_scan_command(mocker, mock_client: Client, api_mock_file: str, ids_i
                          ])
 def test_get_sites_command(mocker, mock_client: Client, api_mock_file: str, expected_output_context_file: str):
     api_data = load_test_data("api_mock", api_mock_file)
-    mocker.patch.object(Client, "get_sites", return_value=api_data)
+    mocker.patch.object(Client, "_paged_http_request", return_value=api_data)
 
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
 
@@ -402,11 +420,11 @@ def test_get_sites_command(mocker, mock_client: Client, api_mock_file: str, expe
 def test_list_shared_credential_command(mocker, mock_client: Client, api_mock_file: str,
                                         expected_output_context_file: str):
     api_data = load_test_data("api_mock", api_mock_file)
-    mocker.patch.object(Client, "get_shared_credentials", return_value=api_data)
+    mocker.patch.object(Client, "_http_request", return_value=api_data)
 
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
 
-    result = list_shared_credential_command(client=mock_client)
+    result = list_shared_credential_command(client=mock_client, limit="3")
 
     assert result.outputs == expected_output_context
 
@@ -418,11 +436,11 @@ def test_list_shared_credential_command(mocker, mock_client: Client, api_mock_fi
 def test_list_assigned_shared_credential_command(mocker, mock_client: Client, api_mock_file: str,
                                                  expected_output_context_file: str):
     api_data = load_test_data("api_mock", api_mock_file)
-    mocker.patch.object(Client, "get_assigned_shared_credentials", return_value=api_data)
+    mocker.patch.object(Client, "_http_request", return_value=api_data)
 
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
 
-    result = list_assigned_shared_credential_command(client=mock_client, site=Site(site_id="1"))
+    result = list_assigned_shared_credential_command(client=mock_client, site=Site(site_id="1"), limit="3")
 
     assert result.outputs == expected_output_context
 
@@ -434,7 +452,7 @@ def test_list_assigned_shared_credential_command(mocker, mock_client: Client, ap
 def test_list_vulnerability_command(mocker, mock_client: Client, api_mock_file: str,
                                     expected_output_context_file: str):
     api_data = load_test_data("api_mock", api_mock_file)
-    mocker.patch.object(Client, "get_vulnerabilities", return_value=api_data)
+    mocker.patch.object(Client, "_paged_http_request", return_value=api_data)
 
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
 
@@ -450,10 +468,30 @@ def test_list_vulnerability_command(mocker, mock_client: Client, api_mock_file: 
 def test_list_vulnerability_exceptions_command(mocker, mock_client: Client, api_mock_file: str,
                                                expected_output_context_file: str):
     api_data = load_test_data("api_mock", api_mock_file)
-    mocker.patch.object(Client, "get_vulnerability_exceptions", return_value=api_data)
+    mocker.patch.object(Client, "_paged_http_request", return_value=api_data)
 
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
 
     result = list_vulnerability_exceptions_command(client=mock_client)
 
     assert result.outputs == expected_output_context
+
+
+@pytest.mark.parametrize("api_mock_file, expected_output_context_file",
+                         [
+                             ("client_search_assets", "search_assets_command")
+                         ])
+def test_search_assets_command(mocker, mock_client: Client, api_mock_file: str,
+                               expected_output_context_file: str):
+    api_data = load_test_data("api_mock", api_mock_file)
+    mocker.patch.object(Client, "search_assets", return_value=api_data,)
+    mocker.patch.object(Client, "find_asset_site", return_value=Site(site_id="1", site_name="Test"))
+
+    expected_output_context = load_test_data("expected_context", expected_output_context_file)
+
+    results = search_assets_command(client=mock_client, risk_score="8000")
+
+    assert isinstance(results, list)  # Assure a list of CommandResults has been received instead of a single one.
+    # Using `sorted` to not fail test in case the order of CommandResults changes
+    assert sorted([result.outputs for result in results], key=lambda d: d["AssetId"]) == \
+           sorted(expected_output_context, key=lambda d: d["AssetId"])

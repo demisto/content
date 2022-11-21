@@ -5096,7 +5096,7 @@ def update_vulnerability_exception_status_command(client: Client, vulnerability_
     )
 
 
-def main():
+def main():  # pragma: no cover
     try:
         args = demisto.args()
         params = demisto.params()
