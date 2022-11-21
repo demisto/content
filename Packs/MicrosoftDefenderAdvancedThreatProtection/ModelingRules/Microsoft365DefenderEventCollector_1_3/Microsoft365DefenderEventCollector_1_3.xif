@@ -4,7 +4,6 @@ alter
     xdm.event.id = id,
     xdm.alert.original_alert_id = to_string(incidentId),
     xdm.alert.severity = severity,
-    xdm.observer.product = detectionSource,
     xdm.alert.category = category,
     xdm.alert.subcategory = threatFamilyName,
     xdm.alert.name = if(threatName = null, title, threatName),
@@ -26,4 +25,6 @@ alter
     xdm.source.user.domain = json_extract_scalar(evidence, "$.domainName"),
     xdm.source.user.identifier = json_extract_scalar(evidence, "$.userSid"),
     xdm.target.ipv4 = json_extract_scalar(evidence, "$.ipAddress"),
-    xdm.event.outcome = json_extract_scalar(evidence, "$.detectionStatus");
+    xdm.event.outcome = json_extract_scalar(evidence, "$.detectionStatus"),
+    xdm.observer.vendor = _vendor,
+    xdm.observer.product = _product;
