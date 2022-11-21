@@ -23,12 +23,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: bb43c945-9532-4e71-812e-aed1f69c9885
+      id: 37d4b949-a249-4151-88ea-d8296e0e5bdc
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: bb43c945-9532-4e71-812e-aed1f69c9885
+    taskid: 37d4b949-a249-4151-88ea-d8296e0e5bdc
     timertriggers: []
     type: start
     view: |-
@@ -106,13 +106,13 @@ tasks:
     task:
       brand: ""
       description: "Collect Log bundle and parse data\n\nHolding the default Thresholds:\n{\n\t\"LargeInvestigations\": {\n\t\t\"numberofincidentswithmorethan500entries\": 300,\n\t\t\"numberofincidentsbiggerthan10mb\": 1,\n\t\t\"numberofincidentsbiggerthan1mb\": 300\n\t},\n\t\"LargeInputsOutputs\": {\n\t\t\"numberofincidentsIObiggerthan10mb\": 1,\n\t\t\"numberofincidentsIObiggerthan1mb\": 10\n\t},\n\t\"Indicators\": {\n\t\t\"relatedIndicatorCount\": 100\n\t},\n\t\"CPU\": {\n\t\t\"CPUHighUsage\": 90,\n\t\t\"CPULowUsage\": 30,\n\t\t\"CPUMediumUsage\": 70\n\t},\n\t\"Disk\": {\n\t\t\"DiskUsageHigh\": 90,\n\t\t\"DiskUsageMedium\": 80,\n\t\t\"DiskUsageLow\": 70,\n\t\t\"DiskUsageDailyIncrease\": 2\n\t},\n\t\"Docker\": {\n\t\t\"DockerContainerCPUUsage\": 10,\n\t\t\"DockerContainerRAMUsage\": 10\n\t},\n\t\"DB\": {\n\t\t\"FSPartitionsMedium\": 12,\n\t\t\"FSPartitionsLow\": 6\n\t},\n\t\"Playbooks\": {\n\t\t\"CustomPlaybookLength\": 30,\n\t\t\"CustomPlaybookSetIncidentCount\": 4,\n\t\t\"CustomPlaybookDeprecatedScriptIds\": [\n\t\t\t\"Sleep\",\n\t\t\t\"EmailAskUser\"\n\t\t]\n\t},\n\t\"Incidents\": {\n\t\t\"NumberOfDroppedIncidents\": 2000\n\t}\n}"
-      id: a2b6c5c3-ed1f-46df-869c-e4c2ac59ceb5
+      id: 8e3ce3e1-3edd-4248-850e-2dc28b9dec79
       iscommand: false
       name: Health Check - Collect Log Bundle
       type: playbook
       version: -1
       playbookName: Health Check - Collect Log Bundle
-    taskid: a2b6c5c3-ed1f-46df-869c-e4c2ac59ceb5
+    taskid: 8e3ce3e1-3edd-4248-850e-2dc28b9dec79
     timertriggers: []
     type: playbook
     view: |-
@@ -138,13 +138,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 022eaaa4-cb90-4c9d-860d-e5840667f504
+      id: 55435db1-1014-4fde-8782-72304fb7d4f6
       iscommand: false
       name: Collect Information
       type: title
       version: -1
       description: ''
-    taskid: 022eaaa4-cb90-4c9d-860d-e5840667f504
+    taskid: 55435db1-1014-4fde-8782-72304fb7d4f6
     timertriggers: []
     type: title
     view: |-
@@ -180,13 +180,13 @@ tasks:
     task:
       brand: ""
       description: Return the Demisto server version.
-      id: 223ef49a-f07c-41ba-86f7-b267bb7797f3
+      id: 6c0734fc-7a62-4714-80ac-425fc7fb3c22
       iscommand: false
       name: Set version and incident name
       type: regular
       version: -1
       scriptName: DemistoVersion
-    taskid: 223ef49a-f07c-41ba-86f7-b267bb7797f3
+    taskid: 6c0734fc-7a62-4714-80ac-425fc7fb3c22
     timertriggers: []
     type: regular
     view: |-
@@ -215,13 +215,13 @@ tasks:
     task:
       brand: ""
       description: Present or analyze workers usage
-      id: 81785232-a01b-45f9-80c9-2c9a0d335747
+      id: 5e01ac84-257f-4f04-8379-b4c8d869fcfc
       iscommand: false
       name: HealthCheckWorkers
       type: regular
       version: -1
       scriptName: HealthCheckWorkers
-    taskid: 81785232-a01b-45f9-80c9-2c9a0d335747
+    taskid: 5e01ac84-257f-4f04-8379-b4c8d869fcfc
     timertriggers: []
     type: regular
     view: |-
@@ -250,13 +250,13 @@ tasks:
     task:
       brand: ""
       description: "Read the installedpacks.json. \n\nCount and get packs names"
-      id: 7ef521c8-74cd-4f16-8103-21a34e9a5d81
+      id: 7bc43960-f102-428b-805b-733d4320e5ae
       iscommand: false
       name: Installed Packs
       type: regular
       version: -1
       scriptName: HealthCheckInstalledPacks
-    taskid: 7ef521c8-74cd-4f16-8103-21a34e9a5d81
+    taskid: 7bc43960-f102-428b-805b-733d4320e5ae
     timertriggers: []
     type: regular
     view: |-
@@ -282,13 +282,13 @@ tasks:
     task:
       brand: ""
       description: Trend graph for incidents created per day
-      id: 8b4d4dae-fd4b-4eaa-8938-2749adf18af8
+      id: e313c651-331c-40d2-807d-684e61e23964
       iscommand: false
       name: Integrations instances
       type: regular
       version: -1
       scriptName: HealthCheckIntegrations
-    taskid: 8b4d4dae-fd4b-4eaa-8938-2749adf18af8
+    taskid: e313c651-331c-40d2-807d-684e61e23964
     timertriggers: []
     type: regular
     view: |-
@@ -313,13 +313,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 2fc43150-2498-40ea-88e2-9e6b3dccfc79
+      id: b472fa76-fbd2-43ef-8eff-c1d25951e0d9
       iscommand: false
       name: System Details
       type: title
       version: -1
       description: ''
-    taskid: 2fc43150-2498-40ea-88e2-9e6b3dccfc79
+    taskid: b472fa76-fbd2-43ef-8eff-c1d25951e0d9
     timertriggers: []
     type: title
     view: |-
@@ -347,13 +347,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 3f7d0fad-7bbc-4336-83af-3eab156c0bb2
+      id: 385f671c-ba17-462c-85c8-5c38d229c814
       iscommand: false
       name: Packs and Integrations
       type: title
       version: -1
       description: ''
-    taskid: 3f7d0fad-7bbc-4336-83af-3eab156c0bb2
+    taskid: 385f671c-ba17-462c-85c8-5c38d229c814
     timertriggers: []
     type: title
     view: |-
@@ -379,13 +379,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 731c3f28-1eed-4cf3-8ba4-5a63af8b8ae7
+      id: c608de40-b0ca-449c-81f4-b7714da253e8
       iscommand: false
       name: System Resources
       type: title
       version: -1
       description: ''
-    taskid: 731c3f28-1eed-4cf3-8ba4-5a63af8b8ae7
+    taskid: c608de40-b0ca-449c-81f4-b7714da253e8
     timertriggers: []
     type: title
     view: |-
@@ -414,13 +414,13 @@ tasks:
     task:
       brand: ""
       description: 'Present or parse CPU usage stats '
-      id: 7faf6d30-8b9e-41b9-8091-24d7369606f5
+      id: 8ab3735b-a55f-46d8-83ca-6a6572775df8
       iscommand: false
       name: HealthCheckCPU
       type: regular
       version: -1
       scriptName: HealthCheckCPU
-    taskid: 7faf6d30-8b9e-41b9-8091-24d7369606f5
+    taskid: 8ab3735b-a55f-46d8-83ca-6a6572775df8
     timertriggers: []
     type: regular
     view: |-
@@ -449,13 +449,13 @@ tasks:
     task:
       brand: ""
       description: 'Present or parse Disk usage stats '
-      id: 682d21e4-66f8-40ae-8d05-1d8776223da2
+      id: 0924f6ab-f16c-4253-8551-3c24a5a3c412
       iscommand: false
       name: HealthCheckDiskUsage
       type: regular
       version: -1
       scriptName: HealthCheckDiskUsage
-    taskid: 682d21e4-66f8-40ae-8d05-1d8776223da2
+    taskid: 0924f6ab-f16c-4253-8551-3c24a5a3c412
     timertriggers: []
     type: regular
     view: |-
@@ -481,13 +481,13 @@ tasks:
     task:
       brand: ""
       description: Containers status
-      id: dfa698be-1dbf-4313-8d38-73f45871e7ea
+      id: 8a87e5bb-63f4-42fb-8b60-6b7a3ab91347
       iscommand: false
       name: HealthCheckContainersStatus
       type: regular
       version: -1
       scriptName: HealthCheckContainersStatus
-    taskid: dfa698be-1dbf-4313-8d38-73f45871e7ea
+    taskid: 8a87e5bb-63f4-42fb-8b60-6b7a3ab91347
     timertriggers: []
     type: regular
     view: |-
@@ -512,13 +512,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 5d9fa11a-174f-4d4c-8e7f-f1a6f10254f4
+      id: 9bc024c0-bb96-443d-8061-411d864be68f
       iscommand: false
       name: Playbook Analysis
       type: title
       version: -1
       description: ''
-    taskid: 5d9fa11a-174f-4d4c-8e7f-f1a6f10254f4
+    taskid: 9bc024c0-bb96-443d-8061-411d864be68f
     timertriggers: []
     type: title
     view: |-
@@ -547,13 +547,13 @@ tasks:
     task:
       brand: ""
       description: Parsing playbooks
-      id: 52c21c5b-efd1-4111-8f5f-346b378d7fda
+      id: 94cb346f-ad53-4fd1-836f-1c2fd15c2823
       iscommand: false
       name: Analyze playbooks
       type: regular
       version: -1
       scriptName: HealthCheckPlaybookAnalysis
-    taskid: 52c21c5b-efd1-4111-8f5f-346b378d7fda
+    taskid: 94cb346f-ad53-4fd1-836f-1c2fd15c2823
     timertriggers: []
     type: regular
     view: |-
@@ -578,13 +578,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 7c6d94ba-ce04-45f1-8e30-bca08299451b
+      id: 4f427998-2c43-466e-8d1c-cf281bb789d7
       iscommand: false
       name: Incidents
       type: title
       version: -1
       description: ''
-    taskid: 7c6d94ba-ce04-45f1-8e30-bca08299451b
+    taskid: 4f427998-2c43-466e-8d1c-cf281bb789d7
     timertriggers: []
     type: title
     view: |-
@@ -615,13 +615,13 @@ tasks:
     task:
       brand: ""
       description: Number of dropped incidents
-      id: 4a95127a-8a43-4490-88b2-4b8629f51cc4
+      id: 9951eb1b-c398-4ff1-8f79-3a8514a1b2fe
       iscommand: false
       name: Dropped Incidents
       type: regular
       version: -1
       scriptName: HealthCheckNumberOfDroppedIncidents
-    taskid: 4a95127a-8a43-4490-88b2-4b8629f51cc4
+    taskid: 9951eb1b-c398-4ff1-8f79-3a8514a1b2fe
     timertriggers: []
     type: regular
     view: |-
@@ -646,13 +646,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 1495ac62-fe0a-48a6-8284-08b6e582f7e8
+      id: b8d67aad-81ea-4749-889d-19da6192b894
       iscommand: false
       name: Indicators
       type: title
       version: -1
       description: ''
-    taskid: 1495ac62-fe0a-48a6-8284-08b6e582f7e8
+    taskid: b8d67aad-81ea-4749-889d-19da6192b894
     timertriggers: []
     type: title
     view: |-
@@ -681,13 +681,13 @@ tasks:
     task:
       brand: ""
       description: Reports on common indicators
-      id: 2146c98d-c987-4738-867e-923cbd8880b4
+      id: c0e40aad-ba00-4daa-8c22-4e3eec8a17be
       iscommand: false
       name: Analyze Indicators
       type: regular
       version: -1
       scriptName: HealthCheckCommonIndicators
-    taskid: 2146c98d-c987-4738-867e-923cbd8880b4
+    taskid: c0e40aad-ba00-4daa-8c22-4e3eec8a17be
     timertriggers: []
     type: regular
     view: |-
@@ -712,13 +712,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 846f711e-861c-40f2-8de7-58c4912c6774
+      id: 6d634c4c-d18f-474b-8e42-66af883b57e0
       iscommand: false
       name: Conclusions
       type: title
       version: -1
       description: ''
-    taskid: 846f711e-861c-40f2-8de7-58c4912c6774
+    taskid: 6d634c4c-d18f-474b-8e42-66af883b57e0
     timertriggers: []
     type: title
     view: |-
@@ -757,13 +757,13 @@ tasks:
     task:
       brand: ""
       description: Creates a Grid table from items or key-value pairs.
-      id: 4682c3d6-0c79-44f1-8095-f446b48aad74
+      id: cc76a917-36f5-4eff-8e21-e9705f36b7ac
       iscommand: false
       name: Save to action items table
       type: regular
       version: -1
       scriptName: SetGridField
-    taskid: 4682c3d6-0c79-44f1-8095-f446b48aad74
+    taskid: cc76a917-36f5-4eff-8e21-e9705f36b7ac
     timertriggers: []
     type: regular
     view: |-
@@ -785,13 +785,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: dc5b70dc-2544-4dc9-887c-b10abd3438c2
+      id: 266e759a-4206-46d6-8d3f-82ccc1bee9f2
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: dc5b70dc-2544-4dc9-887c-b10abd3438c2
+    taskid: 266e759a-4206-46d6-8d3f-82ccc1bee9f2
     timertriggers: []
     type: title
     view: |-
@@ -825,13 +825,13 @@ tasks:
     task:
       brand: ""
       description: Parse files
-      id: 373b8598-b5b6-4873-8f6d-f41f7e4dc43f
+      id: 9095e4e2-ef79-470e-826c-8c63f26a8dde
       iscommand: false
       name: Health Check - Log Analysis Read All files
       type: playbook
       version: -1
       playbookName: Health Check - Log Analysis Read All files
-    taskid: 373b8598-b5b6-4873-8f6d-f41f7e4dc43f
+    taskid: 9095e4e2-ef79-470e-826c-8c63f26a8dde
     timertriggers: []
     type: playbook
     view: |-
@@ -863,13 +863,13 @@ tasks:
     task:
       brand: ""
       description: Analyze large investigation
-      id: bd215330-6c70-4030-8221-3f405a5a7756
+      id: aa7144e8-07dd-4a11-8beb-3c43b0c60956
       iscommand: false
       name: Large Investigations
       type: regular
       version: -1
       scriptName: HealthCheckAnalyzeLargeInvestigations
-    taskid: bd215330-6c70-4030-8221-3f405a5a7756
+    taskid: aa7144e8-07dd-4a11-8beb-3c43b0c60956
     timertriggers: []
     type: regular
     view: |-
@@ -901,13 +901,13 @@ tasks:
     task:
       brand: ""
       description: 'Returns inputs and outputs larger than 1 MB from all Cortex XSOAR investigations in the last 6 months '
-      id: 0a8657a8-440d-4784-8ccb-aaa78d9ff490
+      id: f34c4268-3802-4056-80e2-a33140919c6a
       iscommand: false
       name: Large inputs and outputs
       type: regular
       version: -1
       scriptName: HealthCheckGetLargestInputsAndOutputsInIncidents
-    taskid: 0a8657a8-440d-4784-8ccb-aaa78d9ff490
+    taskid: f34c4268-3802-4056-80e2-a33140919c6a
     timertriggers: []
     type: regular
     view: |-
@@ -936,13 +936,13 @@ tasks:
     task:
       brand: ""
       description: Read the license_data.log file extracted from the log bundle
-      id: 5c48e0d0-96db-4f37-897b-88507707cdaf
+      id: 499bfff9-83f6-46a0-842b-c01e1dce572a
       iscommand: false
       name: Server Configuration
       type: regular
       version: -1
       scriptName: HealthCheckServerConfiguration
-    taskid: 5c48e0d0-96db-4f37-897b-88507707cdaf
+    taskid: 499bfff9-83f6-46a0-842b-c01e1dce572a
     timertriggers: []
     type: regular
     view: |-
@@ -981,13 +981,13 @@ tasks:
     task:
       brand: ""
       description: Creates a Grid table from items or key-value pairs.
-      id: 3d2d0a15-0670-4f24-8040-412a2fac1c3a
+      id: 7056fe7f-e300-4066-828c-8fe02768a749
       iscommand: false
       name: Save to action items table
       type: regular
       version: -1
       scriptName: SetGridField
-    taskid: 3d2d0a15-0670-4f24-8040-412a2fac1c3a
+    taskid: 7056fe7f-e300-4066-828c-8fe02768a749
     timertriggers: []
     type: regular
     view: |-
@@ -1012,13 +1012,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 57143829-e534-4f84-8367-1b712943b93a
+      id: e508a242-08ec-45f3-8288-1cb76065db16
       iscommand: false
       name: DB Stats Conclusions
       type: title
       version: -1
       description: ''
-    taskid: 57143829-e534-4f84-8367-1b712943b93a
+    taskid: e508a242-08ec-45f3-8288-1cb76065db16
     timertriggers: []
     type: title
     view: |-
@@ -1054,12 +1054,12 @@ tasks:
     task:
       brand: ""
       description: Check DB stats output
-      id: 1db5217f-500e-490b-88e3-ad4ed9f5d2dd
+      id: 92cd23f6-0e9c-4f3b-8043-9807462aca6d
       iscommand: false
       name: DB stats conclusions
       type: condition
       version: -1
-    taskid: 1db5217f-500e-490b-88e3-ad4ed9f5d2dd
+    taskid: 92cd23f6-0e9c-4f3b-8043-9807462aca6d
     timertriggers: []
     type: condition
     view: |-
@@ -1095,12 +1095,12 @@ tasks:
     task:
       brand: ""
       description: Checking if default thresholds were changed
-      id: 412e6352-74eb-4f12-8fa0-284dc9e132e2
+      id: 3ceaeee9-c613-4681-816c-b92f2e38ebec
       iscommand: false
       name: Is Change Thresholds Required?
       type: condition
       version: -1
-    taskid: 412e6352-74eb-4f12-8fa0-284dc9e132e2
+    taskid: 3ceaeee9-c613-4681-816c-b92f2e38ebec
     timertriggers: []
     type: condition
     view: |-
@@ -1171,13 +1171,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 75e631cf-8092-4606-86b9-c7688d53fd35
+      id: d025a889-9e5e-4c22-86e8-bef83507d026
       iscommand: false
       name: Set Thresholds
       type: regular
       version: -1
       scriptName: Set
-    taskid: 75e631cf-8092-4606-86b9-c7688d53fd35
+    taskid: d025a889-9e5e-4c22-86e8-bef83507d026
     timertriggers: []
     type: regular
     view: |-
@@ -1207,13 +1207,13 @@ tasks:
       description: |-
         Validate if API Integration was defined correctly.
         If not detect what is the problem and warn about it.
-      id: 4d35c035-931e-47c3-89fd-325aba810fbb
+      id: cd049c00-bab1-44cc-8304-46709984ed3b
       iscommand: false
       name: Validate API Integration
       type: regular
       version: -1
       scriptName: HealthCheckAPIvalidation
-    taskid: 4d35c035-931e-47c3-89fd-325aba810fbb
+    taskid: cd049c00-bab1-44cc-8304-46709984ed3b
     timertriggers: []
     type: regular
     view: |-
@@ -1239,13 +1239,13 @@ tasks:
     task:
       brand: ""
       description: Parsing custom fields to detect indexed fields for risky field types
-      id: 92261192-20d2-4770-858f-ba34eab37b7b
+      id: 7c994b82-544f-473e-85a1-fce3c47584e1
       iscommand: false
       name: Fields settings
       type: regular
       version: -1
       scriptName: HealthCheckFields
-    taskid: 92261192-20d2-4770-858f-ba34eab37b7b
+    taskid: 7c994b82-544f-473e-85a1-fce3c47584e1
     timertriggers: []
     type: regular
     view: |-
@@ -1271,13 +1271,13 @@ tasks:
     task:
       brand: ""
       description: Collect data from System Diagnostics tool
-      id: a3a0017f-4731-446e-8a69-3a512d5d5456
+      id: b282b3bf-d51b-4e47-8007-054e072dc5e8
       iscommand: false
       name: DB System Diagnostics
       type: regular
       version: -1
       scriptName: HealthCheckSystemDiagnostics
-    taskid: a3a0017f-4731-446e-8a69-3a512d5d5456
+    taskid: b282b3bf-d51b-4e47-8007-054e072dc5e8
     timertriggers: []
     type: regular
     view: |-
@@ -1302,13 +1302,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: f31bf32d-1513-46dd-874d-d45101f262c9
+      id: 933b4762-4e1f-4d2d-8396-f0b7292fa7b0
       iscommand: false
       name: Database Diagnostics
       type: title
       version: -1
       description: ''
-    taskid: f31bf32d-1513-46dd-874d-d45101f262c9
+    taskid: 933b4762-4e1f-4d2d-8396-f0b7292fa7b0
     timertriggers: []
     type: title
     view: |-
@@ -1347,12 +1347,12 @@ tasks:
     task:
       brand: ""
       description: Bypass System Diagnostics data for versions older than 6.2
-      id: a61ec44a-50b3-4a18-8f1b-76ecfa6850ff
+      id: d2545cf0-90e4-4383-8ed0-61a900ff43c2
       iscommand: false
       name: Version newer than 6.2.0
       type: condition
       version: -1
-    taskid: a61ec44a-50b3-4a18-8f1b-76ecfa6850ff
+    taskid: d2545cf0-90e4-4383-8ed0-61a900ff43c2
     timertriggers: []
     type: condition
     view: |-
@@ -1365,10 +1365,10 @@ tasks:
     continueonerrortype: ""
   "41":
     id: "41"
-    taskid: afe1f555-cbf2-4712-880d-a0ec0e1e3f31
+    taskid: 36e57f48-7c58-4e55-8474-bf12aa0992b0
     type: regular
     task:
-      id: afe1f555-cbf2-4712-880d-a0ec0e1e3f31
+      id: 36e57f48-7c58-4e55-8474-bf12aa0992b0
       version: -1
       name: Types settings
       description: "Identify custom and detached system incidents type  \nChecking if 'Auto Extraction' is turned on for:\nExtract from all\nExtract from specific indicators doesn't have any settings"
@@ -1376,6 +1376,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
     separatecontext: false
     continueonerrortype: ""
     view: |-

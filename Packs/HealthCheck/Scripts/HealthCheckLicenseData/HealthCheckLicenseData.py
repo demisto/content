@@ -71,8 +71,6 @@ try:
             'xsoartelemetryuuid': uid,
         })
 
-        if TimLicenseType:
-            demisto.executeCommand("setIncident", {'xsoartimlicensetype': TimLicenseType})
 
 except ValueError:  # includes simplejson.decoder.JSONDecodeError
     demisto.results('Decoding JSON has failed')
