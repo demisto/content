@@ -467,6 +467,7 @@ script:
       name: enrollment_path
       required: true
     - defaultValue: third-party-csr
+      description: Currently supported values include change-management-info, lets-encrypt-challenges, post-verification-warnings, pre-verification-warnings, third-party-csr.
       name: allowed_input_type_param
     description: Get the CPS code.
     name: akamai-get-change
@@ -1025,6 +1026,7 @@ script:
       name: path
       required: true
     - name: value
+      description: The value of the HTTP Method in dictionary format.
       required: true
     description: Patch PAPI property rule HTTP methods.
     name: akamai-patch-papi-property-rule-httpmethods
@@ -1092,11 +1094,13 @@ script:
     name: akamai-modify-appsec-config-selected-hosts
   - arguments:
     - name: enrollment_id
+      description: The enrollment id.
       required: true
     description: Get Production Deployment
     name: akamai-get-production-deployment
   - arguments:
     - name: enrollment_id
+      description: The enrollment id.
       required: true
     description: Get change history
     name: akamai-get-change-history
