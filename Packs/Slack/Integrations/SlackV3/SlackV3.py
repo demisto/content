@@ -1,19 +1,16 @@
-import asyncio
-import concurrent
 import ssl
 import threading
 from distutils.util import strtobool
 from typing import Tuple
 
-import aiohttp
 import slack_sdk
 from slack_sdk.errors import SlackApiError
-from slack_sdk.socket_mode.aiohttp import SocketModeClient
+from slack_sdk.socket_mode import SocketModeClient
 from slack_sdk.socket_mode.request import SocketModeRequest
 from slack_sdk.socket_mode.response import SocketModeResponse
-from slack_sdk.web.async_client import AsyncWebClient
-from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
+from slack_sdk.web.client import WebClient
+from queue import Queue
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -62,7 +59,6 @@ APP_TOKEN: str
 PROXY_URL: Optional[str]
 PROXIES: dict
 DEDICATED_CHANNEL: str
-ASYNC_CLIENT: slack_sdk.web.async_client.AsyncWebClient
 CLIENT: slack_sdk.WebClient
 ALLOW_INCIDENTS: bool
 INCIDENT_TYPE: str
@@ -90,6 +86,7 @@ DEMISTO_API_KEY: str
 DEMISTO_URL: str
 IGNORE_RETRIES: bool
 EXTENSIVE_LOGGING: bool
+MESSAGE_QUEUE: Queue
 
 
 ''' HELPER FUNCTIONS '''
@@ -106,7 +103,7 @@ def get_bot_id() -> str:
     return response.get('user_id')  # type: ignore
 
 
-def test_module():
+def not_test_module():
     """
     Sends a test message to the dedicated slack channel.
     """
@@ -467,56 +464,10 @@ def send_slack_request_sync(client: slack_sdk.WebClient, method: str, http_verb:
     return response  # type: ignore
 
 
-async def send_slack_request_async(client: AsyncWebClient, method: str, http_verb: str = 'POST', file_: str = '',
-                                   body: dict = None) -> SlackResponse:
-    """
-    Sends an async request to slack API while handling rate limit errors.
-
-    Args:
-        client: The slack client.
-        method: The method to use.
-        http_verb: The HTTP method to use.
-        file_: A file path to send.
-        body: The request body.
-
-    Returns:
-        The slack API response.
-    """
-    if body is None:
-        body = {}
-
-    set_name_and_icon(body, method)
-    total_try_time = 0
-    while True:
-        try:
-            demisto.debug(f'Sending slack {method} (async). Body is: {str(body)}')
-            if http_verb == 'POST':
-                if file_:
-                    response = await client.api_call(method, files={"file": file_}, data=body)  # type: ignore
-                else:
-                    response = await client.api_call(method, json=body)  # type: ignore
-            else:
-                response = await client.api_call(method, http_verb='GET', params=body)  # type: ignore
-        except SlackApiError as api_error:
-            demisto.debug(f'Got rate limit error (async). Body is: {str(body)}\n{api_error}')
-            response = api_error.response
-            headers = response.headers
-            if 'Retry-After' in headers:
-                retry_after = int(headers['Retry-After'])
-                total_try_time += retry_after
-                if total_try_time < MAX_LIMIT_TIME:
-                    await asyncio.sleep(retry_after)
-                    continue
-            raise
-        break
-
-    return response  # type: ignore
-
-
 ''' MIRRORING '''
 
 
-async def get_slack_name(slack_id: str, client: AsyncWebClient) -> str:
+def get_slack_name(slack_id: str, client: WebClient) -> str:
     """
     Get the slack name of a provided user or channel by its ID
 
@@ -543,7 +494,7 @@ async def get_slack_name(slack_id: str, client: AsyncWebClient) -> str:
             if conversations:
                 conversation = conversations[0]
         if not conversation:
-            conversation = await client.conversations_info(channel=slack_id)  # type: ignore
+            conversation = client.conversations_info(channel=slack_id)  # type: ignore
         slack_name = conversation.get('name', '')
     elif prefix == 'U':
         user: dict = {}
@@ -552,14 +503,14 @@ async def get_slack_name(slack_id: str, client: AsyncWebClient) -> str:
             if users:
                 user = users[0]
         if not user:
-            user = await client.users_info(user=slack_id)  # type: ignore
+            user = client.users_info(user=slack_id)  # type: ignore
 
         slack_name = user.get('name', '')
 
     return slack_name
 
 
-async def clean_message(message: str, client: AsyncWebClient) -> str:
+def clean_message(message: str, client: WebClient) -> str:
     """
     Prettifies a slack message - replaces tags and URLs with clean expressions
 
@@ -575,7 +526,7 @@ async def clean_message(message: str, client: AsyncWebClient) -> str:
     message = re.sub(USER_TAG_EXPRESSION, r'\1', message)
     message = re.sub(CHANNEL_TAG_EXPRESSION, r'\1', message)
     for match in matches:
-        slack_name = await get_slack_name(match, client)
+        slack_name = get_slack_name(match, client)
         message = message.replace(match, slack_name)
 
     resolved_message = re.sub(URL_EXPRESSION, r'\1', message)
@@ -1014,45 +965,36 @@ class SlackLogger:
         demisto.error(message)
 
 
-async def slack_loop():
+def socket_client_loop():
     try:
         exception_await_seconds = 1
         while True:
             slack_logger = SlackLogger()
             client = SocketModeClient(
                 app_token=APP_TOKEN,
-                web_client=ASYNC_CLIENT,
+                web_client=CLIENT,
                 logger=slack_logger,  # type: ignore
                 auto_reconnect_enabled=True,
                 trace_enabled=EXTENSIVE_LOGGING,
+                concurrency=100
             )
-            if not VERIFY_CERT:
-                # SocketModeClient does not respect environment variables for ssl verification.
-                # Instead we use a custom session.
-                session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=VERIFY_CERT))
-                client.aiohttp_client_session = session
-            client.socket_mode_request_listeners.append(listen)  # type: ignore
+            client.socket_mode_request_listeners.append(acknowledge_and_queue)  # type: ignore
             try:
-                await client.connect()
+                client.connect()
                 demisto.debug("Socket is connected")
                 # After successful connection, we reset the backoff time.
                 exception_await_seconds = 1
                 demisto.debug(f"Resetting exception wait time to {exception_await_seconds}")
-                await asyncio.sleep(float("inf"))
+                time.sleep(float("inf"))
             except Exception as e:
                 demisto.debug(f"Exception in long running loop, waiting {exception_await_seconds} - {e}")
-                await asyncio.sleep(exception_await_seconds)
+                time.sleep(exception_await_seconds)
                 exception_await_seconds *= 2
-            finally:
-                try:
-                    await session.close()
-                except Exception as e:
-                    demisto.debug(f"Failed to close client. - {e}")
     except Exception as e:
         demisto.error(f"An error has occurred while trying to create the socket client. {e}")
 
 
-async def handle_listen_error(error: str):
+def handle_listen_error(error: str):
     """
     Logs an error and updates the module health accordingly.
 
@@ -1063,20 +1005,39 @@ async def handle_listen_error(error: str):
     demisto.updateModuleHealth(error)
 
 
-async def start_listening():
+def start_listening():
     """
     Starts a Slack SocketMode client and checks for mirrored incidents.
     """
     try:
-        executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
-        loop = asyncio.get_running_loop()
-        loop.run_in_executor(executor, long_running_loop)
-        await slack_loop()
+        # create the long-running background task loop
+        background_task = threading.Thread(target=long_running_loop)
+        background_task.start()
+
+        # Create the message listeners
+        message_consumers = [threading.Thread(target=consume_and_process_message, args=(MESSAGE_QUEUE, i, CLIENT)) for i
+                             in range(3)]
+        for message_consumer in message_consumers:
+            message_consumer.start()
+
+        # Join message listeners to process
+        for message_consumer in message_consumers:
+            message_consumer.join()
+
+        # Join long-running background task to loop
+
+        # create the socket_client loop
+        socket_client = threading.Thread(target=socket_client_loop)
+        socket_client.start()
+
+        # Join socket_client to loop
+        socket_client.join()
+
     except Exception as e:
         demisto.error(f"An error has occurred while gathering the loop tasks. {e}")
 
 
-async def handle_dm(user: dict, text: str, client: AsyncWebClient):
+def handle_dm(user: dict, text: str, client: WebClient):
     """
     Handles a direct message sent to the bot
 
@@ -1104,7 +1065,7 @@ async def handle_dm(user: dict, text: str, client: AsyncWebClient):
             data = 'You are not allowed to create incidents.'
         else:
             try:
-                data = await translate_create(text, user_name, user_email, demisto_user)
+                data = translate_create(text, user_name, user_email, demisto_user)
             except Exception as e:
                 data = f'Failed creating incidents: {str(e)}'
     else:
@@ -1118,17 +1079,17 @@ async def handle_dm(user: dict, text: str, client: AsyncWebClient):
     body = {
         'users': user.get('id')
     }
-    im = await send_slack_request_async(client, 'conversations.open', body=body)
+    im = send_slack_request_sync(client, 'conversations.open', body=body)
     channel = im.get('channel', {}).get('id')  # type: ignore
     body = {
         'text': data,
         'channel': channel
     }
 
-    await send_slack_request_async(client, 'chat.postMessage', body=body)
+    send_slack_request_sync(client, 'chat.postMessage', body=body)
 
 
-async def translate_create(message: str, user_name: str, user_email: str, demisto_user: dict) -> str:
+def translate_create(message: str, user_name: str, user_email: str, demisto_user: dict) -> str:
     """
     Processes an incident creation message
     Args:
@@ -1159,7 +1120,7 @@ async def translate_create(message: str, user_name: str, user_email: str, demist
             incidents = json.loads(incidents_json.replace('“', '"').replace('”', '"'))
             if not isinstance(incidents, list):
                 incidents = [incidents]
-            created_incident = await create_incidents(incidents, user_name, user_email, user_demisto_id)
+            created_incident = create_incidents(incidents, user_name, user_email, user_demisto_id)
 
             if not created_incident:
                 data = 'Failed creating incidents.'
@@ -1181,7 +1142,7 @@ async def translate_create(message: str, user_name: str, user_email: str, demist
             if incident_type:
                 incident['type'] = incident_type
 
-            created_incident = await create_incidents([incident], user_name, user_email, user_demisto_id)
+            created_incident = create_incidents([incident], user_name, user_email, user_demisto_id)
             if not created_incident:
                 data = 'Failed creating incidents.'
 
@@ -1197,7 +1158,7 @@ async def translate_create(message: str, user_name: str, user_email: str, demist
     return data
 
 
-async def create_incidents(incidents: list, user_name: str, user_email: str, user_demisto_id: str = '') -> dict:
+def create_incidents(incidents: list, user_name: str, user_email: str, user_demisto_id: str = '') -> dict:
     """
     Creates incidents according to a provided JSON object
     Args:
@@ -1249,22 +1210,22 @@ def is_bot_message(data: dict) -> bool:
         return False
 
 
-async def get_user_details(user_id: str) -> AsyncSlackResponse:
+def get_user_details(user_id: str) -> SlackResponse:
     """
     Performs the retrieval of the User object from the UserID which is sent as part of the payload.
     :param user_id: str: The ID of the user to perform the lookup on.
-    :return: AsyncSlackResponse: An AsyncSlackResponse object which is a dictionary of the user object.
+    :return: SlackResponse: An SlackResponse object which is a dictionary of the user object.
     """
-    user = await ASYNC_CLIENT.users_info(user=user_id)
+    user = CLIENT.users_info(user=user_id)
     return user.get('user', {})  # type: ignore
 
 
-def search_text_for_entitlement(text: str, user: AsyncSlackResponse) -> str:
+def search_text_for_entitlement(text: str, user: SlackResponse) -> str:
     """
     In some cases, a user may send an entitlement string as part of the text, this function will search the text to see
     if an entitlement string exists, and if so, will handle the entitlement and return a default reply
     :param text: str: The text message found in the events payload
-    :param user: AsyncSlackResponse: The user object returned from get_user_details
+    :param user: SlackResponse: The user object returned from get_user_details
     :return: str: Returns a default response if an entitlement is found, otherwise an empty string.
     """
     entitlement_match = re.search(ENTITLEMENT_REGEX, text)
@@ -1279,7 +1240,7 @@ def search_text_for_entitlement(text: str, user: AsyncSlackResponse) -> str:
         return ''
 
 
-async def process_entitlement_reply(entitlement_reply: str, user_id: str, action_text: str, channel: str, message_ts: str):
+def process_entitlement_reply(entitlement_reply: str, user_id: str, action_text: str, channel: str, message_ts: str):
     """
     Triggered when an entitlement reply is found, this function will update the original message with the reply message.
     :param entitlement_reply: str: The text to update the asking question with.
@@ -1293,13 +1254,13 @@ async def process_entitlement_reply(entitlement_reply: str, user_id: str, action
         entitlement_reply = entitlement_reply.replace('{user}', f'<@{user_id}>')
     if '{response}' in entitlement_reply and action_text:
         entitlement_reply = entitlement_reply.replace('{response}', str(action_text))
-    await send_slack_request_async(client=ASYNC_CLIENT, method='chat.update',
-                                   body={
-                                       'channel': channel,
-                                       'ts': message_ts,
-                                       'text': entitlement_reply,
-                                       'blocks': []
-                                   })
+    send_slack_request_sync(client=CLIENT, method='chat.update',
+                           body={
+                               'channel': channel,
+                               'ts': message_ts,
+                               'text': entitlement_reply,
+                               'blocks': []
+                           })
 
 
 def is_dm(channel: str) -> bool:
@@ -1311,14 +1272,14 @@ def is_dm(channel: str) -> bool:
     return True if channel and channel[0] == 'D' and ENABLE_DM else False
 
 
-async def process_mirror(channel_id: str, text: str, user: AsyncSlackResponse):
+def process_mirror(channel_id: str, text: str, user: SlackResponse):
     """
     Process messages which have been identified as possible mirrored messages. If so, we grab the context (cached), and
     check for a match of the channel_id in the cached mirrors. If we find one, we will update the mirror object and send
     the message to the corresponding investigation's war room as an entry.
     :param channel_id: str: The ID of the channel for the message event we recieved.
     :param text: str: The text of the message event to be sent to a war room.
-    :param user: AsyncSlackResponse: The user object for the user who sent the message.
+    :param user: SlackResponse: The user object for the user who sent the message.
     :return: None
     """
     integration_context = fetch_context()
@@ -1359,7 +1320,7 @@ async def process_mirror(channel_id: str, text: str, user: AsyncSlackResponse):
             demisto.debug("Already Mirrored")
 
         investigation_id = mirror['investigation_id']
-        await handle_text(ASYNC_CLIENT, investigation_id, text, user)  # type: ignore
+        handle_text(CLIENT, investigation_id, text, user)  # type: ignore
 
 
 def fetch_context(force_refresh: bool = False) -> dict:
@@ -1417,20 +1378,11 @@ def handle_newly_created_channel(creator, channel):
         return
 
 
-async def listen(client: SocketModeClient, req: SocketModeRequest):
-    """
-    This is the main listener which is attached to the open socket connection. When a SocketModeRequest has been received
-    this flow will be triggered. The Payload can be of any type and this function will determine what type it is, then
-    handle it accordingly. In the event that the request is nothing of interest to us, we will simply acknowledge the
-    request, process the message and gracefully ignore it.
-    :param client: SocketModeClient: This is the socket client which is created by the slack_loop function.
-    :param req: SocketModeRequest: The request object which has been sent by Slack.
-    :return: None
-    """
+def acknowledge_and_queue(client: SocketModeClient, req: SocketModeRequest):
     demisto.info("Handling request")
     if req.envelope_id:
         response = SocketModeResponse(envelope_id=req.envelope_id)
-        await client.send_socket_mode_response(response)
+        client.send_socket_mode_response(response)
     if req.retry_attempt:
         if req.retry_attempt > 0 and IGNORE_RETRIES:
             demisto.debug("Slack is resending the message. To prevent double posts, the retry is ignored.")
@@ -1438,137 +1390,153 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         else:
             demisto.debug(f"Slack is resending the message. Ignore retries is - {IGNORE_RETRIES} and the "
                           f"retry attempt is - {req.retry_attempt}. Continuing to process the event.")
-    data_type: str = req.type
-    payload: dict = req.payload
-    if data_type == 'error':
-        error = payload.get('error', {})
-        error_code = error.get('code')
-        error_msg = error.get('msg')
-        await handle_listen_error(
-            f'Slack API has thrown an error. Code: {error_code}, Message: {error_msg}.')
-        return
-    try:
-        data: dict = req.payload
-        event: dict = data.get('event', {})
-        text = event.get('text', '')
-        user_id = data.get('user', {}).get('id', '')
-        if not user_id:
-            user_id = event.get('user', '')
-        channel = event.get('channel', '')
-        thread = event.get('thread_ts', None)
-        message = data.get('message', {})
-        action_text = ''
-        message_ts = message.get('ts', '')
-        actions = data.get('actions', [])
-        state = data.get('state', {})
-
-        # Check if slash command received. If so, ignore for now.
-        if data.get('command', None):
-            demisto.debug("Slash command event received. Ignoring.")
-            return
-
-        # Check to see if the event is about a newly handled event.
-        elif event.get('type') == 'channel_created' and MIRRORING_ENABLED:
-            demisto.debug("Found new channel")
-            creator = event.get('channel', {}).get('creator', '')
-            channel_id = event.get('channel', {}).get('id', '')
-            handle_newly_created_channel(creator=creator, channel=channel_id)
-            return
-
-        # Check if the message is from a bot
-        if is_bot_message(data):
-            return
-
-        # Sometimes we can receive message_changed events, we currently do not support these.
-        if event.get('subtype') == 'message_changed':
-            demisto.debug("Received message_changed event type. Ignoring.")
-            return
-
-        # At this point we will need the user's data so we fetch it directly from Slack
-        user = await get_user_details(user_id=user_id)
-        # Searches the text for an entitlement reply. This is not common.
-        entitlement_reply = search_text_for_entitlement(text=text, user=user)
-
-        # Check if the message is being sent directly to our bot.
-        if is_dm(channel):
-            await handle_dm(user, text, ASYNC_CLIENT)  # type: ignore
-
-        # This is a check to determine if the event contains actions which are sent as part of a SlackAsk response.
-        if len(actions) > 0:
-            channel = data.get('channel', {}).get('id', '')
-            entitlement_json = actions[0].get('value')
-            if entitlement_json is None:
-                demisto.debug("Received an action which does not have an entitlement. Ignoring.")
-                return
-            if actions[0].get('action_id') == 'xsoar-button-submit':
-                demisto.debug("Handling a SlackBlockBuilder response.")
-            entitlement_string = json.loads(entitlement_json)
-            entitlement_reply = json.loads(entitlement_json).get("reply", "Thank you for your reply.")
-            action_text = actions[0].get('text').get('text')
-            incident_id = answer_question(action_text, entitlement_string, user.get('profile', {}).get('email'))  # type: ignore
-            if state and DEMISTO_API_KEY:
-                string_safe_state = json.dumps(state)
-                body = {
-                    "data": "!Set",
-                    "args": {
-                        "value": {
-                            "simple": string_safe_state
-                        },
-                        "key": {
-                            "simple": "SlackBlockState"
-                        }
-                    },
-                    "investigationId": str(incident_id)
-                }
-                headers = {
-                    'Authorization': f'{DEMISTO_API_KEY}',
-                    'Content-Type': 'application/json',
-                    'accept': 'application/json'
-                }
-
-                _body = json.dumps(body)
-                try:
-                    response = requests.request("POST",  # type: ignore
-                                                f"{DEMISTO_URL}/entry/execute/sync",
-                                                headers=headers,
-                                                data=_body,
-                                                verify=VERIFY_CERT
-                                                )
-                    response.raise_for_status()  # type: ignore
-                except requests.exceptions.ConnectionError as err:
-                    err_message = f'Error submitting context command to server. Check your API Key: {err}'
-                    demisto.updateModuleHealth(err_message)
-            if state and not DEMISTO_API_KEY:
-                demisto.debug("A state was found in the message, but no API key was configured.")
-
-        # If a thread_id is found in the payload, we will check if it is a reply to a SlackAsk task. Currently threads
-        # are not mirrored
-        elif thread:
-            entitlement_reply = await check_and_handle_entitlement(text, user, thread)  # type: ignore
-
-        # If an entitlement reply has been found, then we will handle the entitlement and forward the message.
-        if entitlement_reply:
-            await process_entitlement_reply(entitlement_reply, user_id, action_text, channel, message_ts)
-
-        # If a message has made it here, we need to check if the message is being mirrored. If not, we will ignore it.
-        else:
-            if MIRRORING_ENABLED:
-                await process_mirror(channel, text, user)
-            else:
-                demisto.debug("Mirroring is not enabled, ignoring.")
-                return
-
-        # Reset module health
-        demisto.updateModuleHealth("")
-        demisto.info("SlackV3 - Event handled successfully.")
-        return
-    except Exception as e:
-        await handle_listen_error(f'Error occurred while listening to Slack: {e}')
+    MESSAGE_QUEUE.put(req)
 
 
-async def get_user_by_id_async(client: AsyncWebClient, user_id: str) -> dict:
+def consume_and_process_message(queue: Queue, i: int):
     """
-    Get the details of a slack user by id asynchronously.
+    This is the main listener which is attached to the open socket connection. When a SocketModeRequest has been received
+    this flow will be triggered. The Payload can be of any type and this function will determine what type it is, then
+    handle it accordingly. In the event that the request is nothing of interest to us, we will simply acknowledge the
+    request, process the message and gracefully ignore it.
+    :queue: Message Queue containing messages to be processed
+    :i: Identifier for the thread process
+    :return: None
+    """
+    while True:
+        req = queue.get()
+        data_type: str = req.type
+        payload: dict = req.payload
+        if data_type == 'error':
+            error = payload.get('error', {})
+            error_code = error.get('code')
+            error_msg = error.get('msg')
+            handle_listen_error(
+                f'Slack API has thrown an error. Code: {error_code}, Message: {error_msg}.')
+            continue
+        try:
+            data: dict = req.payload
+            event: dict = data.get('event', {})
+            text = event.get('text', '')
+            user_id = data.get('user', {}).get('id', '')
+            if not user_id:
+                user_id = event.get('user', '')
+            channel = event.get('channel', '')
+            thread = event.get('thread_ts', None)
+            message = data.get('message', {})
+            action_text = ''
+            message_ts = message.get('ts', '')
+            actions = data.get('actions', [])
+            state = data.get('state', {})
+
+            # Check if slash command received. If so, ignore for now.
+            if data.get('command', None):
+                demisto.debug("Slash command event received. Ignoring.")
+                continue
+
+            # Check to see if the event is about a newly handled event.
+            elif event.get('type') == 'channel_created' and MIRRORING_ENABLED:
+                demisto.debug("Found new channel")
+                creator = event.get('channel', {}).get('creator', '')
+                channel_id = event.get('channel', {}).get('id', '')
+                handle_newly_created_channel(creator=creator, channel=channel_id)
+                continue
+
+            # Check if the message is from a bot
+            if is_bot_message(data):
+                continue
+
+            # Sometimes we can receive message_changed events, we currently do not support these.
+            if event.get('subtype') == 'message_changed':
+                demisto.debug("Received message_changed event type. Ignoring.")
+                continue
+
+            # At this point we will need the user's data so we fetch it directly from Slack
+            user = get_user_details(user_id=user_id)
+            # Searches the text for an entitlement reply. This is not common.
+            entitlement_reply = search_text_for_entitlement(text=text, user=user)
+
+            # Check if the message is being sent directly to our bot.
+            if is_dm(channel):
+                handle_dm(user, text, CLIENT)  # type: ignore
+
+            # This is a check to determine if the event contains actions which are sent as part of a SlackAsk response.
+            if len(actions) > 0:
+                channel = data.get('channel', {}).get('id', '')
+                entitlement_json = actions[0].get('value')
+                if entitlement_json is None:
+                    demisto.debug("Received an action which does not have an entitlement. Ignoring.")
+                    continue
+                if actions[0].get('action_id') == 'xsoar-button-submit':
+                    demisto.debug("Handling a SlackBlockBuilder response.")
+                entitlement_string = json.loads(entitlement_json)
+                entitlement_reply = json.loads(entitlement_json).get("reply", "Thank you for your reply.")
+                action_text = actions[0].get('text').get('text')
+                incident_id = answer_question(action_text, entitlement_string, user.get('profile', {}).get('email'))  # type: ignore
+                if state and DEMISTO_API_KEY:
+                    string_safe_state = json.dumps(state)
+                    body = {
+                        "data": "!Set",
+                        "args": {
+                            "value": {
+                                "simple": string_safe_state
+                            },
+                            "key": {
+                                "simple": "SlackBlockState"
+                            }
+                        },
+                        "investigationId": str(incident_id)
+                    }
+                    headers = {
+                        'Authorization': f'{DEMISTO_API_KEY}',
+                        'Content-Type': 'application/json',
+                        'accept': 'application/json'
+                    }
+
+                    _body = json.dumps(body)
+                    try:
+                        response = requests.request("POST",  # type: ignore
+                                                    f"{DEMISTO_URL}/entry/execute/sync",
+                                                    headers=headers,
+                                                    data=_body,
+                                                    verify=VERIFY_CERT
+                                                    )
+                        response.raise_for_status()  # type: ignore
+                    except requests.exceptions.ConnectionError as err:
+                        err_message = f'Error submitting context command to server. Check your API Key: {err}'
+                        demisto.updateModuleHealth(err_message)
+                if state and not DEMISTO_API_KEY:
+                    demisto.debug("A state was found in the message, but no API key was configured.")
+
+            # If a thread_id is found in the payload, we will check if it is a reply to a SlackAsk task. Currently threads
+            # are not mirrored
+            elif thread:
+                entitlement_reply = check_and_handle_entitlement(text, user, thread)  # type: ignore
+
+            # If an entitlement reply has been found, then we will handle the entitlement and forward the message.
+            if entitlement_reply:
+                process_entitlement_reply(entitlement_reply, user_id, action_text, channel, message_ts)
+
+            # If a message has made it here, we need to check if the message is being mirrored. If not, we will ignore it.
+            else:
+                if MIRRORING_ENABLED:
+                    process_mirror(channel, text, user)
+                else:
+                    demisto.debug("Mirroring is not enabled, ignoring.")
+                    continue
+
+            # Reset module health
+            demisto.updateModuleHealth("")
+            demisto.info(f"SlackV3 - Event handled successfully on thread - {i}.")
+            continue
+        except Exception as e:
+            handle_listen_error(f'Error occurred while listening to Slack on thread - {i}: {e}')
+            continue
+
+
+def get_user_by_id(client: WebClient, user_id: str) -> dict:
+    """
+    Get the details of a slack user by id.
     Args:
         client: The slack web client to use.
         user_id: The id of the user.
@@ -1579,10 +1547,10 @@ async def get_user_by_id_async(client: AsyncWebClient, user_id: str) -> dict:
     body = {
         'user': user_id
     }
-    return (await send_slack_request_async(client, 'users.info', http_verb='GET', body=body)).get('user', {})
+    return (send_slack_request_sync(client, 'users.info', http_verb='GET', body=body)).get('user', {})
 
 
-async def handle_text(client: AsyncWebClient, investigation_id: str, text: str, user: dict):
+def handle_text(client: WebClient, investigation_id: str, text: str, user: dict):
     """
     Handles text received in the Slack workspace (not DM)
 
@@ -1595,7 +1563,7 @@ async def handle_text(client: AsyncWebClient, investigation_id: str, text: str, 
     demisto.info(f'SlackV3 - adding entry to incident {investigation_id}')
     if text:
         demisto.addEntry(id=investigation_id,
-                         entry=await clean_message(text, client),
+                         entry=clean_message(text, client),
                          username=user.get('name', ''),
                          email=user.get('profile', {}).get('email', ''),
                          footer=MESSAGE_FOOTER
@@ -1603,7 +1571,7 @@ async def handle_text(client: AsyncWebClient, investigation_id: str, text: str, 
         demisto.info("SlackV3 - Text handled successfully.")
 
 
-async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) -> str:
+def check_and_handle_entitlement(text: str, user: dict, thread_id: str) -> str:
     """
     Handles an entitlement message (a reply to a question)
     Args:
@@ -2555,16 +2523,9 @@ def long_running_main():
     Starts the long running thread.
     """
     try:
-        asyncio.run(start_listening(), debug=True)
+        start_listening()
     except Exception as e:
         demisto.error(f"The Loop has failed to run {str(e)}")
-    finally:
-        loop = asyncio.get_running_loop()
-        try:
-            loop.stop()
-            loop.close()
-        except Exception as e_:
-            demisto.error(f'Failed to gracefully close the loop - {e_}')
 
 
 def init_globals(command_name: str = ''):
@@ -2573,10 +2534,10 @@ def init_globals(command_name: str = ''):
     """
     global BOT_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT, CACHED_INTEGRATION_CONTEXT, MIRRORING_ENABLED
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM, BOT_ID, CACHE_EXPIRY
-    global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
+    global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN
     global DEFAULT_PERMITTED_NOTIFICATION_TYPES, CUSTOM_PERMITTED_NOTIFICATION_TYPES, PERMITTED_NOTIFICATION_TYPES
     global COMMON_CHANNELS, DISABLE_CACHING, CHANNEL_NOT_FOUND_ERROR_MSG, LONG_RUNNING_ENABLED, DEMISTO_API_KEY, DEMISTO_URL
-    global IGNORE_RETRIES, EXTENSIVE_LOGGING
+    global IGNORE_RETRIES, EXTENSIVE_LOGGING, MESSAGE_QUEUE
 
     VERIFY_CERT = not demisto.params().get('unsecure', False)
     if not VERIFY_CERT:
@@ -2592,7 +2553,6 @@ def init_globals(command_name: str = ''):
     PROXIES = handle_proxy()
     PROXY_URL = PROXIES.get('http')  # aiohttp only supports http proxy
     DEDICATED_CHANNEL = demisto.params().get('incidentNotificationChannel', None)
-    ASYNC_CLIENT = AsyncWebClient(token=BOT_TOKEN, ssl=SSL_CONTEXT, proxy=PROXY_URL)
     CLIENT = slack_sdk.WebClient(token=BOT_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT)
     SEVERITY_THRESHOLD = SEVERITY_DICT.get(demisto.params().get('min_severity', 'Low'), 1)
     ALLOW_INCIDENTS = demisto.params().get('allow_incidents', False)
@@ -2632,12 +2592,6 @@ def init_globals(command_name: str = ''):
                      ' to find the channel.'
     CHANNEL_NOT_FOUND_ERROR_MSG = error_str
 
-    if command_name != 'long-running-execution':
-        loop = asyncio.get_event_loop()
-        if not loop._default_executor:  # type: ignore[attr-defined]
-            demisto.info(f'setting _default_executor on loop: {loop} id: {id(loop)}')
-            loop.set_default_executor(concurrent.futures.ThreadPoolExecutor(max_workers=4))
-
     # Handle Long-Running Specific Globals
     if command_name == 'long-running-execution':
         # Bot identification
@@ -2656,22 +2610,15 @@ def init_globals(command_name: str = ''):
         CACHE_EXPIRY = next_expiry_time()
         CACHED_INTEGRATION_CONTEXT = get_integration_context(SYNC_CONTEXT)
 
+        # Open a Queue for message processing
+        MESSAGE_QUEUE = Queue()
+
 
 def print_thread_dump():
     demisto.info(f'current thread: {threading.current_thread().name}')
     for threadId, stack in sys._current_frames().items():
         stack_str = '\n'.join(traceback.format_stack(stack))
         demisto.info(f'{threadId} stack: {stack_str}')
-
-
-def loop_info():
-    loop = asyncio.get_event_loop()
-    info = f'loop: {loop}. id: {id(loop)}.'
-    info += f'executor: {loop._default_executor} id: {id(loop._default_executor)}'  # type: ignore[attr-defined]
-    if loop._default_executor:  # type: ignore[attr-defined]
-        info += f' executor threads size: {len(loop._default_executor._threads)}'  # type: ignore[attr-defined]
-        info += f' max: {loop._default_executor._max_workers} {loop._default_executor._threads}'  # type: ignore[attr-defined]
-    return info
 
 
 def slack_get_integration_context():
@@ -2719,7 +2666,7 @@ def main() -> None:
     global CLIENT, EXTENSIVE_LOGGING
 
     commands = {
-        'test-module': test_module,
+        'test-module': not_test_module,
         'long-running-execution': long_running_main,
         'mirror-investigation': mirror_investigation,
         'send-notification': slack_send,
@@ -2742,15 +2689,13 @@ def main() -> None:
         demisto.info(f'{command_name} started.')
         command_func = commands[command_name]
         init_globals(command_name)
-        if EXTENSIVE_LOGGING:
-            os.environ['PYTHONASYNCIODEBUG'] = "1"
         support_multithreading()
         command_func()
     except Exception as e:
         LOG(e)
         return_error(str(e))
     finally:
-        demisto.info(f'{command_name} completed. loop: {loop_info()}')  # type: ignore
+        demisto.info(f'{command_name} completed.')  # type: ignore
         if EXTENSIVE_LOGGING:
             print_thread_dump()
 
