@@ -33,6 +33,34 @@
     "context": null,
     "flags": "",
     "compare_fields": "",
+    "wildcards": "",
+    "default_value": "default",
+    "mappings": {
+      "Unknown": 0,
+      "Informational|Info": 0.5,
+      "Low": 1,
+      "Medium": 2,
+      "High": 3,
+      "Critical": 4
+    },
+    "patterns": [
+      {
+        "value": "High",
+        "result": 3
+      },
+      {
+        "value": "Abc",
+        "result": "default"
+      }
+    ]
+  },
+  {
+    "algorithm": "regmatch",
+    "caseless": "true",
+    "priority": "first_match",
+    "context": null,
+    "flags": "",
+    "compare_fields": "",
     "wildcards": "*",
     "mappings": {
       "Unknown": 0,

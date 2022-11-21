@@ -1,0 +1,26 @@
+{
+    "name": "SecneurX Analysis",
+    "description": "Fully automated malware dynamic analysis sandboxing",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "SecneurX Technologies",
+    "created": "2022-07-25T12:00:00Z",
+    "url": "https://www.secneurx.com/products",
+    "email": "support@secneurx.com",
+    "categories": [
+        "Forensics & Malware Analysis"
+    ],
+    "tags": [
+        "Malware",
+        "Forensics",
+        "Threat Intelligence"
+    ],
+    "useCases": [],
+    "keywords": [
+        "Malware Analysis"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

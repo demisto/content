@@ -28,3 +28,13 @@ ignore=BA116
 
 [file:README.md]
 ignore=RM108
+
+[file:playbook-Configuration_Setup_README.md]
+ignore=RM106
+
+[file:playbook-Configuration_Setup.yml]
+ignore=PB106
+
+[known_words]
+cliname
+CICD

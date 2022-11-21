@@ -1,0 +1,13 @@
+{
+  "GoogleChronicleBackstory.RetroHunt(val.retrohuntId == obj.retrohuntId)": {
+    "retrohuntId": "oh_54c2f72b-7527-4f51-8d28-adb30d2d0e46",
+    "ruleId": "ru_64ec8761-846e-4312-aa70-2a63eb15ffaa",
+    "versionId": "ru_64ec8761-846e-4312-aa70-2a63eb15ffaa@v_1654228032_690095000",
+    "eventStartTime": "2020-10-01T00:00:00Z",
+    "eventEndTime": "2022-05-29T00:00:00Z",
+    "retrohuntStartTime": "2022-06-03T03:48:29.501581Z",
+    "retrohuntEndTime": "2022-06-03T04:12:05.288818Z",
+    "state": "DONE",
+    "progressPercentage": 100
+  }
+}

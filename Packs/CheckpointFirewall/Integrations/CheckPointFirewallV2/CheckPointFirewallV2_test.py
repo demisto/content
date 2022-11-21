@@ -2,7 +2,6 @@ import io
 import json
 import pytest
 
-
 import CheckPointFirewallV2
 
 
@@ -549,3 +548,69 @@ def test_checkpoint_server_sanitization(mocker, server: str):
         request_mocker.post(f'{web_api_address}/logout', json={})
 
         main()
+
+
+def get_treat_protection_response():
+    with io.open('./test_data/threat_protection_response.json', mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
+
+
+def test_checkpoint_show_threat_protection(mocker):
+    response = get_treat_protection_response()
+    mocked_client = mocker.Mock()
+    mocked_client.show_threat_protection.return_value = response
+    results = CheckPointFirewallV2.checkpoint_show_threat_protection_command(mocked_client, {})
+    assert '41e821a0-3720-11e3-aa6e-0800200c9fde' in results.readable_output
+    assert 'CheckPoint data for show threat protection' in results.readable_output
+
+
+def test_ip_settings():
+    keys = ['exclude-protection-with-performance-impact',
+            'exclude-protection-with-performance-impact-mode',
+            'exclude-protection-with-severity',
+            'exclude-protection-with-severity-mode',
+            'newly-updated-protections'
+            ]
+    for item in keys:
+        assert CheckPointFirewallV2.ip_settings({item: ''}).get('ips-settings', {}).get(item) == ''
+
+
+def test_checkpoint_add_threat_profile(mocker):
+    response = get_treat_protection_response()
+    mocked_client = mocker.Mock()
+    mocked_client.add_threat_profile.return_value = response
+    results = CheckPointFirewallV2.checkpoint_add_threat_profile_command(mocked_client, {})
+    assert '41e821a0-3720-11e3-aa6e-0800200c9fde' in results.readable_output
+    assert 'CheckPoint data for add threat profile command' in results.readable_output
+
+
+def test_checkpoint_delete_threat_protections(mocker):
+    response = get_treat_protection_response()
+    mocked_client = mocker.Mock()
+    mocked_client.delete_threat_protections.return_value = response
+    results = CheckPointFirewallV2.checkpoint_delete_threat_protections_command(mocked_client, {})
+    assert '41e821a0-3720-11e3-aa6e-0800200c9fde' in results.readable_output
+    assert 'CheckPoint data for delete threat protections' in results.readable_output
+
+
+def test_checkpoint_set_threat_protections(mocker):
+    response = get_treat_protection_response()
+    mocked_client = mocker.Mock()
+    mocked_client.set_threat_protection.return_value = response
+    results = CheckPointFirewallV2.checkpoint_set_threat_protections_command(mocked_client, {})
+    assert '41e821a0-3720-11e3-aa6e-0800200c9fde' in results.readable_output
+    assert 'heckPoint data for set threat protection' in results.readable_output
+
+
+def test_create_override_data():
+    args = {'profiles': 'profile1, profile2',
+            'action': 'action1',
+            'track': 'track1',
+            'capturePackets': 'capturePackets1'
+            }
+    results = CheckPointFirewallV2.create_override_data(args)
+    assert results['overrides'] == [{'profile': 'profile1', 'action': 'action1', 'track': 'track1',
+                                     'capture-packets': None},
+                                    {'profile': ' profile2', 'action': 'action1', 'track': 'track1',
+                                     'capture-packets': None}
+                                    ]

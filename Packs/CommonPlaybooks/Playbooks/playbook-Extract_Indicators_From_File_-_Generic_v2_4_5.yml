@@ -17,6 +17,13 @@ description: |-
   - XLS
   - XLSX
   - XML
+  - XLSM
+  - DOCM
+  - PPTM
+  - DOTM
+  - XLSB
+  - DOT
+  - PPSM
 starttaskid: "0"
 tasks:
   "0":
@@ -34,6 +41,7 @@ tasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -77,11 +85,12 @@ tasks:
                 root: inputs.File
                 accessor: EntryID
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 150
+          "y": 180
         }
       }
     note: false
@@ -117,6 +126,7 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -144,6 +154,7 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -176,7 +187,9 @@ tasks:
       - "7"
       - "9"
       - "15"
+      - "20"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -199,8 +212,7 @@ tasks:
       id: 816708c1-620e-495b-8102-081c06a0146f
       version: -1
       name: Is there a text-based file?
-      description: Checks if there is a text-based file in context. Skips MSG and
-        EML files.
+      description: Checks if there is a text-based file in context. Skips MSG and EML files.
       type: condition
       iscommand: false
       brand: ""
@@ -332,6 +344,7 @@ tasks:
                 transformers:
                 - operator: uniq
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -473,11 +486,12 @@ tasks:
           - operator: uniq
     reputationcalc: 2
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 92.5,
-          "y": 1000
+          "y": 960
         }
       }
     note: false
@@ -536,6 +550,7 @@ tasks:
                 - operator: uniq
             iscontext: true
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -593,11 +608,12 @@ tasks:
           - operator: uniq
     reputationcalc: 2
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 930,
-          "y": 1000
+          "y": 960
         }
       }
     note: false
@@ -609,10 +625,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 839e3d49-c17e-4eb3-85b5-a797e1627d32
+    taskid: a43c6497-ba16-4f6e-8432-04b149d9810c
     type: condition
     task:
-      id: 839e3d49-c17e-4eb3-85b5-a797e1627d32
+      id: a43c6497-ba16-4f6e-8432-04b149d9810c
       version: -1
       name: Is there a Word file?
       description: Checks if there is a Word file (DOC, DOCX) in context.
@@ -761,10 +777,34 @@ tasks:
                     right:
                       value:
                         simple: xlsb
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                  - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: xlsm
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: docm
                 accessor: EntryID
                 transformers:
                 - operator: uniq
             iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -795,11 +835,12 @@ tasks:
       '#none#':
       - "19"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -320,
-          "y": 950
+          "x": -455,
+          "y": 975
         }
       }
     note: false
@@ -811,10 +852,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 54ad5a67-0f23-40af-8e77-451ddbc84108
+    taskid: a7b3afc7-61ea-41b9-8b87-2b7026f8c1db
     type: regular
     task:
-      id: 54ad5a67-0f23-40af-8e77-451ddbc84108
+      id: a7b3afc7-61ea-41b9-8b87-2b7026f8c1db
       version: -1
       name: Extract indicators from Word file
       description: Extracts indicators from word files (DOC, DOCX).
@@ -932,16 +973,30 @@ tasks:
               right:
                 value:
                   simple: pptx
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+            - operator: isNotEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: xlsm
           accessor: EntryID
           transformers:
           - operator: uniq
     reputationcalc: 2
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 510,
-          "y": 1000
+          "y": 960
         }
       }
     note: false
@@ -1017,6 +1072,7 @@ tasks:
                 transformers:
                 - operator: uniq
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1039,8 +1095,7 @@ tasks:
       id: 92e92794-63db-4875-88c3-89bd5a4ec179
       version: -1
       name: Is Image OCR enabled?
-      description: Checks whether there is an active instance of the Image OCR integration.
-        enabled.
+      description: Checks whether there is an active instance of the Image OCR integration. enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -1068,6 +1123,7 @@ tasks:
                       value:
                         simple: Image OCR
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1090,8 +1146,7 @@ tasks:
       id: c6d841e4-812f-40e0-8ef4-9203859c9781
       version: -1
       name: Extract text from images
-      description: Extracts text from PNG, JPEG, and GIF image files, and uses auto-extract
-        to get reputation for indicators.
+      description: Extracts text from PNG, JPEG, and GIF image files, and uses auto-extract to get reputation for indicators.
       script: '|||image-ocr-extract-text'
       type: regular
       iscommand: true
@@ -1145,6 +1200,7 @@ tasks:
           - operator: uniq
     reputationcalc: 2
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1295,6 +1351,7 @@ tasks:
                 - operator: uniq
             iscontext: true
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1433,11 +1490,12 @@ tasks:
           - operator: uniq
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1480,
-          "y": 1000
+          "y": 960
         }
       }
     note: false
@@ -1494,6 +1552,7 @@ tasks:
       file_name:
         simple: PDF_preview
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1556,6 +1615,7 @@ tasks:
                 - operator: uniq
             iscontext: true
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1596,6 +1656,7 @@ tasks:
           root: URL
           accessor: Data
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1610,29 +1671,84 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 60347e57-061c-46ec-87bf-dff0684adc13
+    type: playbook
+    task:
+      id: 60347e57-061c-46ec-87bf-dff0684adc13
+      version: -1
+      name: Microsoft Office File Enrichment - Oletools
+      description: |-
+        Oletools is a tool for analyzing Microsoft OLE2 files, such as Microsoft Office documents or Outlook messages, mainly for malware analysis, forensics, and debugging.
+        This playbook will run run the "oleid" command on the files which are passed to to it as playbook inputs. In case any macros or external relationships were found, it will also run "olevba" and "oleobj" commands as well on the relevant files.
+        oleid - Analyze OLE files to detect specific characteristics usually found in malicious files.
+        oleobj - Extract embedded objects from OLE files.
+        olevba - Extract and analyze VBA Macro source code from MS Office documents (OLE and OpenXML).
+      playbookName: Microsoft Office File Enrichment - Oletools
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      Decode:
+        complex:
+          root: inputs.Decode
+      FileObject:
+        complex:
+          root: inputs.File
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.File.EntryID
+                iscontext: true
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -330,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
     "linkLabelsPosition": {
       "12_14_yes": 0.55,
       "13_12_yes": 0.55,
-      "15_10_#default#": 0.1,
+      "15_10_#default#": 0.13,
       "15_16_yes": 0.38,
       "18_13_#default#": 0.41,
       "18_17_yes": 0.31,
       "1_10_#default#": 0.15,
-      "5_10_#default#": 0.19,
+      "5_10_#default#": 0.23,
       "5_6_yes": 0.36,
-      "7_10_#default#": 0.1,
+      "7_10_#default#": 0.15,
       "7_8_yes": 0.38,
-      "9_10_#default#": 0.11,
+      "9_10_#default#": 0.18,
       "9_11_yes": 0.35
     },
     "paper": {
       "dimensions": {
         "height": 2415,
-        "width": 2180,
-        "x": -320,
+        "width": 2315,
+        "x": -455,
         "y": -10
       }
     }
@@ -1644,6 +1760,34 @@ inputs:
       root: File
   required: false
   description: The file to extract indicators from.
+  playbookInputQuery:
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: ""
+    queryEntity: indicators
+    results:
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue:
+        fromvalue:
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: true
+- key: Decode
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Available values: "True" or "False". Default is "False"
+    When this is set to "True", in case a macro was found within the file (using oletools), it will output all the obfuscated strings with their decoded content (Hex, Base64, StrReverse, Dridex, VBA).
   playbookInputQuery:
 outputs:
 - contextPath: Domain.Name
@@ -1698,31 +1842,150 @@ outputs:
   description: The list of URLs that were extracted from the file.
   type: string
 - contextPath: ExtractedURLsFromFiles
-  description: The list of URLs that were extracted from the file. This output is a
-    duplicate of the URL.Data output and it enables parent playbooks to identify
-    the URLs generated by this playbook.
+  description: The list of URLs that were extracted from the file. This output is a duplicate of the URL.Data output and it enables parent playbooks to identify the URLs generated by this playbook.
   type: String
+- contextPath: Oletools.Oleid.ole_command_result
+  description: Indicator list from the oleid command.
+  type: string
+- contextPath: Oletools.Oleid.file_name
+  description: File name.
+  type: string
+- contextPath: Oletools.Oleid.sha256
+  description: SHA256 hash.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.File_format
+  description: Indicator file format.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.Container_format
+  description: Indicator container format.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.Encrypted
+  description: Indicator encrypted.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.VBA_Macros
+  description: Indicator VBA macros.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.XLM_Macros
+  description: Indicator XLM macros.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.External_Relationships
+  description: Indicator external relationships.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.ObjectPool
+  description: Indicator object pool.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.Flash_objects
+  description: Indicator flash objects.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.File_format.Value
+  description: Indicator file format value.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.File_format.Ole_Risk
+  description: Indicator file format OLE risk.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.File_format.Description
+  description: Indicator file format description.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.Container_format.Value
+  description: Indicator container format value.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.Container_format.Ole_Risk
+  description: Indicator container format OLE risk.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.Container_format.Description
+  description: Indicator container format description.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.Encrypted.Value
+  description: Indicator encrypted value.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.Encrypted.Ole_Risk
+  description: Indicator encrypted OLE risk.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.Encrypted.Description
+  description: Indicator encrypted description.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.VBA_Macros.Value
+  description: Indicator VBA macros value.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.VBA_Macros.Ole_Risk
+  description: Indicator VBA macros OLE risk.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.VBA_Macros.Description
+  description: Indicator VBA macros description.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.XLM_Macros.Value
+  description: Indicator XLM macros value.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.XLM_Macros.Ole_Risk
+  description: Indicator XLM macros OLE risk.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.XLM_Macros.Description
+  description: Indicator XLM macros description.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.External_Relationships.Value
+  description: Indicator XLM macros value.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.External_Relationships.Ole_Risk
+  description: Indicator XLM macros OLE risk.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.External_Relationships.Description
+  description: Indicator XLM macros description.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.ObjectPool.Value
+  description: Indicator object pool value.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.ObjectPool.Ole_Risk
+  description: Indicator object pool OLE risk.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.ObjectPool.Description
+  description: Indicator object pool description.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.Flash_objects.Value
+  description: Indicator Flash objects value.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.Flash_objects.Ole_Risk
+  description: Indicator Flash objects OLE risk.
+  type: string
+- contextPath: Oletools.Oleid.ole_command_result.Flash_objects.Description
+  description: Indicator Flash objects description.
+  type: string
+- contextPath: Oletools.Oleobj.ole_command_result.hyperlinks
+  description: List of hyperlinks.
+  type: string
+- contextPath: Oletools.Oleobj.file_name
+  description: File name.
+  type: string
+- contextPath: Oletools.Oleobj.sha256
+  description: SHA256 hash.
+  type: string
+- contextPath: Oletools.Olevba.file_name
+  description: File name.
+  type: string
+- contextPath: Oletools.Olevba.sha256
+  description: SHA256 hash.
+  type: string
+- contextPath: Oletools.Olevba.ole_command_result.macro_analyze
+  description: Macro analyze.
+  type: string
+- contextPath: Oletools.Olevba.ole_command_result.macro_src_code
+  description: Macro source code.
+  type: string
+- contextPath: Oletools.Olevba.ole_command_result.macro_list
+  description: Macro list.
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator type.
+  type: string
+- contextPath: DBotScore.Vendor
+  description: The vendor used to calculate the score.
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: number
+quiet: true
 tests:
-- Field polling test
-- test-domain-indicator
-- Calculate Severity - Generic v2 - Test
-- Wait Until Datetime - Test
-- Calculate Severity - Standard - Test
 - Extract Indicators From File - Generic v2 - Test
-- URL Enrichment - Generic v2 - Test
-- File Enrichment - Generic v2 - Test
-- Domain Enrichment - Generic v2 - Test
-- Account Enrichment - Generic v2.1 - Test
-- IP Enrichment - Generic v2 - Test
-- Get endpoint details - Generic - test
-- Detonate URL - Generic Test
-- Email Address Enrichment - Generic v2.1 - Test
-- Generic Polling Test
-- Send Investigation Summary Reports - Test
-- Detonate File - No Files test
-- Test Convert file hash to corresponding hashes
-- Detonate File - Generic Test
-- Endpoint Enrichment - Generic v2.1 - Test
-- Retrieve File from Endpoint - Generic V2 Test
-- Isolate and unisolate endpoint - test
 fromversion: 5.0.0

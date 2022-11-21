@@ -27,6 +27,10 @@ New commands were added to the integration, which require different application 
 - ***msgraph-mail-reply-to***
 - ***send-mail***
 
+## Look-Back Parameter Notes
+* Setting the look back parameter will fetch duplicated incidents in the event that incidents that fall out during the given look-back time were already fetched.
+
+
 To use these commands and to fetch incidents,
 you will need to add to your application the *Mail.Send application* permission (not delegated),
 and re-authorize your integration's instance.

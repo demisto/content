@@ -111,3 +111,18 @@ def test_when_value_is_null_or_none_string_and_default_value():
 
     result = get_value_to_set({'value': ["Null"], 'defaultValue': s, 'applyIfEmpty': 'true'})
     assert s == result
+
+
+def test_when_value_is_null_or_none_string_and_default_value_is_null():
+    s = None
+    result = get_value_to_set({'value': ["None"], 'defaultValue': s, 'applyIfEmpty': 'true'})
+    assert [] == result
+
+    result = get_value_to_set({'value': ["none"], 'defaultValue': s, 'applyIfEmpty': 'true'})
+    assert [] == result
+
+    result = get_value_to_set({'value': ["NULL"], 'defaultValue': s, 'applyIfEmpty': 'true'})
+    assert [] == result
+
+    result = get_value_to_set({'value': ["Null"], 'defaultValue': s, 'applyIfEmpty': 'true'})
+    assert [] == result

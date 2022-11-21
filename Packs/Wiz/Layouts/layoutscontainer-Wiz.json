@@ -81,6 +81,15 @@
                             },
                             {
                                 "endCol": 2,
+                                "fieldId": "wizissueurl",
+                                "height": 22,
+                                "id": "6fd428b0-ebd1-11ec-840b-d17131d3a6aa",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
                                 "fieldId": "wizissueduedate",
                                 "height": 22,
                                 "id": "c05b8770-698a-11ec-8f54-25c02ba6665c",
@@ -96,6 +105,33 @@
                                 "index": 8,
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "wizissueprojects",
+                                "height": 22,
+                                "id": "5808c390-ebda-11ec-a8bc-85a2df42907e",
+                                "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "wizprojectowners",
+                                "height": 22,
+                                "id": "a2455ae0-ecb6-11ec-8e94-ad00867f0b0d",
+                                "index": 11,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "wizprojectsecuritychampions",
+                                "height": 22,
+                                "id": "a8234710-ecb6-11ec-8e94-ad00867f0b0d",
+                                "index": 12,
+                                "sectionItemType": "field",
+                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
@@ -106,7 +142,8 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null
                     },
                     {
                         "h": 2,
@@ -120,7 +157,8 @@
                         "type": "notes",
                         "w": 1,
                         "x": 2,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null
                     },
                     {
                         "displayType": "ROW",
@@ -135,7 +173,8 @@
                         "type": "workplan",
                         "w": 1,
                         "x": 1,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null
                     },
                     {
                         "displayType": "ROW",
@@ -151,7 +190,8 @@
                         "type": "linkedIncidents",
                         "w": 1,
                         "x": 1,
-                        "y": 5
+                        "y": 5,
+                        "maxH": null
                     },
                     {
                         "displayType": "ROW",
@@ -166,7 +206,8 @@
                         "type": "childInv",
                         "w": 1,
                         "x": 2,
-                        "y": 5
+                        "y": 5,
+                        "maxH": null
                     },
                     {
                         "displayType": "ROW",
@@ -181,7 +222,8 @@
                         "type": "evidence",
                         "w": 1,
                         "x": 0,
-                        "y": 5
+                        "y": 5,
+                        "maxH": null
                     },
                     {
                         "displayType": "ROW",
@@ -197,7 +239,8 @@
                         "type": "team",
                         "w": 1,
                         "x": 2,
-                        "y": 7
+                        "y": 7,
+                        "maxH": null
                     },
                     {
                         "displayType": "ROW",
@@ -214,7 +257,8 @@
                         "type": "indicators",
                         "w": 2,
                         "x": 0,
-                        "y": 9
+                        "y": 9,
+                        "maxH": null
                     },
                     {
                         "displayType": "CARD",
@@ -275,7 +319,8 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 3
+                        "y": 3,
+                        "maxH": null
                     },
                     {
                         "displayType": "ROW",
@@ -319,7 +364,8 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 7
+                        "y": 7,
+                        "maxH": null
                     },
                     {
                         "displayType": "CARD",
@@ -328,13 +374,11 @@
                         "isVisible": true,
                         "items": [
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "wizresourceid",
+                                "fieldId": "wizresourcecloudid",
                                 "height": 53,
-                                "id": "0084c1f0-6985-11ec-8f54-25c02ba6665c",
+                                "id": "0bb4a990-6c9c-11ec-8550-af1c0da9783d",
                                 "index": 0,
-                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -369,10 +413,30 @@
                             },
                             {
                                 "endCol": 4,
+                                "fieldId": "wizissueresolutionrecommendation",
+                                "height": 106,
+                                "id": "9bda8f20-23b8-11ed-b79f-a335dc38ea14",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "wizresourceid",
+                                "height": 53,
+                                "id": "0084c1f0-6985-11ec-8f54-25c02ba6665c",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 2,
+                                "dropEffect": "move",
+                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289"
+                            },
+                            {
+                                "endCol": 4,
                                 "fieldId": "wizresourcetype",
                                 "height": 53,
                                 "id": "cfe1fc60-698a-11ec-8f54-25c02ba6665c",
-                                "index": 0,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 2
                             },
@@ -382,7 +446,7 @@
                                 "fieldId": "wizresourceregion",
                                 "height": 53,
                                 "id": "cda13420-698a-11ec-8f54-25c02ba6665c",
-                                "index": 1,
+                                "index": 2,
                                 "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
                                 "sectionItemType": "field",
                                 "startCol": 2
@@ -390,13 +454,14 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
+                        "minW": 2,
                         "moved": false,
                         "name": "Investigation Data",
                         "static": false,
                         "w": 2,
                         "x": 1,
-                        "y": 2
+                        "y": 2,
+                        "maxH": null
                     }
                 ],
                 "type": "custom"

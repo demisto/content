@@ -100,7 +100,7 @@ tasks:
       name: Quarantine file
       description: Quarantine a file on selected endpoints. You can select up to 1000
         endpoints.
-      script: '|||xdr-quarantine-files'
+      script: '|||xdr-file-quarantine'
       type: regular
       iscommand: true
       brand: ""

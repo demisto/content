@@ -1,0 +1,13 @@
+{
+    "values": {
+        "Task ID": "TAS000000000409",
+        "Create Date": "2022-07-03T13:12:02.000+0000"
+    },
+    "_links": {
+        "self": [
+            {
+                "href": "https://lb-bmc-remedy-itsm-1790109711.eu-west-1.elb.amazonaws.com:9443/api/arsys/v1/entry/TMS:Task"
+            }
+        ]
+    }
+}

@@ -6,7 +6,10 @@ from CommonServerUserPython import *
 import requests
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
-from typing import Dict, Optional, Any
+from typing import Dict, Optional, Any, Union
+
+CLIENT_CREDENTIALS_FLOW = 'Client Credentials'
+DEVICE_FLOW = 'Device Code'
 
 
 class Client:
@@ -14,7 +17,8 @@ class Client:
     API Client to communicate with AzureRiskyUsers.
     """
 
-    def __init__(self, client_id: str, verify: bool, proxy: bool):
+    def __init__(self, client_id: str, verify: bool, proxy: bool, authentication_type: str,
+                 tenant_id: str = None, client_secret: str = None):
 
         if '@' in client_id:  # for use in test-playbook
             client_id, refresh_token = client_id.split('@')
@@ -22,17 +26,69 @@ class Client:
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
 
-        self.ms_client = MicrosoftClient(
+        self.authentication_type = authentication_type
+        client_args = assign_params(
             self_deployed=True,
             auth_id=client_id,
-            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            grant_type=DEVICE_CODE,
+            grant_type=self.get_grant_by_auth_type(authentication_type),
             base_url='https://graph.microsoft.com/v1.0',
             verify=verify,
             proxy=proxy,
-            scope='https://graph.microsoft.com/IdentityRiskyUser.Read.All '
-                  'IdentityRiskEvent.ReadWrite.All IdentityRiskyUser.Read.All '
-                  'IdentityRiskyUser.ReadWrite.All offline_access')
+            scope=self.get_scope_by_auth_type(authentication_type),
+            # used for device code flow
+            token_retrieval_url=self.get_token_retrieval_url_by_auth_type(authentication_type),
+            # used for client credentials flow
+            tenant_id=tenant_id,
+            enc_key=client_secret
+        )
+        self.ms_client = MicrosoftClient(**client_args)
+
+    @staticmethod
+    def get_grant_by_auth_type(authentication_type: str) -> str:
+        """
+        Gets the grant type by the given authentication type.
+        Args:
+            authentication_type: desirable authentication type, could be Client credentials or Device Code.
+
+        Returns: the grant type.
+        """
+        if authentication_type == CLIENT_CREDENTIALS_FLOW:  # Client credentials flow
+            return CLIENT_CREDENTIALS
+
+        else:  # Device Code Flow
+            return DEVICE_CODE
+
+    @staticmethod
+    def get_scope_by_auth_type(authentication_type: str) -> str:
+        """
+        Gets the scope by the given authentication type.
+        Args:
+            authentication_type: desirable authentication type, could be Client credentials or Device Code.
+
+        Returns: the scope.
+        """
+        if authentication_type == CLIENT_CREDENTIALS_FLOW:  # Client credentials flow
+            return Scopes.graph
+
+        else:  # Device Code Flow
+            return ('https://graph.microsoft.com/IdentityRiskyUser.Read.All'
+                    ' IdentityRiskEvent.ReadWrite.All IdentityRiskyUser.Read.All'
+                    ' IdentityRiskyUser.ReadWrite.All offline_access')
+
+    @staticmethod
+    def get_token_retrieval_url_by_auth_type(authentication_type: str) -> Union[None, str]:
+        """
+        Gets the token retrieval url by the given authentication type.
+        Args:
+            authentication_type: desirable authentication type, could be Client credentials or Device Code.
+
+        Returns: the token retrieval url.
+        """
+        if authentication_type == CLIENT_CREDENTIALS_FLOW:  # Client credentials flow
+            return None
+
+        else:  # Device Code Flow
+            return 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
 
     def risky_users_list_request(self, risk_state: Optional[str], risk_level: Optional[str],
                                  limit: int, skip_token: str = None) -> dict:
@@ -322,6 +378,25 @@ def risk_detection_get_command(client: Client, args: Dict[str, Any]) -> CommandR
                           raw_response=raw_response)
 
 
+def test_module(client: Client):
+    """Tests API connectivity and authentication'
+    The test module is not functional for Device Code flow authentication, it raises the suitable exception instead.
+
+    Args:
+        client (Client): Azure Risky Users API client.
+
+    Returns: None
+    """
+    if client.authentication_type == DEVICE_FLOW:  # Device Code flow
+        raise DemistoException('When using device code flow configuration, please enable the integration and run '
+                               'the azure-risky-users-auth-start command. Follow the instructions that will be printed'
+                               ' as the output of the command.')
+
+    else:  # Client credentials flow
+        test_connection(client)
+        return "ok"
+
+
 # Authentication Functions
 
 
@@ -353,22 +428,29 @@ def main():
     params = demisto.params()
     args = demisto.args()
     client_id = params.get('client_id').get('password', '')
-
+    auth_type = params.get('authentication_type', 'Device Code')
     verify_certificate = not params.get('insecure', False)
-
     proxy = params.get('proxy', False)
+
+    # Params for Client Credentials flow only:
+    tenant_id = params.get('tenant_id')
+    client_secret = params.get('client_secret', {}).get('password', '')
+
     command = demisto.command()
-    LOG(f'Command being called is {command}')
+    demisto.info(f'Command being called is {command}')
     try:
         requests.packages.urllib3.disable_warnings()
         client = Client(
             client_id=client_id,
             verify=verify_certificate,
-            proxy=proxy)
+            proxy=proxy,
+            authentication_type=auth_type,
+            tenant_id=tenant_id,
+            client_secret=client_secret
+        )
 
         if command == 'test-module':
-            return_results('The test module is not functional, '
-                           'run the azure-risky-users-auth-start command instead.')
+            return_results(test_module(client))
         elif command == 'azure-risky-users-auth-reset':
             return_results(reset_auth())
         elif command == 'azure-risky-users-auth-start':

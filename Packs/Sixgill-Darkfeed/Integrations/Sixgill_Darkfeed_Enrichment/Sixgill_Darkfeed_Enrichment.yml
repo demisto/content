@@ -3,22 +3,51 @@ commonfields:
   id: Sixgill_Darkfeed_Enrichment
   version: -1
 configuration:
-  - display: Sixgill API client ID
-    name: client_id
-    required: true
-    type: 0
-  - display: Sixgill API client secret
-    name: client_secret
-    required: true
-    type: 4
-  - display: Trust any certificate (not secure)
-    name: insecure
-    required: false
-    type: 8
-  - display: Use system proxy settings
-    name: proxy
-    required: false
-    type: 8
+- display: Sixgill API client ID
+  name: client_id
+  required: true
+  type: 0
+- display: Sixgill API client secret
+  name: client_secret
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
+- defaultvalue: indicatorType
+  name: feedExpirationPolicy
+  display: ''
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  display: ''
+  required: false
+  type: 1
 description: Sixgill Darkfeed Enrichment – powered by the broadest automated collection from the deep and dark web – is the most comprehensive IOC enrichment solution on the market.
   By enriching Palo Alto Networks Cortex XSOAR IOCs with Darkfeed, customers gain unparalleled context and essential explanations in order to accelerate their incident prevention and response and stay ahead of the threat curve.
   Automatically enrich Cortex XSOAR IOCs (machine to machine) via Darkfeed. Block threats and enrich endpoint protection in real-time from the Cortex XSOAR dashboard,
@@ -558,7 +587,7 @@ script:
           description: Link to the IOC on Virustotal and an abstraction of the number of detections;
             MITRE ATT&CK tactics and techniques.
           type: Unknown
-  dockerimage: demisto/sixgill:1.0.0.23434
+  dockerimage: demisto/sixgill:1.0.0.32143
   feed: false
   isfetch: false
   longRunning: false

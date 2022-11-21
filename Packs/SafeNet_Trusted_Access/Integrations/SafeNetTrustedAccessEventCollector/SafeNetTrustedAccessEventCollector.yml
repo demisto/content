@@ -1,0 +1,97 @@
+category: Authentication
+commonfields:
+  id: SafeNetTrustedAccessEventCollector
+  version: -1
+configuration:
+- additionalinfo: The URL consists of the root part of the REST API Endpoint URL provided
+    in SafeNet Trusted Access, and has the form https://api.[name].com
+  display: URL
+  name: url
+  required: true
+  type: 0
+- additionalinfo: Tenant code for your virtual server or account.
+  display: Tenant Code
+  name: tenant_code
+  required: true
+  type: 0
+- display: ""
+  displaypassword: API Key for the authentication.
+  name: credentials
+  type: 9
+  required: true
+  hiddenusername: true
+- defaultvalue: trusted_access
+  display: The product name corresponding to the integration that originated the events
+  name: product
+  required: false
+  type: 0
+- defaultvalue: safenet
+  display: The vendor name corresponding to the integration that originated the events
+  name: vendor
+  required: false
+  type: 0
+- display: The maximum number of audit logs to fetch. Valid limit is multiples of 1000 and less than 10,000.
+  name: limit
+  type: 0
+  defaultvalue: 1000
+  required: true
+- display: First fetch timestamp
+  name: first_fetch
+  type: 0
+  defaultvalue: 3 days ago
+  required: false
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  type: 8
+  additionalinfo:
+- name: proxy
+  display: Use system proxy settings
+  required: false
+  type: 8
+description: 'Retrieve access, authentication, and audit logs and store them on a Security Information and Event Management (SIEM) system, local repository, or syslog file server. You can retrieve the logs only for the tenant that is associated with the API key, or for a direct or delegated child of that tenant.'
+display: 'Thales SafeNet Trusted Access Event Collector'
+name: SafeNetTrustedAccessEventCollector
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the command will create events, otherwise it will only display them.
+      isArray: false
+      name: should_push_events
+      predefined:
+        - 'true'
+        - 'false'
+      required: true
+    - default: false
+      description: 'Since date'
+      isArray: false
+      name: since
+      required: false
+    - default: false
+      description: 'Until date'
+      isArray: false
+      name: until
+      required: false
+    - default: false
+      description: A string pointing at the next page of results. The marker can be found within the previous response.
+      isArray: false
+      name: marker
+      required: false
+    deprecated: false
+    description: 'Get access, authentication, and audit logs from SafeNet Trusted Access.'
+    execution: false
+    name: sta-get-events
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  isfetchevents: true
+  dockerimage: demisto/python3:3.10.5.31928
+  feed: false
+marketplaces:
+- marketplacev2
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

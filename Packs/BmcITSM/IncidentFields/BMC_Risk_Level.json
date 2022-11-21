@@ -1,0 +1,37 @@
+{
+    "id": "incident_bmcitsmrisklevel",
+    "version": -1,
+    "modified": "2022-07-27T09:02:00.44504197+03:00",
+    "name": "BmcITSM Risk Level",
+    "ownerOnly": false,
+    "cliName": "bmcitsmrisklevel",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "Risk Level 1",
+        "Risk Level 2",
+        "Risk Level 3",
+        "Risk Level 4"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "BMC Change-Request"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0"
+}

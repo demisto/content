@@ -204,12 +204,12 @@ def get_attachments_using_instance(email_related_incident, labels):
         elif label.get('type') == 'Brand':
             integration_name = label.get('value')
 
-    if integration_name == 'EWS v2':
+    if integration_name in ['EWS v2', 'EWSO365']:
         demisto.executeCommand("executeCommandAt",
                                {'command': 'ews-get-attachment', 'incidents': email_related_incident,
                                 'arguments': {'item-id': str(message_id), 'using': instance_name}})
 
-    elif integration_name == 'Gmail':
+    elif integration_name in ['Gmail', 'Gmail Single User']:
         demisto.executeCommand("executeCommandAt",
                                {'command': 'gmail-get-attachments', 'incidents': email_related_incident,
                                 'arguments': {'user-id': 'me', 'message-id': str(message_id), 'using': instance_name}})

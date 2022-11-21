@@ -42,3 +42,8 @@ runas: DBotRole
 runonce: false
 sensitive: true
 fromversion: 5.0.0
+tests:
+- test_delete_context
+- DeleteContext-auto-test
+- DeleteContext-auto-subplaybook-test
+- Delete Context Subplaybook Test

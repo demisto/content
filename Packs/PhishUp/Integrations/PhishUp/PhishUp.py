@@ -67,7 +67,8 @@ def investigate_url_command(client: Client, args, apikey):
             indicator=url,
             integration_name="PhishUp",
             indicator_type=DBotScoreType.URL,
-            score=score
+            score=score,
+            reliability=demisto.params().get('integrationReliability')
         )
 
         url_standard_context = Common.URL(

@@ -31,6 +31,25 @@ configuration:
   name: private_key
   required: false
   type: 14
+- additionalinfo: Type of authentication - either Authorization Code (recommended) or Client Credentials.
+  display: Authentication Type
+  name: auth_type
+  defaultvalue: Client Credentials
+  options:
+  - Authorization Code
+  - Client Credentials
+  type: 15
+- display: Application redirect URI (for authorization code mode)
+  name: redirect_uri
+  required: false
+  type: 0
+- display: Authorization code
+  displaypassword: Authorization code
+  additionalinfo: for user-auth mode - received from the authorization step. see Detailed Instructions section
+  hiddenusername: true
+  name: auth_code
+  required: false
+  type: 9
 - display: Fetch incidents
   name: isFetch
   defaultvalue: 'true'
@@ -85,6 +104,11 @@ configuration:
   name: first_fetch_timestamp
   required: false
   type: 0
+- defaultvalue: 'false'
+  display: Using Microsoft GCC?
+  name: is_gcc
+  required: false
+  type: 8
 - display: ID (received from the admin consent - see Detailed Instructions (?) section) (Deprecated)
   name: auth_id
   required: false
@@ -105,6 +129,17 @@ display: Microsoft Defender for Endpoint
 name: Microsoft Defender Advanced Threat Protection
 script:
   commands:
+  - deprecated: false
+    description: Tests connectivity to Microsoft Defender for Endpoint.
+    execution: false
+    name: microsoft-atp-test
+    arguments:
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
+    polling: true
   - arguments:
     - default: true
       description: A comma-separated list of machine IDs to be used for isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
@@ -128,6 +163,11 @@ script:
       - Selective
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Isolates a machine from accessing external networks.
     execution: true
@@ -169,6 +209,7 @@ script:
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
       description: 'The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5".'
       type: String
+    polling: true
   - arguments:
     - default: false
       description: A comma-separated list of machine IDs to be used to stop the isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
@@ -182,6 +223,11 @@ script:
       name: comment
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Undo an isolation of a machine.
     execution: false
@@ -223,6 +269,7 @@ script:
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
       description: 'The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5".'
       type: String
+    polling: true
   - arguments:
     - default: false
       description: A comma-separated list of computer DNS name.
@@ -263,6 +310,23 @@ script:
       name: os_platform
       required: false
       secret: false
+    - default: false
+      description: Number of machines to return in a page - must be lower or equal to 10,000.
+      name: page_size
+      required: false
+      secret: false
+      defaultValue: '50'
+    - default: false
+      description: The page number to retrieve.
+      defaultValue: '1'
+      name: page_num
+      required: false
+      secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Retrieves a collection of machines that communicated with WDATP cloud in the last 30 days. Note - only IP or hostname can be a comma-separated list. If both are given as lists, an error will appear.
     execution: false
@@ -322,6 +386,7 @@ script:
     - contextPath: MicrosoftATP.Machine.MachineTags
       description: Set of machine tags.
       type: String
+    polling: true
   - arguments:
     - default: false
       description: A comma-separated list of file SHA1 hashes to get the related machines.
@@ -329,6 +394,11 @@ script:
       name: file_hash
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Gets a collection of machines with a given file SHA1 hash.
     execution: false
@@ -391,6 +461,7 @@ script:
     - contextPath: MicrosoftATP.FileMachine.File
       description: The machine related file hash.
       type: String
+    polling: true
   - arguments:
     - default: true
       description: A comma-separated list of machine IDs used to get the machine details, e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
@@ -398,6 +469,11 @@ script:
       name: machine_id
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Get a machine's details by its identity.
     execution: false
@@ -469,6 +545,7 @@ script:
     - contextPath: MicrosoftATP.Machine.NetworkInterfaces.Status
       description: Status for the network interface (e.g. Up, Down).
       type: String
+    polling: true
   - arguments:
     - default: false
       description: A comma-separated list of machine IDs to run the scan on.
@@ -492,6 +569,11 @@ script:
       - Full
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Initiate a Microsoft Defender Antivirus scan on a machine.
     execution: false
@@ -533,6 +615,7 @@ script:
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
       description: 'The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5".'
       type: String
+    polling: true
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -576,6 +659,11 @@ script:
       name: creation_time
       required: false
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Gets a list of alerts present on the system. Filtering can be done only on a single argument.
     execution: false
@@ -674,6 +762,7 @@ script:
     - contextPath: MicrosoftATP.Alert.RBACGroupName
       description: The device RBAC group name.
       type: String
+    polling: true
   - arguments:
     - default: false
       description: Alert ID to update.
@@ -730,6 +819,11 @@ script:
       name: comment
       required: false
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Update the properties of an alert entity.
     execution: false
@@ -810,28 +904,60 @@ script:
     - contextPath: MicrosoftATP.Alert.Comments.CreatedTime
       description: The alert comment created time date.
       type: Date
+    polling: true
   - arguments:
     - default: true
-      description: The query to run.
+      description: The query to run. Must be passed if query_batch argument is not provided.
       isArray: false
       name: query
-      required: true
+      required: false
       secret: false
     - default: false
       defaultValue: '10'
-      description: The amount of time (in seconds) that a request waits for the query response before a timeout occurs.
+      description: The amount of time (in seconds) that a request waits for the query response before a timeout occurs. If specified with query_batch, will be applied to all queries in the array.
       isArray: false
       name: timeout
       required: false
       secret: false
     - name: time_range
-      description: Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day, etc.
+      description: Time range to look back. The expected syntax is a human-readable time range, e.g., 60 minutes, 6 hours, 1 day, etc. If specified with query_batch, applies to all queries in the array.
       required: false
       isArray: false
       defaultValue: ''
       predefined:
       - ''
-    deprecated: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
+    - default: false
+      description: |-
+        A JSON array of queries, limited to 10 queries. Cannot be provided with the query argument. Example for input:
+        [{
+          "query": "query #1",
+          "name": "name #1",
+          "timeout": "timeout #1",
+          "time_range": "2 days ago"
+          },
+          {
+          "query": "query #2",
+          "name": "name #2",
+          "timeout": "timeout #2",
+          "time_range": "6 days ago"
+          }]
+        The query and name fields are mandatory. If timeout and time_range are specified, they will override the {timeout} and {time_range} argument.
+      isArray: false
+      name: query_batch
+      required: false
+      secret: false
+      deprecated: false
+    - default: false
+      description: If stated along with query, the response will be be saved in context under the Result.name path.
+      isArray: false
+      name: name
+      required: false
+      secret: false
     description: 'Allows you to run programmatic queries like in Microsoft Defender ATP Portal (https://securitycenter.windows.com/hunting). Limitations: You can only run a query on data from the last 30 days. The results include a maximum of 10,000 rows. The number of executions is limited (up to 15 calls per minute, 15 minutes of running time every hour and 4 hours of running time a day).'
     execution: false
     name: microsoft-atp-advanced-hunting
@@ -839,6 +965,7 @@ script:
     - contextPath: MicrosoftATP.Hunt.Result
       description: The query results.
       type: String
+    polling: true
   - arguments:
     - default: false
       description: ID of the machine on which the event was identified.
@@ -927,6 +1054,11 @@ script:
       - General
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Creates a new alert entity using event data, as obtained from the Advanced Hunting.
     execution: false
@@ -1007,6 +1139,7 @@ script:
     - contextPath: MicrosoftATP.Alert.Comments.CreatedTime
       description: The alert comment created time date.
       type: Date
+    polling: true
   - arguments:
     - default: false
       description: ID of the alert.
@@ -1014,6 +1147,11 @@ script:
       name: id
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Retrieves the user associated with a specific alert.
     execution: false
@@ -1058,6 +1196,7 @@ script:
     - contextPath: MicrosoftATP.AlertUser.AlertID
       description: The alert ID.
       type: String
+    polling: true
   - arguments:
     - default: false
       description: ID of the alert.
@@ -1079,6 +1218,11 @@ script:
       name: offset
       required: false
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Retrieves the files associated with a specific alert.
     execution: false
@@ -1135,6 +1279,7 @@ script:
     - contextPath: MicrosoftATP.AlertFile.Files.Md5
       description: The MD5 hash of the file.
       type: String
+    polling: true
   - arguments:
     - default: false
       description: ID of the alert.
@@ -1156,6 +1301,11 @@ script:
       name: offset
       required: false
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Retrieves the IPs associated with a specific alert.
     execution: false
@@ -1167,6 +1317,7 @@ script:
     - contextPath: MicrosoftATP.AlertIP.AlertID
       description: The alert ID.
       type: String
+    polling: true
   - arguments:
     - default: false
       description: ID of the alert.
@@ -1188,6 +1339,11 @@ script:
       name: offset
       required: false
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Retrieves the domains associated with a specific alert.
     execution: false
@@ -1199,6 +1355,7 @@ script:
     - contextPath: MicrosoftATP.AlertDomain.AlertID
       description: The alert ID.
       type: Unknown
+    polling: true
   - arguments:
     - default: false
       description: ID of the action.
@@ -1255,6 +1412,11 @@ script:
       name: limit
       required: false
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: |-
       Return the machine's actions. If you set an action ID, it returns the info on the specific action.
@@ -1298,6 +1460,7 @@ script:
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
       description: 'The file identifier type. Possible values: "SHA1" ,"SHA256", and "MD5".'
       type: String
+    polling: true
   - arguments:
     - default: false
       description: The machine ID.
@@ -1311,6 +1474,11 @@ script:
       name: comment
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Collect an investigation package from a machine.
     execution: false
@@ -1352,6 +1520,7 @@ script:
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
       description: 'The file identifier type. Possible values: "SHA1" ,"SHA256", and "MD5".'
       type: String
+    polling: true
   - arguments:
     - default: false
       description: machine action ID.
@@ -1359,6 +1528,11 @@ script:
       name: action_id
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Gets a URI that allows downloading an investigation package.
     execution: false
@@ -1367,6 +1541,7 @@ script:
     - contextPath: MicrosoftATP.InvestigationURI.Link
       description: The investigation package URI.
       type: String
+    polling: true
   - arguments:
     - default: false
       description: The machine ID.
@@ -1380,6 +1555,11 @@ script:
       name: comment
       required: false
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Restricts the execution of all applications on the machine except for a predefined set.
     execution: false
@@ -1421,6 +1601,7 @@ script:
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
       description: 'The file identifier type. Possible values: "SHA1" ,"SHA256", and "MD5".'
       type: String
+    polling: true
   - arguments:
     - default: false
       description: The machine ID.
@@ -1434,6 +1615,11 @@ script:
       name: comment
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Enable the execution of any application on the machine.
     execution: false
@@ -1475,6 +1661,7 @@ script:
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
       description: 'The file identifier type. Possible values: "SHA1" ,"SHA256", and "MD5".'
       type: String
+    polling: true
   - arguments:
     - default: false
       description: The machine ID. When providing multiple values, each value is checked for the same hash.
@@ -1496,6 +1683,11 @@ script:
       name: comment
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Stop the execution of a file on a machine and delete it.
     execution: false
@@ -1537,6 +1729,7 @@ script:
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
       description: 'The file identifier type. Possible values: "SHA1" ,"SHA256", and "MD5".'
       type: String
+    polling: true
   - arguments:
     - default: false
       description: ID can be the investigation ID or the investigation triggering alert ID.
@@ -1560,6 +1753,11 @@ script:
       - ''
       required: false
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Retrieves a collection of investigations or retrieves a specific investigation by its ID.
     execution: false
@@ -1592,6 +1790,7 @@ script:
     - contextPath: MicrosoftATP.Investigation.TriggeringAlertID
       description: The alert ID that triggered the investigation.
       type: String
+    polling: true
   - arguments:
     - default: false
       description: The machine's ID.
@@ -1612,6 +1811,11 @@ script:
       name: timeout
       required: false
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Starts an automated investigation on a machine.
     execution: false
@@ -1644,6 +1848,7 @@ script:
     - contextPath: MicrosoftATP.Investigation.TriggeringAlertID
       description: The alert ID that triggered the investigation.
       type: String
+    polling: true
   - arguments:
     - default: false
       description: The domain address.
@@ -1651,6 +1856,11 @@ script:
       name: domain
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Retrieves statistics on the given domain.
     execution: false
@@ -1668,6 +1878,7 @@ script:
     - contextPath: MicrosoftATP.DomainStatistics.Statistics.OrgLastSeen
       description: The last date and time the domain was in the organization.
       type: Date
+    polling: true
   - arguments:
     - default: false
       description: The domain address.
@@ -1675,6 +1886,11 @@ script:
       name: domain
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Retrieves a collection of alerts related to a given domain address.
     execution: false
@@ -1758,6 +1974,7 @@ script:
     - contextPath: MicrosoftATP.DomainAlert.Alerts.Comments.CreatedTime
       description: The alert comment created time date.
       type: Date
+    polling: true
   - arguments:
     - default: false
       description: The domain address.
@@ -1765,6 +1982,11 @@ script:
       name: domain
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Retrieves a collection of machines that have communicated to or from a given domain address.
     execution: false
@@ -1827,6 +2049,7 @@ script:
     - contextPath: MicrosoftATP.DomainMachine.Machines.MachineTags
       description: Set of machine tags.
       type: String
+    polling: true
   - arguments:
     - default: false
       description: File SHA1 hash to get statistics on.
@@ -1834,6 +2057,11 @@ script:
       name: file_hash
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Retrieves statistics for the given file.
     execution: false
@@ -1863,6 +2091,7 @@ script:
     - contextPath: MicrosoftATP.FileStatistics.Statistics.TopFileNames
       description: The file's top names.
       type: String
+    polling: true
   - arguments:
     - default: false
       description: File SHA1 hash to get statistics on.
@@ -1870,6 +2099,11 @@ script:
       name: file_hash
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Retrieves a collection of alerts related to a given file hash.
     execution: false
@@ -1953,6 +2187,7 @@ script:
     - contextPath: MicrosoftATP.FileAlert.Alerts.Comments.CreatedTime
       description: The alert comment created time date.
       type: Date
+    polling: true
   - arguments:
     - default: false
       description: The IP address.
@@ -1960,6 +2195,11 @@ script:
       name: ip
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Retrieves statistics for a given IP.
     execution: false
@@ -1977,6 +2217,7 @@ script:
     - contextPath: MicrosoftATP.IPStatistics.Statistics.OrgLastSeen
       description: The last date and time the IP was in the organization.
       type: Date
+    polling: true
   - arguments:
     - default: false
       description: The IP address.
@@ -1984,6 +2225,11 @@ script:
       name: ip
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Retrieves a collection of alerts related to a given IP address.
     execution: false
@@ -2067,6 +2313,7 @@ script:
     - contextPath: MicrosoftATP.IPAlert.Alerts.Comments.CreatedTime
       description: The alert comment created time date.
       type: Date
+    polling: true
   - arguments:
     - default: false
       description: |-
@@ -2076,6 +2323,11 @@ script:
       name: username
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Retrieves a collection of alerts related to a given user ID.
     execution: false
@@ -2159,6 +2411,7 @@ script:
     - contextPath: MicrosoftATP.UserAlert.Alerts.Comments.CreatedTime
       description: The alert comment created time date.
       type: Date
+    polling: true
   - arguments:
     - default: false
       description: |-
@@ -2168,6 +2421,11 @@ script:
       name: username
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Retrieves a collection of machines related to a given user ID.
     execution: false
@@ -2230,6 +2488,7 @@ script:
     - contextPath: MicrosoftATP.UserMachine.Machines.MachineTags
       description: Set of machine tags.
       type: String
+    polling: true
   - arguments:
     - default: false
       description: The machine ID.
@@ -2253,6 +2512,11 @@ script:
       name: tag
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Adds or removes a tag on a specific machine.
     execution: false
@@ -2312,6 +2576,7 @@ script:
     - contextPath: MicrosoftATP.Machine.MachineTags
       description: Set of machine tags.
       type: String
+    polling: true
   - arguments:
     - default: false
       defaultValue: '50'
@@ -2327,6 +2592,11 @@ script:
       name: page_size
       required: false
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: true
     description: Deprecated. Use the microsoft-atp-sc-indicator-list command instead. Lists all indicators by the ID that the system creates when the indicator is ingested.
     execution: false
@@ -2506,6 +2776,7 @@ script:
     - contextPath: URL.Data
       description: The URL.
       type: String
+    polling: true
   - arguments:
     - default: true
       description: The ID of the indicator to get.
@@ -2513,6 +2784,11 @@ script:
       name: indicator_id
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: true
     description: Deprecated. Use the microsoft-atp-sc-indicator-get-by-id command instead. Gets an indicator by its ID.
     execution: false
@@ -2692,6 +2968,7 @@ script:
     - contextPath: URL.Data
       description: The URL.
       type: String
+    polling: true
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -2843,6 +3120,11 @@ script:
       name: file_type
       required: false
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: true
     description: Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a file indicator.
     execution: false
@@ -3013,10 +3295,11 @@ script:
     - contextPath: File.Path
       description: The path where the file is located.
       type: String
+    polling: true
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The action to apply if the indicator is matched from within the targetProduct security tool. 
+      description: The action to apply if the indicator is matched from within the targetProduct security tool.
       isArray: false
       name: action
       predefined:
@@ -3204,6 +3487,11 @@ script:
       name: user_agent
       required: false
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: true
     description: Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a network indicator.
     execution: false
@@ -3362,6 +3650,7 @@ script:
     - contextPath: URL.Data
       description: The URL.
       type: String
+    polling: true
   - arguments:
     - default: false
       description: The ID of the indicator to update.
@@ -3395,6 +3684,11 @@ script:
       name: description
       required: false
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: true
     description: Deprecated. Use the microsoft-atp-sc-indicator-update command instead. Updates the specified indicator.
     execution: false
@@ -3574,6 +3868,7 @@ script:
     - contextPath: URL.Data
       description: The URL.
       type: String
+    polling: true
   - arguments:
     - default: false
       description: The ID of the indicator to delete.
@@ -3581,10 +3876,16 @@ script:
       name: indicator_id
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: true
     description: Deprecated. Use the microsoft-atp-sc-indicator-delete command instead. Deletes the specified indicator.
     execution: false
     name: microsoft-atp-indicator-delete
+    polling: true
   - arguments:
     - default: false
       description: The value of the indicator to update.
@@ -3662,6 +3963,17 @@ script:
       description: A comma-separated list of RBAC group names the indicator is applied to.
       isArray: true
       name: rbac_group_names
+      required: false
+      secret: false
+    - description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
+      deprecated: true
+    - default: false
+      description: Whether to generate an alert for the indicator.
+      isArray: false
+      name: generate_alert
       required: false
       secret: false
     deprecated: false
@@ -3762,6 +4074,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
+    polling: true
   - arguments:
     - default: false
       description: The value of the indicator to update.
@@ -3784,7 +4097,7 @@ script:
       - Url
     - default: false
       auto: PREDEFINED
-      description: The action taken if the indicator is discovered in the organization. 
+      description: The action taken if the indicator is discovered in the organization.
       isArray: false
       name: action
       required: true
@@ -3839,6 +4152,17 @@ script:
       description: A comma-separated list of RBAC group names the indicator is applied to.
       isArray: true
       name: rbac_group_names
+      required: false
+      secret: false
+    - description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
+      deprecated: true
+    - default: false
+      description: Whether to generate an alert for the indicator.
+      isArray: false
+      name: generate_alert
       required: false
       secret: false
     deprecated: false
@@ -3939,6 +4263,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
+    polling: true
   - arguments:
     - default: false
       description: The ID of the indicator to delete. The ID can be retrieved by running the microsoft-atp-sc-indicator-list command.
@@ -3946,10 +4271,16 @@ script:
       name: indicator_id
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Deletes the specified indicator.
     execution: false
     name: microsoft-atp-sc-indicator-delete
+    polling: true
   - arguments:
     - default: false
       defaultValue: '50'
@@ -3958,6 +4289,11 @@ script:
       name: limit
       required: false
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     description: Lists all indicators by the ID that the system creates when the indicator is ingested.
     execution: false
     name: microsoft-atp-sc-indicator-list
@@ -4055,6 +4391,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
+    polling: true
   - arguments:
     - default: true
       description: The ID of the indicator to get. The ID can be retrieved by running the microsoft-atp-sc-indicator-list command.
@@ -4062,6 +4399,11 @@ script:
       name: indicator_id
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Gets an indicator by its ID.
     execution: false
@@ -4160,6 +4502,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
+    polling: true
   - arguments:
     - default: true
       description: A comma-separated list of CVE IDs used for getting the machines.
@@ -4167,6 +4510,11 @@ script:
       name: cve_id
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Retrieves a list of machines affected by a vulnerability.
     execution: false
@@ -4187,6 +4535,7 @@ script:
     - contextPath: MicrosoftATP.CveMachine.CVE
       description: The given CVE IDs related to this machine.
       type: Unknown
+    polling: true
   - arguments:
     - default: true
       description: A comma-separated list of file hashes (SHA1 or SHA256) used for getting the file information.
@@ -4194,6 +4543,11 @@ script:
       name: hash
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Retrieves file information by a file hash (SHA1 or SHA256).
     execution: false
@@ -4262,6 +4616,7 @@ script:
     - contextPath: File.Size
       description: The file size.
       type: Number
+    polling: true
   - arguments:
     - default: false
       description: The endpoint ID.
@@ -4281,6 +4636,11 @@ script:
       name: hostname
       required: false
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Gets machines that have communicated with Microsoft Defender for Endpoint cloud. At least one of the following arguments is required - IP, hostname, or ID. Otherwise, an error appears.
     execution: false
@@ -4379,6 +4739,7 @@ script:
     - contextPath: MicrosoftATP.Machine.AgentVersion
       description: The machine Agent version.
       type: String
+    polling: true
   - arguments:
     - default: false
       description: 'A JSON object with a list of MS defender ATP indicators to update. The indicator_batch query should be a list of dictionaries. For example: [{"indicatorValue": "value1"}, {"indicatorValue": "value2"}]'
@@ -4386,6 +4747,11 @@ script:
       name: indicator_batch
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Updates a batch of indicators. If an indicator does not exist, a new indicator is created.
     execution: false
@@ -4403,6 +4769,7 @@ script:
     - contextPath: MicrosoftATP.Indicators.IsFailed
       description: Whether the update failed.
       type: Boolean
+    polling: true
   - arguments:
     - default: false
       description: A comma-separated list of alert IDs.
@@ -4410,6 +4777,11 @@ script:
       name: alert_ids
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Retrieves a specific alert by the given alert ID.
     execution: false
@@ -4508,6 +4880,7 @@ script:
     - contextPath: MicrosoftATP.Alert.RBACGroupName
       description: The device RBAC group name.
       type: String
+    polling: true
   - arguments:
     - default: true
       description: Machine ID to add the file to.
@@ -4548,6 +4921,11 @@ script:
       required: false
       secret: false
       deprecated: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: 'Collects file from a device. Note: Backslashes in the path must be escaped.'
     execution: true
@@ -4681,6 +5059,11 @@ script:
       required: false
       secret: false
       deprecated: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: |-
       Runs a script from the library on a device. The Args parameter is passed to your script. Timeouts after 10 minutes.
@@ -4740,6 +5123,11 @@ script:
       required: false
       secret: false
       deprecated: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Puts a file from the library to the device. Files are saved in a working folder and are deleted when the device restarts by default.
     execution: true
@@ -4840,6 +5228,11 @@ script:
       name: command_index
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Gets a result file for a specified action.
     execution: true
@@ -4861,11 +5254,17 @@ script:
       name: comment
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Cancels an action with an unfinished status.
     execution: true
     name: microsoft-atp-live-response-cancel-action
     outputs: []
+    polling: true
   - name: microsoft-atp-advanced-hunting-lateral-movement-evidence
     description: Detects evidence of attempted lateral movement. When you select a “query_purpose” argument, a designated query template is used.
     deprecated: false
@@ -4955,6 +5354,11 @@ script:
       name: show_query
       required: false
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     outputs:
     - contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.network_connections
       description: The query results for network_connections query_purpose.
@@ -4968,6 +5372,7 @@ script:
     - contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.management_connection
       description: The query results for management_connection query_purpose.
       type: String
+    polling: true
   - name: microsoft-atp-advanced-hunting-persistence-evidence
     description: Detects evidence of persistence. When you select a “query_purpose” argument, a designated query template is used.
     deprecated: false
@@ -5065,6 +5470,11 @@ script:
       name: process_cmd
       required: false
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     outputs:
     - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.scheduled_job
       description: The query results for scheduled_job query_purpose.
@@ -5099,6 +5509,7 @@ script:
     - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.host_file_change
       description: The query results for host_file_change query_purpose.
       type: String
+    polling: true
   - name: microsoft-atp-advanced-hunting-file-origin
     description: Indicates how the file got on the machine. Possible details are "dropped_file" - Was the file dropped? From where? "created_file" - Created by another File (script, compiled binary). "network_shared" - Shared via network. "execution_chain" - What is the process execution chain.
     deprecated: false
@@ -5172,10 +5583,16 @@ script:
       name: show_query
       required: false
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     outputs:
     - contextPath: MicrosoftATP.HuntFileOrigin.Result
       description: The query results.
       type: String
+    polling: true
   - name: microsoft-atp-advanced-hunting-process-details
     description: Detects process details. When you select a “query_purpose” argument, a designated query template is used.
     deprecated: false
@@ -5262,6 +5679,11 @@ script:
       name: show_query
       required: false
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     outputs:
     - contextPath: MicrosoftATP.HuntProcessDetails.Result.parent_process
       description: The query results for parent_process query_purposeThe query results.
@@ -5281,6 +5703,7 @@ script:
     - contextPath: MicrosoftATP.HuntProcessDetails.Result.process_excecution_powershell
       description: The query results for process_excecution_powershell query_purpose.
       type: String
+    polling: true
   - name: microsoft-atp-advanced-hunting-network-connections
     description: Detects network connections. When you select a “query_purpose” argument, a designated query template is used.
     deprecated: false
@@ -5364,6 +5787,11 @@ script:
       name: show_query
       required: false
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     outputs:
     - contextPath: MicrosoftATP.HuntNetworkConnections.Result.external_addresses
       description: The query results for external_addresses query_purpose.
@@ -5374,6 +5802,7 @@ script:
     - contextPath: MicrosoftATP.HuntNetworkConnections.Result.encoded_commands
       description: The query results for encoded_commands query_purpose.
       type: String
+    polling: true
   - name: microsoft-atp-advanced-hunting-privilege-escalation
     description: Detects evidence of privilege escalation.
     deprecated: false
@@ -5427,6 +5856,11 @@ script:
       name: show_query
       required: false
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     outputs:
     - contextPath: MicrosoftATP.HuntPrivilegeEscalation.Result
       description: The query results.
@@ -5484,10 +5918,16 @@ script:
       name: show_query
       required: false
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     outputs:
     - contextPath: MicrosoftATP.HuntTampering.Result
       description: The query results.
       type: String
+    polling: true
   - name: microsoft-atp-advanced-hunting-cover-up
     description: Detects cover up actions. When you select a “query_purpose” argument, a designated query template is used.
     deprecated: false
@@ -5579,6 +6019,11 @@ script:
       name: show_query
       required: false
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     outputs:
     - contextPath: MicrosoftATP.HuntCoverUp.Result.file_deleted
       description: The query results for file_deleted query_purpose.
@@ -5598,6 +6043,7 @@ script:
     - contextPath: MicrosoftATP.HuntCoverUp.Result.common_files
       description: The query results for common_files query_purpose.
       type: String
+    polling: true
   - arguments:
     - default: true
       description: A machine ID used for getting logged on users.
@@ -5605,6 +6051,11 @@ script:
       name: machine_id
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Retrieves a collection of logged on users on a specific device.
     execution: false
@@ -5637,6 +6088,7 @@ script:
     - contextPath: MicrosoftATP.MachineUser.MachineID
       description: The machine ID.
       type: String
+    polling: true
   - arguments:
     - default: true
       description: A machine ID used for getting machine related alerts.
@@ -5644,6 +6096,11 @@ script:
       name: machine_id
       required: true
       secret: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Retrieves a collection of alerts related to a specific device.
     execution: false
@@ -5679,6 +6136,7 @@ script:
     - contextPath: MicrosoftATP.MachineAlerts.MachineID
       description: The alerts machine ID.
       type: String
+    polling: true
   - arguments:
     - default: false
       description: The machine ID. Can be retrieved by running the 'microsoft-atp-get-machines' command.
@@ -5712,6 +6170,11 @@ script:
       required: false
       secret: false
       deprecated: false
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     deprecated: false
     description: Collect and download an investigation package from a machine.
     execution: false
@@ -5736,6 +6199,11 @@ script:
     - description: A comment to associate with the action.
       name: comment
       required: true
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     description: Offboard a machine from defender.
     execution: true
     name: microsoft-atp-offboard-machine
@@ -5779,7 +6247,8 @@ script:
     - contextPath: MicrosoftATP.OffboardMachine.troubleshootInfo
       description: Troubleshooting information.
       type: String
-  dockerimage: demisto/crypto:1.0.0.31715
+    polling: true
+  dockerimage: demisto/crypto:1.0.0.36225
   feed: false
   isfetch: true
   longRunning: false
@@ -5792,4 +6261,3 @@ defaultmapperin: Microsoft Defender For Endpoint Mapper
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
-

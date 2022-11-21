@@ -6,6 +6,7 @@ args:
   defaultValue: sha256
   name: type
   predefined:
+  - sha512
   - sha256
   - md5
   - sha1
@@ -13,14 +14,14 @@ args:
   required: true
   description: Hash method to be used.
 comment: |
-  Creating a hash of a given input, support sha1, sha256, md5 and blake. Wrapper for https://docs.python.org/3/library/hashlib.html.
+  Creating a hash of a given input, support sha1, sha256, sha512, md5 and blake. Wrapper for https://docs.python.org/3/library/hashlib.html.
 commonfields:
   id: CreateHash
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/python3:3.10.4.27798
+dockerimage: demisto/python3:3.10.6.33415
 enabled: true
 name: CreateHash
 outputs:

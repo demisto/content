@@ -1,0 +1,34 @@
+{
+    "autorun": true,
+    "color": "#54CEC7",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {
+            "details": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": true
+            }
+        },
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Google Dorking",
+    "layout": "Google Dorking",
+    "locked": false,
+    "name": "Google Dorking",
+    "onChangeRepAlg": 0,
+    "playbookId": "Google Dorking File Processing",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.2.0"
+}

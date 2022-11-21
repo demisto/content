@@ -17,19 +17,22 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+      - "4"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 80
+          "x": 265,
+          "y": 50
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 335f96a3-ea62-4a3f-8808-873c57caa695
@@ -46,21 +49,23 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 440
+          "x": 265,
+          "y": 370
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: b30d383c-cdfb-4200-8ed6-cb7ab5b00a1c
+    taskid: 3ba3c401-b5ae-4213-83a4-1d9b0f3de689
     type: playbook
     task:
-      id: b30d383c-cdfb-4200-8ed6-cb7ab5b00a1c
+      id: 3ba3c401-b5ae-4213-83a4-1d9b0f3de689
       version: -1
       name: Symantec block Email
       playbookName: Symantec block Email
@@ -71,9 +76,6 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
-    scriptarguments:
-      EmailToBlock:
-        simple: ${inputs.EmailToBlock}
     separatecontext: true
     loop:
       iscommand: false
@@ -83,8 +85,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 250
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -92,15 +94,63 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: bae7d267-da68-49d4-8e25-be3f454c8608
+    type: playbook
+    task:
+      id: bae7d267-da68-49d4-8e25-be3f454c8608
+      version: -1
+      name: Mimecast - Block Sender Email
+      playbookName: Mimecast - Block Sender Email
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      BlockGroup:
+        complex:
+          root: inputs.MimecastBlockGroup
+      QuerySource:
+        complex:
+          root: inputs.MimecastQuerySource
+      SenderEmail:
+        complex:
+          root: inputs.EmailToBlock
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 425,
-        "width": 380,
-        "x": 450,
-        "y": 80
+        "height": 385,
+        "width": 810,
+        "x": 50,
+        "y": 50
       }
     }
   }
@@ -109,6 +159,16 @@ inputs:
   value: {}
   required: false
   description: The email address that will be blocked.
+  playbookInputQuery:
+- key: MimecastBlockGroup
+  value: {}
+  required: false
+  description: The name of the Mimecast block group to add emails to.
+  playbookInputQuery:
+- key: MimecastQuerySource
+  value: {}
+  required: false
+  description: The query source of Mimecast, please input "cloud" or "ldap".
   playbookInputQuery:
 outputs: []
 tests:

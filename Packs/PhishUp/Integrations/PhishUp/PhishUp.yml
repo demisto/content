@@ -32,6 +32,35 @@ configuration:
   - ' Move to SPAM'
   required: true
   type: 15
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
+- defaultvalue: indicatorType
+  name: feedExpirationPolicy
+  display: ''
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  display: ''
+  required: false
+  type: 1
 description: PhishUp prevents phishing attacks, protects your staff and your brand
   with AI
 display: PhishUp
@@ -97,7 +126,7 @@ script:
     - contextPath: PhishUp.Evaluation
       description: returns "Phish" if any response has "Phish" result
       type: String
-  dockerimage: demisto/python3:3.10.4.27798
+  dockerimage: demisto/python3:3.10.5.31928
   feed: false
   isfetch: false
   longRunning: false

@@ -3,9 +3,7 @@ commonfields:
   id: SaaS Security Event Collector
   version: -1
 configuration:
-- additionalinfo: 'The instance configuration URL based on the server location: <br/>US:
-    https://api.aperture.paloaltonetworks.com<br/> EU: https://api.aperture-eu.paloaltonetworks.com<br/>
-    APAC: https://api.aperture-apac.paloaltonetworks.com'
+- additionalinfo: 'The instance configuration URL based on the server location: <br/>US: https://api.aperture.paloaltonetworks.com<br/> EU: https://api.aperture-eu.paloaltonetworks.com<br/> APAC: https://api.aperture-apac.paloaltonetworks.com'
   defaultvalue: https://api.aperture.paloaltonetworks.com
   display: Your server URL
   name: url
@@ -31,15 +29,6 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- display: The vendor corresponding to the integration that produced the events.
-  name: vendor
-  type: 0
-  defaultvalue: paloaltonetworks
-- display: The product corresponding to the integration that produced the events.
-  name: product
-  type: 0
-  defaultvalue: saassecurity
-  required: false
 description: Palo Alto Networks SaaS Security Event Collector integration for XSIAM.
 display: SaaS Security Event Collector
 name: SaaS Security Event Collector
@@ -50,17 +39,17 @@ script:
     execution: false
     name: saas-security-get-events
     arguments:
-      - name: limit
-        description: The maximum number of events to get. Must be divisible by 100 due to SaaS-Security api limitations. Overrides the max-fetch parameter of the integration.
-      - auto: PREDEFINED
-        defaultValue: 'False'
-        description: Set this argument to True in order to create events, otherwise the command will only display them. *If setting to 'False' The returned events will be lost.*
-        isArray: false
-        name: should_push_events
-        predefined:
-          - 'True'
-          - 'False'
-        required: true
+    - name: limit
+      description: The maximum number of events to get. Must be divisible by 100 due to SaaS-Security api limitations. Overrides the max-fetch parameter of the integration.
+    - auto: PREDEFINED
+      defaultValue: 'False'
+      description: Set this argument to True in order to create events, otherwise the command will only display them. *If setting to 'False' The returned events will be lost.*
+      isArray: false
+      name: should_push_events
+      predefined:
+      - 'True'
+      - 'False'
+      required: true
     outputs:
     - contextPath: SaasSecurity.Event.log_type
       description: Event type.
@@ -152,7 +141,7 @@ script:
     - contextPath: SaasSecurity.Event.resource_value_new
       description: New resource value. (optional).
       type: String
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.5.31928
   isfetchevents: true
   script: '-'
   subtype: python3

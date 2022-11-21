@@ -1,0 +1,26 @@
+commonfields:
+  id: CuckooDetonateURL
+  version: -1
+name: CuckooDetonateURL
+script: ''
+type: python
+subtype: python3
+tags:
+- cuckoo
+comment: Deprecated. Use 'cuckoo-create-task-from-url' instead.
+deprecated: true
+system: true
+args:
+- name: url
+  required: true
+  default: true
+  description: URL to check.
+scripttarget: 0
+dependson:
+  must:
+  - cuckoo-create-task-from-url
+timeout: 0s
+tests:
+- No test
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.6.33415

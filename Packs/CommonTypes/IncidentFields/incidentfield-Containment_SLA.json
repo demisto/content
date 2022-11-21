@@ -1,0 +1,31 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "containmentsla",
+    "closeForm": false,
+    "content": true,
+    "editForm": false,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_containmentsla",
+    "description": "The time it took to contain the incident.",
+    "isReadOnly": true,
+    "locked": false,
+    "name": "Containment SLA",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 30,
+    "system": false,
+    "threshold": 3,
+    "type": "timer",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.0.0"
+}

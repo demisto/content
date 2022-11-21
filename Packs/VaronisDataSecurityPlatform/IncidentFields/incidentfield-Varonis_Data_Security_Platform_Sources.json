@@ -1,0 +1,59 @@
+{
+    "id": "incident_varonisdatasecurityplatformsources",
+    "version": -1,
+    "name": "Varonis Data Security Platform Sources",
+    "ownerOnly": false,
+    "cliName": "varonisdatasecurityplatformsources",
+    "associatedTypes": [
+        "Varonis DSP Incident"
+    ],
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "platform",
+            "displayName": "Platform",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 263,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "fileserverordomain",
+            "displayName": "File Server Or Domain",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

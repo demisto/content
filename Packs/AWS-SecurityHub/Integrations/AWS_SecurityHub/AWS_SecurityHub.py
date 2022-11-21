@@ -733,7 +733,8 @@ def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filter
     incidents = [{
         'occurred': finding['CreatedAt'],
         'severity': severity_mapping(finding['Severity']['Normalized']),
-        'rawJSON': json.dumps(finding)
+        'rawJSON': json.dumps(finding),
+        'dbotMirrorId': finding['Id']
     }
         for finding in findings]
     if findings:

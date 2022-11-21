@@ -76,3 +76,16 @@ Check the recommended remediation action for any incident
 | --- | --- | 
 | **remediation_actions** | **NEEDS REVIEW** |
 
+### fetch-incidents
+***
+Gets a list of armorblox incidents
+
+
+#### Base Command
+
+`fetch-incidents`
+
+
+#### Context Output
+
+There is no context output for this command.

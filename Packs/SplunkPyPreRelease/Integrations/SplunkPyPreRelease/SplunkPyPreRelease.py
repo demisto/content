@@ -2200,7 +2200,7 @@ def splunk_edit_notable_event_command(service, auth_token):
     params = demisto.params()
 
     base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
-    sessionKey = service.token if not auth_token else None
+    sessionKey = get_auth_session_key(service) if not auth_token else None
 
     eventIDs = None
     if demisto.get(demisto.args(), 'eventIDs'):
@@ -2474,6 +2474,13 @@ def get_kv_store_config(kv_store):
     return '\n'.join(readable)
 
 
+def get_auth_session_key(service):
+    """
+    Get the session key or token for POST request based on whether the Splunk basic auth are true or not
+    """
+    return service and service.basic and service._auth_headers[0][1] or service.token
+
+
 def extract_indicator(indicator_path, _dict_objects):
     indicators = []
     indicator_paths = indicator_path.split('.')
@@ -2523,7 +2530,6 @@ def main():
         connection_args['username'] = username
         connection_args['password'] = password
         connection_args['autologin'] = True
-        connection_args['basic'] = True
 
     if use_requests_handler:
         handle_proxy()

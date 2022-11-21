@@ -503,7 +503,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: MicrosoftATP.HuntPersistenceEvidence.Result
+              simple: MicrosoftATP.HuntPersistenceEvidence.Result.group_user_change
           operator: isNotEmpty
           right:
             value: {}
@@ -524,12 +524,12 @@ tasks:
     task:
       brand: ''
       description: Any results?
-      id: eb473d36-4c0c-455e-86a1-c574554cfefa
+      id: 4fc1e709-e62d-4d32-8511-0407c5d72f97
       iscommand: false
       name: Any results?
       type: condition
       version: -1
-    taskid: eb473d36-4c0c-455e-86a1-c574554cfefa
+    taskid: 4fc1e709-e62d-4d32-8511-0407c5d72f97
     timertriggers: []
     type: condition
     view: |-
@@ -610,7 +610,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: MicrosoftATP.HuntPersistenceEvidence.Result
+              simple: MicrosoftATP.HuntPersistenceEvidence.Result.new_group
           operator: isNotEmpty
           right:
             value: {}
@@ -631,12 +631,12 @@ tasks:
     task:
       brand: ''
       description: Any results?
-      id: 6b2908e3-b71b-4149-8526-3aacc02e313a
+      id: 25bf6692-ea9e-4694-865a-34eb7d2f885a
       iscommand: false
       name: Any results?
       type: condition
       version: -1
-    taskid: 6b2908e3-b71b-4149-8526-3aacc02e313a
+    taskid: 25bf6692-ea9e-4694-865a-34eb7d2f885a
     timertriggers: []
     type: condition
     view: |-
@@ -717,7 +717,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: MicrosoftATP.HuntPersistenceEvidence.Result
+              simple: MicrosoftATP.HuntPersistenceEvidence.Result.new_user
           operator: isNotEmpty
           right:
             value: {}
@@ -738,12 +738,12 @@ tasks:
     task:
       brand: ''
       description: Any results?
-      id: 06eee70f-4a15-4510-863a-8dc29613fe3d
+      id: c7909e61-e6e8-40e1-830b-39a15b154fd0
       iscommand: false
       name: Any results?
       type: condition
       version: -1
-    taskid: 06eee70f-4a15-4510-863a-8dc29613fe3d
+    taskid: c7909e61-e6e8-40e1-830b-39a15b154fd0
     timertriggers: []
     type: condition
     view: |-
@@ -824,7 +824,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: MicrosoftATP.HuntPersistenceEvidence.Result
+              simple: MicrosoftATP.HuntPersistenceEvidence.Result.registry_entry
           operator: isNotEmpty
           right:
             value: {}
@@ -845,12 +845,12 @@ tasks:
     task:
       brand: ''
       description: Any results?
-      id: 80f5dab1-5c7b-45a1-8be6-7440d8ac0459
+      id: c78f32fc-6e71-460f-8efa-0b5ae87a3d0e
       iscommand: false
       name: Any results?
       type: condition
       version: -1
-    taskid: 80f5dab1-5c7b-45a1-8be6-7440d8ac0459
+    taskid: c78f32fc-6e71-460f-8efa-0b5ae87a3d0e
     timertriggers: []
     type: condition
     view: |-
@@ -931,7 +931,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: MicrosoftATP.HuntPersistenceEvidence.Result
+              simple: MicrosoftATP.HuntPersistenceEvidence.Result.startup_folder_changes
           operator: isNotEmpty
           right:
             value: {}
@@ -952,12 +952,12 @@ tasks:
     task:
       brand: ''
       description: Any results?
-      id: ab08cf70-e437-4ef5-8f24-87956b96ef9e
+      id: 1d39a97c-b11e-4e1c-8599-67446bba05ce
       iscommand: false
       name: Any results?
       type: condition
       version: -1
-    taskid: ab08cf70-e437-4ef5-8f24-87956b96ef9e
+    taskid: 1d39a97c-b11e-4e1c-8599-67446bba05ce
     timertriggers: []
     type: condition
     view: |-
@@ -1038,7 +1038,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: MicrosoftATP.HuntPersistenceEvidence.Result
+              simple: MicrosoftATP.HuntPersistenceEvidence.Result.scheduled_job
           operator: isNotEmpty
           right:
             value: {}
@@ -1059,12 +1059,12 @@ tasks:
     task:
       brand: ''
       description: Any results?
-      id: 31d216f7-1d35-44e6-8150-a593001c76ee
+      id: c944b0db-041c-4401-8757-c215fbc3454f
       iscommand: false
       name: Any results?
       type: condition
       version: -1
-    taskid: 31d216f7-1d35-44e6-8150-a593001c76ee
+    taskid: c944b0db-041c-4401-8757-c215fbc3454f
     timertriggers: []
     type: condition
     view: |-

@@ -1,30 +1,50 @@
 from __future__ import print_function
 
-import os
 import ast
-import json
+from functools import lru_cache
 import glob
+import json
+import os
 import re
 import sys
-import demisto_client
-from threading import Thread, Lock
-from demisto_client.demisto_api.rest import ApiException
-from demisto_sdk.commands.common.tools import run_threads_list
-
-from google.cloud.storage import Bucket
-from packaging.version import Version
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
+from threading import Lock
 from typing import List
 
-from Tests.Marketplace.marketplace_services import init_storage_client, Pack, load_json
+import demisto_client
+from demisto_client.demisto_api.rest import ApiException
+from demisto_sdk.commands.common import tools
+from demisto_sdk.commands.content_graph.common import PACK_METADATA_FILENAME
+from google.cloud.storage import Bucket
+from packaging.version import Version
+
+from Tests.Marketplace.marketplace_constants import (IGNORED_FILES,
+                                                     PACKS_FOLDER,
+                                                     PACKS_FULL_PATH,
+                                                     GCPConfig, Metadata)
+from Tests.Marketplace.marketplace_services import (Pack, init_storage_client,
+                                                    load_json)
 from Tests.Marketplace.upload_packs import download_and_extract_index
-from Tests.Marketplace.marketplace_constants import GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER, Metadata
-from Tests.scripts.utils.content_packs_util import is_pack_deprecated
 from Tests.scripts.utils import logging_wrapper as logging
 
-PACK_METADATA_FILE = 'pack_metadata.json'
 PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.PRODUCTION_STORAGE_BASE_PATH}/[A-Za-z0-9-_.]+/(\d+\.\d+\.\d+)/[A-Za-z0-9-_.]'
                                      r'+\.zip$')
 SUCCESS_FLAG = True
+
+
+def is_pack_deprecated(pack_path: str) -> bool:
+    """Checks whether the pack is deprecated.
+    Tests are not being collected for deprecated packs and the pack is not installed in the build process.
+    Args:
+        pack_path (str): The pack path
+    Returns:
+        True if the pack is deprecated, False otherwise
+    """
+    pack_metadata_path = Path(pack_path) / PACK_METADATA_FILENAME
+    if not pack_metadata_path.is_file():
+        return True
+    return tools.get_pack_metadata(str(pack_metadata_path)).get('hidden', False)
 
 
 def get_pack_id_from_error_with_gcp_path(error: str) -> str:
@@ -46,7 +66,7 @@ def get_pack_display_name(pack_id: str) -> str:
     :param pack_id: ID of the pack.
     :return: Name found in the pack metadata, otherwise an empty string.
     """
-    metadata_path = os.path.join(PACKS_FULL_PATH, pack_id, PACK_METADATA_FILE)
+    metadata_path = os.path.join(PACKS_FULL_PATH, pack_id, PACK_METADATA_FILENAME)
     if pack_id and os.path.isfile(metadata_path):
         with open(metadata_path, 'r') as json_file:
             pack_metadata = json.load(json_file)
@@ -54,6 +74,7 @@ def get_pack_display_name(pack_id: str) -> str:
     return ''
 
 
+@lru_cache
 def is_pack_hidden(pack_id: str) -> bool:
     """
     Check if the given pack is deprecated.
@@ -61,7 +82,7 @@ def is_pack_hidden(pack_id: str) -> bool:
     :param pack_id: ID of the pack.
     :return: True if the pack is deprecated, i.e. has 'hidden: true' field, False otherwise.
     """
-    metadata_path = os.path.join(PACKS_FULL_PATH, pack_id, PACK_METADATA_FILE)
+    metadata_path = os.path.join(PACKS_FULL_PATH, pack_id, PACK_METADATA_FILENAME)
     if pack_id and os.path.isfile(metadata_path):
         with open(metadata_path, 'r') as json_file:
             pack_metadata = json.load(json_file)
@@ -629,18 +650,15 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
     packs_to_install: list = []  # we save all the packs we want to install, to avoid duplications
     installation_request_body: list = []  # the packs to install, in the request format
 
-    threads_list = []
     lock = Lock()
 
-    for pack_id in pack_ids:
-        thread = Thread(target=search_pack_and_its_dependencies,
-                        kwargs={'client': client,
-                                'pack_id': pack_id,
-                                'packs_to_install': packs_to_install,
-                                'installation_request_body': installation_request_body,
-                                'lock': lock})
-        threads_list.append(thread)
-    run_threads_list(threads_list)
+    with ThreadPoolExecutor(max_workers=130) as pool:
+        for pack_id in pack_ids:
+            if is_pack_hidden(pack_id):
+                logging.debug(f'pack {pack_id} is hidden, skipping installation and not searching for dependencies')
+                continue
+            pool.submit(search_pack_and_its_dependencies,
+                        client, pack_id, packs_to_install, installation_request_body, lock)
 
     install_packs(client, host, installation_request_body)
 

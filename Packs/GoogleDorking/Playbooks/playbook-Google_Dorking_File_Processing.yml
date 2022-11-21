@@ -1,0 +1,1700 @@
+id: Google Dorking File Processing
+version: -1
+name: Google Dorking File Processing
+description: |-
+  This playbook processes files fetched by the Google Dorking integration.
+  The SOC will track the file owner and classify the exposed data and users in order to contained the leaked data.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 22fc4f65-594e-4751-8f08-15c58a2e2c95
+    type: start
+    task:
+      id: 22fc4f65-594e-4751-8f08-15c58a2e2c95
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1760,
+          "y": -2610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: c1e41188-0c5a-4282-8ab8-fe041225d62f
+    type: condition
+    task:
+      id: c1e41188-0c5a-4282-8ab8-fe041225d62f
+      version: -1
+      name: Does the file need to be removed?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "No":
+      - "5"
+      "YES":
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 050603ae-f766-4e5e-8986-9af74f7fa1be
+    type: title
+    task:
+      id: 050603ae-f766-4e5e-8986-9af74f7fa1be
+      version: -1
+      name: Non sensetive data
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: ea5bd8fc-96b6-4d21-85cb-d835fbe86111
+    type: regular
+    task:
+      id: ea5bd8fc-96b6-4d21-85cb-d835fbe86111
+      version: -1
+      name: Add file SHA256 to exclusion list
+      description: commands.local.cmd.list.add
+      script: Builtin|||addToList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      listData:
+        simple: ${File.SHA256}
+      listName:
+        simple: ${inputs.ExclusionListName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: afb4f340-d3db-48ca-8aec-4f972e7a3648
+    type: condition
+    task:
+      id: afb4f340-d3db-48ca-8aec-4f972e7a3648
+      version: -1
+      name: Does data require compliance?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "31"
+      Custom:
+      - "42"
+      GDPR:
+      - "55"
+      HIPPA:
+      - "56"
+      US:
+      - "57"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2610,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 5df0aebd-c38a-43fb-823f-ead8f9b978d4
+    type: title
+    task:
+      id: 5df0aebd-c38a-43fb-823f-ead8f9b978d4
+      version: -1
+      name: Compliance
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2610,
+          "y": 315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 2834e6ec-91e1-4b18-80ca-9b0065e02a0c
+    type: title
+    task:
+      id: 2834e6ec-91e1-4b18-80ca-9b0065e02a0c
+      version: -1
+      name: IT Operations
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": 315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: ba0d16e9-be35-450a-809c-6ed04a14649c
+    type: condition
+    task:
+      id: ba0d16e9-be35-450a-809c-6ed04a14649c
+      version: -1
+      name: Are there breached service accounts?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "31"
+      "Yes":
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 7159663a-8eb2-46a6-8e80-92d61ce09e23
+    type: regular
+    task:
+      id: 7159663a-8eb2-46a6-8e80-92d61ce09e23
+      version: -1
+      name: Notify IT to reset all detected credentials
+      description: Send an email
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      body:
+        simple: 'Review the following accounts '
+      subject:
+        simple: Exposed accounts on google
+      to:
+        simple: ${inputs.ITMailAddress}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1300,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 02c6eed9-00a1-41d1-8800-601319a4c0bc
+    type: regular
+    task:
+      id: 02c6eed9-00a1-41d1-8800-601319a4c0bc
+      version: -1
+      name: Notify IT to replace service accounts
+      description: Send an email
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      subject:
+        simple: Exposed service accounts on google
+      to:
+        simple: ${inputs.ITMailAddress}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2110,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 340c5db6-8fcf-4f27-8f50-6cda98368ee9
+    type: regular
+    task:
+      id: 340c5db6-8fcf-4f27-8f50-6cda98368ee9
+      version: -1
+      name: Revoke API keys
+      description: Send an email
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      replyTo:
+        simple: ${inputs.ITMailAddress}
+      subject:
+        simple: Exposed API key on google
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1700,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: ddc792a1-a861-49c2-8e7e-c6ce1249a6ef
+    type: condition
+    task:
+      id: ddc792a1-a861-49c2-8e7e-c6ce1249a6ef
+      version: -1
+      name: Is the data owner known?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "NO":
+      - "24"
+      "YES":
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1760,
+          "y": -1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: cf691179-a204-4721-828c-703bc34a98cf
+    type: collection
+    task:
+      id: cf691179-a204-4721-828c-703bc34a98cf
+      version: -1
+      name: Data owner details
+      description: commands.local.cmd.set.incident
+      type: collection
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1760,
+          "y": -695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Provide data owner name
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Provide data owner email
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Data owner details
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 98f687db-ceee-4458-87a9-e7145ff7eda1
+    type: regular
+    task:
+      id: 98f687db-ceee-4458-87a9-e7145ff7eda1
+      version: -1
+      name: Track data owner
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2340,
+          "y": -1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 16f33acb-d67a-4bf5-8eae-8f95b25fd295
+    type: collection
+    task:
+      id: 16f33acb-d67a-4bf5-8eae-8f95b25fd295
+      version: -1
+      name: Validate data classification
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2340,
+          "y": -360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: What is the data classification
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: public
+        - simple: internal-only
+        - simple: confidential
+        - simple: restricted
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Is there IT data
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Is the data under compliance
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Data classification
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 92e255de-250a-4d6f-8096-1276ec5e84c0
+    type: regular
+    task:
+      id: 92e255de-250a-4d6f-8096-1276ec5e84c0
+      version: -1
+      name: Set severity
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      severity:
+        complex:
+          root: Provide the data classification.Answers
+          accessor: "0"
+          transformers:
+          - operator: MapValuesTransformer
+            args:
+              input_values:
+                value:
+                  simple: public,internal-only,confidential,restricted
+              mapped_values:
+                value:
+                  simple: inputs.SeverityMapping
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1760,
+          "y": -50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 59800b8c-8da8-4ae8-8702-4db813d6a115
+    type: condition
+    task:
+      id: 59800b8c-8da8-4ae8-8702-4db813d6a115
+      version: -1
+      name: Course of action
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      Non sensitive:
+      - "4"
+      Sensitive data:
+      - "13"
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1760,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: cae28c5a-536f-4e3a-8fa8-a6612cb60856
+    type: regular
+    task:
+      id: cae28c5a-536f-4e3a-8fa8-a6612cb60856
+      version: -1
+      name: Close investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1540,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 56ab0a0a-643d-49bd-8acc-efc9806df570
+    type: title
+    task:
+      id: 56ab0a0a-643d-49bd-8acc-efc9806df570
+      version: -1
+      name: Close
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1540,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 756f4c0b-19ce-4b70-8b58-49481ee2923f
+    type: title
+    task:
+      id: 756f4c0b-19ce-4b70-8b58-49481ee2923f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1540,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 34530be5-9cc9-48a0-81fc-c09149d105bd
+    type: regular
+    task:
+      id: 34530be5-9cc9-48a0-81fc-c09149d105bd
+      version: -1
+      name: Remove file from google indexing
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2320,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 2a860634-d266-4996-8d6b-9b5368b15391
+    type: collection
+    task:
+      id: 2a860634-d266-4996-8d6b-9b5368b15391
+      version: -1
+      name: Notify data owner
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1760,
+          "y": -360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${Data owner details.Answers.1}
+      subject:
+        simple: The file ${incident.file} has been found on google
+      body:
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: What is the data classification
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: public
+        - simple: internal-only
+        - simple: confidential
+        - simple: restricted
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Provide the data classification
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 4327abc1-6d1b-428e-8e86-f38582964cc3
+    type: condition
+    task:
+      id: 4327abc1-6d1b-428e-8e86-f38582964cc3
+      version: -1
+      name: Owner found?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "25"
+      Found:
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2340,
+          "y": -870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: f98aaebf-98c3-4a0b-8ca3-16db659d5fe6
+    type: regular
+    task:
+      id: f98aaebf-98c3-4a0b-8ca3-16db659d5fe6
+      version: -1
+      name: Set severity
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      severity:
+        complex:
+          root: Data classification.Answers
+          accessor: "0"
+          transformers:
+          - operator: MapValuesTransformer
+            args:
+              input_values:
+                value:
+                  simple: public,internal-only,confidential,restricted
+              mapped_values:
+                value:
+                  simple: inputs.SeverityMapping
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2340,
+          "y": -50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: bc6700e4-78f7-4dca-81fd-ccb4103d7911
+    type: regular
+    task:
+      id: bc6700e4-78f7-4dca-81fd-ccb4103d7911
+      version: -1
+      name: Rasterize file
+      description: Converts the contents of a URL to an image file or a PDF file.
+      tags:
+      - image
+      script: '|||rasterize'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      url:
+        simple: ${incident.detectionurl}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1570,
+          "y": -1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 03874d4e-7eec-4b47-89af-fd8a223ff0fc
+    type: title
+    task:
+      id: 03874d4e-7eec-4b47-89af-fd8a223ff0fc
+      version: -1
+      name: Present Data
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+      - "37"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1760,
+          "y": -1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: d7352e17-457c-442f-8a0f-8e6c1bfc5b0b
+    type: regular
+    task:
+      id: d7352e17-457c-442f-8a0f-8e6c1bfc5b0b
+      version: -1
+      name: Read data
+      description: Load the contents of a file into context.
+      scriptName: ReadFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1960,
+          "y": -1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: details
+      output:
+        simple: ${FileData}
+    - incidentfield: Description
+      output:
+        simple: ${FileData}
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: df5bf13d-bb30-4567-8532-e3d258d2e268
+    type: title
+    task:
+      id: df5bf13d-bb30-4567-8532-e3d258d2e268
+      version: -1
+      name: Data Owner and Classification
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1760,
+          "y": -1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 2fd4bb91-987d-4d3a-8446-ae2d384713aa
+    type: regular
+    task:
+      id: 2fd4bb91-987d-4d3a-8446-ae2d384713aa
+      version: -1
+      name: Create custom notification incident
+      description: commands.local.cmd.create.inc
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3940,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 54c7e538-c448-444c-8152-b2c81a8ef6b0
+    type: regular
+    task:
+      id: 54c7e538-c448-444c-8152-b2c81a8ef6b0
+      version: -1
+      name: Confirm remediation is complete
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3160,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 347bc0a6-7863-4eeb-806b-5278ae2b94c2
+    type: regular
+    task:
+      id: 347bc0a6-7863-4eeb-806b-5278ae2b94c2
+      version: -1
+      name: Set Data Owner Details
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      googledorkingdataowner:
+        simple: ${Data owner details.Answers.0}
+      googledorkingdataownermail:
+        simple: ${Data owner details.Answers.1}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1760,
+          "y": -525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: a02f9e25-4808-483b-8a02-059019ec649c
+    type: regular
+    task:
+      id: a02f9e25-4808-483b-8a02-059019ec649c
+      version: -1
+      name: Get data classification from data owner
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      googledorkingdataclassification:
+        simple: ${Provide the data classification.Answers.0}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1760,
+          "y": -205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 220e5a39-6194-43a0-8531-1deef00e667b
+    type: regular
+    task:
+      id: 220e5a39-6194-43a0-8531-1deef00e667b
+      version: -1
+      name: Extract usernames
+      description: Extract strings suspected as a user from a given file or text.
+      scriptName: ExtractUsernames
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+      - "51"
+      - "52"
+    scriptarguments:
+      text:
+        simple: ${incident.details}
+      user_regex:
+        simple: .*?username\s+\:\s(.*?)\s
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": 455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 2595e519-ec0d-467e-8d15-cb9930bc6397
+    type: title
+    task:
+      id: 2595e519-ec0d-467e-8d15-cb9930bc6397
+      version: -1
+      name: Exclusion
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "49"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1760,
+          "y": -2480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 3329fb5f-e201-47e2-8998-3078396b31e5
+    type: condition
+    task:
+      id: 3329fb5f-e201-47e2-8998-3078396b31e5
+      version: -1
+      name: Was a file hash list provided?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "36"
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ExclusionListName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1760,
+          "y": -2340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: c58f00db-a0ba-498f-8555-8d3780f6a07a
+    type: title
+    task:
+      id: c58f00db-a0ba-498f-8555-8d3780f6a07a
+      version: -1
+      name: File Excluded close incident
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": -1635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: f1e227e2-0aa6-4e62-8a66-3c22f4ab43f5
+    type: condition
+    task:
+      id: f1e227e2-0aa6-4e62-8a66-3c22f4ab43f5
+      version: -1
+      name: Are there breached API keys?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+      "YES":
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1700,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 43aab3a5-fbb9-4e7e-8b2f-533dbcbe5cfb
+    type: condition
+    task:
+      id: 43aab3a5-fbb9-4e7e-8b2f-533dbcbe5cfb
+      version: -1
+      name: Are there breached user accounts?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "31"
+      "YES":
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1300,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: b14e4f6e-b3e0-4035-81b3-da5769198f35
+    type: regular
+    task:
+      id: b14e4f6e-b3e0-4035-81b3-da5769198f35
+      version: -1
+      name: Run filter by list
+      description: Checks whether the specified item is in a list. The default list is the Demisto Indicators Whitelist.
+      scriptName: FilterByList
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      listname:
+        simple: ${inputs.ExclusionListName}
+      values:
+        simple: ${File.SHA256}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": -2170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 0b13c700-f2e4-4620-884f-a87b4febe39c
+    type: condition
+    task:
+      id: 0b13c700-f2e4-4620-884f-a87b4febe39c
+      version: -1
+      name: Is the file in the exclusion list?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "36"
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: List.In
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": -1960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 6d37ef5b-b6fa-48d0-8502-7aab94d60dc6
+    type: playbook
+    task:
+      id: 6d37ef5b-b6fa-48d0-8502-7aab94d60dc6
+      version: -1
+      name: GDPR Breach Notification
+      playbookName: GDPR Breach Notification
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2770,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: fe66a184-fdf5-4b4c-8a7e-776891427d6c
+    type: playbook
+    task:
+      id: fe66a184-fdf5-4b4c-8a7e-776891427d6c
+      version: -1
+      name: HIPAA - Breach Notification
+      playbookName: HIPAA - Breach Notification
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      AutoNotification:
+        simple: "False"
+      ContactEmailAddress:
+        simple: ${incident.googledorkingdataownermail}
+      ContactName:
+        simple: ${incident.googledorkingdataowner}
+      ResidentNotification_WhatCanTheyDo:
+        simple: "First, change your online login information, passwords, and security questions-and-answers. \nSecond, if you used similar login information and passwords for different sites - change the login information, passwords, and security Q&A to them, too.\nThird, pay attention if you start receiving notices of password changes to your current accounts or find yourself locked out of your accounts.\nFourth, Consider implementing two-factor-authentication to your account to reduce the risk of unauthorized access in your account."
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 3160,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: ae16018c-6b4f-4964-8377-4ac6fe69855b
+    type: playbook
+    task:
+      id: ae16018c-6b4f-4964-8377-4ac6fe69855b
+      version: -1
+      name: US - Breach Notification
+      playbookName: US - Breach Notification
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      AutoNotification:
+        simple: "False"
+      ContactEmailAddress:
+        simple: ${incident.googledorkingdataownermail}
+      ContactName:
+        simple: ${incident.googledorkingdataowner}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 3550,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: e361134a-9fc9-4ad8-8523-29e025038415
+    type: regular
+    task:
+      id: e361134a-9fc9-4ad8-8523-29e025038415
+      version: -1
+      name: Extract indicators
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      text:
+        simple: ${incident.details}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1960,
+          "y": -1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_31_#default#": 0.8,
+      "22_23_YES": 0.55,
+      "7_31_#default#": 0.42
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4235,
+        "width": 3690,
+        "x": 630,
+        "y": -2610
+      }
+    }
+  }
+inputs:
+- key: ExclusionListName
+  value: {}
+  required: false
+  description: An XSOAR list to exclude files by hash
+  playbookInputQuery:
+- key: SeverityMapping
+  value:
+    simple: 1,2,3,4
+  required: false
+  description: ""
+  playbookInputQuery:
+- key: ComplianceMailAddress
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+- key: ITMailAddress
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

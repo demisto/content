@@ -6,25 +6,31 @@ Ingest indicator feeds from TAXII 2.0 and 2.1 servers.
 2. Search for TAXII 2 Feed.
 3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Required** |
-| --- | --- |
-| Fetch indicators | False |
-| Indicator Reputation | False |
-| Source Reliability | True |
-| Traffic Light Protocol Color | False
-| Feed Fetch Interval | False |
-| Bypass exclusion list | False |
-| Discovery Service URL \(e.g. https://example.net/taxii\) | True |
-| Username / API Key / Custom Auth Header | False |
-| Collection Name To Fetch Indicators From | False |
-| Full Feed Fetch | False |
-| Max Indicators Per Fetch \(disabled for Full Feed Fetch\) | False |
-| First Fetch Time | False |
-| Max STIX Objects Per Poll | False |
-| Complex Observation Mode | False |
-| Trust any certificate \(not secure\) | False |
-| Use system proxy settings | False |
-| Tags | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Fetch indicators |  | False |
+| Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
+| Source Reliability | Reliability of the source providing the intelligence data | True |
+| Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
+| Feed Fetch Interval |  | False |
+| Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
+| Discovery Service URL (e.g. https://example.net/taxii) |  | True |
+| Username / API Key |  | False |
+| Password |  | False |
+| Collection Name To Fetch Indicators From | Indicators will be fetched from this collection. Run "taxii2-get-collections" command to get a valid value. If left empty, the instance will try to fetch from all the collections in the given discovery service. | False |
+| Incremental Feed | Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified. | False |
+| Full Feed Fetch | When enabled, fetch-indicators will try to fetch the entire feed for every fetch. When disabled, fetch-indicators will try to fetch just the latest entries \(since the last fetch\). | False |
+| Max Indicators Per Fetch (disabled for Full Feed Fetch) | The maximum number of indicators that can be fetched per fetch. If this field is left empty, there will be no limit on the number of indicators fetched. | False |
+| First Fetch Time | The time interval for the first fetch \(retroactive\). &amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt; of type minute/hour/day/year. For example, 1 minute, 12 hour | False |
+| STIX Objects To Fetch |  | False |
+| Certificate File as Text | Add a certificate file as text to connect to the TAXII server | False |
+| Key File as Text | Add a key file as text to connect to the TAXII server | False |
+| Max STIX Objects Per Poll | Set the number of stix object that will be requested with each taxii poll \(http request\). A single fetch is made of several taxii polls. Changing this setting can help speed up fetches, or fix issues on slower networks. Please note server restrictions may apply, overriding and limiting the "requested limit". | False |
+| Complex Observation Mode | Choose how to handle complex observations. Two or more Observation Expressions MAY be combined using a complex observation operator such as "AND", "OR". e.g. \`\[ IP = 'b' \] AND \[ URL = 'd' \]\` | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Tags | Supports CSV values. | False |
+| Default API Root to use | The Default API Root to use (e.g. default, public). If left empty, the server default API root will be used. When the server has no default root, the first available API root will be used instead. Providing an API root that can't be reached will result in an error message with all possible API roots listed. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 

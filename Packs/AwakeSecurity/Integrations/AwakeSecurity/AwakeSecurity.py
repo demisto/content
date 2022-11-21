@@ -5,9 +5,10 @@ from CommonServerPython import *
 import base64
 import re
 import requests
+import urllib3
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS '''
 handle_proxy()
@@ -121,7 +122,8 @@ def toDBotScore(indicator_type, percentile, lookup_key):
         "Vendor": "Awake Security",
         "Type": indicator_type,
         "Indicator": lookup_key,
-        "Score": score
+        "Score": score,
+        "Reliability": demisto.params().get('integrationReliability')
     }
 
 
@@ -137,11 +139,8 @@ def lookup(lookup_type, lookup_key):
     request["lookback_minutes"] = int(args["lookback_minutes"])
     response = requests.post(prefix + path, json=request, headers=headers, verify=verify)
     if response.status_code < 200 or response.status_code >= 300:
-        return_error('Request Failed.\nStatus code: {} with body {} with headers {}'.format(
-            str(response.status_code),
-            response.content,
-            str(response.headers))
-        )
+        return_error(f'Request Failed.\nStatus code: {str(response.status_code)}'
+                     f' with body {str(response.content)} with headers {response.headers}')
 
     return response.json()
 
@@ -174,7 +173,8 @@ def lookupDevice():
             "Vendor": "Awake Security",
             "Type": 'device',
             "Indicator": lookup_key,
-            "Score": 0
+            "Score": 0,
+            "Reliability": demisto.params().get('integrationReliability')
         }
     humanReadable = displayTable([contents], humanReadableFields)
     contents["device"] = lookup_key
@@ -203,7 +203,8 @@ def lookupDomain():
             "Vendor": "Awake Security",
             "Type": 'domain',
             "Indicator": lookup_key,
-            "Score": 0
+            "Score": 0,
+            "Reliability": demisto.params().get('integrationReliability')
         }
     humanReadable = displayTable([contents], humanReadableFields)
     contents["domain"] = lookup_key
@@ -234,7 +235,8 @@ def lookupEmail():
             "Vendor": "Awake Security",
             "Type": 'email',
             "Indicator": lookup_key,
-            "Score": 0
+            "Score": 0,
+            "Reliability": demisto.params().get('integrationReliability')
         }
     humanReadable = displayTable(contents, humanReadableFields)
     for content in contents:
@@ -255,7 +257,8 @@ def lookupIp():
         "Vendor": "Awake Security",
         "Type": 'ip',
         "Indicator": lookup_key,
-        "Score": 0
+        "Score": 0,
+        "Reliability": demisto.params().get('integrationReliability')
     }
     # Note: No DBotScore for IP addresses as we do not score them.
     # Our product scores devices rather than IP addresses.
@@ -285,11 +288,8 @@ def query(lookup_type):
     path = "/query/" + lookup_type
     response = requests.post(prefix + path, json=request, headers=headers, verify=verify)
     if response.status_code < 200 or response.status_code >= 300:
-        return_error('Request Failed.\nStatus code: {} with body {} with headers {}'.format(
-            str(response.status_code),
-            response.content,
-            str(response.headers))
-        )
+        return_error(f'Request Failed.\nStatus code: {str(response.status_code)}'
+                     f' with body {str(response.content)} with headers {response.headers}')
     contents = response.json()
     return request["queryExpression"], contents
 
@@ -374,11 +374,8 @@ def pcapDownload():
     path = "/pcap/download"
     response = requests.post(prefix + path, json=request, headers=headers, verify=verify)
     if response.status_code < 200 or response.status_code >= 300:
-        return_error('Request Failed.\nStatus code: {} with body {} with headers {}'.format(
-            str(response.status_code),
-            response.content,
-            str(response.headers))
-        )
+        return_error(f"Request Failed.\nStatus code: {str(response.status_code)} "
+                     f"with body {str(response.content)} with headers {response.headers}")
     b64 = response.json()["pcap"]
     bytes = base64.b64decode(b64)
     demisto.results(fileResult("download.pcap", bytes))
@@ -419,6 +416,7 @@ def fetchIncidents():
                 "Query": matchingThreatBehavior["query"],
                 "StartTime": startTimeString,
                 "EndTime": endTimeString,
+                "rawJSON": json.dumps(matchingThreatBehavior),
             }
         demisto.incidents(map(toIncident, matchingThreatBehaviors))
         # Don't increase the low-water-mark until we actually find incidents
@@ -472,4 +470,4 @@ except Exception as e:
         raise
     LOG(e)
     LOG.print_log()
-    return_error(e.message)
+    return_error(e)

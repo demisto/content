@@ -120,11 +120,14 @@ def handle_prevalence_command(client: Client, command: str, args: dict):
         'args': args_list
     }
     res = client.get_prevalence(request_body).get('results', [])
+    for item in res:  # remove 'args' scope
+        name = item.pop('args', {})
+        item.update(name)
     command_type = PREVALENCE_COMMANDS[command]
     return CommandResults(
         readable_output=tableToMarkdown(string_to_table_header(f'{command_type} Prevalence'),
                                         [{
-                                            key_names_in_response[command_type]: item.get('args', {}).get(
+                                            key_names_in_response[command_type]: item.get(
                                                 key_names_in_response[command_type]),
                                             'Prevalence': item.get('value')
                                         } for item in res],
@@ -439,6 +442,12 @@ def main():  # pragma: no cover
 
         elif command == 'core-get-dynamic-analysis':
             return_results(get_dynamic_analysis_command(client, args))
+
+        elif command == 'core-add-endpoint-tag':
+            return_results(add_tag_to_endpoints_command(client, args))
+
+        elif command == 'core-remove-endpoint-tag':
+            return_results(remove_tag_from_endpoints_command(client, args))
 
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))

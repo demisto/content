@@ -13,7 +13,8 @@ alter XDM.Network.original_event_type=action,
       XDM.Network.event_timestamp=to_timestamp(to_integer(timestamp), "SECONDS"),
       XDM.Network.Source.packets=total_packets,
       XDM.Network.Destination.user.username=user,
-      XDM.Network.Destination.user.identifier=userkey;
+      XDM.Network.Destination.user.identifier=userkey,
+      XDM.Network.http.user_agent = useragent;
 
 [MODEL: dataset=netskope_netskope_raw, model=Audit]
 alter XDM.Audit.threat.severity=severity_level,
@@ -34,7 +35,8 @@ alter XDM.Audit.threat.severity=severity_level,
         XDM.Audit.threat.severity=severity,
         XDM.Audit.original_event_description=if(json_extract_scalar(supporting_data, "$.data_type") = "reason", json_extract_scalar(supporting_data, "$.data_values[0]"), ""),
         //XDM.Audit.TriggeredBy.identity.name=if(json_extract_scalar(supporting_data, "$.data_type") = "user", if(array_length(json_extract_array(supporting_data, "$.data_values"))=1, json_extract_scalar(supporting_data, "$.data_values[0]"), json_extract_scalar(supporting_data, "$.data_values[1]"))),
-        XDM.Audit.TriggeredBy.location.geo=concat("lat: ", to_string(src_latitude), " lon: ", to_string(dst_longitude));
+        XDM.Audit.TriggeredBy.location.geo=concat("lat: ", to_string(src_latitude), " lon: ", to_string(dst_longitude)),
+        XDM.Audit.TriggeredBy.user_agent = useragent;
 
 [MODEL: dataset=netskope_netskope_raw, model=Auth]
 filter activity in ("SignInEvent","Logout","Login Attempt","Login Successful","Login Failed")
@@ -56,4 +58,5 @@ filter activity in ("SignInEvent","Logout","Login Attempt","Login Successful","L
         XDM.Auth.reason=action,
         XDM.Auth.threat.severity=severity,
         XDM.Auth.Client.process.executable.sha256=coalesce(_sha256, sha256),
-        XDM.Auth.kerberos.padata_type=data_type;
+        XDM.Auth.kerberos.padata_type=data_type,
+        XDM.Auth.Client.user_agent = useragent;

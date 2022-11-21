@@ -438,7 +438,7 @@ def company_findings_get_command(client, args, first_seen=None, fetch_incidents=
         if severity:
             severity = severity.lower()
         if grade:
-            grade = grade.lower()
+            grade = grade.upper()
         if asset_category:
             asset_category = asset_category.lower()
         risk_vector_list = argToList(args.get('risk_vector_label', []))

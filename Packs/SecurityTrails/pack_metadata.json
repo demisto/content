@@ -2,13 +2,13 @@
     "name": "SecurityTrails",
     "description": "Integration for the SecurityTrails platform.",
     "support": "community",
-    "currentVersion": "1.1.2",
+    "currentVersion": "1.1.3",
     "author": "Adam Burt",
     "url": "",
     "email": "",
     "created": "2021-05-24T14:15:33Z",
     "categories": [
-        "Utilities"
+        "Data Enrichment & Threat Intelligence"
     ],
     "tags": [],
     "useCases": [],

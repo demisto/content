@@ -1,0 +1,36 @@
+{
+    "dataType": "incidents",
+    "params": {
+        "groupBy": [
+            "occurred(d)",
+            "severity"
+        ],
+        "keys": [
+            "avg|openDuration / 60"
+        ],
+        "timeFrame": "days",
+        "valuesFormat": "abbreviated"
+    },
+    "query": "-category:job and status:Closed",
+    "modified": "2022-09-15T14:43:02.966652016Z",
+    "name": "MTTR by Severity",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 7,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "e086debd-715c-4f4f-8c3a-a584b12e1252",
+    "widgetType": "line",
+    "fromVersion": "6.5.0",
+    "description": ""
+}

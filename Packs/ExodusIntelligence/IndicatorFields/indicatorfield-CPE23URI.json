@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Exodus Intelligence"
+    ],
+    "caseInsensitive": true,
+    "cliName": "xicpe23uri",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_xicpe23uri",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "XI CPE23URI",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

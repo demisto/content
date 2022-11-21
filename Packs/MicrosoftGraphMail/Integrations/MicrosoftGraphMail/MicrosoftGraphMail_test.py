@@ -6,7 +6,7 @@ import requests_mock
 from CommonServerPython import *
 from MicrosoftGraphMail import MsGraphClient, build_mail_object, assert_pages, build_folders_path, \
     list_mails_command, item_result_creator, create_attachment, reply_email_command, \
-    send_email_command, list_attachments_command, main
+    send_email_command, list_attachments_command, main, API_DATE_FORMAT
 from MicrosoftApiModule import MicrosoftClient
 import demistomock as demisto
 
@@ -74,7 +74,7 @@ def test_params_working(mocker, params, expected_results):
     MsGraphClient.__init__.assert_called_with(False, expected_results[0], expected_results[1], expected_results[2],
                                               'ms-graph-mail', '/v1.0', True, False, (200, 201, 202, 204), '', 'Inbox',
                                               '15 minutes', 50, 10, 'com', certificate_thumbprint='', private_key='',
-                                              display_full_email_body=False)
+                                              display_full_email_body=False, look_back=0)
 
 
 def test_build_mail_object():
@@ -266,15 +266,48 @@ def expected_incident():
 
 
 @pytest.fixture()
-def emails_data():
-    with open('test_data/emails_data') as emails_json:
+def emails_data_as_html():
+    return emails_data_as_html_including_body()
+
+
+def emails_data_as_html_including_body():
+    with open('test_data/emails_data_html') as emails_json:
         mocked_emails = json.load(emails_json)
         return mocked_emails
 
 
 @pytest.fixture()
-def emails_data_full_body():
-    with open('test_data/emails_data_full_body') as emails_json:
+def emails_data_as_text():
+    return emails_data_as_text_including_body()
+
+
+def emails_data_as_text_including_body():
+    with open('test_data/emails_data_text') as emails_json:
+        mocked_emails = json.load(emails_json)
+        return mocked_emails
+
+
+def emails_data_as_html_without_body():
+    with open('test_data/emails_data_html_without_body') as emails_json:
+        mocked_emails = json.load(emails_json)
+        return mocked_emails
+
+
+def emails_data_as_text_without_body():
+    with open('test_data/emails_data_text_without_body') as emails_json:
+        mocked_emails = json.load(emails_json)
+        return mocked_emails
+
+
+@pytest.fixture()
+def emails_data_full_body_as_html():
+    with open('test_data/emails_data_full_body_html') as emails_json:
+        return json.load(emails_json)
+
+
+@pytest.fixture()
+def emails_data_full_body_as_text():
+    with open('test_data/emails_data_full_body_text') as emails_json:
         return json.load(emails_json)
 
 
@@ -297,14 +330,43 @@ def last_run_data():
     return last_run
 
 
-@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
-def test_fetch_incidents(mocker, client, emails_data, expected_incident, last_run_data):
-    mocker.patch('MicrosoftGraphMail.get_now_utc', return_value='2019-11-12T15:01:00Z')
-    mocker.patch.object(client.ms_client, 'http_request', return_value=emails_data)
+@pytest.mark.parametrize(
+    'client, email_content_html, email_content_text', [
+        (
+            oproxy_client(),
+            emails_data_as_html_including_body(),
+            emails_data_as_text_including_body()
+        ),
+        (
+            self_deployed_client(),
+            emails_data_as_html_without_body(),
+            emails_data_as_text_without_body()
+        )
+    ]
+)
+def test_fetch_incidents(client, email_content_html, email_content_text, mocker, last_run_data, expected_incident):
+    """
+    Given
+     - Case A: emails as text and html including the full body key in the api response.
+     - Case B: emails as text and html without the full body key in the api response.
+
+    When
+     - fetching incidents when there is a body key and when there isn't a body key.
+
+    Then
+     - Case A: make sure the 'body' key is being taken even when 'uniqueBody' key exists.
+     - Case B: make sure the 'uniqueBody' is being taken instead of the 'body' key.
+    """
+    mocker.patch(
+        'CommonServerPython.get_current_time',
+        return_value=dateparser.parse('2019-11-12T15:01:00', settings={'TIMEZONE': 'UTC'})
+    )
+    # the third argument in side effect is for attachments (no-attachments here)
+    mocker.patch.object(client.ms_client, 'http_request', side_effect=[email_content_html, email_content_text, {}])
     mocker.patch.object(demisto, "info")
     result_next_run, result_incidents = client.fetch_incidents(last_run_data)
 
-    assert result_next_run.get('LAST_RUN_TIME') == '2019-11-12T15:00:30Z'
+    assert result_next_run.get('time') == '2019-11-12T15:00:30Z'
     assert result_next_run.get('LAST_RUN_IDS') == ['dummy_id_1']
     assert result_next_run.get('LAST_RUN_FOLDER_ID') == 'last_run_dummy_folder_id'
     assert result_next_run.get('LAST_RUN_FOLDER_PATH') == 'Phishing'
@@ -317,46 +379,145 @@ def test_fetch_incidents(mocker, client, emails_data, expected_incident, last_ru
     assert result_incidents == expected_incident
 
 
+class TestFetchIncidentsWithLookBack:
+
+    FREEZE_TIMESTAMP = '2022-07-28T12:09:17Z'
+
+    @staticmethod
+    def start_freeze_time(timestamp):
+        from freezegun import freeze_time
+        _start_freeze_time = freeze_time(timestamp)
+        _start_freeze_time.start()
+        return datetime.now()
+
+    def create_incidents_queue(self):
+
+        first_email = {
+            'id': '1',
+            'subject': 'email-1',
+            'lastModifiedDateTime': (
+                self.start_freeze_time(self.FREEZE_TIMESTAMP) - timedelta(minutes=2)
+            ).strftime(API_DATE_FORMAT)
+        }
+
+        second_email = {
+            'id': '2',
+            'subject': 'email-2',
+            'lastModifiedDateTime': (
+                self.start_freeze_time(self.FREEZE_TIMESTAMP) - timedelta(minutes=5)
+            ).strftime(API_DATE_FORMAT)
+        }
+
+        third_email = {
+            'id': '3',
+            'subject': 'email-3',
+            'lastModifiedDateTime': (
+                self.start_freeze_time(self.FREEZE_TIMESTAMP) - timedelta(minutes=10)
+            ).strftime(API_DATE_FORMAT)
+        }
+
+        return [
+            (
+                [third_email], []
+            ),
+            (
+                [second_email, third_email], []
+            ),
+            (
+                [first_email, second_email, third_email], []
+            )
+        ]
+
+    @pytest.mark.parametrize('look_back', [30, 40, 400])
+    def test_fetch_emails_with_look_back_greater_than_zero(self, mocker, look_back):
+        """
+        Given
+         - a look back parameter.
+         - incidents queue.
+
+        When
+         - trying to fetch emails with the look-back mechanism.
+
+        Then
+         - make sure only one incident is being returned each time, based on the 'cache' look-back mechanism.
+         - make sure the correct timestamp to query the api was called based on the look-back parameter.
+         - make sure the correct incident is being returned by its name without any duplication whatsoever.
+         - make sure the 'time' for the look-back for the last run is being set to the latest incident occurred incident
+         - make sure the 'ID' field is being removed from the incidents before fetching.
+        """
+        client = self_deployed_client()
+        client.look_back = look_back
+
+        last_emails_mocker = mocker.patch.object(
+            client, '_fetch_last_emails', side_effect=self.create_incidents_queue()
+        )
+        mocker.patch.object(client, '_get_email_attachments', return_value=[])
+
+        last_run = {
+            'LAST_RUN_FOLDER_ID': 'last_run_dummy_folder_id',
+            'LAST_RUN_FOLDER_PATH': "Phishing",
+            'LAST_RUN_ACCOUNT': 'dummy@mailbox.com',
+            'LAST_RUN_TIME': (datetime.now() - timedelta(minutes=20)).strftime(API_DATE_FORMAT)
+        }
+
+        expected_last_run_timestamps = ['2022-07-28T12:07:17Z', '2022-07-28T12:04:17Z', '2022-07-28T11:59:17Z']
+
+        for i in range(3, 0, -1):
+            next_run, incidents = client.fetch_incidents(last_run=last_run)
+            assert last_emails_mocker.call_args.kwargs['last_fetch'] == (
+                datetime.now() - timedelta(minutes=look_back)
+            ).strftime(API_DATE_FORMAT)
+            assert next_run['time'] == expected_last_run_timestamps[i - 1]
+            assert len(incidents) == 1
+            assert incidents[0]['name'] == f'email-{i}'
+            assert 'ID' not in incidents[0]
+
+
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
-def test_fetch_incidents_changed_folder(mocker, client, emails_data, last_run_data):
+def test_fetch_incidents_changed_folder(mocker, client, emails_data_as_html, emails_data_as_text, last_run_data):
     changed_folder = "Changed_Folder"
     client._folder_to_fetch = changed_folder
     mocker_folder_by_path = mocker.patch.object(client, '_get_folder_by_path',
                                                 return_value={'id': 'some_dummy_folder_id'})
-    mocker.patch.object(client.ms_client, 'http_request', return_value=emails_data)
+    # the third argument in side effect is for attachments (no-attachments here)
+    mocker.patch.object(client.ms_client, 'http_request', side_effect=[emails_data_as_html, emails_data_as_text, {}])
     mocker.patch.object(demisto, "info")
     client.fetch_incidents(last_run_data)
 
-    mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', changed_folder)
+    mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', changed_folder, overwrite_rate_limit_retry=True)
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
-def test_fetch_incidents_changed_account(mocker, client, emails_data, last_run_data):
+def test_fetch_incidents_changed_account(mocker, client, emails_data_as_html, emails_data_as_text, last_run_data):
     changed_account = "Changed_Account"
     client._mailbox_to_fetch = changed_account
     mocker_folder_by_path = mocker.patch.object(client, '_get_folder_by_path',
                                                 return_value={'id': 'some_dummy_folder_id'})
-    mocker.patch.object(client.ms_client, 'http_request', return_value=emails_data)
+    # the third argument in side effect is for attachments (no-attachments here)
+    mocker.patch.object(client.ms_client, 'http_request', side_effect=[emails_data_as_html, emails_data_as_text, {}])
     mocker.patch.object(demisto, "info")
     client.fetch_incidents(last_run_data)
 
-    mocker_folder_by_path.assert_called_once_with(changed_account, last_run_data['LAST_RUN_FOLDER_PATH'])
+    mocker_folder_by_path.assert_called_once_with(changed_account, last_run_data['LAST_RUN_FOLDER_PATH'],
+                                                  overwrite_rate_limit_retry=True)
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
-def test_fetch_incidents_detect_initial(mocker, client, emails_data):
+def test_fetch_incidents_detect_initial(mocker, client, emails_data_as_html, emails_data_as_text):
     mocker_folder_by_path = mocker.patch.object(client, '_get_folder_by_path',
                                                 return_value={'id': 'some_dummy_folder_id'})
-    mocker.patch.object(client.ms_client, 'http_request', return_value=emails_data)
+    # the third argument in side effect is for attachments (no-attachments here)
+    mocker.patch.object(client.ms_client, 'http_request', side_effect=[emails_data_as_html, emails_data_as_text, {}])
     mocker.patch.object(demisto, "info")
     client.fetch_incidents({})
 
-    mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', "Phishing")
+    mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', "Phishing", overwrite_rate_limit_retry=True)
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
 def test_fetch_incidents_with_full_body(
-    mocker, client, emails_data_full_body, expected_incident_full_body, last_run_data
+    mocker, client, emails_data_full_body_as_html,
+    emails_data_full_body_as_text, expected_incident_full_body, last_run_data
 ):
     """
     Given -
@@ -368,13 +529,19 @@ def test_fetch_incidents_with_full_body(
     Then -
         Make sure that in the details section, there is the full email body content.
     """
-    mocker.patch('MicrosoftGraphMail.get_now_utc', return_value='2019-11-12T15:01:00Z')
+    mocker.patch(
+        'CommonServerPython.get_current_time',
+        return_value=dateparser.parse('2019-11-12T15:01:00', settings={'TIMEZONE': 'UTC'})
+    )
     client.display_full_email_body = True
-    mocker.patch.object(client.ms_client, 'http_request', return_value=emails_data_full_body)
+    # the third argument in side effect is for attachments (no-attachments here)
+    mocker.patch.object(
+        client.ms_client, 'http_request', side_effect=[emails_data_full_body_as_html, emails_data_full_body_as_text, {}]
+    )
     mocker.patch.object(demisto, "info")
     result_next_run, result_incidents = client.fetch_incidents(last_run_data)
 
-    assert result_next_run.get('LAST_RUN_TIME') == '2019-11-12T15:00:30Z'
+    assert result_next_run.get('time') == '2019-11-12T15:00:30Z'
     assert result_next_run.get('LAST_RUN_IDS') == ['dummy_id_1']
     assert result_next_run.get('LAST_RUN_FOLDER_ID') == 'last_run_dummy_folder_id'
     assert result_next_run.get('LAST_RUN_FOLDER_PATH') == 'Phishing'
@@ -1087,10 +1254,9 @@ def test_fetch_last_emails__with_exclude(mocker):
     client = oproxy_client()
     client._emails_fetch_limit = 2
     mocker.patch.object(client.ms_client, 'http_request', return_value=emails)
-    fetched_emails, ids, next_fetch = client._fetch_last_emails('', last_fetch='2', exclude_ids=['1', '2'])
+    fetched_emails, ids = client._fetch_last_emails('', last_fetch='2', exclude_ids=['1', '2'])
     assert len(fetched_emails) == 2
     assert ids == ['3', '4']
-    assert next_fetch == '4'
     assert fetched_emails[0] == emails['value'][2]
     assert fetched_emails[1] == emails['value'][3]
 
@@ -1113,10 +1279,9 @@ def test_fetch_last_emails__no_exclude(mocker):
     client = oproxy_client()
     client._emails_fetch_limit = 2
     mocker.patch.object(client.ms_client, 'http_request', return_value=emails)
-    fetched_emails, ids, next_fetch = client._fetch_last_emails('', last_fetch='0', exclude_ids=[])
+    fetched_emails, ids = client._fetch_last_emails('', last_fetch='0', exclude_ids=[])
     assert len(fetched_emails) == 1
     assert ids == ['1']
-    assert next_fetch == '1'
     assert fetched_emails[0] == emails['value'][0]
 
 
@@ -1139,7 +1304,6 @@ def test_fetch_last_emails__all_mails_in_exclude(mocker):
     client = oproxy_client()
     client._emails_fetch_limit = 2
     mocker.patch.object(client.ms_client, 'http_request', return_value=emails)
-    fetched_emails, ids, next_fetch = client._fetch_last_emails('', last_fetch='2', exclude_ids=['1', '2'])
+    fetched_emails, ids = client._fetch_last_emails('', last_fetch='2', exclude_ids=['1', '2'])
     assert len(fetched_emails) == 0
-    assert next_fetch == '2'
     assert ids == ['1', '2']

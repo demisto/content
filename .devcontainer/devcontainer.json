@@ -1,8 +1,20 @@
 {
 	"name": "XSOAR Content",
-	"dockerComposeFile": "docker-compose.yml",
-	"service": "content",
-	"workspaceFolder": "/workspaces/content",
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+	"runArgs": [
+		"--init",
+		"--privileged"
+	],
+	"overrideCommand": false,
+	"mounts": [
+		"source=venv,target=${containerWorkspaceFolder}/.venv,type=volume",
+		"source=poetry-venv,target=/home/demisto/.cache/pypoetry,type=volume",
+		"source=node-modules,target=${containerWorkspaceFolder}/node_modules,type=volume",
+		"source=dind-var-lib-docker,target=/var/lib/docker,type=volume"
+	],
+	"remoteUser": "demisto",
 	"settings": {
 		"terminal.integrated.defaultProfile.linux": "zsh",
 		"terminal.integrated.profiles.linux": {
@@ -10,24 +22,16 @@
 				"path": "/bin/zsh"
 			}
 		},
-		"python.defaultInterpreterPath": "/usr/local/bin/python",
-		"python.linting.enabled": true,
-		"python.linting.flake8Enabled": true,
-		"python.linting.mypyEnabled": true,
-		"python.linting.mypyArgs": [
-			"--follow-imports=silent",
-			"--ignore-missing-imports",
-			"--show-column-numbers",
-			"--no-pretty",
-			"--allow-redefinition",
-			"--no-site-packages",
-			"--namespace-packages"
-		],
-		"python.testing.pytestEnabled": true,
-		"python.testing.pytestArgs": [
-			"."
-		],
-		"python.testing.cwd": "${localWorkspaceFolder}/Packs/HelloWorld/Integrations/HelloWorld"
+		"cSpell.words": [
+			"demisto",
+			"xsoar",
+			"xsiam",
+			"fromversion",
+			"toversion",
+			"marketplacev",
+			"ciac",
+			"whois",
+		]
 	},
 	"extensions": [
 		"cortexxsoarext.xsoar",
@@ -46,25 +50,46 @@
 		"shd101wyy.markdown-preview-enhanced",
 		"Gruntfuggly.todo-tree",
 		"redhat.vscode-yaml",
-		"PKief.material-icon-theme"
+		"PKief.material-icon-theme",
+		"mikestead.dotenv",
+		"KevinRose.vsc-python-indent",
+		"rangav.vscode-thunder-client",
+		"ms-python.black-formatter",
+		"LittleFoxTeam.vscode-python-test-adapter"
 	],
 	"remoteEnv": {
 		"LOCAL_WORKSPACE_PATH": "${localWorkspaceFolder}",
+		"PATH": "${containerWorkspaceFolder}/.venv/bin:${containerEnv:PATH}",
 		"CONTENT": "${containerWorkspaceFolder}",
-		"PYTHONPATH": "${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerPython/:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerUserPython/:${containerWorkspaceFolder}/Tests/demistomock/:${containerEnv:PYTHONPATH}",
-		"MYPYPATH": "${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerPython/:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerUserPython/:${containerWorkspaceFolder}/Tests/demistomock/:${containerEnv:PYTHONPATH}",
+		"DEMISTO_SDK_CONTENT_PATH": "${containerWorkspaceFolder}",
+		"PYTHONPATH": "${containerWorkspaceFolder}:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerPython/:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerUserPython/:${containerWorkspaceFolder}/Tests/demistomock/:${containerEnv:PYTHONPATH}",
+		"MYPYPATH": "${containerWorkspaceFolder}:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerPython/:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerUserPython/:${containerWorkspaceFolder}/Tests/demistomock/:${containerEnv:PYTHONPATH}",
 		"DEMISTO_BASE_URL": "${localEnv:DEMISTO_BASE_URL}",
 		"DEMISTO_USERNAME": "${localEnv:DEMISTO_USERNAME}",
 		"DEMISTO_PASSWORD": "${localEnv:DEMISTO_PASSWORD}",
 		"DEMISTO_VERIFY_SSL": "${localEnv:DEMISTO_VERIFY_SSL}",
 		"DEMISTO_API_KEY": "${localEnv:DEMISTO_API_KEY}"
 	},
-	"features": {
-		"docker-in-docker": "latest",
-		"git": "os-provided",
-		"github-cli": "latest",
-		"powershell": "latest"
-	},
-	"onCreateCommand": "touch ${containerWorkspaceFolder}/CommonServerUserPython.py && echo 'export PYTHONPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$PYTHONPATH' >> ~/.zshrc && echo 'export MYPYPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$MYPYPATH' >> ~/.zshrc",
-	"postCreateCommand": "poetry install"
+	// this is commented out until VSCode will fix self signed certificate issues
+	// "features": {
+	// 	"ghcr.io/devcontainers/features/docker-in-docker:1": {
+	// 		"version": "latest"
+	// 	},
+	// 	"ghcr.io/devcontainers/features/git:1": {
+	// 		"version": "os-provided"
+	// 	},
+	// 	"ghcr.io/devcontainers/features/powershell:1": {
+	// 		"version": "latest"
+	// 	},
+	// 	"ghcr.io/devcontainers/features/common-utils:1": {
+	// 		"version": "latest"
+	// 	},
+	// 	"ghcr.io/devcontainers/features/node:1": {
+	// 		"version": "latest"
+	// 	}
+	// },
+	// "overrideFeatureInstallOrder": [
+	// 	"ghcr.io/devcontainers/features/common-utils:1"
+	// ],
+	"onCreateCommand": "dos2unix .devcontainer/createCommand.sh && chmod +x .devcontainer/createCommand.sh && bash .devcontainer/createCommand.sh",
 }

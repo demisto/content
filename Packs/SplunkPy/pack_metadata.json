@@ -2,7 +2,7 @@
     "name": "Splunk",
     "description": "Run queries on Splunk servers.",
     "support": "xsoar",
-    "currentVersion": "2.4.5",
+    "currentVersion": "2.4.16",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,7 +10,9 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Data Source"
+    ],
     "useCases": [],
     "keywords": [],
     "dependencies": {

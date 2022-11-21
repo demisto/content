@@ -1,0 +1,226 @@
+{
+  "quarantineJobs": [
+    {
+      "id": 6,
+      "createdBy": "dummy",
+      "createdDate": "2022-07-07T07:35:28.403647",
+      "modifiedBy": "system",
+      "modifiedDate": "2022-07-12T06:20:57.505202",
+      "stopRequested": "False",
+      "quarantineJobRuns": [
+        {
+          "id": 12,
+          "jobRunType": "QUARANTINE",
+          "status": "COMPLETED",
+          "startedDate": "2022-07-07T07:35:35.017755",
+          "completedDate": "2022-07-07T07:35:35.561672",
+          "total": 1,
+          "error": 1
+        },
+        {
+          "id": 19,
+          "jobRunType": "QUARANTINE",
+          "status": "COMPLETED",
+          "startedDate": "2022-07-07T07:39:50.118717",
+          "completedDate": "2022-07-07T07:39:50.76418",
+          "total": 1,
+          "error": 1
+        },
+        {
+          "id": 25,
+          "jobRunType": "QUARANTINE",
+          "status": "COMPLETED",
+          "startedDate": "2022-07-07T07:54:35.392174",
+          "completedDate": "2022-07-07T07:54:35.900535",
+          "total": 1,
+          "error": 1
+        },
+        {
+          "id": 32,
+          "jobRunType": "QUARANTINE",
+          "status": "COMPLETED",
+          "startedDate": "2022-07-07T08:09:35.619748",
+          "completedDate": "2022-07-07T08:09:36.05021",
+          "total": 1,
+          "error": 1
+        },
+        {
+          "id": 38,
+          "jobRunType": "QUARANTINE",
+          "status": "COMPLETED",
+          "startedDate": "2022-07-07T08:24:35.843659",
+          "completedDate": "2022-07-07T08:24:36.208118",
+          "total": 1,
+          "error": 1
+        },
+        {
+          "id": 51,
+          "jobRunType": "RESTORE",
+          "status": "COMPLETED",
+          "startedDate": "2022-07-07T09:25:21.693275",
+          "completedDate": "2022-07-07T09:25:22.728294",
+          "total": 1,
+          "error": 1
+        },
+        {
+          "id": 62,
+          "jobRunType": "RESTORE",
+          "status": "COMPLETED",
+          "startedDate": "2022-07-07T09:40:51.971035",
+          "completedDate": "2022-07-07T09:40:52.833205",
+          "total": 1,
+          "error": 1
+        },
+        {
+          "id": 73,
+          "jobRunType": "RESTORE",
+          "status": "COMPLETED",
+          "startedDate": "2022-07-07T09:55:52.239001",
+          "completedDate": "2022-07-07T09:55:53.172871",
+          "total": 1,
+          "error": 1
+        },
+        {
+          "id": 81,
+          "jobRunType": "RESTORE",
+          "status": "COMPLETED",
+          "startedDate": "2022-07-07T10:10:37.512462",
+          "completedDate": "2022-07-07T10:10:38.48153",
+          "total": 1,
+          "error": 1
+        },
+        {
+          "id": 86,
+          "jobRunType": "RESTORE",
+          "status": "COMPLETED",
+          "startedDate": "2022-07-07T10:24:52.723237",
+          "completedDate": "2022-07-07T10:24:53.608006",
+          "total": 1,
+          "error": 1
+        },
+        {
+          "id": 319,
+          "jobRunType": "RESTORE",
+          "status": "COMPLETED",
+          "startedDate": "2022-07-12T06:20:57.505721",
+          "completedDate": "2022-07-12T06:21:04.430902",
+          "total": 1,
+          "error": 0
+        }
+      ],
+      "autoQuarantine": "False",
+      "emailCount": 1
+    },
+    {
+      "id": 7,
+      "createdBy": "dummy",
+      "createdDate": "2022-07-07T07:35:46.809644",
+      "modifiedBy": "system",
+      "modifiedDate": "2022-07-07T11:26:38.979421",
+      "stopRequested": "False",
+      "quarantineJobRuns": [
+        {
+          "id": 13,
+          "jobRunType": "QUARANTINE",
+          "status": "COMPLETED",
+          "startedDate": "2022-07-07T07:35:50.015713",
+          "completedDate": "2022-07-07T07:35:50.62012",
+          "total": 1,
+          "error": 1
+        },
+        {
+          "id": 20,
+          "jobRunType": "QUARANTINE",
+          "status": "COMPLETED",
+          "startedDate": "2022-07-07T07:40:05.133129",
+          "completedDate": "2022-07-07T07:40:05.719848",
+          "total": 1,
+          "error": 1
+        },
+        {
+          "id": 26,
+          "jobRunType": "QUARANTINE",
+          "status": "COMPLETED",
+          "startedDate": "2022-07-07T07:54:50.399113",
+          "completedDate": "2022-07-07T07:54:50.67299",
+          "total": 1,
+          "error": 1
+        },
+        {
+          "id": 33,
+          "jobRunType": "QUARANTINE",
+          "status": "COMPLETED",
+          "startedDate": "2022-07-07T08:09:50.626501",
+          "completedDate": "2022-07-07T08:09:51.136003",
+          "total": 1,
+          "error": 1
+        },
+        {
+          "id": 39,
+          "jobRunType": "QUARANTINE",
+          "status": "COMPLETED",
+          "startedDate": "2022-07-07T08:24:50.851361",
+          "completedDate": "2022-07-07T08:24:51.272018",
+          "total": 1,
+          "error": 1
+        },
+        {
+          "id": 65,
+          "jobRunType": "RESTORE",
+          "status": "COMPLETED",
+          "startedDate": "2022-07-07T09:49:07.099748",
+          "completedDate": "2022-07-07T09:49:08.367398",
+          "total": 1,
+          "error": 1
+        },
+        {
+          "id": 74,
+          "jobRunType": "RESTORE",
+          "status": "COMPLETED",
+          "startedDate": "2022-07-07T09:56:07.247383",
+          "completedDate": "2022-07-07T09:56:07.830754",
+          "total": 1,
+          "error": 1
+        },
+        {
+          "id": 82,
+          "jobRunType": "RESTORE",
+          "status": "COMPLETED",
+          "startedDate": "2022-07-07T10:10:52.521116",
+          "completedDate": "2022-07-07T10:10:53.457638",
+          "total": 1,
+          "error": 1
+        },
+        {
+          "id": 87,
+          "jobRunType": "RESTORE",
+          "status": "COMPLETED",
+          "startedDate": "2022-07-07T10:25:07.736495",
+          "completedDate": "2022-07-07T10:25:08.74365",
+          "total": 1,
+          "error": 1
+        },
+        {
+          "id": 88,
+          "jobRunType": "RESTORE",
+          "status": "COMPLETED",
+          "startedDate": "2022-07-07T10:39:08.063477",
+          "completedDate": "2022-07-07T10:39:08.966069",
+          "total": 1,
+          "error": 1
+        },
+        {
+          "id": 102,
+          "jobRunType": "RESTORE",
+          "status": "COMPLETED",
+          "startedDate": "2022-07-07T11:26:38.980065",
+          "completedDate": "2022-07-07T11:26:40.076919",
+          "total": 1,
+          "error": 1
+        }
+      ],
+      "autoQuarantine": "False",
+      "emailCount": 1
+    }
+  ]
+}

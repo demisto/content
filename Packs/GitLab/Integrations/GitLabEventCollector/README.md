@@ -14,8 +14,6 @@ An event collector for Gitlab audit events and events using Gitlab's API.
 | API key  | The request API key.  | True   |
 | Groups IDs  | A comma-separated list of group IDs to get. | False   |
 | Projects IDs    | A comma-separated list of project IDs to get. | True         |
-| The product name corresponding to the integration that originated the events     | The name of the product to name the dataset after.     | False        |
-| The vendor name corresponding to the integration that originated the events     | The name of the vendor to name the dataset after.      | False        |
 | First fetch from API time     | The time to first fetch from the API.  | True         |                                           | True         |
 
 

@@ -28,7 +28,7 @@ slack-sdk = "==3.11.2"
 GitPython = "~=3.0"
 
 [packages]
-elasticsearch = "*"
+elasticsearch = ">=8.3.3"
 opensearch-py = "*"
 elasticsearch-dsl = "*"
 opensearch-dsl = "*"

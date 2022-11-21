@@ -10,7 +10,8 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 MAX_EVENTS_PER_REQUEST = 100
-
+VENDOR = 'paloaltonetworks'
+PRODUCT = 'saassecurity'
 
 ''' CLIENT CLASS '''
 
@@ -61,8 +62,8 @@ class Client(BaseClient):
         token_expiration_seconds = integration_context.get('token_expiration_seconds')
 
         if access_token and not is_token_expired(
-            token_initiate_time=float(token_initiate_time),
-            token_expiration_seconds=float(token_expiration_seconds)
+                token_initiate_time=float(token_initiate_time),
+                token_expiration_seconds=float(token_expiration_seconds)
         ):
             return access_token
 
@@ -155,8 +156,8 @@ def test_module(client: Client):
 
 
 def get_events_command(
-    client: Client, args: Dict, max_fetch: Optional[int], vendor='paloaltonetworks', product='saassecurity'
-) -> Union[str, CommandResults]:
+        client: Client, args: Dict, max_fetch: Optional[int], vendor=VENDOR,
+        product=PRODUCT) -> Union[str, CommandResults]:
     """
     Fetches events from the saas-security queue and return them to the war-room.
     in case should_push_events is set to True, they will be also sent to XSIAM.
@@ -214,7 +215,6 @@ def main() -> None:
     args = demisto.args()
     max_fetch = arg_to_number(args.get('limit') or params.get('max_fetch'))
     validate_limit(max_fetch)
-    vendor, product = params.get('vendor'), params.get('product')
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
@@ -232,12 +232,12 @@ def main() -> None:
         elif command == 'fetch-events':
             send_events_to_xsiam(
                 events=fetch_events_from_saas_security(client=client, max_fetch=max_fetch),
-                vendor=vendor,
-                product=product
+                vendor=VENDOR,
+                product=PRODUCT
             )
         elif command == 'saas-security-get-events':
             return_results(get_events_command(
-                client=client, args=args, max_fetch=max_fetch, vendor=vendor, product=product)
+                client=client, args=args, max_fetch=max_fetch)
             )
         else:
             raise ValueError(f'Command {command} is not implemented in saas-security integration.')
@@ -246,7 +246,6 @@ def main() -> None:
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

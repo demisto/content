@@ -101,13 +101,18 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: 3 days
-  display: First fetch time interval. The time range to consider for initial data
-    fetch.(<number> <unit>, e.g., 1 day, 7 days, 3 months, 1 year).
+- additionalinfo: |-
+    The UTC date or relative timestamp from where to start fetching incidents.
+
+    Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
+
+    For example: 10 minutes, 5 hours, 8 days, 2 weeks, 8 months, 2021-12-31, 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
+  defaultvalue: 3 days
+  display: First fetch time
   name: first_fetch
   required: false
   type: 0
-- defaultvalue: '10'
+- defaultvalue: '100'
   display: How many incidents to fetch each time
   name: max_fetch
   required: false
@@ -126,8 +131,9 @@ configuration:
   - User alerts
   required: false
   type: 15
-- display: Select the severity of asset alerts to be filtered for Fetch Incidents.
-    Available options are 'High', 'Medium', 'Low' and 'Unspecified' (Default-No Selection).
+- display: Select the severity of alerts to be filtered for Fetch Incidents. Available
+    options are 'High', 'Medium', 'Low' and 'Unspecified' (If not selected, fetches
+    all alerts).
   name: incident_severity
   options:
   - High
@@ -138,7 +144,8 @@ configuration:
   type: 15
 - additionalinfo: 'Fetches detection by either Rule ID (format: ru_{UUID}) or Version
     ID (format: {ruleId}@v_{int64}_{int64}. Enter in comma separated format to add
-    multiple. Entered rules have precedence over the "Fetch all rules detections" checkbox.'
+    multiple. Entered rules have precedence over the "Fetch all rules detections"
+    checkbox.'
   display: Detections to fetch by Rule ID or Version ID
   hidden: false
   name: fetch_detection_by_ids
@@ -177,7 +184,8 @@ configuration:
   required: false
   type: 15
 - additionalinfo: Sort detections by "DETECTION_TIME" or by "CREATED_TIME". If not
-    specified, it defaults to "CREATED_TIME". This configuration is applicable to "Detection alerts" only.
+    specified, it defaults to "CREATED_TIME". This configuration is applicable to
+    "Detection alerts" only.
   defaultvalue: CREATED_TIME
   display: List Basis
   name: fetch_detection_by_list_basis
@@ -194,6 +202,35 @@ configuration:
   name: proxy
   required: false
   type: 8
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
+- defaultvalue: indicatorType
+  name: feedExpirationPolicy
+  display: ''
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  display: ''
+  required: false
+  type: 1
 description: Use the Chronicle integration to retrieve Asset alerts or IOC Domain
   matches as Incidents. Use it to fetch a list of infected assets based on the indicator
   accessed. This integration also provides reputation and threat enrichment of indicators
@@ -221,7 +258,7 @@ script:
         (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default
         is the UTC time corresponding to 3 days earlier than current time. Formats:
         YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z,
-        2020-05-01, 2 days, 5 hours.'
+        2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
       isArray: false
       name: start_time
       required: false
@@ -229,7 +266,7 @@ script:
     - default: false
       defaultValue: '10000'
       description: The maximum number of IOCs to return. You can specify between 1
-        and 10000. The default is 10000.
+        and 10000.
       isArray: false
       name: page_size
       required: false
@@ -298,7 +335,7 @@ script:
         (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default
         is the UTC time corresponding to 3 days earlier than current time. Formats:
         YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z,
-        2020-05-01, 2 days, 5 hours.'
+        2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
       isArray: false
       name: start_time
       required: false
@@ -307,14 +344,16 @@ script:
       description: 'The value of the end time for your request, in RFC 3339 format
         (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,  the default
         is current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N
-        hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.'
+        hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar
+        2021, 01 Feb 2021 04:45:33, 15 Jun.'
       isArray: false
       name: end_time
       required: false
       secret: false
     - default: false
+      defaultValue: '10000'
       description: The maximum number of IOCs to return. You can specify between 1
-        and 10000. The default is 10000.
+        and 10000.
       isArray: false
       name: page_size
       required: false
@@ -413,8 +452,8 @@ script:
       description: The domain name of the artifact.
       type: String
     - contextPath: GoogleChronicleBackstory.IP.Sources.Address.Port
-      description: The port number of the artifact.
-      type: Number
+      description: The port numbers of the artifact.
+      type: Unknown
     - contextPath: GoogleChronicleBackstory.IP.Sources.Category
       description: The behavior of the artifact.
       type: String
@@ -474,8 +513,8 @@ script:
       description: The domain name of the artifact.
       type: String
     - contextPath: GoogleChronicleBackstory.Domain.Sources.Address.Port
-      description: The port number of the artifact.
-      type: Number
+      description: The port numbers of the artifact.
+      type: Unknown
     - contextPath: GoogleChronicleBackstory.Domain.Sources.Category
       description: The behavior of the artifact.
       type: String
@@ -524,8 +563,8 @@ script:
       description: The domain name of the artifact.
       type: String
     - contextPath: GoogleChronicleBackstory.IocDetails.Sources.Address.Port
-      description: The port number of the artifact.
-      type: Number
+      description: The port numbers of the artifact.
+      type: Unknown
     - contextPath: GoogleChronicleBackstory.IocDetails.Sources.Category
       description: The behavior of the artifact.
       type: String
@@ -561,7 +600,7 @@ script:
         (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default
         is the UTC time corresponding to 3 days earlier than current time. Formats:
         YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z,
-        2020-05-01, 2 days, 5 hours.'
+        2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
       isArray: false
       name: start_time
       required: false
@@ -570,7 +609,8 @@ script:
       description: 'The value of the end time for your request, in RFC 3339 format
         (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,  the default
         is current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N
-        hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.'
+        hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar
+        2021, 01 Feb 2021 04:45:33, 15 Jun.'
       isArray: false
       name: end_time
       required: false
@@ -578,7 +618,7 @@ script:
     - default: false
       defaultValue: '10000'
       description: The maximum number of IOCs to return. You can specify between 1
-        and 10000. The default is 10000.
+        and 100000.
       isArray: false
       name: page_size
       required: false
@@ -691,7 +731,8 @@ script:
         should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time.
         If not supplied, the product considers UTC time corresponding to 2 hours earlier
         than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
-        Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.'
+        Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01
+        Feb 2021 04:45:33, 15 Jun.'
       isArray: false
       name: start_time
       required: false
@@ -701,15 +742,15 @@ script:
         should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time.
         If not supplied, the product considers current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ,
         YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2
-        days, 5 hours.'
+        days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
       isArray: false
       name: end_time
       required: false
       secret: false
     - default: false
-      defaultValue: '100'
+      defaultValue: '10000'
       description: Specify the maximum number of events to fetch. You can specify
-        between 1 and 1000. The default is 100.
+        between 1 and 10000.
       isArray: false
       name: page_size
       required: false
@@ -719,7 +760,7 @@ script:
         in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,
         the product considers start time as reference time. Formats: YYYY-MM-ddTHH:mm:ssZ,
         YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2
-        days, 5 hours.'
+        days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
       isArray: false
       name: reference_time
       required: false
@@ -1883,7 +1924,7 @@ script:
       description: |-
         (Deprecated: use `start_time` instead) Time to begin returning detections, filtering on a detection's "detectionTime". If not specified, the start time is treated as open-ended.
         Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
-        Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.
+        Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.
       isArray: false
       name: detection_start_time
       required: false
@@ -1892,7 +1933,7 @@ script:
       description: |-
         (Deprecated: use `end_time` instead) Time to stop returning detections, filtering on a detection's "detectionTime". If not specified, the end time is treated as open-ended.
         Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
-        Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.
+        Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.
       isArray: false
       name: detection_end_time
       required: false
@@ -1912,7 +1953,7 @@ script:
     - default: false
       defaultValue: '100'
       description: Specify the limit on the number of detections to display. You can
-        specify between 1 and 1,000.
+        specify between 1 and 1000.
       isArray: false
       name: page_size
       required: false
@@ -1956,7 +1997,7 @@ script:
       description: |-
         Time to begin returning detections, filtering by the detection field specified in the listBasis parameter. If not specified, the start time is treated as open-ended.
         Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
-        Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.
+        Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.
       isArray: false
       name: start_time
       required: false
@@ -1965,7 +2006,7 @@ script:
       description: |-
         Time to stop returning detections, filtering by the detection field specified by the listBasis parameter. If not specified, the end time is treated as open-ended.
         Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
-        Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.
+        Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.
       isArray: false
       name: end_time
       required: false
@@ -3173,7 +3214,7 @@ script:
     - default: false
       defaultValue: '100'
       description: Specify the maximum number of Rules to return. You can specify
-        between 1 and 1,000. The default is 100.
+        between 1 and 1000.
       isArray: false
       name: page_size
       required: false
@@ -3254,7 +3295,675 @@ script:
       description: A page token that can be provided to the next call to view the
         next page of Rules. Absent if this is the last page.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.29031
+  - arguments:
+    - default: false
+      description: Rule text in YARA-L 2.0 format for the rule to be created.
+      isArray: false
+      name: rule_text
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a new rule. By default the live rule status will be set to
+      disabled.
+    execution: false
+    name: gcb-create-rule
+    outputs:
+    - contextPath: GoogleChronicleBackstory.Rules.ruleId
+      description: Unique identifier for a Rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.versionId
+      description: Unique identifier for a specific version of a rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.ruleName
+      description: Name of the rule, as parsed from ruleText.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.ruleText
+      description: Source code for the rule, as defined by the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.liveRuleEnabled
+      description: Whether the rule is enabled to run as a Live Rule.
+      type: Boolean
+    - contextPath: GoogleChronicleBackstory.Rules.alertingEnabled
+      description: Whether the rule is enabled to generate Alerts.
+      type: Boolean
+    - contextPath: GoogleChronicleBackstory.Rules.versionCreateTime
+      description: A string representing the time in ISO-8601 format.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.compilationState
+      description: Compilation state of the rule. It can be SUCCEEDED or FAILED.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.compilationError
+      description: A compilation error if compilationState is FAILED, absent if compilationState
+        is SUCCEEDED.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.ruleType
+      description: Indicates the type of event in rule. It can be SINGLE_EVENT or
+        MULTI_EVENT.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.metadata.severity
+      description: Severity for the rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.metadata.author
+      description: Name of author for the rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.metadata.description
+      description: Description of the rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.metadata.reference
+      description: Reference link for the rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.metadata.created
+      description: Time at which the rule is created.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.metadata.updated
+      description: Time at which the rule is updated.
+      type: String
+  - arguments:
+    - default: false
+      description: Rule ID or Version ID of the rule to be retrieved.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the rule details of specified Rule ID or Version ID.
+    execution: false
+    name: gcb-get-rule
+    outputs:
+    - contextPath: GoogleChronicleBackstory.Rules.ruleId
+      description: Unique identifier for a Rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.versionId
+      description: Unique identifier for a specific version of a rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.ruleName
+      description: Name of the rule, as parsed from ruleText.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.ruleText
+      description: Source code for the rule, as defined by the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.liveRuleEnabled
+      description: Whether the rule is enabled to run as a Live Rule.
+      type: Boolean
+    - contextPath: GoogleChronicleBackstory.Rules.alertingEnabled
+      description: Whether the rule is enabled to generate Alerts.
+      type: Boolean
+    - contextPath: GoogleChronicleBackstory.Rules.versionCreateTime
+      description: A string representing the time in ISO-8601 format.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.compilationState
+      description: Compilation state of the rule. It can be SUCCEEDED or FAILED.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.compilationError
+      description: A compilation error if compilationState is FAILED, absent if compilationState
+        is SUCCEEDED.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.ruleType
+      description: Indicates the type of event in rule. It can be SINGLE_EVENT or
+        MULTI_EVENT.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.metadata.severity
+      description: Severity for the rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.metadata.author
+      description: Name of author for the rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.metadata.description
+      description: Description of the rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.metadata.reference
+      description: Reference link for the rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.metadata.created
+      description: Time at which the rule is created.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.metadata.updated
+      description: Time at which the rule is updated.
+      type: String
+  - arguments:
+    - default: false
+      description: ID of the rule to be deleted.
+      isArray: false
+      name: rule_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes the rule specified by Rule ID.
+    execution: false
+    name: gcb-delete-rule
+    outputs:
+    - contextPath: GoogleChronicleBackstory.DeleteRule.ruleId
+      description: Unique identifier for a Rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.DeleteRule.actionStatus
+      description: Whether the rule is successfully deleted or not.
+      type: String
+  - arguments:
+    - default: false
+      description: Rule ID for a Rule for which to create a new version.
+      isArray: false
+      name: rule_id
+      required: true
+      secret: false
+    - default: false
+      description: Rule text in YARA-L 2.0 format for the new version of the rule
+        to be created.
+      isArray: false
+      name: rule_text
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a new version of an existing rule.
+    execution: false
+    name: gcb-create-rule-version
+    outputs:
+    - contextPath: GoogleChronicleBackstory.Rules.ruleId
+      description: Unique identifier for a Rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.versionId
+      description: Unique identifier for a specific version of a rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.ruleName
+      description: Name of the rule, as parsed from ruleText.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.ruleText
+      description: Source code for the rule, as defined by the user.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.liveRuleEnabled
+      description: Whether the rule is enabled to run as a Live Rule.
+      type: Boolean
+    - contextPath: GoogleChronicleBackstory.Rules.alertingEnabled
+      description: Whether the rule is enabled to generate Alerts.
+      type: Boolean
+    - contextPath: GoogleChronicleBackstory.Rules.versionCreateTime
+      description: A string representing the time in ISO-8601 format.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.compilationState
+      description: Compilation state of the rule. It can be SUCCEEDED or FAILED.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.compilationError
+      description: A compilation error if compilationState is FAILED, absent if compilationState
+        is SUCCEEDED.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.ruleType
+      description: Indicates the type of event in rule. It can be SINGLE_EVENT or
+        MULTI_EVENT.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.metadata.severity
+      description: Severity for the rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.metadata.author
+      description: Name of author for the rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.metadata.description
+      description: Description of the rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.metadata.reference
+      description: Reference link for the rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.metadata.created
+      description: Time at which the rule is created.
+      type: String
+    - contextPath: GoogleChronicleBackstory.Rules.metadata.updated
+      description: Time at which the rule is updated.
+      type: String
+  - arguments:
+    - default: false
+      description: ID of the rule.
+      isArray: false
+      name: rule_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: New alerting status for the Rule. Possible values are 'enable'
+        or 'disable'.
+      isArray: false
+      name: alerting_status
+      predefined:
+      - enable
+      - disable
+      required: true
+      secret: false
+    deprecated: false
+    description: Updates the alerting status for a rule specified by Rule ID.
+    execution: false
+    name: gcb-change-rule-alerting-status
+    outputs:
+    - contextPath: GoogleChronicleBackstory.RuleAlertingChange.ruleId
+      description: Unique identifier for a Rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.RuleAlertingChange.actionStatus
+      description: Whether the alerting status for the rule is successfully updated
+        or not.
+      type: String
+    - contextPath: GoogleChronicleBackstory.RuleAlertingChange.alertingStatus
+      description: New alerting status for the rule.
+      type: String
+  - arguments:
+    - default: false
+      description: ID of the rule.
+      isArray: false
+      name: rule_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: New live rule status for the Rule. Possible values are 'enable'
+        or 'disable'.
+      isArray: false
+      name: live_rule_status
+      predefined:
+      - enable
+      - disable
+      required: true
+      secret: false
+    deprecated: false
+    description: Updates the live rule status for a rule specified by Rule ID.
+    execution: false
+    name: gcb-change-live-rule-status
+    outputs:
+    - contextPath: GoogleChronicleBackstory.LiveRuleStatusChange.ruleId
+      description: Unique identifier for a Rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.LiveRuleStatusChange.actionStatus
+      description: Whether the live rule status for the rule is successfully updated
+        or not.
+      type: String
+    - contextPath: GoogleChronicleBackstory.LiveRuleStatusChange.liveRuleStatus
+      description: New live rule status for the rule.
+      type: String
+  - arguments:
+    - default: false
+      description: Rule ID or Version ID of the rule whose retrohunt is to be started.
+      isArray: false
+      name: rule_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: 1 week
+      description: |-
+        Start time for the time range of logs being processed. The format of Date should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the product considers UTC time corresponding to 1 week earlier than current time.
+        Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
+        Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      defaultValue: 10 min
+      description: |-
+        End time for the time range of logs being processed. The format of Date should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the product considers UTC time corresponding to 10 minutes earlier than current time.
+        Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
+        Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    deprecated: false
+    description: Initiate a retrohunt for the specified rule.
+    execution: false
+    name: gcb-start-retrohunt
+    outputs:
+    - contextPath: GoogleChronicleBackstory.RetroHunt.retrohuntId
+      description: Unique identifier for a retrohunt, defined and returned by the
+        server.
+      type: String
+    - contextPath: GoogleChronicleBackstory.RetroHunt.ruleId
+      description: Unique identifier for a Rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.RetroHunt.versionId
+      description: Unique identifier for a specific version of a rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.RetroHunt.eventStartTime
+      description: Start time for the time range of logs being processed.
+      type: Date
+    - contextPath: GoogleChronicleBackstory.RetroHunt.eventEndTime
+      description: End time for the time range of logs being processed.
+      type: Date
+    - contextPath: GoogleChronicleBackstory.RetroHunt.retrohuntStartTime
+      description: Start time for the retrohunt.
+      type: Date
+    - contextPath: GoogleChronicleBackstory.RetroHunt.state
+      description: Current state of the retrohunt. It can be STATE_UNSPECIFIED, RUNNING,
+        DONE, or CANCELLED.
+      type: String
+  - arguments:
+    - default: false
+      description: Rule ID or Version ID of the rule whose retrohunt is to be retrieved.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Unique identifier for a retrohunt, defined and returned by the
+        server. You must specify exactly one retrohunt identifier.
+      isArray: false
+      name: retrohunt_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get retrohunt for a specific version of rule.
+    execution: false
+    name: gcb-get-retrohunt
+    outputs:
+    - contextPath: GoogleChronicleBackstory.RetroHunt.retrohuntId
+      description: Unique identifier for a retrohunt, defined and returned by the
+        server.
+      type: String
+    - contextPath: GoogleChronicleBackstory.RetroHunt.ruleId
+      description: Unique identifier for a Rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.RetroHunt.versionId
+      description: Unique identifier for a specific version of a rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.RetroHunt.eventStartTime
+      description: Start time for the time range of logs being processed.
+      type: Date
+    - contextPath: GoogleChronicleBackstory.RetroHunt.eventEndTime
+      description: End time for the time range of logs being processed.
+      type: Date
+    - contextPath: GoogleChronicleBackstory.RetroHunt.retrohuntStartTime
+      description: Start time for the retrohunt.
+      type: Date
+    - contextPath: GoogleChronicleBackstory.RetroHunt.retrohuntEndTime
+      description: End time for the retrohunt.
+      type: Date
+    - contextPath: GoogleChronicleBackstory.RetroHunt.state
+      description: Current state of the retrohunt. It can be STATE_UNSPECIFIED, RUNNING,
+        DONE or CANCELLED.
+      type: String
+    - contextPath: GoogleChronicleBackstory.RetroHunt.progressPercentage
+      description: Percentage progress towards retrohunt completion (0.00 to 100.00).
+      type: Number
+  - arguments:
+    - default: false
+      description: Rule ID or Version ID of the rule whose retrohunts are to be listed.
+        If not supplied, retohunts for all versions of all rules will be listed.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: |-
+        Whether to retrieve retrohunts for all versions of a rule with a given rule identifier.
+        Note: If this option is set to true, rule id is required.
+      isArray: false
+      name: retrohunts_for_all_versions
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter retrohunts based on their status. The possible values are
+        "RUNNING", "DONE", or "CANCELLED".
+      isArray: false
+      name: state
+      predefined:
+      - RUNNING
+      - DONE
+      - CANCELLED
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Specify the maximum number of retohunts to return. You can specify
+        between 1 and 1000.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: A page token, received from a previous call. Provide this to retrieve
+        the subsequent page.
+      isArray: false
+      name: page_token
+      required: false
+      secret: false
+    deprecated: false
+    description: List retrohunts for a rule.
+    execution: false
+    name: gcb-list-retrohunts
+    outputs:
+    - contextPath: GoogleChronicleBackstory.RetroHunt.retrohuntId
+      description: Unique identifier for a retrohunt, defined and returned by the
+        server.
+      type: String
+    - contextPath: GoogleChronicleBackstory.RetroHunt.ruleId
+      description: Unique identifier for a Rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.RetroHunt.versionId
+      description: Unique identifier for a specific version of a rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.RetroHunt.eventStartTime
+      description: Start time for the time range of logs being processed.
+      type: Date
+    - contextPath: GoogleChronicleBackstory.RetroHunt.eventEndTime
+      description: End time for the time range of logs being processed.
+      type: Date
+    - contextPath: GoogleChronicleBackstory.RetroHunt.retrohuntStartTime
+      description: Start time for the retrohunt.
+      type: Date
+    - contextPath: GoogleChronicleBackstory.RetroHunt.retrohuntEndTime
+      description: End time for the retrohunt.
+      type: Date
+    - contextPath: GoogleChronicleBackstory.RetroHunt.state
+      description: Current state of the retrohunt. It can be STATE_UNSPECIFIED, RUNNING,
+        DONE or CANCELLED.
+      type: String
+    - contextPath: GoogleChronicleBackstory.RetroHunt.progressPercentage
+      description: Percentage progress towards retrohunt completion (0.00 to 100.00).
+      type: Number
+  - arguments:
+    - default: false
+      description: Rule ID or Version ID of the rule whose retrohunt is to be cancelled.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Unique identifier for a retrohunt, defined and returned by the
+        server. You must specify exactly one retrohunt identifier.
+      isArray: false
+      name: retrohunt_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Cancel a retrohunt for a specified rule.
+    execution: false
+    name: gcb-cancel-retrohunt
+    outputs:
+    - contextPath: GoogleChronicleBackstory.RetroHunt.id
+      description: Unique identifier for a Rule.
+      type: String
+    - contextPath: GoogleChronicleBackstory.RetroHunt.retrohuntId
+      description: Unique identifier for a retrohunt, defined and returned by the
+        server.
+      type: String
+    - contextPath: GoogleChronicleBackstory.RetroHunt.cancelled
+      description: Whether the retrohunt is cancelled or not.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: Provide a unique name of the list to create a reference list.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Description of the list.
+      isArray: false
+      name: description
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        Enter the content to be added into the reference list.
+        Format accepted is: "Line 1, Line 2, Line 3".
+      isArray: false
+      name: lines
+      required: true
+      secret: false
+    - default: true
+      defaultValue: ','
+      description: |-
+        Delimiter by which the content of the list is seperated.
+        Eg:  " , " , " : ", " ; "
+      isArray: false
+      name: delimiter
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new reference list.
+    execution: false
+    name: gcb-create-reference-list
+    outputs:
+    - contextPath: GoogleChronicleBackstory.ReferenceList.name
+      description: Unique name of the list.
+      type: String
+    - contextPath: GoogleChronicleBackstory.ReferenceList.description
+      description: Description of the list.
+      type: String
+    - contextPath: GoogleChronicleBackstory.ReferenceList.lines
+      description: List of line items.
+      type: String
+    - contextPath: GoogleChronicleBackstory.ReferenceList.createTime
+      description: Time when the list was created.
+      type: Date
+  - arguments:
+    - default: true
+      defaultValue: '100'
+      description: Number of results to retrieve in the response. Maximum size allowed
+        is 1000.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: The next page token to retrieve the next set of results.
+      isArray: false
+      name: page_token
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: BASIC
+      description: Select option to control the returned response. BASIC will return
+        the metadata for the list, but not the full contents. FULL will return everything.
+      isArray: false
+      name: view
+      predefined:
+      - BASIC
+      - FULL
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve all the reference lists.
+    execution: false
+    name: gcb-list-reference-list
+    outputs:
+    - contextPath: GoogleChronicleBackstory.ReferenceLists.name
+      description: Unique name of the list.
+      type: String
+    - contextPath: GoogleChronicleBackstory.ReferenceLists.description
+      description: Description of the list.
+      type: String
+    - contextPath: GoogleChronicleBackstory.ReferenceLists.createTime
+      description: Time when the list was created.
+      type: Date
+    - contextPath: GoogleChronicleBackstory.ReferenceLists.lines
+      description: List of line items.
+      type: String
+  - arguments:
+    - default: false
+      description: Provide a unique name of the list to retrieve the result.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: FULL
+      description: Select option to control the returned response. BASIC will return
+        the metadata for the list, but not the full contents. FULL will return everything.
+      isArray: false
+      name: view
+      predefined:
+      - FULL
+      - BASIC
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns the specified list.
+    execution: false
+    name: gcb-get-reference-list
+    outputs:
+    - contextPath: GoogleChronicleBackstory.ReferenceList.name
+      description: Unique name of the list.
+      type: String
+    - contextPath: GoogleChronicleBackstory.ReferenceList.description
+      description: Description of the list.
+      type: String
+    - contextPath: GoogleChronicleBackstory.ReferenceList.createTime
+      description: Time when the list was created.
+      type: Date
+    - contextPath: GoogleChronicleBackstory.ReferenceList.lines
+      description: List of line items.
+      type: String
+  - arguments:
+    - default: false
+      description: Provide a unique name of the list to update.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        Enter the content to be updated into the reference list.
+        Format accepted is: "Line 1, Line 2, Line 3".
+
+        Note: Use gcb-get-reference-list to retrieve the content and description of the list.
+      isArray: false
+      name: lines
+      required: true
+      secret: false
+    - default: false
+      description: Description to be updated of the list.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ','
+      description: |-
+        Delimiter by which the content of the list is seperated.
+        Eg:  " , " , " : ", " ; "
+      isArray: false
+      name: delimiter
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates an existing reference list.
+    execution: false
+    name: gcb-update-reference-list
+    outputs:
+    - contextPath: GoogleChronicleBackstory.ReferenceList.name
+      description: Unique name of the list.
+      type: String
+    - contextPath: GoogleChronicleBackstory.ReferenceList.description
+      description: Description of the list.
+      type: String
+    - contextPath: GoogleChronicleBackstory.ReferenceList.lines
+      description: List of line items.
+      type: String
+    - contextPath: GoogleChronicleBackstory.ReferenceList.createTime
+      description: Time when the list was created.
+      type: Date
+  dockerimage: demisto/googleapi-python3:1.0.0.33018
   feed: false
   isfetch: true
   longRunning: false

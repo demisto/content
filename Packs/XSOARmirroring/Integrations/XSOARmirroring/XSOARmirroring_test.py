@@ -1,4 +1,4 @@
-from XSOARmirroring import get_mapping_fields_command, Client, fetch_incidents, XSOAR_DATE_FORMAT
+from XSOARmirroring import get_mapping_fields_command, Client, fetch_incidents, update_remote_system_command, XSOAR_DATE_FORMAT
 from datetime import datetime, timedelta
 import dateparser
 
@@ -14,6 +14,12 @@ def generate_dummy_client():
         def get_incident_types(self):
             pass
 
+        def get_incident(self):
+            pass
+
+        def update_incident(self):
+            pass
+
     return Client
 
 
@@ -24,7 +30,9 @@ INCIDENT_FIELDS = [
         'name': "field1",
         'type': 'type1',
         'description': 'description1',
-        'cliName': 'cliName1'
+        'cliName': 'cliName1',
+        'content': False,
+        'system': True
     },
     {
         'group': 0,
@@ -34,7 +42,9 @@ INCIDENT_FIELDS = [
         'name': "field2",
         'type': 'type2',
         'description': 'description2',
-        'cliName': 'cliName2'
+        'cliName': 'cliName2',
+        'content': True,
+        'system': True
     }
 ]
 INCIDENT_TYPES = [
@@ -68,8 +78,8 @@ def test_mirroring(mocker):
         'cliName1': 'field1 - type1'
     }
     assert response['test'] == {
-        'cliName1': 'field1 - type1',
-        'cliName2': 'field2 - type2'
+        'CustomFields': {'cliName2': 'field2 - type2'},
+        'cliName1': 'field1 - type1'
     }
     assert response['Something'] == {
         'cliName1': 'field1 - type1'
@@ -90,6 +100,12 @@ INCIDENTS = [
         "created": (datetime.now() - timedelta(minutes=5)).strftime(XSOAR_DATE_FORMAT)
     }
 ]
+
+REMOTE_INCIDENT = {
+    "id": 1,
+    "created": (datetime.now() - timedelta(minutes=10)).strftime(XSOAR_DATE_FORMAT),
+    "CustomFields": {"custom_field": "some_custom_field"}
+}
 
 
 def test_fetch_incidents(mocker):
@@ -113,3 +129,25 @@ def test_fetch_incidents(mocker):
 
     assert len(incidents_result) == 3
     assert dateparser.parse(next_run['last_fetch']) == dateparser.parse(INCIDENTS[-1]['created']) + timedelta(microseconds=1)
+
+
+def test_update_remote_system(mocker):
+    """
+    Given:
+        - Old incident and fields that were changed.
+
+    When:
+        - Running the update_remote_system_command.
+
+    Then:
+        - Ensure the incident was updated.
+    """
+    args = {'incidentChanged': True,
+            'remoteId': 1,
+            'delta': {'custom_field': 'updated_field'}
+            }
+    client = generate_dummy_client()
+    mocker.patch.object(client, 'get_incident', return_value=REMOTE_INCIDENT)
+    result = mocker.patch.object(client, 'update_incident')
+    update_remote_system_command(client, args, {})
+    assert result.call_args.kwargs['incident']['CustomFields']['custom_field'] == args['delta']['custom_field']

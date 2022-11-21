@@ -17,6 +17,6 @@ echo "Auth loaded successfully."
 
 echo "starting configure_and_install_packs ..."
 
-python3 ./Tests/Marketplace/configure_and_install_packs.py -s "$SECRET_CONF_PATH" --ami_env "$1" --branch "$CI_COMMIT_BRANCH" --build_number "$CI_PIPELINE_ID" --service_account $GCS_MARKET_KEY -e "$EXTRACT_FOLDER" --xsiam_machine "$XSIAM_CHOSEN_MACHINE_ID" --xsiam_servers_path $XSIAM_SERVERS_PATH --pack_ids_to_install "$ARTIFACTS_FOLDER/content_packs_to_install.txt" -o $OVERRIDE_ALL_PACKS
+python3 ./Tests/Marketplace/configure_and_install_packs.py -s "$SECRET_CONF_PATH" --ami_env "$1" --branch "$CI_COMMIT_BRANCH" --build_number "$CI_PIPELINE_ID" --service_account $GCS_MARKET_KEY -e "$EXTRACT_FOLDER" --xsiam_machine "$XSIAM_CHOSEN_MACHINE_ID" --xsiam_servers_path $XSIAM_SERVERS_PATH --pack_ids_to_install "$ARTIFACTS_FOLDER/content_packs_to_install.txt" -o $OVERRIDE_ALL_PACKS --xsiam_servers_api_keys $XSIAM_API_KEYS
 
 exit $RETVAL

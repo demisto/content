@@ -118,8 +118,8 @@ def test_search_and_install_packs_and_their_dependencies(mocker):
     When
     - Running integrations configuration tests.
     Then
-    - Ensure packs & their dependencies' search requests are valid.
-    - Ensure packs & their dependencies' installation requests are valid.
+    - Ensure packs & their dependency search requests are valid.
+    - Ensure packs & their dependency installation requests are valid.
     """
     good_pack_ids = [
         'HelloWorld',
