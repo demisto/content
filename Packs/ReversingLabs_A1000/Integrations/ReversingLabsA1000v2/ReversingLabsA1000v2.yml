@@ -326,7 +326,7 @@ script:
       defaultValue: '5000'
       description: Maximum number of results
       isArray: false
-      name: resultLimit
+      name: result_limit
       required: false
       secret: false
     deprecated: false
