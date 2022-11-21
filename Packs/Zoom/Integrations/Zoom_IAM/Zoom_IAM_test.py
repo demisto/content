@@ -2,6 +2,7 @@ from Zoom_IAM import Client
 from IAMApiModule import *
 from freezegun import freeze_time
 import Zoom_IAM
+import pytest
 
 APP_USER_OUTPUT = {
     "user_id": "mock_id",
@@ -70,6 +71,26 @@ def test_generate_oauth_token(mocker):
     assert m.call_args[1]['auth'] == ('mockclient', 'mocksecret')
 
     assert res == 'token'
+
+
+@pytest.mark.parametrize("result", (" ", "None"))
+def test_get_oauth_token__if_not_ctx(mocker, result):
+    """
+        Given -
+           client
+        When -
+            asking for the latest token's generation_time and the result is None
+            or empty 
+        Then -
+            Validate that a new token will be generated.            
+    """
+    mocker.patch.object(Zoom_IAM, "get_integration_context",
+                        return_value={"generation_time": result,
+                                      'oauth_token': "old token"})
+    generate_token_mock = mocker.patch.object(Client, "generate_oauth_token")
+    Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    assert generate_token_mock.called
 
 
 @freeze_time("1988-03-03T11:00:00")

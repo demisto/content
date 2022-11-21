@@ -1,4 +1,5 @@
 from IAMApiModule import *
+import pytest
 
 APP_USER_OUTPUT = {
     "user_id": "mock_id",
@@ -241,7 +242,8 @@ def test_disable_user_command__non_existing_user(mocker):
     assert outputs.get('reason') == IAMErrors.USER_DOES_NOT_EXIST[1]
 
 
-def test_enable_user_command__non_existing_user(mocker):
+@pytest.mark.parametrize("not_existing", (" ", "testdemisto2@paloaltonetworks.com"))
+def test_enable_user_command__non_existing_user(mocker, not_existing):
     """
     Given:
         - An app client object
@@ -254,7 +256,7 @@ def test_enable_user_command__non_existing_user(mocker):
         - Ensure the command is considered successful and skipped
     """
     client = MockCLient()
-    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com'}}
+    args = {'user-profile': {'email': not_existing}}
 
     mocker.patch.object(client, 'get_user', return_value=None)
 
