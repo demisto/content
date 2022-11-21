@@ -18,7 +18,7 @@ res = demisto.executeCommand(
     })[0]["Contents"]["response"]
 
 
-nonLockedTypes = list(filter(lambda x: x['locked'] is False or x['detached'] is True, res))
+nonLockedTypes = list(filter(lambda x: x.get('locked') == False or x.get('detached') == True, res))
 extractAll = list(filter(lambda x: x['extractSettings']['mode'] == 'All', nonLockedTypes))
 extractWithNoSettings = list(filter(lambda x: x['extractSettings']['mode']
                              == 'Specific' and x['extractSettings']['fieldCliNameToExtractSettings'] == {}, nonLockedTypes))
