@@ -2529,7 +2529,7 @@ def get_status(device_id):
     raw_res = http_request('GET', '/devices/entities/online-state/v1', params={'ids': device_id})
     state = raw_res.get('resources')[0].get('state', '')
     if state == 'unknown':
-        demisto.info(f"Device with id: {device_id} returned an unknown state, which indicates that the host has not"
+        demisto.debug(f"Device with id: {device_id} returned an unknown state, which indicates that the host has not"
                      f" been seen recently and we are not confident about its current state")
     return HOST_STATUS_DICT[state]
 
