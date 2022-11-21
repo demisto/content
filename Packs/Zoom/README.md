@@ -20,7 +20,7 @@ To get the credentials, login to your Zoom account, click [here](https://marketp
     API Secret
 ***
 
-### Truble shooting - OAuth
+### Troubleshooting - OAuth
 Important nots:
 - You must have your app activated for the OAuth authentication method.
 - Your API token is generated based on the permission you give it, AKA scopes.
