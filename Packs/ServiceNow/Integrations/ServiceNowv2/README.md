@@ -213,7 +213,7 @@ Any modifications require that the mappers be cloned before any changes can be a
 2. Select it and click **Duplicate**.  
   The left side of the screen shows the ServiceNow fields to which to map and the right side of the
 screen shows the Cortex XSOAR fields by which you are mapping.
-3. Under the **Incident Type** dropdown, select **ServiceNow Ticket**.
+3. Under the **Incident Type** dropdown, select the relevant incident type (for example **ServiceNow Ticket**).
 4. Under **Schema Type**, select **incident**. The Schema Type represents the ServiceNow entity that
 you are mapping to. In our example it is an incident, but it can also be any other kind of ticket that
 ServiceNow supports.
@@ -309,7 +309,7 @@ Any modifications require that the mappers be cloned before any changes can be a
 **Note:**  
 Any modifications require that the mappers be cloned before any changes can be applied.
 1. Navigate to **Classification and Mapping**, and for **Incidents** search for the **ServiceNow - Outgoing Mapper_copy** (or whatever you renamed it).
-2. Under the **Incident Type** dropdown, select **ServiceNow Ticket**.
+2. Under the **Incident Type** dropdown, select the relevant incident type (for example **ServiceNow Ticket**).
 3. Under **Schema Type**, select **incident**. The Schema Type represents the ServiceNow entity that
 you are mapping to. In our example it is an incident, but it can also be any other kind of ticket that
 ServiceNow supports.

@@ -11,7 +11,6 @@ from PaloAltoNetworks_PrismaCloudCompute import (
 
 from CommonServerPython import DemistoException
 
-
 BASE_URL = 'https://test.com'
 
 
@@ -1279,3 +1278,23 @@ def test_context_data_output_is_valid(requests_mock, args, func, url_suffix, jso
             assert result.outputs == expected_output
     else:
         assert command_results.outputs == expected_context_output
+
+
+def test_get_impacted_resources(mocker):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - Calling 'prisma-cloud-compute-vulnerabilities-impacted-resources-list' command
+    Then:
+        -  Ensure raw_response is a dictionary with the given cve as a key and the value is the mocked answer
+    """
+    from PaloAltoNetworks_PrismaCloudCompute import get_impacted_resources, PrismaCloudComputeClient
+    d = {'_id': 'string', 'codeRepos': [], 'codeReposCount': 0, 'functions': [], 'functionsCount': 0, 'hosts': [],
+                'hostsCount': 0, 'images': [], 'imagesCount': 0, 'registryImages': [], 'registryImagesCount': 0}
+    mocker.patch.object(PrismaCloudComputeClient, 'get_impacted_resources', return_value=d)
+
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
+    assert get_impacted_resources(client, {'resourceType': 'image', 'cve': 'CVE-2018-1270'}).raw_response == \
+           {'CVE-2018-1270': d}

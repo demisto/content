@@ -3,9 +3,10 @@ from taxii2client.common import TokenAuth
 from taxii2client.v20 import Server, as_pages
 
 from CommonServerPython import *
+import urllib3
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 UNIT42_TYPES_TO_DEMISTO_TYPES = {
     'ipv4-addr': FeedIndicatorType.IP,
@@ -140,7 +141,7 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None, 
                     }
 
                     if "file:hashes.'SHA-256' = '" in indicator_obj['value']:
-                        if ioc_value := extract_ioc_value(indicator_obj['value']) is not None:
+                        if ioc_value := extract_ioc_value(indicator_obj['value']):
                             indicator_obj['value'] = ioc_value
 
                     if tlp_color:
@@ -693,7 +694,7 @@ def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: Opti
     return command_results
 
 
-def main():
+def main():  # pragma: no cover
     """
     PARSE AND VALIDATE FEED PARAMS
     """
@@ -718,7 +719,17 @@ def main():
         elif command == 'fetch-indicators':
             indicators = fetch_indicators(client, feed_tags, tlp_color, create_relationships)
             for iter_ in batch(indicators, batch_size=2000):
-                demisto.createIndicators(iter_)
+                try:
+                    demisto.createIndicators(iter_)
+                except Exception:
+                    # find problematic indicator
+                    for indicator in iter_:
+                        try:
+                            demisto.createIndicators([indicator])
+                        except Exception as err:
+                            demisto.debug(f'createIndicators Error: failed to create the following indicator:'
+                                          f' {indicator}\n {err}')
+                    raise
 
         elif command == 'unit42-get-indicators':
             return_results(get_indicators_command(client, args, feed_tags, tlp_color))

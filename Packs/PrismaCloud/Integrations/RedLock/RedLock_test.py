@@ -11,6 +11,29 @@ integration_params = {
     'unsecure': 'false',
 }
 
+sample_incidents = [{
+    "id": "P-12345",
+    "alertTime": 1664697641,
+    "policy.name": "This is a test"
+}, {
+    "id": "P-678910",
+    "alertTime": 1664697641,
+    "policy.name": "This is a test"
+}]
+
+expected_incidents = [
+    {
+        'name': 'This is a test - P-12345',
+        'occurred': '1970-01-20T06:24:57Z',
+        'severity': 0,
+        'rawJSON': '{"id": "P-12345", "alertTime": 1664697641, "policy.name": "This is a test"}'
+    }, {
+        'name': 'This is a test - P-678910',
+        'occurred': '1970-01-20T06:24:57Z',
+        'severity': 0,
+        'rawJSON': '{"id": "P-678910", "alertTime": 1664697641, "policy.name": "This is a test"}'
+    }]
+
 
 @pytest.fixture(autouse=True)
 def set_mocks(mocker):
@@ -32,8 +55,96 @@ def test_fetch_incidents_first_time_fetch(mocker):
     from RedLock import fetch_incidents
     mocker.patch('RedLock.req', return_value=[])
 
-    _, next_run = fetch_incidents()
+    _, _, next_run = fetch_incidents()
     assert next_run == 1625938454758
+
+
+@freeze_time("2021-07-10T16:34:14.758295 UTC+1")
+def test_fetch_incidents_fetch_all_new(mocker):
+    """
+        Given
+            - fetch incidents command
+            - command args
+            - No last run object, meaning first fetch
+        When
+            - mock the integration parameters
+        Then
+            - Validate that the last_time is as the now time(not changed, not of the incident)
+            - Validate that the length of fetched_ids is 2 indicating they were collected
+            - Validate that the incidents match what is expected
+    """
+    mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+    from RedLock import fetch_incidents
+    mocker.patch('RedLock.req', return_value=sample_incidents)
+
+    incidents, fetched_ids, next_run = fetch_incidents()
+    assert next_run == 1625938454758
+    assert len(fetched_ids) == 2
+    assert incidents == expected_incidents
+
+
+@freeze_time("2021-07-10T16:34:14.758295 UTC+1")
+def test_fetch_incidents_fetch_previously_fetched(mocker):
+    """
+        Given
+            - fetch incidents command
+            - command args
+            - Mocked last run where the P-12345 incident was laready fetched
+        When
+            - mock the integration parameters
+        Then
+            - Validate that the last_time is as the now time(not changed, not of the incident)
+            - Validate that the length of fetched_ids is 2 indicating the previous were not
+              dropped and the new ones were added
+            - Validate that only one incident was created
+    """
+    mock_last_run = {
+        'fetched_ids': [{'P-12345': 123456789}],
+        'time': 1625927654758
+    }
+    mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+    mocker.patch.object(demisto, 'getLastRun', return_value=mock_last_run)
+    from RedLock import fetch_incidents
+    mocker.patch('RedLock.req', return_value=sample_incidents)
+
+    incidents, fetched_ids, next_run = fetch_incidents()
+    assert next_run == 1625927654758
+    assert len(fetched_ids) == 2
+    assert len(incidents) == 1
+
+
+@freeze_time("2021-07-10T16:34:14.758295 UTC+1")
+def test_expire_stored_ids_should_not_expire():
+    """
+        Given
+            - a set of fetched IDs within the last hour
+        When
+            - cleaning expired IDs from the context
+        Then
+            - Validate that cleaned IDs returned contains the unexpired ID.
+    """
+    from RedLock import expire_stored_ids
+    fetched_ids = [{'P-12345': 1625938454758}]
+
+    cleaned_ids = expire_stored_ids(fetched_ids=fetched_ids)
+    assert cleaned_ids == [{'P-12345': 1625938454758}]
+
+
+@freeze_time("2022-07-10T16:34:14.758295 UTC+1")
+def test_expire_stored_ids_should_expire():
+    """
+        Given
+            - a set of fetched IDs from the last year
+        When
+            - cleaning expired IDs from the context
+        Then
+            - Validate that the ID is expired and an empty array is returned
+    """
+    from RedLock import expire_stored_ids
+    fetched_ids = [{'P-12345': 1625927654758}]
+
+    cleaned_ids = expire_stored_ids(fetched_ids=fetched_ids)
+    assert cleaned_ids == []
 
 
 def test_redlock_list_scans(mocker):

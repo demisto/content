@@ -125,7 +125,7 @@ class Client(BaseClient):
         """
         return self._http_request(
             'GET',
-            f'files/{file}?relationships={relationships}', ok_codes=(429, 200)
+            f'files/{file}?relationships={relationships}', ok_codes=(404, 429, 200)
         )
 
     def url(self, url: str, relationships: str = ''):
@@ -835,20 +835,14 @@ class ScoreCalculator:
             raw_response: The response from the API
 
         Returns:
-            DBotScore of the indicator. Can by Common.DBotScore.BAD, Common.DBotScore.SUSPICIOUS,
-            Common.DBotScore.GOOD or Common.DBotScore.NONE
+            DBotScore of the indicator. Can by Common.DBotScore.BAD, Common.DBotScore.SUSPICIOUS or
+            Common.DBotScore.GOOD
         """
         self.logs.append(f'Analysing file hash {given_hash}. ')
         data = raw_response.get('data', {})
         attributes = data.get('attributes', {})
         analysis_results = attributes.get('last_analysis_results', {})
         analysis_stats = attributes.get('last_analysis_stats', {})
-
-        if raw_response.get('error', {}).get('code') == 'NotFoundError':
-            self.logs.append(
-                f'Hash: "{given_hash}" was not found in VirusTotal'
-            )
-            return Common.DBotScore.NONE
 
         # Trusted vendors
         if self.is_preferred_vendors_pass_malicious(analysis_results):
@@ -1438,6 +1432,12 @@ def build_file_output(
     )
 
 
+def build_unknown_file_output(client: Client, file_hash: str) -> CommandResults:
+    desc = f'File "{file_hash}" was not found in VirusTotal'
+    dbot = Common.DBotScore(file_hash, DBotScoreType.FILE, INTEGRATION_NAME, 0, desc, client.reliability)
+    return CommandResults(indicator=Common.File(dbot), readable_output=desc)
+
+
 def get_whois(whois_string: str) -> defaultdict:
     """Gets a WHOIS string and returns a parsed dict of the WHOIS String.
 
@@ -1606,6 +1606,9 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
                 execution_metrics.quota_error += 1
                 result = CommandResults(readable_output=f'Quota exceeded for file: {file}')
                 results.append(result)
+                continue
+            if raw_response.get('error', {}).get('code') == 'NotFoundError':
+                results.append(build_unknown_file_output(client, file))
                 continue
             results.append(build_file_output(client, score_calculator, file, raw_response, extended_data))
             execution_metrics.success += 1
@@ -1909,7 +1912,7 @@ def get_comments_command(client: Client, args: dict) -> CommandResults:
         raw_response = client.get_ip_comments(resource, limit)
     elif resource_type == 'url':
         raw_response = client.get_url_comments(resource, limit)
-    elif resource_type == 'hash':
+    elif resource_type in ('hash', 'file'):
         raise_if_hash_not_valid(resource)
         raw_response = client.get_hash_comments(resource, limit)
     elif resource_type == 'domain':

@@ -39,7 +39,7 @@ class PathManager:
 
         content_root_files = set(filter(lambda f: f.is_file(), self.content_path.iterdir()))
         non_content_files = self._glob(
-            filter(lambda p: p.is_dir() and p.name != 'Packs', self.content_path.iterdir()))  # type: ignore[union-attr]
+            filter(lambda p: p.is_dir() and p.name != 'Packs', self.content_path.iterdir()))  # type: ignore[arg-type, union-attr]
         non_content = non_content_files | content_root_files
 
         infrastructure_test_data = self._glob(('Tests/scripts/infrastructure_tests/tests_data',))

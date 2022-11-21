@@ -1,13 +1,20 @@
 {
 	"name": "XSOAR Content",
 	"build": {
-		"dockerfile": "Dockerfile",
-
+		"dockerfile": "Dockerfile"
 	},
+	"runArgs": [
+		"--init",
+		"--privileged"
+	],
+	"overrideCommand": false,
 	"mounts": [
 		"source=venv,target=${containerWorkspaceFolder}/.venv,type=volume",
-		"source=node-modules,target=${containerWorkspaceFolder}/node-modules,type=volume",
+		"source=poetry-venv,target=/home/demisto/.cache/pypoetry,type=volume",
+		"source=node-modules,target=${containerWorkspaceFolder}/node_modules,type=volume",
+		"source=dind-var-lib-docker,target=/var/lib/docker,type=volume"
 	],
+	"remoteUser": "demisto",
 	"settings": {
 		"terminal.integrated.defaultProfile.linux": "zsh",
 		"terminal.integrated.profiles.linux": {
@@ -15,24 +22,16 @@
 				"path": "/bin/zsh"
 			}
 		},
-		"python.defaultInterpreterPath": "${containerWorkspaceFolder}/.venv/bin/python",
-		"python.linting.enabled": true,
-		"python.linting.flake8Enabled": true,
-		"python.linting.mypyEnabled": true,
-		"python.linting.mypyArgs": [
-			"--follow-imports=silent",
-			"--ignore-missing-imports",
-			"--show-column-numbers",
-			"--no-pretty",
-			"--allow-redefinition",
-			"--no-site-packages",
-			"--namespace-packages"
-		],
-		"python.testing.pytestEnabled": true,
-		"python.testing.pytestArgs": [
-			"."
-		],
-		"python.testing.cwd": "${containerWorkspaceFolder}/Packs/HelloWorld/Integrations/HelloWorld"
+		"cSpell.words": [
+			"demisto",
+			"xsoar",
+			"xsiam",
+			"fromversion",
+			"toversion",
+			"marketplacev",
+			"ciac",
+			"whois",
+		]
 	},
 	"extensions": [
 		"cortexxsoarext.xsoar",
@@ -54,10 +53,13 @@
 		"PKief.material-icon-theme",
 		"mikestead.dotenv",
 		"KevinRose.vsc-python-indent",
-		"rangav.vscode-thunder-client"
+		"rangav.vscode-thunder-client",
+		"ms-python.black-formatter",
+		"LittleFoxTeam.vscode-python-test-adapter"
 	],
 	"remoteEnv": {
 		"LOCAL_WORKSPACE_PATH": "${localWorkspaceFolder}",
+		"PATH": "${containerWorkspaceFolder}/.venv/bin:${containerEnv:PATH}",
 		"CONTENT": "${containerWorkspaceFolder}",
 		"DEMISTO_SDK_CONTENT_PATH": "${containerWorkspaceFolder}",
 		"PYTHONPATH": "${containerWorkspaceFolder}:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerPython/:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerUserPython/:${containerWorkspaceFolder}/Tests/demistomock/:${containerEnv:PYTHONPATH}",
@@ -89,5 +91,5 @@
 	// "overrideFeatureInstallOrder": [
 	// 	"ghcr.io/devcontainers/features/common-utils:1"
 	// ],
-	"onCreateCommand": "touch ${containerWorkspaceFolder}/CommonServerUserPython.py && touch .env && path=$(printf '%s:' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$PYTHONPATH && echo PYTHONPATH=\"$path\" >> .env && echo MYPYPATH=\"$path\" >> .env && pipx install demisto-sdk --force && NO_HOOKS=1 .hooks/bootstrap"
+	"onCreateCommand": "dos2unix .devcontainer/createCommand.sh && chmod +x .devcontainer/createCommand.sh && bash .devcontainer/createCommand.sh",
 }

@@ -1,15 +1,15 @@
-This playbook checks prior alert closing reasons and performs enrichment on different IOC types. It then  returns the information needed to establish the alert's verdict.
+This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then returns the information needed to establish the alert's verdict.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Domain Enrichment - Generic v2
-* File Reputation
-* URL Enrichment - Generic v2
 * IP Enrichment - Generic v2
+* Domain Enrichment - Generic v2
+* URL Enrichment - Generic v2
+* Get prevalence for IOCs 
 * Account Enrichment - Generic v2.1
-* AWS IAM - User enrichment
+* File Reputation
 
 ### Integrations
 This playbook does not use any integrations.
@@ -20,15 +20,15 @@ This playbook does not use any integrations.
 * SearchIncidentsV2
 
 ### Commands
-* wildfire-report
 * wildfire-get-verdict
+* wildfire-report
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| threshold | The number of previous alerts that were closed as false positive alerts. This threshold establishes whether the Previous Verdict key will be marked as false positive. | 5 | Optional |
+| threshold | The number of previous alerts that were closed as false positive alerts. This threshold establishes whether the Previous Verdict key will be marked as false positive. | alert.hostip | Optional |
 | query | A query for the previous alerts search.<br/>Use free form query \(Lucene syntax\) as a filter. All other filters are ignored when this filter is used. | (initiatorsha256:${inputs.FileSHA256} or hostip:${inputs.IP}) and alertsource:${alert.sourceBrand} and alertname:${alert.name} | Optional |
 | CloseReason | The closing reason of the previous alerts to search for.<br/>Possible values are:<br/>- Resolved - Threat Handled<br/>- Resolved - True Positive<br/>- Resolved - False Positive<br/>- Resolved - Security Testing<br/>- Resolved - Known Issue<br/>- Resolved - Duplicate Incident<br/>- Resolved - Other<br/>- Resolved - Auto | Resolved - False Positive,Resolved - Duplicate Incident,Resolved - Known Issue | Optional |
 | FileMD5 | File MD5 to enrich and give verdict. |  | Optional |
@@ -40,6 +40,10 @@ This playbook does not use any integrations.
 | User | User to enrich and give verdict. \(AWS IAM or Active Directory\). | alert.username | Optional |
 | Domain | Domain to enrich and give verdict. | alert.domainname | Optional |
 | awsUser | Name of the AWS IAM user to enrich. |  | Optional |
+| CommandLine | The CMD to run the prevalence check.  |  | Optional |
+| ProcessName | The process name to run the prevalence check. |  | Optional |
+| RegistryKey | The registry key to run the prevalence check. The input registry value must be provided as well. |  | Optional |
+| RegistryValue | The registry value to run prevalence check. The input registry key must be provided as well. |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -67,7 +71,25 @@ This playbook does not use any integrations.
 | WildFire.Verdicts.Verdict | Verdict of the file. | unknown |
 | WildFire.Verdicts.VerdictDescription | Description of the file verdict. | unknown |
 | DomainVerdict | Domain verdict | unknown |
+| Core.AnalyticsPrevalence.Ip.value | Whether the IP address is prevalent or not. | unknown |
+| Core.AnalyticsPrevalence.Ip.data.global_prevalence.value | The global prevalence of the IP. | unknown |
+| Core.AnalyticsPrevalence.Ip.data.local_prevalence.value | The local prevalence of the IP. | unknown |
+| Core.AnalyticsPrevalence.Hash.value | Whether the hash is prevalent or not. | unknown |
+| Core.AnalyticsPrevalence.Hash.data.global_prevalence.value | The global prevalence of the hash. | unknown |
+| Core.AnalyticsPrevalence.Hash.data.local_prevalence.value | The local prevalence of the hash. | unknown |
+| Core.AnalyticsPrevalence.Domain.value | Whether the domain is prevalent or not. | unknown |
+| Core.AnalyticsPrevalence.Domain.data.global_prevalence.value | The global prevalence of the domain. | unknown |
+| Core.AnalyticsPrevalence.Domain.data.local_prevalence.value | The local prevalence of the domain. | unknown |
+| Core.AnalyticsPrevalence.Process.value | Whether the process is prevalent or not. | unknown |
+| Core.AnalyticsPrevalence.Process.data.global_prevalence.value | The global prevalence of the process. | unknown |
+| Core.AnalyticsPrevalence.Process.data.local_prevalence.value | The local prevalence of the process. | unknown |
+| Core.AnalyticsPrevalence.Registry.value | Whether the registry is prevalent or not. | unknown |
+| Core.AnalyticsPrevalence.Registry.data.global_prevalence.value | The global prevalence of the registry. | unknown |
+| Core.AnalyticsPrevalence.Registry.data.local_prevalence.value | The local prevalence of the registry. | unknown |
+| Core.AnalyticsPrevalence.Cmd.value | Whether the CMD is prevalent or not. | unknown |
+| Core.AnalyticsPrevalence.Cmd.data.global_prevalence.value | The global prevalence of the CMD. | unknown |
+| Core.AnalyticsPrevalence.Cmd.data.local_prevalence.value | The local prevalence of the CDM. | unknown |
 
 ## Playbook Image
 ---
-![Enrichment for Verdict](https://raw.githubusercontent.com/demisto/content/83139fce8bb3f76917669e780df144115da69c90/Packs/CommonPlaybooks/doc_files/Enrichment_for_Verdict.png)
+![Enrichment for Verdict](../doc_files/Enrichment_for_Verdict.png)

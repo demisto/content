@@ -3,33 +3,37 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-import re
-import json
 import base64
-from datetime import datetime, timedelta
-from typing import *
-import httplib2
-import urlparse
-from distutils.util import strtobool
+import concurrent.futures
+import itertools as it
+import json
+import mimetypes
+import random
+import re
+import string
 import sys
-from HTMLParser import HTMLParser, HTMLParseError
-from htmlentitydefs import name2codepoint
+from datetime import datetime, timedelta
+from distutils.util import strtobool
+from email.header import Header
+from email.mime.application import MIMEApplication
 from email.mime.audio import MIMEAudio
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
-from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.header import Header
-import mimetypes
-import random
-import string
+from html.entities import name2codepoint
+from html.parser import HTMLParser
+from typing import *
+from urllib.parse import urlparse
+
+import google_auth_httplib2
+import httplib2
 from apiclient import discovery
-from oauth2client import service_account
-import itertools as it
-import concurrent.futures
+from google.oauth2 import service_account
+from googleapiclient.errors import HttpError
 
 ''' GLOBAL VARS '''
+
 ADMIN_EMAIL = None
 PRIVATE_KEY_CONTENT = None
 GAPPS_ID = None
@@ -74,14 +78,14 @@ class TextExtractHtmlParser(HTMLParser):
 
     def handle_entityref(self, name):
         if not self._ignore and name in name2codepoint:
-            self._texts.append(unichr(name2codepoint[name]))
+            self._texts.append(chr(name2codepoint[name]))
 
     def handle_charref(self, name):
         if not self._ignore:
             if name.startswith('x'):
-                c = unichr(int(name[1:], 16))
+                c = chr(int(name[1:], 16))
             else:
-                c = unichr(int(name))
+                c = chr(int(name))
             self._texts.append(c)
 
     def get_text(self):
@@ -93,7 +97,7 @@ def html_to_text(html):
     try:
         parser.feed(html)
         parser.close()
-    except HTMLParseError:
+    except Exception:
         pass
     return parser.get_text()
 
@@ -107,7 +111,7 @@ def get_http_client_with_proxy(proxies):
         https_proxy = proxies['https']
         if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
             https_proxy = 'https://' + https_proxy
-        parsed_proxy = urlparse.urlparse(https_proxy)
+        parsed_proxy = urlparse(https_proxy)
         proxy_info = httplib2.ProxyInfo(
             proxy_type=httplib2.socks.PROXY_TYPE_HTTP,  # disable-secrets-detection
             proxy_host=parsed_proxy.hostname,
@@ -135,24 +139,25 @@ def get_credentials(additional_scopes=None, delegated_user=None):
     if additional_scopes is not None:
         scopes += additional_scopes
 
-    cred = service_account.ServiceAccountCredentials. \
-        from_json_keyfile_dict(json.loads(PRIVATE_KEY_CONTENT), scopes=scopes)  # type: ignore
-
-    return cred.create_delegated(delegated_user)
+    json_acct_info = json.loads(PRIVATE_KEY_CONTENT)  # type: ignore
+    credentials = service_account.Credentials.from_service_account_info(json_acct_info)
+    scoped_credentials = credentials.with_scopes(scopes)
+    delegated_credentials = scoped_credentials.with_subject(delegated_user)
+    return delegated_credentials
 
 
 def get_service(serviceName, version, additional_scopes=None, delegated_user=None):
     credentials = get_credentials(additional_scopes=additional_scopes, delegated_user=delegated_user)
     proxies = handle_proxy()
     if PROXY or DISABLE_SSL:
-        http_client = credentials.authorize(get_http_client_with_proxy(proxies))
+        http_client = google_auth_httplib2.AuthorizedHttp(credentials, http=get_http_client_with_proxy(proxies))
         return discovery.build(serviceName, version, cache_discovery=False, http=http_client)
     return discovery.build(serviceName, version, cache_discovery=False, credentials=credentials)
 
 
 def parse_mail_parts(parts):
-    body = u''
-    html = u''
+    body = ''
+    html = ''
     attachments = []  # type: list
     for part in parts:
         if 'multipart' in part['mimeType']:
@@ -162,7 +167,7 @@ def parse_mail_parts(parts):
             html += part_html
             attachments.extend(part_attachments)
         elif len(part['filename']) == 0:
-            text = unicode(base64.urlsafe_b64decode(
+            text = str(base64.urlsafe_b64decode(
                 part['body'].get('data', '').encode('ascii')), 'utf-8')
             if 'text/html' in part['mimeType']:
                 html += text
@@ -260,7 +265,7 @@ def get_email_context(email_data, mailbox):
         'From': headers.get('from'),
         'To': headers.get('to'),
         # only for format 'full'
-        'Body': unicode(parsed_body, 'utf-8'),
+        'Body': str(parsed_body, 'utf-8'),
 
         # only for incident
         'Cc': headers.get('cc', []),
@@ -281,7 +286,7 @@ def get_email_context(email_data, mailbox):
         'From': headers.get('from'),
         'To': headers.get('to'),
         # only for format 'full'
-        'Body/Text': unicode(parsed_body, 'utf-8'),
+        'Body/Text': str(parsed_body, 'utf-8'),
 
         'CC': headers.get('cc', []),
         'BCC': headers.get('bcc', []),
@@ -337,14 +342,14 @@ def create_incident_labels(parsed_msg, headers):
                    for cc in headers.get('Cc', '').split(',')])
     labels.extend([{'type': 'Email/bcc', 'value': bcc}
                    for bcc in headers.get('Bcc', '').split(',')])
-    for key, val in headers.items():
+    for key, val in list(headers.items()):
         labels.append({'type': 'Email/Header/' + key, 'value': val})
 
     return labels
 
 
 def mailboxes_to_entry(mailboxes):
-    query = "Query: {}".format(mailboxes[0].get('q') if mailboxes else '')
+    query = f"Query: {mailboxes[0].get('q') if mailboxes else ''}"
     result = [{"Mailbox": user['Mailbox']} for user in mailboxes if user.get('Mailbox')]
 
     return {
@@ -429,13 +434,6 @@ def mail_to_incident(msg, service, user_key):
     return incident
 
 
-def organization_format(org_list):
-    if org_list:
-        return ','.join(str(org.get('name')) for org in org_list if org.get('name'))
-    else:
-        return None
-
-
 def users_to_entry(title, response, next_page_token=None):
     context = []
 
@@ -461,18 +459,16 @@ def users_to_entry(title, response, next_page_token=None):
                'DisplayName', 'Groups', 'CustomerId', 'Domain', 'OrganizationUnit', 'Email', 'VisibleInDirectory']
 
     human_readable = tableToMarkdown(title, context, headers, removeNull=True)
-
     if next_page_token:
         human_readable += "\nTo get further results, rerun the command with this page-token:\n" + next_page_token
 
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable,
-        'EntryContext': {'Account(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': context}
-    }
+    return CommandResults(
+        outputs=context,
+        raw_response=response,
+        readable_output=human_readable,
+        outputs_prefix='Account',
+        outputs_key_field=['ID', 'Type']
+    )
 
 
 def labels_to_entry(title, response, user_key):
@@ -490,14 +486,13 @@ def labels_to_entry(title, response, user_key):
     headers = ['Name', 'ID', 'Type', 'MessageListVisibility', 'LabelListVisibility']
     human_readable = tableToMarkdown(title, context, headers, removeNull=True)
 
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable,
-        'EntryContext': {'GmailLabel(val.ID == obj.ID && val.Name == obj.Name && val.UserID == obj.UserID)': context}
-    }
+    return CommandResults(
+        outputs=context,
+        raw_response=response,
+        readable_output=human_readable,
+        outputs_prefix='GmailLabel',
+        outputs_key_field=['ID', 'Name', 'UserID']
+    )
 
 
 def autoreply_to_entry(title, response, user_id):
@@ -521,17 +516,13 @@ def autoreply_to_entry(title, response, user_id):
         "Address": user_id,
         "AutoReply": autoreply_context
     }
-
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': autoreply_context,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, autoreply_context, headers, removeNull=True),
-        'EntryContext': {
-            'Account.Gmail(val.Address == obj.Address)': account_context
-        }
-    }
+    return CommandResults(
+        raw_response=autoreply_context,
+        outputs=account_context,
+        readable_output=tableToMarkdown(title, autoreply_context, headers, removeNull=True),
+        outputs_prefix='Account.Gmail',
+        outputs_key_field='Address'
+    )
 
 
 def sent_mail_to_entry(title, response, to, emailfrom, cc, bcc, body, subject):
@@ -554,15 +545,13 @@ def sent_mail_to_entry(title, response, to, emailfrom, cc, bcc, body, subject):
     headers = ['Type', 'ID', 'To', 'From', 'Cc', 'Bcc', 'Subject', 'Body', 'Labels',
                'ThreadId']
 
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, gmail_context, headers, removeNull=True),
-        'EntryContext': {
-            'Gmail.SentMail(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': gmail_context}
-    }
+    return CommandResults(
+        raw_response=response,
+        outputs=gmail_context,
+        readable_output=tableToMarkdown(title, gmail_context, headers, removeNull=True),
+        outputs_prefix='Gmail.SentMail',
+        outputs_key_field=['ID', 'Type']
+    )
 
 
 def user_roles_to_entry(title, response):
@@ -578,15 +567,14 @@ def user_roles_to_entry(title, response):
         })
     headers = ['ID', 'RoleAssignmentId',
                'ScopeType', 'Kind', 'OrgUnitId']
-
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': context,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, context, headers, removeNull=True),
-        'EntryContext': {'Gmail.Role(val.ID && val.ID == obj.ID)': context}
-    }
+    human_readable = tableToMarkdown(title, context, headers, removeNull=True)
+    return CommandResults(
+        raw_response=context,
+        outputs=context,
+        readable_output=human_readable,
+        outputs_prefix='Gmail.Role',
+        outputs_key_field='ID'
+    )
 
 
 def tokens_to_entry(title, response):
@@ -602,14 +590,13 @@ def tokens_to_entry(title, response):
 
     headers = ['DisplayText', 'ClientId', 'Kind', 'Scopes', 'UserKey']
 
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': context,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, context, headers, removeNull=True),
-        'EntryContext': {'Tokens(val.ClientId && val.ClientId == obj.ClientId)': context}
-    }
+    return CommandResults(
+        raw_response=context,
+        outputs=context,
+        readable_output=tableToMarkdown(title, context, headers, removeNull=True),
+        outputs_prefix='Tokens',
+        outputs_key_field='ClientId'
+    )
 
 
 def filters_to_entry(title, mailbox, response):
@@ -653,17 +640,16 @@ def role_to_entry(title, role):
 
     privileges = context.get('Privilege', [])
     privileges_headers = ['ServiceID', 'Name']
-    privileges_title = 'Role {} privileges:'.format(context.get('ID'))
+    privileges_title = f"Role {context.get('ID')} privileges:"
     privileges_hr = tableToMarkdown(privileges_title, privileges, privileges_headers, removeNull=True)
 
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': context,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': details_hr + privileges_hr,
-        'EntryContext': {'Gmail.Role(val.ID && val.ID == obj.ID)': context}
-    }
+    return CommandResults(
+        raw_response=context,
+        outputs=context,
+        readable_output=details_hr + privileges_hr,
+        outputs_prefix='Gmail.Role',
+        outputs_key_field='ID'
+    )
 
 
 def dict_keys_snake_to_camelcase(dictionary):
@@ -674,7 +660,7 @@ def dict_keys_snake_to_camelcase(dictionary):
     """
     underscore_pattern = re.compile(r'_([a-z])')  # pylint: disable=E1101
     return {underscore_pattern.sub(lambda i: i.group(1).upper(), key.lower()): value for (key, value) in
-            dictionary.items()}
+            list(dictionary.items())}
 
 
 def get_millis_from_date(date, arg_name):
@@ -691,13 +677,13 @@ def get_millis_from_date(date, arg_name):
         try:
             return int(date)
         except ValueError:
-            raise ValueError('{} argument is not in expected format.'.format(arg_name))
+            raise ValueError(f'{arg_name} argument is not in expected format.')
 
 
 ''' FUNCTIONS '''
 
 
-def list_users_command():
+def list_users_command() -> CommandResults:
     args = demisto.args()
     domain = args.get('domain', ADMIN_EMAIL.split('@')[1])  # type: ignore
     customer = args.get('customer')
@@ -720,7 +706,7 @@ def list_labels_command():
     args = demisto.args()
     user_key = args.get('user-id')
     labels = list_labels(user_key)
-    return labels_to_entry('Labels for UserID {}:'.format(user_key), labels, user_key)
+    return labels_to_entry(f'Labels for UserID {user_key}:', labels, user_key)
 
 
 def list_users(domain, customer=None, query=None, sort_order=None, view_type='admin_view',
@@ -741,11 +727,10 @@ def list_users(domain, customer=None, query=None, sort_order=None, view_type='ad
 
     service = get_service('admin', 'directory_v1')
     result = service.users().list(**command_args).execute()
-
     return result['users'], result.get('nextPageToken')
 
 
-def get_user_command():
+def get_user_command() -> CommandResults:
     args = demisto.args()
     user_key = args.get('user-id')
     view_type = args.get('view-type-public-domain')
@@ -753,7 +738,7 @@ def get_user_command():
     customer_field_mask = args.get('customer-field-mask')
 
     result = get_user(user_key, view_type, projection, customer_field_mask)
-    return users_to_entry('User {}:'.format(user_key), [result])
+    return users_to_entry(f'User {user_key}:', [result])
 
 
 def get_user(user_key, view_type, projection, customer_field_mask=None):
@@ -771,13 +756,13 @@ def get_user(user_key, view_type, projection, customer_field_mask=None):
     return result
 
 
-def hide_user_command():
+def hide_user_command() -> CommandResults:
     args = demisto.args()
     user_key = args.get('user-id')
     hide_value = args.get('visible-globally')
     result = hide_user(user_key, hide_value)
 
-    return users_to_entry('User {}:'.format(user_key, ), [result])
+    return users_to_entry(f'User {user_key}:', [result])
 
 
 def hide_user(user_key, hide_value):
@@ -813,7 +798,7 @@ def set_user_password(user_key, password):
                           additional_scopes=['https://www.googleapis.com/auth/admin.directory.user'])
     service.users().update(**command_args).execute()
 
-    return 'User {} password has been set.'.format(command_args['userKey'])
+    return f'User {command_args["userKey"]} password has been set.'
 
 
 def get_autoreply_command():
@@ -822,7 +807,7 @@ def get_autoreply_command():
 
     autoreply_message = get_autoreply(user_id)
 
-    return autoreply_to_entry('User {}:'.format(user_id), [autoreply_message], user_id)
+    return autoreply_to_entry(f'User {user_id}:', [autoreply_message], user_id)
 
 
 def get_autoreply(user_id):
@@ -836,7 +821,6 @@ def get_autoreply(user_id):
                                              'https://www.googleapis.com/auth/gmail.settings.basic'],
                           delegated_user=user_id)
     result = service.users().settings().getVacation(**command_args).execute()
-
     return result
 
 
@@ -862,7 +846,7 @@ def set_autoreply_command():
     autoreply_message = set_autoreply(user_id, enable_autoreply, response_subject, response_body_plain_text,
                                       domain_only, contacts_only, start_time, end_time, response_body_type)
 
-    return autoreply_to_entry('User {}:'.format(user_id), [autoreply_message], user_id)
+    return autoreply_to_entry(f'User {user_id}:', [autoreply_message], user_id)
 
 
 def set_autoreply(user_id, enable_autoreply, response_subject, response_body_plain_text, domain_only, contacts_only,
@@ -913,7 +897,7 @@ def delegate_user_mailbox(user_id, delegate_email, delegate_token):
         }
 
         service.users().settings().delegates().create(**command_args).execute()
-        return 'Email {} has been delegated'.format(delegate_email)
+        return f'Email {delegate_email} has been delegated'
 
     else:
         command_args = {
@@ -922,7 +906,7 @@ def delegate_user_mailbox(user_id, delegate_email, delegate_token):
         }
 
         service.users().settings().delegates().delete(**command_args).execute()
-        return 'Email {} has been removed from delegation'.format(delegate_email)
+        return f'Email {delegate_email} has been removed from delegation'
 
 
 def create_user_command():
@@ -977,7 +961,7 @@ def delete_user(user_key):
         ['https://www.googleapis.com/auth/admin.directory.user'])
     service.users().delete(**command_args).execute()
 
-    return 'User {} have been deleted.'.format(command_args['userKey'])
+    return f'User {command_args["userKey"]} have been deleted.'
 
 
 def list_labels(user_key):
@@ -1044,7 +1028,7 @@ def get_role_command():
         raise ValueError('Must provide Immutable GoogleApps Id')
 
     role = get_role(role_id, customer)
-    return role_to_entry('Role {} details:'.format(role_id), role)
+    return role_to_entry(f'Role {role_id} details:', role)
 
 
 def revoke_user_roles_command():
@@ -1119,14 +1103,15 @@ def search_all_mailboxes(receive_only_accounts):
                 futures.append(executor.submit(search_command, mailbox=user['primaryEmail']))
             for future in concurrent.futures.as_completed(futures):
                 accounts_counter += 1
+                result = future.result()
+                if result is None:
+                    continue
                 entries.append(future.result())
                 if accounts_counter % 100 == 0:
                     demisto.info(
-                        'Still searching. Searched {}% of total accounts ({} / {}), and found {} results so far'.format(
-                            int((accounts_counter / users_count) * 100),
-                            accounts_counter,
-                            users_count,
-                            len(entries)),
+                        f'Still searching. Searched {int((accounts_counter / users_count) * 100)}%  \
+                        of total accounts ({accounts_counter} / {users_count}), \
+                        and found {len(entries)} results so far',
                     )
 
         if receive_only_accounts:
@@ -1134,11 +1119,14 @@ def search_all_mailboxes(receive_only_accounts):
 
         # if these are the final result push - return them
         if users_next_page_token is None:
-            entries.append("Search completed")
-            return entries
+            if entries:
+                entries.append("Search completed")
+            else:
+                entries.append("No entries.")
+                return entries
 
         # return midway results
-        demisto.results(entries)
+        return entries
 
 
 def search_command(mailbox=None):
@@ -1158,7 +1146,7 @@ def search_command(mailbox=None):
     _in = args.get('in', '')
 
     query = args.get('query', '')
-    fields = args.get('fields')  # TODO
+    fields = args.get('fields')
     label_ids = [lbl for lbl in args.get('labels-ids', '').split(',') if lbl != '']
     max_results = int(args.get('max-results', 100))
     page_token = args.get('page-token')
@@ -1183,9 +1171,10 @@ def search_command(mailbox=None):
         if mails:
             return {'Mailbox': mailbox, 'q': q}
         return {'Mailbox': None, 'q': q}
-
-    res = emails_to_entry('Search in {}:\nquery: "{}"'.format(mailbox, q), mails, 'full', mailbox)
-    return res
+    if mails:
+        res = emails_to_entry(f'Search in {mailbox}:\nquery: "{q}"', mails, 'full', mailbox)
+        return res
+    return
 
 
 def search(user_id, subject='', _from='', to='', before='', after='', filename='', _in='', query='',
@@ -1202,7 +1191,7 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
         'has': 'attachment' if has_attachments else ''
     }
     q = ' '.join('%s:%s ' % (name, value,)
-                 for name, value in query_values.iteritems() if value != '')
+                 for name, value in list(query_values.items()) if value != '')
     q = ('%s %s' % (q, query,)).strip()
 
     command_args = {
@@ -1229,7 +1218,7 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
             raise
 
     # In case the user wants only account list without content.
-    if receive_only_accounts and result.get('sizeEstimate') > 0:
+    if receive_only_accounts and result.get('sizeEstimate', 0) > 0:
         return True, q
 
     entries = [get_mail(user_id=user_id,
@@ -1556,7 +1545,7 @@ def remove_filter_command():
 
     user_id = args.get('user-id', ADMIN_EMAIL)
     ids = args.get('filter_ids', '')
-    if isinstance(ids, STRING_TYPES):  # alternativly it could be an array
+    if isinstance(ids, STRING_OBJ_TYPES):  # alternativly it could be an array
         ids = ids.split(',')
 
     for _id in ids:
@@ -1597,7 +1586,7 @@ def header(s):
         return None
 
     s_no_newlines = ' '.join(s.splitlines())
-    return Header(s_no_newlines, 'utf-8')
+    return Header(s_no_newlines)
 
 
 def template_params(paramsStr):
@@ -1610,7 +1599,7 @@ def template_params(paramsStr):
             params = json.loads(paramsStr)
 
         except ValueError as e:
-            return_error('Unable to parse templateParams: {}'.format(str(e)))
+            return_error(f'Unable to parse templateParams: {str(e)}')
         # Build a simple key/value
 
         for p in params:
@@ -1637,7 +1626,7 @@ def transient_attachments(transientFile, transientFileContent, transientFileCID)
         transientFileCID = []
 
     attachments = []
-    for file_name, file_data, file_cid in it.izip_longest(transientFile, transientFileContent, transientFileCID):
+    for file_name, file_data, file_cid in it.zip_longest(transientFile, transientFileContent, transientFileCID):
         if file_name is None:
             break
 
@@ -1679,9 +1668,9 @@ def handle_html(htmlBody):
             'maintype': maintype,
             'subtype': subtype,
             'data': base64.b64decode(m.group(3)),
-            'name': 'image%d.%s' % (i, subtype)
+            'name': f"image{i}.{subtype}"
         }
-        att['cid'] = '%s@%s.%s' % (att['name'], randomword(8), randomword(8))
+        att['cid'] = f'{str(att.get("name"))}@{randomword(8)}.{randomword(8)}'
         attachments.append(att)
         cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + att['cid']
         lastIndex = m.end() - 1
@@ -1737,7 +1726,8 @@ def collect_manual_attachments():
                 data = fp.read()
         else:
             with open(path, 'rb') as fp:
-                data = fp.read()
+                data = fp.read()  # type: ignore [assignment]
+
         attachments.append({
             'name': attachment['FileName'],
             'maintype': maintype,
@@ -1917,7 +1907,7 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
             header_name, header_value = h.split('=')
             message[header_name] = header(header_value)
 
-    encoded_message = base64.urlsafe_b64encode(message.as_string())
+    encoded_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
     command_args = {
         'userId': emailfrom,
         'body': {
@@ -1991,37 +1981,154 @@ def reply_mail_command():
     return sent_mail_to_entry('Email sent:', [result], emailto, emailfrom, cc, bcc, body, subject)
 
 
-def forwarding_address_add_command():
+def forwarding_address_add(user_id: str, forwarding_email: str) -> tuple[dict, bool, Optional[dict]]:
+    """ Creates forwarding address.
+        Args:
+            user_id: str - The user's email address or the user id.
+            forwarding_email: str - The forwarding address to be retrieved.
+        Returns:
+            result: dict - Response body from the API.
+            exception: bool - Indicates whether there is an error.
+            exception_details: dict - The details of the exception.
     """
-    Creates a forwarding address.
-    """
-
-    args = demisto.args()
-    forwarding_email = args.get('forwarding_email', '')
-    user_id = args.get('user_id', '')
+    result = {}
+    exception_details = {}
+    exception = False
     request_body = {'forwardingEmail': forwarding_email}
     service = get_service(
         'gmail',
         'v1',
         ['https://www.googleapis.com/auth/gmail.settings.sharing'],
         delegated_user=user_id)
-    result = service.users().settings().forwardingAddresses().create(userId=user_id, body=request_body).execute()
-    readable_output = "Added forwarding address {0} for {1} with status {2}.".format(forwarding_email, user_id,
-                                                                                     result.get('verificationStatus',
-                                                                                                ''))
-    context = dict(result)
-    context['userId'] = user_id
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': result,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': readable_output,
-        'EntryContext': {
-            'Gmail.ForwardingAddress((val.forwardingEmail && val.forwardingEmail '
-            '== obj.forwardingEmail) && (val.userId && val.userId == obj.userId))': context,
-        }
+    try:
+        result = service.users().settings().forwardingAddresses().create(userId=user_id, body=request_body).execute()
+        result['userId'] = user_id
+    except HttpError as e:
+        exception = True
+        exception_details = {'forwardingEmail': forwarding_email, 'errorMessage': e.reason, 'userId': user_id}
+    return result, exception, exception_details
+
+
+def forwarding_address_add_command() -> list[CommandResults]:
+    """ Creates forwarding address.
+        Args:
+            user_id: str - The user's email address or the user id.
+            forwarding_email: str - The forwarding address to be retrieved.
+        Returns:
+            A list of CommandResults.
+    """
+    args = demisto.args()
+    forwarding_email_list = argToList(args.get('forwarding_email'))
+    user_id = args.get('user_id', '')
+    headers = {
+        'success': ['forwardingEmail', 'userId', 'verificationStatus'],
+        'failure': ['forwardingEmail', 'errorMessage']
     }
+    outputs_list_success = []
+    outputs_list_failure = []
+    results = []
+    for forwarding_email in forwarding_email_list:
+        result_forwarding_add, is_exception, error_details = forwarding_address_add(user_id, forwarding_email)
+        if is_exception:
+            outputs_list_failure.append(error_details)
+            demisto.debug(error_details)
+        else:
+            outputs_list_success.append(result_forwarding_add)
+
+    if outputs_list_success:
+        results.append(CommandResults(raw_response=outputs_list_success,
+                                      outputs=outputs_list_success,
+                                      readable_output=tableToMarkdown(f'Forwarding addresses results for "{user_id}":',
+                                                                      outputs_list_success, headers['success'], removeNull=True),
+                                      outputs_prefix='Gmail.ForwardingAddress',
+                                      outputs_key_field=['forwardingEmail', 'userId']))
+    if outputs_list_failure:
+        results.append(CommandResults(raw_response=outputs_list_failure,
+                                      readable_output=tableToMarkdown(f'Forwarding addresses errors for "{user_id}":',
+                                                                      outputs_list_failure, headers['failure'], removeNull=True),
+                                      outputs_prefix='Gmail.ForwardingAddress',
+                                      outputs_key_field=['forwardingEmail', 'userId']))
+    return results
+
+
+def forwarding_address_update(user_id: str, disposition: str, forwarding_email: str) -> tuple[dict, bool, Optional[dict]]:
+    """ Update forwarding address with disposition.
+        Args:
+            user_id: str - The user's email address or the user id.
+            forwarding_email: str - The forwarding address to be retrieved.
+            disposition: str - The state that a message should be left in after it has been forwarded.
+        Returns:
+            result: dict - Response body from the API.
+            exception: bool - Indicates whether there is an error.
+            exception_details: dict - The details of the exception.
+    """
+    exception = False
+    result = {}
+    exception_details = {}
+    service = get_service(
+        'gmail',
+        'v1',
+        ['https://www.googleapis.com/auth/gmail.settings.sharing'],
+        delegated_user=user_id)
+    request_body = {'emailAddress': forwarding_email,
+                    'enabled': True,
+                    'disposition': disposition
+                    }
+    try:
+        result = service.users().settings().updateAutoForwarding(userId=user_id, body=request_body).execute()
+        result['userId'] = user_id
+    except HttpError as e:
+        exception = True
+        exception_details = {'forwardingEmail': forwarding_email, 'errorMessage': e.reason, 'userId': user_id}
+
+    return result, exception, exception_details
+
+
+def forwarding_address_update_command() -> list[CommandResults]:
+    """ Update forwarding address with disposition.
+        Args:
+            user_id: str - The user's email address or the user id.
+            forwarding_email: list[str] - a forwarding addresses list to be retrieved.
+            disposition: str - The state that a message should be left in after it has been forwarded.
+        Returns:
+           A list of CommandResults.
+    """
+    args = demisto.args()
+    forwarding_email_list = argToList(args.get('forwarding_email'))
+    user_id = args.get('user_id')
+    disposition = args.get('disposition')
+    headers = {
+        'success': ['forwardingEmail', 'userId', 'disposition', 'enabled'],
+        'failure': ['forwardingEmail', 'errorMessage']
+    }
+    outputs_list_success = []
+    outputs_list_failure = []
+    results = []
+    for forwarding_email in forwarding_email_list:
+        result_forwarding_update, is_exception, error_details = forwarding_address_update(user_id, disposition, forwarding_email)
+        if is_exception:
+            outputs_list_failure.append(error_details)
+            demisto.debug(error_details)
+        else:
+            result_forwarding_update['forwardingEmail'] = result_forwarding_update.pop('emailAddress')
+            result_forwarding_update['userId'] = user_id
+            outputs_list_success.append(result_forwarding_update)
+
+    if outputs_list_success:
+        results.append(CommandResults(raw_response=outputs_list_success,
+                                      outputs=outputs_list_success,
+                                      readable_output=tableToMarkdown(f'Forwarding addresses update results for "{user_id}":',
+                                                                      outputs_list_success, headers['success'], removeNull=True),
+                                      outputs_prefix='Gmail.ForwardingAddress',
+                                      outputs_key_field=['forwardingEmail', 'userId']))
+    if outputs_list_failure:
+        results.append(CommandResults(raw_response=outputs_list_failure,
+                                      readable_output=tableToMarkdown(f'Forwarding addresses update errors for "{user_id}":',
+                                                                      outputs_list_failure, headers['failure'], removeNull=True),
+                                      outputs_prefix='Gmail.ForwardingAddress',
+                                      outputs_key_field=['userId', 'forwardingEmail']))
+
+    return results
 
 
 def send_as_add_command():
@@ -2037,15 +2144,15 @@ def send_as_add_command():
     args = demisto.args()
     user_id = args.pop('user_id', '')
 
-    smtp_msa_object = {key.replace('smtp_', ''): value for (key, value) in args.items() if
+    smtp_msa_object = {key.replace('smtp_', ''): value for (key, value) in list(args.items()) if
                        key.startswith('smtp_')}
 
-    args = {key: value for (key, value) in args.items() if not key.startswith('smtp_')}
+    args = {key: value for (key, value) in list(args.items()) if not key.startswith('smtp_')}
 
     send_as_settings = dict_keys_snake_to_camelcase(args)
 
     if smtp_msa_object:
-        if any(field not in smtp_msa_object.keys() for field in SEND_AS_SMTP_FIELDS):
+        if any(field not in list(smtp_msa_object.keys()) for field in SEND_AS_SMTP_FIELDS):
             raise ValueError('SMTP configuration missing. Please provide all the SMTP field values.')
         smtp_msa_object['securityMode'] = smtp_msa_object.pop('securitymode', '')
         send_as_settings['smtpMsa'] = smtp_msa_object
@@ -2059,27 +2166,147 @@ def send_as_add_command():
     context = result.copy()
     context['userId'] = user_id
 
-    for (key, value) in context.pop('smtpMsa', {}).items():
+    for (key, value) in list(context.pop('smtpMsa', {}).items()):
         context['smtpMsa' + (key[0].upper() + key[1:])] = value
 
     hr_fields = ['sendAsEmail', 'displayName', 'replyToAddress', 'isPrimary', 'treatAsAlias']
 
     readable_output = tableToMarkdown(
-        'A custom "{}" send-as alias created for "{}".'.format(result.get('sendAsEmail', ''), user_id),
+        f'A custom "{result.get("sendAsEmail", "")}" send-as alias created for "{user_id}".',
         context, headerTransform=pascalToSpace, removeNull=True,
         headers=hr_fields)
 
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': result,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': readable_output,
-        'EntryContext': {
-            'Gmail.SendAs((val.sendAsEmail && val.sendAsEmail '
-            '== obj.sendAsEmail) && (val.userId && val.userId == obj.userId))': context,
-        }
-    }
+    return CommandResults(
+        outputs=context,
+        raw_response=result,
+        readable_output=readable_output,
+        outputs_prefix='Gmail.SendAs',
+        outputs_key_field=['sendAsEmail', 'userId']
+    )
+
+
+def forwarding_address_get(user_id: str, forwarding_email: str) -> dict:
+    """ Gets an Existing forwarding address.
+        Args:
+            user_id: str - The user email address or the user id.
+            forwarding_email: str - The forwarding address to be retrieved.
+        Returns:
+            A Dict object - Response body from the API.
+    """
+    service = get_service(
+        'gmail',
+        'v1',
+        ['https://www.googleapis.com/auth/gmail.readonly',
+         'https://www.googleapis.com/auth/gmail.modify',
+         'https://mail.google.com/',
+         'https://www.googleapis.com/auth/gmail.settings.basic'],
+        delegated_user=user_id)
+    result = service.users().settings().forwardingAddresses().get(userId=user_id, forwardingEmail=forwarding_email).execute()
+    return result
+
+
+def forwarding_address_get_command() -> CommandResults:
+    """ Gets an Existing forwarding address.
+        Args:
+            user_id: str - The user's email address or the user id.
+            forwarding_email: str - The forwarding address to be retrieved.
+        Returns:
+            A CommandResults object.
+    """
+    args = demisto.args()
+    forwarding_email = args.get('forwarding_email')
+    headers = ['forwardingEmail', 'verificationStatus']
+    user_id = args.get('user_id')
+    result = forwarding_address_get(user_id, forwarding_email)
+    result['userId'] = user_id
+
+    return CommandResults(
+        raw_response=result,
+        outputs=result,
+        readable_output=tableToMarkdown(f'Get forwarding address for: "{user_id}"', result, headers, removeNull=True),
+        outputs_prefix='Gmail.ForwardingAddress',
+        outputs_key_field=['forwardingEmail', 'userId']
+    )
+
+
+def forwarding_address_remove(user_id: str, forwarding_email: str) -> dict:
+    """ Removes a forwarding address.
+        Args:
+            user_id: str - The user's email address or the user id.
+            forwarding_email: str - The forwarding address to be retrieved.
+        Returns:
+            A Dict object - Response body from the API (empty when successful).
+    """
+    service = get_service(
+        'gmail',
+        'v1',
+        ['https://www.googleapis.com/auth/gmail.settings.sharing'],
+        delegated_user=user_id)
+    result = service.users().settings().forwardingAddresses().delete(userId=user_id, forwardingEmail=forwarding_email).execute()
+    return result
+
+
+def forwarding_address_remove_command() -> CommandResults:
+    """ Removes a forwarding address.
+        Args:
+            user_id: str - The user's email address or the user id.
+            forwarding_email: str - The forwarding address to be retrieved.
+        Returns:
+            A CommandResults object.
+    """
+    args = demisto.args()
+    forwarding_email = args.get('forwarding_email')
+    user_id = args.get('user_id')
+    forwarding_address_remove(user_id, forwarding_email)
+    return CommandResults(
+        readable_output=f'Forwarding address "{forwarding_email}" for "{user_id}" was deleted successfully .'
+    )
+
+
+def forwarding_address_list(user_id: str) -> dict:
+    """ Gets a list of forwarding addresses.
+        Args:
+            user_id: str - The user's email address or the user id.
+        Returns:
+            A Dict object - Response body from the API.
+    """
+    result = {}
+    service = get_service(
+        'gmail',
+        'v1',
+        ['https://www.googleapis.com/auth/gmail.settings.basic',
+         'https://mail.google.com/',
+         'https://www.googleapis.com/auth/gmail.modify',
+         'https://www.googleapis.com/auth/gmail.readonly'],
+        delegated_user=user_id)
+    result = service.users().settings().forwardingAddresses().list(userId=user_id).execute()
+    return result
+
+
+def forwarding_address_list_command() -> CommandResults:
+    """ Gets a list of forwarding addresses.
+        Args:
+            user_id: str - The user's email address or the user id.
+            limit: str - The Limit of the results list. Default is 50.
+        Returns:
+            A CommandResults object.
+    """
+    args = demisto.args()
+    user_id = args.get('user_id')
+    limit = int(args.get('limit', '50'))
+    result = forwarding_address_list(user_id)
+    context = result.get('forwardingAddresses')
+    context = context[:limit] if context else []
+    for msg in context:
+        msg['userId'] = user_id
+    headers = ['forwardingEmail', 'verificationStatus']
+    return CommandResults(
+        raw_response=result,
+        outputs=context,
+        readable_output=tableToMarkdown(f'Forwarding addresses list for: "{user_id}"', context, headers, removeNull=True),
+        outputs_prefix='Gmail.ForwardingAddress',
+        outputs_key_field=['forwardingEmail', 'userId']
+    )
 
 
 '''FETCH INCIDENTS'''
@@ -2129,7 +2356,7 @@ def fetch_incidents():
         if temp_date > current_fetch:
             incidents.append(incident)
 
-    demisto.info('extract {} incidents'.format(len(incidents)))
+    demisto.info(f'extract {len(incidents)} incidents')
     demisto.setLastRun({'gmt_time': last_fetch.isoformat().split('.')[0] + 'Z'})
     return incidents
 
@@ -2170,33 +2397,35 @@ def main():
         'send-mail': send_mail_command,
         'reply-mail': reply_mail_command,
         'gmail-get-role': get_role_command,
-        'gmail-forwarding-address-add': forwarding_address_add_command,
         'gmail-send-as-add': send_as_add_command,
+        'gmail-forwarding-address-get': forwarding_address_get_command,
+        'gmail-forwarding-address-remove': forwarding_address_remove_command,
+        'gmail-forwarding-address-list': forwarding_address_list_command,
+        'gmail-forwarding-address-update': forwarding_address_update_command,
+        'gmail-forwarding-address-add': forwarding_address_add_command,
     }
     command = demisto.command()
     LOG('GMAIL: command is %s' % (command,))
     try:
         if command == 'test-module':
             list_users(ADMIN_EMAIL.split('@')[1])
-            demisto.results('ok')
+            return_results('ok')
             sys.exit(0)
 
         if command == 'fetch-incidents':
             demisto.incidents(fetch_incidents())
             sys.exit(0)
-
         cmd_func = COMMANDS.get(command)
         if cmd_func is None:
             raise NotImplementedError(
-                'Command "{}" is not implemented.'.format(command))
+                f'Command "{command}" is not implemented.')
 
         else:
             if command == 'gmail-search-all-mailboxes':
                 receive_only_accounts = argToBoolean(demisto.args().get('show-only-mailboxes', 'false'))
-                demisto.results(cmd_func(receive_only_accounts))  # type: ignore
+                return_results(cmd_func(receive_only_accounts))  # type: ignore
             else:
-                demisto.results(cmd_func())  # type: ignore
-
+                return_results(cmd_func())  # type: ignore
     except Exception as e:
         import traceback
         if command == 'fetch-incidents':
@@ -2205,9 +2434,9 @@ def main():
             raise
 
         else:
-            return_error('GMAIL: {}'.format(str(e)), traceback.format_exc())
+            return_error(f'GMAIL: {str(e)}', traceback.format_exc())
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ in ("__builtin__", "builtins"):
+if __name__ in ("__builtin__", "builtins", "__main__"):
     main()
