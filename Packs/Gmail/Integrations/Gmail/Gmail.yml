@@ -380,13 +380,13 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'false'
+      defaultValue: 'False'
       description: 'Include messages from SPAM and TRASH in the results. (Default: false)'
       isArray: false
       name: include-spam-trash
       predefined:
-      - 'false'
-      - 'true'
+      - 'False'
+      - 'True'
       required: false
       secret: false
     - default: false
@@ -437,8 +437,8 @@ script:
       isArray: false
       name: has-attachments
       predefined:
-      - 'true'
-      - 'false'
+      - 'True'
+      - 'False'
       required: false
       secret: false
     deprecated: false
@@ -552,13 +552,13 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'false'
+      defaultValue: 'False'
       description: 'Includes messages from SPAM and TRASH in the results. (Default: false)'
       isArray: false
       name: include-spam-trash
       predefined:
-      - 'false'
-      - 'true'
+      - 'False'
+      - 'True'
       required: false
       secret: false
     - default: false
@@ -609,13 +609,13 @@ script:
       isArray: false
       name: has-attachments
       predefined:
-      - 'false'
-      - 'true'
+      - 'False'
+      - 'True'
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to return only mailboxes which contain the email. Default is "false".
+      description: Whether to return only mailboxes which contain the email. Default is "true".
       name: show-only-mailboxes
       predefined:
       - "false"
@@ -675,14 +675,14 @@ script:
       description: All headers of specific mail (list).
       type: unknown
     - contextPath: Gmail.Mailboxes
-      description: The Gmail Mailbox.
-      type: string
+      description: The Gmail mailboxes in which emails matching the query were found.
+      type: String
     - contextPath: PageToken.NextPageToken
-      description: The Gmail Mailbox.
-      type: string
+      description: The use of this output is in the Search all mailboxes - Gmail with polling Playbook, so NextPageToken is used to call back the command to fetch the list of the next accounts in which the search will be made.
+      type: String
     - contextPath: SearchingAccounts
-      description: Needs rewrite.
-      type: Array
+      description: The use of this output is in the Search all mailboxes - Gmail with polling Playbook, it allows the search process to be followed.
+      type: String
     - contextPath: Email.To
       description: The recipient of the email.
       type: String
@@ -764,8 +764,8 @@ script:
       isArray: false
       name: show-deleted
       predefined:
-      - 'false'
-      - 'true'
+      - 'False'
+      - 'True'
       required: false
       secret: false
     - auto: PREDEFINED
@@ -801,16 +801,6 @@ script:
       name: page-token
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: This argument to be used Search all mailboxes - Gmail playbook.
-      isArray: false
-      name: for-searching-all-mailboxes
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
     deprecated: false
     description: Lists all Google users in a domain.
     execution: false
@@ -842,9 +832,6 @@ script:
       type: String
     - contextPath: Account.OrganizationUnit
       description: The Organization Unit (OU) of the account.
-      type: String
-    - contextPath: PageToken.NextPageToken
-      description: Needs rewrite.
       type: String
   - arguments:
     - default: false
@@ -939,8 +926,8 @@ script:
       isArray: false
       name: permanent
       predefined:
-      - 'false'
-      - 'true'
+      - 'False'
+      - 'True'
       required: false
       secret: false
     deprecated: false
@@ -1416,7 +1403,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether to hide the user's visibility in the Global Directory. Can be false to hide the user, true to show the user in the directory (default).
+      description: Whether to hide the user's visibility in the Global Directory. Can be False to hide the user, True to show the user in the directory (default).
       isArray: false
       name: visible-globally
       predefined:
