@@ -1053,7 +1053,7 @@ tasks:
       brand: ""
       id: 369734a2-ac9a-41f0-8a68-281c984b47b5
       iscommand: false
-      name: 629bfb7f-d719-4b74-8f1b-7f5a97b816db
+      name: Palo Alto Networks BPA - Submit Scan
       playbookId: 629bfb7f-d719-4b74-8f1b-7f5a97b816db
       type: playbook
       version: -1
