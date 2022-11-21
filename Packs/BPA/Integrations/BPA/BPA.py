@@ -1,12 +1,10 @@
 from typing import Dict, Tuple, List
-
-import requests
-from CommonServerUserPython import *
-
+import urllib3
 from CommonServerPython import *
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
+
 
 ''' GLOBALS/PARAMS '''
 BPA_HOST = 'https://bpa.paloaltonetworks.com'
@@ -88,7 +86,7 @@ class Client(BaseClient):
 
     def __init__(self, bpa_token: str, verify: bool, proxy: bool):
         headers = {'Authorization': f'Token {bpa_token}'}
-        super().__init__(base_url=BPA_URL, verify=verify, headers=headers)
+        super().__init__(base_url=BPA_URL, verify=verify, headers=headers, proxy=proxy)
         self.token = bpa_token
         if proxy:
             self.proxies = handle_proxy()
