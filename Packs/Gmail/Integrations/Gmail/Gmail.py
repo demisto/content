@@ -733,30 +733,19 @@ def get_mailboxes(max_results: int = 100, users_next_page_token: str = None):
 ''' FUNCTIONS '''
 
 
-def list_users_command() -> Union[CommandResults, List[CommandResults]]:
+def list_users_command() -> CommandResults:
     args = demisto.args()
     domain = args.get('domain', ADMIN_EMAIL.split('@')[1])  # type: ignore
     customer = args.get('customer')
     view_type = args.get('view-type-public-domain', 'admin_view')
     query = args.get('query')
     sort_order = args.get('sort-order')
-    max_results = arg_to_number(args.get('max-results', 100)) or 100
+    max_results = args.get('max-results', 100)
     show_deleted = bool(strtobool(args.get('show-deleted', 'false')))
     projection = args.get('projection', 'basic')
     custom_field_mask = args.get(
         'custom_field_mask') if projection == 'custom' else None
     page_token = args.get('page-token')
-
-    if argToBoolean(args.get('for-searching-all-mailboxes', 'false')):
-        list_accounts, new_page_token = get_mailboxes(max_results, page_token)  # type: ignore
-
-        command_results = [CommandResults(
-            outputs={'NextPageToken': new_page_token},
-            outputs_prefix='PageToken',
-            outputs_key_field='NextPageToken'
-        )]
-        command_results.append(cutting_for_batches(list_accounts))
-        return command_results
 
     users, next_page_token = list_users(domain, customer, query, sort_order, view_type,
                                         show_deleted, max_results, projection, custom_field_mask, page_token)
