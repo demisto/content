@@ -968,28 +968,28 @@ class SlackLogger:
 def socket_client_loop():
     try:
         exception_await_seconds = 1
-        while True:
-            slack_logger = SlackLogger()
-            client = SocketModeClient(
-                app_token=APP_TOKEN,
-                web_client=CLIENT,
-                logger=slack_logger,  # type: ignore
-                auto_reconnect_enabled=True,
-                trace_enabled=EXTENSIVE_LOGGING,
-                concurrency=100
-            )
-            client.socket_mode_request_listeners.append(acknowledge_and_queue)  # type: ignore
-            try:
-                client.connect()
-                demisto.debug("Socket is connected")
-                # After successful connection, we reset the backoff time.
-                exception_await_seconds = 1
-                demisto.debug(f"Resetting exception wait time to {exception_await_seconds}")
-                time.sleep(float("inf"))
-            except Exception as e:
-                demisto.debug(f"Exception in long running loop, waiting {exception_await_seconds} - {e}")
-                time.sleep(exception_await_seconds)
-                exception_await_seconds *= 2
+
+        slack_logger = SlackLogger()
+        client = SocketModeClient(
+            app_token=APP_TOKEN,
+            web_client=CLIENT,
+            logger=slack_logger,  # type: ignore
+            auto_reconnect_enabled=True,
+            trace_enabled=EXTENSIVE_LOGGING,
+            concurrency=100
+        )
+        client.socket_mode_request_listeners.append(acknowledge_and_queue)  # type: ignore
+        try:
+            client.connect()
+            demisto.debug("Socket is connected")
+            # After successful connection, we reset the backoff time.
+            exception_await_seconds = 1
+            demisto.debug(f"Resetting exception wait time to {exception_await_seconds}")
+            time.sleep(threading.TIMEOUT_MAX)
+        except Exception as e:
+            demisto.debug(f"Exception in long running loop, waiting {exception_await_seconds} - {e}")
+            time.sleep(exception_await_seconds)
+            exception_await_seconds *= 2
     except Exception as e:
         demisto.error(f"An error has occurred while trying to create the socket client. {e}")
 
@@ -1011,27 +1011,32 @@ def start_listening():
     """
     try:
         # create the long-running background task loop
-        background_task = threading.Thread(target=long_running_loop)
+        background_task = threading.Thread(target=long_running_loop, daemon=True)
         background_task.start()
+        demisto.info("Created background task")
 
         # Create the message listeners
-        message_consumers = [threading.Thread(target=consume_and_process_message, args=(MESSAGE_QUEUE, i, CLIENT)) for i
+        message_consumers = [threading.Thread(target=consume_and_process_message, args=(MESSAGE_QUEUE, i, CLIENT), daemon=True) for i
                              in range(3)]
         for message_consumer in message_consumers:
             message_consumer.start()
-
-        # Join message listeners to process
-        for message_consumer in message_consumers:
-            message_consumer.join()
+            demisto.info("Created consumer task")
 
         # Join long-running background task to loop
 
         # create the socket_client loop
         socket_client = threading.Thread(target=socket_client_loop)
         socket_client.start()
+        demisto.info("Started Client")
+
 
         # Join socket_client to loop
         socket_client.join()
+
+        # Join message listeners to process
+        for message_consumer in message_consumers:
+            message_consumer.join()
+            demisto.info("Starting consumer task")
 
     except Exception as e:
         demisto.error(f"An error has occurred while gathering the loop tasks. {e}")
