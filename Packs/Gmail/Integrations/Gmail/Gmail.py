@@ -40,7 +40,10 @@ FETCH_TIME = demisto.params().get('fetch_time', '1 days')
 
 SEND_AS_SMTP_FIELDS = ['host', 'port', 'username', 'password', 'securitymode']
 DATE_FORMAT = '%Y-%m-%d'  # sample - 2020-08-23
+MAX_USERS = 2500
+MAX_WITHOUT_POLLING = 500
 BATCH_DIVIDER = 5
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -678,7 +681,7 @@ def get_millis_from_date(date, arg_name):
             raise ValueError(f'{arg_name} argument is not in expected format.')
 
 
-def cutting_for_batches(list_accounts: list) -> CommandResults:
+def cutting_for_batches(list_accounts: list) -> List[list]:
 
     batch_size = int(len(list_accounts) / BATCH_DIVIDER)
     rest = len(list_accounts) % BATCH_DIVIDER
@@ -690,13 +693,7 @@ def cutting_for_batches(list_accounts: list) -> CommandResults:
     if rest > 0:
         accounts[0].extend(list_accounts[batch_size * BATCH_DIVIDER:])
 
-    command_results = CommandResults(
-        outputs_prefix='Account.Gmail.Address',
-        outputs=accounts,
-        readable_output='Done'
-    )
-
-    return command_results
+    return accounts
 
 
 def get_mailboxes(max_results: int = 100, users_next_page_token: str = None):
@@ -1140,13 +1137,68 @@ def get_user_tokens(user_id):
     return result.get('items', [])
 
 
+def scheduled_commands_for_more_users(accounts: list, next_page_token: str) -> List[CommandResults]:
+
+    accounts_batches = cutting_for_batches(accounts)
+
+    command_results: List[CommandResults] = []
+    args = {k: v for k, v in demisto.args().items()}
+    for batch in accounts_batches:
+
+        args.update({'list_accounts': batch})
+        command_results.append(
+            CommandResults(
+                readable_output='Please wait... serching...',
+                scheduled_command=ScheduledCommand(
+                    command='gmail-search-all-mailboxes',
+                    next_run_in_seconds=10,
+                    args={k: v for k, v in args.items()},
+                    timeout_in_seconds=50
+                )
+            )
+        )
+        del args['list_accounts']
+    command_results.append(
+        CommandResults(
+            outputs_key_field='PageToken',
+            outputs={'PageToken': {'NextPageToken': next_page_token}}
+        )
+    )
+
+    return command_results
+
+
+def information_search_process(length_accounts: int, searching_accounts: List[str]) -> CommandResults:
+
+    if not searching_accounts:
+        readable_output = f'Searching on {length_accounts} accounts, ' \
+                          f'from 1 to {length_accounts} from all the accounts'
+        outputs_searching = {'SearchingAccounts': str([1, length_accounts])}
+    else:
+
+        readable_output = f'Searching on {length_accounts} accounts, ' \
+                          f'from {int(searching_accounts[1]) + 1} to {int(searching_accounts[1]) + length_accounts}' \
+                          ' from all the accounts'
+        outputs_searching = {
+            'SearchingAccounts':
+                str([int(searching_accounts[1]) + 1,
+                    int(searching_accounts[1]) + length_accounts])
+        }
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs_searching
+    )
+
+
 def search_all_mailboxes():
 
     args = demisto.args()
     receive_only_accounts = argToBoolean(args.get('show-only-mailboxes', 'true'))
-    max_results = arg_to_number(args.get('max-results', 100)) or 100
-    writing_to_logs = arg_to_number(args.get('writing-to-logs', 100)) or 100
+    max_results = arg_to_number(args.get('max-results', 100))
+    writing_to_logs = arg_to_number(args.get('writing-to-logs', 100))
     list_accounts = argToList(args.get('list_accounts', ''))  # yml file
+    next_page_token = args.get('page-token', '')  # Need to check in yml file
 
     if list_accounts:
 
@@ -1189,9 +1241,23 @@ def search_all_mailboxes():
                 entries = []
 
     else:
+        # check if there is next_page_token and remove it from the args (To avoid using this argument in search command)
+        if next_page_token:
+            del demisto.args()['page-token']
 
-        all_accounts, _ = get_mailboxes(max_results)
-        if all_accounts:
+        # Get the accounts that will be searched, maximum accounts is set by MAX_USERS.
+        all_accounts, next_page_token = get_mailboxes(MAX_USERS, next_page_token)
+
+        # When the number of accounts is more than MAX_WITHOUT_POLLING the searching will make with polling commands.
+        if len(all_accounts) > MAX_WITHOUT_POLLING:
+            command_results: List[CommandResults] = scheduled_commands_for_more_users(all_accounts, next_page_token)
+            command_results.append(information_search_process(len(all_accounts), argToList(args.get('searching_accounts'))))
+            return_results(command_results)
+
+        # In case that the number of accounts less than MAX_WITHOUT_POLLING the searching run as usual.
+        elif all_accounts:
+            if args.get('searching_accounts'):
+                return_results(information_search_process(len(all_accounts), argToList(args.get('searching_accounts'))))
             args['list_accounts'] = all_accounts
             search_all_mailboxes()
 

@@ -10,12 +10,11 @@ This playbook does not use any sub-playbooks.
 * Gmail
 
 ### Scripts
-* Set
 * DeleteContext
+* Set
 
 ### Commands
 * gmail-search-all-mailboxes
-* gmail-list-users
 
 ## Playbook Inputs
 ---
@@ -32,11 +31,10 @@ This playbook does not use any sub-playbooks.
 | in | Messages in any folder, including Spam and Trash. For example, shopping |  | Optional |
 | include-spam-trash | Includes messages from SPAM and TRASH in the results. \(Default: false\) |  | Optional |
 | labels-ids | Only returns messages with labels that match all of the specified label IDs in a comma separated list. |  | Optional |
-| max-results | The number of accounts Playbook will search in every time it runs,<br/>\(Default is 100\) |  | Optional |
 | page-token | This argument is not usable |  | Optional |
 | query | Returns messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". For more syntax information,see "https://support.google.com/mail/answer/7190?hl=en" |  | Optional |
-| show-only-mailboxes | Whether to return only mailboxes which contain the email. Default is "True". |  | Optional |
 | subject | Words in the subject line. For example, "alert" |  | Optional |
+| searching_accounts | Used to track a search's progress |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -59,7 +57,8 @@ This playbook does not use any sub-playbooks.
 | Email.Attachments.entryID | Email Attachments. IDs are separated by ','. | unknown |
 | NewPageToken | In the next iteration, additional accounts will be imported using this output. | unknown |
 | Stop | As a result of this output, the loop will come to an end. | unknown |
+| SearchingAccounts | Needs rewrite. | unknown |
 
 ## Playbook Image
 ---
-![Search in mailboxes Gmail (Loop)](../doc_files/Search_in_mailboxes_Gmail_(Loop).png)
+![Search in mailboxes Gmail (Loop) with polling](../doc_files/Search_in_mailboxes_Gmail_(Loop)_with_polling.png)

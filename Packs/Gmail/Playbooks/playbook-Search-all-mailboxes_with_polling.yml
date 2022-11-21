@@ -1,6 +1,6 @@
-id: Search all mailboxes - Gmail
+id: Search all mailboxes - Gmail with polling
 version: -1
-name: Search all mailboxes - Gmail
+name: Search all mailboxes - Gmail with polling
 description: This playbook searches Gmail records for all Google users, designed for large companies with over 500 Google users.
 starttaskid: "0"
 tasks:
@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "4"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -34,16 +34,86 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
-    taskid: 8b33d229-bc7c-46d2-80b0-3487035cce4e
+  "2":
+    id: "2"
+    taskid: d9b8ff21-a8ec-437b-8d5e-2af99e27d119
+    type: title
+    task:
+      id: d9b8ff21-a8ec-437b-8d5e-2af99e27d119
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: de67faa2-c10f-4fc7-8c36-3d82667dcb41
+    type: regular
+    task:
+      id: de67faa2-c10f-4fc7-8c36-3d82667dcb41
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: Gmail,SearchingAccounts
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: d3e7a7f0-29a4-40f3-8080-3791a832adf1
     type: playbook
     task:
-      id: 8b33d229-bc7c-46d2-80b0-3487035cce4e
+      id: d3e7a7f0-29a4-40f3-8080-3791a832adf1
       version: -1
-      name: Search in mailboxes Gmail (Loop)
+      name: Search in mailboxes Gmail (Loop) with polling
       description: This playbook is used as a subplaybook for the Playbook Search-all-mailboxes - Gmail, it should not be used.
-      playbookName: Search in mailboxes Gmail (Loop)
+      playbookName: Search in mailboxes Gmail (Loop) with polling
       type: playbook
       iscommand: false
       brand: ""
@@ -78,18 +148,15 @@ tasks:
       labels-ids:
         complex:
           root: inputs.labels-ids
-      max-results:
-        complex:
-          root: inputs.max-results
       page-token:
         complex:
           root: NewPageToken
       query:
         complex:
           root: inputs.query
-      show-only-mailboxes:
+      searching_accounts:
         complex:
-          root: inputs.show-only-mailboxes
+          root: SearchingAccounts
       subject:
         complex:
           root: inputs.subject
@@ -104,7 +171,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${Stop}
+              simple: Stop
             iscontext: true
           right:
             value:
@@ -116,77 +183,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 205
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 2
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: d9b8ff21-a8ec-437b-8d5e-2af99e27d119
-    type: title
-    task:
-      id: d9b8ff21-a8ec-437b-8d5e-2af99e27d119
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: ddaba651-7bad-422f-8cee-daeac88d878b
-    type: regular
-    task:
-      id: ddaba651-7bad-422f-8cee-daeac88d878b
-      version: -1
-      name: DeleteContext
-      description: |-
-        Delete field from context.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      all:
-        simple: "yes"
-      keysToKeep:
-        simple: Gmail
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
+          "y": 195
         }
       }
     note: false
@@ -259,11 +256,6 @@ inputs:
   required: false
   description: Only returns messages with labels that match all of the specified label IDs in a comma separated list.
   playbookInputQuery:
-- key: show-only-mailboxes
-  value: {}
-  required: false
-  description: Whether to return only mailboxes which contain the email. Default is "True".
-  playbookInputQuery:
 - key: subject
   value: {}
   required: false
@@ -273,13 +265,6 @@ inputs:
   value: {}
   required: false
   description: 'Returns messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". For more syntax information,see "https://support.google.com/mail/answer/7190?hl=en"'
-  playbookInputQuery:
-- key: max-results
-  value: {}
-  required: false
-  description: |-
-    The maximum number of results to return per user. Default is 100. Maximum is 500. Acceptable values are 1 to 500, inclusive.
-    (Used in the case that show-only-mailboxes argument is false)
   playbookInputQuery:
 outputs:
 - contextPath: Gmail.Mailboxes
@@ -309,5 +294,5 @@ outputs:
 - contextPath: Gmail.Headers
   description: All headers of specific mail (list).
 tests:
-- Gmail Convert Html Test
+- No tests
 fromversion: 6.5.0

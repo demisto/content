@@ -611,9 +611,15 @@ script:
       name: list_accounts
       required: false
       secret: false
+    - default: false
+      description: Used to track a search's progress.
+      name: searching_accounts
+      required: false
+      secret: false
     deprecated: false
     description: Searches the Gmail records for all Google users.
     execution: false
+    polling: true
     name: gmail-search-all-mailboxes
     outputs:
     - contextPath: Gmail.ID
@@ -655,6 +661,12 @@ script:
     - contextPath: Gmail.Mailboxes
       description: The Gmail Mailbox.
       type: string
+    - contextPath: PageToken.NextPageToken
+      description: The Gmail Mailbox.
+      type: string
+    - contextPath: SearchingAccounts
+      description: Needs rewrite.
+      type: Array
     - contextPath: Email.To
       description: The recipient of the email.
       type: String

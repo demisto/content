@@ -1,13 +1,13 @@
-This playbook searches Gmail records for all Google users, designed for large organizations with over 500 Google users.
+This playbook searches Gmail records for all Google users, designed for large companies with over 500 Google users.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Search in mailboxes Gmail (Loop)
+* Search in mailboxes Gmail (Loop) with polling
 
 ### Integrations
-Gmail
+Gmail.
 
 ### Scripts
 * DeleteContext
@@ -30,10 +30,8 @@ This playbook does not use any commands.
 | in | Messages in any folder, including Spam and Trash. For example, shopping |  | Optional |
 | include-spam-trash | Includes messages from SPAM and TRASH in the results. \(Default: false\) |  | Optional |
 | labels-ids | Only returns messages with labels that match all of the specified label IDs in a comma separated list. |  | Optional |
-| show-only-mailboxes | Whether to return only mailboxes which contain the email. Default is "True". |  | Optional |
 | subject | Words in the subject line. For example, "alert" |  | Optional |
 | query | Returns messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". For more syntax information,see "https://support.google.com/mail/answer/7190?hl=en" |  | Optional |
-| max-results | The maximum number of results to return per user. Default is 100. Maximum is 500. Acceptable values are 1 to 500, inclusive.<br/>\(Used in the case that show-only-mailboxes argument is false\) |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -56,4 +54,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Search all mailboxes - Gmail](../doc_files/Search_all_mailboxes_-_Gmail.png)
+![Search all mailboxes - Gmail with polling](../doc_files/Search_all_mailboxes_-_Gmail_with_polling.png)
