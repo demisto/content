@@ -151,14 +151,18 @@ def update_pack_ignore(pack: Path):
 
 
 @add_changed_pack
-def create_failing_pack(integration: Path):
+def create_failing_pack(pack: Path):
     """
     Modify a pack such that the upload fails on it - modifying a pack
     without adding release notes and without bumping the version.
     """
-    with integration.open('a') as f:
-        f.write('\n#  CHANGE IN PACK')
-    return integration.parent.parent.parent, get_current_version(integration.parent.parent.parent), None
+    metadata_json = pack / 'pack_metadata.json'
+    with metadata_json.open('r') as f:
+        base_metadata = json.load(f)
+    splited_pack_version = base_metadata['currentVersion'].rsplit('.', 1)
+    base_metadata['currentVersion'] = '.'.join([splited_pack_version[0], str(int(splited_pack_version[1]) + 1)])
+    json_write(metadata_json, base_metadata)
+    return pack, base_metadata['currentVersion'], None
 
 
 def modify_pack(pack: Path, integration: str):
@@ -174,6 +178,17 @@ def modify_pack(pack: Path, integration: str):
     #  (same handling as in TestUploadFlow dummy pack, in create_new_pack
     return pack, get_current_version(pack), items_dict
 
+
+@add_changed_pack
+def modify_modeling_rules(modeling_rule: Path, old_name: str, new_name: str):
+    
+    modify_item_path(modeling_rule / f'{old_name}.xif', f'{new_name}.xif', packs_path / 'AlibabaActionTrail')
+    modify_item_path(modeling_rule / f'{old_name}.yml', f'{new_name}.yml', packs_path / 'AlibabaActionTrail')
+    modify_item_path(modeling_rule / f'{old_name}_schema.json', f'{new_name}_schema.json', packs_path / 'AlibabaActionTrail')
+    parent = modeling_rule.parent
+    modeling_rule.rename(parent.joinpath(new_name))
+    return modeling_rule.parent.parent, get_current_version(packs_path / 'AlibabaActionTrail'), None
+    
 
 @add_changed_pack
 def modify_item_path(item: Path, new_name: str, pack_id: Path):
@@ -243,26 +258,40 @@ if __name__ == "__main__":
         packs_path = content_path / 'Packs'
         branch = create_new_branch(repo, new_branch_name)
 
+        # Case 1: Verify new pack - TestUploadFlow
         new_pack_path = create_new_pack()[0]
+
+        # Case 2: Verify dependencies handling - Armis
         add_dependency(packs_path / 'Armis', new_pack_path)
+
+        # Case 3: Verify new version - ZeroFox
         enhance_release_notes(packs_path / 'ZeroFox')
+
+        # Case 4: Verify changed image - Armis
         change_image(packs_path / 'Armis')
 
+        # Case 5: Verify modified existing release notes - Box
         update_existing_release_notes(packs_path / 'Box', "2.1.2")
+
+        # Case 6: Verify 1.0.0 rn was added - BPA
         add_1_0_0_release_notes(packs_path / 'BPA')
+
+        # Case 7: Verify pack is set to hidden - Microsoft365Defender
         # set_pack_hidden(packs_path / 'Microsoft365Defender') TODO: fix after hidden pack mechanism is fixed
+
+        # Case 8: Verify changed readme - Maltiverse
         update_readme(packs_path / 'Maltiverse')
+
+        # TODO: didnt verify
         update_pack_ignore(packs_path / 'MISP')
 
-        create_failing_pack(packs_path / 'Absolute/Integrations/Absolute/Absolute.py')
+        # Case 9: Verify failing pack - Absolute
+        create_failing_pack(packs_path / 'Absolute')
+
+        # Case 10: Verify modified pack - Grafana
         modify_pack(packs_path / 'Grafana', 'Integrations/Grafana/Grafana.py')
-        modify_item_path(packs_path / 'AlibabaActionTrail/ModelingRules/AlibabaModelingRules/AlibabaModelingRules.xif',
-                         'Alibaba.xif', packs_path / 'AlibabaActionTrail')
-        modify_item_path(packs_path / 'AlibabaActionTrail/ModelingRules/AlibabaModelingRules/AlibabaModelingRules.yml',
-                         'Alibaba.yml', packs_path / 'AlibabaActionTrail')
-        modify_item_path(packs_path /
-                         'AlibabaActionTrail/ModelingRules/AlibabaModelingRules/AlibabaModelingRules_schema.json',
-                         'Alibaba_schema.json', packs_path / 'AlibabaActionTrail') # TODO: add script
+        
+        modify_modeling_rules(packs_path / 'AlibabaActionTrail/ModelingRules/AlibabaModelingRules', 'AlibabaModelingRules', 'Alibaba')  # TODO: add script
 
         for p in changed_packs:
             repo.git.add(f"{p}/*")

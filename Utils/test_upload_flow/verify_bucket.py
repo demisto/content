@@ -259,37 +259,40 @@ if __name__ == "__main__":
     gcp = GCP(service_account, storage_bucket_name, storage_base_path)
 
     bv = BucketVerifier(gcp, versions_dict)
-    # verify new pack - TestUploadFlow
+    # Case 1: Verify new pack - TestUploadFlow
     bv.verify_new_pack('TestUploadFlow', items_dict.get('TestUploadFlow'))
 
-    # verify dependencies handling
+    # Case 2: Verify dependencies handling - Armis
     bv.verify_dependency('Armis', 'TestUploadFlow')
 
-    # verify new version
+    # Case 3: Verify new version - ZeroFox
     expected_rn = 'testing adding new RN'
     bv.verify_new_version('ZeroFox', expected_rn)
 
-    # verify modified existing rn
+    # Case 4: Verify changed image - Armis
+    bv.verify_new_image('Armis', Path(
+        __file__).parent / 'TestUploadFlow' / 'Integrations' / 'TestUploadFlow' / 'TestUploadFlow_image.png')
+
+    # Case 5: Verify modified existing release notes - Box
     expected_rn = 'testing modifying existing RN'
     bv.verify_rn('Box', expected_rn)
 
-    # verify 1.0.0 rn was added
-    expected_rn = """
-                    #### Integrations
-                    ##### BPA
-                    first release note
-                    """
+    # Case 6: Verify 1.0.0 rn was added - BPA
+    expected_rn = """\n#### Integrations\n##### BPA\nfirst release note\n"""
     bv.verify_rn('BPA', expected_rn)
 
-    # verify pack is set to hidden
+    # Case 7: Verify pack is set to hidden - Microsoft365Defender
     # bv.verify_hidden('Microsoft365Defender')  TODO: fix after hidden pack mechanism is fixed
 
-    # verify readme
+    # Case 8: Verify changed readme - Maltiverse
     expected_readme = 'readme test upload flow'
     bv.verify_readme('Maltiverse', expected_readme)
 
-    # verify failing pack
+    # Case 9: Verify failing pack - Absolute
     bv.verify_failed_pack('Absolute')
+
+    # Case 10: Verify modified pack - Grafana
+    bv.verify_modified_pack('Grafana', items_dict.get('Grafana'))
 
     # verify path modification
     if 'v2' in gcp.storage_bucket.name:
@@ -300,12 +303,6 @@ if __name__ == "__main__":
         bv.verify_modified_path('ModelingRule', 'AlibabaActionTrail', os.path.join('AlibabaActionTrail',
                                                                                    'ModelingRule', 'Alibaba.xif'))
 
-    # verify modified pack
-    bv.verify_modified_pack('Grafana', items_dict.get('Grafana'))
-
-    # verify image
-    bv.verify_new_image('Armis', Path(
-        __file__).parent / 'TestUploadFlow' / 'Integrations' / 'TestUploadFlow' / 'TestUploadFlow_image.png')
     is_valid = 'valid' if bv.is_valid else 'not valid'
     logging.info(f'The bucket {gcp.storage_bucket.name}/{gcp.storage_base_path} was found as {is_valid}')
 
