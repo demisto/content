@@ -100,6 +100,33 @@ configuration:
   name: initial_interval
   required: false
   type: 0
+- additionalinfo: 'The objects to fetch, most likely indicators. Might slow down fetch time.'
+  display: STIX Objects To Fetch
+  name: objects_to_fetch
+  type: 16
+  required: false
+  options:
+  - indicator
+  - relationship
+  - report
+  - malware
+  - campaign
+  - attack-pattern
+  - course-of-action
+  - intrusion-set
+  - tool
+  - threat-actor
+  - infrastructure
+  - autonomous-system
+  - domain-name
+  - email-addr
+  - file
+  - ipv4-addr
+  - ipv6-addr
+  - mutex
+  - url
+  - user-account
+  - windows-registry-key
 - display: Trust any certificate (not secure)
   name: insecure
   required: false

@@ -966,6 +966,7 @@ class Taxii2FeedClient:
                 if not parse_objects_func.get(obj_type):
                     demisto.debug(f'There is no parsing function for object type {obj_type}, '
                                   f'available parsing functions are for types: {",".join(parse_objects_func.keys())}.')
+                    demisto.debug(f'{obj=}')
                     continue
                 if result := parse_objects_func[obj_type](obj):
                     indicators.extend(result)
