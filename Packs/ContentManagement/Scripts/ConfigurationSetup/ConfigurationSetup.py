@@ -250,7 +250,7 @@ def create_context(full_configuration: Configuration) -> Dict[str, List[Dict[str
             'listname': list_name,
             'listdata': pps["value"],
         }
-        for list_name, pps in full_configuration.lists.items() if not exist_list(list_name) or pps["type"] != "dynamic"
+        for list_name, pps in full_configuration.lists.items() if not list_exists(list_name) or pps["type"] != "dynamic"
     ]
 
     return {
