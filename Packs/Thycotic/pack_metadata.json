@@ -1,6 +1,6 @@
 {
-    "name": "Thycotic Secret Server",
-    "description": "Secure privileges for service, application, root and administrator accounts across your enterprise.",
+    "name": "Thycotic Secret Server (Deprecated)",
+    "description": "Deprecated. Use DelineaSS instead.",
     "support": "partner",
     "currentVersion": "1.0.3",
     "author": "Thycotic, Inc",
