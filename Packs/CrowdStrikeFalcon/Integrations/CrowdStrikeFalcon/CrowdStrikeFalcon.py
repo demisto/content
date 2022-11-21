@@ -3874,30 +3874,37 @@ def cs_falcon_spotlight_search_vulnerability_command(args: dict):
     if len(args) == 0:
         raise ValueError('Must insert at least one filter param or filter string')
     elif args.get('filter'):
-        body = json.dumps({'filter': args.get('filter')})
+        params = assign_params(filter=args.get('filter'))
     else:
-        body = json.dumps({
-            'aid': args.get('aid'),
-            'cve_id': args.get('cve_id'),
-            'cve_severity': args.get('cve_severity'),
-            'tags': args.get('tags'),
-            'status': args.get('status'),
-            'platform_name': args.get('platform_name'),
-            'host_group': args.get('host_group'),
-            'host_type': args.get('host_type'),
-            'last_seen_within': args.get('last_seen_within'),
-            'is_suppressed': args.get('is_suppressed'),
-            'display_remediation_info': args.get('display_remediation_info'),
-            'display_evaluation_logic_info': args.get('display_evaluation_logic_info'),
-            'display_host_info': args.get('display_host_info'),
-            'limit': args.get('limit')
-        })
-    response = http_request('GET', endpoint_url, data=body)
-    print('response')
-    human_readable = ''  #  tableToMarkdown('')
-    human_readable += get_human_readable_for_failed_command(outputs, host_ids, "HostID")
-    return CommandResults(raw_response=response, readable_output=human_readable, outputs=outputs,
-                          outputs_prefix="CrowdStrike.Command.rm", outputs_key_field="HostID")
+        params = assign_params(
+            aid=args.get('aid'),
+            cve_id=args.get('cve_id'),
+            cve_severity=args.get('cve_severity'),
+            tags=args.get('tags'),
+            status=args.get('status'),
+            platform_name=args.get('platform_name'),
+            host_group=args.get('host_group'),
+            host_type=args.get('host_type'),
+            last_seen_within=args.get('last_seen_within'),
+            is_suppressed=args.get('is_suppressed'),
+            display_remediation_info=args.get('display_remediation_info'),
+            display_evaluation_logic_info=args.get('display_evaluation_logic_info'),
+            display_host_info=args.get('display_host_info'),
+            limit=args.get('limit')
+        )
+    vulnerability_response = http_request('GET', endpoint_url, params=params)
+
+    outputs = []
+    for vulnerability in vulnerability_response.get('resources'):
+        outputs.append({'id': vulnerability.get('id'),
+                        'cid': vulnerability.get('cid'),
+                        'aid': vulnerability.get('aid'),
+                        'created_timestamp': vulnerability.get('created_timestamp'),
+                        'updated_timestamp': vulnerability.get('updated_timestamp')})
+    human_readable = tableToMarkdown()
+    return CommandResults(raw_response=vulnerability_response.get('resources'),
+                          readable_output=outputs, outputs=outputs,
+                          outputs_prefix="CrowdStrike.VulnerabilityHost", outputs_key_field="id")
 
 
 def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict):
