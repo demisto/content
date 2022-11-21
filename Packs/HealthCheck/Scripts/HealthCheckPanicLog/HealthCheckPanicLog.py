@@ -35,7 +35,7 @@ def countUniqueLogs(table):
 def findLatestTimestamp(table, commonTable):
     for entry in commonTable:
         for log in reversed(table):
-            if entry['panicvalue'] == "{} {}".format(log['panic'], log['value']):
+            if entry['panicvalue'] == f"{log['panic']} {log['value']}":
                 entry['latestpanictime'] = log['time']
                 break
 
