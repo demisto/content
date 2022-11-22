@@ -3361,7 +3361,7 @@ def list_papi_edgehostname_bygroup_command(client: Client,
 
     title = f'{INTEGRATION_NAME} - new papi edgeHostname command'
     # raw_response["domainPrefix"] = domain_prefix
-    entry_context, human_readable_ec = list_papi_edgehostname_bygroup_ec(returnDict)
+    entry_context, human_readable_ec = list_papi_edgehostname_bygroup_ec(returnDict)  # type: ignore
     context_entry: Dict = {
         f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.EdgeHostnames"
         f"(val.DomainPrefix && val.DomainPrefix == obj.DomainPrefix)": entry_context
@@ -3682,7 +3682,7 @@ def patch_papi_property_rule_origin_command(client: Client,
                 "op": operation,
                 "path": path,
                 "value": {
-                    "name": "Origin for " + external_url,
+                    "name": f"Origin for {external_url}",
                     "children": [],
                     "behaviors": [
                         {
@@ -3725,7 +3725,7 @@ def patch_papi_property_rule_origin_command(client: Client,
                             }
                         }
                     ],
-                    "criteriaMustSatisfy": "all",
+                    "criteriaMustSatisfy": "all"
                 }
             }
         ]
@@ -3737,7 +3737,7 @@ def patch_papi_property_rule_origin_command(client: Client,
                                                          validate_rules=validate_rules,
                                                          body=body,
                                                          )
-    raw_response = {"Origins added": origin}
+
     title = f'{INTEGRATION_NAME} - Patch papi property origin command'
     entry_context, human_readable_ec = {"Origins added": origin}, {"Origins added": origin}
     context_entry: Dict = {
@@ -4514,17 +4514,17 @@ def new_or_renew_match_target_command(client: Client,
                                                   includeChildObjectName='true'
                                                   )
 
-    if raw_response["matchTargets"]["websiteTargets"] == []:
+    if not raw_response.get("matchTargets", {})("websiteTargets"):
         # If no list is found, create a new match target and add the hostname in there.
-        raw_response: Dict = client.new_match_target(config_id=arg_to_number(config_id),  # type: ignore[arg-type]
-                                                     config_version=arg_to_number(config_version),  # type: ignore[arg-type]
-                                                     match_type=match_type,
-                                                     bypass_network_lists=networkList,
-                                                     default_file=default_file,
-                                                     file_paths=argToList(file_paths),
-                                                     hostnames=argToList(hostnameList),
-                                                     policy_id=policy_id,
-                                                     )
+        raw_response = client.new_match_target(config_id=arg_to_number(config_id),  # type: ignore
+                                               config_version=arg_to_number(config_version),  # type: ignore[arg-type]
+                                               match_type=match_type,
+                                               bypass_network_lists=networkList,
+                                               default_file=default_file,
+                                               file_paths=argToList(file_paths),
+                                               hostnames=argToList(hostnameList),
+                                               policy_id=policy_id
+                                               )
         title = f'{INTEGRATION_NAME} - create new match target'
     else:
         # If a list is found, get the first match target in the list
@@ -4534,16 +4534,16 @@ def new_or_renew_match_target_command(client: Client,
         for item in hostnameList:
             existing_hostnames.append(item)
 
-        raw_response: Dict = client.modify_match_target(config_id=arg_to_number(config_id),  # type: ignore[arg-type]
-                                                        config_version=arg_to_number(config_version),  # type: ignore[arg-type]
-                                                        policy_id=policy_id,
-                                                        match_target_id=match_target_found["targetId"],
-                                                        match_type=match_type,
-                                                        bypass_network_lists=networkList,
-                                                        default_file=default_file,
-                                                        file_paths=argToList(file_paths),
-                                                        hostnames=argToList(existing_hostnames),
-                                                        )
+        raw_response = client.modify_match_target(config_id=arg_to_number(config_id),  # type: ignore
+                                                  config_version=arg_to_number(config_version),  # type: ignore[arg-type]
+                                                  policy_id=policy_id,
+                                                  match_target_id=match_target_found["targetId"],
+                                                  match_type=match_type,
+                                                  bypass_network_lists=networkList,
+                                                  default_file=default_file,
+                                                  file_paths=argToList(file_paths),
+                                                  hostnames=argToList(existing_hostnames),
+                                                  )
         title = f'{INTEGRATION_NAME} - update existing match target'
 
     # Process outputs
@@ -4727,8 +4727,10 @@ def main():
         f'{INTEGRATION_COMMAND_NAME}-get-security-policy-id-by-name': get_security_policy_id_by_name_command,
         f'{INTEGRATION_COMMAND_NAME}-clone-appsec-config-version': clone_appsec_config_version_command,
         f'{INTEGRATION_COMMAND_NAME}-patch-papi-property-rule-httpmethods': patch_papi_property_rule_httpmethods_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-papi-property-activation-status-command': get_papi_property_activation_status_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-papi-edgehostname-creation-status-command': get_papi_edgehostname_creation_status_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-papi-property-activation-status-command':
+            get_papi_property_activation_status_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-papi-edgehostname-creation-status-command':
+            get_papi_edgehostname_creation_status_command,
         f'{INTEGRATION_COMMAND_NAME}-acknowledge-warning-command': acknowledge_warning_command,
         f'{INTEGRATION_COMMAND_NAME}-get-production-deployment': get_production_deployment_command,
         f'{INTEGRATION_COMMAND_NAME}-get-change-history': get_change_history_command,
