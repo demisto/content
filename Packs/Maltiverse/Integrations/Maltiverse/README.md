@@ -1,5 +1,5 @@
 Analyze suspicious hashes, URLs, domains and IP addresses
-This integration was integrated and tested with version 1.0.0-oas3 of Maltiverse
+This integration was integrated and tested with version 1.1 of Maltiverse
 
 ## Use Cases
 ---
