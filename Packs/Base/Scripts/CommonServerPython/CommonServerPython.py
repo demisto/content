@@ -231,7 +231,8 @@ entryTypes = {
 
 ENDPOINT_STATUS_OPTIONS = [
     'Online',
-    'Offline'
+    'Offline',
+    'Unknown'
 ]
 
 ENDPOINT_ISISOLATED_OPTIONS = [
@@ -1818,9 +1819,14 @@ def argToList(arg, separator=',', transform=None):
     if isinstance(arg, list):
         result = arg
     elif isinstance(arg, STRING_TYPES):
+        is_comma_separated = True
         if arg[0] == '[' and arg[-1] == ']':
-            result = json.loads(arg)
-        else:
+            try:
+                result = json.loads(arg)
+                is_comma_separated = False
+            except Exception:
+                demisto.debug('Failed to load {} as JSON, trying to split'.format(arg))
+        if is_comma_separated:
             result = [s.strip() for s in arg.split(separator)]
     else:
         result = [arg]
