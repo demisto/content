@@ -677,6 +677,7 @@ Action: _guardduty:GetFindings_
 | AWS.GuardDuty.Findings.Partition | string | The partition associated with the finding. | 
 | AWS.GuardDuty.Findings.ResourceType | string | The type of Amazon Web Services resource. | 
 | AWS.GuardDuty.Findings.SchemaVersion | string | The version of the schema used for the finding. | 
+| AWS.GuardDuty.Findings.Service | string | Contains additional information about the generated finding. | 
 | AWS.GuardDuty.Findings.Resource.AccessKeyDetails | string | The IAM access key details \(IAM user information\) of a user that engaged in the activity that prompted GuardDuty to generate a finding. | 
 | AWS.GuardDuty.Findings.Resource.InstanceDetails.IamInstanceProfile | string | The profile information of the EC2 instance. | 
 | AWS.GuardDuty.Findings.Resource.InstanceDetails.NetworkInterfaces | string | The elastic network interface information of the EC2 instance. | 
@@ -688,7 +689,6 @@ Action: _guardduty:GetFindings_
 | AWS.GuardDuty.Findings.Resource.EcsClusterDetails | string | Contains information about the details of the ECS Cluster. | 
 | AWS.GuardDuty.Findings.Resource.ContainerDetails | string | Details of a container. | 
 | AWS.GuardDuty.Findings.Resource.S3BucketDetails | string | Contains information on the S3 bucket. | 
-| AWS.GuardDuty.Findings.Resource.Service | string | Contains additional information about the generated finding. | 
 
 #### Command Example
 
