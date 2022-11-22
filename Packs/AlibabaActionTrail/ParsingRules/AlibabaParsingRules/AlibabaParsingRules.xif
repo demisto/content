@@ -1,2 +1,2 @@
-[INGEST:vendor="Alibaba", product="Actiontrail", target_dataset="alibaba_action_trail_raw", no_hit=drop]
+[INGEST:vendor="alibaba", product="action-trail", target_dataset="alibaba_action_trail_raw", no_hit=drop]
 alter  _time = timestamp_seconds(to_integer(__time__));
