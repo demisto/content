@@ -421,6 +421,7 @@ class Build(ABC):
             integrations_to_configure = modified_integrations[:]
             integrations_to_configure.extend(unchanged_integrations)
             placeholders_map = {'%%SERVER_HOST%%': self.servers[0]}
+            logging.info(f'self object: {self}')
             new_ints_params_set = set_integration_params(self,
                                                          new_integrations,
                                                          instance_names_conf,
@@ -1130,6 +1131,11 @@ def set_integration_params(build,
     Returns:
         (bool): True if integrations params were filled with secret configuration values, otherwise false
     """
+    logging.info(f'_________in set_integration_params_________')
+    logging.info(f'placeholders_map: {placeholders_map}')
+    logging.info(f'instance_names: {instance_names}')
+    logging.info(f'integrations: {integrations}')
+    logging.info(f'project_id: {project_id[0:9]}')
     for integration in integrations:
         # Secret name will be the name of the integration + the instance_name
         # "name": "McAfee__ESM__v2",
@@ -1137,8 +1143,11 @@ def set_integration_params(build,
         # McAfee__ESM__v2__v11.1.3
 
         secrets = secret_conf.list_secrets(project_id, name_filter=integration["name"], with_secret=True)
+        logging.info(f'integration: {integration}')
+        logging.info(f'secrets: {secrets}')
         integration_params = [change_placeholders_to_values(placeholders_map, item) for item
                               in secrets if item['name'] == integration['name']]
+        logging.info(f'integration_params: {integration_params}')
         if integration_params:
             matched_integration_params = integration_params[0]
             # if there are more than one integration params, it means that there are configuration
@@ -1168,14 +1177,14 @@ def set_integration_params(build,
             integration['validate_test'] = matched_integration_params.get('validate_test', True)
             if integration['name'] not in build.unmockable_integrations:
                 integration['params'].update({'proxy': True})
-                logging.debug(
+                logging.info(
                     f'Configuring integration "{integration["name"]}" with proxy=True')
             else:
                 integration['params'].update({'proxy': False})
-                logging.debug(
+                logging.info(
                     f'Configuring integration "{integration["name"]}" with proxy=False')
         else:
-            logging.debug(
+            logging.info(
                 f'Could not fined the secret config fo "{integration["name"]}" with secret ')
             return False
 
