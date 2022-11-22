@@ -30,6 +30,17 @@ class LdapClient:
     SUPPORTED_BUILD_NUMBER = 57352  # required server build number
     CIPHERS_STRING = '@SECLEVEL=1:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:DH+AESGCM:' \
                      'ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'  # Allowed ciphers for SSL/TLS
+    SSL_VERSIONS = {
+        'SSLv23': ssl.PROTOCOL_SSLv23,
+        # 'SSLv2': ssl.PROTOCOL_SSLv2,
+        # 'SSLv3': ssl.PROTOCOL_SSLv3,
+        'TLSv1': ssl.PROTOCOL_TLSv1,
+        'TLSv1_1': ssl.PROTOCOL_TLSv1_1,
+        'TLSv1_2': ssl.PROTOCOL_TLSv1_2,
+        'TLS': ssl.PROTOCOL_TLS,
+        'TLS_CLIENT': ssl.PROTOCOL_TLS_CLIENT,
+        'TLS_SERVER': ssl.PROTOCOL_TLS_SERVER
+    }
 
     def __init__(self, kwargs):
         self._ldap_server_vendor = kwargs.get('ldap_server_vendor', self.OPENLDAP)  # OpenLDAP or Active Directory
@@ -39,6 +50,7 @@ class LdapClient:
         self._password = kwargs.get('credentials', {}).get('password', '')
         self._base_dn = kwargs.get('base_dn', '').strip()
         self._connection_type = kwargs.get('connection_type', 'none').lower()
+        self._ssl_version = kwargs.get('ssl_version')
         self._fetch_groups = kwargs.get('fetch_groups', True)
         self._verify = not kwargs.get('insecure', False)
         self._ldap_server = self._initialize_ldap_server()
@@ -100,6 +112,20 @@ class LdapClient:
         """
         return self._custom_attributes
 
+    def _get_ssl_version(self):
+        """
+            Returns the ssl version object according to the user's selection.
+        """
+        if self._ssl_version:
+            version = self.SSL_VERSIONS.get(self._ssl_version)
+            demisto.info(f"SSL/TLS protocol version is {self._ssl_version} ({version}).")
+
+        else:  # By default we don't set a specific version
+            version = None
+            demisto.info(f"SSL/TLS protocol version is None (default).")
+
+        return version
+
     def _get_tls_object(self):
         """
             Returns a TLS object according to the user's selection of the 'Trust any certificate' checkbox.
@@ -108,12 +134,12 @@ class LdapClient:
             # Trust any certificate = False means that the LDAP server's certificate must be valid -
             # i.e if the server's certificate is not valid the connection will fail.
             tls = Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=os.environ.get('SSL_CERT_FILE'),
-                      version=ssl.PROTOCOL_TLS)
+                      version=self._get_ssl_version())
 
         else:  # Trust any certificate is checked
             # Trust any certificate = True means that we do not require validation of the LDAP server's certificate,
             # and allow the use of all possible ciphers.
-            tls = Tls(validate=ssl.CERT_NONE, ca_certs_file=None, version=ssl.PROTOCOL_TLS,
+            tls = Tls(validate=ssl.CERT_NONE, ca_certs_file=None, version=self._get_ssl_version(),
                       ciphers=self.CIPHERS_STRING)
 
             # By setting the version to ssl.PROTOCOL_TLS we select the highest protocol version that both client
@@ -421,7 +447,7 @@ class LdapClient:
         """
             Performs simple bind operation on ldap server.
         """
-        if self._ldap_server_vendor == self.OPENLDAP:
+        if self._ldap_server_vendor == self.OPENLDAP: # TODO: need to solve the call from the test-module
             is_valid_dn, _ = LdapClient._is_valid_dn(username, self.USER_IDENTIFIER_ATTRIBUTE)
             if not is_valid_dn:  # the username is a user and not a full DN
                 username = f'{self.USER_IDENTIFIER_ATTRIBUTE}={username},{self._base_dn}'
