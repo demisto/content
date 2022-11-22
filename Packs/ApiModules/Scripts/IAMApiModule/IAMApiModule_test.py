@@ -1,5 +1,6 @@
 from IAMApiModule import *
 import pytest
+from copy import deepcopy
 
 APP_USER_OUTPUT = {
     "user_id": "mock_id",
@@ -21,6 +22,10 @@ APP_DISABLED_USER_OUTPUT = {
 }
 
 DISABLED_USER_APP_DATA = IAMUserAppData("mock_id", "mock_user_name", is_active=False, app_data=APP_DISABLED_USER_OUTPUT)
+
+
+def create_user_data(data: dict):
+    return IAMUserAppData()
 
 
 class MockCLient():
@@ -267,3 +272,34 @@ def test_enable_user_command__non_existing_user(mocker, not_existing):
     assert outputs.get('success') is True
     assert outputs.get('skipped') is True
     assert outputs.get('reason') == IAMErrors.USER_DOES_NOT_EXIST[1]
+
+
+@pytest.mark.parametrize("given_name, is_correct", [("mock_given_name", True), ("wrong_name", False)])
+def test_enable_user_command__with_wrong_and_correct_given_name(mocker, given_name, is_correct):
+    """
+    Given:
+        - An app client object
+        - A user-profile argument that contains an email of a user and a given name
+    When:
+        - The given name is correct and matches an existing user
+        - The given name is wrong and dos not match an existing user
+    Then:
+        - That name will be saved under the givenname section.
+    """
+    client = MockCLient()
+    args = {'user-profile': {'email': 'testdemisto2@paloaltonetworks.com', 'givenname': given_name}}
+    disabled_user_data = IAMUserAppData("mock_userid", "mock_username", False, {"user_id": "mock_id",
+                                                                                "user_name": "mock_user_name",
+                                                                                "first_name": given_name,
+                                                                                "last_name": "mock_last_name",
+                                                                                "email": "testdemisto2@paloaltonetworks.com"})
+    enabled_user_data = deepcopy(disabled_user_data)
+    enabled_user_data.is_active = True
+    mocker.patch.object(client, 'get_user', return_value=disabled_user_data)
+    mocker.patch.object(client, 'enable_user', return_value=enabled_user_data)
+
+    user_profile = IAMCommand().enable_user(client, args)
+    outputs = get_outputs_from_user_profile(user_profile)
+
+    assert outputs.get('action') == IAMActions.ENABLE_USER
+    assert outputs.get('details', {}).get('first_name') == given_name
