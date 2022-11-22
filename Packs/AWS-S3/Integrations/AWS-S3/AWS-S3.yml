@@ -645,7 +645,7 @@ script:
     description: Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket.
     execution: false
     name: aws-s3-put-public-access-block
-  dockerimage: devdemisto/py3-primary:8.1.0.37698
+  dockerimage: devdemisto/py3-primary:8.1.0.37703
   isfetch: false
   runonce: false
   script: ''
