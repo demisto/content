@@ -2580,7 +2580,7 @@ script:
       type: String
       name: limit
       required: false
-    description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter.
+    description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with CrowdStrike Spotlight license.
     name: cs-falcon-spotlight-search-vulnerability
     outputs:
     - contextPath: CrowdStrike.Vulnerability.id
@@ -2735,7 +2735,7 @@ script:
       name: cve
       required: true
       secret: false
-    description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter.
+    description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with CrowdStrike Spotlight license.
     name: cve
     outputs:
     - contextPath: CrowdStrike.VulnerabilityCve.id
@@ -2834,7 +2834,7 @@ script:
       name: cve_ids
       isArray: true
       required: false
-    description: Retrieve vulnerability details for a specific ID and host.
+    description: Retrieve vulnerability details for a specific ID and host. Supported with CrowdStrike Spotlight license.
     name: cs-falcon-spotlight-list-host-by-vulnerability
     outputs:
     - contextPath: CrowdStrike.VulnerabilityHost.id

@@ -3944,6 +3944,7 @@ def cs_falcon_spotlight_search_vulnerability_command(args: dict):
     else:
         params = assign_params(
             filter=args.get('filter'),
+            facet='cve',
             aid=argToList(args.get('aid')),
             cve_id=argToList(args.get('cve_id')),
             cve_severity=argToList(args.get('cve_severity')),
@@ -3959,27 +3960,55 @@ def cs_falcon_spotlight_search_vulnerability_command(args: dict):
             display_host_info=args.get('display_host_info'),
             limit=args.get('limit'))
     vulnerability_response = http_request('GET', endpoint_url, params=params)
-    headers = ['cve_id', 'ID', 'CID', 'AID', 'Status', 'Created_Timestamp', 'Updated_Timestamp']
+    headers = ['CVE ID', 'CVE Severity', 'CVE Base Score', 'CVE Published Date', 'CVE Impact Score',
+               'CVE Exploitability Score', 'CVE Vector']
     outputs = []
     for vulnerability in vulnerability_response.get('resources'):
-        outputs.append({'cve_id': vulnerability.get('cve', {}).get('id'),
-                        'ID': vulnerability.get('id'),
-                        'CID': vulnerability.get('cid'),
-                        'Status': vulnerability.get('status'),
-                        'AID': vulnerability.get('aid'),
-                        'Created_Timestamp': vulnerability.get('created_timestamp'),
-                        'Updated_Timestamp': vulnerability.get('updated_timestamp')})
-    print(outputs)
-    print("/n params")
-    print(params)
+        outputs.append({'CVE ID': vulnerability.get('cve', {}).get('id'),
+                        'CVE Severity': vulnerability.get('cve', {}).get('severity'),
+                        'CVE Base Score': vulnerability.get('cve', {}).get('base_score'),
+                        'CVE Published Date': vulnerability.get('cve', {}).get('published_date'),
+                        'CVE Impact Score': vulnerability.get('cve', {}).get('impact_score'),
+                        'CVE Exploitability Score': vulnerability.get('cve', {}).get('exploitability_score'),
+                        'CVE Vector': vulnerability.get('cve', {}).get('vector')
+                        })
+    human_readable = tableToMarkdown("", outputs, headers=headers)
+    return CommandResults(raw_response=vulnerability_response.get('resources'),
+                          readable_output=human_readable, outputs=outputs,
+                          outputs_prefix="CrowdStrike.Vulnerability", outputs_key_field="id")
+
+
+def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict):
+    """
+        Get a list of vulnerability by spotlight
+        : args: filter which include params or filter param.
+        : return: a list of vulnerabilities according to the user.
+    """
+    endpoint_url = '/spotlight/combined/vulnerabilities/v1?facet=host_info'
+    if not args:
+        raise ValueError('Must insert at least one filter param or filter string')
+    else:
+        params = assign_params(
+            facet='host_info',
+            cve_ids=argToList(args.get('cve_ids')),
+            limit=args.get('limit'))
+    vulnerability_response = http_request('GET', endpoint_url, params=params)
+    headers = ['CVE ID', 'CVE Severity', 'CVE Base Score', 'CVE Published Date', 'CVE Impact Score',
+               'CVE Exploitability Score', 'CVE Vector']
+    outputs = []
+    for vulnerability in vulnerability_response.get('resources'):
+        outputs.append({'CVE ID': vulnerability.get('cve', {}).get('id'),
+                        'CVE Severity': vulnerability.get('cve', {}).get('severity'),
+                        'CVE Base Score': vulnerability.get('cve', {}).get('base_score'),
+                        'CVE Published Date': vulnerability.get('cve', {}).get('published_date'),
+                        'CVE Impact Score': vulnerability.get('cve', {}).get('impact_score'),
+                        'CVE Exploitability Score': vulnerability.get('cve', {}).get('exploitability_score'),
+                        'CVE Vector': vulnerability.get('cve', {}).get('vector')
+                        })
     human_readable = tableToMarkdown("", outputs, headers=headers)
     return CommandResults(raw_response=vulnerability_response.get('resources'),
                           readable_output=human_readable, outputs=outputs,
                           outputs_prefix="CrowdStrike.VulnerabilityHost", outputs_key_field="id")
-
-
-def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict):
-    pass
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
