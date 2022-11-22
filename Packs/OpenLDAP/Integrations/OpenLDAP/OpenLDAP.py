@@ -421,6 +421,11 @@ class LdapClient:
         """
             Performs simple bind operation on ldap server.
         """
+        if self._ldap_server_vendor == self.OPENLDAP:
+            is_valid_dn, _ = LdapClient._is_valid_dn(username, self.USER_IDENTIFIER_ATTRIBUTE)
+            if not is_valid_dn:  # the username is a user and not a full DN
+                username = f'{self.USER_IDENTIFIER_ATTRIBUTE}={username},{self._base_dn}'
+
         auto_bind = self._get_auto_bind_value()
         ldap_conn = Connection(server=self._ldap_server, user=username, password=password, auto_bind=auto_bind)
         demisto.info(f'LDAP Connection Details: {ldap_conn}')
