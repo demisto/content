@@ -123,7 +123,7 @@ def get_bucket_policy_status_command(args, aws_client):
         {'BucketName': args.get('bucket'), 'IsPublic': policy.get('IsPublic'), 'Json': response.get('PolicyStatus')}
     )
     human_readable = tableToMarkdown('AWS S3 Bucket Policy Status', data)
-    return CommandResults(readable_output=human_readable, outputs_prefix='AWS.S3.Buckets',
+    return CommandResults(readable_output=human_readable, outputs_prefix='AWS.S3.Buckets.PolicyStatus',
                           outputs_key_field='BucketName', outputs=data)
 
 
