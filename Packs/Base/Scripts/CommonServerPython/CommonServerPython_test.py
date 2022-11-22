@@ -1043,7 +1043,7 @@ def test_aws_table_to_markdown(header, raw_input, expected_output):
     assert aws_table_to_markdown(raw_input, header) == expected_output
 
 
-def test_argToList():
+def test_argToList(mocker):
     expected = ['a', 'b', 'c']
     test1 = ['a', 'b', 'c']
     test2 = 'a,b,c'
@@ -1053,17 +1053,19 @@ def test_argToList():
     test6 = '1'
     test7 = True
     test8 = [1, 2, 3]
+    test9 = "[test.com]"
 
     results = [argToList(test1), argToList(test2), argToList(test2, ','), argToList(test3), argToList(test4, ';')]
 
     for result in results:
         assert expected == result, 'argToList test failed, {} is not equal to {}'.format(str(result), str(expected))
-
+    mocker.patch.object(demisto, 'debug', return_value=None)
     assert argToList(test5) == [1]
     assert argToList(test5, transform=str) == ['1']
     assert argToList(test6) == ['1']
     assert argToList(test7) == [True]
     assert argToList(test8, transform=str) == ['1', '2', '3']
+    assert argToList(test9) == ["[test.com]"]
 
 
 @pytest.mark.parametrize('args, field, expected_output', [
