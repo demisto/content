@@ -913,7 +913,7 @@ tasks:
       sourceContextKey:
         simple: tempResourcesList
       targetIncidentField:
-        simple: cloudresourceslist
+        simple: cloudresourcelist
     separatecontext: false
     continueonerrortype: ""
     view: |-
