@@ -3606,7 +3606,7 @@ def test_module(
     password: str = None,
 ):
     """
-    Performs basic GET request to check if the API is reachable and authentication is successful.
+    Performs basic GET request to check if the API is reachable using different authentication methods.
     Returns ok if successful.
     """
 
@@ -3804,7 +3804,6 @@ def main() -> None:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
-""" ENTRY POINT """
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
