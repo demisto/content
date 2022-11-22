@@ -1,9 +1,10 @@
 import urllib.parse
-import urllib3
 from json import JSONDecodeError
-from typing import Tuple, Pattern
+from typing import Pattern, Tuple
 
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+import urllib3
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -691,34 +692,13 @@ class Client(BaseClient):
                 resp_type='response'
             )
         except Exception as e:
-            exception_str = str(e)
-            demisto.info(f'Encountered an error for url {self._base_url}/token: {exception_str}')
-            if 'Incorrect user id or password' in exception_str:
-                raise DemistoException('Unauthorized - Incorrect user id or password')
-            raise ValueError('Could not get a token')
+            demisto.debug(f'Encountered an error for url {self._base_url}/token: {e}')
+            raise ValueError("Server URL incorrect")
 
         # successful request
         response_headers = response.headers
         token = response_headers.get('X-FeApi-Token')
-        self._auth = None  # the authentication now is based on the token
         return token
-
-    def token_logout(self):
-        """
-        perform logout for the active session
-        """
-        if self._headers['X-FeApi-Token']:
-            try:
-                self._http_request(
-                    method='DELETE',
-                    url_suffix='token',
-                    resp_type='response'
-                )
-            except Exception as e:
-                demisto.debug(f'Encountered an error when tring to logout: {e}')
-
-            # successful request
-            self._headers['X-FeApi-Token'] = None
 
     """
     POLICIES REQUEST
@@ -1077,6 +1057,47 @@ class Client(BaseClient):
             url_suffix=f'/alerts/{alert_id}',
             return_empty_response=True
         )
+
+    def get_alert_group(self, agent_id: str):
+        """
+
+        returns the response body on successful request
+
+        """
+        params = {'host._id': agent_id}
+
+        return self._http_request(
+            method='GET',
+            url_suffix='/alert_groups',
+            params=params,
+            headers=self._headers
+        )
+
+    def acknowledge_alert_request(self, alert_group_id: str, comment: str):
+        """
+
+        returns the response body on successful request
+
+        """
+        body = self.create_static_alert_acknowledge_request_body(comment)
+
+        return self._http_request(
+            method='PATCH',
+            url_suffix=f'/alert_groups/{alert_group_id}',
+            json_data=body,
+            headers=self._headers
+        )
+
+    @staticmethod
+    def create_static_alert_acknowledge_request_body(comment: str):
+        body = {
+            'acknowledgement': {
+                'acknowledged': True,
+                'comment': comment
+            }
+        }
+
+        return body
 
     """
     INDICATORS REQUEST
@@ -1511,7 +1532,7 @@ def get_indicator_command_result(alert: Dict[str, Any]) -> CommandResults:
             readable_output=md_table
         )
 
-    elif alert.get("event_type") == 'ipv4NetworkEvent':
+    else:
         indicator = general_context_from_event(alert)
         event_values = alert.get('event_values', {})
         md_table = tableToMarkdown(
@@ -1523,8 +1544,6 @@ def get_indicator_command_result(alert: Dict[str, Any]) -> CommandResults:
             indicator=indicator,
             readable_output=md_table
         )
-
-    return CommandResults(readable_output=f'Unknown event type: {alert.get("event_type")}')
 
 
 def get_condition_entry(condition: Dict):
@@ -2591,6 +2610,62 @@ def suppress_alert_command(client: Client, args: Dict[str, Any]) -> CommandResul
     )
 
 
+def get_alert_group_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+
+    returns the alert group id
+
+    """
+    agent_id = str(args.get('agentId', ''))
+    alert_id = args.get('alertId')
+
+    try:
+        alert_group_ids = client.get_alert_group(agent_id)
+    except Exception as e:
+        if '404' in str(e):
+            raise ValueError(f"Alerts of host {agent_id} Not Found")
+
+    alert_groups = {}
+    for entry in alert_group_ids['data']['entries']:
+        alert_groups.update({str(entry['last_alert']['_id']): entry['_id']})
+    return alert_groups[alert_id]
+
+
+def acknowledge_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+
+    returns a success message to the war room
+
+    """
+    agent_id = str(args.get('agentId', ''))
+    alert_id = args.get('alertId')
+    comment = str(args.get('comment', ''))
+
+    try:
+        alert_group_ids = client.get_alert_group(agent_id)
+
+        alert_groups = {}
+        for entry in alert_group_ids['data']['entries']:
+            alert_groups.update({str(entry['last_alert']['_id']): entry['_id']})
+
+        alert_group_id = alert_groups[alert_id]
+
+        client.acknowledge_alert_request(alert_group_id, comment)
+    except KeyError:
+        raise KeyError(f'The Alert {alert_id} for Host {agent_id} - Not Found')
+    except Exception as e:
+        if '404' in str(e):
+            raise ValueError(f'The Alert {alert_id} with Alert Group {alert_group_id} for Host {agent_id} - Not Found')
+        else:
+            raise ValueError(e)
+
+    # no exceptions raised->successful request
+    return CommandResults(
+        readable_output=f'The Alert {alert_id} with Alert Group {alert_group_id} for Host {agent_id} got'
+        'acknowledged successfully.'
+    )
+
+
 """
 INDICATORS
 """
@@ -3163,6 +3238,8 @@ def main() -> None:
         'fireeye-hx-update-host-set-static': update_static_host_set_command,
         'fireeye-hx-create-host-set-dynamic': create_dynamic_host_set_command,
         'fireeye-hx-update-host-set-dynamic': update_dynamic_host_set_command,
+        'fireeye-hx-acknowledge-alert': acknowledge_alert_command,
+        'fireeye-hx-get-alert-group': get_alert_group_command,
     }
 
     params = demisto.params()
@@ -3184,7 +3261,6 @@ def main() -> None:
     proxy = params.get('proxy', False)
     command = demisto.command()
     args = demisto.args()
-    client = None
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -3213,10 +3289,6 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
-    finally:
-        # perform logout to avoid open sessions
-        if client:
-            client.token_logout()
 
 
 ''' ENTRY POINT '''
