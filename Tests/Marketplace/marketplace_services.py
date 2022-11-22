@@ -1824,6 +1824,8 @@ class Pack(object):
 
             if content_type_to_filtered_entries:
                 filtered_release_notes[content_type] = content_type_to_filtered_entries
+        
+        logging.debug(f"Release notes after filtering by display -\n{filtered_release_notes}")
 
         if not filtered_release_notes:
             logging.debug(f"Didn't find relevant release notes entries after filtering by display name.\n \
@@ -4241,5 +4243,6 @@ def is_content_item_in_id_set(display_name: str, rn_header: str, id_set: dict, m
 
         if list(id_set_entity.values())[0]['display_name'] == display_name:
             return True
-
+    
+    logging.debug(f"Could not find the entity with display name {display_name} in id_set.")
     return False
