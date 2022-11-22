@@ -214,7 +214,7 @@ EXPECTED_FINDING_OUTPUTS = [{'AccountId': 'string',
                                         '"ItemCount": 123, "FilePaths": [{"FilePath": "string", '
                                         '"VolumeArn": "string", "Hash": "string", "FileName": '
                                         '"string"}]}]}}}}',
-                             'Severity': 123.0,
+                             'Severity': 0,
                              'Title': 'title',
                              'Type': 'string',
                              'UpdatedAt': '2022-11-08T14:24:52.908Z'},
@@ -434,7 +434,7 @@ EXPECTED_FINDING_OUTPUTS = [{'AccountId': 'string',
                                         '"ItemCount": 123, "FilePaths": [{"FilePath": "string", '
                                         '"VolumeArn": "string", "Hash": "string", "FileName": '
                                         '"string"}]}]}}}}',
-                             'Severity': 123.0,
+                             'Severity': 0,
                              'Title': 'title',
                              'Type': 'string',
                              'UpdatedAt': '2022-09-07T13:48:00.814Z'}]
