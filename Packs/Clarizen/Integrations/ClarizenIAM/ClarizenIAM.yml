@@ -264,7 +264,7 @@ script:
       within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: devdemisto/py3-primary:8.1.0.37703
+  dockerimage: devdemisto/py3-primary:8.1.0.37708
   isfetch: false
   longRunning: false
   longRunningPort: false

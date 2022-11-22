@@ -20,6 +20,6 @@ args:
   defaultValue: '0.3'
 scripttarget: 0
 runonce: false
-dockerimage: devdemisto/py3-primary:8.1.0.37703
+dockerimage: devdemisto/py3-primary:8.1.0.37708
 tests:
 - No tests (auto formatted)

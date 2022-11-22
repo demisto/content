@@ -12,7 +12,7 @@ name: GetTasksWithSections
 script: '-'
 type: python
 subtype: python3
-dockerimage: devdemisto/py3-primary:8.1.0.37703
+dockerimage: devdemisto/py3-primary:8.1.0.37708
 tags:
 - Utility
 comment: Groups all tasks for a specific incident according to the task headers (titles).

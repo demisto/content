@@ -172,7 +172,7 @@ script:
     description: Running a sql query
     execution: false
     name: sql-command
-  dockerimage: devdemisto/py3-primary:8.1.0.37703
+  dockerimage: devdemisto/py3-primary:8.1.0.37708
   feed: false
   isfetch: false
   longRunning: false

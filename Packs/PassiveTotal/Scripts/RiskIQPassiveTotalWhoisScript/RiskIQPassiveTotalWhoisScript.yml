@@ -22,7 +22,7 @@ tags:
 - enhancement
 timeout: '0'
 type: python
-dockerimage: devdemisto/py3-primary:8.1.0.37703
+dockerimage: devdemisto/py3-primary:8.1.0.37708
 runas: DBotWeakRole
 runonce: false
 tests:

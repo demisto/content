@@ -19,4 +19,4 @@ tests:
 - No test - Can't test script that triggers on SLA breach. Need a field to trigger
   it and need a configured mail sender. Also errors aren't accounted.
 fromversion: 6.5.0
-dockerimage: devdemisto/py3-primary:8.1.0.37703
+dockerimage: devdemisto/py3-primary:8.1.0.37708

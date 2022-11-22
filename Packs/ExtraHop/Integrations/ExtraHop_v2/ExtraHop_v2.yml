@@ -3352,7 +3352,7 @@ script:
     - name: port2
       description: Returns packets sent from or received on the specified port.
     description: Search for specific packets in Reveal(x).
-  dockerimage: devdemisto/py3-primary:8.1.0.37703
+  dockerimage: devdemisto/py3-primary:8.1.0.37708
   runonce: false
 tests:
 - ExtraHop_v2-Test

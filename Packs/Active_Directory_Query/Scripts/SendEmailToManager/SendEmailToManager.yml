@@ -47,4 +47,4 @@ dependson:
 timeout: 0s
 tests:
 - No test
-dockerimage: devdemisto/py3-primary:8.1.0.37703
+dockerimage: devdemisto/py3-primary:8.1.0.37708

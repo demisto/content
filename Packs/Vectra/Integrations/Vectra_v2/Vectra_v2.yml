@@ -398,7 +398,7 @@ script:
         max. is 5000.
     description: Runs an advanced search on hosts and detections.
   isfetch: true
-  dockerimage: devdemisto/py3-primary:8.1.0.37703
+  dockerimage: devdemisto/py3-primary:8.1.0.37708
 tests:
 - No test
 fromversion: 5.0.0

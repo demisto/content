@@ -27,7 +27,7 @@ outputs:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: devdemisto/py3-primary:8.1.0.37703
+dockerimage: devdemisto/py3-primary:8.1.0.37708
 runas: DBotWeakRole
 fromversion: 6.0.0
 comment: Joins values from two lists by index according to a given format.
