@@ -32,15 +32,22 @@ configuration:
   section: Connect
   advanced: true
 - display: Access Key
+  displaypassword: Secret Key
+  name: credentials
+  type: 9
+  required: false
+- display: Access Key
   name: access_key
   required: false
   type: 0
   section: Connect
+  hidden: true
 - display: Secret Key
   name: secret_key
   required: false
   type: 4
   section: Connect
+  hidden: true
 - display: Role Session Duration
   name: sessionDuration
   defaultvalue: ""
