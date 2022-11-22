@@ -300,20 +300,22 @@ def humio_get_notifier_by_id(client, args, headers):
     else:
         raise ValueError("Error:" + " response from server was: " + str(response.text))
 
-
 def fetch_incidents(client, headers):
     incidentquery = demisto.params().get("queryParameter")
     incidentrepo = demisto.params().get("queryRepository")
     timestampfrom = demisto.params().get("queryStartTime")
+    chunkSize = demisto.params().get("queryChunkSize", "50")
     lastrun = demisto.getLastRun()
     url = "/api/v1/repositories/" + incidentrepo + "/query"
     headers["Accept"] = "application/json"
 
-    # set maximum of 50 returned events (this is idempotent)
-    incidentquery = incidentquery + "| head(50)"
+    last_event_ts = int(lastrun.get("time", 0))
 
-    backup_ts = int(datetime.now().timestamp()) * 1000
-    last_run_time = lastrun.get("time")
+    # Only query events with an ingesttimestamp greater than the last run and
+    # set maximum of 50 returned events (this is idempotent)
+    incidentquery = "@ingesttimestamp > " + str(last_event_ts) + " | " + incidentquery + " | head(" + str(chunkSize) + ")"
+
+    demisto.debug("Querying '" + incidentquery + "'")
     data = {
         "queryString": incidentquery,
         "end": "now",
@@ -321,30 +323,20 @@ def fetch_incidents(client, headers):
         "timeZoneOffsetMinutes": int(
             demisto.params().get("queryTimeZoneOffsetMinutes")
         ),
+        "start": timestampfrom
     }
-
-    if last_run_time is None:
-        # First run
-        data["start"] = timestampfrom
-        max_ts = 0
-    else:
-        data["start"] = int(last_run_time)
-        max_ts = int(last_run_time)
 
     response = client.http_request("POST", url, data, headers)
     if response.status_code == 200:
         response_data = response.json()
-        for result in response_data:
-            ts = int(result.get("@timestamp", backup_ts))
-            if ts > max_ts:
-                max_ts = ts
+        if (response_data):
+            for result in response_data:
+                ingest_ts = int(result.get("@ingesttimestamp"))
+                if ingest_ts > last_event_ts:
+                    last_event_ts = ingest_ts
 
-        # Ensures that max_ts gets a reasonable value if no events were returned on first run
-        if (not response_data):
-            max_ts = backup_ts
-        else:
-            max_ts += 1
-        demisto.setLastRun({"time": max_ts})
+            last_event_ts += 1
+            demisto.setLastRun({"time": last_event_ts})
         return form_incindents(response_data)
     else:
         raise ValueError(
