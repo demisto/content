@@ -22,6 +22,41 @@ def create_test_client(mocker) -> Client:
     return Client(base_url=BASE_URL, verify=False, proxy=False, customer_id='id', service_account_json={})
 
 
+TEST_DATA_INVALID_PAGINATION_ARGUMENTS = [
+    ({'page': '3', 'page_size': '4', 'limit': '25'}, ('please supply either the argument limit,'
+                                                      ' or the argument page, or the arguments page and page_size together.')),
+    ({'page_size': '4'}, 'Please insert a page number'),
+    ({'page': '2', 'page_size': '101'}, 'The maximum page size is')
+]
+
+@pytest.mark.parametrize('args, error_message', TEST_DATA_INVALID_PAGINATION_ARGUMENTS)
+def test_invalid_pagination_arguments(args, error_message):
+    from GoogleWorkspaceAdmin import prepare_pagination_arguments
+    from CommonServerPython import DemistoException
+    with pytest.raises(DemistoException) as e:
+        prepare_pagination_arguments(args=args)
+    assert error_message in str(e)
+
+
+TEST_DATA_MOBILE_DEVICE_LIST_WRONG_ARGUMENTS = [
+    ({'projection': 'Basics'}, 'Unsupported argument value'),
+    ({'projection': 'Basic', 'sort_order': 'ASCENDINGs'}, 'Unsupported argument value'),
+    ({'sort_order': 'ASCENDINGs'}, 'Unsupported argument value'),
+    ({'projection': 'Basic', 'sort_order': 'ASCENDING', 'order_by': 'lastsynC'}, 'Unsupported argument value'),
+    ({'order_by': 'lastsynC'}, 'Unsupported argument value'),
+    ({'sort_order': 'Ascending'}, 'sort_order argument must be used with the order_by parameter.')
+]
+
+@pytest.mark.parametrize('args, error_message', TEST_DATA_MOBILE_DEVICE_LIST_WRONG_ARGUMENTS)
+def test_mobile_device_list_wrong_arguments(mocker, args, error_message):
+    from GoogleWorkspaceAdmin import google_mobile_device_list_command
+    from CommonServerPython import DemistoException
+    client = create_test_client(mocker=mocker)
+    with pytest.raises(DemistoException) as e:
+        google_mobile_device_list_command(client=client, **args)
+    assert error_message in str(e)
+
+
 def test_mobile_device_action_exception_wrong_action(mocker):
     """
     Given:
@@ -132,6 +167,27 @@ def test_chromeos_device_action(mocker):
     assert command_result.to_context() == expected_command_result.to_context()
 
 
+TEST_DATA_CHROMEOS_DEVICE_LIST_WRONG_ARGUMENTS = [
+    ({'projection': 'Basics'}, 'Unsupported argument value'),
+    ({'projection': 'Basic', 'sort_order': 'ASCENDINGs'}, 'Unsupported argument value'),
+    ({'sort_order': 'ASCENDINGs'}, 'Unsupported argument value'),
+    ({'projection': 'Basic', 'sort_order': 'ASCENDING', 'order_by': 'lastsynC'}, 'Unsupported argument value'),
+    ({'order_by': 'lastsynC'}, 'Unsupported argument value'),
+    ({'include_child_org_units': True, 'projection': 'Basic', 'sort_order': 'ASCENDING', 'order_by': 'last_sync'},
+     'If include_child_org_units is set to true, org_unit_path must be provided'),
+    ({'sort_order': 'Ascending'}, 'sort_order argument must be used with the order_by parameter.')
+]
+
+@pytest.mark.parametrize('args, error_message', TEST_DATA_CHROMEOS_DEVICE_LIST_WRONG_ARGUMENTS)
+def test_chromeos_device_list_wrong_arguments(mocker, args, error_message):
+    from GoogleWorkspaceAdmin import google_chromeos_device_list_command
+    from CommonServerPython import DemistoException
+    client = create_test_client(mocker=mocker)
+    with pytest.raises(DemistoException) as e:
+        google_chromeos_device_list_command(client=client, **args)
+    assert error_message in str(e)
+
+
 TEST_DATA_AUTO_PAGINATION_FILES_CASES = [
     ('test_data/mobile_devices_list/automatic_pagination/raw_results_3_pages.json',
      'test_data/mobile_devices_list/automatic_pagination//parsed_results_3_pages.json', '7'),
@@ -166,8 +222,8 @@ def test_mobile_device_list_automatic_pagination(mocker, raw_results_file, parse
 TEST_DATA_MANUAL_PAGINATION_FILES_CASES = [
     ('test_data/mobile_devices_list/manual_pagination/raw_results.json',
      'test_data/mobile_devices_list/manual_pagination//parsed_results.json', {'page': '3', 'page_size': '2'}),
-    ('test_data/mobile_devices_list/manual_pagination/raw_results_no_page_found.json',
-     'test_data/mobile_devices_list/manual_pagination//parsed_results_no_page_found.json', {'page': '4', 'page_size': '3'})
+    ('test_data/mobile_devices_list/manual_pagination/raw_results_page_not_found.json',
+     'test_data/mobile_devices_list/manual_pagination//parsed_results_page_not_found.json', {'page': '4', 'page_size': '3'})
 ]
 
 @pytest.mark.parametrize('raw_results_file, parsed_results_file, pagination_args', TEST_DATA_MANUAL_PAGINATION_FILES_CASES)

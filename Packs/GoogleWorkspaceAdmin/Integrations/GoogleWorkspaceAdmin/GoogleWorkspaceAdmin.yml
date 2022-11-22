@@ -30,241 +30,297 @@ script:
       description: ""
       arguments:
         - name: resource_id
-          description: ""
+          description: "The unique ID the API service uses to identify the mobile device."
           required: true
           isArray: false
         - name: action
-          description: ""
+          description: "The action to be performed on the device."
           required: true
           isArray: false
+          predefined:
+            - admin_remote_wipe
+            - admin_account_wipe
+            - approve
+            - block
+            - cancel_remote_wipe_then_activate
+            - cancel_remote_wipe_then_block
+      outputs:
+        - type: String
+          contextPath: Google.mobileAction.Response
+          description: "Whether the action was successful or failure."
+        - type: String
+          contextPath: Google.mobileAction.Reason
+          description: "The reason the command failed."
     - name: google-mobiledevice-list
       description: ""
       arguments:
-        - name: customerid
-          description: ""
-          required: false
-          isArray: false
         - name: projection
-          description: ""
+          description: "Whether to show all metadata fields, or only the basic metadata fields (e.g., deviceId, model, type, and status)"
           required: false
           isArray: false
+          predefined:
+            - BASIC
+            - FULL
         - name: query
-          description: ""
+          description: "Search string in the format given at https://developers.google.com/admin-sdk/directory/v1/search-operators"
           required: false
           isArray: false
-        - name: orderby
-          description: ""
+        - name: order_by
+          description: "Device property to use for sorting results."
           required: false
           isArray: false
-        - name: sortorder
-          description: ""
+          predefined:
+            - DEVICE_ID
+            - EMAIL
+            - LAST_SYNC
+            - MODEL
+            - NAME
+            - OS
+            - STATUS
+            - TYPE
+        - name: sort_order
+          description: "Whether to return results in ascending or descending order. Must be used with the order_by parameter."
           required: false
           isArray: false
-        - name: pagetoken
-          description: ""
-          required: false
-          isArray: false
+          predefined:
+            - ASCENDING
+            - DESCENDING
         - name: limit
-          description: ""
+          description: "The maximum number of records to return from the collection. The default value is 50."
           required: false
           isArray: false
         - name: page
-          description: ""
+          description: "The page number."
           required: false
           isArray: false
         - name: page_size
-          description: ""
+          description: "The number of requested results per page. The default value is 50. Max allowed value is 100."
           required: false
           isArray: false
       outputs:
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.kind
-          description: ""
+          contextPath: Google.mobileEvent.resourceKind
+          description: "Kind of resource this is."
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.etag
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.kind
+          description: "The type of the API resource. "
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.kind
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.etag
+          description: "ETag of the resource."
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.etag
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.resourceId
+          description: "The unique ID the API service uses to identify the mobile device."
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.resourceId
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.deviceId
+          description: "The serial number for a Google Sync mobile device. For Android and iOS devices, this is a software-generated unique identifier."
+        - type: List
+          contextPath: Google.mobileEvent.mobileListObjects.name
+          description: "A list of the owner's usernames."
+        - type: List
+          contextPath: Google.mobileEvent.mobileListObjects.email
+          description: "A list of the owner's email addresses."
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.deviceId
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.model
+          description: "The mobile device's model name."
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.name
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.os
+          description: "The mobile device's operating system."
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.email
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.type
+          description: "The type of mobile device."
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.model
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.status
+          description: "The device's status."
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.os
-          description: ""
-        - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.type
-          description: ""
-        - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.status
-          description: ""
-        - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.hardwareId
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.hardwareId
+          description: "The IMEI/MEID unique identifier for Android hardware."
         - type: Date
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.firstSync
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.firstSync
+          description: "The date and time the device was initially synchronized with the policy settings in the Admin console."
         - type: Date
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.lastSync
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.lastSync
+          description: "The date and time the device was last synchronized with the policy settings in the Admin console."
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.userAgent
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.userAgent
+          description: "Gives information about the device such as os version."
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.serialNumber
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.serialNumber
+          description: "The device's serial number."
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.imei
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.imei
+          description: "The device's IMEI number."
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.meid
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.meid
+          description: "The device's MEID number."
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.wifiMacAddress
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.wifiMacAddress
+          description: "The device's MAC address on Wi-Fi networks."
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.networkOperator
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.networkOperator
+          description: "Mobile Device mobile or network operator."
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.defaultLanguage
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.defaultLanguage
+          description: "The default locale used on the device."
         - type: Boolean
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.managedAccountIsOnOwnerProfile
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.managedAccountIsOnOwnerProfile
+          description: "Boolean indicating if this account is on owner/primary profile or not."
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.deviceCompromisedStatus
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.deviceCompromisedStatus
+          description: "The compromised device status."
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.buildNumber
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.buildNumber
+          description: "The device's operating system build number."
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.kernelVersion
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.kernelVersion
+          description: "The device's kernel version."
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.basebandVersion
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.basebandVersion
+          description: "The device's baseband version."
         - type: Boolean
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.unknownSourcesStatus
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.unknownSourcesStatus
+          description: "Unknown sources enabled or disabled on device"
         - type: Boolean
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.adbStatus
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.adbStatus
+          description: "Adb (USB debugging) enabled or disabled on device."
         - type: Boolean
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.developerOptionsStatus
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.developerOptionsStatus
+          description: "Developer options enabled or disabled on device."
+        - type: List
+          contextPath: Google.mobileEvent.mobileListObjects.otherAccountsInfo
+          description: "A list of accounts added on device."
         - type: Boolean
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.supportsWorkProfile
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.supportsWorkProfile
+          description: "Work profile supported on device."
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.manufacturer
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.manufacturer
+          description: "Mobile Device manufacturer."
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.releaseVersion
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.releaseVersion
+          description: "Mobile Device release version version."
         - type: Date
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.securityPatchLevel
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.securityPatchLevel
+          description: "Mobile Device Security patch level."
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.brand
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.brand
+          description: "Mobile Device Brand."
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.bootloaderVersion
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.bootloaderVersion
+          description: "Mobile Device Bootloader version."
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.hardware
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.hardware
+          description: "Mobile Device Hardware."
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.encryptionStatus
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.encryptionStatus
+          description: "Mobile Device Encryption Status."
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.devicePasswordStatus
-          description: ""
+          contextPath: Google.mobileEvent.mobileListObjects.devicePasswordStatus
+          description: "Device Password Status"
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleMobiledeviceList.mobiledevices.privilege
-          description: ""
-    - name: google_chromeosdevice_list
+          contextPath: Google.mobileEvent.mobileListObjects.privilege
+          description: "DM Agent Permission."
+        - type: String
+          contextPath: Google.mobileEvent.mobileListObjects.applications.packageName
+          description: "The application's package name."
+        - type: String
+          contextPath: Google.mobileEvent.mobileListObjects.applications.displayName
+          description: "The application's display name."
+        - type: String
+          contextPath: Google.mobileEvent.mobileListObjects.applications.versionName
+          description: "The application's version name."
+        - type: String
+          contextPath: Google.mobileEvent.mobileListObjects.applications.versionCode
+          description: "The application's version code."
+        - type: List
+          contextPath: Google.mobileEvent.mobileListObjects.applications.permission
+          description: "The list of permissions of this application."
+    - name: google-chromeosdevice-list
       description: ""
       arguments:
-        - name: customerid
-          description: ""
-          required: false
-          isArray: false
         - name: projection
-          description: ""
+          description: "Whether to show all metadata fields, or only the basic metadata fields (e.g., deviceId, serialNumber, status, and user)"
           required: false
           isArray: false
+          predefined:
+            - BASIC
+            - FULL
         - name: query
-          description: ""
+          description: "Search string in the format given at https://developers.google.com/admin-sdk/directory/v1/list-query-operators"
           required: false
           isArray: false
-        - name: orderby
-          description: ""
+        - name: order_by
+          description: "Device property to use for sorting results."
           required: false
           isArray: false
-        - name: sortorder
-          description: ""
+          predefined:
+            - ANNOTATED_LOCATION
+            - ANNOTATED_USER
+            - LAST_SYNC
+            - NOTES
+            - SERIAL_NUMBER
+            - STATUS
+        - name: sort_order
+          description: "Whether to return results in ascending or descending order. Must be used with the order_by parameter."
           required: false
           isArray: false
-        - name: pagetoken
-          description: ""
+          predefined:
+            - ASCENDING
+            - DESCENDING
+        - name: org_unit_path
+          description: "The full path of the organizational unit (minus the leading /) or its unique ID."
           required: false
           isArray: false
-        - name: maxresults
-          description: ""
+        - name: include_child_org_units
+          description: "Whether to return devices from all child orgunits."
+          required: false
+          isArray: false
+          predefined:
+            - yes
+            - no
+        - name: limit
+          description: "The maximum number of records to return from the collection. The default value is 50."
+          required: false
+          isArray: false
+        - name: page
+          description: "The page number."
+          required: false
+          isArray: false
+        - name: page_size
+          description: "The number of requested results per page. The default value is 50. Max allowed value is 100."
           required: false
           isArray: false
     - name: google-chromeosdevice-action
       description: ""
       arguments:
         - name: resource_id
-          description: ""
+          description: "The unique ID of the device."
           required: true
           isArray: false
         - name: action
-          description: ""
+          description: "The action to be performed on the ChromeOS device."
           required: true
           isArray: false
+          predefined:
+            - deprovision
+            - disable
+            - reenable
+            - pre_provisioned_disable
+            - pre_provisioned_reenable
         - name: deprovision_reason
-          description: ""
+          description: "Only used when the action is deprovision. With the deprovision action, this field is required."
           required: false
           isArray: false
+          predefined:
+            - different_model_replacement
+            - retiring_device
+            - same_model_replacement
+            - upgrade_transfer
       outputs:
-        - type: Number
-          contextPath: GoogleWorkspaceAdmin.GoogleChromeosdeviceAction.error.code
-          description: ""
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleChromeosdeviceAction.error.message
-          description: ""
+          contextPath: Google.mobileAction.Response
+          description: "Whether the action was successful or failure."
         - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleChromeosdeviceAction.error.errors.message
-          description: ""
-        - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleChromeosdeviceAction.error.errors.domain
-          description: ""
-        - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleChromeosdeviceAction.error.errors.reason
-          description: ""
-        - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleChromeosdeviceAction.error.errors.location
-          description: ""
-        - type: String
-          contextPath: GoogleWorkspaceAdmin.GoogleChromeosdeviceAction.error.errors.locationType
-          description: ""
+          contextPath: Google.mobileAction.Reason
+          description: "The reason the command failed."
   type: python
   subtype: python3
   dockerimage: demisto/googleapi-python3:1.0.0.36486

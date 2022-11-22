@@ -15,10 +15,17 @@ OUTPUT_PREFIX = 'Google'
 INTEGRATION_NAME = 'Google Workspace Admin'
 
 CHROMEOS_DEVICE_ACTION = ['deprovision', 'disable', 'reenable', 'pre_provisioned_disable', 'pre_provisioned_reenable']
-CHROMEOS_DEPROVISION_REASON = ['different_model_replacement', 'retiring_device', 'same_model_replacement', 'upgrade_transfer']
+CHROMEOS_DEVICE_DEPROVISION_REASON = ['different_model_replacement', 'retiring_device', 'same_model_replacement',
+                                      'upgrade_transfer']
+CHROMEOS_DEVICE_ORDER_BY = ['annotated_location', 'annotated_user', 'last_sync', 'notes', 'serial_number', 'status']
+CHROMEOS_DEVICE_PROJECTION = ['basic', 'full']
+CHROMEOS_DEVICE_SORT_ORDER = ['ascending', 'descending']
 
 MOBILE_DEVICE_ACTION = ['admin_remote_wipe', 'admin_account_wipe', 'approve',
                         'block', 'cancel_remote_wipe_then_activate', 'cancel_remote_wipe_then_block']
+MOBILE_DEVICE_ORDER_BY = ['device_id', 'email', 'last_sync', 'model', 'name', 'os', 'status', 'type']
+MOBILE_DEVICE_PROJECTION = ['basic', 'full']
+MOBILE_DEVICE_SORT_ORDER = ['ascending', 'descending']
 
 MAX_PAGE_SIZE = 100
 DEFAULT_PAGE_SIZE = 50
@@ -116,8 +123,6 @@ class Client(BaseClient):
         return response
 
     def google_mobile_device_list_request(self, query_params: dict) -> dict:
-        # params = assign_params(projection=projection, query=query, orderBy=order_by,
-        #                        sortOrder=sort_order, pageToken=page_token, maxResults=3 if max_results > 3 else max_results)
         # TODO Don't forget to delete the following lines (these are for testing purposes)
         max_results = query_params['maxResults']
         query_params['maxResults'] = 3 if max_results > 3 else max_results
@@ -137,7 +142,7 @@ class Client(BaseClient):
             raise ActionCommandIncorrectArguments(
                 f'Unsupported argument value {action if action else "of empty string"} for action.')
         elif action == 'deprovision':
-            if deprovision_reason not in CHROMEOS_DEPROVISION_REASON:
+            if deprovision_reason not in CHROMEOS_DEVICE_DEPROVISION_REASON:
                 raise ActionCommandIncorrectArguments(
                     (f'Unsupported argument value'
                      f' {deprovision_reason if deprovision_reason else "of empty string"} for deprovision_reason.'))
@@ -152,8 +157,10 @@ class Client(BaseClient):
         return response
 
     def google_chromeos_device_list_request(self, query_params: dict) -> dict:
-        # params = assign_params(projection=projection, query=query, orderBy=order_by, orgUnitPath=org_unit_path,
-        #                        sortOrder=sort_order, pageToken=page_token, maxResults=max_results)
+        # TODO Don't forget to delete the following lines (these are for testing purposes)
+        max_results = query_params['maxResults']
+        query_params['maxResults'] = 3 if max_results > 3 else max_results
+
         scopes = ['https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly']
         token = self._get_oauth_token(scopes=scopes)
         headers = self._headers | {'Authorization': f'Bearer {token}'}
@@ -164,36 +171,13 @@ class Client(BaseClient):
         return response
 
 
-def trim_extra_double_quotes_from_string(value: str) -> str:
-    value_length = len(value)
-    first_element = value[0]
-    last_element = value[value_length - 1]
-    if((first_element == '"' or first_element == "'") and (last_element == '"' or last_element == "'")):
-        return value[1:value_length - 1]
-    return value
-
-
-def google_mobile_device_action_command(client: Client, resource_id: str, action: str) -> CommandResults:
-    readable_output = 'Success'
-    failure_reason = {}
-    try:
-        # We want to catch the exception that is thrown from a bad API call, so we can mark this
-        # request as failure
-        client.google_mobile_device_action_request(resource_id, action)
-    except ActionCommandIncorrectArguments as e:
-        readable_output = 'Failure'
-        failure_reason['Reason'] = str(e)
-    except DemistoException as e:
-        demisto.debug(f'An error has occurred when running the command:\n{str(e)}')
-        readable_output = 'Failure'
-        # TODO Should I add the reason as str(e)?
-        # raise e
-    command_results = CommandResults(
-        outputs_prefix=f'{OUTPUT_PREFIX}.mobileAction',
-        readable_output=readable_output,
-        outputs=failure_reason | {'Response': readable_output},
-    )
-    return command_results
+# def trim_extra_double_quotes_from_string(value: str) -> str:
+#     value_length = len(value)
+#     first_element = value[0]
+#     last_element = value[value_length - 1]
+#     if((first_element == '"' or first_element == "'") and (last_element == '"' or last_element == "'")):
+#         return value[1:value_length - 1]
+#     return value
 
 
 def device_list_manual_pagination(api_request: Callable, to_human_readable: Callable, query_params: dict, page: Optional[int],
@@ -219,6 +203,7 @@ def device_list_manual_pagination(api_request: Callable, to_human_readable: Call
     Executes the command mobile-device-list using manual pagination, and returns a CommandResult
     that holds the data to return to the user.
     """
+    query_params['maxResults'] = page_size
     relevant_response = {}  # This will hold the relevant response that holds the page that was requested
     context_data = {}  # This will hold the context data to return to the user
     next_page_token: str | None = None
@@ -233,7 +218,7 @@ def device_list_manual_pagination(api_request: Callable, to_human_readable: Call
         if(current_page_number == page):
             get_data_from_api = False
             context_data['resourceKind'] = response.get('kind')
-            context_data['ETag'] = trim_extra_double_quotes_from_string(value=response.get('etag'))
+            # context_data['ETag'] = trim_extra_double_quotes_from_string(value=response.get('etag'))
             context_data[cd_devices_list_key] = response.get(response_devices_list_key, [])
             relevant_response = response
         elif(not next_page_token):
@@ -279,7 +264,7 @@ def device_list_automatic_pagination(api_request: Callable, to_human_readable: C
         results_limit -= len(response_mobile_devices)
         if(results_limit <= 0 or not next_page_token):
             context_data['resourceKind'] = response.get('kind')
-            context_data['ETag'] = trim_extra_double_quotes_from_string(value=response.get('etag'))
+            # context_data['ETag'] = trim_extra_double_quotes_from_string(value=response.get('etag'))
             context_data[cd_devices_list_key] = mobile_devices
             get_data_from_api = False
     human_readable = to_human_readable(context_data=context_data)
@@ -294,11 +279,53 @@ def device_list_automatic_pagination(api_request: Callable, to_human_readable: C
     return command_results
 
 
+def prepare_pagination_arguments(args: dict) -> dict:
+    """ The function gets the arguments from the user and checks the content of the pagination arguments,
+        and if everything is valid, it returns a dictionary that holds the pagination information.
+
+    Args:
+        args (dict): The arguments from the user
+
+    Returns:
+        _type_: A dictionary that holds the pagination information.
+    """
+    if('page' in args or 'page_size' in args):
+        if('limit' in args):
+            raise DemistoException(('In order to use pagination, please supply either the argument limit,'
+                                    ' or the argument page, or the arguments page and page_size together.'))
+        page = arg_to_number(args.get('page', None))
+        if not page:
+            raise DemistoException(message='Please insert a page number')
+        page_size = arg_to_number(args.get('page_size', None))
+        page_size = page_size if page_size else DEFAULT_PAGE_SIZE
+        if page_size > MAX_PAGE_SIZE:
+            raise DemistoException(f'The maximum page size is {MAX_PAGE_SIZE}')
+        return {'page_size': page_size, 'page': page}
+
+    limit = arg_to_number(args.get('limit', None))
+    limit = limit if limit else DEFAULT_LIMIT
+    return {'limit': limit}
+
+
 def mobile_device_list_create_query_parameters(args: dict) -> dict:
-    query_params = assign_params(projection=args.get('projection', None),
-                                 query=args.get('query', None),
-                                 orderBy=args.get('order_by', None),
-                                 sortOrder=args.get('sort_order', None),
+    projection = args.get('projection', '').lower()
+    if(projection and projection not in MOBILE_DEVICE_PROJECTION):
+        raise DemistoException(f'Unsupported argument value {projection if projection else "of empty string"} for projection.')
+
+    order_by = args.get('order_by', '').lower()
+    if(order_by and order_by not in MOBILE_DEVICE_ORDER_BY):
+        raise DemistoException(f'Unsupported argument value {order_by if order_by else "of empty string"} for order_by.')
+
+    sort_order = args.get('sort_order', '').lower()
+    if(sort_order and sort_order not in MOBILE_DEVICE_SORT_ORDER):
+        raise DemistoException(f'Unsupported argument value {sort_order if sort_order else "of empty string"} for sort_order.')
+
+    if(sort_order and not order_by):
+        raise DemistoException('sort_order argument must be used with the order_by parameter.')
+    query_params = assign_params(projection=projection,
+                                 query=args.get('query', ''),
+                                 orderBy=order_by,
+                                 sortOrder=sort_order,
                                  )
     return query_params
 
@@ -323,41 +350,52 @@ def google_mobile_device_list_command(client: Client, **kwargs) -> CommandResult
     table_title = f'{INTEGRATION_NAME} - Mobile Devices List'
     response_devices_list_key = 'mobiledevices'
     cd_devices_list_key = 'mobileListObjects'
-    if('page' in kwargs or 'page_size' in kwargs):
-        if('limit' in kwargs):
-            return_error(('In order to use pagination, please supply either the argument `limit`,'
-                          ' or the argument `page`, or the arguments `page` and `page_size` together'))
-        page = arg_to_number(kwargs.get('page', None), arg_name='page', required=True)
-        if not page:
-            return_error(message='Please insert a page number')
-        page_size = arg_to_number(kwargs.get('page_size', None))
-        page_size = page_size if page_size else DEFAULT_PAGE_SIZE
-        query_params['maxResults'] = page_size
-        return device_list_manual_pagination(api_request=client.google_mobile_device_list_request,
-                                             to_human_readable=mobile_device_list_to_human_readable,
-                                             table_headers=table_headers,
-                                             table_title=table_title,
-                                             response_devices_list_key=response_devices_list_key,
-                                             cd_devices_list_key=cd_devices_list_key,
-                                             query_params=query_params, page=page, page_size=page_size)
+    pagination_args = prepare_pagination_arguments(args=kwargs)
+    if 'limit' in pagination_args:
+        return device_list_automatic_pagination(api_request=client.google_mobile_device_list_request,
+                                                to_human_readable=mobile_device_list_to_human_readable,
+                                                table_headers=table_headers,
+                                                table_title=table_title,
+                                                response_devices_list_key=response_devices_list_key,
+                                                cd_devices_list_key=cd_devices_list_key,
+                                                query_params=query_params, **pagination_args)
 
-    limit = arg_to_number(kwargs.get('limit', None))
-    limit = limit if limit else DEFAULT_LIMIT
-    return device_list_automatic_pagination(api_request=client.google_mobile_device_list_request,
-                                            to_human_readable=mobile_device_list_to_human_readable,
-                                            table_headers=table_headers,
-                                            table_title=table_title,
-                                            response_devices_list_key=response_devices_list_key,
-                                            cd_devices_list_key=cd_devices_list_key,
-                                            query_params=query_params, limit=limit)
+    return device_list_manual_pagination(api_request=client.google_mobile_device_list_request,
+                                         to_human_readable=mobile_device_list_to_human_readable,
+                                         table_headers=table_headers,
+                                         table_title=table_title,
+                                         response_devices_list_key=response_devices_list_key,
+                                         cd_devices_list_key=cd_devices_list_key,
+                                         query_params=query_params, **pagination_args)
 
 
 def chromeos_device_list_create_query_parameters(args: dict) -> dict:
-    query_params = assign_params(projection=args.get('projection', None),
+    projection = args.get('projection', '').lower()
+    if(projection and projection not in CHROMEOS_DEVICE_PROJECTION):
+        raise DemistoException(f'Unsupported argument value {projection if projection else "of empty string"} for projection.')
+
+    order_by = args.get('order_by', '').lower()
+    if(order_by and order_by not in CHROMEOS_DEVICE_ORDER_BY):
+        raise DemistoException(f'Unsupported argument value {order_by if order_by else "of empty string"} for order_by.')
+
+    sort_order = args.get('sort_order', '').lower()
+    if(sort_order and sort_order not in CHROMEOS_DEVICE_SORT_ORDER):
+        raise DemistoException(f'Unsupported argument value {sort_order if sort_order else "of empty string"} for sort_order.')
+
+    if(sort_order and not order_by):
+        raise DemistoException('sort_order argument must be used with the order_by parameter.')
+
+    include_child_org_units = argToBoolean(args.get('include_child_org_units', False))
+    org_unit_path = args.get('org_unit_path', '')
+    if(include_child_org_units and not org_unit_path):
+        raise DemistoException('If include_child_org_units is set to true, org_unit_path must be provided')
+
+    query_params = assign_params(projection=projection,
                                  query=args.get('query', None),
-                                 orderBy=args.get('order_by', None),
-                                 sortOrder=args.get('sort_order', None),
-                                 orgUnitPath=args.get('org_unit_path', None)
+                                 orderBy=order_by,
+                                 sortOrder=sort_order,
+                                 orgUnitPath=org_unit_path,
+                                 includeChildOrgunits=str(include_child_org_units)
                                  )
     return query_params
 
@@ -381,33 +419,45 @@ def google_chromeos_device_list_command(client: Client, **kwargs) -> CommandResu
     table_title = f'{INTEGRATION_NAME} - ChromeOs Devices List'
     response_devices_list_key = 'chromeosdevices'
     cd_devices_list_key = 'chromeosListObjects'
-    if('page' in kwargs or 'page_size' in kwargs):
-        if('limit' in kwargs):
-            return_error(('In order to use pagination, please supply either the argument `limit`,'
-                          ' or the arguments `page` and `page_size` together'))
-        page = arg_to_number(kwargs.get('page', None), arg_name='page', required=True)
-        if not page:
-            return_error(message='Please insert a page number')
-        page_size = arg_to_number(kwargs.get('page_size', None))
-        page_size = page_size if page_size else DEFAULT_PAGE_SIZE
-        query_params['maxResults'] = page_size
-        return device_list_manual_pagination(api_request=client.google_chromeos_device_list_request,
-                                             to_human_readable=chromeos_device_list_to_human_readable,
-                                             table_headers=table_headers,
-                                             table_title=table_title,
-                                             response_devices_list_key=response_devices_list_key,
-                                             cd_devices_list_key=cd_devices_list_key,
-                                             query_params=query_params, page=page, page_size=page_size)
+    pagination_args = prepare_pagination_arguments(args=kwargs)
+    if 'limit' in pagination_args:
+        return device_list_automatic_pagination(api_request=client.google_mobile_device_list_request,
+                                                to_human_readable=chromeos_device_list_to_human_readable,
+                                                table_headers=table_headers,
+                                                table_title=table_title,
+                                                response_devices_list_key=response_devices_list_key,
+                                                cd_devices_list_key=cd_devices_list_key,
+                                                query_params=query_params, **pagination_args)
+    return device_list_manual_pagination(api_request=client.google_chromeos_device_list_request,
+                                         to_human_readable=chromeos_device_list_to_human_readable,
+                                         table_headers=table_headers,
+                                         table_title=table_title,
+                                         response_devices_list_key=response_devices_list_key,
+                                         cd_devices_list_key=cd_devices_list_key,
+                                         query_params=query_params, **pagination_args)
 
-    limit = arg_to_number(kwargs.get('limit', None))
-    limit = limit if limit else DEFAULT_LIMIT
-    return device_list_automatic_pagination(api_request=client.google_mobile_device_list_request,
-                                            to_human_readable=chromeos_device_list_to_human_readable,
-                                            table_headers=table_headers,
-                                            table_title=table_title,
-                                            response_devices_list_key=response_devices_list_key,
-                                            cd_devices_list_key=cd_devices_list_key,
-                                            query_params=query_params, limit=limit)
+
+def google_mobile_device_action_command(client: Client, resource_id: str, action: str) -> CommandResults:
+    readable_output = 'Success'
+    failure_reason = {}
+    try:
+        # We want to catch the exception that is thrown from a bad API call, so we can mark this
+        # request as failure
+        client.google_mobile_device_action_request(resource_id, action)
+    except ActionCommandIncorrectArguments as e:
+        readable_output = 'Failure'
+        failure_reason['Reason'] = str(e)
+    except DemistoException as e:
+        demisto.debug(f'An error has occurred when running the command:\n{str(e)}')
+        readable_output = 'Failure'
+        # TODO Should I add the reason as str(e)?
+        # raise e
+    command_results = CommandResults(
+        outputs_prefix=f'{OUTPUT_PREFIX}.mobileAction',
+        readable_output=readable_output,
+        outputs=failure_reason | {'Response': readable_output},
+    )
+    return command_results
 
 
 def google_chromeos_device_action_command(client: Client, resource_id: str, action: str,
