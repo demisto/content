@@ -285,6 +285,7 @@ def lis_get_by_minute(client: GwClient, args: Dict[Any, Any]) -> CommandResults:
     return CommandResults(
         readable_output=readable_result,
         outputs_prefix="LIS.GetByMinute",
+        outputs_key_field="Value",
         outputs=result,
         raw_response=result
     )
@@ -319,6 +320,7 @@ def lis_get_by_value(client: GwClient, args: Dict[Any, Any]) -> CommandResults: 
     return CommandResults(
         readable_output=readable_result,
         outputs_prefix="LIS.GetByValue",
+        outputs_key_field="Value",
         outputs=result,
         raw_response=result
     )
