@@ -1,7 +1,7 @@
 ## Prisma SASE Content Pack
 ---
 
-This content pack enables XSOAR to integrate with Palo Alto Networks Prisma SASE. It includes 1 integration.
+This content pack enables Cortex XSOAR to integrate with Palo Alto Networks Prisma SASE. It includes 1 integration.
 
 
 ### Prisma SASE
