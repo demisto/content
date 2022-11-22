@@ -361,6 +361,7 @@ class Client(BaseClient):
         Returns:
             dict: dict containing the alert as returned from the API.
         """
+        print("test")
 
         return self._http_request(
             method='GET',
