@@ -22,7 +22,7 @@ configuration:
   name: tsg_id
   required: false
   type: 0
-  additionalinfo: Default Tenant Services Group ID to use for API calls. Example: 1234567890.
+  additionalinfo: 'Default Tenant Services Group ID to use for API calls. Example: 1234567890.'
 - defaultvalue: https://auth.apps.paloaltonetworks.com/am/oauth2/access_token
   display: Prisma API OAUTH URL
   name: oauth_url
@@ -95,7 +95,7 @@ script:
       isArray: true
       name: from
       required: true
-    - description: A comma-separated list of source zones.
+    - description: A comma-separated list of destination zones.
       isArray: true
       name: to
       required: true
@@ -303,7 +303,7 @@ script:
       isArray: true
       name: from
       required: true
-    - description: A comma-separated list of source zones.
+    - description: A comma-separated list of destination zones.
       isArray: true
       name: to
       required: true
