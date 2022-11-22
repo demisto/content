@@ -18,12 +18,12 @@ Basic authentication method based on ***Username*** and ***Password*** parameter
 
 #### There are 3 methods to use Auth Token authentication:
 
-##### 1. If an Auth Client already exists, and ***Client ID***, ***Client Secret*** are available:
-1. Run `vd-auth-start` command, passing ***Client ID*** and ***Client Secret*** as arguments **OR** parameters to generate new Auth Token using the given Auth Client.
+##### 1. If user have valid authentication parameters, meaning ***Client ID*** and ***Client Secret*** are available:
+1. Run `vd-auth-start` command, passing ***Client ID*** and ***Client Secret*** as arguments to generate new Auth Token using the existing Client. If not provided. ***Client ID*** and ***Client Secret*** will be taken from the instance configuration.
 2. The new Auth Token along with all of its relevant information will be saved in the integration context.
 3. Uncheck the ***Use Basic Authentication*** checkbox.
 
-##### 2. If an Auth Client does not exist, and ***Client ID***, ***Client Secret*** are not available:
+##### 2. If user do not have valid authentication parameters, meaning ***Client ID***, ***Client Secret*** are not available:
 1. Check the ***Use Basic Authentication*** checkbox.
 1. Run  `vd-auth-start` command, passing ***Token Name*** argument (if ***Token Name*** is not passed, a default name will be used - this may cause conflicts if an Auth Client already created with the same name).
 2. The command will create a new Auth Client, and will generate a new Auth Token using the newly created Auth Client, displaying ***Client ID*** and ***Client Name*** in a message for later use.
