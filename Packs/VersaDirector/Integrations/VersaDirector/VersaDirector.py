@@ -28,7 +28,7 @@ AUTH_EXCEEDED_MAXIMUM = "Auth process failed. Possibly exceeded maximum number o
 AUTH_INVALID_CREDENTIALS = "Auth process failed. Invalid credentials returned from API."
 BASIC_CREDENTIALS_COULD_NOT_START = (
     "Auth process could not start. To run '!vd-auth-start' command,"
-    + " please enter Username and Password parameters in instance configuration."
+    + " Please enter Username and Password parameters in instance configuration."
 )
 CLIENT_CREDENTIALS_COULD_NOT_START = (
     "Auth process could not start, missing Client ID and Client Secret command arguments or integration parameters."
@@ -146,7 +146,7 @@ class Client(BaseClient):
         forwarding_profile: str,
         predefined_application: list,
         user_defined_application: list,
-        rule_disable: str = "false",
+        rule_disable: str,
     ):
 
         request_body: dict[str, dict] = {
@@ -1027,6 +1027,7 @@ class Client(BaseClient):
         forwarding_profile: str,
         predefined_application: list,
         user_defined_application: list,
+        rule_disable: str,
     ):
 
         request_body = self._create_sdwan_policy_rule_request_body(
@@ -1043,6 +1044,7 @@ class Client(BaseClient):
             forwarding_profile,
             predefined_application,
             user_defined_application,
+            rule_disable,
         )
 
         response = self._http_request(
@@ -1183,6 +1185,7 @@ class Client(BaseClient):
         forwarding_profile: str,
         predefined_application: list,
         user_defined_application: list,
+        rule_disable: str,
     ):
 
         request_body = self._create_sdwan_policy_rule_request_body(
@@ -1199,6 +1202,7 @@ class Client(BaseClient):
             forwarding_profile,
             predefined_application,
             user_defined_application,
+            rule_disable,
         )
 
         response = self._http_request(
@@ -1707,7 +1711,7 @@ def create_client_header(
             raise DemistoException(
                 "Auth Authentication method chosen but Access Token, "
                 + "Client ID or Client Secret parameters are missing or invalid."
-                + " Please Enter Client ID and Client Secret OR Auth Token parameters OR use '!vd-auth-start' command."
+                + " Please enter Client ID and Client Secret OR Auth Token parameters OR use '!vd-auth-start' command."
             )
 
     else:
@@ -2604,18 +2608,7 @@ def template_access_policy_rule_create_command(client: Client, args: Dict[str, A
 
     try:
         response, request_body = client.template_access_policy_rule_create_request(
-            organization,
-            template_name,
-            access_policy_name,
-            access_policy_rule_args.get("rule_name", ""),
-            access_policy_rule_args.get("description", ""),
-            access_policy_rule_args.get("tags", []),
-            access_policy_rule_args.get("source_address_objects", []),
-            access_policy_rule_args.get("destination_address_objects", []),
-            access_policy_rule_args.get("url_reputation", []),
-            access_policy_rule_args.get("predefined_application", []),
-            access_policy_rule_args.get("user_defined_application", []),
-            access_policy_rule_args.get("custom_url_categories", []),
+            organization, template_name, access_policy_name, **access_policy_rule_args
         )
     except DemistoException as e:
         if e.res.status_code == 409:
@@ -2642,18 +2635,7 @@ def template_access_policy_rule_edit_command(client: Client, args: Dict[str, Any
     organization = set_organization(organization_args, client.organization_params)
 
     response, request_body = client.template_access_policy_rule_edit_request(
-        organization,
-        template_name,
-        access_policy_name,
-        access_policy_rule_args.get("rule_name", ""),
-        access_policy_rule_args.get("description", ""),
-        access_policy_rule_args.get("tags", []),
-        access_policy_rule_args.get("source_address_objects", []),
-        access_policy_rule_args.get("destination_address_objects", []),
-        access_policy_rule_args.get("url_reputation", []),
-        access_policy_rule_args.get("predefined_application", []),
-        access_policy_rule_args.get("user_defined_application", []),
-        access_policy_rule_args.get("custom_url_categories", []),
+        organization, template_name, access_policy_name, **access_policy_rule_args
     )
 
     command_results = CommandResults(
@@ -2754,18 +2736,7 @@ def appliance_access_policy_rule_create_command(client: Client, args: Dict[str, 
 
     try:
         response, request_body = client.appliance_access_policy_rule_create_request(
-            organization,
-            appliance_name,
-            access_policy_name,
-            access_policy_rule_args.get("rule_name", ""),
-            access_policy_rule_args.get("description", ""),
-            access_policy_rule_args.get("tags", []),
-            access_policy_rule_args.get("source_address_objects", []),
-            access_policy_rule_args.get("destination_address_objects", []),
-            access_policy_rule_args.get("url_reputation", []),
-            access_policy_rule_args.get("predefined_application", []),
-            access_policy_rule_args.get("user_defined_application", []),
-            access_policy_rule_args.get("custom_url_categories", []),
+            organization, appliance_name, access_policy_name, **access_policy_rule_args
         )
     except DemistoException as e:
         if e.res.status_code == 409:
@@ -2792,18 +2763,7 @@ def appliance_access_policy_rule_edit_command(client: Client, args: Dict[str, An
     organization = set_organization(organization_args, client.organization_params)
 
     response, request_body = client.appliance_access_policy_rule_edit_request(
-        organization,
-        appliance_name,
-        access_policy_name,
-        access_policy_rule_args.get("rule_name", ""),
-        access_policy_rule_args.get("description", ""),
-        access_policy_rule_args.get("tags", []),
-        access_policy_rule_args.get("source_address_objects", []),
-        access_policy_rule_args.get("destination_address_objects", []),
-        access_policy_rule_args.get("url_reputation", []),
-        access_policy_rule_args.get("predefined_application", []),
-        access_policy_rule_args.get("user_defined_application", []),
-        access_policy_rule_args.get("custom_url_categories", []),
+        organization, appliance_name, access_policy_name, **access_policy_rule_args
     )
 
     command_results = CommandResults(
@@ -2905,22 +2865,7 @@ def template_sdwan_policy_rule_create_command(client: Client, args: Dict[str, An
 
     try:
         response, request_body = client.template_sdwan_policy_rule_create_request(
-            organization,
-            template_name,
-            sdwan_policy_name,
-            sdwan_policy_rule_args.get("rule_name", ""),
-            sdwan_policy_rule_args.get("description", ""),
-            sdwan_policy_rule_args.get("tags", []),
-            sdwan_policy_rule_args.get("source_address_objects", []),
-            sdwan_policy_rule_args.get("destination_address_objects", []),
-            sdwan_policy_rule_args.get("url_reputation", []),
-            sdwan_policy_rule_args.get("custom_url_categories", []),
-            sdwan_policy_rule_args.get("forwarding_action", ""),
-            sdwan_policy_rule_args.get("nexthop_ip", ""),
-            sdwan_policy_rule_args.get("routing_instance", ""),
-            sdwan_policy_rule_args.get("forwarding_profile", ""),
-            sdwan_policy_rule_args.get("predefined_application", []),
-            sdwan_policy_rule_args.get("user_defined_application", []),
+            organization, template_name, sdwan_policy_name, **sdwan_policy_rule_args
         )
     except DemistoException as e:
         if e.res.status_code == 409:
@@ -2947,23 +2892,7 @@ def template_sdwan_policy_rule_edit_command(client: Client, args: Dict[str, Any]
     sdwan_policy_rule_args = get_sdwan_policy_rule_args_with_possible_custom_rule_json(args)
 
     response, request_body = client.template_sdwan_policy_rule_edit_request(
-        organization,
-        template_name,
-        sdwan_policy_name,
-        sdwan_policy_rule_args.get("rule_name", ""),
-        sdwan_policy_rule_args.get("description", ""),
-        sdwan_policy_rule_args.get("tags", []),
-        sdwan_policy_rule_args.get("rule_disable", ""),
-        sdwan_policy_rule_args.get("source_address_objects", []),
-        sdwan_policy_rule_args.get("destination_address_objects", []),
-        sdwan_policy_rule_args.get("url_reputation", []),
-        sdwan_policy_rule_args.get("custom_url_categories", []),
-        sdwan_policy_rule_args.get("forwarding_action", ""),
-        sdwan_policy_rule_args.get("nexthop_ip", ""),
-        sdwan_policy_rule_args.get("routing_instance", ""),
-        sdwan_policy_rule_args.get("forwarding_profile", ""),
-        sdwan_policy_rule_args.get("predefined_application", []),
-        sdwan_policy_rule_args.get("user_defined_application", []),
+        organization, template_name, sdwan_policy_name, **sdwan_policy_rule_args
     )
 
     command_results = CommandResults(
@@ -3068,22 +2997,7 @@ def appliance_sdwan_policy_rule_create_command(client: Client, args: Dict[str, A
 
     try:
         response, request_body = client.appliance_sdwan_policy_rule_create_request(
-            organization,
-            appliance_name,
-            sdwan_policy_name,
-            sdwan_policy_rule_args.get("rule_name", ""),
-            sdwan_policy_rule_args.get("description", ""),
-            sdwan_policy_rule_args.get("tags", []),
-            sdwan_policy_rule_args.get("source_address_objects", []),
-            sdwan_policy_rule_args.get("destination_address_objects", []),
-            sdwan_policy_rule_args.get("url_reputation", []),
-            sdwan_policy_rule_args.get("custom_url_categories", []),
-            sdwan_policy_rule_args.get("forwarding_action", ""),
-            sdwan_policy_rule_args.get("nexthop_ip", ""),
-            sdwan_policy_rule_args.get("routing_instance", ""),
-            sdwan_policy_rule_args.get("forwarding_profile", ""),
-            sdwan_policy_rule_args.get("predefined_application", []),
-            sdwan_policy_rule_args.get("user_defined_application", []),
+            organization, appliance_name, sdwan_policy_name, **sdwan_policy_rule_args
         )
     except DemistoException as e:
         if e.res.status_code == 409:
@@ -3109,23 +3023,7 @@ def appliance_sdwan_policy_rule_edit_command(client: Client, args: Dict[str, Any
     sdwan_policy_rule_args = get_sdwan_policy_rule_args_with_possible_custom_rule_json(args)
 
     response, request_body = client.appliance_sdwan_policy_rule_edit_request(
-        organization,
-        appliance_name,
-        sdwan_policy_name,
-        sdwan_policy_rule_args.get("rule_name", ""),
-        sdwan_policy_rule_args.get("description", ""),
-        sdwan_policy_rule_args.get("tags", []),
-        sdwan_policy_rule_args.get("rule_disable", ""),
-        sdwan_policy_rule_args.get("source_address_objects", []),
-        sdwan_policy_rule_args.get("destination_address_objects", []),
-        sdwan_policy_rule_args.get("url_reputation", []),
-        sdwan_policy_rule_args.get("custom_url_categories", []),
-        sdwan_policy_rule_args.get("forwarding_action", ""),
-        sdwan_policy_rule_args.get("nexthop_ip", ""),
-        sdwan_policy_rule_args.get("routing_instance", ""),
-        sdwan_policy_rule_args.get("forwarding_profile", ""),
-        sdwan_policy_rule_args.get("predefined_application", []),
-        sdwan_policy_rule_args.get("user_defined_application", []),
+        organization, appliance_name, sdwan_policy_name, **sdwan_policy_rule_args
     )
 
     command_results = CommandResults(
@@ -3736,7 +3634,6 @@ def main() -> None:
                 client._headers = {"Authorization": f"Bearer {new_token}"}
 
         commands = {
-            "test-module": test_module,
             "vd-auth-start": handle_auth_token_command,
             "vd-auth-test": auth_test_command,
             "vd-appliance-list": appliance_list_command,
@@ -3747,7 +3644,6 @@ def main() -> None:
             "vd-template-list": template_list_by_organization_command,
             "vd-datastore-template-list": template_list_by_datastore_command,
             "vd-application-service-template-list": application_service_template_list_command,
-            "vd-template-change-commit": template_change_commit_command,
             "vd-template-custom-url-category-list": template_custom_url_category_list_command,
             "vd-template-custom-url-category-create": template_custom_url_category_create_command,
             "vd-template-custom-url-category-edit": template_custom_url_category_edit_command,

@@ -16,6 +16,7 @@ def client():
         organization_params="",
         client_id_param="",
         client_secret_param="",
+        use_basic_auth_param=True,
     )
 
 
