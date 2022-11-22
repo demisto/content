@@ -40,9 +40,9 @@ class GoogleSecreteManagerModule:
             cur_directory_path = os.getcwd()
             credentials_file_name = f'{datetime.now().strftime("%m-%d-%Y,%H:%M:%S:%f")}.json'
             credentials_file_path = os.path.join(cur_directory_path, credentials_file_name)
-            json_object = json.loads(service_account)
+            json_object = json5.loads(service_account)
             f = open(credentials_file_path, "w")
-            f.write(json.dumps(json_object))
+            f.write(json5.dumps(json_object))
             f.close()
             client = secretmanager.SecretManagerServiceClient.from_service_account_json(credentials_file_path)
             return client
