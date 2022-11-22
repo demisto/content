@@ -15,7 +15,7 @@ Basic authentication method based on ***Username*** and ***Password*** parameter
 2. Check the ***Use Basic Authentication*** checkbox.
 
 ### Auth Token:
-
+- **NOTE: ***Auth Client*** is represented with ***CLIENT ID*** and ***Client Secret*** parameters/arguments.**
 #### There are 3 methods to use Auth Token authentication:
 
 ##### 1. If an Auth Client already exists, and ***Client ID***, ***Client Secret*** are available:
@@ -25,7 +25,7 @@ Basic authentication method based on ***Username*** and ***Password*** parameter
 
 ##### 2. If an Auth Client does not exist, and ***Client ID***, ***Client Secret*** are not available:
 1. Check the ***Use Basic Authentication*** checkbox.
-1. Run  `vd-auth-start` command, passing ***Token Name*** argument (if ***Token Name*** is not passed, a default name will be used - this may cause conflicts if an Auth Client already created with the same name).
+1. Run  `vd-auth-start` command, passing ***Auth Client Name*** argument (if ***Auth Client Name*** is not passed, a default name will be used - this may cause conflicts if an Auth Client already created with the same name).
 2. The command will create a new Auth Client, and will generate a new Auth Token using the newly created Auth Client, displaying ***Client ID*** and ***Client Name*** in a message for later use.
 3. Uncheck the ***Use Basic Authentication*** checkbox.
    
