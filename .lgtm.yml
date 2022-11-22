@@ -1,6 +1,0 @@
-path_classifiers:
-  test:
-    - "**/*_test.py"
-queries:
-  # exclude polluting-import as this is how we import from demistomock and CommonServerPython
-  - exclude: py/polluting-import
