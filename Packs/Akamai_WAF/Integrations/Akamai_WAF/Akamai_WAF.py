@@ -1170,7 +1170,6 @@ class Client(BaseClient):
             <Response [201]>
             The response provides a URL link to the newly created property.
         """
-        body = body
 
         headers = {
             "Accept": 'application/vnd.akamai.papirules.latest+json',
@@ -3637,7 +3636,7 @@ def patch_papi_property_rule_origin_command(client: Client,
     Returns:
         human readable (markdown format), entry context and raw response
     """
-
+    body = []
     time.sleep(int(sleep_time))
     if path == "/rules/behaviors":
         body = [
@@ -3681,7 +3680,7 @@ def patch_papi_property_rule_origin_command(client: Client,
             {
                 "op": operation,
                 "path": path,
-                "value": {
+                "value": [{
                     "name": f"Origin for {external_url}",
                     "children": [],
                     "behaviors": [
@@ -3726,7 +3725,7 @@ def patch_papi_property_rule_origin_command(client: Client,
                         }
                     ],
                     "criteriaMustSatisfy": "all"
-                }
+                }]
             }
         ]
 
