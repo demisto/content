@@ -1,5 +1,5 @@
 Enrich and analyze any domain, URL, or IP. Pivot to search on data points and linked indicators to investigate risky properties.
-This integration was integrated and tested with version xx of Pulsedive
+This integration was integrated and tested with version 5.1.15 of Pulsedive
 
 ## Configure Pulsedive on Cortex XSOAR
 
