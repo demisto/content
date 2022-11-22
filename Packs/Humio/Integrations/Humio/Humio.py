@@ -234,38 +234,69 @@ def humio_delete_alert(client, args, headers):
     else:
         raise ValueError("Error:" + " response from server was: " + str(response.text))
 
-
 def humio_list_notifiers(client, args, headers):
-    data: Dict[str, str] = {}
-    url = "/api/v1/repositories/" + args.get("repository") + "/alertnotifiers"
+    url = "/graphql"
     headers["Accept"] = "application/json"
-    response = client.http_request("GET", url, data, headers)
+
+    graphql_query = """
+    query{searchDomain(name:"{repoName}"){actions{__typename,id, name 
+        ... on EmailAction{id, name, recipients, subjectTemplate, emailBodyTemplate: bodyTemplate, useProxy, attachCsv}
+        ... on SlackAction{url, fields{fieldName, value}, useProxy}
+        ... on SlackPostMessageAction{apiToken, channels, fields{fieldName, value}, useProxy}
+        ... on WebhookAction{method, url, webhookBodyTemplate: bodyTemplate, headers{header,value}, ignoreSSL, useProxy}
+        ... on OpsGenieAction{apiUrl, genieKey, useProxy}
+        ... on VictorOpsAction{messageType, notifyUrl, useProxy}
+        ... on PagerDutyAction{severity, routingKey, useProxy}
+        ... on HumioRepoAction{ingestToken}
+        ... on UploadFileAction{fileName}}}}
+    """.format(repoName=args.get("repository"))
+
+    data = {"query" : graphql_query}
+    json_data = json.dumps(data)
+
+    response = client.http_request("POST", url, json_data, headers).json()
+
     if response.status_code == 200:
-        result = response.json()
-        markdown = tableToMarkdown("Humio Notifiers", result, removeNull=True)
-        outputs = {"Humio.Notifier(val.id == obj.id)": result}
-        return markdown, outputs, result
+        if not response.get("data"):
+            raise ValueError(f"Failed to execute request: {response['errors'][0]['message']}")
+    
+        actions = response["data"]["actions"]
+        markdown = tableToMarkdown("Humio Notifiers", actions, removeNull=True)
+        outputs = {"Humio.Notifier(val.id == obj.id)": actions}
+        return markdown, outputs, actions
     else:
         raise ValueError("Error:" + " response from server was: " + str(response.text))
 
-
 def humio_get_notifier_by_id(client, args, headers):
-    data: Dict[str, str] = {}
-    url = (
-        "/api/v1/repositories/"
-        + args.get("repository")
-        + "/alertnotifiers/"
-        + args.get("id")
-    )
+    url = "/graphql"
+    graphql_query = """
+    query{searchDomain(name:"{repoName}"){action(id:"{id}"){__typename,id, name 
+        ... on EmailAction{id, name, recipients, subjectTemplate, emailBodyTemplate: bodyTemplate, useProxy, attachCsv}
+        ... on SlackAction{url, fields{fieldName, value}, useProxy}
+        ... on SlackPostMessageAction{apiToken, channels, fields{fieldName, value}, useProxy}
+        ... on WebhookAction{method, url, webhookBodyTemplate: bodyTemplate, headers{header,value}, ignoreSSL, useProxy}
+        ... on OpsGenieAction{apiUrl, genieKey, useProxy}
+        ... on VictorOpsAction{messageType, notifyUrl, useProxy}
+        ... on PagerDutyAction{severity, routingKey, useProxy}
+        ... on HumioRepoAction{ingestToken}
+        ... on UploadFileAction{fileName}}}}
+    """.format(repoName=args.get("repository"), id=args.get("id"))
+
+
     headers["Accept"] = "application/json"
-    response = client.http_request("GET", url, data, headers)
-    if response.status_code == 200:
-        if not response.text:
-            raise ValueError("Notifier with id " + str(args.get("id")) + " not found")
-        result = response.json()
-        markdown = tableToMarkdown("Humio Notifiers", result, removeNull=True)
-        outputs = {"Humio.Notifier(val.id == obj.id)": result}
-        return markdown, outputs, result
+
+    data = {"query" : graphql_query}
+    json_data = json.dumps(data)
+
+    response = client.http_request("POST", url, json_data, headers).json()
+    if response.status_code == 200:        
+        if not response.get("data"):
+            raise ValueError(f"Failed to execute request: {response['errors'][0]['message']}")
+        
+        actions = response["data"]["action"]
+        markdown = tableToMarkdown("Humio Notifiers", actions, removeNull=True)
+        outputs = {"Humio.Notifier(val.id == obj.id)": actions}
+        return markdown, outputs, actions
     else:
         raise ValueError("Error:" + " response from server was: " + str(response.text))
 
