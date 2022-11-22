@@ -3,7 +3,6 @@ import io
 import json
 import re
 from datetime import datetime, timedelta
-import ssl
 
 import dateparser  # type: ignore
 import demistomock as demisto  # noqa: F401
@@ -14,10 +13,8 @@ import splunklib.results as results
 import urllib3
 from CommonServerPython import *  # noqa: F401
 from splunklib.binding import AuthenticationError, HTTPError, namespace
-import http.client as httplib
-urllib3.disable_warnings()
 
-CONNECTION = None
+urllib3.disable_warnings()
 
 # Define utf8 as default encoding
 params = demisto.params()
@@ -1885,18 +1882,17 @@ def parse_notable(notable, to_dict=False):
     return dict(notable) if to_dict else notable
 
 
-def httplib_handler(url, message, **kwargs):
-    if not CONNECTION:
-        return
+def requests_handler(url, message, **kwargs):
     method = message['method'].lower()
     data = message.get('body', '') if method == 'post' else None
     headers = dict(message.get('headers', []))
     try:
-        response = CONNECTION.request(
+        response = requests.request(
             method,
             url,
-            body=data,
+            data=data,
             headers=headers,
+            verify=VERIFY_CERTIFICATE,
             **kwargs
         )
     except requests.exceptions.HTTPError as e:
@@ -2579,7 +2575,6 @@ def get_connection_args():
 
 
 def main():
-    global CONNECTION
     command = demisto.command()
     params = demisto.params()
 
@@ -2592,8 +2587,6 @@ def main():
     connection_args = get_connection_args()
 
     base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
-    context = ssl._create_unverified_context() if not VERIFY_CERTIFICATE else None
-    CONNECTION = httplib.HTTPSConnection(base_url, context=context)
     auth_token = None
     username = demisto.params()['authentication']['identifier']
     password = demisto.params()['authentication']['password']
@@ -2607,7 +2600,7 @@ def main():
 
     if proxy:
         handle_proxy()
-        connection_args['handler'] = httplib_handler
+        connection_args['handler'] = requests_handler
 
     service = client.connect(**connection_args)
 
