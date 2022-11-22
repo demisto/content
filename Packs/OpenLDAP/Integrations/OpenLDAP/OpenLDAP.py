@@ -122,7 +122,7 @@ class LdapClient:
 
         else:  # By default we don't set a specific version
             version = None
-            demisto.info(f"SSL/TLS protocol version is None (default).")
+            demisto.info("SSL/TLS protocol version is None (default).")
 
         return version
 
@@ -447,7 +447,7 @@ class LdapClient:
         """
             Performs simple bind operation on ldap server.
         """
-        if self._ldap_server_vendor == self.OPENLDAP: # TODO: need to solve the call from the test-module
+        if self._ldap_server_vendor == self.OPENLDAP:  # TODO: need to solve the call from the test-module
             is_valid_dn, _ = LdapClient._is_valid_dn(username, self.USER_IDENTIFIER_ATTRIBUTE)
             if not is_valid_dn:  # the username is a user and not a full DN
                 username = f'{self.USER_IDENTIFIER_ATTRIBUTE}={username},{self._base_dn}'
