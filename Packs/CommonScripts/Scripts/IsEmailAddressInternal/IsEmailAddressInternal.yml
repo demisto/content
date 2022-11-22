@@ -40,6 +40,6 @@ outputs:
 scripttarget: 0
 runonce: false
 fromversion: 5.0.0
-dockerimage: devdemisto/py3-primary:8.1.0.37698
+dockerimage: devdemisto/py3-primary:8.1.0.37703
 tests:
 - No tests (auto formatted)

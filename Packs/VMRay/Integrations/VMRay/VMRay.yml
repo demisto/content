@@ -1214,7 +1214,7 @@ script:
     description: Retrieves a sample using the sample ID. (Deprecated)
     execution: false
     name: upload_sample
-  dockerimage: devdemisto/py3-primary:8.1.0.37698
+  dockerimage: devdemisto/py3-primary:8.1.0.37703
   feed: false
   isfetch: false
   longRunning: false

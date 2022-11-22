@@ -2,7 +2,7 @@ comment: Gets all currently enabled integration instances.
 commonfields:
   id: GetEnabledInstances
   version: -1
-dockerimage: devdemisto/py3-primary:8.1.0.37698
+dockerimage: devdemisto/py3-primary:8.1.0.37703
 enabled: true
 name: GetEnabledInstances
 outputs:

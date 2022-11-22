@@ -113,7 +113,7 @@ tags:
 - ml
 timeout: '0'
 type: python
-dockerimage: devdemisto/py3-primary:8.1.0.37698
+dockerimage: devdemisto/py3-primary:8.1.0.37703
 fromversion: 5.0.0
 tests:
 - VerifyOOBV2Predictions-Test

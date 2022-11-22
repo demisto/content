@@ -25,7 +25,7 @@ outputs:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: devdemisto/py3-primary:8.1.0.37698
+dockerimage: devdemisto/py3-primary:8.1.0.37703
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)

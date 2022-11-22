@@ -18,6 +18,6 @@ scripttarget: 0
 comment: |-
   Use this script to avoid DB version errors when simultaneously running multiple linked incidents.
 fromversion: 5.0.0
-dockerimage: devdemisto/py3-primary:8.1.0.37698
+dockerimage: devdemisto/py3-primary:8.1.0.37703
 tests:
 - No tests (auto formatted)

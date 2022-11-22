@@ -11,7 +11,7 @@ type: python
 tags:
 - dynamic-section
 subtype: python3
-dockerimage: devdemisto/py3-primary:8.1.0.37698
+dockerimage: devdemisto/py3-primary:8.1.0.37703
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

@@ -7,7 +7,7 @@ comment: |-
 commonfields:
   id: CollectCampaignRecipients
   version: -1
-dockerimage: devdemisto/py3-primary:8.1.0.37698
+dockerimage: devdemisto/py3-primary:8.1.0.37703
 enabled: true
 name: CollectCampaignRecipients
 runonce: false

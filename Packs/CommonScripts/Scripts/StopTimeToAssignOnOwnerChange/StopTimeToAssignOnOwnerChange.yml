@@ -21,4 +21,4 @@ runonce: false
 runas: DBotWeakRole
 tests:
 - SLA Scripts - Test
-dockerimage: devdemisto/py3-primary:8.1.0.37698
+dockerimage: devdemisto/py3-primary:8.1.0.37703

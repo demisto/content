@@ -20,7 +20,7 @@ args:
     to match.
 scripttarget: 0
 runonce: false
-dockerimage: devdemisto/py3-primary:8.1.0.37698
+dockerimage: devdemisto/py3-primary:8.1.0.37703
 runas: DBotWeakRole
 tests:
 - No test - unit test
