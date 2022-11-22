@@ -176,8 +176,6 @@ def search_command():
 
 
 def ip_command():
-    command_results: List[CommandResults] = []
-
     ip = demisto.args()['ip']
 
     res = http_request('GET', f'/shodan/host/{ip}')
@@ -222,12 +220,6 @@ def ip_command():
             relationships=relationships_list
         )
 
-        command_results.append(CommandResults(
-            raw_response=res,
-            indicator=ip_details,
-            outputs_prefix='IP'
-        ))
-
         shodan_ip_details = {
             'Tag': res.get('tags', []),
             'Latitude': res.get('latitude', 0.0),
@@ -243,24 +235,31 @@ def ip_command():
             'Vulnerabilities': vulns_list
         }
 
-        human_readable = tableToMarkdown(f'Shodan details for IP {ip}', {
+        title = f'Shodan details for IP {ip}'
+
+        human_readable = {
             'Country': res.get('country_name', ''),
             'Location': location,
             'ASN': res.get('asn', ''),
             'ISP': res.get('isp', ''),
             'Ports': ', '.join([str(x) for x in res.get('ports', [])]),
             'Hostname': hostname
-        })
+        }
 
-        command_results.append(CommandResults(
-            readable_output=human_readable,
+        readable_output = tableToMarkdown(
+            name=title,
+            t=human_readable,
+            removeNull=True
+        )
+
+        return CommandResults(
+            readable_output=readable_output,
             raw_response=res,
             outputs=shodan_ip_details,
             relationships=relationships_list,
-            outputs_prefix='Shodan.IP'
-        ))
-
-        return command_results
+            outputs_prefix='Shodan.IP',
+            indicator=ip_details
+        )
 
 
 def shodan_search_count_command():
