@@ -61,5 +61,47 @@
             "severe": 0,
             "total": 0
         }
+    },
+    {
+        "assets": 0,
+        "duration": "PT33.564S",
+        "endTime": "2019-12-04T00:20:55.763Z",
+        "engineId": 3,
+        "engineName": "Local scan engine",
+        "id": 4,
+        "scanName": "Wed 04 Dec 2019 02:20 AM",
+        "scanType": "Manual",
+        "siteId": 1,
+        "siteName": "Test",
+        "startTime": "2019-12-04T00:20:22.199Z",
+        "startedByUsername": "N/A",
+        "status": "finished",
+        "vulnerabilities": {
+            "critical": 0,
+            "moderate": 0,
+            "severe": 0,
+            "total": 0
+        }
+    },
+    {
+        "assets": 0,
+        "duration": "PT30.505S",
+        "endTime": "2019-12-04T00:44:14.576Z",
+        "engineId": 3,
+        "engineName": "Local scan engine",
+        "id": 5,
+        "scanName": "Wed 04 Dec 2019 02:43 AM",
+        "scanType": "Manual",
+        "siteId": 1,
+        "siteName": "Test",
+        "startTime": "2019-12-04T00:43:44.071Z",
+        "startedByUsername": "N/A",
+        "status": "finished",
+        "vulnerabilities": {
+            "critical": 0,
+            "moderate": 0,
+            "severe": 0,
+            "total": 0
+        }
     }
 ]

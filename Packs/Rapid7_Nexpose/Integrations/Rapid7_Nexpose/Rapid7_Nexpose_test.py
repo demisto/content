@@ -429,6 +429,20 @@ def test_get_scan_command(mocker, mock_client: Client, api_mock_file: str, ids_i
 
 @pytest.mark.parametrize("api_mock_file, expected_output_context_file",
                          [
+                             ("client_get_scans", "get_scans_command")
+                         ])
+def test_get_scans_command(mocker, mock_client: Client, api_mock_file: str, expected_output_context_file: str):
+    api_data = load_test_data("api_mock", api_mock_file)
+    mocker.patch.object(Client, "_paged_http_request", return_value=api_data)
+
+    expected_output_context = load_test_data("expected_context", expected_output_context_file)
+
+    result = get_scans_command(client=mock_client, active="false")
+    assert result.outputs == expected_output_context
+
+
+@pytest.mark.parametrize("api_mock_file, expected_output_context_file",
+                         [
                              ("client_get_sites", "get_sites_command")
                          ])
 def test_get_sites_command(mocker, mock_client: Client, api_mock_file: str, expected_output_context_file: str):

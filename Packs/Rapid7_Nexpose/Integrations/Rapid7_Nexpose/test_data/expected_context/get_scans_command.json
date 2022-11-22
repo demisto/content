@@ -61,5 +61,47 @@
         "TotalTime": "28.904 seconds",
         "Completed": "2019-12-03T21:01:33.970Z",
         "Status": "finished"
+    },
+    {
+        "engineId": 3,
+        "engineName": "Local scan engine",
+        "siteId": 1,
+        "siteName": "Test",
+        "startTime": "2019-12-04T00:20:22.199Z",
+        "startedByUsername": "N/A",
+        "vulnerabilities": {
+            "critical": 0,
+            "moderate": 0,
+            "severe": 0,
+            "total": 0
+        },
+        "Id": 4,
+        "ScanType": "Manual",
+        "ScanName": "Wed 04 Dec 2019 02:20 AM",
+        "Assets": 0,
+        "TotalTime": "33.564 seconds",
+        "Completed": "2019-12-04T00:20:55.763Z",
+        "Status": "finished"
+    },
+    {
+        "engineId": 3,
+        "engineName": "Local scan engine",
+        "siteId": 1,
+        "siteName": "Test",
+        "startTime": "2019-12-04T00:43:44.071Z",
+        "startedByUsername": "N/A",
+        "vulnerabilities": {
+            "critical": 0,
+            "moderate": 0,
+            "severe": 0,
+            "total": 0
+        },
+        "Id": 5,
+        "ScanType": "Manual",
+        "ScanName": "Wed 04 Dec 2019 02:43 AM",
+        "Assets": 0,
+        "TotalTime": "30.505 seconds",
+        "Completed": "2019-12-04T00:44:14.576Z",
+        "Status": "finished"
     }
 ]
