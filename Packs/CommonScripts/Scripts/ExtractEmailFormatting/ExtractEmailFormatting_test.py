@@ -41,8 +41,7 @@ def test_verify_is_email(address, valid):
     assert verify_is_email(address) is valid
 
 
-@pytest.mark.parametrize('input,output', [  # noqa: E501 disable-secrets-detection
-    # no processing needed
+@pytest.mark.parametrize('input,output', [  # noqa: E501 disable-secrets-detection # no processing needed
     ('\\u003ctest@test.com', 'test@test.com'),
 ])  # noqa: E124
 
