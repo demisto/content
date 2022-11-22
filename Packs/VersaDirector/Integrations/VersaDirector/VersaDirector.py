@@ -3610,7 +3610,7 @@ def test_module(
     Returns ok if successful.
     """
 
-    case_client_id_and_client_secret = bool((client_id) and (client_secret))
+    case_client_id_and_client_secret = bool(client_id and client_secret)
     case_not_client_id_and_not_client_secret = bool(not client_id and not client_secret)
     case_missing_client_id_or_client_secret = bool(not client_id or not client_secret)
     case_missing_username_or_password = bool(not username or not password)
@@ -3802,8 +3802,6 @@ def main() -> None:
             raise e
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
-
-
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

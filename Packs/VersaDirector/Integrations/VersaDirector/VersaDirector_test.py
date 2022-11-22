@@ -41,7 +41,7 @@ def test_handle_auth_token_command(mocker, client):
     mocker.patch.object(
         client, "auth_credentials_request", return_value={"client_id": "client_id_mock", "client_secret": "client_secret_mock"}
     )
-    command_result = handle_auth_token_command(client, args={"token_name": "token_name_mock"})
+    command_result = handle_auth_token_command(client, args={"auth_client_name": "token_name_mock"})
     assert command_result.readable_output == (
         "Auth Client Created Successfully.\nClient ID: client_id_mock, Auth Client Name: token_name_mock.\n\n"
         + "Authentication request was successful, Auth Token was created and saved in the Integration Context.\n"
