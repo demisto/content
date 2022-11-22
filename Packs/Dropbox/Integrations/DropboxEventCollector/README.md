@@ -25,7 +25,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ### dropbox-auth-start
 ***
-Starts the authentication.
+Run this command to start the authorization process and follow the instructions in the command results. This command generates a link. By clicking the link, you get a code for the dropbox-auth-complete command.
 
 
 #### Base Command
@@ -41,7 +41,7 @@ There is no context output for this command.
 
 ### dropbox-auth-complete
 ***
-Completes the authentication.
+Run this command to complete the authorization process. Should be used after running the dropbox-auth-start command.
 
 
 #### Base Command
@@ -60,8 +60,9 @@ There is no context output for this command.
 
 ### dropbox-auth-test
 ***
-Tests the authentication.
+Run this command to test the connectivity to Dropbox. 
 
+***Note: Use this command instead of the Test button in the UI.*** 
 
 #### Base Command
 
