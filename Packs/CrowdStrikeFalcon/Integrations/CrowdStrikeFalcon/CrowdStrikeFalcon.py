@@ -9,10 +9,8 @@ import json
 from enum import Enum
 from threading import Timer
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
-
 import requests
 from dateutil.parser import parse
-
 # Disable insecure warnings
 import urllib3
 urllib3.disable_warnings()
@@ -3864,19 +3862,18 @@ def get_detection_for_incident_command(incident_id: str) -> CommandResults:
                           raw_response=detection_res)
 
 
-def cs_falcon_spotlight_search_vulnerability_command(args: dict):
+def cs_falcon_spotlight_search_vulnerability_command_try(args: dict):
     """
         Get a list of vulnerability by spotlight
         : args: filter which include params or filter param.
         : return: a list of vulnerabilities according to the user.
     """
-    endpoint_url = '/spotlight/combined/vulnerabilities/v1'
+    endpoint_url = '/spotlight/combined/vulnerabilities/v1?'
     if len(args) == 0:
         raise ValueError('Must insert at least one filter param or filter string')
-    elif args.get('filter'):
-        params = assign_params(filter=args.get('filter'))
     else:
         params = assign_params(
+            filter=args.get('filter'),
             aid=args.get('aid'),
             cve_id=args.get('cve_id'),
             cve_severity=args.get('cve_severity'),
@@ -3890,20 +3887,83 @@ def cs_falcon_spotlight_search_vulnerability_command(args: dict):
             display_remediation_info=args.get('display_remediation_info'),
             display_evaluation_logic_info=args.get('display_evaluation_logic_info'),
             display_host_info=args.get('display_host_info'),
-            limit=args.get('limit')
-        )
+            limit=args.get('limit'))
+        for param, val in params:
+            if type(val) == str:
+                endpoint_url = f'{endpoint_url}+'
+                
+                
+                
     vulnerability_response = http_request('GET', endpoint_url, params=params)
-
+    headers = ['ID']
     outputs = []
     for vulnerability in vulnerability_response.get('resources'):
-        outputs.append({'id': vulnerability.get('id'),
+        outputs.append({'ID': vulnerability.get('id'),
                         'cid': vulnerability.get('cid'),
                         'aid': vulnerability.get('aid'),
                         'created_timestamp': vulnerability.get('created_timestamp'),
                         'updated_timestamp': vulnerability.get('updated_timestamp')})
-    human_readable = tableToMarkdown()
+    human_readable = tableToMarkdown("Name", outputs, headers=headers,)
     return CommandResults(raw_response=vulnerability_response.get('resources'),
                           readable_output=outputs, outputs=outputs,
+                          outputs_prefix="CrowdStrike.VulnerabilityHost", outputs_key_field="id")
+
+
+'''
+for param, param_value in params:
+    if isinstance(param_value,list):
+        values_with_operator = ''
+        for arg in param_value:
+            values_with_operator = values_with_operator
+             
+        params[param] = 
+
+'''
+
+
+def cs_falcon_spotlight_search_vulnerability_command(args: dict):
+    """
+        Get a list of vulnerability by spotlight
+        : args: filter which include params or filter param.
+        : return: a list of vulnerabilities according to the user.
+    """
+    endpoint_url = '/spotlight/combined/vulnerabilities/v1'
+    if not args:
+        raise ValueError('Must insert at least one filter param or filter string')
+    else:
+        params = assign_params(
+            filter=args.get('filter'),
+            aid=argToList(args.get('aid')),
+            cve_id=argToList(args.get('cve_id')),
+            cve_severity=argToList(args.get('cve_severity')),
+            tags=argToList(args.get('tags')),
+            status=argToList(args.get('status')),
+            platform_name=args.get('platform_name'),
+            host_group=argToList(args.get('host_group')),
+            host_type=argToList(args.get('host_type')),
+            last_seen_within=args.get('last_seen_within'),
+            is_suppressed=args.get('is_suppressed'),
+            display_remediation_info=args.get('display_remediation_info'),
+            display_evaluation_logic_info=args.get('display_evaluation_logic_info'),
+            display_host_info=args.get('display_host_info'),
+            limit=args.get('limit'))
+    vulnerability_response = http_request('GET', endpoint_url, params=params)
+    headers = ['cve_id', 'ID', 'CID', 'AID', 'Status', 'Created_Timestamp', 'Updated_Timestamp']
+    outputs = []
+    for vulnerability in vulnerability_response.get('resources'):
+        outputs.append({'cve_id': vulnerability.get('cve', {}).get('id'),
+                        'ID': vulnerability.get('id'),
+                        'CID': vulnerability.get('cid'),
+                        'Status': vulnerability.get('status'),
+                        'AID': vulnerability.get('aid'),
+                        'Created_Timestamp': vulnerability.get('created_timestamp'),
+                        'Updated_Timestamp': vulnerability.get('updated_timestamp')})
+    print(outputs)
+    print("/n params")
+    print(params)
+    human_readable = tableToMarkdown("", outputs, headers=headers)
+    return CommandResults(raw_response=vulnerability_response.get('resources'),
+                          readable_output=human_readable, outputs=outputs,
                           outputs_prefix="CrowdStrike.VulnerabilityHost", outputs_key_field="id")
 
 

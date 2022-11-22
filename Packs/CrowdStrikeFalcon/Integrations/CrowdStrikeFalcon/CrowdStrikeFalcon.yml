@@ -2529,7 +2529,7 @@ script:
       name: tags
       isArray: true
       required: false
-    - description: Status of a vulnerability. The value must be entered in all lowercase letters. This filter supports multiple values and negation.
+    - description: Status of a vulnerability. This filter supports multiple values and negation(open, closed, reopen, expired)
       name: status
       isArray: true
       required: false
