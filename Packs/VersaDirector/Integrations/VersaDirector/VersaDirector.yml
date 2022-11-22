@@ -2242,8 +2242,8 @@ script:
   - name: vd-auth-start
     description: 'Obtain Access token from api client. If Client ID and Client Secret were not passed as parameters or arguments, a new Auth Client will be created.'
     arguments:
-    - name: token_name
-      description: 'Name of access token. If an excising token name will be given as argument, an error might occur.'
+    - name: auth_client_name
+      description: 'Name of Auth Client. If an excising Auth Client name will be given as argument, an error might occur.'
       required: false
       isArray: false
     - name: description

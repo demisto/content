@@ -305,9 +305,9 @@ class Client(BaseClient):
 
         return response
 
-    def auth_credentials_request(self, access_token: str, token_name: str, token_description: str):
+    def auth_credentials_request(self, access_token: str, auth_client_name: str, token_description: str):
         request_body = {
-            "name": token_name,
+            "name": auth_client_name,
             "description": token_description,
             "expires_at": "",
             "client_secret_expires_at": "",
@@ -1863,7 +1863,7 @@ def handle_auth_token_command(client: Client, args: Dict[str, Any]) -> CommandRe
     if not client._auth:
         raise DemistoException(message=BASIC_CREDENTIALS_COULD_NOT_START)
     username, password = client._auth
-    token_name = args.get("token_name", OAUTH_CLIENT)
+    auth_client_name = args.get("auth_client_name", OAUTH_CLIENT)
     token_description = args.get("description", OAUTH_CLIENT + " for Versa Director Integration")
     client_id = None
     client_secret = None
@@ -1894,7 +1894,7 @@ def handle_auth_token_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
             # stage 2: If successful, use the “Access_token” from the response as a “Bearer token”
             # authorization to created the desired "Auth Client"
-            response = client.auth_credentials_request(access_token, token_name, token_description)
+            response = client.auth_credentials_request(access_token, auth_client_name, token_description)
 
         except DemistoException as e:
             if e.res.status_code == 500:
@@ -1912,11 +1912,11 @@ def handle_auth_token_command(client: Client, args: Dict[str, Any]) -> CommandRe
         if not client_id or not client_secret:
             raise DemistoException(message=AUTH_INVALID_CREDENTIALS)
 
-        _outputs = {"client_id": client_id, "client_name": token_name}
+        _outputs = {"client_id": client_id, "client_name": auth_client_name}
         update_integration_auth_context(response)
 
         oauth_client_created_msg = (
-            f"Auth Client Created Successfully.\nClient ID: {client_id}, Auth Client Name: {token_name}.\n\n"
+            f"Auth Client Created Successfully.\nClient ID: {client_id}, Auth Client Name: {auth_client_name}.\n\n"
         )
 
     # stage 3: create an Auth Token using the Auth Client
