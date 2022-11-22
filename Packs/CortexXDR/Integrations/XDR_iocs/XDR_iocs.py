@@ -57,6 +57,7 @@ class Client:
     override_severity: bool = True
     severity: str = ''  # used when override_severity is True
     xsoar_severity_field: str = 'sourceoriginalseverity'  # used when override_severity is False
+    comments_field: str = 'comments'
     tag = 'Cortex XDR'
     tlp_color = None
     error_codes: Dict[int, str] = {
@@ -220,6 +221,20 @@ def demisto_types_to_xdr(_type: str) -> str:
         return xdr_type
 
 
+def _parse_ioc_comment(ioc: dict, comment_field_name: str) -> str | None:
+    values = ioc.get(comment_field_name, ())
+    if comment_field_name == 'comments':
+        # default behavior, take last comment's content value where type==IndicatorCommentRegular
+        last_comment: dict = next(
+            filter(lambda x: x.get('type') == 'IndicatorCommentRegular', reversed(values)), {}
+        )
+        return (last_comment).get('content')
+
+    else:
+        # custom comments field
+        return ','.join(argToList(values)) or None
+
+
 def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
     try:
         demisto.debug(f'Raw outgoing IOC: {ioc}')
@@ -230,12 +245,9 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
             'reputation': demisto_score_to_xdr.get(ioc.get('score', 0), 'UNKNOWN'),
             'expiration_date': demisto_expiration_to_xdr(ioc.get('expiration'))
         }
-        # get last 'IndicatorCommentRegular'
-        comment: Dict = next(
-            filter(lambda x: x.get('type') == 'IndicatorCommentRegular', reversed(ioc.get('comments', []))), {}
-        )
-        if comment:
-            xdr_ioc['comment'] = comment.get('content')
+        if (comment := _parse_ioc_comment(ioc, comment_field_name=Client.comments_field)):
+            demisto.debug(f'parsed comment value {comment}')
+            xdr_ioc['comment'] = comment
         if aggregated_reliability := ioc.get('aggregatedReliability'):
             xdr_ioc['reliability'] = aggregated_reliability[0]
         if vendors := demisto_vendors_to_xdr(ioc.get('moduleToFeedMap', {})):
@@ -554,7 +566,8 @@ def main():  # pragma: no cover
         Client.tag = tag
     if xsoar_severity_field := params.get('xsoar_severity_field'):
         Client.xsoar_severity_field = to_cli_name(xsoar_severity_field)
-
+    if xsoar_comment_field := params.get('xsoar_comments_field'):
+        Client.comments_field = xsoar_comment_field
     client = Client(params)
     commands = {
         'test-module': module_test,

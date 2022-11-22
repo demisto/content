@@ -123,6 +123,12 @@ configuration:
   required: false
   type: 0
   defaultvalue: 'sourceoriginalseverity'
+- additionalinfo: The XSOAR field where comments are stored. Default is `comments`, expecting an XSOAR IOC format of a comment (nested dictionary). Specifying a different field name assumes the field has a list of strings to be used as comments, or a comma-separated string.
+  display: XSOAR Comment Field
+  name: xsoar_comments_field
+  required: false
+  type: 0
+  defaultvalue: 'comments'
 - defaultvalue: 'true'
   additionalinfo: When enabled, the severity value will be taken from the `severity` parameter, regardless of the IOC severity value. Otherwise, the severity value will be taken according to the `xsoar_severity_field` parameter.
   display: Override severity
