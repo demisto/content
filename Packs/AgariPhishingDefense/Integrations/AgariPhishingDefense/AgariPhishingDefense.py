@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 """ IMPORTS """
 
 import dateparser
-import requests
 from requests import Response
 from typing import Dict, Any, Union, Tuple
 from requests.exceptions import (
@@ -16,10 +15,9 @@ from requests.exceptions import (
 )
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading
+import urllib3
 
-
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 """ CONSTANTS """
 
