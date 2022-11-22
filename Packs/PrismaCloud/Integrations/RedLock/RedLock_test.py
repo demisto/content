@@ -423,7 +423,7 @@ def test_alert_to_context(raw_alert, expected_result, set_args, mocker):
             - resource_keys argument is set to 'tags'
         Then
             - Validate that the function returns the expected context JSON
-            - Validate that the function returns the expected context JSON including the 'tags' element from the resource 
+            - Validate that the function returns the expected context JSON including the 'tags' element from the resource
     """
     from RedLock import alert_to_context
     if set_args:
