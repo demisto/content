@@ -421,6 +421,7 @@ class Build(ABC):
             integrations_to_configure = modified_integrations[:]
             integrations_to_configure.extend(unchanged_integrations)
             placeholders_map = {'%%SERVER_HOST%%': self.servers[0]}
+            logging.info(f'****************configure_server_instances***************')
             logging.info(f'self object: {self}')
             new_ints_params_set = set_integration_params(self,
                                                          new_integrations,
