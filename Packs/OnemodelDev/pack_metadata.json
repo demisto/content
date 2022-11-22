@@ -1,6 +1,7 @@
 {
-    "name": "OneModel",
-    "description": "OneModel",
+    "name": "OneModel (Deprecated)",
+    "description": "Deprecated. this pack purpose was for internal usage only",
+    "hidden": true,
     "support": "xsoar",
     "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",
