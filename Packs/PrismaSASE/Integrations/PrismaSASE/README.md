@@ -1,5 +1,5 @@
 Beta integration that provides commands for interaction with Prisma SASE API.
-This integration was integrated and tested with version 1.0 of Prisma SASE API.
+This integration was integrated and tested with version 1 of Prisma SASE API.
 
 ## Configure Prisma SASE (Beta) on Cortex XSOAR
 
@@ -8,12 +8,12 @@ This integration was integrated and tested with version 1.0 of Prisma SASE API.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
+    | ########-####-####-####-############ |
     | API Gateway URL |  | True |
     | API Client ID |  | True |
     | API Client Secret |  | True |
     | Use system proxy settings |  | False |
-    | Default Tenant Services Group ID to use for API calls. |  | False |
+    | Tenant Services Group ID | Default Tenant Services Group ID to use for API calls. Example: 1234567890 | False |
     | Prisma API OAUTH URL | URL that will be used to obtain OAUTH2 access token. | False |
     | Trust any certificate (not secure) |  | False |
 
@@ -62,24 +62,24 @@ Create a new security rule
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PrismaAccess.CreatedSecurityRule | unknown | Created security rule | 
-| PrismaAccess.CreatedSecurityRule.action | String |  | 
-| PrismaAccess.CreatedSecurityRule.application | String |  | 
-| PrismaAccess.CreatedSecurityRule.category | String |  | 
-| PrismaAccess.CreatedSecurityRule.description | String |  | 
-| PrismaAccess.CreatedSecurityRule.destination | String |  | 
-| PrismaAccess.CreatedSecurityRule.folder | String |  | 
-| PrismaAccess.CreatedSecurityRule.from | String |  | 
-| PrismaAccess.CreatedSecurityRule.id | String |  | 
-| PrismaAccess.CreatedSecurityRule.name | String |  | 
-| PrismaAccess.CreatedSecurityRule.position | String |  | 
-| PrismaAccess.CreatedSecurityRule.profile_setting.group | String |  | 
-| PrismaAccess.CreatedSecurityRule.service | String |  | 
-| PrismaAccess.CreatedSecurityRule.source | String |  | 
-| PrismaAccess.CreatedSecurityRule.source_user | String |  | 
-| PrismaAccess.CreatedSecurityRule.to | String |  | 
+| PrismaAccess.CreatedSecurityRule.action | String | Security rule action | 
+| PrismaAccess.CreatedSecurityRule.application | String | Security rule application | 
+| PrismaAccess.CreatedSecurityRule.category | String | Security rule category | 
+| PrismaAccess.CreatedSecurityRule.description | String | Security rule description | 
+| PrismaAccess.CreatedSecurityRule.destination | String | Security rule destination | 
+| PrismaAccess.CreatedSecurityRule.folder | String | Security rule folder | 
+| PrismaAccess.CreatedSecurityRule.from | String | Security rule from field \(source zone\(s\)\) | 
+| PrismaAccess.CreatedSecurityRule.id | String | Security rule id | 
+| PrismaAccess.CreatedSecurityRule.name | String | Security rule name | 
+| PrismaAccess.CreatedSecurityRule.position | String | Security rule position | 
+| PrismaAccess.CreatedSecurityRule.profile_setting.group | String | Security rule group | 
+| PrismaAccess.CreatedSecurityRule.service | String | Security rule service | 
+| PrismaAccess.CreatedSecurityRule.source | String | Security rule source | 
+| PrismaAccess.CreatedSecurityRule.source_user | String | Security rule source_user | 
+| PrismaAccess.CreatedSecurityRule.to | String | Security rule to field \(destination zone\(s\)\) | 
 
 #### Command example
-```!prisma-access-create-security-rule name="new-test-ruleB" action="deny" description="Test Rule Created by XSOAR" application="any" category="any" destination="XSOAR Test Object B" profile_setting="best-practice" service="application-default" source="XSOAR Test Object B" source_user="any" from="trust" to="any" folder="Shared" position="pre"```
+```!prisma-access-create-security-rule name="new-test-rule B" action="deny" description="Test Rule Created by XSOAR" application="any" category="any" destination="XSOAR Test Object" profile_setting="best-practice" service="application-default" source="XSOAR Test Object" source_user="any" from="trust" to="any" folder="Shared" position="pre"```
 #### Context Example
 ```json
 {
@@ -94,14 +94,14 @@ Create a new security rule
             ],
             "description": "Test Rule Created by XSOAR",
             "destination": [
-                "XSOAR Test Object B"
+                "XSOAR Test Object"
             ],
             "folder": "Shared",
             "from": [
                 "trust"
             ],
-            "id": "c680####-7d34-4c##-8b##-375baade####",
-            "name": "new-test-ruleB",
+            "id": "########-####-####-####-############",
+            "name": "new-test-rule B",
             "position": "pre",
             "profile_setting": {
                 "group": [
@@ -112,7 +112,7 @@ Create a new security rule
                 "application-default"
             ],
             "source": [
-                "XSOAR Test Object B"
+                "XSOAR Test Object"
             ],
             "source_user": [
                 "any"
@@ -128,9 +128,9 @@ Create a new security rule
 #### Human Readable Output
 
 >### Security Rule Created
->|action|application|category|description|destination|folder|from|id|name|position|profile_setting|service|source|source_user|to|
+>|Action|Application|Category|Description|Destination|Folder|From|Id|Name|Position|Profile Setting|Service|Source|Source User|To|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| deny | any | any | Test Rule Created by XSOAR | XSOAR Test Object B | Shared | trust | c680####-7d34-4c##-8b##-375baade#### | new-test-ruleB | pre | group: best-practice | application-default | XSOAR Test Object B | any | any |
+>| deny | any | any | Test Rule Created by XSOAR | XSOAR Test Object | Shared | trust | ########-####-####-####-############ | new-test-rule B | pre | group: best-practice | application-default | XSOAR Test Object | any | any |
 
 
 ### prisma-access-list-security-rules
@@ -158,23 +158,23 @@ List security rules
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PrismaAccess.FoundSecurityRule | unknown | Found security rule | 
-| PrismaAccess.FoundSecurityRule.action | String |  | 
-| PrismaAccess.FoundSecurityRule.application | String |  | 
-| PrismaAccess.FoundSecurityRule.category | String |  | 
-| PrismaAccess.FoundSecurityRule.description | String |  | 
-| PrismaAccess.FoundSecurityRule.destination | String |  | 
-| PrismaAccess.FoundSecurityRule.folder | String |  | 
-| PrismaAccess.FoundSecurityRule.from | String |  | 
-| PrismaAccess.FoundSecurityRule.id | String |  | 
-| PrismaAccess.FoundSecurityRule.log_setting | String |  | 
-| PrismaAccess.FoundSecurityRule.name | String |  | 
-| PrismaAccess.FoundSecurityRule.position | String |  | 
-| PrismaAccess.FoundSecurityRule.service | String |  | 
-| PrismaAccess.FoundSecurityRule.source | String |  | 
-| PrismaAccess.FoundSecurityRule.source_user | String |  | 
-| PrismaAccess.FoundSecurityRule.tag | String |  | 
-| PrismaAccess.FoundSecurityRule.to | String |  | 
-| PrismaAccess.FoundSecurityRule.negate_destination | Boolean |  | 
+| PrismaAccess.FoundSecurityRule.action | String | Security rule action | 
+| PrismaAccess.FoundSecurityRule.application | String | Security rule application | 
+| PrismaAccess.FoundSecurityRule.category | String | Security rule category | 
+| PrismaAccess.FoundSecurityRule.description | String | Security rule description | 
+| PrismaAccess.FoundSecurityRule.destination | String | Security rule destination | 
+| PrismaAccess.FoundSecurityRule.folder | String | Security rule folder | 
+| PrismaAccess.FoundSecurityRule.from | String | Security rule from field \(source zone\(s\)\) | 
+| PrismaAccess.FoundSecurityRule.id | String | Security rule id | 
+| PrismaAccess.FoundSecurityRule.log_setting | String | Security rule log_setting | 
+| PrismaAccess.FoundSecurityRule.name | String | Security rule name | 
+| PrismaAccess.FoundSecurityRule.position | String | Security rule position | 
+| PrismaAccess.FoundSecurityRule.service | String | Security rule service | 
+| PrismaAccess.FoundSecurityRule.source | String | Security rule source | 
+| PrismaAccess.FoundSecurityRule.source_user | String | source_user | 
+| PrismaAccess.FoundSecurityRule.tag | String | Security rule tag | 
+| PrismaAccess.FoundSecurityRule.to | String | Security rule to field \(desintation zone\(s\)\) | 
+| PrismaAccess.FoundSecurityRule.negate_destination | Boolean | Security rule netgate_destination | 
 
 #### Command example
 ```!prisma-access-list-security-rules folder="Shared" position="pre" limit=5```
@@ -199,7 +199,7 @@ List security rules
                 "from": [
                     "any"
                 ],
-                "id": "c680####-7d34-4c##-8b##-375baade####",
+                "id": "########-####-####-####-############",
                 "log_setting": "Cortex Data Lake",
                 "name": "Drop Traffic to Known Malicious IP Addresses",
                 "position": "pre",
@@ -235,7 +235,7 @@ List security rules
                 "from": [
                     "any"
                 ],
-                "id": "c680####-7d34-4c##-8b##-375baade####",
+                "id": "########-####-####-####-############",
                 "log_setting": "Cortex Data Lake",
                 "name": "Drop Traffic to Potential High Risk IP Addresses",
                 "negate_destination": false,
@@ -272,7 +272,7 @@ List security rules
                 "from": [
                     "any"
                 ],
-                "id": "c680####-7d34-4c##-8b##-375baade####",
+                "id": "########-####-####-####-############",
                 "log_setting": "Cortex Data Lake",
                 "name": "Drop Traffic to Bulletproof hosting providers",
                 "negate_destination": false,
@@ -309,7 +309,7 @@ List security rules
                 "from": [
                     "any"
                 ],
-                "id": "c680####-7d34-4c##-8b##-375baade####",
+                "id": "########-####-####-####-############",
                 "log_setting": "Cortex Data Lake",
                 "name": "Drop Traffic from Known Malicious IP Addresses",
                 "negate_destination": false,
@@ -346,7 +346,7 @@ List security rules
                 "from": [
                     "any"
                 ],
-                "id": "c680####-7d34-4c##-8b##-375baade####",
+                "id": "########-####-####-####-############",
                 "log_setting": "Cortex Data Lake",
                 "name": "Drop Traffic from Potential High Risk IP Addresses",
                 "negate_destination": false,
@@ -375,13 +375,13 @@ List security rules
 #### Human Readable Output
 
 >### Security Rules
->|id|name|description|action|destination|folder|
+>|Id|Name|Description|Action|Destination|Folder|
 >|---|---|---|---|---|---|
->| 5a5b3aff-8aec-4a90-9d77-a7a85d1681e8 | Drop Traffic to Known Malicious IP Addresses | Rule to block traffic to well known malicious IP addresses, as provided by dynamic feeds from Palo Alto Networks threat intel | drop | panw-known-ip-list | Shared |
->| 22b18d2f-a6cc-45de-a15a-978df14dc2a5 | Drop Traffic to Potential High Risk IP Addresses | Rule to block traffic to IP addresses that have recently been featured in threat activity advisories distributed by high-trust organizations | drop | panw-highrisk-ip-list | Shared |
->| 94487223-d185-424f-8a3d-31a9f8bc92af | Drop Traffic to Bulletproof hosting providers | Rule to block traffic to bulletproof IP addresses as bulletproof hosting providers place few, if any, restrictions on content and attackers can use these services to host and distribute malicious, illegal, and unethical material | drop | panw-bulletproof-ip-list | Shared |
->| 55eefe85-ccca-4341-a77d-d5083dd88987 | Drop Traffic from Known Malicious IP Addresses | Rule to block traffic from well known malicious IP addresses, as provided by dynamic feeds from Palo Alto Networks threat intel | drop | any | Shared |
->| 9aa5d7be-4823-40bc-9b3f-0e857f3c0261 | Drop Traffic from Potential High Risk IP Addresses | Rule to block traffic from IP addresses that have recently been featured in threat activity advisories distributed by high-trust organizations | drop | any | Shared |
+>| ########-####-####-####-############ | Drop Traffic to Known Malicious IP Addresses | Rule to block traffic to well known malicious IP addresses, as provided by dynamic feeds from Palo Alto Networks threat intel | drop | panw-known-ip-list | Shared |
+>| ########-####-####-####-############ | Drop Traffic to Potential High Risk IP Addresses | Rule to block traffic to IP addresses that have recently been featured in threat activity advisories distributed by high-trust organizations | drop | panw-highrisk-ip-list | Shared |
+>| ########-####-####-####-############ | Drop Traffic to Bulletproof hosting providers | Rule to block traffic to bulletproof IP addresses as bulletproof hosting providers place few, if any, restrictions on content and attackers can use these services to host and distribute malicious, illegal, and unethical material | drop | panw-bulletproof-ip-list | Shared |
+>| ########-####-####-####-############ | Drop Traffic from Known Malicious IP Addresses | Rule to block traffic from well known malicious IP addresses, as provided by dynamic feeds from Palo Alto Networks threat intel | drop | any | Shared |
+>| ########-####-####-####-############ | Drop Traffic from Potential High Risk IP Addresses | Rule to block traffic from IP addresses that have recently been featured in threat activity advisories distributed by high-trust organizations | drop | any | Shared |
 
 
 ### prisma-access-push-candidate-config
@@ -406,9 +406,9 @@ Push the candidate configuration
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PrismaAccess.ConfigPush | unknown | Config Job info | 
-| PrismaAccess.ConfigPush.job_id | String |  | 
-| PrismaAccess.ConfigPush.message | String |  | 
-| PrismaAccess.ConfigPush.success | Boolean |  | 
+| PrismaAccess.ConfigPush.job_id | String | Config job id | 
+| PrismaAccess.ConfigPush.message | String | Config job message | 
+| PrismaAccess.ConfigPush.success | Boolean | Config job success | 
 
 #### Command example
 ```!prisma-access-push-candidate-config folders="Mobile Users"```
@@ -417,8 +417,8 @@ Push the candidate configuration
 {
     "PrismaAccess": {
         "ConfigPush": {
-            "job_id": "29",
-            "message": "CommitAndPush job enqueued with jobid 29",
+            "job_id": "48",
+            "message": "CommitAndPush job enqueued with jobid 48",
             "success": true
         }
     }
@@ -428,14 +428,14 @@ Push the candidate configuration
 #### Human Readable Output
 
 >### Configuration Push Requested
->|job_id|message|success|
+>|Job Id|Message|Success|
 >|---|---|---|
->| 29 | CommitAndPush job enqueued with jobid 29 | true |
+>| 48 | CommitAndPush job enqueued with jobid 48 | true |
 
 
 ### prisma-access-edit-security-rule
 ***
-Edit or edit existing security rule
+Edit an existing security rule
 
 
 #### Base Command
@@ -473,28 +473,28 @@ Edit or edit existing security rule
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PrismaAccess.EditedSecurityRule | unknown | Edited security rule | 
-| PrismaAccess.UpdatedSecurityRule.action | String |  | 
-| PrismaAccess.UpdatedSecurityRule.application | String |  | 
-| PrismaAccess.UpdatedSecurityRule.category | String |  | 
-| PrismaAccess.UpdatedSecurityRule.description | String |  | 
-| PrismaAccess.UpdatedSecurityRule.destination | String |  | 
-| PrismaAccess.UpdatedSecurityRule.folder | String |  | 
-| PrismaAccess.UpdatedSecurityRule.from | String |  | 
-| PrismaAccess.UpdatedSecurityRule.id | String |  | 
-| PrismaAccess.UpdatedSecurityRule.name | String |  | 
-| PrismaAccess.UpdatedSecurityRule.profile_setting.group | String |  | 
-| PrismaAccess.UpdatedSecurityRule.service | String |  | 
-| PrismaAccess.UpdatedSecurityRule.source | String |  | 
-| PrismaAccess.UpdatedSecurityRule.source_user | String |  | 
-| PrismaAccess.UpdatedSecurityRule.to | String |  | 
+| PrismaAccess.UpdatedSecurityRule.action | String | Security rule action | 
+| PrismaAccess.UpdatedSecurityRule.application | String | Security rule application | 
+| PrismaAccess.UpdatedSecurityRule.category | String | Security rule category | 
+| PrismaAccess.UpdatedSecurityRule.description | String | Security rule description | 
+| PrismaAccess.UpdatedSecurityRule.destination | String | Security rule destination | 
+| PrismaAccess.UpdatedSecurityRule.folder | String | Security rule folder | 
+| PrismaAccess.UpdatedSecurityRule.from | String | Security rule from field \(source zone\(s\)\) | 
+| PrismaAccess.UpdatedSecurityRule.id | String | Security rule id | 
+| PrismaAccess.UpdatedSecurityRule.name | String | Security rule name | 
+| PrismaAccess.UpdatedSecurityRule.profile_setting.group | String | Security rule profile setting | 
+| PrismaAccess.UpdatedSecurityRule.service | String | Security rule service | 
+| PrismaAccess.UpdatedSecurityRule.source | String | Security rule source | 
+| PrismaAccess.UpdatedSecurityRule.source_user | String | Security rule source user | 
+| PrismaAccess.UpdatedSecurityRule.to | String | Security rule to field \(destination zone\(s\)\) | 
 
 #### Command example
-```!prisma-access-edit-security-rule id="c680####-7d34-4c##-8b##-375baade####" name="new-test-rule" action="deny" description="Rule Edited by XSOAR" application="any" category="any" destination="XSOAR Test Object B" profile_setting="best-practice" service="application-default" source="XSOAR Test Object B" source_user="any" from="trust" to="any"```
+```!prisma-access-edit-security-rule id="########-####-####-####-############" name="new-test-rule" action="deny" description="Rule Edited by XSOAR" application="any" category="any" destination="XSOAR Test Object" profile_setting="best-practice" service="application-default" source="XSOAR Test Object" source_user="any" from="trust" to="any"```
 #### Context Example
 ```json
 {
     "PrismaAccess": {
-        "UpdatedSecurityRule": {
+        "EditedSecurityRule": {
             "action": "deny",
             "application": [
                 "any"
@@ -504,13 +504,13 @@ Edit or edit existing security rule
             ],
             "description": "Rule Edited by XSOAR",
             "destination": [
-                "XSOAR Test Object B"
+                "XSOAR Test Object"
             ],
             "folder": "Shared",
             "from": [
                 "trust"
             ],
-            "id": "c680####-7d34-4c##-8b##-375baade####",
+            "id": "########-####-####-####-############",
             "name": "new-test-rule",
             "profile_setting": {
                 "group": [
@@ -521,7 +521,7 @@ Edit or edit existing security rule
                 "application-default"
             ],
             "source": [
-                "XSOAR Test Object B"
+                "XSOAR Test Object"
             ],
             "source_user": [
                 "any"
@@ -537,9 +537,9 @@ Edit or edit existing security rule
 #### Human Readable Output
 
 >### Security Rule Updated
->|action|application|category|description|destination|folder|from|id|name|profile_setting|service|source|source_user|to|
+>|Action|Application|Category|Description|Destination|Folder|From|Id|Name|Profile Setting|Service|Source|Source User|To|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| deny | any | any | Rule Edited by XSOAR | XSOAR Test Object B | Shared | trust | c680####-7d34-4c##-8b##-375baade#### | new-test-rule | group: best-practice | application-default | XSOAR Test Object B | any | any |
+>| deny | any | any | Rule Edited by XSOAR | XSOAR Test Object | Shared | trust | ########-####-####-####-############ | new-test-rule | group: best-practice | application-default | XSOAR Test Object | any | any |
 
 
 ### prisma-sase-query-agg-monitor-api
@@ -564,7 +564,7 @@ Query the aggregate monitor API
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PrismaSASE.AggregateQueryResponse | unknown | Aggregate Query Response | 
-| PrismaSASE.AggregateQueryResponse.header.dataCount | Number |  | 
+| PrismaSASE.AggregateQueryResponse.header.dataCount | Number | Query response data count | 
 
 ### prisma-access-get-security-rule-by-name
 ***
@@ -589,24 +589,24 @@ Get a security rule using the name
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PrismaAccess.FoundSecurityRule | unknown | Found security rule | 
-| PrismaAccess.FoundSecurityRule.action | String |  | 
-| PrismaAccess.FoundSecurityRule.application | String |  | 
-| PrismaAccess.FoundSecurityRule.category | String |  | 
-| PrismaAccess.FoundSecurityRule.description | String |  | 
-| PrismaAccess.FoundSecurityRule.destination | String |  | 
-| PrismaAccess.FoundSecurityRule.folder | String |  | 
-| PrismaAccess.FoundSecurityRule.from | String |  | 
-| PrismaAccess.FoundSecurityRule.id | String |  | 
-| PrismaAccess.FoundSecurityRule.name | String |  | 
-| PrismaAccess.FoundSecurityRule.position | String |  | 
-| PrismaAccess.FoundSecurityRule.profile_setting.group | String |  | 
-| PrismaAccess.FoundSecurityRule.service | String |  | 
-| PrismaAccess.FoundSecurityRule.source | String |  | 
-| PrismaAccess.FoundSecurityRule.source_user | String |  | 
-| PrismaAccess.FoundSecurityRule.to | String |  | 
+| PrismaAccess.FoundSecurityRule.action | String | Security rule action | 
+| PrismaAccess.FoundSecurityRule.application | String | Security rule application | 
+| PrismaAccess.FoundSecurityRule.category | String | Security rule category | 
+| PrismaAccess.FoundSecurityRule.description | String | Security rule description | 
+| PrismaAccess.FoundSecurityRule.destination | String | Security rule destination | 
+| PrismaAccess.FoundSecurityRule.folder | String | Security rule folder | 
+| PrismaAccess.FoundSecurityRule.from | String | Security rule from field \(source zone\(s\)\) | 
+| PrismaAccess.FoundSecurityRule.id | String | Security rule id | 
+| PrismaAccess.FoundSecurityRule.name | String | Security rule name | 
+| PrismaAccess.FoundSecurityRule.position | String | Security rule position | 
+| PrismaAccess.FoundSecurityRule.profile_setting.group | String | Security rule profile setting | 
+| PrismaAccess.FoundSecurityRule.service | String | Security rule service | 
+| PrismaAccess.FoundSecurityRule.source | String | Security rule source | 
+| PrismaAccess.FoundSecurityRule.source_user | String | Security rule source user | 
+| PrismaAccess.FoundSecurityRule.to | String | Security rule to field \(desintation zone\(s\)\) | 
 
 #### Command example
-```!prisma-access-get-security-rule-by-name folder="Shared" name="new-test-ruleB" position="pre"```
+```!prisma-access-get-security-rule-by-name folder="Shared" name="new-test-rule B" position="pre"```
 #### Context Example
 ```json
 {
@@ -621,14 +621,14 @@ Get a security rule using the name
             ],
             "description": "Test Rule Created by XSOAR",
             "destination": [
-                "XSOAR Test Object B"
+                "XSOAR Test Object"
             ],
             "folder": "Shared",
             "from": [
                 "trust"
             ],
-            "id": "c680####-7d34-4c##-8b##-375baade####",
-            "name": "new-test-ruleB",
+            "id": "########-####-####-####-############",
+            "name": "new-test-rule B",
             "position": "pre",
             "profile_setting": {
                 "group": [
@@ -639,7 +639,7 @@ Get a security rule using the name
                 "application-default"
             ],
             "source": [
-                "XSOAR Test Object B"
+                "XSOAR Test Object"
             ],
             "source_user": [
                 "any"
@@ -657,12 +657,12 @@ Get a security rule using the name
 >### Security Rules
 >|action|application|category|description|destination|folder|from|id|name|position|profile_setting|service|source|source_user|to|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| deny | any | any | Test Rule Created by XSOAR | XSOAR Test Object B | Shared | trust | c680####-7d34-4c##-8b##-375baade#### | new-test-ruleB | pre | group: best-practice | application-default | XSOAR Test Object B | any | any |
+>| deny | any | any | Test Rule Created by XSOAR | XSOAR Test Object | Shared | trust | ########-####-####-####-############ | new-test-rule B | pre | group: best-practice | application-default | XSOAR Test Object | any | any |
 
 
 ### prisma-access-get-config-jobs-by-id
 ***
-Get specific config job by the jobid
+Get a specific config job by the job id
 
 
 #### Base Command
@@ -681,29 +681,29 @@ Get specific config job by the jobid
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PrismaAccess.ConfigJob | unknown | Config job details | 
-| PrismaAccess.ConfigJob.details | String |  | 
-| PrismaAccess.ConfigJob.end_ts | Date |  | 
-| PrismaAccess.ConfigJob.id | String |  | 
-| PrismaAccess.ConfigJob.insert_ts | Date |  | 
-| PrismaAccess.ConfigJob.job_result | String |  | 
-| PrismaAccess.ConfigJob.job_status | String |  | 
-| PrismaAccess.ConfigJob.job_type | String |  | 
-| PrismaAccess.ConfigJob.last_update | Date |  | 
-| PrismaAccess.ConfigJob.opaque_int | String |  | 
-| PrismaAccess.ConfigJob.opaque_str | String |  | 
-| PrismaAccess.ConfigJob.owner | String |  | 
-| PrismaAccess.ConfigJob.parent_id | String |  | 
-| PrismaAccess.ConfigJob.percent | String |  | 
-| PrismaAccess.ConfigJob.result_i | String |  | 
-| PrismaAccess.ConfigJob.result_str | String |  | 
-| PrismaAccess.ConfigJob.session_id | String |  | 
-| PrismaAccess.ConfigJob.start_ts | Date |  | 
-| PrismaAccess.ConfigJob.status_i | String |  | 
-| PrismaAccess.ConfigJob.status_str | String |  | 
-| PrismaAccess.ConfigJob.summary | String |  | 
-| PrismaAccess.ConfigJob.type_i | String |  | 
-| PrismaAccess.ConfigJob.type_str | String |  | 
-| PrismaAccess.ConfigJob.uname | String |  | 
+| PrismaAccess.ConfigJob.details | String | Config job details | 
+| PrismaAccess.ConfigJob.end_ts | Date | Config job end timestamp | 
+| PrismaAccess.ConfigJob.id | String | Config job id | 
+| PrismaAccess.ConfigJob.insert_ts | Date | Config job insert timestamp | 
+| PrismaAccess.ConfigJob.job_result | String | Config job result | 
+| PrismaAccess.ConfigJob.job_status | String | Config job status | 
+| PrismaAccess.ConfigJob.job_type | String | Config job type | 
+| PrismaAccess.ConfigJob.last_update | Date | Config job last update | 
+| PrismaAccess.ConfigJob.opaque_int | String | Config job opaque int | 
+| PrismaAccess.ConfigJob.opaque_str | String | Config job opaque str | 
+| PrismaAccess.ConfigJob.owner | String | Config job owner | 
+| PrismaAccess.ConfigJob.parent_id | String | Config job parent id | 
+| PrismaAccess.ConfigJob.percent | String | Config job percent | 
+| PrismaAccess.ConfigJob.result_i | String | Config job result i | 
+| PrismaAccess.ConfigJob.result_str | String | Config job str | 
+| PrismaAccess.ConfigJob.session_id | String | Config job session id | 
+| PrismaAccess.ConfigJob.start_ts | Date | Config job start timestamp | 
+| PrismaAccess.ConfigJob.status_i | String | Config job status i | 
+| PrismaAccess.ConfigJob.status_str | String | Config job status str | 
+| PrismaAccess.ConfigJob.summary | String | Config job summary | 
+| PrismaAccess.ConfigJob.type_i | String | Config job type i | 
+| PrismaAccess.ConfigJob.type_str | String | Config job type str | 
+| PrismaAccess.ConfigJob.uname | String | Config job uname | 
 
 #### Command example
 ```!prisma-access-get-config-jobs-by-id id=21```
@@ -743,7 +743,7 @@ Get specific config job by the jobid
 #### Human Readable Output
 
 >### Config Jobs
->|id|type_str|
+>|Id|Type Str|
 >|---|---|
 >| 21 | CommitAndPush |
 
@@ -770,20 +770,20 @@ List config jobs
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PrismaAccess.ConfigJob | unknown | Config job details | 
-| PrismaAccess.ConfigJob.description | String |  | 
-| PrismaAccess.ConfigJob.end_ts | Date |  | 
-| PrismaAccess.ConfigJob.id | String |  | 
-| PrismaAccess.ConfigJob.job_result | String |  | 
-| PrismaAccess.ConfigJob.job_status | String |  | 
-| PrismaAccess.ConfigJob.job_type | String |  | 
-| PrismaAccess.ConfigJob.parent_id | String |  | 
-| PrismaAccess.ConfigJob.percent | String |  | 
-| PrismaAccess.ConfigJob.result_str | String |  | 
-| PrismaAccess.ConfigJob.start_ts | Date |  | 
-| PrismaAccess.ConfigJob.status_str | String |  | 
-| PrismaAccess.ConfigJob.summary | String |  | 
-| PrismaAccess.ConfigJob.type_str | String |  | 
-| PrismaAccess.ConfigJob.uname | String |  | 
+| PrismaAccess.ConfigJob.description | String | Config job description | 
+| PrismaAccess.ConfigJob.end_ts | Date | Config job end timestamp | 
+| PrismaAccess.ConfigJob.id | String | Config job id | 
+| PrismaAccess.ConfigJob.job_result | String | Config job result | 
+| PrismaAccess.ConfigJob.job_status | String | Config job status | 
+| PrismaAccess.ConfigJob.job_type | String | Config job type | 
+| PrismaAccess.ConfigJob.parent_id | String | Config job parent id | 
+| PrismaAccess.ConfigJob.percent | String | Config job precent | 
+| PrismaAccess.ConfigJob.result_str | String | Config job result str | 
+| PrismaAccess.ConfigJob.start_ts | Date | Config job start timestamp | 
+| PrismaAccess.ConfigJob.status_str | String | Config job status str | 
+| PrismaAccess.ConfigJob.summary | String | Config job summary | 
+| PrismaAccess.ConfigJob.type_str | String | Config job type str | 
+| PrismaAccess.ConfigJob.uname | String | Config job uname | 
 
 #### Command example
 ```!prisma-access-list-config-jobs limit=5```
@@ -794,31 +794,31 @@ List config jobs
         "ConfigJob": [
             {
                 "description": "Mobile Users Global Protect configuration pushed to cloud",
-                "end_ts": "2022-10-20 18:02:00",
-                "id": "28",
-                "job_result": "1",
+                "end_ts": "2022-11-18 17:54:35",
+                "id": "47",
+                "job_result": "2",
                 "job_status": "2",
                 "job_type": "22",
-                "parent_id": "27",
+                "parent_id": "46",
                 "percent": "100",
-                "result_str": "FAIL",
-                "start_ts": "2022-10-20 18:00:24",
+                "result_str": "OK",
+                "start_ts": "2022-11-18 17:51:26",
                 "status_str": "FIN",
-                "summary": "Configuration push failed",
+                "summary": "Configuration push finished",
                 "type_str": "CommitAll",
                 "uname": "user@example.com"
             },
             {
                 "description": "",
-                "end_ts": "2022-10-20 18:00:19",
-                "id": "27",
+                "end_ts": "2022-11-18 17:51:25",
+                "id": "46",
                 "job_result": "2",
                 "job_status": "2",
                 "job_type": "53",
                 "parent_id": "0",
                 "percent": "100",
                 "result_str": "OK",
-                "start_ts": "2022-10-20 17:57:06",
+                "start_ts": "2022-11-18 17:50:21",
                 "status_str": "FIN",
                 "summary": "",
                 "type_str": "CommitAndPush",
@@ -826,31 +826,31 @@ List config jobs
             },
             {
                 "description": "Mobile Users Global Protect configuration pushed to cloud",
-                "end_ts": "2022-10-19 20:09:38",
-                "id": "26",
+                "end_ts": "2022-11-11 02:11:04",
+                "id": "45",
                 "job_result": "1",
                 "job_status": "2",
                 "job_type": "22",
-                "parent_id": "25",
-                "percent": "100",
+                "parent_id": "44",
+                "percent": "0",
                 "result_str": "FAIL",
-                "start_ts": "2022-10-19 20:08:02",
+                "start_ts": "2022-11-11 01:10:50",
                 "status_str": "FIN",
-                "summary": "Configuration push failed",
+                "summary": "",
                 "type_str": "CommitAll",
                 "uname": "user@example.com"
             },
             {
                 "description": "",
-                "end_ts": "2022-10-19 20:08:01",
-                "id": "25",
+                "end_ts": "2022-11-11 01:10:46",
+                "id": "44",
                 "job_result": "2",
                 "job_status": "2",
                 "job_type": "53",
                 "parent_id": "0",
                 "percent": "100",
                 "result_str": "OK",
-                "start_ts": "2022-10-19 20:06:41",
+                "start_ts": "2022-11-11 01:09:49",
                 "status_str": "FIN",
                 "summary": "",
                 "type_str": "CommitAndPush",
@@ -858,15 +858,15 @@ List config jobs
             },
             {
                 "description": "Mobile Users Global Protect configuration pushed to cloud",
-                "end_ts": "2022-09-30 05:20:34",
-                "id": "24",
+                "end_ts": "2022-11-10 21:44:53",
+                "id": "43",
                 "job_result": "2",
                 "job_status": "2",
                 "job_type": "22",
-                "parent_id": "23",
+                "parent_id": "42",
                 "percent": "100",
                 "result_str": "OK",
-                "start_ts": "2022-09-30 05:16:40",
+                "start_ts": "2022-11-10 21:36:52",
                 "status_str": "FIN",
                 "summary": "Configuration push finished",
                 "type_str": "CommitAll",
@@ -880,18 +880,18 @@ List config jobs
 #### Human Readable Output
 
 >### Config Job
->|id|type_str|description|summary|
+>|Id|Type Str|Description|Summary|
 >|---|---|---|---|
->| 28 | CommitAll | Mobile Users Global Protect configuration pushed to cloud | Configuration push failed |
->| 27 | CommitAndPush |  |  |
->| 26 | CommitAll | Mobile Users Global Protect configuration pushed to cloud | Configuration push failed |
->| 25 | CommitAndPush |  |  |
->| 24 | CommitAll | Mobile Users Global Protect configuration pushed to cloud | Configuration push finished |
+>| 47 | CommitAll | Mobile Users Global Protect configuration pushed to cloud | Configuration push finished |
+>| 46 | CommitAndPush |  |  |
+>| 45 | CommitAll | Mobile Users Global Protect configuration pushed to cloud |  |
+>| 44 | CommitAndPush |  |  |
+>| 43 | CommitAll | Mobile Users Global Protect configuration pushed to cloud | Configuration push finished |
 
 
 ### prisma-access-delete-security-rule
 ***
-Delete security rule
+Delete a security rule
 
 
 #### Base Command
@@ -910,23 +910,23 @@ Delete security rule
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PrismaAccess.DeletedSecurityRule | unknown | Deleted security rule info | 
-| PrismaAccess.DeletedSecurityRule.action | String |  | 
-| PrismaAccess.DeletedSecurityRule.application | String |  | 
-| PrismaAccess.DeletedSecurityRule.category | String |  | 
-| PrismaAccess.DeletedSecurityRule.description | String |  | 
-| PrismaAccess.DeletedSecurityRule.destination | String |  | 
-| PrismaAccess.DeletedSecurityRule.folder | String |  | 
-| PrismaAccess.DeletedSecurityRule.from | String |  | 
-| PrismaAccess.DeletedSecurityRule.id | String |  | 
-| PrismaAccess.DeletedSecurityRule.name | String |  | 
-| PrismaAccess.DeletedSecurityRule.profile_setting.group | String |  | 
-| PrismaAccess.DeletedSecurityRule.service | String |  | 
-| PrismaAccess.DeletedSecurityRule.source | String |  | 
-| PrismaAccess.DeletedSecurityRule.source_user | String |  | 
-| PrismaAccess.DeletedSecurityRule.to | String |  | 
+| PrismaAccess.DeletedSecurityRule.action | String | Security rule action | 
+| PrismaAccess.DeletedSecurityRule.application | String | Security rule application | 
+| PrismaAccess.DeletedSecurityRule.category | String | Security rule category | 
+| PrismaAccess.DeletedSecurityRule.description | String | Security rule description | 
+| PrismaAccess.DeletedSecurityRule.destination | String | Security rule destination | 
+| PrismaAccess.DeletedSecurityRule.folder | String | Security rule folder | 
+| PrismaAccess.DeletedSecurityRule.from | String | Security rule from field \(source zone\(s\)\) | 
+| PrismaAccess.DeletedSecurityRule.id | String | Security rule id | 
+| PrismaAccess.DeletedSecurityRule.name | String | Security rule name | 
+| PrismaAccess.DeletedSecurityRule.profile_setting.group | String | Security rule profile setting | 
+| PrismaAccess.DeletedSecurityRule.service | String | Security rule service | 
+| PrismaAccess.DeletedSecurityRule.source | String | Security rule source | 
+| PrismaAccess.DeletedSecurityRule.source_user | String | Security rule source user | 
+| PrismaAccess.DeletedSecurityRule.to | String | Security rule to field \(destination zone\(s\)\) | 
 
 #### Command example
-```!prisma-access-delete-security-rule rule_id="c680####-7d34-4c##-8b##-375baade####"```
+```!prisma-access-delete-security-rule rule_id="########-####-####-####-############"```
 #### Context Example
 ```json
 {
@@ -941,13 +941,13 @@ Delete security rule
             ],
             "description": "Rule Edited by XSOAR",
             "destination": [
-                "XSOAR Test Object B"
+                "XSOAR Test Object"
             ],
             "folder": "Shared",
             "from": [
                 "trust"
             ],
-            "id": "c680####-7d34-4c##-8b##-375baade####",
+            "id": "########-####-####-####-############",
             "name": "new-test-rule",
             "profile_setting": {
                 "group": [
@@ -958,7 +958,7 @@ Delete security rule
                 "application-default"
             ],
             "source": [
-                "XSOAR Test Object B"
+                "XSOAR Test Object"
             ],
             "source_user": [
                 "any"
@@ -974,9 +974,9 @@ Delete security rule
 #### Human Readable Output
 
 >### Security Rule Deleted
->|action|application|category|description|destination|folder|from|id|name|profile_setting|service|source|source_user|to|
+>|Action|Application|Category|Description|Destination|Folder|From|Id|Name|Profile Setting|Service|Source|Source User|To|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| deny | any | any | Rule Edited by XSOAR | XSOAR Test Object B | Shared | trust | c680####-7d34-4c##-8b##-375baade#### | new-test-rule | group: best-practice | application-default | XSOAR Test Object B | any | any |
+>| deny | any | any | Rule Edited by XSOAR | XSOAR Test Object | Shared | trust | ########-####-####-####-############ | new-test-rule | group: best-practice | application-default | XSOAR Test Object | any | any |
 
 
 ### prisma-access-create-address-object
@@ -1004,14 +1004,14 @@ Create a new address object
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PrismaAccess.CreatedAddressObject | unknown | Created Address Object | 
-| PrismaAccess.CreatedAddress.description | String |  | 
-| PrismaAccess.CreatedAddress.folder | String |  | 
-| PrismaAccess.CreatedAddress.id | String |  | 
-| PrismaAccess.CreatedAddress.ip_netmask | String |  | 
-| PrismaAccess.CreatedAddress.name | String |  | 
+| PrismaAccess.CreatedAddress.description | String | Address description | 
+| PrismaAccess.CreatedAddress.folder | String | Address folder | 
+| PrismaAccess.CreatedAddress.id | String | Address id | 
+| PrismaAccess.CreatedAddress.ip_netmask | String | Address ip netmask | 
+| PrismaAccess.CreatedAddress.name | String | Address name | 
 
 #### Command example
-```!prisma-access-create-address-object folder="Shared" ip_netmask="10.10.10.10/32" name="XSOAR Test Object B" description="Test Object Creation from XSOAR"```
+```!prisma-access-create-address-object folder="Shared" ip_netmask="10.10.10.10/32" name="XSOAR Test Object" description="Test Object Creation from XSOAR"```
 #### Context Example
 ```json
 {
@@ -1019,9 +1019,9 @@ Create a new address object
         "CreatedAddress": {
             "description": "Test Object Creation from XSOAR",
             "folder": "Shared",
-            "id": "c680####-7d34-4c##-8b##-375baade####",
+            "id": "########-####-####-####-############",
             "ip_netmask": "10.10.10.10/32",
-            "name": "XSOAR Test Object B"
+            "name": "XSOAR Test Object"
         }
     }
 }
@@ -1030,9 +1030,9 @@ Create a new address object
 #### Human Readable Output
 
 >### Address Object Created
->|description|folder|id|ip_netmask|name|
+>|Description|Folder|Id|Ip Netmask|Name|
 >|---|---|---|---|---|
->| Test Object Creation from XSOAR | Shared | c680####-7d34-4c##-8b##-375baade#### | 10.10.10.10/32 | XSOAR Test Object B |
+>| Test Object Creation from XSOAR | Shared | ########-####-####-####-############ | 10.10.10.10/32 | XSOAR Test Object |
 
 
 ### prisma-access-edit-address-object
@@ -1060,14 +1060,14 @@ Edit address object
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PrismaAccess.EditedAddressObject | unknown | Edited Address Object | 
-| PrismaAccess.EditedAddress.description | String |  | 
-| PrismaAccess.EditedAddress.folder | String |  | 
-| PrismaAccess.EditedAddress.id | String |  | 
-| PrismaAccess.EditedAddress.ip_netmask | String |  | 
-| PrismaAccess.EditedAddress.name | String |  | 
+| PrismaAccess.EditedAddress.description | String | Address description | 
+| PrismaAccess.EditedAddress.folder | String | Address folder | 
+| PrismaAccess.EditedAddress.id | String | Address id | 
+| PrismaAccess.EditedAddress.ip_netmask | String | Address ip netmask | 
+| PrismaAccess.EditedAddress.name | String | Address name | 
 
 #### Command example
-```!prisma-access-edit-address-object id="c680####-7d34-4c##-8b##-375baade####" ip_netmask="10.10.10.11/32" name="XSOAR Test Object" description="XSOAR edited object"```
+```!prisma-access-edit-address-object id="########-####-####-####-############" ip_netmask="10.10.10.11/32" name="XSOAR Test Object B" description="XSOAR edited object"```
 #### Context Example
 ```json
 {
@@ -1075,9 +1075,9 @@ Edit address object
         "EditedAddress": {
             "description": "XSOAR edited object",
             "folder": "Shared",
-            "id": "c680####-7d34-4c##-8b##-375baade####",
+            "id": "########-####-####-####-############",
             "ip_netmask": "10.10.10.11/32",
-            "name": "XSOAR Test Object"
+            "name": "XSOAR Test Object B"
         }
     }
 }
@@ -1086,9 +1086,9 @@ Edit address object
 #### Human Readable Output
 
 >### Address Object Edited
->|description|folder|id|ip_netmask|name|
+>|Description|Folder|Id|Ip Netmask|Name|
 >|---|---|---|---|---|
->| XSOAR edited object | Shared | c680####-7d34-4c##-8b##-375baade#### | 10.10.10.11/32 | XSOAR Test Object |
+>| XSOAR edited object | Shared | ########-####-####-####-############ | 10.10.10.11/32 | XSOAR Test Object B |
 
 
 ### prisma-access-delete-address-object
@@ -1112,14 +1112,14 @@ Delete address object
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PrismaAccess.DeletedAddressObject | unknown | Deleted Address Object | 
-| PrismaAccess.DeletedAddress.description | String |  | 
-| PrismaAccess.DeletedAddress.folder | String |  | 
-| PrismaAccess.DeletedAddress.id | String |  | 
-| PrismaAccess.DeletedAddress.ip_netmask | String |  | 
-| PrismaAccess.DeletedAddress.name | String |  | 
+| PrismaAccess.DeletedAddress.description | String | Address description | 
+| PrismaAccess.DeletedAddress.folder | String | Address folder | 
+| PrismaAccess.DeletedAddress.id | String | id | 
+| PrismaAccess.DeletedAddress.ip_netmask | String | Address ip netmask | 
+| PrismaAccess.DeletedAddress.name | String | Address name | 
 
 #### Command example
-```!prisma-access-delete-address-object id="c680####-7d34-4c##-8b##-375baade####"```
+```!prisma-access-delete-address-object id="########-####-####-####-############"```
 #### Context Example
 ```json
 {
@@ -1127,9 +1127,9 @@ Delete address object
         "DeletedAddress": {
             "description": "XSOAR edited object",
             "folder": "Shared",
-            "id": "c680####-7d34-4c##-8b##-375baade####",
+            "id": "########-####-####-####-############",
             "ip_netmask": "10.10.10.11/32",
-            "name": "XSOAR Test Object"
+            "name": "XSOAR Test Object B"
         }
     }
 }
@@ -1138,9 +1138,9 @@ Delete address object
 #### Human Readable Output
 
 >### Address Object Deleted
->|description|folder|id|ip_netmask|name|
+>|Description|Folder|Id|Ip Netmask|Name|
 >|---|---|---|---|---|
->| XSOAR edited object | Shared | c680####-7d34-4c##-8b##-375baade#### | 10.10.10.11/32 | XSOAR Test Object |
+>| XSOAR edited object | Shared | ########-####-####-####-############ | 10.10.10.11/32 | XSOAR Test Object B |
 
 
 ### prisma-access-list-address-objects
@@ -1167,12 +1167,12 @@ List Address Objects
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PrismaAccess.FoundSecurityRule | unknown | Found security rule | 
-| PrismaAccess.FoundAddressObjects.description | String |  | 
-| PrismaAccess.FoundAddressObjects.folder | String |  | 
-| PrismaAccess.FoundAddressObjects.fqdn | String |  | 
-| PrismaAccess.FoundAddressObjects.id | String |  | 
-| PrismaAccess.FoundAddressObjects.name | String |  | 
-| PrismaAccess.FoundAddressObjects.ip_netmask | String |  | 
+| PrismaAccess.FoundAddressObjects.description | String | Address description | 
+| PrismaAccess.FoundAddressObjects.folder | String | Address folder | 
+| PrismaAccess.FoundAddressObjects.fqdn | String | Address fqdn | 
+| PrismaAccess.FoundAddressObjects.id | String | Address id | 
+| PrismaAccess.FoundAddressObjects.name | String | Address name | 
+| PrismaAccess.FoundAddressObjects.ip_netmask | String | Address ip netmask | 
 
 #### Command example
 ```!prisma-access-list-address-objects folder="Shared"```
@@ -1185,21 +1185,21 @@ List Address Objects
                 "description": "Palo Alto Networks sinkhole",
                 "folder": "Shared",
                 "fqdn": "sinkhole.paloaltonetworks.com",
-                "id": "c680####-7d34-4c##-8b##-375baade####",
+                "id": "########-####-####-####-############",
                 "name": "Palo Alto Networks Sinkhole"
             },
             {
                 "folder": "Shared",
-                "id": "c680####-7d34-4c##-8b##-375baade####",
-                "ip_netmask": "10.0.0.0/16",
+                "id": "########-####-####-####-############",
+                "ip_netmask": "100.127.0.0/16",
                 "name": "GP-Users"
             },
             {
                 "description": "Test Object Creation from XSOAR",
                 "folder": "Shared",
-                "id": "c680####-7d34-4c##-8b##-375baade####",
+                "id": "########-####-####-####-############",
                 "ip_netmask": "10.10.10.10/32",
-                "name": "XSOAR Test Object"
+                "name": "XSOAR Test Object B"
             }
         ]
     }
@@ -1209,9 +1209,9 @@ List Address Objects
 #### Human Readable Output
 
 >### Address Objects
->|name|description|ip_netmask|fqdn|
+>|Name|Description|Ip Netmask|Fqdn|
 >|---|---|---|---|
 >| Palo Alto Networks Sinkhole | Palo Alto Networks sinkhole |  | sinkhole.paloaltonetworks.com |
->| GP-Users |  | 10.0.0.0/16 |  |
->| XSOAR Test Object | Test Object Creation from XSOAR | 10.10.10.10/32 |  |
+>| GP-Users |  | 100.127.0.0/16 |  |
+>| XSOAR Test Object B | Test Object Creation from XSOAR | 10.10.10.10/32 |  |
 
