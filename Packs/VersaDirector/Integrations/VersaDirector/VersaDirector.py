@@ -59,11 +59,13 @@ class Client(BaseClient):
         organization_params,
         client_id_param,
         client_secret_param,
+        use_basic_auth_param,
     ):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
         self.organization_params = organization_params
         self.client_id_param = client_id_param
         self.client_secret_param = client_secret_param
+        self.use_basic_auth_param = use_basic_auth_param
 
     # HEADING: """ CLIENT HELPER FUNCTIONS """
 
@@ -230,22 +232,22 @@ class Client(BaseClient):
         }
 
         if urls:
-            _strings = urls_dict.get("strings", [])
+            urls_dict_strings = urls_dict.get("strings", [])
             for value in urls:
-                _strings.append({"string-value": value})
+                urls_dict_strings.append({"string-value": value})
 
             if url_reputation:
                 for i in range(len(url_reputation)):
-                    _strings[i]["reputation"] = url_reputation[i]
+                    urls_dict_strings[i]["reputation"] = url_reputation[i]
 
         if patterns:
-            _patterns = urls_dict.get("patterns", [])
+            urls_dict_patterns = urls_dict.get("patterns", [])
             for value in patterns:
-                _patterns.append({"pattern-value": value})
+                urls_dict_patterns.append({"pattern-value": value})
 
             if pattern_reputation:
                 for i in range(len(pattern_reputation)):
-                    _patterns[i]["reputation"] = pattern_reputation[i]
+                    urls_dict_patterns[i]["reputation"] = pattern_reputation[i]
 
         request_body = {
             "url-category": {
@@ -1705,7 +1707,7 @@ def create_client_header(
             raise DemistoException(
                 "Auth Authentication method chosen but Access Token, "
                 + "Client ID or Client Secret parameters are missing or invalid."
-                + " please Enter Client ID and Client Secret OR Auth Token parameters OR use '!vd-auth-start' command."
+                + " Please Enter Client ID and Client Secret OR Auth Token parameters OR use '!vd-auth-start' command."
             )
 
     else:
@@ -1937,7 +1939,7 @@ def handle_auth_token_command(client: Client, args: Dict[str, Any]) -> CommandRe
         oauth_client_created_msg
         + "Authentication request was successful, Auth Token was created and saved in the Integration Context.\n"
     )
-    if args.get("use_basic_auth", True):
+    if client.use_basic_auth_param:
         output_message += "Please uncheck the 'Use Basic Authentication' checkbox in the configuration screen.\n"
     output_message += "To ensure the authentication is valid, run the 'vd-auth-test' command."
 
@@ -2594,7 +2596,7 @@ def template_access_policy_rule_create_command(client: Client, args: Dict[str, A
     template_name = args.get("template_name", "")
     access_policy_name = args.get("access_policy_name", "")
 
-    _args = get_access_policy_rule_args_with_possible_custom_rule_json(args)
+    access_policy_rule_args = get_access_policy_rule_args_with_possible_custom_rule_json(args)
 
     organization = set_organization(organization_args, client.organization_params)
 
@@ -2605,15 +2607,15 @@ def template_access_policy_rule_create_command(client: Client, args: Dict[str, A
             organization,
             template_name,
             access_policy_name,
-            _args.get("rule_name", ""),
-            _args.get("description", ""),
-            _args.get("tags", []),
-            _args.get("source_address_objects", []),
-            _args.get("destination_address_objects", []),
-            _args.get("url_reputation", []),
-            _args.get("predefined_application", []),
-            _args.get("user_defined_application", []),
-            _args.get("custom_url_categories", []),
+            access_policy_rule_args.get("rule_name", ""),
+            access_policy_rule_args.get("description", ""),
+            access_policy_rule_args.get("tags", []),
+            access_policy_rule_args.get("source_address_objects", []),
+            access_policy_rule_args.get("destination_address_objects", []),
+            access_policy_rule_args.get("url_reputation", []),
+            access_policy_rule_args.get("predefined_application", []),
+            access_policy_rule_args.get("user_defined_application", []),
+            access_policy_rule_args.get("custom_url_categories", []),
         )
     except DemistoException as e:
         if e.res.status_code == 409:
@@ -2635,7 +2637,7 @@ def template_access_policy_rule_edit_command(client: Client, args: Dict[str, Any
     template_name = args.get("template_name", "")
     access_policy_name = args.get("access_policy_name", "")
 
-    _args = get_access_policy_rule_args_with_possible_custom_rule_json(args)
+    access_policy_rule_args = get_access_policy_rule_args_with_possible_custom_rule_json(args)
 
     organization = set_organization(organization_args, client.organization_params)
 
@@ -2643,15 +2645,15 @@ def template_access_policy_rule_edit_command(client: Client, args: Dict[str, Any
         organization,
         template_name,
         access_policy_name,
-        _args.get("rule_name", ""),
-        _args.get("description", ""),
-        _args.get("tags", []),
-        _args.get("source_address_objects", []),
-        _args.get("destination_address_objects", []),
-        _args.get("url_reputation", []),
-        _args.get("predefined_application", []),
-        _args.get("user_defined_application", []),
-        _args.get("custom_url_categories", []),
+        access_policy_rule_args.get("rule_name", ""),
+        access_policy_rule_args.get("description", ""),
+        access_policy_rule_args.get("tags", []),
+        access_policy_rule_args.get("source_address_objects", []),
+        access_policy_rule_args.get("destination_address_objects", []),
+        access_policy_rule_args.get("url_reputation", []),
+        access_policy_rule_args.get("predefined_application", []),
+        access_policy_rule_args.get("user_defined_application", []),
+        access_policy_rule_args.get("custom_url_categories", []),
     )
 
     command_results = CommandResults(
@@ -2744,7 +2746,7 @@ def appliance_access_policy_rule_create_command(client: Client, args: Dict[str, 
     appliance_name = args.get("appliance_name", "")
     access_policy_name = args.get("access_policy_name", "")
 
-    _args = get_access_policy_rule_args_with_possible_custom_rule_json(args)
+    access_policy_rule_args = get_access_policy_rule_args_with_possible_custom_rule_json(args)
 
     organization = set_organization(organization_args, client.organization_params)
 
@@ -2755,15 +2757,15 @@ def appliance_access_policy_rule_create_command(client: Client, args: Dict[str, 
             organization,
             appliance_name,
             access_policy_name,
-            _args.get("rule_name", ""),
-            _args.get("description", ""),
-            _args.get("tags", []),
-            _args.get("source_address_objects", []),
-            _args.get("destination_address_objects", []),
-            _args.get("url_reputation", []),
-            _args.get("predefined_application", []),
-            _args.get("user_defined_application", []),
-            _args.get("custom_url_categories", []),
+            access_policy_rule_args.get("rule_name", ""),
+            access_policy_rule_args.get("description", ""),
+            access_policy_rule_args.get("tags", []),
+            access_policy_rule_args.get("source_address_objects", []),
+            access_policy_rule_args.get("destination_address_objects", []),
+            access_policy_rule_args.get("url_reputation", []),
+            access_policy_rule_args.get("predefined_application", []),
+            access_policy_rule_args.get("user_defined_application", []),
+            access_policy_rule_args.get("custom_url_categories", []),
         )
     except DemistoException as e:
         if e.res.status_code == 409:
@@ -2785,7 +2787,7 @@ def appliance_access_policy_rule_edit_command(client: Client, args: Dict[str, An
     appliance_name = args.get("appliance_name", "")
     access_policy_name = args.get("access_policy_name", "")
 
-    _args = get_access_policy_rule_args_with_possible_custom_rule_json(args)
+    access_policy_rule_args = get_access_policy_rule_args_with_possible_custom_rule_json(args)
 
     organization = set_organization(organization_args, client.organization_params)
 
@@ -2793,15 +2795,15 @@ def appliance_access_policy_rule_edit_command(client: Client, args: Dict[str, An
         organization,
         appliance_name,
         access_policy_name,
-        _args.get("rule_name", ""),
-        _args.get("description", ""),
-        _args.get("tags", []),
-        _args.get("source_address_objects", []),
-        _args.get("destination_address_objects", []),
-        _args.get("url_reputation", []),
-        _args.get("predefined_application", []),
-        _args.get("user_defined_application", []),
-        _args.get("custom_url_categories", []),
+        access_policy_rule_args.get("rule_name", ""),
+        access_policy_rule_args.get("description", ""),
+        access_policy_rule_args.get("tags", []),
+        access_policy_rule_args.get("source_address_objects", []),
+        access_policy_rule_args.get("destination_address_objects", []),
+        access_policy_rule_args.get("url_reputation", []),
+        access_policy_rule_args.get("predefined_application", []),
+        access_policy_rule_args.get("user_defined_application", []),
+        access_policy_rule_args.get("custom_url_categories", []),
     )
 
     command_results = CommandResults(
@@ -2897,7 +2899,7 @@ def template_sdwan_policy_rule_create_command(client: Client, args: Dict[str, An
 
     organization = set_organization(organization_args, client.organization_params)
 
-    _args = get_sdwan_policy_rule_args_with_possible_custom_rule_json(args)
+    sdwan_policy_rule_args = get_sdwan_policy_rule_args_with_possible_custom_rule_json(args)
 
     message = "Command run successfully."
 
@@ -2906,19 +2908,19 @@ def template_sdwan_policy_rule_create_command(client: Client, args: Dict[str, An
             organization,
             template_name,
             sdwan_policy_name,
-            _args.get("rule_name", ""),
-            _args.get("description", ""),
-            _args.get("tags", []),
-            _args.get("source_address_objects", []),
-            _args.get("destination_address_objects", []),
-            _args.get("url_reputation", []),
-            _args.get("custom_url_categories", []),
-            _args.get("forwarding_action", ""),
-            _args.get("nexthop_ip", ""),
-            _args.get("routing_instance", ""),
-            _args.get("forwarding_profile", ""),
-            _args.get("predefined_application", []),
-            _args.get("user_defined_application", []),
+            sdwan_policy_rule_args.get("rule_name", ""),
+            sdwan_policy_rule_args.get("description", ""),
+            sdwan_policy_rule_args.get("tags", []),
+            sdwan_policy_rule_args.get("source_address_objects", []),
+            sdwan_policy_rule_args.get("destination_address_objects", []),
+            sdwan_policy_rule_args.get("url_reputation", []),
+            sdwan_policy_rule_args.get("custom_url_categories", []),
+            sdwan_policy_rule_args.get("forwarding_action", ""),
+            sdwan_policy_rule_args.get("nexthop_ip", ""),
+            sdwan_policy_rule_args.get("routing_instance", ""),
+            sdwan_policy_rule_args.get("forwarding_profile", ""),
+            sdwan_policy_rule_args.get("predefined_application", []),
+            sdwan_policy_rule_args.get("user_defined_application", []),
         )
     except DemistoException as e:
         if e.res.status_code == 409:
@@ -2942,26 +2944,26 @@ def template_sdwan_policy_rule_edit_command(client: Client, args: Dict[str, Any]
 
     organization = set_organization(organization_args, client.organization_params)
 
-    _args = get_sdwan_policy_rule_args_with_possible_custom_rule_json(args)
+    sdwan_policy_rule_args = get_sdwan_policy_rule_args_with_possible_custom_rule_json(args)
 
     response, request_body = client.template_sdwan_policy_rule_edit_request(
         organization,
         template_name,
         sdwan_policy_name,
-        _args.get("rule_name", ""),
-        _args.get("description", ""),
-        _args.get("tags", []),
-        _args.get("rule_disable", ""),
-        _args.get("source_address_objects", []),
-        _args.get("destination_address_objects", []),
-        _args.get("url_reputation", []),
-        _args.get("custom_url_categories", []),
-        _args.get("forwarding_action", ""),
-        _args.get("nexthop_ip", ""),
-        _args.get("routing_instance", ""),
-        _args.get("forwarding_profile", ""),
-        _args.get("predefined_application", []),
-        _args.get("user_defined_application", []),
+        sdwan_policy_rule_args.get("rule_name", ""),
+        sdwan_policy_rule_args.get("description", ""),
+        sdwan_policy_rule_args.get("tags", []),
+        sdwan_policy_rule_args.get("rule_disable", ""),
+        sdwan_policy_rule_args.get("source_address_objects", []),
+        sdwan_policy_rule_args.get("destination_address_objects", []),
+        sdwan_policy_rule_args.get("url_reputation", []),
+        sdwan_policy_rule_args.get("custom_url_categories", []),
+        sdwan_policy_rule_args.get("forwarding_action", ""),
+        sdwan_policy_rule_args.get("nexthop_ip", ""),
+        sdwan_policy_rule_args.get("routing_instance", ""),
+        sdwan_policy_rule_args.get("forwarding_profile", ""),
+        sdwan_policy_rule_args.get("predefined_application", []),
+        sdwan_policy_rule_args.get("user_defined_application", []),
     )
 
     command_results = CommandResults(
@@ -3060,7 +3062,7 @@ def appliance_sdwan_policy_rule_create_command(client: Client, args: Dict[str, A
     sdwan_policy_name = args.get("sdwan_policy_name", "")
     organization = set_organization(organization_args, client.organization_params)
 
-    _args = get_sdwan_policy_rule_args_with_possible_custom_rule_json(args)
+    sdwan_policy_rule_args = get_sdwan_policy_rule_args_with_possible_custom_rule_json(args)
 
     message = "Command run successfully."
 
@@ -3069,19 +3071,19 @@ def appliance_sdwan_policy_rule_create_command(client: Client, args: Dict[str, A
             organization,
             appliance_name,
             sdwan_policy_name,
-            _args.get("rule_name", ""),
-            _args.get("description", ""),
-            _args.get("tags", []),
-            _args.get("source_address_objects", []),
-            _args.get("destination_address_objects", []),
-            _args.get("url_reputation", []),
-            _args.get("custom_url_categories", []),
-            _args.get("forwarding_action", ""),
-            _args.get("nexthop_ip", ""),
-            _args.get("routing_instance", ""),
-            _args.get("forwarding_profile", ""),
-            _args.get("predefined_application", []),
-            _args.get("user_defined_application", []),
+            sdwan_policy_rule_args.get("rule_name", ""),
+            sdwan_policy_rule_args.get("description", ""),
+            sdwan_policy_rule_args.get("tags", []),
+            sdwan_policy_rule_args.get("source_address_objects", []),
+            sdwan_policy_rule_args.get("destination_address_objects", []),
+            sdwan_policy_rule_args.get("url_reputation", []),
+            sdwan_policy_rule_args.get("custom_url_categories", []),
+            sdwan_policy_rule_args.get("forwarding_action", ""),
+            sdwan_policy_rule_args.get("nexthop_ip", ""),
+            sdwan_policy_rule_args.get("routing_instance", ""),
+            sdwan_policy_rule_args.get("forwarding_profile", ""),
+            sdwan_policy_rule_args.get("predefined_application", []),
+            sdwan_policy_rule_args.get("user_defined_application", []),
         )
     except DemistoException as e:
         if e.res.status_code == 409:
@@ -3104,26 +3106,26 @@ def appliance_sdwan_policy_rule_edit_command(client: Client, args: Dict[str, Any
     sdwan_policy_name = args.get("sdwan_policy_name", "")
     organization = set_organization(organization_args, client.organization_params)
 
-    _args = get_sdwan_policy_rule_args_with_possible_custom_rule_json(args)
+    sdwan_policy_rule_args = get_sdwan_policy_rule_args_with_possible_custom_rule_json(args)
 
     response, request_body = client.appliance_sdwan_policy_rule_edit_request(
         organization,
         appliance_name,
         sdwan_policy_name,
-        _args.get("rule_name", ""),
-        _args.get("description", ""),
-        _args.get("tags", []),
-        _args.get("rule_disable", ""),
-        _args.get("source_address_objects", []),
-        _args.get("destination_address_objects", []),
-        _args.get("url_reputation", []),
-        _args.get("custom_url_categories", []),
-        _args.get("forwarding_action", ""),
-        _args.get("nexthop_ip", ""),
-        _args.get("routing_instance", ""),
-        _args.get("forwarding_profile", ""),
-        _args.get("predefined_application", []),
-        _args.get("user_defined_application", []),
+        sdwan_policy_rule_args.get("rule_name", ""),
+        sdwan_policy_rule_args.get("description", ""),
+        sdwan_policy_rule_args.get("tags", []),
+        sdwan_policy_rule_args.get("rule_disable", ""),
+        sdwan_policy_rule_args.get("source_address_objects", []),
+        sdwan_policy_rule_args.get("destination_address_objects", []),
+        sdwan_policy_rule_args.get("url_reputation", []),
+        sdwan_policy_rule_args.get("custom_url_categories", []),
+        sdwan_policy_rule_args.get("forwarding_action", ""),
+        sdwan_policy_rule_args.get("nexthop_ip", ""),
+        sdwan_policy_rule_args.get("routing_instance", ""),
+        sdwan_policy_rule_args.get("forwarding_profile", ""),
+        sdwan_policy_rule_args.get("predefined_application", []),
+        sdwan_policy_rule_args.get("user_defined_application", []),
     )
 
     command_results = CommandResults(
@@ -3630,13 +3632,13 @@ def test_module(
     elif not use_basic_auth and case_client_id_and_client_secret_and_access_token:
         return_error(
             "More parameters passed than expected."
-            + " Please Pass Client ID and Client Secret OR Auth Token parameters (not both)."
+            + " Please pass Client ID and Client Secret OR Auth Token parameters (not both)."
         )
 
     elif not use_basic_auth and case_not_client_id_and_not_client_secret_and_not_access_token:
         return_error(
             "Auth Token authentication method chosen but no parameters passed."
-            + " Please Pass Client ID and Client Secret OR Auth Token parameters (not both)."
+            + " Please pass Client ID and Client Secret OR Auth Token parameters (not both)."
         )
 
     # Case: using Auth Token method with Auth Token parameter only (without Client ID and Client Secret parameters)
@@ -3656,7 +3658,7 @@ def test_module(
     elif not use_basic_auth and case_missing_client_id_or_client_secret:
         return_error(
             "Auth Authentication method chosen but Client ID or Client Secret parameters are missing."
-            + " please Enter Client ID and Client Secret parameters OR use '!vd-auth-start' command."
+            + " Please enter Client ID and Client Secret parameters OR use '!vd-auth-start' command."
         )
 
     else:
@@ -3725,6 +3727,7 @@ def main() -> None:
             organization_params=params.get("organization"),
             client_id_param=params.get("client_id"),
             client_secret_param=params.get("access_token"),
+            use_basic_auth_param=use_basic_auth,
         )
 
         # check auth token validity and if a refresh token is needed to obtain new auth token
@@ -3790,7 +3793,7 @@ def main() -> None:
         if command == "test-module":
             return_results(test_module(client, use_basic_auth, client_id, client_secret, access_token, username, password))
         elif command == "vd-template-change-commit":
-            return_results(commands[command](args, client))
+            return_results(template_change_commit_command(args, client))
         elif command in commands:
             return_results(commands[command](client, args))
         else:
