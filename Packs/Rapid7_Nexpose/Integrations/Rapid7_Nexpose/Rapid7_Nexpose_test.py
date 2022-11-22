@@ -192,8 +192,8 @@ def test_generate_duration_time(test_input_kwargs: dict, expected_output: str):
 @pytest.mark.parametrize("test_input, expected_output",
                          [
                              ("PT2M16.481S", "2 minutes, 16.481 seconds"),
-                             ("PT2M17.976S", "2 minutes, 17.976 seconds"),
-                             ("PT51.316S", "51.316 seconds")
+                             ("PT51.316S", "51.316 seconds"),
+                             ("P3Y6M4DT12H30M5S", "3 years, 6 months, 4 days, 12 hours, 30 minutes, 5 seconds"),
                          ])
 def test_readable_duration_time(test_input: str, expected_output: float):
     assert readable_duration_time(test_input) == expected_output

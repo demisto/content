@@ -2497,7 +2497,7 @@ def readable_duration_time(duration: str) -> str:
     p_duration = re.findall(r"([\d.]+[A-Z])", p_duration)
     t_duration = re.findall(r"([\d.]+[A-Z])", t_duration)
     duration_mapping_p = {
-        "P": "years",
+        "Y": "years",
         "M": "months",
         "W": "weeks",
         "D": "days",
