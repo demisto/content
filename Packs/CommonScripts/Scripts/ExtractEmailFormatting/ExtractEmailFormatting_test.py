@@ -44,7 +44,6 @@ def test_verify_is_email(address, valid):
 @pytest.mark.parametrize('input,output', [  # noqa: E501 disable-secrets-detection # no processing needed
     ('\\u003ctest@test.com', 'test@test.com'),
 ])  # noqa: E124
-
 def test_extract_email(input, output):
     extracted_fqdn = remove_unicode_points(input)
     # extracted_domain = extract_fqdn_or_domain(input, is_domain=True)
