@@ -1858,6 +1858,9 @@ class Client(BaseClient):
         except Exception:
             return None
 
+        finally:
+            self._session.cookies.clear()  # Remove cookies received and saved to session be this request.
+
         if not response_data.get("records"):
             return None
 
