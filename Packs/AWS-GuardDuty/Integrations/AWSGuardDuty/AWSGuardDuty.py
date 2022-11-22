@@ -35,7 +35,10 @@ class DatetimeEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def create_detector(client: boto3.client, args: dict):
+def create_detector(client: boto3.client, args: dict) -> CommandResults:
+    """
+    Creates a single Amazon GuardDuty detector.
+    """
     kwargs = {'Enable': argToBoolean(args.get('enabled', False))}
 
     if args.get('findingFrequency'):
@@ -47,8 +50,8 @@ def create_detector(client: boto3.client, args: dict):
     if args.get('ebsVolumesMalwareProtection'):
         get_dataSources.update({'MalwareProtection': {
             'ScanEc2InstanceWithFindings': {'EbsVolumes': argToBoolean(args['ebsVolumesMalwareProtection'])}}})
-    if args.get('enableS3_logs'):
-        get_dataSources.update({'S3Logs': {'Enable': argToBoolean(args['enableS3_logs'])}})
+    if args.get('enableS3Logs'):
+        get_dataSources.update({'S3Logs': {'Enable': argToBoolean(args['enableS3Logs'])}})
     if get_dataSources:
         kwargs['DataSources'] = get_dataSources
 
@@ -71,7 +74,10 @@ def delete_detector(client: boto3.client, args: dict):
         raise Exception(f"The Detector {args.get('detectorId')} failed to delete.")
 
 
-def get_detector(client: boto3.client, args: dict):
+def get_detector(client: boto3.client, args: dict) -> CommandResults:
+    """
+    Retrieves an Amazon GuardDuty detector specified by the detectorId.
+    """
     response = client.get_detector(DetectorId=args.get('detectorId'))
     data = ({
         'DetectorId': args.get('detectorId'),
@@ -99,7 +105,10 @@ def get_detector(client: boto3.client, args: dict):
                           outputs_key_field='DetectorId')
 
 
-def update_detector(client: boto3.client, args: dict):
+def update_detector(client: boto3.client, args: dict) -> str:
+    """
+    Updates the Amazon GuardDuty detector specified by the detectorId.
+    """
     kwargs = {'Enable': argToBoolean(args.get('enable', False)), 'DetectorId': args.get('detectorId')}
 
     if args.get('findingFrequency'):
@@ -111,8 +120,8 @@ def update_detector(client: boto3.client, args: dict):
     if args.get('ebsVolumesMalwareProtection'):
         get_dataSources.update({'MalwareProtection': {
             'ScanEc2InstanceWithFindings': {'EbsVolumes': argToBoolean(args['ebsVolumesMalwareProtection'])}}})
-    if args.get('enableS3_logs'):
-        get_dataSources.update({'S3Logs': {'Enable': argToBoolean(args['enableS3_logs'])}})
+    if args.get('enableS3Logs'):
+        get_dataSources.update({'S3Logs': {'Enable': argToBoolean(args['enableS3Logs'])}})
     if get_dataSources:
         kwargs['DataSources'] = get_dataSources
 
@@ -123,7 +132,7 @@ def update_detector(client: boto3.client, args: dict):
         raise Exception(f"Detector {args.get('detectorId')} failed to update. Response was: {response}")
 
 
-def list_detectors(client: boto3.client, args: dict):
+def list_detectors(client: boto3.client, args: dict) -> CommandResults:
     limit, page_size, page = get_pagination_args(args)
 
     paginator = client.get_paginator('list_detectors')
@@ -224,7 +233,7 @@ def get_ip_set(client: boto3.client, args: dict):
                           outputs_key_field='IpSetId')
 
 
-def list_ip_sets(client: boto3.client, args: dict):
+def list_ip_sets(client: boto3.client, args: dict) -> CommandResults:
     limit, page_size, page = get_pagination_args(args)
 
     paginator = client.get_paginator('list_ip_sets')
@@ -309,7 +318,7 @@ def get_threat_intel_set(client: boto3.client, args: dict):
                           outputs_key_field='ThreatIntelSetId')
 
 
-def list_threat_intel_sets(client: boto3.client, args: dict):
+def list_threat_intel_sets(client: boto3.client, args: dict) -> CommandResults:
     limit, page_size, page = get_pagination_args(args)
 
     paginator = client.get_paginator('list_threat_intel_sets')
@@ -357,8 +366,8 @@ def update_threat_intel_set(client: boto3.client, args: dict):
                         f"Response was: {response}")
 
 
-def severity_mapping(severity: Optional[int]):
-    demisto_severity = 0
+def severity_mapping(severity: Optional[float]) -> Optional[int]:
+    demisto_severity = None
     if severity:
         if severity <= 3.9:
             demisto_severity = 1
@@ -366,6 +375,8 @@ def severity_mapping(severity: Optional[int]):
             demisto_severity = 2
         elif 7 <= severity <= 8.9:
             demisto_severity = 3
+        else:
+            demisto_severity = 0
     return demisto_severity
 
 
@@ -382,7 +393,7 @@ def gd_severity_mapping(severity: str):
     return gdSevirity
 
 
-def list_findings(client: boto3.client, args: dict):
+def list_findings(client: boto3.client, args: dict) -> CommandResults:
     limit, page_size, page = get_pagination_args(args)
 
     paginator = client.get_paginator('list_findings')
@@ -409,7 +420,7 @@ def list_findings(client: boto3.client, args: dict):
                           outputs_key_field='')
 
 
-def get_pagination_args(args: dict):
+def get_pagination_args(args: dict) -> Tuple[int, int, Optional[int]]:
     """
     Gets and validates pagination arguments.
     :param args: The command arguments (page, page_size or limit)
@@ -420,13 +431,13 @@ def get_pagination_args(args: dict):
     limit = arg_to_number(args.get('limit', MAX_RESULTS_RESPONSE))
 
     # Manual Pagination
-    page = arg_to_number(args['page']) if args.get('page') else None
+    page = arg_to_number(args.get('page'))
     if page is not None and page <= 0:
-        raise Exception('page argument must be greater than 0')
+        raise DemistoException('page argument must be greater than 0')
 
-    page_size = arg_to_number(args['page_size']) if args.get('page_size') else MAX_RESULTS_RESPONSE
+    page_size = arg_to_number(args.get('page_size', MAX_RESULTS_RESPONSE))
     if not 0 < page_size <= MAX_RESULTS_RESPONSE:  # type: ignore
-        raise Exception(f'page_size argument must be between 1 to {MAX_RESULTS_RESPONSE}')
+        raise DemistoException(f'page_size argument must be between 1 to {MAX_RESULTS_RESPONSE}')
 
     if page:
         limit = page * page_size  # type: ignore
@@ -434,9 +445,14 @@ def get_pagination_args(args: dict):
     return limit, page_size, page
 
 
-def parse_finding(finding: dict):
+def parse_finding(finding: dict) -> Dict:
+    """
+    Parse the finding data to output, context format
+    :param finding: Contains information about the finding,
+    which is generated when abnormal or suspicious activity is detected.
+    :return: parsed_finding
+    """
     parsed_finding: dict = dict()
-
     parsed_finding['AccountId'] = finding.get('AccountId')
     parsed_finding['CreatedAt'] = finding.get('CreatedAt')
     parsed_finding['Description'] = finding.get('Description')
@@ -444,7 +460,7 @@ def parse_finding(finding: dict):
     parsed_finding['Id'] = finding.get('Id')
     parsed_finding['Title'] = finding.get('Title')
     parsed_finding['Type'] = finding.get('Type')
-    parsed_finding['Severity'] = finding.get('Severity')
+    parsed_finding['Severity'] = severity_mapping(finding.get('Severity'))
     parsed_finding['UpdatedAt'] = finding.get('UpdatedAt')
 
     parsed_finding['Arn'] = finding.get('Arn')
@@ -480,7 +496,7 @@ def parse_finding(finding: dict):
     return parsed_finding
 
 
-def get_findings(client: boto3.client, args: dict):
+def get_findings(client: boto3.client, args: dict) -> CommandResults:
     response = client.get_findings(
         DetectorId=args.get('detectorId'),
         FindingIds=argToList(args.get('findingIds')))
@@ -545,8 +561,7 @@ def fetch_incidents(client: boto3.client, aws_gd_severity: str, last_run: dict, 
     latest_created_time = last_run.get('latest_created_time')
     last_incidents_ids = last_run.get('last_incidents_ids', [])
     last_next_token = last_run.get('last_next_token', "")
-    latest_updated_time = dateparser.parse(last_run['latest_updated_time']) if last_run.get(
-        'latest_updated_time') else None
+    latest_updated_time = dateparser.parse(last_run.get('latest_updated_time', ""))
 
     # Handle first time fetch
     if latest_created_time is None:
@@ -683,7 +698,7 @@ def update_findings_feedback(client: boto3.client, args: dict):
         raise Exception(f"Failed to send findings feedback. Response was: {response}")
 
 
-def list_members(client: boto3.client, args: dict):
+def list_members(client: boto3.client, args: dict) -> CommandResults:
     limit, page_size, page = get_pagination_args(args)
 
     paginator = client.get_paginator('list_members')

@@ -75,7 +75,7 @@ Action: _guardduty:CreateDetector_
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | enabled | A boolean value that specifies whether the detector is to be enabled. Possible values are: True, False. Default is True. | Required | 
-| enableS3_logs | The status of S3 data event logs as a data source. Possible values are: True, False. | Optional | 
+| enableS3Logs | The status of S3 data event logs as a data source. Possible values are: True, False. | Optional | 
 | enableKubernetesLogs | The status of Kubernetes audit logs as a data source. Possible values are: True, False. | Optional | 
 | ebsVolumesMalwareProtection | Describes the configuration for scanning EBS volumes as data source. Possible values are: True, False. | Optional | 
 | findingFrequency | A value that specifies how frequently updated findings are exported. Possible values are: Fifteen Minutes, One Hour, Six Hours. | Optional | 
@@ -189,7 +189,7 @@ Action: _guardduty:UpdateDetector_
 | --- | --- | --- |
 | detectorId | The unique ID of the detector that you want to update. | Required | 
 | enable | Updated boolean value for the detector that specifies whether the detector is enabled. Possible values are: True, False. Default is True. | Required | 
-| enableS3_logs | The status of S3 data event logs as a data source. Possible values are: True, False. | Optional | 
+| enableS3Logs | The status of S3 data event logs as a data source. Possible values are: True, False. | Optional | 
 | enableKubernetesLogs | The status of Kubernetes audit logs as a data source. Possible values are: True, False. | Optional | 
 | ebsVolumesMalwareProtection | Describes the configuration for scanning EBS volumes as data source. Possible values are: True, False. | Optional | 
 | findingFrequency | A value that specifies how frequently updated findings are exported. Possible values are: Fifteen Minutes, One Hour, Six Hours. | Optional | 

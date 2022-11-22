@@ -131,7 +131,7 @@ script:
       secret: false
     - description: The status of S3 data event logs as a data source.
       isArray: false
-      name: enableS3_logs
+      name: enableS3Logs
       required: false
       auto: PREDEFINED
       predefined:
@@ -324,7 +324,7 @@ script:
       secret: false
     - description: The status of S3 data event logs as a data source.
       isArray: false
-      name: enableS3_logs
+      name: enableS3Logs
       required: false
       auto: PREDEFINED
       predefined:
