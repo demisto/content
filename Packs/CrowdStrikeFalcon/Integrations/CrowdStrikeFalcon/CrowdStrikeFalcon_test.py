@@ -3181,7 +3181,7 @@ def test_search_device_command(requests_mock):
                       'Status': 'normal'}
     endpoint_context = {'Hostname': 'FALCON-CROWDSTR', 'ID': 'identifier_number', 'IPAddress': '1.1.1.1',
                         'MACAddress': '42-01-0a-80-00-07', 'OS': 'Windows', 'OSVersion': 'Windows Server 2019',
-                        'Status': 'Online', 'Vendor': 'CrowdStrike Falcon'}
+                        'Status': 'Offline', 'Vendor': 'CrowdStrike Falcon'}
     status_res = {
         "meta": {
             "query_time": 0.002455124,
@@ -3193,7 +3193,7 @@ def test_search_device_command(requests_mock):
                 "id": "15dbb9d8f06b45fe9f61eb46e829d986",
                 "cid": "20879a8064904ecfbb62c118a6a19411",
                 "last_seen": "2022-09-03T10:48:12Z",
-                "state": "online"
+                "state": "offline"
             }
         ],
         "errors": []
