@@ -3680,8 +3680,8 @@ def patch_papi_property_rule_origin_command(client: Client,
             {
                 "op": operation,
                 "path": path,
-                "value": [{
-                    "name": f"Origin for {external_url}",
+                "value": {  # type: ignore
+                    "name": "Origin for " + external_url,
                     "children": [],
                     "behaviors": [
                         {
@@ -3725,7 +3725,7 @@ def patch_papi_property_rule_origin_command(client: Client,
                         }
                     ],
                     "criteriaMustSatisfy": "all"
-                }]
+                }
             }
         ]
 
@@ -4513,7 +4513,7 @@ def new_or_renew_match_target_command(client: Client,
                                                   includeChildObjectName='true'
                                                   )
 
-    if not raw_response.get("matchTargets", {})("websiteTargets"):
+    if not raw_response.get("matchTargets", {}).get("websiteTargets"):
         # If no list is found, create a new match target and add the hostname in there.
         raw_response = client.new_match_target(config_id=arg_to_number(config_id),  # type: ignore
                                                config_version=arg_to_number(config_version),  # type: ignore[arg-type]
