@@ -1,0 +1,4 @@
+[INGEST:vendor="cisco", product="sma", target_dataset="cisco_sma_raw"]
+alter event_time = arrayindex(regextract(_raw_log ,"\d+\>([a-zA-Z]+\s\d+\s\d+\:\d+\:\d+)\s"),0),
+    year = format_timestamp("%Y", _insert_time)
+| alter _time = parse_timestamp("%b %d %H:%M:%S %Y",concat(event_time," ", year) );
