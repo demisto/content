@@ -1191,7 +1191,7 @@ List Address Objects
             {
                 "folder": "Shared",
                 "id": "########-####-####-####-############",
-                "ip_netmask": "100.127.0.0/16",
+                "ip_netmask": "10.0.0.0/16",
                 "name": "GP-Users"
             },
             {
@@ -1212,6 +1212,6 @@ List Address Objects
 >|Name|Description|Ip Netmask|Fqdn|
 >|---|---|---|---|
 >| Palo Alto Networks Sinkhole | Palo Alto Networks sinkhole |  | sinkhole.paloaltonetworks.com |
->| GP-Users |  | 100.127.0.0/16 |  |
+>| GP-Users |  | 10.0.0.0/16 |  |
 >| XSOAR Test Object B | Test Object Creation from XSOAR | 10.10.10.10/32 |  |
 
