@@ -1,4 +1,4 @@
-## BaseIntegration Help
+## Integration Help
 
 - Get an API Key from LIS.
-- Put the APi Key in the XSoar LIS pack.
+- Put the APi Key in the LastInfoSec API token of your instance.

@@ -75,7 +75,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Filtre IoC by risk
+      description: Filter IoC by risk
       isArray: true
       name: Risk
       predefined:
@@ -86,7 +86,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Filtre IoC by TLP
+      description: Filter IoC by TLP
       isArray: true
       name: TLP
       predefined:
@@ -109,7 +109,7 @@ script:
       description: Value to be search
       isArray: false
       name: Value
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Allows you to search for an IOC (url, hash, host) or a vulnerability

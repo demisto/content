@@ -1,4 +1,3 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)"""
 from typing import (
     Any,
     Dict
@@ -7,7 +6,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 import urllib3
 # Disable insecure warnings
-urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()
 
 
 class GwAPIException(Exception):
@@ -175,18 +174,12 @@ class GwClient(GwRequests):
             )
             return False
 
-    def get_by_minute(self, minute: str, categories: str = None, ftype: str = None, mode: str = None,
-                      risk: str = None, tlp: str = None) -> list:
+    def get_by_minute(self, minute) -> list:
         """Retrieve the data from Gatewatcher CTI feed by minute.
             Max 1440 minutes.
 
         Args:
             minute: Number of minutes to get. (max 1440 min)
-            categories: Filter IoC by categories
-            ftype: Filter IoC by type
-            mode: Filter IoC by mode
-            risk: Filter IoC by risk
-            tlp: Filter IoC by tlp
 
         Returns:
             LIS Json response
@@ -194,46 +187,20 @@ class GwClient(GwRequests):
         Raises:
             GwAPIException: If status_code != 200.
         """
-        try:
-            int(minute)
-        except ValueError:
-            raise ValueError("Minute must be a number")
-        if ftype and ftype.lower() == "filename":
-            raise ValueError("Cant filter by filename")
-        if risk and risk.lower() == "informational":
-            raise ValueError("Cant filter by informational")
 
         response = self._get(
-            endpoint=f"/lis/getbyminutes/{minute}?api_key={self.token}&headers=false"
+            endpoint=f"/lis/getbyminutes/{arg_to_number(minute)}?api_key={self.token}&headers=false"
         )
         if response.status_code == 200:
             demisto.info("Get ioc by minute : [OK]")
-            result = response.json()
+            return response.json()
         else:
             raise GwAPIException(
                 "Get ioc by minute: [FAILED]",
                 response.text, response.status_code, response.reason
             )
-        categories = categories.lower().replace(" ", "").split(",") if categories else []
-        risk = risk.lower().replace(" ", "").split(",") if risk else []
-        tlp = tlp.lower().replace(" ", "").split(",") if tlp else []
-        ftype = ftype.lower().replace(" ", "").split(",") if ftype else []
-        for case in result:
-            if categories:
-                case["IOCs"] = [ioc for ioc in case["IOCs"] if set(categories) & set(ioc["Categories"])]
-            if ftype:
-                case["IOCs"] = [ioc for ioc in case["IOCs"] if ioc["Type"].lower() in ftype]
-            if mode:
-                case["IOCs"] = [ioc for ioc in case["IOCs"] if mode.lower() == ioc["UsageMode"].lower()]
-            if risk:
-                case["IOCs"] = [ioc for ioc in case["IOCs"] if ioc["Risk"].lower() in risk]
-            if tlp:
-                case["IOCs"] = [ioc for ioc in case["IOCs"] if ioc["TLP"].lower() in tlp]
 
-        result = [ioc["Value"] for case in result for ioc in case['IOCs']]
-        return result
-
-    def get_by_value(self, value: str = None) -> dict:
+    def get_by_value(self, value: str) -> dict:
         """Allows you to search for an IOC (url, hash, host) or a vulnerability in the Gatewatcher CTI database.
             If the data is known, only the IOC corresponding to the value will be returned.
 
@@ -246,34 +213,18 @@ class GwClient(GwRequests):
         Raises:
             GwAPIException: If status_code != 200.
         """
-        param = {
-            "value": value
-        }
         response = self._post(
             endpoint=f"/lis/search?api_key={self.token}&headers=false",
-            json_data=param
+            json_data=assign_params(value=value)
         )
         if response.status_code == 200:
             demisto.info("Get search ioc: [OK]")
-            result = response.json()
+            return response.json()
         else:
             raise GwAPIException(
                 "Get search ioc: [FAILED]",
                 response.text, response.status_code, response.reason
             )
-
-        for ioc in result["IOCs"]:
-            if ioc["Value"] == value:
-                return {
-                    "Value": ioc["Value"],
-                    "Risk": ioc["Risk"],
-                    "Categories": ioc["Categories"],
-                    "Type": ioc["Type"],
-                    "TLP": ioc["TLP"],
-                    "UsageMode": ioc["UsageMode"],
-                    "Vulnerabilities": ioc["Vulnerabilities"]
-                }
-        return {}
 
 
 def test_module(client: GwClient) -> str:  # noqa: E501
@@ -292,7 +243,7 @@ def test_module(client: GwClient) -> str:  # noqa: E501
         return "Request error, please check ip/user/password/token: [ERROR]"
 
 
-def lis_get_by_minute(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+def lis_get_by_minute(client: GwClient, args: Dict[Any, Any]) -> CommandResults:  # noqa: E501
     """Retrieve the data from Gatewatcher CTI feed by minute.
         Max 1440 minutes.
 
@@ -303,28 +254,45 @@ def lis_get_by_minute(client: GwClient, args: Optional[Dict[Any, Any]]) -> Comma
     Returns:
         CommandResults object with the "LIS.IoC.GetByMinute" prefix.
     """
-    result = client.get_by_minute(
-        minute=args.get("Minute"),  # type: ignore
-        categories=args.get("Categories"),  # type: ignore
-        ftype=args.get("Type"),  # type: ignore
-        mode=args.get("Mode"),  # type: ignore
-        risk=args.get("Risk"),  # type: ignore
-        tlp=args.get("TLP")  # type: ignore
-    )
+    minute = arg_to_number(args.get("Minute"))
+    categories = argToList(args.get("Categories"))
+    risk = argToList(args.get("Risk"))
+    tlp = argToList(args.get("TLP"))
+    ftype = argToList(args.get("Type"))
+    mode = args.get("Mode")
+
+    if "Filename" in ftype:
+        raise ValueError("Filter filename is not a valid filter. Please use a different filter option.")
+    if "Informational" in risk:
+        raise ValueError("Filter informational is not a valid filter. Please use a different filter option.")
+
+    response = client.get_by_minute(minute=minute)
+
+    for case in response:
+        if categories:
+            case["IOCs"] = [ioc for ioc in case["IOCs"] if set(categories) & set(ioc["Categories"])]
+        if ftype:
+            case["IOCs"] = [ioc for ioc in case["IOCs"] if ioc["Type"] in ftype]
+        if mode:
+            case["IOCs"] = [ioc for ioc in case["IOCs"] if mode == ioc["UsageMode"]]
+        if risk:
+            case["IOCs"] = [ioc for ioc in case["IOCs"] if ioc["Risk"] in risk]
+        if tlp:
+            case["IOCs"] = [ioc for ioc in case["IOCs"] if ioc["TLP"] in tlp]
+    result = [ioc["Value"] for case in response for ioc in case['IOCs']]
+
     readable_result = tableToMarkdown("Get IoC by minute", result, headers="Value")
     return CommandResults(
         readable_output=readable_result,
         outputs_prefix="LIS.GetByMinute",
-        outputs_key_field=None,
         outputs=result,
         raw_response=result
     )
 
 
-def lis_get_by_value(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+def lis_get_by_value(client: GwClient, args: Dict[Any, Any]) -> CommandResults:  # noqa: E501
     """Allows you to search for an IOC (url, hash, host) or a vulnerability in the Gatewatcher CTI database.
         If the data is known, only the IOC corresponding to the value will be returned.
-
 
     Args:
         client: Client to interact with the LIS API.
@@ -333,22 +301,30 @@ def lis_get_by_value(client: GwClient, args: Optional[Dict[Any, Any]]) -> Comman
     Returns:
         CommandResults object with the "LIS.IoC.GetByValue" prefix.
     """
-    result = client.get_by_value(
-        value=args.get("Value")  # type: ignore
-    )
+    value = args["Value"]
+    response = client.get_by_value(value=value)
+
+    ioc = list(filter(lambda x: x["Value"] == value, response["IOCs"]))[0]
+    result = {
+        "Value": ioc["Value"],
+        "Risk": ioc["Risk"],
+        "Categories": ioc["Categories"],
+        "Type": ioc["Type"],
+        "TLP": ioc["TLP"],
+        "UsageMode": ioc["UsageMode"],
+        "Vulnerabilities": ioc["Vulnerabilities"]
+    }
+
     readable_result = tableToMarkdown("Get IoC corresponding to the value", result)
     return CommandResults(
         readable_output=readable_result,
         outputs_prefix="LIS.GetByValue",
-        outputs_key_field=None,
         outputs=result,
         raw_response=result
     )
 
 
 def main() -> None:
-    """main function, parses params and runs command functions"""
-
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
@@ -372,6 +348,8 @@ def main() -> None:
             return_results(
                 lis_get_by_value(client=client, args=args)
             )
+        else:
+            raise NotImplementedError(f'{command} command is not implemented.')
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
