@@ -25,7 +25,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -34,6 +34,7 @@ tasks:
       - "6"
       - "7"
       - "9"
+      - "10"
     separatecontext: false
     view: |-
       {
@@ -61,7 +62,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -74,7 +75,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 220,
+          "x": 160,
           "y": 310
         }
       }
@@ -97,7 +98,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -114,7 +115,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
+          "x": 610,
           "y": 310
         }
       }
@@ -156,7 +157,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -240,
+          "x": -320,
           "y": 310
         }
       }
@@ -206,7 +207,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -219,7 +220,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1140,
+          "x": 1110,
           "y": 310
         }
       }
@@ -242,7 +243,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -255,7 +256,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1600,
+          "x": 1560,
           "y": 310
         }
       }
@@ -278,7 +279,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -295,7 +296,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2050,
+          "x": 1990,
           "y": 310
         }
       }
@@ -306,14 +307,57 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 6249599a-63f5-4a27-8101-92c4fc503b0a
+    type: playbook
+    task:
+      id: 6249599a-63f5-4a27-8101-92c4fc503b0a
+      version: -1
+      name: Block Domain - External Dynamic List
+      description: |-
+        This playbook blocks domains using External Dynamic Link.
+        The playbook adds a tag to the inputs domain indicators. those tags indicators can be published as External Dynamic list that can be blocked by multiple products like Panorama by Palo Alto Networks.
+      playbookName: Block Domain - External Dynamic List
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      Domains:
+        simple: ${inputs.Domain}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 2420,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 485,
-        "width": 2670,
-        "x": -240,
+        "width": 3120,
+        "x": -320,
         "y": 120
       }
     }
