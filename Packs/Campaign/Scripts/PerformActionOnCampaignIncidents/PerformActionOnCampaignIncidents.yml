@@ -15,7 +15,7 @@ comment: |-
 commonfields:
   id: PerformActionOnCampaignIncidents
   version: -1
-dockerimage: devdemisto/py3-primary:8.1.0.37708
+dockerimage: devdemisto/py3-primary:8.1.0.37710
 enabled: true
 name: PerformActionOnCampaignIncidents
 runonce: false

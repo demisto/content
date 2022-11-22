@@ -46,7 +46,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: devdemisto/py3-primary:8.1.0.37708
+dockerimage: devdemisto/py3-primary:8.1.0.37710
 fromversion: 6.1.0
 tests:
 - ListUsedDockerImages - Test

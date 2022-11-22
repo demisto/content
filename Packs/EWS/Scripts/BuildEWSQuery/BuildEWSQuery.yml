@@ -50,4 +50,4 @@ runonce: false
 tests:
 - buildewsquery_test
 fromversion: 5.0.0
-dockerimage: devdemisto/py3-primary:8.1.0.37708
+dockerimage: devdemisto/py3-primary:8.1.0.37710

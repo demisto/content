@@ -44,7 +44,7 @@ tags:
 - ml
 timeout: '0'
 type: python
-dockerimage: devdemisto/py3-primary:8.1.0.37708
+dockerimage: devdemisto/py3-primary:8.1.0.37710
 runas: DBotRole
 runonce: false
 tests:

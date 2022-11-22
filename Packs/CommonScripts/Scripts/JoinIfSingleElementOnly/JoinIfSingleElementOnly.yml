@@ -20,6 +20,6 @@ args:
   isArray: true
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: devdemisto/py3-primary:8.1.0.37708
+dockerimage: devdemisto/py3-primary:8.1.0.37710
 tests:
 - No tests (auto formatted)

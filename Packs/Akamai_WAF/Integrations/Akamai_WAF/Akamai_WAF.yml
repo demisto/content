@@ -1053,7 +1053,7 @@ script:
       type: textArea
     description: Acknowledge the warning message for uploading the certs and trust
       chains of enrollments.
-  dockerimage: devdemisto/py3-primary:8.1.0.37708
+  dockerimage: devdemisto/py3-primary:8.1.0.37710
   runonce: false
   script: ''
   subtype: python3
