@@ -199,6 +199,12 @@ MIRROR_DIRECTION_DICT = {
     'Incoming And Outgoing': 'Both'
 }
 
+HOST_STATUS_DICT = {
+    'online': 'Online',
+    'offline': 'Offline',
+    'unknown': 'Unknown'
+}
+
 
 class IncidentType(Enum):
     INCIDENT = 'inc'
@@ -1409,6 +1415,7 @@ def search_device(filter_operator='AND'):
     device_ids = raw_res.get('resources')
     if not device_ids:
         return None
+    demisto.debug(f"number of devices returned from the api call is: {len(device_ids)}")
     return http_request('GET', '/devices/entities/devices/v2', params={'ids': device_ids})
 
 
@@ -2474,6 +2481,7 @@ def search_device_command():
 
     command_results = []
     for single_device in devices:
+        # demisto.debug(f"single device info: {single_device}")
         # status, is_isolated = generate_status_fields(single_device.get('status'), single_device.get("device_id"))
         endpoint = Common.Endpoint(
             id=single_device.get('device_id'),
@@ -2518,7 +2526,10 @@ def search_device_by_ip(raw_res, ip_address):
 def get_status(device_id):
     raw_res = http_request('GET', '/devices/entities/online-state/v1', params={'ids': device_id})
     state = raw_res.get('resources')[0].get('state', '')
-    return 'Online' if state in ['online', 'Online'] else ''
+    if state == 'unknown':
+        demisto.debug(f"Device with id: {device_id} returned an unknown state, which indicates that the host has not"
+                      f" been seen recently and we are not confident about its current state")
+    return HOST_STATUS_DICT[state]
 
 
 def get_isolation_status(endpoint_status):
