@@ -2346,8 +2346,8 @@ class Pack(object):
         finally:
             return task_status
 
-    def _collect_pack_tags(self, user_metadata, landing_page_sections, trending_packs):
-        tags = set(input_to_list(input_data=user_metadata.get('tags')))
+    def _collect_pack_tags(self, user_metadata, landing_page_sections, trending_packs, marketplace):
+        tags = self._get_tags_by_marketplace(user_metadata, marketplace)
         tags |= self._get_tags_from_landing_page(landing_page_sections)
         tags |= {PackTags.TIM} if self._is_feed else set()
         tags |= {PackTags.USE_CASE} if self._use_cases else set()
@@ -2370,7 +2370,20 @@ class Pack(object):
 
         return tags
 
-    def _enhance_pack_attributes(self, index_folder_path, dependencies_metadata_dict,
+    def _get_tags_by_marketplace(self, user_metadata: dict, marketplace: str):
+        """ Returns tags in according to the current marketplace"""
+        tags = []
+        for tag in user_metadata.get('tags', []):
+            if ':' in tag:
+                tag_data = tag.split(':')
+                if marketplace in tag_data[0].split(','):
+                    tags.append(tag_data[1])
+            else:
+                tags.append(tag)
+
+        return set(input_to_list(input_data=tags))
+
+    def _enhance_pack_attributes(self, index_folder_path, dependencies_metadata_dict, marketplace,
                                  statistics_handler=None, format_dependencies_only=False):
         """ Enhances the pack object with attributes for the metadata file
 
@@ -2433,7 +2446,7 @@ class Pack(object):
             self._downloads_count = self._pack_statistics_handler.download_count
             trending_packs = statistics_handler.trending_packs
             pack_dependencies_by_download_count = self._pack_statistics_handler.displayed_dependencies_sorted
-        self._tags = self._collect_pack_tags(self.user_metadata, landing_page_sections, trending_packs)
+        self._tags = self._collect_pack_tags(self.user_metadata, landing_page_sections, trending_packs, marketplace)
         self._search_rank = mp_statistics.PackStatisticsHandler.calculate_search_rank(
             tags=self._tags, certification=self._certification, content_items=self._content_items
         )
@@ -2475,7 +2488,7 @@ class Pack(object):
             dependencies_metadata_dict, is_missing_dependencies = self._load_pack_dependencies_metadata(
                 index_folder_path, packs_dict)
 
-            self._enhance_pack_attributes(index_folder_path, dependencies_metadata_dict,
+            self._enhance_pack_attributes(index_folder_path, dependencies_metadata_dict, marketplace,
                                           statistics_handler, format_dependencies_only)
 
             formatted_metadata = self._parse_pack_metadata(build_number, commit_hash)
