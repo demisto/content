@@ -1704,9 +1704,10 @@ def packs_names_to_integrations_names(turned_non_hidden_packs_names: Set[str]) -
     hidden_integrations_paths = [f'Packs/{pack_name}/Integrations' for pack_name in turned_non_hidden_packs_names]
     # extract integration names within the turned non-hidden packs.
     for hidden_integrations_path in hidden_integrations_paths:
-        pack_integrations_paths = listdir_fullpath(hidden_integrations_path)
-        for integration_path in pack_integrations_paths:
-            hidden_integrations.append(integration_path.split("/")[-1])
+        if os.path.exists(hidden_integrations_path):
+            pack_integrations_paths = listdir_fullpath(hidden_integrations_path)
+            for integration_path in pack_integrations_paths:
+                hidden_integrations.append(integration_path.split("/")[-1])
     hidden_integrations_names = [integration for integration in hidden_integrations if
                                  not str(integration).startswith('.')]
     return hidden_integrations_names
