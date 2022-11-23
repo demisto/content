@@ -317,18 +317,6 @@ tasks:
       - "12"
     separatecontext: false
     conditions:
-    - label: User
-      condition:
-      - - operator: notContainsGeneral
-          left:
-            value:
-              complex:
-                root: inputs.username
-            iscontext: true
-          right:
-            value:
-              simple: projects
-          ignorecase: true
     - label: Delete
       condition:
       - - operator: isEqualString
