@@ -45,6 +45,7 @@
             "display_name": "Microsoft Graph Mail"
         }
     },
+    "excludedDependencies": ["CrisisManagement"],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

@@ -47,6 +47,7 @@
             "display_name": "RemoteAccess v2"
         }
     },
+    "excludedDependencies": ["GoogleMaps", "Slack"],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

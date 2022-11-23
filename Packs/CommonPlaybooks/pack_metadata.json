@@ -285,6 +285,7 @@
             "display_name": "SecneurX Analysis"
         }
     },
+    "excludedDependencies": ["Attlasian", "HelloIAMWorld", "AWS-ILM", "GitHub", "SalesforceFusion", "Salesforce", "PrismaCloud", "Okta", "SAP_IAM", "Oracle_IAM", "Clarizen", "Slack", "Zoom", "Envoy", "ServiceNow", "ExceedLMS"],
     "displayedImages": [
         "Threat_Crowd",
         "CiscoASA",
