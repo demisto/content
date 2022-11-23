@@ -22,7 +22,7 @@ There are several procedures you have to perform in Google before configuring th
 6.  Click **Continue.**
 7.  In the **Create key** section, click **CREATE KEY**.
 8.  Select Key type **JSON** and click **CREATE**.
-9.  Click **DONE**.<br/>A key pair is generated and automatically downloads.
+9.  Click **DONE**.<br/>A Service Account file with a key pair is generated and automatically downloads.
 10.  In the **Actions** column, select the service and then click **edit**.
     ![mceclip1.png](https://github.com/demisto/content/raw/6d9ac954729a6dffd6be51b658e7987824238462/Integrations/Gmail/doc_imgs/mceclip1.png) 
 11.  Under the show domain wide delegation, select **Enable G Suite Domain-wide Delegation**.
