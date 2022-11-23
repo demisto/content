@@ -3,4 +3,5 @@ alter time_convert = to_string(TIMESTAMP_DERIVED)
 | alter date_part = arraystring(regextract(time_convert , "^\d{4}\-\d{2}\-\d{2}"), ""),
     time_part = arraystring(regextract(time_convert, "T(\d{2}\:\d{2}\:\d{2})"), "")
 | alter time_format = arraystring(arraycreate(date_part, time_part), " ")
-| alter _time = parse_timestamp("%Y-%m-%d %H:%M:%S", time_format);
+| alter _time = parse_timestamp("%Y-%m-%d %H:%M:%S", time_format)
+| fields -time_convert, date_part, time_part, time_format;
