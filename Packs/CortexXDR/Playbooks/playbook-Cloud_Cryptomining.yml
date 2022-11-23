@@ -919,7 +919,7 @@ inputs:
   playbookInputQuery:
 - key: SOCEmailAddress
   value:
-    simple: analyst@xsoartemp.com
+    simple:
   required: false
   description: The SOC email address to use for the alert status notification.
   playbookInputQuery:
