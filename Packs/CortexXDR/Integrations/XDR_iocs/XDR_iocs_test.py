@@ -877,13 +877,12 @@ def test_severity_validate(value: str):
      ))
 def test_xsoar_comments__csv(comment_value: str | list[str], expected_comment: str | None):
     """
-    Given   a custom field name, and comma-separated comments
+    Given   a custom field name, and comma-separated comments in it 
     When    converting an XSOAR IOC to XDR
     Then    check the output values
     """
     custom_comments_field = 'custom_comments_field'
 
     Client.xsoar_comments_field = custom_comments_field
-    # default behavior
     xdr_ioc = demisto_ioc_to_xdr({'value': '1.1.1.1', 'indicator_type': 'FILE', custom_comments_field: comment_value})
     assert xdr_ioc.get('comment') == expected_comment, xdr_ioc
