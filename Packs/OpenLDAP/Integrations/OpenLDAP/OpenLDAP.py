@@ -33,8 +33,8 @@ class LdapClient:
     SSL_VERSIONS = {
         'SSLv23': ssl.PROTOCOL_SSLv23,
         'TLSv1': ssl.PROTOCOL_TLSv1,
-        'TLSv1_1': ssl.PROTOCOL_TLSv1_1,
-        'TLSv1_2': ssl.PROTOCOL_TLSv1_2,
+        'TLSv1_1': ssl.PROTOCOL_TLSv1_1,  # guardrails-disable-line
+        'TLSv1_2': ssl.PROTOCOL_TLSv1_2,  # guardrails-disable-line
         'TLS': ssl.PROTOCOL_TLS,
         'TLS_CLIENT': ssl.PROTOCOL_TLS_CLIENT
     }
