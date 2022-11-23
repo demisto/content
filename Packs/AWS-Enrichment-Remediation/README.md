@@ -12,6 +12,7 @@ Users are only able to run the playbook in v6.5.0 or higher as it requires comma
 This content pack includes the following playbooks: 
 1. AWS - Enrichment
 2. AWS - Security Group Remediation
+3. Cloud Response - AWS
 
 #### AWS - Enrichment
 AWS - Enrichment playbook reports EC2 and IAM information Given an IP address of an EC2 instance.
@@ -22,3 +23,4 @@ AWS - Enrichment playbook reports EC2 and IAM information Given an IP address of
 AWS - Security Group Remediation playbook replaces current securtiy groups associated to NIC with Remediation securtiy group.
 
 ![AWS - Security Group Remediation](https://raw.githubusercontent.com/demisto/content/master/Packs/AWS-Enrichment-Remediation/doc_files/AWS_-_Security_Group_Remediation.png)
+
