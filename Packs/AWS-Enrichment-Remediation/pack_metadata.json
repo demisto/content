@@ -1,5 +1,5 @@
 {
-    "name": "AWS Enrichment and Remediaton",
+    "name": "AWS Enrichment and Remediation",
     "description": "Playbooks using multiple AWS content packs for enrichment and remediation purposes",
     "support": "xsoar",
     "currentVersion": "1.0.1",

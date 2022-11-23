@@ -236,7 +236,7 @@ tasks:
       - "23"
       Disable:
       - "20"
-      Revoke:
+      Delete:
       - "21"
     separatecontext: false
     conditions:
@@ -252,7 +252,7 @@ tasks:
             value:
               simple: Delete
           ignorecase: true
-    - label: Revoke
+    - label: Delete
       condition:
       - - operator: isEqualString
           left:
@@ -262,7 +262,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Revoke
+              simple: Delete
           ignorecase: true
     continueonerrortype: ""
     view: |-
