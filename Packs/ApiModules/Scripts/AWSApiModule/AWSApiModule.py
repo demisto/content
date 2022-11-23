@@ -18,6 +18,16 @@ def validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws
         raise DemistoException('Role session name is required when using role ARN.')
 
 
+def extract_session_from_access(access_key: str, session_token: str):
+    """
+    Extract the session token from the access_key field.
+    """
+    if '@@@' in access_key and not session_token:
+        return access_key.split('@@@')[0], access_key.split('@@@')[1]
+    else:
+        return access_key, session_token
+
+
 class AWSClient:
 
     def __init__(self, aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
@@ -30,8 +40,7 @@ class AWSClient:
         self.aws_role_session_duration = aws_role_session_duration
         self.aws_role_policy = aws_role_policy
         self.aws_access_key_id = aws_access_key_id
-        self.aws_secret_access_key = aws_secret_access_key
-        self.aws_session_token = aws_session_token
+        self.aws_secret_access_key, self.aws_session_token = extract_session_from_access(aws_secret_access_key, aws_session_token)
         self.verify_certificate = verify_certificate
 
         proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
