@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: Symantec Messaging Gateway
 display: Symantec Messaging Gateway
-category: Email Gateway
+category: Network Security
 description: Symantec Messaging Gateway protects against spam, malware, targeted attacks
   and provides advanced content filtering, data loss prevention, and email encryption.
 configuration:

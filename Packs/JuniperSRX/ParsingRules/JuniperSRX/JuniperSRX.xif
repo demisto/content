@@ -1,0 +1,7 @@
+[INGEST:vendor="juniper", product="srx", target_dataset="juniper_srx_raw", no_hit = keep]
+alter event_time1 = arrayindex(regextract(_raw_log , "^(\w+\s+\d+\s+\d+\:\d+\:\d+)"),0)
+    ,event_time2 = arrayindex(regextract(_raw_log , "\>\d+\s+(\d+\-\d+\-\d+T\d+\:\d+\:\d+)"),0)
+| alter year = format_timestamp("%Y",_insert_time )
+| alter event_time1 = parse_timestamp("%b %d %H:%M:%S %Y",concat(event_time1, " ", year)),
+    event_time2 = parse_timestamp("%Y-%m-%dT%H:%M:%S",event_time2 )
+| alter _time = coalesce(event_time1, event_time2);
