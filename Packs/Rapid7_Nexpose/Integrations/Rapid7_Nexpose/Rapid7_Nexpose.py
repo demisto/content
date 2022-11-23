@@ -3473,16 +3473,6 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults | list[Co
         extra_info = client.get_vulnerability(vulnerability["id"])
         asset_data["vulnerabilities"][idx].update(extra_info)
 
-        if "cves" in extra_info:
-            cve_indicators.extend([CommandResults(
-                indicator=Common.CVE(
-                    id=cve,
-                    cvss=None,  # type: ignore
-                    description=None,  # type: ignore
-                    modified=None,  # type: ignore
-                    published=None,  # type: ignore
-                )) for cve in extra_info["cves"]])
-
         output_vulnerability = {
             "Id": vulnerability["id"],
             "Title": extra_info["title"],
@@ -3495,6 +3485,29 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults | list[Co
             "Severity": extra_info["severity"],
             "Instances": vulnerability["instances"],
         }
+
+        if "cves" in extra_info:
+            for cve in extra_info["cves"]:
+                if "v3" in extra_info["cvss"]:
+                    cvss_info = extra_info["cvss"]["v3"]
+                    cvss_version = "3"
+
+                else:
+                    cvss_info = extra_info["cvss"]["v2"]
+                    cvss_version = "2"
+
+                cve_indicators.append(CommandResults(
+                    readable_output=tableToMarkdown(cve, output_vulnerability, vulnerability_headers, removeNull=True),
+                    indicator=Common.CVE(
+                        id=cve,
+                        cvss=None,  # type: ignore
+                        cvss_score=cvss_info.get("score"),
+                        cvss_vector=cvss_info.get("vector"),
+                        cvss_version=cvss_version,
+                        description=extra_info["description"]["text"],
+                        modified=extra_info["modified"],
+                        published=extra_info["published"],
+                    )))
 
         vulnerabilities_output.append(output_vulnerability)
 
@@ -3665,7 +3678,7 @@ def get_asset_vulnerability_command(client: Client, asset_id: str,
 
     # Add extra info about vulnerability
     vulnerability_extra_data = client.get_vulnerability(vulnerability_id=vulnerability_id)
-    vulnerability_data.update(vulnerability_extra_data)
+    vulnerability_data.update(deepcopy(vulnerability_extra_data))
 
     vulnerability_outputs: dict = replace_key_names(
         data=vulnerability_extra_data,
@@ -3769,29 +3782,52 @@ def get_asset_vulnerability_command(client: Client, asset_id: str,
     vulnerability_outputs["Check"] = results_output
     vulnerability_outputs["Solution"] = solutions_output
 
-    result = CommandResults(
-        outputs_prefix="Nexpose.Asset",
-        outputs_key_field="Id",
-        outputs={
-            "AssetId": asset_id,
-            "Vulnerability": [vulnerability_outputs]
-        },
-        readable_output=vulnerabilities_md + results_md + solutions_md,
-    )
+    indicators: list = []
 
-    if vulnerability_outputs.get("CVES"):
-        results = [CommandResults(
-            indicator=Common.CVE(
-                id=cve,
-                cvss=None,  # type: ignore
-                description=None,  # type: ignore
-                modified=None,  # type: ignore
-                published=None,  # type: ignore
-            )) for cve in vulnerability_outputs["CVES"]]
-        results.append(result)
-        return results
+    if vulnerability_data.get("cves"):
+        for cve in vulnerability_data["cves"]:
+            if "v3" in vulnerability_data["cvss"]:
+                cvss_info = vulnerability_data["cvss"]["v3"]
+                cvss_version = "3"
 
-    return result
+            else:
+                cvss_info = vulnerability_data["cvss"]["v2"]
+                cvss_version = "2"
+
+            indicators.append(
+                Common.CVE(
+                    id=cve,
+                    cvss=None,  # type: ignore
+                    cvss_score=cvss_info.get("score"),
+                    cvss_vector=cvss_info.get("vector"),
+                    cvss_version=cvss_version,
+                    description=vulnerability_data["description"]["text"],
+                    modified=vulnerability_data["modified"],
+                    published=vulnerability_data["published"],
+                )
+            )
+
+    if len(indicators) == 0:
+        indicators = [None]
+
+    results = []
+
+    for indicator in indicators:
+        results.append(CommandResults(
+            outputs_prefix="Nexpose.Asset",
+            outputs_key_field="Id",
+            outputs={
+                "AssetId": asset_id,
+                "Vulnerability": [vulnerability_outputs],
+            },
+            readable_output=vulnerabilities_md + results_md + solutions_md,
+            indicator=indicator,
+        ))
+
+    if len(results) == 1:
+        return results[0]
+
+    return results
 
 
 def get_generated_report_status_command(client: Client, report_id: str, instance_id: str) -> CommandResults:
@@ -4424,8 +4460,8 @@ def list_vulnerability_exceptions_command(client: Client, vulnerability_exceptio
 def search_assets_command(client: Client, filter_query: str | None = None, ip_addresses: str | None = None,
                           hostnames: str | None = None, risk_score: str | None = None,
                           vulnerability_title: str | None = None, site_ids: str | None = None,
-                          site_names: str | None = None, match: str | None = None,
-                          page_size: str | None = None, page: str | None = None, sort: str | None = None,
+                          site_names: str | None = None, match: str | None = None, page_size: str | None = None,
+                          page: str | None = None, sort: str | None = None,
                           limit: str | None = None) -> CommandResults | list[CommandResults]:
     """
     Retrieve a list of all assets with access permissions that match the provided search filters.

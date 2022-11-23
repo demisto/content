@@ -379,7 +379,7 @@ def test_get_asset_vulnerability_command(mocker, mock_client: Client, vulnerabil
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
 
     result = get_asset_vulnerability_command(client=mock_client, asset_id="1", vulnerability_id=vulnerability_id)
-    assert result[-1].outputs == expected_output_context
+    assert result.outputs == expected_output_context
 
 
 @pytest.mark.parametrize("api_mock_file, expected_output_context_file",
