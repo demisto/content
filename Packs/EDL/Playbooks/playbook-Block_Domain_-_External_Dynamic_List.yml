@@ -61,14 +61,16 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.Tag
+              complex:
+                root: inputs.Tag
             iscontext: true
           right:
             value: {}
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.Domains
+              complex:
+                root: inputs.Domains
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -103,9 +105,13 @@ tasks:
       - "3"
     scriptarguments:
       indicatorsValues:
-        simple: ${inputs.Domains}
+        complex:
+          root: inputs.Domains
+          transformers:
+          - operator: uniq
       tags:
-        simple: ${inputs.Tag}
+        complex:
+          root: inputs.Tag
     separatecontext: false
     continueonerrortype: ""
     view: |-
