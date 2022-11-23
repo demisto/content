@@ -292,10 +292,10 @@ script:
       description: Describes whether Kubernetes audit logs are enabled as a data source.
       type: string
     - contextPath: AWS.GuardDuty.Detectors.MalwareProtectionStatus
-      description: Describes whether scanning EBS volumes are enabled as a data source.
+      description: Describes whether scanning EBS volumes is enabled as a data source.
       type: string
     - contextPath: AWS.GuardDuty.Detectors.MalwareProtectionReason
-      description: The reason why scanning EBS volumes (Malware Protection) were not enabled as a data source.
+      description: The reason why scanning EBS volumes (Malware Protection) was not enabled as a data source.
       type: string
     - contextPath: AWS.GuardDuty.Detectors.Tags
       description: The tags of the detector resource.
