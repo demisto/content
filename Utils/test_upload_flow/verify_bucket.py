@@ -141,6 +141,7 @@ class BucketVerifier:
         self.bucket_name = bucket_name
         self.versions = versions_dict
         self.items_dict = items_dict
+        self.is_valid = True
 
     @logger
     def verify_new_pack(self, pack_id, pack_items):
@@ -233,16 +234,15 @@ class BucketVerifier:
         # Case 1: Verify new pack - TestUploadFlow
         self.verify_new_pack('TestUploadFlow', self.items_dict.get('TestUploadFlow'))
 
-        # Case 2: Verify dependencies handling - Armis
+        # Case 2: Verify modified pack - Grafana
+        self.verify_modified_pack('Grafana', self.items_dict.get('Grafana'))
+
+        # Case 3: Verify dependencies handling - Armis
         self.verify_dependency('Armis', 'TestUploadFlow')
 
-        # Case 3: Verify new version - ZeroFox
+        # Case 4: Verify new version - ZeroFox
         expected_rn = 'testing adding new RN'
         self.verify_new_version('ZeroFox', expected_rn)
-
-        # Case 4: Verify changed image - Armis
-        self.verify_new_image('Armis', Path(
-            __file__).parent / 'TestUploadFlow' / 'Integrations' / 'TestUploadFlow' / 'TestUploadFlow_image.png')
 
         # Case 5: Verify modified existing release notes - Box
         expected_rn = 'testing modifying existing RN'
@@ -262,8 +262,9 @@ class BucketVerifier:
         # Case 9: Verify failing pack - Absolute
         self.verify_failed_pack('Absolute')
 
-        # Case 10: Verify modified pack - Grafana
-        self.verify_modified_pack('Grafana', self.items_dict.get('Grafana'))
+        # Case 10: Verify changed image - Armis
+        self.verify_new_image('Armis', Path(
+            __file__).parent / 'TestUploadFlow' / 'Integrations' / 'TestUploadFlow' / 'TestUploadFlow_image.png')
 
     def run_xsiam_bucket_validations(self):
         """

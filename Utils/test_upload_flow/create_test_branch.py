@@ -56,7 +56,6 @@ def create_new_pack():
         Creates new pack with given pack name
         returns a dict with the created content items in the form of {item_type: item_path}
     """
-    content_dict = {}
     content_path = Path(__file__).parent.parent.parent
     source_path = Path(__file__).parent / 'TestUploadFlow'
     dest_path = content_path / 'Packs' / 'TestUploadFlow'
@@ -64,8 +63,23 @@ def create_new_pack():
         shutil.rmtree(dest_path)
     shutil.copytree(source_path, dest_path)
 
-    sub_dirs = os.listdir(source_path)
+    return dest_path, '1.0.0', get_pack_content_dict(dest_path)
+
+
+def get_pack_content_dict(pack_path: Path):
+    """
+    Gets a dict of all the paths of the pack content items as it is in the bucket.
+
+    Args:
+        pack_path (Path): The pack path.
+
+    Returns:
+        dict: The content paths dict.
+    """
+    content_dict = {}
+    sub_dirs = os.listdir(pack_path)
     sub_dirs = [str(sub_dir) for sub_dir in sub_dirs if '.' not in str(sub_dir)]
+
     prefix_dict = {content_item: content_item.lower()[:-1] for content_item in sub_dirs}
     prefix_dict['Layouts'] = 'layoutscontainer'
     prefix_dict['IndicatorTypes'] = 'reputation'
@@ -78,8 +92,7 @@ def create_new_pack():
             extension = 'yml' if content_item == 'Playbooks' else 'json'
             content_dict[content_item] = os.path.join('TestUploadFlow', content_item,
                                                       f'{prefix_dict[content_item]}-TestUploadFlow.{extension}')
-
-    return dest_path, '1.0.0', content_dict
+    return content_dict
 
 
 @add_changed_pack
@@ -172,11 +185,9 @@ def modify_pack(pack: Path, integration: str):
     integration = pack / integration
     with integration.open('a') as f:
         f.write('\n#  CHANGE IN PACK')
+
     enhance_release_notes(pack)
-    items_dict = {}
-    # TODO: here should add a section that collects all of the pack's content items, and returns it as a dict
-    #  (same handling as in TestUploadFlow dummy pack, in create_new_pack
-    return pack, get_current_version(pack), items_dict
+    return pack, get_current_version(pack), get_pack_content_dict(pack)
 
 
 @add_changed_pack
@@ -262,16 +273,16 @@ if __name__ == "__main__":
         branch = create_new_branch(repo, new_branch_name)
 
         # Case 1: Verify new pack - TestUploadFlow
-        new_pack_path = create_new_pack()[0]
+        new_pack_path, _, _ = create_new_pack()
 
-        # Case 2: Verify dependencies handling - Armis
+        # Case 2: Verify modified pack - Grafana
+        modify_pack(packs_path / 'Grafana', 'Integrations/Grafana/Grafana.py')
+
+        # Case 3: Verify dependencies handling - Armis
         add_dependency(packs_path / 'Armis', new_pack_path)
 
-        # Case 3: Verify new version - ZeroFox
+        # Case 4: Verify new version - ZeroFox
         enhance_release_notes(packs_path / 'ZeroFox')
-
-        # Case 4: Verify changed image - Armis
-        change_image(packs_path / 'Armis')
 
         # Case 5: Verify modified existing release notes - Box
         update_existing_release_notes(packs_path / 'Box', "2.1.2")
@@ -291,9 +302,10 @@ if __name__ == "__main__":
         # Case 9: Verify failing pack - Absolute
         create_failing_pack(packs_path / 'Absolute')
 
-        # Case 10: Verify modified pack - Grafana
-        modify_pack(packs_path / 'Grafana', 'Integrations/Grafana/Grafana.py')
-        
+        # Case 10: Verify changed image - Armis
+        change_image(packs_path / 'Armis')
+
+        # Case 11: Verify modified modeling rule path - AlibabaActionTrail
         modify_modeling_rules(packs_path / 'AlibabaActionTrail/ModelingRules/AlibabaModelingRules', 'AlibabaModelingRules', 'Alibaba')  # TODO: add script
 
         for p in changed_packs:
