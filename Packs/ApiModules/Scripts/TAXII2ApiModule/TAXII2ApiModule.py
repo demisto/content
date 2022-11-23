@@ -255,7 +255,7 @@ class Taxii2FeedClient:
 
     def set_api_root(self):
         roots_to_api = {}
-        for api_root in self.server.api_roots:
+        for api_root in self.server.api_roots:  # type: ignore[attr-defined]
             # ApiRoots are initialized with wrong _conn because we are not providing auth or cert to Server
             # closing wrong unused connections
             api_root_name = str(api_root.url).split('/')[-2]
@@ -954,6 +954,7 @@ class Taxii2FeedClient:
             # now we have a list of objects, go over each obj, save id with obj, parse the obj
             for obj in stix_objects:
                 obj_type = obj.get('type')
+                demisto.debug(f'{obj_type=}')
 
                 # we currently don't support extension object
                 if obj_type == 'extension-definition':

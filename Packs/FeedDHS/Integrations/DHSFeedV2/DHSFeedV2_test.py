@@ -1,4 +1,5 @@
 import pytest
+from freezegun import freeze_time
 
 from DHSFeedV2 import *
 
@@ -146,20 +147,30 @@ def test_get_collections_function():
 less_then_max = ('24 hours', None, '24 hours')
 a_bit_less_then_max = ('44 hours', None, '44 hours')
 more_then_max = ('57 hours', None, MAX_FETCH_INTERVAL)
-take_min_second_value = ('2 hours', '1 hour', '1 hour')
-take_min_first_value = ('1 hour', '2 hours', '1 hour')
-take_min_sent_with_value = (get_limited_interval('3 days' or DEFAULT_FETCH_INTERVAL), '50 hours', MAX_FETCH_INTERVAL)
-take_min_sent_without_value = (get_limited_interval(None or DEFAULT_FETCH_INTERVAL), '50 hours', DEFAULT_FETCH_INTERVAL)
+take_closer_second_value = ('2 hours', '1 hour', '1 hour')
+take_closer_first_value = ('1 hour', '2 hours', '1 hour')
 
 
+@freeze_time("2022-11-23 11:00:00 UTC")
 @pytest.mark.parametrize('given_interval, fetch_interval, expected_min_interval', [less_then_max,
                                                                                    a_bit_less_then_max,
                                                                                    more_then_max,
-                                                                                   take_min_second_value,
-                                                                                   take_min_first_value,
-                                                                                   take_min_sent_with_value,
-                                                                                   take_min_sent_without_value])
+                                                                                   take_closer_second_value,
+                                                                                   take_closer_first_value])
 def test_get_limited_interval(given_interval, fetch_interval, expected_min_interval):
     returned_min_interval = get_limited_interval(given_interval, fetch_interval)
     expected_min_interval = dateparser.parse(expected_min_interval, date_formats=[TAXII_TIME_FORMAT])
-    assert returned_min_interval.replace(microsecond=0) == expected_min_interval.replace(microsecond=0)
+    assert returned_min_interval.replace(microsecond=0) == expected_min_interval.replace(microsecond=0, tzinfo=utc)
+
+
+take_min_sent_with_value = ('3 days', '50 hours', MAX_FETCH_INTERVAL)
+take_min_sent_without_value = (None, '50 hours', DEFAULT_FETCH_INTERVAL)
+
+
+@freeze_time("2022-11-23 11:00:00 UTC")
+@pytest.mark.parametrize('given_interval, fetch_interval, expected_min_interval', [take_min_sent_with_value,
+                                                                                   take_min_sent_without_value])
+def test_get_limited_interval_twice(given_interval, fetch_interval, expected_min_interval):
+    returned_min_interval = get_limited_interval(get_limited_interval(given_interval or DEFAULT_FETCH_INTERVAL), fetch_interval)
+    expected_min_interval = dateparser.parse(expected_min_interval, date_formats=[TAXII_TIME_FORMAT])
+    assert returned_min_interval.replace(microsecond=0) == expected_min_interval.replace(microsecond=0, tzinfo=utc)

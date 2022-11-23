@@ -1,3 +1,4 @@
+from pytz import utc
 from taxii2client.common import _ensure_datetime_to_string
 
 import demistomock as demisto
@@ -23,10 +24,11 @@ def get_limited_interval(given_interval: Union[str, datetime],
                          fetch_interval: Optional[Union[str, datetime]] = MAX_FETCH_INTERVAL) -> datetime:
     given_interval: datetime = given_interval if isinstance(given_interval, datetime) \
         else dateparser.parse(given_interval, date_formats=[TAXII_TIME_FORMAT])  # type: ignore[assignment]
-    default_fetch_interval: datetime = fetch_interval if isinstance(fetch_interval, datetime) \
+    fetch_interval: datetime = fetch_interval if isinstance(fetch_interval, datetime) \
         else dateparser.parse(fetch_interval or MAX_FETCH_INTERVAL,
                               date_formats=[TAXII_TIME_FORMAT])  # type: ignore[assignment]
-    return max(given_interval, default_fetch_interval)
+    demisto.debug(f'{given_interval=}, {fetch_interval=}')
+    return max(given_interval.replace(tzinfo=utc), fetch_interval.replace(tzinfo=utc))  # closer time is bigger
 
 
 def fetch_indicators_command(client: Taxii2FeedClient, limit: int, last_run_ctx: dict,
@@ -56,6 +58,7 @@ def fetch_one_collection(client: Taxii2FeedClient, limit: int, initial_interval:
     last_fetch_time = last_run_ctx.get(client.collection_to_fetch.id) if last_run_ctx else None
     # initial_interval gets here limited so no need to check limitation with default value
     added_after: datetime = get_limited_interval(initial_interval, last_fetch_time)
+    demisto.debug(f'{added_after=}')
 
     indicators = client.build_iterator(limit, added_after=added_after)
     if last_run_ctx is not None:  # in case we got {}, we want to set it because we are in fetch incident run
@@ -101,6 +104,7 @@ def get_indicators_command(client: Taxii2FeedClient, args: Dict[str, Any]) \
     raw = argToBoolean(args.get('raw', 'false'))
 
     if client.collection_to_fetch:
+        demisto.debug(f'{added_after=}')
         indicators = client.build_iterator(limit, added_after=added_after)
     else:
         indicators, _ = fetch_all_collections(client, limit, added_after)  # type: ignore[arg-type]
@@ -137,6 +141,7 @@ def get_collections_command(client: Taxii2FeedClient) -> CommandResults:
 
 
 def main():  # pragma: no cover
+    demisto.debug('version 2.7.5')
     params = demisto.params()
     url = params.get('url', 'https://ais2.cisa.dhs.gov/taxii2/')
     key = params.get('key', {}).get('password')
@@ -177,6 +182,7 @@ def main():  # pragma: no cover
         )
         client.initialise()
 
+        start_time = time.time()
         if command == 'test-module':
             return_results(command_test_module(client))
 
@@ -196,6 +202,8 @@ def main():  # pragma: no cover
 
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
+
+        demisto.debug(f'Running {command} took {round(time.time() - start_time)}sec')
 
     except Exception as error:
         error_msg = str(error)
