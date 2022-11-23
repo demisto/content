@@ -18,7 +18,7 @@ outputs:
   description: ParseExcel
 scripttarget: 0
 runonce: false
-dockerimage: devdemisto/py3-primary:8.1.0.37710
+dockerimage: devdemisto/py3-primary:8.1.0.37716
 tests:
 - ParseExcel-test
 fromversion: 5.0.0

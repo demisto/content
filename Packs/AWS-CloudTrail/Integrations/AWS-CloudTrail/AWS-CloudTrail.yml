@@ -666,7 +666,7 @@ script:
     - contextPath: AWS.CloudTrail.Events.CloudTrailEvent
       description: A JSON string that contains a representation of the event returned.
       type: string
-  dockerimage: devdemisto/py3-primary:8.1.0.37710
+  dockerimage: devdemisto/py3-primary:8.1.0.37716
   feed: false
   isfetch: false
   longRunning: false

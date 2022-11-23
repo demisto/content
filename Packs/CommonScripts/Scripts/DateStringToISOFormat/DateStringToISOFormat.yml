@@ -70,5 +70,5 @@ tags:
 - date
 timeout: '0'
 type: python
-dockerimage: devdemisto/py3-primary:8.1.0.37710
+dockerimage: devdemisto/py3-primary:8.1.0.37716
 fromversion: 5.0.0

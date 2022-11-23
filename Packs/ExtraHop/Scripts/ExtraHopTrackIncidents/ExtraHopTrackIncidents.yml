@@ -18,7 +18,7 @@ dependson:
   must:
   - ExtraHop v2|||extrahop-track-ticket
 runonce: false
-dockerimage: devdemisto/py3-primary:8.1.0.37710
+dockerimage: devdemisto/py3-primary:8.1.0.37716
 runas: DBotWeakRole
 tests:
 - ExtraHop_v2-Test

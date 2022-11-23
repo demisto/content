@@ -45,4 +45,4 @@ runonce: false
 tests:
 - No test
 fromversion: 5.0.0
-dockerimage: devdemisto/py3-primary:8.1.0.37710
+dockerimage: devdemisto/py3-primary:8.1.0.37716

@@ -23,7 +23,7 @@ outputs:
   type: string
 scripttarget: 0
 runonce: false
-dockerimage: devdemisto/py3-primary:8.1.0.37710
+dockerimage: devdemisto/py3-primary:8.1.0.37716
 tests:
 - URLDecode-Test
 fromversion: 5.0.0

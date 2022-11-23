@@ -23,7 +23,7 @@ type: python
 runas: DBotWeakRole
 runonce: false
 subtype: python3
-dockerimage: devdemisto/py3-primary:8.1.0.37710
+dockerimage: devdemisto/py3-primary:8.1.0.37716
 tests:
 - sumList - Test
 fromversion: 5.0.0

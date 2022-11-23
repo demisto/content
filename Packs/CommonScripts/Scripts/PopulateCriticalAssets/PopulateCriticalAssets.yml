@@ -21,4 +21,4 @@ runas: DBotWeakRole
 tests:
 - Calculate Severity - Generic v2 - Test
 fromversion: 5.0.0
-dockerimage: devdemisto/py3-primary:8.1.0.37710
+dockerimage: devdemisto/py3-primary:8.1.0.37716

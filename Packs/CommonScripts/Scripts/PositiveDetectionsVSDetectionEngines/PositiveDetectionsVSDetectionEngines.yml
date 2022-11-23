@@ -17,7 +17,7 @@ tags:
 - dynamic-indicator-section
 timeout: '0'
 type: python
-dockerimage: devdemisto/py3-primary:8.1.0.37710
+dockerimage: devdemisto/py3-primary:8.1.0.37716
 runas: DBotWeakRole
 runonce: false
 tests:

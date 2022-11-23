@@ -452,7 +452,7 @@ script:
     - contextPath: SymantecDLP.Incident.ViolatingComponent.ViolatingSegment.Text.RuleName
       description: The rule name which triggered the violation.
       type: String
-  dockerimage: devdemisto/py3-primary:8.1.0.37710
+  dockerimage: devdemisto/py3-primary:8.1.0.37716
   feed: false
   isfetch: true
   longRunning: false

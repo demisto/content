@@ -16,5 +16,5 @@ runonce: false
 subtype: python3
 tests:
 - GetTasksWithSections SetIRProcedures end to end test
-dockerimage: devdemisto/py3-primary:8.1.0.37710
+dockerimage: devdemisto/py3-primary:8.1.0.37716
 fromversion: 6.0.0

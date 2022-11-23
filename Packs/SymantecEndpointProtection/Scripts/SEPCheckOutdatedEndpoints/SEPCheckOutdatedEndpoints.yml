@@ -24,4 +24,4 @@ timeout: 0s
 tests:
 - No test - postpone for later
 fromversion: 5.0.0
-dockerimage: devdemisto/py3-primary:8.1.0.37710
+dockerimage: devdemisto/py3-primary:8.1.0.37716

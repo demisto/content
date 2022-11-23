@@ -2712,7 +2712,7 @@ script:
       changes. This method is only used for debugging purposes and will not update
       the current incident or detection.
     name: update-remote-system
-  dockerimage: devdemisto/py3-primary:8.1.0.37710
+  dockerimage: devdemisto/py3-primary:8.1.0.37716
   isfetch: true
   ismappable: true
   isremotesyncin: true
