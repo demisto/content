@@ -45,9 +45,9 @@ The username and password for the user which you intend to use for the investiga
 
 ### Creating a Certificate
 
-The CER and PFK certificates will be necessary for the next steps.
+If you are using a linux environment (macOS included), you can run the script [provided here](../../doc_imgs/create_o365_security_and_compliance_cert.sh) to create the certificates.
 
-<script src="https://gist.github.com/mrcunninghamz/4f4ebbeeb4cfa9667870b8af4db24dc6.js"></script>
+If you are using Powershell, please use the script [found here](https://github.com/SharePoint/PnP-Partner-Pack/blob/master/scripts/Create-SelfSignedCertificate.ps1).
 
 ### Configuring an App in Azure
 
