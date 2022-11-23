@@ -1,0 +1,4 @@
+[INGEST:vendor="msft", product="radius", target_dataset="msft_radius_raw", no_hit=drop]
+alter extract_timestamp = arrayindex(regextract(_raw_log,"\<Timestamp\sdata_type\=\"\d+\"\>([^\<]+)\."),0)
+| alter change_format_timestamp = parse_timestamp("%m/%d/%Y %H:%M:%S", extract_timestamp)
+|alter _time = change_format_timestamp;
