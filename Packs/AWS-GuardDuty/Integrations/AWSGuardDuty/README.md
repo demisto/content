@@ -29,13 +29,13 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
     | Fetch incidents |  | False |
     | Incident type | Incident type | False |
     | Role Session Name | A descriptive name for the assumed role session. For example, xsiam-IAM.integration-Role_SESSION | False |
-    | Role Session Duration | The maximum length of each session in seconds. Default: 900 seconds. The XSOAR integration will have the permissions assigned only when the session is initiated and for the defined duration. | False |
+    | Role Session Duration | The maximum length of each session in seconds. Default: 900 seconds. The Cortex XSOAR integration will have the permissions assigned only when the session is initiated and for the defined duration. | False |
     | Access Key | The access key ID used for authentication, that was configured during IAM user configuration. If this is used, Role ARN is not required. | False |
     | Secret Key | The secret key used for authentication, that was configured during IAM user configuration. If this is used, Role ARN is not required. | False |
-    | Timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 second will be used. | False |
+    | Timeout | The time in seconds until a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 second will be used. | False |
     | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
     | How many incidents to fetch each time | Default `10` | False |
-    | First fetch timestamp | First fetch query `<number> <time unit>`, e.g. `7 days`. Default `3 days`| False |
+    | First fetch timestamp | First fetch query `<number> <time unit>`, e.g., `7 days`. Default `3 days`| False |
     | Guard Duty Severity level | The severity level or higher of findings to be fetched: Low, Medium, or High. For example, if you set the severity level to Medium, only findings with severity level Medium or High will be fetched. | False |
     | Archive findings After Fetch | You can set whether findings that are fetched will be moved to the GuardDuty archive. | False |
     | Incidents Fetch Interval | Time interval for fetching incidents. | False |
@@ -77,8 +77,8 @@ Action: _guardduty:CreateDetector_
 | enabled | A boolean value that specifies whether the detector is to be enabled. Possible values are: True, False. Default is True. | Required | 
 | enableS3Logs | The status of S3 data event logs as a data source. Possible values are: True, False. | Optional | 
 | enableKubernetesLogs | The status of Kubernetes audit logs as a data source. Possible values are: True, False. | Optional | 
-| ebsVolumesMalwareProtection | Describes the configuration for scanning EBS volumes as data source. Possible values are: True, False. | Optional | 
-| findingFrequency | A value that specifies how frequently updated findings are exported. Possible values are: Fifteen Minutes, One Hour, Six Hours. | Optional | 
+| ebsVolumesMalwareProtection | Describes the configuration for scanning EBS volumes as a data source. Possible values are: True, False. | Optional | 
+| findingFrequency | Specifies how frequently updated findings are exported. Possible values are: Fifteen Minutes, One Hour, Six Hours. | Optional | 
 | region | The AWS Region, if not specified the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
@@ -159,10 +159,10 @@ Action: _guardduty:GetDetector_
 | AWS.GuardDuty.Detectors.Status | string | The status of detector. | 
 | AWS.GuardDuty.Detectors.UpdatedAt | string | The time a resource was last updated. | 
 | AWS.GuardDuty.Detectors.CloudTrailStatus | string | Describes whether CloudTrail is enabled as a data source for the detector. | 
-| AWS.GuardDuty.Detectors.DNSLogsStatus | string | Denotes whether DNS logs is enabled as a data source. | 
-| AWS.GuardDuty.Detectors.FlowLogsStatus | string | Denotes whether VPC flow logs is enabled as a data source. | 
-| AWS.GuardDuty.Detectors.S3LogsStatus | string | A value that describes whether S3 data event logs are automatically enabled for new members of the organization. | 
-| AWS.GuardDuty.Detectors.KubernetesAuditLogsStatus | string | A value that describes whether Kubernetes audit logs are enabled as a data source. | 
+| AWS.GuardDuty.Detectors.DNSLogsStatus | string | Denotes whether DNS logs are enabled as a data source. | 
+| AWS.GuardDuty.Detectors.FlowLogsStatus | string | Denotes whether VPC flow logs are enabled as a data source. | 
+| AWS.GuardDuty.Detectors.S3LogsStatus | string | Describes whether S3 data event logs are automatically enabled for new members of the organization. | 
+| AWS.GuardDuty.Detectors.KubernetesAuditLogsStatus | string | Describes whether Kubernetes audit logs are enabled as a data source. | 
 | AWS.GuardDuty.Detectors.MalwareProtectionStatus | string | Describes whether scanning EBS volumes is enabled as a data source. | 
 | AWS.GuardDuty.Detectors.MalwareProtectionReason | string | Specifies the reason why scanning EBS volumes \(Malware Protection\) was not enabled as a data source. | 
 | AWS.GuardDuty.Detectors.Tags | string | The tags of the detector resource. | 
@@ -666,7 +666,7 @@ Action: _guardduty:GetFindings_
 | AWS.GuardDuty.Findings.AccountId | string | The ID of the account in which the finding was generated. | 
 | AWS.GuardDuty.Findings.CreatedAt | string | The time and date when the finding was created. | 
 | AWS.GuardDuty.Findings.Description | string | The description of the finding. | 
-| AWS.GuardDuty.Findings.Region | string | The Region where the finding was generated. | 
+| AWS.GuardDuty.Findings.Region | string | The region where the finding was generated. | 
 | AWS.GuardDuty.Findings.Id | string | The ID of the finding. | 
 | AWS.GuardDuty.Findings.Title | string | The title of the finding. | 
 | AWS.GuardDuty.Findings.Severity | string | The severity of the finding. | 
@@ -682,7 +682,7 @@ Action: _guardduty:GetFindings_
 | AWS.GuardDuty.Findings.Resource.InstanceDetails | string | The information about the EC2 instance associated with the activity that prompted GuardDuty to generate a finding. | 
 | AWS.GuardDuty.Findings.Resource.EksClusterDetails | string | Details about the EKS cluster involved in a Kubernetes finding. | 
 | AWS.GuardDuty.Findings.Resource.KubernetesDetails | string | Details about the Kubernetes user and workload involved in a Kubernetes finding. | 
-| AWS.GuardDuty.Findings.Resource.EbsVolumeDetails | string | Contains list of scanned and skipped EBS volumes with details. | 
+| AWS.GuardDuty.Findings.Resource.EbsVolumeDetails | string | Contains a list of scanned and skipped EBS volumes with details. | 
 | AWS.GuardDuty.Findings.Resource.EcsClusterDetails | string | Contains information about the details of the ECS Cluster. | 
 | AWS.GuardDuty.Findings.Resource.ContainerDetails | string | Details of a container. | 
 | AWS.GuardDuty.Findings.Resource.S3BucketDetails | string | Contains information on the S3 bucket. | 
@@ -904,9 +904,10 @@ Action: _guardduty:GetMembers_
 ## Breaking changes from the previous version of this integration - AWS-GuardDuty
 The following sections list the changes in this version.
 
-#### Fetch incidents command - Findings that are fetched are no longer moved automatically to the GuardDuty archive.
+### Commands
+Fetch incidents command - Findings that are fetched are no longer moved automatically to the GuardDuty archive.
 ### Parameters
-#### The following parameters were added in this version:
-  - **How many incidents to fetch each time**
-  - **First fetch timestamp**
-  - **Archive findings After Fetch**
+The following parameters were added in this version:
+- *How many incidents to fetch each time*
+- *First fetch timestamp*
+- *Archive findings After Fetch*
