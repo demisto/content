@@ -60,7 +60,7 @@
             "display_name": "Core Alert Fields"
         },
         "MalwareInvestigationAndResponse": {
-            "mandatory": false,
+            "mandatory": true,
             "display_name": "Malware Investigation and Response"
         },
         "AutoFocus": {
