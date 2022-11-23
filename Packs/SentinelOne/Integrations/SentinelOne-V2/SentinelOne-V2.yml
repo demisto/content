@@ -2563,7 +2563,7 @@ script:
     - contextPath: SentinelOne.Agent.Initiated
       description: Whether the scan was initiated.
       type: Boolean
-  dockerimage: devdemisto/py3-primary:8.1.0.37716
+  dockerimage: devdemisto/py3-primary:8.1.0.37717
   isfetch: true
   longRunning: false
   longRunningPort: false

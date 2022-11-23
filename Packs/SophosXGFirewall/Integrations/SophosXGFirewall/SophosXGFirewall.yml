@@ -4237,7 +4237,7 @@ script:
     - contextPath: SophosFirewall.WebFilterPolicy.IsDeleted
       description: Whether the policy is deleted.
       type: Bool
-  dockerimage: devdemisto/py3-primary:8.1.0.37716
+  dockerimage: devdemisto/py3-primary:8.1.0.37717
   feed: false
   isfetch: false
   longRunning: false

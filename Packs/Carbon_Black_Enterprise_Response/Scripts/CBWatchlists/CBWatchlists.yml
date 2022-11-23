@@ -19,6 +19,6 @@ dependson:
   - cb-watchlist-get
 timeout: 0s
 fromversion: 5.0.0
-dockerimage: devdemisto/py3-primary:8.1.0.37716
+dockerimage: devdemisto/py3-primary:8.1.0.37717
 tests:
 - No tests (auto formatted)

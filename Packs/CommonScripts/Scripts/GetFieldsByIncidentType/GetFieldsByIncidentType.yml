@@ -50,7 +50,7 @@ dependson:
   must:
   - '|||demisto-api-get'
 runonce: false
-dockerimage: devdemisto/py3-primary:8.1.0.37716
+dockerimage: devdemisto/py3-primary:8.1.0.37717
 runas: DBotWeakRole
 tests:
 - No test - unit test

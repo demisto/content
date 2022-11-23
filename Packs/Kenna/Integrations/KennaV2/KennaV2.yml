@@ -580,7 +580,7 @@ script:
     - contextPath: Kenna.ConnectorRunsList.ReopenedVulnerabilities
       description: Amount of re-opened vulnerabilities.
       type: Number
-  dockerimage: devdemisto/py3-primary:8.1.0.37716
+  dockerimage: devdemisto/py3-primary:8.1.0.37717
   feed: false
   isfetch: false
   longRunning: false

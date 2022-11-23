@@ -41,6 +41,6 @@ outputs:
   description: The URL redirects from the given URL
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: devdemisto/py3-primary:8.1.0.37716
+dockerimage: devdemisto/py3-primary:8.1.0.37717
 tests:
 - No tests (auto formatted)

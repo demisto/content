@@ -31,4 +31,4 @@ runonce: false
 tests:
 - stripChars - Test
 fromversion: 5.0.0
-dockerimage: devdemisto/py3-primary:8.1.0.37716
+dockerimage: devdemisto/py3-primary:8.1.0.37717

@@ -770,7 +770,7 @@ script:
     - contextPath: TrendMicroCAS.BlockedList.urls
       description: A list of blocked URLs.
       type: String
-  dockerimage: devdemisto/py3-primary:8.1.0.37716
+  dockerimage: devdemisto/py3-primary:8.1.0.37717
   feed: false
   isfetch: true
   longRunning: false

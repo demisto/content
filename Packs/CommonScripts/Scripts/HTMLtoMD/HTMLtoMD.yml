@@ -23,7 +23,7 @@ system: false
 timeout: '0'
 type: python
 tags: []
-dockerimage: devdemisto/py3-primary:8.1.0.37716
+dockerimage: devdemisto/py3-primary:8.1.0.37717
 runas: DBotWeakRole
 runonce: false
 subtype: python3
