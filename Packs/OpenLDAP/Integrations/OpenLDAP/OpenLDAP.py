@@ -36,8 +36,7 @@ class LdapClient:
         'TLSv1_1': ssl.PROTOCOL_TLSv1_1,
         'TLSv1_2': ssl.PROTOCOL_TLSv1_2,
         'TLS': ssl.PROTOCOL_TLS,
-        'TLS_CLIENT': ssl.PROTOCOL_TLS_CLIENT,
-        'TLS_SERVER': ssl.PROTOCOL_TLS_SERVER
+        'TLS_CLIENT': ssl.PROTOCOL_TLS_CLIENT
     }
 
     def __init__(self, kwargs):

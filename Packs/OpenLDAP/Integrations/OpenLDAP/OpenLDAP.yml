@@ -96,7 +96,6 @@ configuration:
   - TLSv1_2
   - TLS
   - TLS_CLIENT
-  - TLS_SERVER
   required: false
   type: 15
 - display: Trust any certificate (not secure)
