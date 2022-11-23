@@ -43,6 +43,9 @@ ignore=IM111
 [known_words]
 SSH
 Misconfiguration
+replyOptions
+nexttasks
+validations
 
 [file:classifier-Prisma_Cloud.json]
 ignore=BA101
