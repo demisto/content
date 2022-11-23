@@ -393,21 +393,28 @@ def xdr_expiration_to_demisto(expiration) -> Union[str, None]:
 
 
 def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
+    demisto.debug(f'Raw incoming IOC: {ioc}')
     indicator = ioc.get('RULE_INDICATOR', '')
     xdr_server_score = int(xdr_reputation_to_demisto.get(ioc.get('REPUTATION'), 0))
     score = get_indicator_xdr_score(indicator, xdr_server_score)
     severity = Client.severity if Client.override_severity else xdr_severity_to_demisto[ioc['RULE_SEVERITY']]
+
+    extra_fields = {
+        "tags": list(set(filter(None, (ioc.get('COMMENT'), Client.tag)))),
+    } if Client.xsoar_comments_field == 'tags' else {
+        "tags": [Client.tag],
+        Client.xsoar_comments_field: ioc.get('COMMENT', '')
+    }
 
     entry: Dict = {
         "value": indicator,
         "type": xdr_types_to_demisto.get(ioc.get('IOC_TYPE')),
         "score": score,
         "fields": {
-            "tags": Client.tag,
             "xdrstatus": ioc.get('RULE_STATUS', '').lower(),
             "expirationdate": xdr_expiration_to_demisto(ioc.get('RULE_EXPIRATION_TIME')),
             Client.xsoar_severity_field: severity,
-        },
+        } | extra_fields,
         "rawJSON": ioc
     }
     if Client.tlp_color:
