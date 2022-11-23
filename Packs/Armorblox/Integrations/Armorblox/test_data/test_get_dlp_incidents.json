@@ -6,7 +6,7 @@
         "users": [
             {
                 "name": "Admin",
-                "email": "admin@armorblox.dev",
+                "email": "demo@armorblox.dev",
                 "is_vip": false
             }
         ],
@@ -24,8 +24,8 @@
         "app_name": "MICROSOFT_OUTLOOK",
         "external_users": [
             {
-                "name": "Guestethanz",
-                "email": "ethanz@securerockets.com",
+                "name": "John Doe",
+                "email": "john_doe@patterson.com",
                 "is_vip": false
             }
         ],

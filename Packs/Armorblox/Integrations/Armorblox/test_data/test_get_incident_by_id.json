@@ -10,7 +10,7 @@
     "users": [
         {
             "user_name": "Admin",
-            "user_address": "admin@armorblox.dev",
+            "user_address": "demo@armorblox.dev",
             "is_vip": false,
             "department_name": "Engineering",
             "job_title": "Manager"
@@ -32,7 +32,7 @@
                 "Admin"
             ],
             "to_address": [
-                "admin@armorblox.dev"
+                "demo@armorblox.dev"
             ],
             "affected_user": "Admin",
             "folder_category": "UNCATEGORIZED",
@@ -59,7 +59,7 @@
                 "Admin"
             ],
             "to_address": [
-                "admin@armorblox.dev"
+                "demo@armorblox.dev"
             ],
             "affected_user": "Admin",
             "folder_category": "UNCATEGORIZED",
@@ -86,7 +86,7 @@
                 "Admin"
             ],
             "to_address": [
-                "admin@armorblox.dev"
+                "demo@armorblox.dev"
             ],
             "affected_user": "Admin",
             "folder_category": "UNCATEGORIZED",
@@ -113,7 +113,7 @@
                 "Admin"
             ],
             "to_address": [
-                "admin@armorblox.dev"
+                "demo@armorblox.dev"
             ],
             "affected_user": "Admin",
             "folder_category": "UNCATEGORIZED",
@@ -140,7 +140,7 @@
                 "Admin"
             ],
             "to_address": [
-                "admin@armorblox.dev"
+                "demo@armorblox.dev"
             ],
             "affected_user": "Admin",
             "folder_category": "UNCATEGORIZED",
@@ -167,7 +167,7 @@
                 "Admin"
             ],
             "to_address": [
-                "admin@armorblox.dev"
+                "demo@armorblox.dev"
             ],
             "affected_user": "Admin",
             "folder_category": "UNCATEGORIZED",
@@ -183,7 +183,7 @@
             "event_id": "112064",
             "object_id": "7548d4d366950087b7cfa4cf1f6c3fac9eb8719296f3f7bf63f741e624b2d723",
             "from_name": "Admin",
-            "from_address": "admin@armorblox.dev",
+            "from_address": "demo@armorblox.dev",
             "date": "2022-10-11T21:26:26Z",
             "event_action": {
                 "action": "ALERT"
@@ -209,7 +209,7 @@
             "event_id": "112059",
             "object_id": "306a3ae472a92a367a56b03c4f233b0732d868eb1002da61d839e544dbf2fc2d",
             "from_name": "Admin",
-            "from_address": "admin@armorblox.dev",
+            "from_address": "demo@armorblox.dev",
             "date": "2022-10-11T21:14:58Z",
             "event_action": {
                 "action": "ALERT"
@@ -235,7 +235,7 @@
             "event_id": "112016",
             "object_id": "93a32bb97fadeb976fd778782ce69a51c1ea7bc300aaf770e8d19ffd4fa2790c",
             "from_name": "Admin",
-            "from_address": "admin@armorblox.dev",
+            "from_address": "demo@armorblox.dev",
             "date": "2022-10-11T18:00:13Z",
             "event_action": {
                 "action": "ALERT"
@@ -272,7 +272,7 @@
                 "Admin"
             ],
             "to_address": [
-                "admin@armorblox.dev"
+                "demo@armorblox.dev"
             ],
             "affected_user": "Admin",
             "folder_category": "UNCATEGORIZED",
@@ -299,7 +299,7 @@
                 "Admin"
             ],
             "to_address": [
-                "admin@armorblox.dev"
+                "demo@armorblox.dev"
             ],
             "affected_user": "Admin",
             "folder_category": "UNCATEGORIZED",
@@ -326,7 +326,7 @@
                 "Admin"
             ],
             "to_address": [
-                "admin@armorblox.dev"
+                "demo@armorblox.dev"
             ],
             "affected_user": "Admin",
             "folder_category": "UNCATEGORIZED",
@@ -353,7 +353,7 @@
                 "Admin"
             ],
             "to_address": [
-                "admin@armorblox.dev"
+                "demo@armorblox.dev"
             ],
             "affected_user": "Admin",
             "folder_category": "UNCATEGORIZED",
@@ -380,7 +380,7 @@
                 "Admin"
             ],
             "to_address": [
-                "admin@armorblox.dev"
+                "demo@armorblox.dev"
             ],
             "affected_user": "Admin",
             "folder_category": "UNCATEGORIZED",
@@ -407,7 +407,7 @@
                 "Admin"
             ],
             "to_address": [
-                "admin@armorblox.dev"
+                "demo@armorblox.dev"
             ],
             "affected_user": "Admin",
             "folder_category": "SPAM",
@@ -434,7 +434,7 @@
                 "Admin"
             ],
             "to_address": [
-                "admin@armorblox.dev"
+                "demo@armorblox.dev"
             ],
             "affected_user": "Admin",
             "folder_category": "SPAM",
@@ -461,7 +461,7 @@
                 "Admin"
             ],
             "to_address": [
-                "admin@armorblox.dev"
+                "demo@armorblox.dev"
             ],
             "affected_user": "Admin",
             "folder_category": "SPAM",
@@ -488,7 +488,7 @@
                 "Admin"
             ],
             "to_address": [
-                "admin@armorblox.dev"
+                "demo@armorblox.dev"
             ],
             "affected_user": "Admin",
             "folder_category": "UNCATEGORIZED",
@@ -515,7 +515,7 @@
                 "Admin"
             ],
             "to_address": [
-                "admin@armorblox.dev"
+                "demo@armorblox.dev"
             ],
             "affected_user": "Admin",
             "folder_category": "UNCATEGORIZED",
@@ -542,7 +542,7 @@
                 "Admin"
             ],
             "to_address": [
-                "admin@armorblox.dev"
+                "demo@armorblox.dev"
             ],
             "affected_user": "Admin",
             "folder_category": "SPAM",
@@ -562,7 +562,7 @@
     "reporters": [
         {
             "user_name": "Admin",
-            "user_address": "admin@armorblox.dev",
+            "user_address": "demo@armorblox.dev",
             "is_vip": false,
             "department_name": "Engineering",
             "job_title": "Manager"
@@ -579,7 +579,7 @@
             "event_id": "13644",
             "object_id": "04ac5f25514be66ffa58c624d3badec3b363265733f2ef54c41c78ebbad5b067",
             "from_name": "Admin",
-            "from_address": "admin@armorblox.dev",
+            "from_address": "demo@armorblox.dev",
             "date": "2022-04-22T19:55:41Z",
             "event_action": {
                 "action": "ALERT"
@@ -603,7 +603,7 @@
     "app_name": "MICROSOFT_OUTLOOK",
     "senders": [
         "news@pitchbook.com",
-        "admin@armorblox.dev"
+        "demo@armorblox.dev"
     ],
     "external_senders": [
         "news@pitchbook.com"

@@ -38,14 +38,14 @@
                                 "type": "IMPERSONATION"
                             },
                             "display": {
-                                "display_name": "brandon romero"
+                                "display_name": "John Doe"
                             },
                             "impersonator": {
                                 "impersonated_email": "zoey_russel@fake-odessa.com",
-                                "impersonator_name": "brandon romero"
+                                "impersonator_name": "John Doe"
                             },
                             "original": {
-                                "original_email": "brandon_romero9@armorblox.dev"
+                                "original_email": "john_doe@patterson.com"
                             },
                             "nickname": {
                                 "is_nickname": false

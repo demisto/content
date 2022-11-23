@@ -1,6 +1,6 @@
 Armorblox is an API-based platform that stops targeted email attacks,
   protects sensitive data, and automates incident response.
-This integration was integrated and tested with version xx of Armorblox
+This integration was integrated and tested with version 6.1.0 of Armorblox
 
 ## Configure Armorblox on Cortex XSOAR
 

@@ -10,7 +10,7 @@
     "object_type": "CONTENT_MAIL",
     "body_in_global": true,
     "received_mailbox": {
-        "name": "james pardue",
-        "email": "james@armorblox.dev"
+        "name": "John Doe",
+        "email": "john_doe@patterson.com"
     }
 }

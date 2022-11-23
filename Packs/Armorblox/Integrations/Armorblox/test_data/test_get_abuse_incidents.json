@@ -6,14 +6,14 @@
             "users": [
                 {
                     "name": "Admin",
-                    "email": "admin@armorblox.dev",
+                    "email": "demo@armorblox.dev",
                     "is_vip": false
                 }
             ],
             "reporters": [
                 {
                     "name": "Admin",
-                    "email": "admin@armorblox.dev",
+                    "email": "demo@armorblox.dev",
                     "is_vip": false
                 }
             ],
@@ -32,8 +32,8 @@
             "app_name": "MICROSOFT_OUTLOOK",
             "external_users": [
                 {
-                    "name": "Bobby Lyons",
-                    "email": "bobby.lyons.ablox@gmail.com",
+                    "name": "John Doe",
+                    "email": "john_doe@patterson.com",
                     "is_vip": false
                 }
             ],
@@ -41,7 +41,7 @@
                 "Your new Weekly Ad is here..eml"
             ],
             "external_senders": [
-                "bobby.lyons.ablox@gmail.com"
+                "john_doe@patterson.com"
             ],
             "status_counts": {
                 "process_count": "0",

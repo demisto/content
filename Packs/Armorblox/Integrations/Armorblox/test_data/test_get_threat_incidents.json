@@ -6,8 +6,8 @@
             "date": "2022-04-18T10:40:06.541066Z",
             "users": [
                 {
-                    "name": "Adam",
-                    "email": "adam@armorblox.dev",
+                    "name": "John Doe",
+                    "email": "john_doe@patterson.com",
                     "is_vip": false
                 }
             ],
@@ -36,7 +36,7 @@
             "users": [
                 {
                     "name": "Admin",
-                    "email": "admin@armorblox.dev",
+                    "email": "demo@armorblox.dev",
                     "is_vip": false
                 }
             ],
