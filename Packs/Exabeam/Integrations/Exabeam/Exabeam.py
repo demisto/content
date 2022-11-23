@@ -9,6 +9,8 @@ import dateparser
 requests.packages.urllib3.disable_warnings()
 
 TOKEN_INPUT_IDENTIFIER = '__token'
+DAYS_BACK_FOR_FIRST_QUERY_OF_INCIDENTS = 3
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S%z'
 
 
 class Client(BaseClient):
@@ -691,9 +693,58 @@ class Client(BaseClient):
                                       params=params)
         return response
 
+    def get_incident_response_list(self, query, incident_type, priority, status):
+        params = self.build_incident_response_query_params(incident_type, priority, query, status)
+        return self._http_request('GET', url_suffix=f'/ir/api/incident/list',
+                                  params=params)
+
+    def get_list_incidents(self, query, incident_type, priority, status, limit=None, page_number=None, page_size=None,
+                           last_run=None):
+        params = self.build_incident_response_query_params(incident_type, priority,query, status, limit, page_number,
+                                                           page_size)
+        return self._http_request('GET', url_suffix=f'/ir/api/incident/list',
+                                  params=params)
+
+    def build_incident_response_query_params(self, incident_type, priority, query,
+                                             status, limit=None, page_number=None, page_size=None):
+        params = {'incidentType': incident_type, 'priority': priority, 'status': status}
+        if query:
+            for key, val in params:
+                if val:
+                    query += f' AND {key}:{val}'
+            params = {'query': query}
+
+        if page_number and page_size:
+            params['offset'] = page_number * page_size
+
+        if limit:
+            params['length'] = limit
+
+        return params
+
+    def get_single_incident(self, incident_id: str, username: str = None):
+        headers = {**self._headers, 'EXA_USERNAME': 'demisto'}
+        return self._http_request('GET', url_suffix=f'/ir/api/incident/{incident_id}',
+                                  headers=headers)
+
 
 ''' HELPER FUNCTIONS '''
-
+def format_single_incident(incident):
+    incident_fields = incident.get('fields')
+    return {'incidentId': incident.get('incidentId'),
+            'name': incident.get('name'),
+            'fields': {
+                'startedDate': convert_unix_to_date(incident_fields.get('startedDate', None)),
+                'closedDate': convert_unix_to_date(incident_fields.get('closedDate', None)),
+                'createdAt': convert_unix_to_date(incident_fields.get('createdAt', None)),
+                'owner': incident_fields.get('owner'),
+                'status': incident_fields.get('status'),
+                'incidentType': incident_fields.get('incidentType'),
+                'source': incident_fields.get('source'),
+                'priority': incident_fields.get('priority'),
+                'queue': incident_fields.get('queue'),
+                'description': incident_fields.get('description')
+            }}
 
 def get_query_params_str(params: dict, array_type_params: dict) -> str:
     """ Used for API queries that include array type parameters. Passing them in a dictionary won't work
@@ -1895,6 +1946,66 @@ def get_notable_sequence_event_types(client: Client, args: Dict[str, str]) -> Tu
     return human_readable, entry_context, sequence_event_types_raw_data
 
 
+def fetch_ir_as_incidents(client: Client, args: Dict[str, str]):
+    query = args.get('query')
+    incident_type = args.get('incident_type')
+    priority = args.get('priority')
+    status = args.get('status')
+
+    incidents = []
+
+    last_run = demisto.getLastRun()
+
+    raw_response = client.get_list_incidents(query, incident_type, priority, status, last_run=last_run)
+
+    for incident in raw_response['incidents']:
+        incidents.append(format_single_incident(incident))
+
+    if last_run and 'start_time' in last_run:
+        start_time = last_run.get('start_time')
+    else:
+        pass
+
+    next_run = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)
+    demisto.setLastRun({'time': next_run})
+
+    # this command will create incidents in Demisto
+    demisto.incidents(incidents)
+
+
+def list_incidents(client: Client, args: Dict[str, str]):
+    incident_id = args.get('incident_id')
+    query = args.get('query')
+    incident_type = args.get('incident_type')
+    priority = args.get('priority')
+    status = args.get('status')
+    limit = args.get('limit', 50)
+    page_size = args.get('page_size', 25)
+    page_number = args.get('page_number', 1)
+
+    incidents = []
+    raw_response = dict()
+
+    if incident_id:
+        raw_response = client.get_single_incident(incident_id)
+        incidents.append(format_single_incident(raw_response))
+
+    else:
+        if any([query, incident_type, priority, status]):
+            raw_response = client.get_list_incidents(query, incident_type, priority, status, limit, page_size,
+                                                     page_number)
+            for incident in raw_response['incidents']:
+                incidents.append(format_single_incident(incident))
+        else:
+            return_error('One of the following params is a must: query, incident_type, priority, status')
+
+    entry_context = {'Exabeam.Incident(val.incidentId && val.incidentId === obj.incidentId)': incidents}
+
+    human_readable = tableToMarkdown('Incidents list:', incidents)
+
+    return human_readable, entry_context, raw_response
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1946,7 +2057,9 @@ def main():
         'exabeam-get-notable-assets': get_notable_assets,
         'exabeam-get-notable-sequence-details': get_notable_sequence_details,
         'exabeam-get-notable-session-details': get_notable_session_details,
-        'exabeam-get-sequence-eventtypes': get_notable_sequence_event_types
+        'exabeam-get-sequence-eventtypes': get_notable_sequence_event_types,
+        'exabeam-list-incident': list_incidents,
+        'fetch-incidents': fetch_ir_as_incidents
     }
 
     try:
