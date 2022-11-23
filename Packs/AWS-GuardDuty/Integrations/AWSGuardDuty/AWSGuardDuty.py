@@ -380,7 +380,7 @@ def severity_mapping(severity: Optional[float]) -> Optional[int]:
     return demisto_severity
 
 
-def gd_severity_mapping(severity_list: List[str]) -> int:
+def gd_severity_mapping(severity_list: List[str]):
     if 'Low' in severity_list:
         gd_severity = 1
     elif 'Medium' in severity_list:
@@ -420,7 +420,7 @@ def list_findings(client: boto3.client, args: dict) -> CommandResults:
                           outputs_key_field='')
 
 
-def get_pagination_args(args: dict) -> Tuple[int, int, Optional[int]]:
+def get_pagination_args(args: dict) -> Tuple[Optional[int], Optional[int], Optional[int]]:
     """
     Gets and validates pagination arguments.
     :param args: The command arguments (page, page_size or limit)
@@ -471,8 +471,9 @@ def parse_finding(finding: dict) -> Dict:
     parsed_finding['ResourceType'] = demisto.get(finding, 'Resource.ResourceType')
 
     get_resource = finding.get('Resource')
-    parsed_finding['Resource'] = {k: json.dumps(v, cls=DatetimeEncoder) for k, v in get_resource.items()
-                                  if k != 'ResourceType'}
+    if get_resource:
+        parsed_finding['Resource'] = {k: json.dumps(v, cls=DatetimeEncoder) for k, v in get_resource.items()
+                                      if k != 'ResourceType'}
     return parsed_finding
 
 
@@ -557,7 +558,6 @@ def fetch_incidents(client: boto3.client, aws_gd_severity: List[str], last_run: 
 
     criterion_conditions = dict()  # Represents the criteria to be used in the filter for querying findings.
     criterion_conditions['severity'] = {'Gte': gd_severity_mapping(aws_gd_severity)}
-    demisto.debug('severity = ', criterion_conditions['severity'])
     if is_archive:
         demisto.debug('Fetching Amazon GuardDuty with Archive')
         criterion_conditions['service.archived'] = {'Eq': ['false']}
@@ -581,7 +581,8 @@ def fetch_incidents(client: boto3.client, aws_gd_severity: List[str], last_run: 
             NextToken=last_next_token
         )
         last_next_token = list_findings_res.get("NextToken", "")
-        get_findings_res = client.get_findings(DetectorId=detector[0], FindingIds=list_findings_res['FindingIds'],
+        finding_ids = list_findings_res.get('FindingIds', [])
+        get_findings_res = client.get_findings(DetectorId=detector[0], FindingIds=finding_ids,
                                                SortCriteria={'AttributeName': 'createdAt', 'OrderBy': 'ASC'})
 
         for finding in get_findings_res['Findings']:
@@ -606,8 +607,8 @@ def fetch_incidents(client: boto3.client, aws_gd_severity: List[str], last_run: 
 
         if incidents and is_archive:
             # Archive findings
-            demisto.debug('Archived ', len(list_findings_res['FindingIds']))
-            client.archive_findings(DetectorId=detector[0], FindingIds=list_findings_res['FindingIds'])
+            demisto.debug(f'Archived {len(finding_ids)} findings.')
+            client.archive_findings(DetectorId=detector[0], FindingIds=finding_ids)
 
         # if there is no next_token, or we have reached the fetch_limit -> break
         if not last_next_token or fetch_limit - len(incidents) == 0:

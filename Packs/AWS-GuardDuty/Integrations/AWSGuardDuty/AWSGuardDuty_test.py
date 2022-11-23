@@ -745,8 +745,8 @@ def test_update_detector(mocker, response, raises):
                                                          'DataSources': {'S3Logs': {'Enable': True},
                                                                          'Kubernetes': {'AuditLogs': {'Enable': True}},
                                                                          'MalwareProtection':
-                                                                             {'ScanEc2InstanceWithFindings':
-                                                                                  {'EbsVolumes': True}}}}
+                                                                             {'ScanEc2InstanceWithFindings': {
+                                                                                 'EbsVolumes': True}}}}
 
 
 @pytest.mark.parametrize('response, raises', [pytest.param({}, does_not_raise(),
@@ -840,8 +840,8 @@ def test_create_detector(mocker):
                                                          'DataSources': {'S3Logs': {'Enable': True},
                                                                          'Kubernetes': {'AuditLogs': {'Enable': True}},
                                                                          'MalwareProtection':
-                                                                             {'ScanEc2InstanceWithFindings':
-                                                                                  {'EbsVolumes': True}}}}
+                                                                             {'ScanEc2InstanceWithFindings': {
+                                                                                 'EbsVolumes': True}}}}
     assert command_results.outputs == {'DetectorId': 'some_id'}
 
 
