@@ -352,6 +352,9 @@ tasks:
       Domains:
         complex:
           root: inputs.Domain
+      Tag:
+        complex:
+          root: inputs.Tag
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -369,7 +372,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -398,6 +401,13 @@ inputs:
   description: |-
     The Domain List ID to add the Domain to.
     product: Proofpoint Threat Response
+  playbookInputQuery:
+- key: Tag
+  value: {}
+  required: false
+  description: |-
+    Tag to assign Domain to the External Dynamic List.
+    sub-playbook: Block Domain - External Dynamic List
   playbookInputQuery:
 outputs: []
 tests:
