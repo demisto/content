@@ -233,7 +233,7 @@ def _parse_ioc_comment(custom_fields: dict, comment_field_name: str) -> str | No
 
     else:
         # custom comments field
-        return ','.join(argToList(values)) or None
+        return ', '.join(argToList(values)) or None
 
 
 def demisto_ioc_to_xdr(ioc: Dict) -> Dict:

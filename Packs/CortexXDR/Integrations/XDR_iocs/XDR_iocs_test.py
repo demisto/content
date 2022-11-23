@@ -871,8 +871,8 @@ def test_severity_validate(value: str):
 @pytest.mark.parametrize(
     'comment_value,expected_comment',
     (('hello', 'hello'),
-     ('hello,world', 'hello,world'),
-     (['hello', 'world'], 'hello,world'),
+     ('hello,world', 'hello, world'),
+     (['hello', 'world'], 'hello, world'),
      ([], None),
      ))
 def test_xsoar_comments__csv(comment_value: str | list[str], expected_comment: str | None):
