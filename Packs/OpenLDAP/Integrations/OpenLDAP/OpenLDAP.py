@@ -447,11 +447,6 @@ class LdapClient:
         """
             Performs simple bind operation on ldap server.
         """
-        if self._ldap_server_vendor == self.OPENLDAP:  # TODO: need to solve the call from the test-module
-            is_valid_dn, _ = LdapClient._is_valid_dn(username, self.USER_IDENTIFIER_ATTRIBUTE)
-            if not is_valid_dn:  # the username is a user and not a full DN
-                username = f'{self.USER_IDENTIFIER_ATTRIBUTE}={username},{self._base_dn}'
-
         auto_bind = self._get_auto_bind_value()
         ldap_conn = Connection(server=self._ldap_server, user=username, password=password, auto_bind=auto_bind)
         demisto.info(f'LDAP Connection Details: {ldap_conn}')
@@ -463,24 +458,14 @@ class LdapClient:
             raise Exception(f"LDAP Authentication - authentication connection failed,"
                             f" server type is: {self._ldap_server_vendor}")
 
-    def get_user_data(self, username: str, pull_name: bool, pull_mail: bool, pull_phone: bool,
-                      name_attribute: str, mail_attribute: str, phone_attribute: str,
-                      search_user_by_dn: bool = False) -> dict:
+    def search_user_data(self, username: str, attributes: List, search_user_by_dn: bool = False) -> Tuple:
         """
-            Returns data for given ldap user.
+             Returns data for given ldap user.
+             Raises error if the user is not found in the ldap server.
         """
         auto_bind = self._get_auto_bind_value()
         with Connection(self._ldap_server, self._username, self._password, auto_bind=auto_bind) as ldap_conn:
             demisto.info(f'LDAP Connection Details: {ldap_conn}')
-
-            attributes = [self.GROUPS_IDENTIFIER_ATTRIBUTE]
-
-            if pull_name:
-                attributes.append(name_attribute)
-            if pull_mail:
-                attributes.append(mail_attribute)
-            if pull_phone:
-                attributes.append(phone_attribute)
 
             if search_user_by_dn:
                 search_filter = f'(&(objectClass={self.USER_OBJECT_CLASS})' +\
@@ -497,22 +482,44 @@ class LdapClient:
             if not ldap_conn.entries:
                 raise Exception("LDAP Authentication - LDAP user not found")
             entry = ldap_conn.entries[0]
+            referrals = ldap_conn.result.get('referrals')
 
             if self.GROUPS_IDENTIFIER_ATTRIBUTE not in entry \
                     or not entry[self.GROUPS_IDENTIFIER_ATTRIBUTE].value:
                 raise Exception(f"LDAP Authentication - OpenLDAP user's {self.GROUPS_IDENTIFIER_ATTRIBUTE} not found")
 
-            user_data = {'dn': entry.entry_dn, 'gid_number': [str(entry[self.GROUPS_IDENTIFIER_ATTRIBUTE].value)],
-                         'referrals': ldap_conn.result.get('referrals')}
+            return entry, referrals
 
-            if name_attribute in entry and entry[name_attribute].value:
-                user_data['name'] = ldap_conn.entries[0][name_attribute].value
-            if mail_attribute in entry and entry[mail_attribute].value:
-                user_data['email'] = ldap_conn.entries[0][mail_attribute].value
-            if phone_attribute in entry and entry[phone_attribute].value:
-                user_data['mobile'] = ldap_conn.entries[0][phone_attribute].value
+    def get_user_data(self, username: str, pull_name: bool, pull_mail: bool, pull_phone: bool,
+                      name_attribute: str, mail_attribute: str, phone_attribute: str,
+                      search_user_by_dn: bool = False) -> dict:
+        """
+            Returns data for given ldap user.
+        """
 
-            return user_data
+        attributes = [self.GROUPS_IDENTIFIER_ATTRIBUTE]
+
+        if pull_name:
+            attributes.append(name_attribute)
+        if pull_mail:
+            attributes.append(mail_attribute)
+        if pull_phone:
+            attributes.append(phone_attribute)
+
+        user_data_entry, referrals = self.search_user_data(username, attributes, search_user_by_dn)
+
+        user_data = {'dn': user_data_entry.entry_dn,
+                     'gid_number': [str(user_data_entry[self.GROUPS_IDENTIFIER_ATTRIBUTE].value)],
+                     'referrals': referrals}
+
+        if name_attribute in user_data_entry and user_data_entry[name_attribute].value:
+            user_data['name'] = user_data_entry[name_attribute].value
+        if mail_attribute in user_data_entry and user_data_entry[mail_attribute].value:
+            user_data['email'] = user_data_entry[mail_attribute].value
+        if phone_attribute in user_data_entry and user_data_entry[phone_attribute].value:
+            user_data['mobile'] = user_data_entry[phone_attribute].value
+
+        return user_data
 
     def get_user_groups(self, user_identifier: str):
         """
@@ -611,6 +618,19 @@ class LdapClient:
                                                         mail_attribute=mail_attribute, name_attribute=name_attribute,
                                                         phone_attribute=phone_attribute)
 
+    def ad_authenticate(self, username: str, password: str) -> str:
+        """
+            Search for the user in the ldap server.
+            Performs simple bind operation on ldap server.
+        """
+        if self._ldap_server_vendor == self.OPENLDAP:
+            # If the given username is not a full DN, search for it in the ldap server and find it's full DN
+            search_user_by_dn, _ = LdapClient._is_valid_dn(username, self.USER_IDENTIFIER_ATTRIBUTE)
+            user_data_entry, _ = self.search_user_data(username, [self.GROUPS_IDENTIFIER_ATTRIBUTE], search_user_by_dn)
+            username = user_data_entry.entry_dn
+
+        return self.authenticate_ldap_user(username, password)
+
     def test_module(self):
         """
             Basic test connection and validation of the Ldap integration.
@@ -627,7 +647,7 @@ class LdapClient:
             try:
                 parse_dn(self._username)
             except LDAPInvalidDnError:
-                raise Exception("Invalid credentials input. Credentials must be full DN.")
+                raise Exception("Invalid credentials input. User DN must be a full DN.")
         self.authenticate_ldap_user(username=self._username, password=self._password)
         return 'ok'
 
@@ -649,7 +669,7 @@ def main():
         elif command == 'ad-authenticate':
             username = args.get('username')
             password = args.get('password')
-            authentication_result = client.authenticate_ldap_user(username, password)
+            authentication_result = client.ad_authenticate(username, password)
             demisto.info(f'ad-authenticate command - authentication result: {authentication_result}')
             return_results(authentication_result)
         elif command == 'ad-groups':
