@@ -13,17 +13,19 @@ This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR
     | Incident type |  | False |
     | Incident Mirroring Direction |  | False |
     | Server URL (copy URL from XDR - click ? to see more info.) |  | True |
-    | API Key ID |  | True |
-    | API Key |  | True |
-    | Only fetch starred incidents |  | False |
-    | Starred incidents fetch window (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)  |  | False |
+    | API Key ID |  | False |
+    | API Key |  | False |
     | HTTP Timeout | The timeout of the HTTP requests sent to Cortex XDR API \(in seconds\). | False |
     | Maximum number of incidents per fetch | The maximum number of incidents per fetch. Cannot exceed 100. | False |
+    | Only fetch starred incidents |  | False |
+    | Starred incidents fetch window | Starred fetch window timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\). Fetches only starred incidents within the specified time range. | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Sync Incident Owners | For Cortex XSOAR version 6.0.0 and above. If selected, for every incident fetched from Cortex XDR to Cortex XSOAR, the incident owners will be synced. Note that once this value is changed and synchronized between the systems, additional changes will not be reflected. For example, if you change the owner in Cortex XSOAR, the new owner will also be changed in Cortex XDR. However, if you now change the owner back in Cortex XDR, this additional change will not be reflected in Cortex XSOAR. In addition, for this change to be reflected, the owners must exist in both Cortex XSOAR and Cortex XDR. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
+    | Prevent Only Mode | Whether the XDR tenant Mode is prevent only | False |
     | Incident Statuses to Fetch | The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. Note: An incident whose status was changed to a filtered status after its creation time will not be fetched. | False |
+    | Incidents Fetch Interval |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -169,7 +171,8 @@ If you pass multiple filtering arguments, they will be concatenated using the AN
 | page | Page number (for pagination). The default is 0 (the first page). Default is 0. | Optional | 
 | limit | Maximum number of incidents to return per page. The default and maximum is 100. Default is 100. | Optional | 
 | status | Filters only incidents in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto. | Optional | 
-| starred | Whether the incident is starred or not (Boolean value: true or false). | Optional |
+| starred | Whether the incident is starred (Boolean value: true or false). Possible values are: true, false. | Optional | 
+| starred_incidents_fetch_window | Starred fetch window timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 3 days. | Optional | 
 
 
 #### Context Output
@@ -182,7 +185,7 @@ If you pass multiple filtering arguments, they will be concatenated using the AN
 | PaloAltoNetworksXDR.Incident.assigned_user_mail | String | Email address of the assigned user. | 
 | PaloAltoNetworksXDR.Incident.high_severity_alert_count | String | Number of alerts with the severity HIGH. | 
 | PaloAltoNetworksXDR.Incident.host_count | number | Number of hosts involved in the incident. | 
-| PaloAltoNetworksXDR.Incident.xdr_url | String | A link to the incident view on XDR. | 
+| PaloAltoNetworksXDR.Incident.xdr_url | String | A link to the incident view on Cortex XDR. | 
 | PaloAltoNetworksXDR.Incident.assigned_user_pretty_name | String | Full name of the user assigned to the incident. | 
 | PaloAltoNetworksXDR.Incident.alert_count | number | Total number of alerts in the incident. | 
 | PaloAltoNetworksXDR.Incident.med_severity_alert_count | number | Number of alerts with the severity MEDIUM. | 
@@ -191,12 +194,12 @@ If you pass multiple filtering arguments, they will be concatenated using the AN
 "low","medium","high"
  | 
 | PaloAltoNetworksXDR.Incident.low_severity_alert_count | String | Number of alerts with the severity LOW. | 
-| PaloAltoNetworksXDR.Incident.status | String | Current status of the incident. Valid values are: "new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing" or "resolved_other". |
-| PaloAltoNetworksXDR.Incident.starred | Boolean | Incident starred. |
+| PaloAltoNetworksXDR.Incident.status | String | Current status of the incident. Valid values are: "new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing" or "resolved_other".
+ | 
 | PaloAltoNetworksXDR.Incident.description | String | Dynamic calculated description of the incident. | 
 | PaloAltoNetworksXDR.Incident.resolve_comment | String | Comments entered by the user when the incident was resolved. | 
 | PaloAltoNetworksXDR.Incident.notes | String | Comments entered by the user regarding the incident. | 
-| PaloAltoNetworksXDR.Incident.creation_time | date | Date and time the incident was created on XDR. | 
+| PaloAltoNetworksXDR.Incident.creation_time | date | Date and time the incident was created on Cortex XDR. | 
 | PaloAltoNetworksXDR.Incident.detection_time | date | Date and time that the first alert occurred in the incident. | 
 | PaloAltoNetworksXDR.Incident.modification_time | date | Date and time that the incident was last modified. | 
 
@@ -291,7 +294,7 @@ If you pass multiple filtering arguments, they will be concatenated using the AN
 
 
 ### xdr-get-incident-extra-data
----
+***
 Returns additional data for the specified incident, for example, related alerts, file artifacts, network artifacts, and so on.
 
 
@@ -303,8 +306,8 @@ Returns additional data for the specified incident, for example, related alerts,
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | The ID of the incident for which to get additional data. | Required | 
-| alerts_limit | Maximum number of alerts to return. Default is 1,000. Default is 1000. | Optional | 
-| return_only_updated_incident | Return data only if the incident was changed since the last time it was mirrored in to XSOAR.  This flag should be used only from within a XDR incident. Default is False. | Optional | 
+| alerts_limit | Maximum number of alerts to return. Default is 1000. | Optional | 
+| return_only_updated_incident | Return data only if the incident was changed since the last time it was mirrored into Cortex XSOAR.  This flag should be used only from within a Cortex XDR incident. Default is False. | Optional | 
 
 
 #### Context Output
@@ -312,7 +315,7 @@ Returns additional data for the specified incident, for example, related alerts,
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXDR.Incident.incident_id | String | Unique ID assigned to each returned incident. | 
-| PaloAltoNetworksXDR.Incident.creation_time | Date | Date and time the incident was created on XDR. | 
+| PaloAltoNetworksXDR.Incident.creation_time | Date | Date and time the incident was created on Cortex XDR. | 
 | PaloAltoNetworksXDR.Incident.modification_time | Date | Date and time that the incident was last modified. | 
 | PaloAltoNetworksXDR.Incident.detection_time | Date | Date and time that the first alert occurred in the incident. | 
 | PaloAltoNetworksXDR.Incident.status | String | Current status of the incident. Valid values are:
@@ -331,9 +334,9 @@ Returns additional data for the specified incident, for example, related alerts,
 | PaloAltoNetworksXDR.Incident.resolve_comment | String | Comments entered by the user when the incident was resolved. | 
 | PaloAltoNetworksXDR.Incident.manual_severity | String | Incident severity assigned by the user. This does not affect the calculated severity of low, medium, or high. | 
 | PaloAltoNetworksXDR.Incident.manual_description | String | Incident description provided by the user. | 
-| PaloAltoNetworksXDR.Incident.xdr_url | String | A link to the incident view on XDR. | 
+| PaloAltoNetworksXDR.Incident.xdr_url | String | A link to the incident view on Cortex XDR. | 
 | PaloAltoNetworksXDR.Incident.starred | Boolean | Incident starred. | 
-| PaloAltoNetworksXDR.Incident.wildfire_hits.mitre_techniques_ids_and_names | String | Incident Mitre techniques ids and names. | 
+| PaloAltoNetworksXDR.Incident.wildfire_hits.mitre_techniques_ids_and_names | String | Incident Mitre techniques IDs and names. | 
 | PaloAltoNetworksXDR.Incident.wildfire_hits.mitre_tactics_ids_and_names | String | Incident Mitre tactics ids and names. | 
 | PaloAltoNetworksXDR.Incident.alerts.alert_id | String | Unique ID for each alert. | 
 | PaloAltoNetworksXDR.Incident.alerts.detection_timestamp | Date | Date and time that the alert occurred. | 
@@ -351,12 +354,12 @@ Returns additional data for the specified incident, for example, related alerts,
 | PaloAltoNetworksXDR.Incident.alerts.actor_process_image_name | String | Image name. | 
 | PaloAltoNetworksXDR.Incident.alerts.actor_process_command_line | String | Command line. | 
 | PaloAltoNetworksXDR.Incident.alerts.actor_process_signature_status | String | Signature status. Valid values are: "Signed" "Invalid Signature" "Unsigned" "Revoked" "Signature Fail" "N/A" "Weak Hash". | 
-| PaloAltoNetworksXDR.Incident.alerts.actor_process_signature_vendor | String | Singature vendor name. | 
+| PaloAltoNetworksXDR.Incident.alerts.actor_process_signature_vendor | String | Signature vendor name. | 
 | PaloAltoNetworksXDR.Incident.alerts.causality_actor_process_image_name | String | Image name. | 
 | PaloAltoNetworksXDR.Incident.alerts.causality_actor_process_command_line | String | Command line. | 
 | PaloAltoNetworksXDR.Incident.alerts.causality_actor_process_signature_status | String | Signature status. Valid values are: "Signed" "Invalid Signature" "Unsigned" "Revoked" "Signature Fail" "N/A" "Weak Hash" | 
 | PaloAltoNetworksXDR.Incident.alerts.causality_actor_process_signature_vendor | String | Signature vendor. | 
-| PaloAltoNetworksXDR.Incident.alerts.causality_actor_causality_id | Unknown | Causality id. | 
+| PaloAltoNetworksXDR.Incident.alerts.causality_actor_causality_id | Unknown | Causality ID. | 
 | PaloAltoNetworksXDR.Incident.alerts.action_process_image_name | String | Image name. | 
 | PaloAltoNetworksXDR.Incident.alerts.action_process_image_command_line | String | Command line. | 
 | PaloAltoNetworksXDR.Incident.alerts.action_process_image_sha256 | String | Image SHA256. | 
@@ -391,7 +394,7 @@ Returns additional data for the specified incident, for example, related alerts,
 | PaloAltoNetworksXDR.Incident.file_artifacts.is_malicious | boolean | Whether the artifact is malicious, as decided by the Wildfire verdict. | 
 | PaloAltoNetworksXDR.Incident.file_artifacts.is_manual | boolean | Whether the artifact was created by the user \(manually\). | 
 | PaloAltoNetworksXDR.Incident.file_artifacts.type | String | The artifact type. Valid values are: "META" "GID" "CID" "HASH" "IP" "DOMAIN" "REGISTRY" "HOSTNAME" | 
-| PaloAltoNetworksXDR.Incident.file_artifacts.file_sha256 | String | SHA-256 hash of the file. | 
+| PaloAltoNetworksXDR.Incident.file_artifacts.file_sha256 | String | SHA256 hash of the file. | 
 | PaloAltoNetworksXDR.Incident.file_artifacts.file_signature_vendor_name | String | File signature vendor name. | 
 | Account.Username | String | The username in the relevant system. | 
 | Endpoint.Hostname | String | The hostname that is mapped to this endpoint. | 
@@ -409,6 +412,10 @@ Returns additional data for the specified incident, for example, related alerts,
 | IP.Address | String | IP address. | 
 | IP.Geo.Country | String | The country in which the IP address is located. | 
 | Domain.Name | String | The domain name, for example: "google.com". | 
+
+### xdr-update-incident
+***
+Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
 
 ##### Command Example
 ```!xdr-get-incident-extra-data incident_id=4 alerts_limit=10```
@@ -755,7 +762,7 @@ Returns additional data for the specified incident, for example, related alerts,
 There is no context output for this command.
 ### xdr-insert-parsed-alert
 ***
-Upload alert from external alert sources in Cortex XDR format. Cortex XDR displays alerts that are parsed
+Uploads an alert from external alert sources in Cortex XDR format. Cortex XDR displays alerts that are parsed
 successfully in related incidents and views. You can send 600 alerts per minute. Each request can contain a
 maximum of 60 alerts.
 
@@ -768,12 +775,12 @@ maximum of 60 alerts.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | product | String value that defines the product. | Required | 
-| vendor | String value that defines the product. | Required | 
+| vendor | String value that defines the vendor. | Required | 
 | local_ip | String value for the source IP address. | Optional | 
 | local_port | Integer value for the source port. | Required | 
 | remote_ip | String value of the destination IP<br/>address. | Required | 
 | remote_port | Integer value for the destination<br/>port. | Required | 
-| event_timestamp | Integer value representing the epoch of the time the alert occurred in milliseconds, or a string value in date format 2019-10-23T10:00:00. If not set, the event time will be defined as now. | Optional | 
+| event_timestamp | Integer value representing the time the alert occurred in milliseconds, or a string value in date format 2019-10-23T10:00:00. If not set, the event time will be defined as now. | Optional | 
 | severity | String value of alert severity. Valid values are:<br/>Informational, Low, Medium or High. Possible values are: Informational, Low, Medium, High. Default is Medium. | Optional | 
 | alert_name | String defining the alert name. | Required | 
 | alert_description | String defining the alert description. | Optional | 
@@ -812,7 +819,7 @@ Isolates the specified endpoint.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
+| incident_id | Allows linking the response action to the incident that triggered it. | Optional | 
 | endpoint_id | The endpoint ID (string) to isolate. You can retrieve the string from the xdr-get-endpoints command. | Required | 
 | suppress_disconnected_endpoint_error | Whether to suppress an error when trying to isolate a disconnected endpoint. When sets to false, an error will be returned. Possible values are: true, false. Default is false. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
@@ -838,7 +845,7 @@ Reverses the isolation of an endpoint.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
+| incident_id | Allows linking the response action to the incident that triggered it. | Optional | 
 | endpoint_id | The endpoint ID (string) for which to reverse the isolation. You can retrieve it from the xdr-get-endpoints command. | Required | 
 | suppress_disconnected_endpoint_error | Whether to suppress an error when trying to unisolate a disconnected endpoint. When sets to false, an error will be returned. Possible values are: true, false. Default is false. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
@@ -863,25 +870,25 @@ Gets a list of endpoints, according to the passed filters. If there are no filte
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-|-------------------| --- | --- |
-| status            | The status of the endpoint to filter. Possible values are: connected, disconnected, lost, uninstalled. | Optional | 
-| endpoint_id_list  | A comma-separated list of endpoint IDs. | Optional | 
-| dist_name         | A comma-separated list of distribution package names or installation package names. <br/>Example: dist_name1,dist_name2. | Optional | 
-| ip_list           | A comma-separated list of IP addresses.<br/>Example: 8.8.8.8,1.1.1.1. | Optional | 
-| group_name        | The group name to which the agent belongs.<br/>Example: group_name1,group_name2. | Optional | 
-| platform          | The endpoint platform. Valid values are\: "windows", "linux", "macos", or "android". . Possible values are: windows, linux, macos, android. | Optional | 
-| alias_name        | A comma-separated list of alias names.<br/>Examples: alias_name1,alias_name2. | Optional | 
-| isolate           | Specifies whether the endpoint was isolated or unisolated. Possible values are: isolated, unisolated. | Optional | 
-| hostname          | Hostname<br/>Example: hostname1,hostname2. | Optional | 
-| first_seen_gte    | All the agents that were first seen after {first_seen_gte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
-| first_seen_lte    | All the agents that were first seen before {first_seen_lte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
-| last_seen_gte     | All the agents that were last seen before {last_seen_gte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
-| last_seen_lte     | All the agents that were last seen before {last_seen_lte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
-| page              | Page number (for pagination). The default is 0 (the first page). Default is 0. | Optional | 
-| limit             | Maximum number of endpoints to return per page. The default and maximum is 30. Default is 30. | Optional | 
-| sort_by           | Specifies whether to sort endpoints by the first time or last time they were seen. Can be "first_seen" or "last_seen". Possible values are: first_seen, last_seen. | Optional | 
-| sort_order        | The order by which to sort results. Can be "asc" (ascending) or "desc" ( descending). Default set to asc. Possible values are: asc, desc. Default is asc. | Optional | 
-| username          | The usernames to query for, accepts a single user, or comma-separated list of usernames. | Optional | 
+| --- | --- | --- |
+| status | The status of the endpoint to filter. Possible values are: connected, disconnected, lost, uninstalled. | Optional | 
+| endpoint_id_list | A comma-separated list of endpoint IDs. | Optional | 
+| dist_name | A comma-separated list of distribution package names or installation package names.<br/>Example: dist_name1,dist_name2. | Optional | 
+| ip_list | A comma-separated list of IP addresses.<br/>Example: 8.8.8.8,1.1.1.1. | Optional | 
+| group_name | The group name to which the agent belongs.<br/>Example: group_name1,group_name2. | Optional | 
+| platform | The endpoint platform. Valid values are\: "windows", "linux", "macos", or "android". . Possible values are: windows, linux, macos, android. | Optional | 
+| alias_name | A comma-separated list of alias names.<br/>Examples: alias_name1,alias_name2. | Optional | 
+| isolate | Specifies whether the endpoint was isolated or unisolated. Possible values are: isolated, unisolated. | Optional | 
+| hostname | Hostname<br/>Example: hostname1,hostname2. | Optional | 
+| first_seen_gte | All the agents that were first seen after {first_seen_gte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
+| first_seen_lte | All the agents that were first seen before {first_seen_lte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
+| last_seen_gte | All the agents that were last seen before {last_seen_gte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
+| last_seen_lte | All the agents that were last seen before {last_seen_lte}.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
+| page | Page number (for pagination). The default is 0 (the first page). Default is 0. | Optional | 
+| limit | Maximum number of endpoints to return per page. The default and maximum is 30. Default is 30. | Optional | 
+| sort_by | Specifies whether to sort endpoints by the first time or last time they were seen. Can be "first_seen" or "last_seen". Possible values are: first_seen, last_seen. | Optional | 
+| sort_order | The order by which to sort results. Can be "asc" (ascending) or "desc" ( descending). Default set to asc. Possible values are: asc, desc. Default is asc. | Optional | 
+| username | The usernames to query for, accepts a single user, or comma-separated list of usernames. | Optional | 
 
 
 #### Context Output
@@ -1013,7 +1020,7 @@ Gets a list of endpoints, according to the passed filters. If there are no filte
 
 
 ### xdr-get-distribution-versions
----
+***
 Gets a list of all the agent versions to use for creating a distribution list.
 
 
@@ -1083,7 +1090,7 @@ There are no input arguments for this command.
 
 
 ### xdr-create-distribution
----
+***
 Creates an installation package. This is an asynchronous call that returns the distribution ID. This does not mean that the creation succeeded. To confirm that the package has been created, check the status of the distribution by running the Get Distribution Status API.
 
 
@@ -1097,7 +1104,7 @@ Creates an installation package. This is an asynchronous call that returns the d
 | name | A string representing the name of the installation package. | Required | 
 | platform | String, valid values are:<br/>• windows <br/>• linux<br/>• macos <br/>• android. Possible values are: windows, linux, macos, android. | Required | 
 | package_type | A string representing the type of package to create.<br/>standalone - An installation for a new agent<br/>upgrade - An upgrade of an agent from ESM. Possible values are: standalone, upgrade. | Required | 
-| agent_version | agent_version returned from xdr-get-distribution-versions. Not required for Android platfom. | Required | 
+| agent_version | agent_version returned from xdr-get-distribution-versions. Not required for Android platform. | Required | 
 | description | Information about the package. | Optional | 
 
 
@@ -1133,7 +1140,7 @@ Creates an installation package. This is an asynchronous call that returns the d
 Distribution 43aede7f846846fa92b50149663fbb25 created successfully
 
 ### xdr-get-distribution-url
----
+***
 Gets the distribution URL for downloading the installation package.
 
 
@@ -1171,7 +1178,7 @@ Gets the status of the installation package.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| distribution_ids | A comma-separated list of distribution IDs to get the status of. | Required | 
+| distribution_ids | A comma-separated list of distribution IDs to get the status for. | Required | 
 
 
 #### Context Output
@@ -1310,8 +1317,8 @@ Block lists requested files which have not already been block listed or added to
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.blocklist.added_hashes | Number | Added fileHash to blocklist | 
-| PaloAltoNetworksXDR.blocklist.excluded_hashes | Number | Added fileHash to blocklist | 
+| PaloAltoNetworksXDR.blocklist.added_hashes | Number | Number of file hashes added to block list. | 
+| PaloAltoNetworksXDR.blocklist.excluded_hashes | Number | Number of file hashes excluded from block list. | 
 
 ### xdr-allowlist-files
 ***
@@ -1335,8 +1342,8 @@ Adds requested files to allow list if they are not already on block list or allo
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.allowlist.added_hashes | Number | Added fileHash to allowlist | 
-| PaloAltoNetworksXDR.allowlist.excluded_hashes | Number | Added fileHash to allowlist | 
+| PaloAltoNetworksXDR.allowlist.added_hashes | Number | Number of added file hashes to allowlist. | 
+| PaloAltoNetworksXDR.allowlist.excluded_hashes | Number | Number of excluded file hashes from allowlist. | 
 
 ### xdr-file-quarantine
 ***
@@ -1350,7 +1357,7 @@ Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
+| incident_id | Allows linking the response action to the incident that triggered it. | Optional | 
 | endpoint_id_list | List of endpoint IDs. | Required | 
 | file_path | String that represents the path of the file you want to quarantine. | Required | 
 | file_hash | String that represents the file’s hash. Must be a valid SHA256 hash. | Required | 
@@ -1395,7 +1402,7 @@ Restores a quarantined file on requested endpoints.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
+| incident_id | Allows linking the response action to the incident that triggered it. | Optional | 
 | file_hash | String that represents the file in hash. Must be a valid SHA256 hash. | Required | 
 | endpoint_id | String that represents the endpoint ID. If you do not enter a specific endpoint ID, the request will run restore on all endpoints which relate to the quarantined file you defined. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
@@ -1409,7 +1416,7 @@ There is no context output for this command.
 
 ### xdr-endpoint-scan-execute
 ***
-Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Do note that scanning all the endpoints may cause performance issues and latency.
+Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Note: scanning all the endpoints may cause performance issues and latency.
 
 
 #### Base Command
@@ -1419,20 +1426,20 @@ Runs a scan on a selected endpoint. To scan all endpoints, run this command with
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
+| incident_id | Allows linking the response action to the incident that triggered it. | Optional | 
 | endpoint_id_list | List of endpoint IDs. | Optional | 
 | dist_name | Name of the distribution list. | Optional | 
-| gte_first_seen | Epoch timestamp in milliseconds. | Optional | 
-| gte_last_seen | Epoch timestamp in milliseconds. | Optional | 
-| lte_first_seen | Epoch timestamp in milliseconds. | Optional | 
-| lte_last_seen | Epoch timestamp in milliseconds. | Optional | 
+| gte_first_seen | GTE first seen timestamp in milliseconds. | Optional | 
+| gte_last_seen | GET last seen timestamp in milliseconds. | Optional | 
+| lte_first_seen | LTE first seen timestamp in milliseconds. | Optional | 
+| lte_last_seen | LTE last seen timestamp in milliseconds. | Optional | 
 | ip_list | List of IP addresses. | Optional | 
 | group_name | Name of the endpoint group. | Optional | 
 | platform | Type of operating system. Possible values are: windows, linux, macos, android. | Optional | 
 | alias | Endpoint alias name. | Optional | 
 | isolate | Whether an endpoint has been isolated. Can be "isolated" or "unisolated". Possible values are: isolated, unisolated. | Optional | 
 | hostname | Name of the host. | Optional | 
-| all | Whether to scan all of the endpoints or not. Default is false. Scanning all of the endpoints may cause performance issues and latency. Possible values are: true, false. Default is false. | Optional | 
+| all | Whether to scan all of the endpoints. Scanning all of the endpoints may cause performance issues and latency. Possible values are: true, false. Default is false. | Optional | 
 | action_id | For polling use. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. | Optional | 
@@ -1443,11 +1450,11 @@ Runs a scan on a selected endpoint. To scan all endpoints, run this command with
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXDR.endpointScan.actionId | Number | The action ID of the scan request. | 
-| PaloAltoNetworksXDR.endpointScan.aborted | Boolean | Was the scan aborted. |
+| PaloAltoNetworksXDR.endpointScan.aborted | Boolean | Was the scan aborted? | 
 
 ### xdr-endpoint-scan-abort
 ***
-Cancel the scan of selected endpoints. A scan can only be aborted if the selected endpoints are Pending or In Progress. To scan all endpoints, run the command with the argument all=true. Note that scanning all of the endpoints may cause performance issues and latency.
+Cancels the scan of selected endpoints. A scan can only be aborted if the selected endpoints are Pending or In Progress. To scan all endpoints, run the command with the argument all=true. Note that scanning all of the endpoints may cause performance issues and latency.
 
 
 #### Base Command
@@ -1457,32 +1464,32 @@ Cancel the scan of selected endpoints. A scan can only be aborted if the selecte
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
+| incident_id | Allows linking the response action to the incident that triggered it. | Optional | 
 | endpoint_id_list | List of endpoint IDs. | Optional | 
 | dist_name | Name of the distribution list. | Optional | 
-| gte_first_seen | Epoch timestamp in milliseconds. | Optional | 
-| gte_last_seen | Epoch timestamp in milliseconds. | Optional | 
-| lte_first_seen | Epoch timestamp in milliseconds. | Optional | 
-| lte_last_seen | Epoch timestamp in milliseconds. | Optional | 
+| gte_first_seen | GTE first seen timestamp in milliseconds. | Optional | 
+| gte_last_seen | GTE last seen timestamp in milliseconds. | Optional | 
+| lte_first_seen | LTE first seen timestamp in milliseconds. | Optional | 
+| lte_last_seen | LTE last seen timestamp in milliseconds. | Optional | 
 | ip_list | List of IP addresses. | Optional | 
 | group_name | Name of the endpoint group. | Optional | 
 | platform | Type of operating system. Possible values are: windows, linux, macos, android. | Optional | 
 | alias | Endpoint alias name. | Optional | 
 | isolate | Whether an endpoint has been isolated. Can be "isolated" or "unisolated". Possible values are: isolated, unisolated. | Optional | 
 | hostname | Name of the host. | Optional | 
-| all | Whether to scan all of the endpoints or not. Default is false. Note that scanning all of the endpoints may cause performance issues and latency. Possible values are: true, false. Default is false. | Optional | 
+| all | Whether to scan all of the endpoints. Note: scanning all of the endpoints may cause performance issues and latency. Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.endpointScan.actionId | Unknown | The action id of the abort scan request. | 
-| PaloAltoNetworksXDR.endpointScan.aborted | Boolean | Was the scan aborted. | 
+| PaloAltoNetworksXDR.endpointScan.actionId | Unknown | The action ID of the abort scan request. | 
+| PaloAltoNetworksXDR.endpointScan.aborted | Boolean | Was the scan aborted? | 
 
 ### get-mapping-fields
 ***
-Get mapping fields from remote incident. Please note that this method will not update the current incident, it's here for debugging purposes.
+Gets mapping fields from remote incident. Note: This method will not update the current incident, it's here for debugging purposes.
 
 
 #### Base Command
@@ -1490,14 +1497,16 @@ Get mapping fields from remote incident. Please note that this method will not u
 `get-mapping-fields`
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
 
 #### Context Output
 
 There is no context output for this command.
 ### get-remote-data
 ***
-Get remote data from a remote incident. Please note that this method will not update the current incident, it's here for debugging purposes.
+Gets remote data from a remote incident. Note: This method will not update the current incident, it's here for debugging purposes.
 
 
 #### Base Command
@@ -1507,7 +1516,7 @@ Get remote data from a remote incident. Please note that this method will not up
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The remote incident id. | Required | 
+| id | The remote incident ID. | Required | 
 | lastUpdate | UTC timestamp in seconds. The incident is only updated if it was modified after the last update time. Default is 0. | Optional | 
 
 
@@ -1516,7 +1525,7 @@ Get remote data from a remote incident. Please note that this method will not up
 There is no context output for this command.
 ### get-modified-remote-data
 ***
-Get the list of incidents that were modified since the last update. Please note that this method is here for debugging purposes. get-modified-remote-data is used as part of a Mirroring feature, which is available since version 6.1.
+Gets the list of incidents that were modified since the last update. Note: This method is here for debugging purposes. get-modified-remote-data is used as part of a Mirroring feature, which is available since version 6.1.
 
 
 #### Base Command
@@ -1570,8 +1579,8 @@ Gets a list of scripts available in the scripts library.
 | script_name | A comma-separated list of the script names. | Optional | 
 | description | A comma-separated list of the script descriptions. | Optional | 
 | created_by | A comma-separated list of the users who created the script. | Optional | 
-| limit | The maximum number of scripts returned to the War Room. Default is 50. | Optional | 
-| offset | (Int) Offset in the data set. Default is 0. | Optional | 
+| limit | The maximum number of scripts returned to the War Room. | Optional | 
+| offset | (Int) Offset in the data set. | Optional | 
 | windows_supported | Whether the script can be executed on a Windows operating system. Possible values are: true, false. | Optional | 
 | linux_supported | Whether the script can be executed on a Linux operating system. Possible values are: true, false. | Optional | 
 | macos_supported | Whether the script can be executed on a Mac operating system. Possible values are: true, false. | Optional | 
@@ -1606,7 +1615,7 @@ Deletes selected endpoints in the Cortex XDR app. You can delete up to 1000 endp
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_ids | Comma-separated list of endpoint IDs. You can retrieve the endpoint IDs from the xdr-get-endpoints command. | Required | 
+| endpoint_ids | A comma-separated list of endpoint IDs. You can retrieve the endpoint IDs from the xdr-get-endpoints command. | Required | 
 
 
 #### Context Output
@@ -1624,18 +1633,18 @@ Gets a list of device control violations filtered by selected fields. You can re
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_ids | Comma-separated list of endpoint IDs. You can retrieve the endpoint IDs from the xdr-get-endpoints command. | Optional | 
+| endpoint_ids | A comma-separated list of endpoint IDs. You can retrieve the endpoint IDs from the xdr-get-endpoints command. | Optional | 
 | type | Type of violation. Possible values are: "cd-rom", "disk drive", "floppy disk", and "portable device". Possible values are: cd-rom, disk drive, floppy disk, portable device. | Optional | 
 | timestamp_gte | Timestamp of the violation. Violations that are greater than or equal to this timestamp will be returned. Values can be in either ISO date format, relative time, or epoch timestamp. For example:  "2019-10-21T23:45:00" (ISO date format), "3 days ago" (relative time) 1579039377301 (epoch time). | Optional | 
 | timestamp_lte | Timestamp of the violation. Violations that are less than or equal to this timestamp will be returned. Values can be in either ISO date format, relative time, or epoch timestamp. For example:  "2019-10-21T23:45:00" (ISO date format), "3 days ago" (relative time) 1579039377301 (epoch time). | Optional | 
-| ip_list | Comma-separated list of IP addresses. | Optional | 
+| ip_list | A comma-separated list of IP addresses. | Optional | 
 | vendor | Name of the vendor. | Optional | 
 | vendor_id | Vendor ID. | Optional | 
 | product | Name of the product. | Optional | 
 | product_id | Product ID. | Optional | 
 | serial | Serial number. | Optional | 
 | hostname | Hostname. | Optional | 
-| violation_id_list | Comma-separated list of violation IDs. | Optional | 
+| violation_id_list | A comma-separated list of violation IDs. | Optional | 
 | username | Username. | Optional | 
 
 
@@ -1646,7 +1655,7 @@ Gets a list of device control violations filtered by selected fields. You can re
 | PaloAltoNetworksXDR.EndpointViolations | Unknown | Endpoint violations command results. | 
 | PaloAltoNetworksXDR.EndpointViolations.violations | Unknown | A list of violations. | 
 | PaloAltoNetworksXDR.EndpointViolations.violations.os_type | string | Type of the operating system. | 
-| PaloAltoNetworksXDR.EndpointViolations.violations.hostname | string | Hostname of the violation. | 
+| PaloAltoNetworksXDR.EndpointViolations.violations.hostname | string | Host name of the violation. | 
 | PaloAltoNetworksXDR.EndpointViolations.violations.username | string | Username of the violation. | 
 | PaloAltoNetworksXDR.EndpointViolations.violations.ip | string | IP address of the violation. | 
 | PaloAltoNetworksXDR.EndpointViolations.violations.timestamp | number | Timestamp of the violation. | 
@@ -1672,11 +1681,11 @@ Retrieves files from selected endpoints. You can retrieve up to 20 files, from n
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
-| endpoint_ids | Comma-separated list of endpoint IDs. | Required | 
+| endpoint_ids | A comma-separated list of endpoint IDs. | Required | 
 | windows_file_paths | A comma-separated list of file paths on the Windows platform. | Optional | 
 | linux_file_paths | A comma-separated list of file paths on the Linux platform. | Optional | 
 | mac_file_paths | A comma-separated list of file paths on the Mac platform. | Optional | 
-| generic_file_path | A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parallel to the endpoints list order, therefore, the first file path in the list is related to the first endpoint and so on. | Optional | 
+| generic_file_path | A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parallel to the endpoints list order, so the first file path in the list is related to the first endpoint and so on. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. | Optional | 
 | action_id | For polling use. | Optional | 
@@ -1687,9 +1696,9 @@ Retrieves files from selected endpoints. You can retrieve up to 20 files, from n
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXDR.RetrievedFiles.action_id | string | ID of the action to retrieve files from selected endpoints. | 
-| PaloAltoNetworksXDR.RetrievedFiles.endpoint_id | string | Endpoint ID. Added only when the operation is successful.| 
+| PaloAltoNetworksXDR.RetrievedFiles.endpoint_id | string | Endpoint ID. Added only when the operation is successful. | 
 | PaloAltoNetworksXDR.RetrievedFiles.file_link | string | Link to the file. Added only when the operation is successful. | 
-| PaloAltoNetworksXDR.RetrievedFiles.status | string | The action status. Added only when the operation is unsuccessful. |
+| PaloAltoNetworksXDR.RetrievedFiles.status | string | The action status. Added only when the operation is unsuccessful. | 
 
 ### xdr-retrieve-file-details
 ***
@@ -1804,7 +1813,7 @@ Retrieves the status of the requested actions according to the action ID.
 
 ### xdr-run-script
 ***
-Initiates a new endpoint script execution action using a script from the script library.
+This command will soon be deprecated; prefer xdr-script-run instead. Initiates a new endpoint script execution action using a script from the script library.
 
 
 #### Base Command
@@ -1814,10 +1823,10 @@ Initiates a new endpoint script execution action using a script from the script 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
-| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required | 
+| incident_id | Allows linking the response action to the incident that triggered it. | Optional | 
+| endpoint_ids | A comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required | 
 | script_uid | Unique identifier of the script. Can be retrieved by running the xdr-get-scripts command. | Required | 
-| parameters | Dictionary contains the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}. | Optional | 
+| parameters | Dictionary containing the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}. | Optional | 
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional | 
 
 
@@ -1840,8 +1849,8 @@ Initiates a new endpoint script execution action using the provided snippet code
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
-| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required | 
+| incident_id | Allows linking the response action to the incident that triggered it. | Optional | 
+| endpoint_ids | A comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required | 
 | snippet_code | Section of a script you want to initiate on an endpoint (e.g., print("7")). | Required | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. | Optional | 
@@ -1853,7 +1862,7 @@ Initiates a new endpoint script execution action using the provided snippet code
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXDR.ScriptRun.action_id | Number | ID of the action initiated. | 
-| PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. |
+| PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
 
 ### xdr-get-script-execution-status
 ***
@@ -1953,7 +1962,7 @@ Gets the files retrieved from a specific endpoint during a script execution.
 
 ### xdr-script-commands-execute
 ***
-Initiate a new endpoint script execution of shell commands.
+Initiates a new endpoint script execution of shell commands.
 
 
 #### Base Command
@@ -1963,9 +1972,9 @@ Initiate a new endpoint script execution of shell commands.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
-| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required | 
-| commands | Comma-separated list of shell commands to execute. | Required | 
+| incident_id | Allows linking the response action to the incident that triggered it. | Optional | 
+| endpoint_ids | A comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required | 
+| commands | A comma-separated list of shell commands to execute. | Required | 
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. | Optional | 
@@ -1991,9 +2000,9 @@ Initiates a new endpoint script execution to delete the specified file.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
-| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required | 
-| file_path | Paths of the files to delete, in a comma-separated list. Paths of the files to check for existence. All of the given file paths will run on all of the endpoints. | Required | 
+| incident_id | Allows linking the response action to the incident that triggered it. | Optional | 
+| endpoint_ids | A comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required | 
+| file_path | A comma-separated list of paths of the files to delete. All of the given file paths will run on all of the endpoints. | Required | 
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. | Optional | 
@@ -2005,7 +2014,7 @@ Initiates a new endpoint script execution to delete the specified file.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXDR.ScriptRun.action_id | Number | ID of the action initiated. | 
-| PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. |
+| PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
 
 ### xdr-file-exist-script-execute
 ***
@@ -2019,9 +2028,9 @@ Initiates a new endpoint script execution to check if file exists.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
-| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required | 
-| file_path | Paths of the files to check for existence, in a comma-separated list. All of the given file paths will run on all of the endpoints. | Required | 
+| incident_id | Allows linking the response action to the incident that triggered it. | Optional | 
+| endpoint_ids | A comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required | 
+| file_path | A comma-separated list of paths of the files to check for existence. All of the given file paths will run on all of the endpoints. | Required | 
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. | Optional | 
@@ -2033,7 +2042,7 @@ Initiates a new endpoint script execution to check if file exists.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXDR.ScriptRun.action_id | Number | ID of the action initiated. | 
-| PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. |
+| PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
 
 ### xdr-kill-process-script-execute
 ***
@@ -2048,7 +2057,7 @@ Initiates a new endpoint script execution kill process.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
-| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required | 
+| endpoint_ids | A comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required | 
 | process_name | Names of processes to kill. Will kill all of the given processes on all of the endpoints. | Required | 
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
@@ -2077,20 +2086,20 @@ Returns information about an endpoint.
 | --- | --- | --- |
 | id | The endpoint ID. | Optional | 
 | ip | The endpoint IP address. | Optional | 
-| hostname | The endpoint hostname. | Optional | 
+| hostname | The endpoint host name. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Endpoint.Hostname | String | The endpoint's hostname. | 
-| Endpoint.OS | String | The endpoint's operation system. | 
-| Endpoint.IPAddress | String | The endpoint's IP address. | 
-| Endpoint.ID | String | The endpoint's ID. | 
-| Endpoint.Status | String | The endpoint's status. | 
-| Endpoint.IsIsolated | String | The endpoint's isolation status. | 
-| Endpoint.MACAddress | String | The endpoint's MAC address. | 
+| Endpoint.Hostname | String | The endpoint hostname. | 
+| Endpoint.OS | String | The endpoint operation system. | 
+| Endpoint.IPAddress | String | The endpoint IP address. | 
+| Endpoint.ID | String | The endpoint ID. | 
+| Endpoint.Status | String | The endpoint status. | 
+| Endpoint.IsIsolated | String | The endpoint isolation status. | 
+| Endpoint.MACAddress | String | The endpoint MAC address. | 
 | Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
 
 ### xdr-get-endpoints-by-status
@@ -2114,8 +2123,8 @@ Returns the number of the connected\disconnected endpoints.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.EndpointsStatus.status | String | The endpoint's status. | 
-| PaloAltoNetworksXDR.EndpointsStatus.count | Number | The number of endpoint's with this status. | 
+| PaloAltoNetworksXDR.EndpointsStatus.status | String | The endpoint status. | 
+| PaloAltoNetworksXDR.EndpointsStatus.count | Number | The number of endpoints with this status. | 
 
 ### xdr-get-cloud-original-alerts
 ***
@@ -2230,8 +2239,8 @@ There is no context output for this command.
 
 ### xdr-get-alerts
 ***
-Returns a list of alerts and their meta-data, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. 
-Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value.
+Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. 
+Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value.
 
 
 #### Base Command
@@ -2243,10 +2252,10 @@ Multiple filter arguments will be concatenated using AND operator, while argumen
 | --- | --- | --- |
 | alert_id | The unique ID of the alert. | Optional | 
 | severity | The severity of the alert. Possible values are: low, medium, high. | Optional | 
-| custom_filter | a custom filter, when using this argument, other filter arguments are not relevant except time_frame, start_time and end_time which are used to filter the time. example: <br/>`{<br/>                "OR": [<br/>                    {<br/>                        "SEARCH_FIELD": "actor_process_command_line",<br/>                        "SEARCH_TYPE": "EQ",<br/>                        "SEARCH_VALUE": "path_to_file"<br/>                    }<br/>                ]<br/>            }`. | Optional | 
-| Identity_type | Account type. Possible values are: ANONYMOUS,  APPLICATION,  COMPUTE,  FEDERATED_IDENTITY,  SERVICE,  SERVICE_ACCOUNT,  TEMPORARY_CREDENTIALS,  TOKEN,  UNKNOWN,  USER. | Optional | 
+| custom_filter | a custom filter, when using this argument, other filter arguments are not relevant. example: <br/>`{<br/>                "OR": [<br/>                    {<br/>                        "SEARCH_FIELD": "actor_process_command_line",<br/>                        "SEARCH_TYPE": "EQ",<br/>                        "SEARCH_VALUE": "path_to_file"<br/>                    }<br/>                ]<br/>            }`. | Optional | 
+| Identity_type | Account type. Possible values are: ANONYMOUS, APPLICATION, COMPUTE, FEDERATED_IDENTITY, SERVICE, SERVICE_ACCOUNT, TEMPORARY_CREDENTIALS, TOKEN, UNKNOWN, USER. | Optional | 
 | agent_id | A unique identifier per agent. | Optional | 
-| action_external_hostname | The hostname to connect to. In case of a proxy connection, this value will differ from action_remote_ip. | Optional | 
+| action_external_hostname | The host name to connect to. In case of a proxy connection, this value will differ from action_remote_ip. | Optional | 
 | rule_id | A string identifying the user rule. | Optional | 
 | rule_name | The name of the user rule. | Optional | 
 | alert_name | The alert name. | Optional | 
@@ -2269,13 +2278,14 @@ Multiple filter arguments will be concatenated using AND operator, while argumen
 | action_local_port | The local IP address for the connection. | Optional | 
 | action_remote_port | The remote port for the connection. | Optional | 
 | dst_action_external_hostname | The hostname we connect to. In case of a proxy connection, this value will differ from action_remote_ip. | Optional | 
-| sort_field | The field by which we will sort the results. Default is source_insert_ts. | Optional | 
+| sort_field | The field by which we sort the results. Default is source_insert_ts. | Optional | 
 | sort_order | The order in which we sort the results. Possible values are: DESC, ASC. | Optional | 
 | offset | The first page from which we bring the alerts. Default is 0. | Optional | 
 | limit | The last page from which we bring the alerts. Default is 50. | Optional | 
 | start_time | Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss.000Z). | Optional | 
 | end_time | Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss.000Z). | Optional | 
 | starred | Whether the alert is starred or not. Possible values are: true, false. | Optional | 
+| mitre_technique_id_and_name | The MITRE attack technique. | Optional | 
 
 
 #### Context Output
@@ -2283,15 +2293,15 @@ Multiple filter arguments will be concatenated using AND operator, while argumen
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXDR.Alert.internal_id | String | The unique ID of the alert. | 
-| PaloAltoNetworksXDR.Alert.source_insert_ts | Number | The detection timestamp. | 
+| PaloAltoNetworksXDR.Alert.source_insert_ts | Number | The detection timestamp | 
 | PaloAltoNetworksXDR.Alert.alert_name | String | The name of the alert. | 
 | PaloAltoNetworksXDR.Alert.severity | String | The severity of the alert. | 
 | PaloAltoNetworksXDR.Alert.alert_category | String | The category of the alert. | 
 | PaloAltoNetworksXDR.Alert.alert_action_status | String | The alert action. | 
 | PaloAltoNetworksXDR.Alert.alert_name | String | The alert name. | 
 | PaloAltoNetworksXDR.Alert.alert_description | String | The alert description. | 
-| PaloAltoNetworksXDR.Alert.agent_ip_addresses | String | The host IP | 
-| PaloAltoNetworksXDR.Alert.agent_hostname | String | The host name | 
+| PaloAltoNetworksXDR.Alert.agent_ip_addresses | String | The host IP. | 
+| PaloAltoNetworksXDR.Alert.agent_hostname | String | The host name. | 
 | PaloAltoNetworksXDR.Alert.mitre_tactic_id_and_name | String | The MITRE attack tactic. | 
 | PaloAltoNetworksXDR.Alert.mitre_technique_id_and_name | String | The MITRE attack technique. | 
 | PaloAltoNetworksXDR.Alert.starred | Boolean | Whether the alert is starred or not. | 
@@ -2311,7 +2321,7 @@ Retrieves contributing events for a specific alert.
 | --- | --- | --- |
 | alert_ids | The alert ID's from where to retrieve the contributing events. | Required | 
 | limit | The maximum number of contributing events to retrieve. Default is 50. | Optional | 
-| page_number | The page number to retrieve. Default (and minimum) is 1. | Optional | 
+| page_number | The page number to retrieve. Minimum is 1. Default is 1. | Optional | 
 | page_size | The page size. Default is 50. | Optional | 
 
 
@@ -2394,7 +2404,7 @@ Retrieves contributing events for a specific alert.
 
 ### xdr-replace-featured-field
 ***
-Replace the featured hosts\users\ip addresses\active directory groups listed in your environment.
+Replace the featured hosts\users\IP addresses\active directory groups listed in your environment.
 
 
 #### Base Command
@@ -2404,10 +2414,10 @@ Replace the featured hosts\users\ip addresses\active directory groups listed in 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| field_type | The field type that should change. Possible values are: hosts, users, ip_addresses, ad_groups. | Required | 
-| values | String value that defines the new field. Maximum length is 256 characters. | Required | 
-| comments | String that represents additional information regarding the featured alert field. | Optional | 
-| ad_type | String value identifying if you want to replace to an active directory group or organizational unit.<br/>Possible values are: group, ou. Default is group. | Optional | 
+| field_type | The field type to change. Possible values are: hosts, users, ip_addresses, ad_groups. | Required | 
+| values | The string value, which defines the new field. Maximum length is 256 characters. | Required | 
+| comments | The string value, which represents additional information regarding the featured alert field. | Optional | 
+| ad_type | The string value to replace an active directory group or organizational unit. Possible values are: group, ou. Default is group. | Optional | 
 
 
 #### Context Output
@@ -2415,7 +2425,7 @@ Replace the featured hosts\users\ip addresses\active directory groups listed in 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXDR.FeaturedField.fieldType | String | The field type that changed. | 
-| PaloAltoNetworksXDR.FeaturedField.fields | String | The string value that defines the new field. | 
+| PaloAltoNetworksXDR.FeaturedField.fields | String | String value that defines the new field. | 
 
 #### Command example
 ```!xdr-replace-featured-field field_type=ip_addresses values=`["1.1.1.1"]` comments=`new ip address````
@@ -2444,10 +2454,45 @@ Replace the featured hosts\users\ip addresses\active directory groups listed in 
 >|---|---|
 >| new ip address | 1.1.1.1 |
 
-### xdr-script-run
+## xdr-script-run
 ***
-This command will soon be deprecated; prefer xdr-script-run instead. Initiates a new endpoint script execution action using a script from the script library.
+Initiates a new endpoint script execution action using a script from the script library and returns the results.
 
+
+#### Base Command
+
+`xdr-script-run`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | Allows linking the response action to the incident that triggered it. | Optional | 
+| endpoint_ids | A comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required | 
+| script_uid | Unique identifier of the script. Can be retrieved by running the xdr-get-scripts command. | Required | 
+| parameters | Dictionary containing the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}. | Optional | 
+| timeout | The timeout in seconds for this execution. Default is 600. | Optional | 
+| polling_interval_in_seconds | Interval in seconds between each poll. Default is 10. | Optional | 
+| polling_timeout_in_seconds | Polling timeout in seconds. Default is 600. | Optional | 
+| action_id | action ID for polling. | Optional | 
+| hide_polling_output | whether to hide the polling result (automatically filled by polling). | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.ScriptResult.action_id | Number | ID of the action initiated. | 
+| PaloAltoNetworksXDR.ScriptResult.results.retrieved_files | Number | Number of successfully retrieved files. | 
+| PaloAltoNetworksXDR.ScriptResult.results.endpoint_ip_address | String | Endpoint IP address. | 
+| PaloAltoNetworksXDR.ScriptResult.results.endpoint_name | String | Number of successfully retrieved files. | 
+| PaloAltoNetworksXDR.ScriptResult.results.failed_files | Number | Number of files failed to retrieve. | 
+| PaloAltoNetworksXDR.ScriptResult.results.endpoint_status | String | Endpoint status. | 
+| PaloAltoNetworksXDR.ScriptResult.results.domain | String | Domain to which the endpoint belongs. | 
+| PaloAltoNetworksXDR.ScriptResult.results.endpoint_id | String | Endpoint ID. | 
+| PaloAltoNetworksXDR.ScriptResult.results.execution_status | String | Execution status of this endpoint. | 
+| PaloAltoNetworksXDR.ScriptResult.results.return_value | String | Value returned by the script in case the type is not a dictionary. | 
+| PaloAltoNetworksXDR.ScriptResult.results.standard_output | String | The STDOUT and the STDERR logged by the script during the execution. | 
+| PaloAltoNetworksXDR.ScriptResult.results.retention_date | Date | Timestamp in which the retrieved files will be deleted from the server. | 
 
 #### Base Command
 
@@ -2527,3 +2572,58 @@ This command will soon be deprecated; prefer xdr-script-run instead. Initiates a
   }
 }
 ```
+### xdr-endpoint-tag-add
+***
+Adds a tag to specified endpoint_ids
+
+
+#### Base Command
+
+`xdr-endpoint-tag-add`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_ids | List of endpoint IDs. Supports comma separated list. | Optional | 
+| tag | Tag to add. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### xdr-endpoint-tag-remove
+***
+Removes a tag from specified endpoint_ids.
+
+
+#### Base Command
+
+`xdr-endpoint-tag-remove`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_ids | List of endpoint IDs. Supports comma separated list. | Optional | 
+| tag | Tag to remove from specified endpoint_ids. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+## Incident Mirroring
+
+You can enable incident mirroring between Cortex XSOAR incidents and Palo Alto Networks Cortex XDR - Investigation and Response corresponding events (available from Cortex XSOAR version 6.0.0).
+To set up the mirroring:
+1. Enable *Fetching incidents* in your instance configuration.
+2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
+
+    | **Option** | **Description** |
+    | --- | --- |
+    | None | Turns off incident mirroring. |
+    | Incoming | Any changes in Palo Alto Networks Cortex XDR - Investigation and Response events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
+    | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in Palo Alto Networks Cortex XDR - Investigation and Response events (outgoing mirrored fields). |
+    | Both |  |
+
+
+Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Palo Alto Networks Cortex XDR - Investigation and Response.
