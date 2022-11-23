@@ -1,12 +1,22 @@
 commonfields:
-  id: New-omer-automation
+  id: b369c754-dc40-40bf-8958-98480b419a22
   version: -1
 contentitemexportablefields:
   contentitemfields:
+    definitionid: ""
     fromServerVersion: ""
+    itemVersion: ""
+    packID: add43420-92b5-49e7-83be-4276394f0abb
+    packName: New Omer Automation
+    propagationLabels:
+    - all
+    toServerVersion: ""
 dockerimage: demisto/python3:3.10.8.37233
 enabled: true
+engineinfo: {}
+mainengineinfo: {}
 name: New-omer-automation
+pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -14,6 +24,3 @@ scripttarget: 0
 subtype: python3
 tags: []
 type: python
-fromversion: 6.0.0
-tests:
-- No tests (auto formatted)
