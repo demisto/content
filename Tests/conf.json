@@ -4222,6 +4222,10 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "Microsoft Graph"
+            ],
+            "instance_names": [
+                "ms_graph_security_prod",
+                "ms_graph_security_dev"
             ]
         },
         {
