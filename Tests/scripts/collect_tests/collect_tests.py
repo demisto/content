@@ -658,7 +658,6 @@ class BranchTestCollector(TestCollector):
 
                 elif yml.id_ not in self.conf.integrations_to_tests:
                     # note, this whole method is always called after validating support level is xsoar
-                    logger.warning(f"integrations to tests: {self.conf.integrations_to_tests}")
                     raise ValueError(
                         f'integration {str(PACK_MANAGER.relative_to_packs(yml.path))} is '
                         f'(1) missing from conf.json, AND'
