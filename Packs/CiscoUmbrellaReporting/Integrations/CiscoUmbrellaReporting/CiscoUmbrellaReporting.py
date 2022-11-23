@@ -944,7 +944,7 @@ def get_destinations_list_command(client: Client, args: Dict[str, Any]):
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Destination',
-        outputs_key_field='',
+        outputs_key_field='domain',
         outputs=data
     )
 
@@ -980,7 +980,7 @@ def get_categories_list_command(client: Client, args: Dict[str, Any]):
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Category',
-        outputs_key_field='',
+        outputs_key_field='category.id',
         outputs=data
     )
 
@@ -1012,7 +1012,7 @@ def get_identities_list_command(client: Client, args: Dict[str, Any]):
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Identity',
-        outputs_key_field='',
+        outputs_key_field='identity.id',
         outputs=data
     )
 
@@ -1043,7 +1043,7 @@ def get_file_list_command(client: Client, args: Dict[str, Any]):
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.File',
-        outputs_key_field='',
+        outputs_key_field='sha256',
         outputs=data
     )
 
@@ -1075,7 +1075,7 @@ def get_threat_list_command(client: Client, args: Dict[str, Any]):
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Threat',
-        outputs_key_field='',
+        outputs_key_field='threat',
         outputs=data
     )
 
@@ -1107,7 +1107,7 @@ def get_event_types_list_command(client: Client, args: Dict[str, Any]):
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.EventType',
-        outputs_key_field='',
+        outputs_key_field='eventtype',
         outputs=data
     )
 
@@ -1138,7 +1138,7 @@ def get_activity_list_command(client: Client, args: Dict[str, Any]):
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Activity',
-        outputs_key_field='',
+        outputs_key_field='domain',
         outputs=data,
     )
 
@@ -1214,6 +1214,11 @@ def get_summary_list_command(client: Client, args: Dict[str, Any]):
         CommandResults: A ``CommandResults`` object that is then passed
          to ``return_results``, that contains an updated result.
     """
+    summary_outputs_key_field = {
+        'category': 'category.id',
+        'destination': 'domain',
+        'intrusion_rule': 'signaturelist.id'
+    }
     summary_endpoint_dict = {
         'category': 'summaries-by-category',
         'destination': 'summaries-by-destination',
@@ -1257,7 +1262,7 @@ def get_summary_list_command(client: Client, args: Dict[str, Any]):
         return CommandResults(
             readable_output=readable_output,
             outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.{context_output_name[summary_type]}',
-            outputs_key_field='',
+            outputs_key_field=f'{summary_outputs_key_field[summary_type]}',
             outputs=data
         )
 
