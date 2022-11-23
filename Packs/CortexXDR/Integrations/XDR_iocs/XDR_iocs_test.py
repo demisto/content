@@ -866,3 +866,26 @@ def test_severity_fix_info(value: str):
 def test_severity_validate(value: str):
     with pytest.raises(DemistoException):
         validate_fix_severity_value(value)
+
+
+@pytest.mark.parametrize(
+    'comment_value,expected_comment',
+    (('hello', 'hello'),
+     ('hello,world', 'hello,world'),
+     (['hello', 'world'], 'hello,world'),
+     ([], None),
+     ))
+def test_xsoar_comments__csv(comment_value: str | list[str], expected_comment: str | None):
+    """
+    Given   a custom field name, and comma-separated comments
+    When    converting an XSOAR IOC to XDR
+    Then    check the output values
+    """
+    custom_comments_field = 'custom_comments_field'
+
+    Client.xsoar_comments_field = custom_comments_field
+    dummy_demisto_ioc = {'value': '1.1.1.1', 'indicator_type': 'FILE', custom_comments_field: comment_value}
+
+    # default behavior
+    xdr_ioc = demisto_ioc_to_xdr(dummy_demisto_ioc)
+    assert xdr_ioc.get('comment') == expected_comment, xdr_ioc
