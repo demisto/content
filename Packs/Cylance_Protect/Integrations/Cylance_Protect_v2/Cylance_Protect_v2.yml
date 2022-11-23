@@ -953,7 +953,7 @@ script:
     - contextPath: InstaQuery.List
       description: The list of InstaQuery
       type: string
-  dockerimage: devdemisto/py3-primary:8.1.0.37710
+  dockerimage: devdemisto/py3-primary:8.1.0.37716
   isfetch: true
   runonce: false
   script: ''
