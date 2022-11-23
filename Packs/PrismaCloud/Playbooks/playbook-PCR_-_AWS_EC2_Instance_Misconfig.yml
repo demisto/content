@@ -186,7 +186,6 @@ tasks:
         completeaftersla: false
       replyOptions:
       - "Yes"
-      - "No"
     skipunavailable: false
     quietmode: 0
     isoversize: false

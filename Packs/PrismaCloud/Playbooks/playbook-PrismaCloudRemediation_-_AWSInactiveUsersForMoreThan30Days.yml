@@ -445,7 +445,6 @@ tasks:
         completeafterreplies: 1
       replyOptions:
       - "Yes"
-      - "No"
   "20":
     id: "20"
     taskid: a5a6a46c-7247-4d7a-8eab-a96c36c363d3

@@ -261,7 +261,6 @@ tasks:
       methods: []
       replyOptions:
       - Yes
-      - No
       subject:
       timings:
         completeafterreplies: 1

@@ -227,7 +227,6 @@ tasks:
         completeafterreplies: 1
       replyOptions:
       - "Yes"
-      - "No"
     skipunavailable: false
     quietmode: 0
   "7":

@@ -187,7 +187,6 @@ tasks:
         completeafterreplies: 1
       replyOptions:
       - "YES"
-      - "NO"
   "8":
     id: "8"
     taskid: 0686f462-5117-4462-879f-ad026bf49b94
