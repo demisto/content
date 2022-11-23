@@ -147,3 +147,22 @@ def test_launch_scan_command(mocker, requests_mock):
 
     assert 'The requested scan was launched successfully' in results['HumanReadable']
     assert entry_context['Id'] == '1'
+
+
+def test_get_asset_details_command(requests_mock):
+    from Tenable_io import get_asset_details_command
+    mock_demisto(mocker, {'ip': '1.3.2.1'})
+    requests_mock.get(MOCK_PARAMS['url'] + 'workbenches/assets', json={'assets': [{'id': 'fake_asset_id'}]})
+    #TODO Change for send_asset_details_request and get mock data
+    requests_mock.get(MOCK_PARAMS['url'] + 'workbenches/assets/fake_asset_id/vulnerabilities/',
+                      json=MOCK_RAW_VULN_BY_ASSET)
+    #TODO Change for send_asset_attributes_request and get mock data
+    requests_mock.get(MOCK_PARAMS['url'] + 'workbenches/assets/fake_asset_id/vulnerabilities/',
+                      json=MOCK_RAW_VULN_BY_ASSET)
+
+    response = get_asset_details_command()
+
+    #TODO MOCK DATA, CHANGE OUTPTS
+    assert response.outputs == EXTERNAL_SERVICES_RESULTS
+    assert response.outputs_prefix == 'ASM.ExternalService'
+    assert response.outputs_key_field == 'service_id'
