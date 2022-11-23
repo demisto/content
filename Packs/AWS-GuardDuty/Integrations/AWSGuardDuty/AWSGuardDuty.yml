@@ -78,7 +78,7 @@ configuration:
   type: 16
   section: Collect
   advanced: true
-  additionalinfo: You can set the severity level of the findings to be fetched. "Low", "Medium", "High". For example, if you set the severity level to "Medium", the integration will only fetch findings with severity level of Medium and higher.
+  additionalinfo: 'You can set the severity level of the findings to be fetched: "Low", "Medium", "High". For example, if you set the severity level to "Medium", the integration will only fetch findings with severity level of Medium and higher.'
   options:
   - Low
   - Medium
@@ -141,7 +141,7 @@ script:
       predefined:
       - 'True'
       - 'False'
-    - description: Describes the configuration for scanning EBS volumes as data source.
+    - description: Describes the configuration for scanning EBS volumes as a data source.
       isArray: false
       name: ebsVolumesMalwareProtection
       required: false
@@ -149,7 +149,7 @@ script:
       predefined:
       - 'True'
       - 'False'
-    - description: A value that specifies how frequently updated findings are exported.
+    - description: Specifies how frequently updated findings are exported.
       isArray: false
       name: findingFrequency
       required: false
@@ -159,7 +159,7 @@ script:
       - 'One Hour'
       - 'Six Hours'
     - default: false
-      description: The AWS Region, if not specified the default region will be used.
+      description: The AWS Region. If not specified the default region will be used.
       isArray: false
       name: region
       required: false
@@ -280,22 +280,22 @@ script:
       description: Describes whether CloudTrail is enabled as a data source for the detector.
       type: string
     - contextPath: AWS.GuardDuty.Detectors.DNSLogsStatus
-      description: Denotes whether DNS logs is enabled as a data source.
+      description: Denotes whether DNS logs are enabled as a data source.
       type: string
     - contextPath: AWS.GuardDuty.Detectors.FlowLogsStatus
-      description: Denotes whether VPC flow logs is enabled as a data source.
+      description: Denotes whether VPC flow logs are enabled as a data source.
       type: string
     - contextPath: AWS.GuardDuty.Detectors.S3LogsStatus
-      description: A value that describes whether S3 data event logs are automatically enabled for new members of the organization.
+      description: Describes whether S3 data event logs are automatically enabled for new members of the organization.
       type: string
     - contextPath: AWS.GuardDuty.Detectors.KubernetesAuditLogsStatus
-      description: A value that describes whether Kubernetes audit logs are enabled as a data source.
+      description: Describes whether Kubernetes audit logs are enabled as a data source.
       type: string
     - contextPath: AWS.GuardDuty.Detectors.MalwareProtectionStatus
-      description: Describes whether scanning EBS volumes is enabled as a data source.
+      description: Describes whether scanning EBS volumes are enabled as a data source.
       type: string
     - contextPath: AWS.GuardDuty.Detectors.MalwareProtectionReason
-      description: Specifies the reason why scanning EBS volumes (Malware Protection) was not enabled as a data source.
+      description: The reason why scanning EBS volumes (Malware Protection) were not enabled as a data source.
       type: string
     - contextPath: AWS.GuardDuty.Detectors.Tags
       description: The tags of the detector resource.
@@ -334,7 +334,7 @@ script:
       predefined:
       - 'True'
       - 'False'
-    - description: Describes the configuration for scanning EBS volumes as data source.
+    - description: Describes the configuration for scanning EBS volumes as a data source.
       isArray: false
       name: ebsVolumesMalwareProtection
       required: false
@@ -342,7 +342,7 @@ script:
       predefined:
       - 'True'
       - 'False'
-    - description: A value that specifies how frequently updated findings are exported.
+    - description: Specifies how frequently updated findings are exported.
       isArray: false
       name: findingFrequency
       required: false
@@ -352,7 +352,7 @@ script:
       - 'One Hour'
       - 'Six Hours'
     - default: false
-      description: The AWS Region, if not specified the default region will be used.
+      description: The AWS Region. If not specified the default region will be used.
       isArray: false
       name: region
       required: false
@@ -498,7 +498,7 @@ script:
     name: aws-gd-delete-ip-set
   - arguments:
     - default: false
-      description: Number of total results to query. Default is "50".
+      description: Number of total results to query. 
       isArray: false
       name: limit
       required: false
@@ -518,7 +518,7 @@ script:
       secret: false
       defaultValue: '50'
     - default: false
-      description: The AWS Region, if not specified the default region will be used.
+      description: The AWS Region. If not specified the default region will be used.
       isArray: false
       name: region
       required: false
@@ -702,7 +702,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Number of total results to query. Default is "50".
+      description: Number of total results to query. 
       isArray: false
       name: limit
       required: false
@@ -935,7 +935,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Number of total results to query. Default is "50".
+      description: Number of total results to query. 
       isArray: false
       name: limit
       required: false
@@ -1057,7 +1057,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Number of total results to query. Default is "50".
+      description: Number of total results to query. 
       isArray: false
       name: limit
       required: false
@@ -1135,7 +1135,7 @@ script:
       description: The description of the finding.
       type: string
     - contextPath: 'AWS.GuardDuty.Findings.Region'
-      description: The Region where the finding was generated.
+      description: The region where the finding was generated.
       type: string
     - contextPath: 'AWS.GuardDuty.Findings.Id'
       description: The ID of the finding.
@@ -1147,7 +1147,7 @@ script:
       description: The severity of the finding.
       type: string
     - contextPath: 'AWS.GuardDuty.Findings.Type'
-      description: The type of finding.
+      description: The type of the finding.
       type: string
     - contextPath: 'AWS.GuardDuty.Findings.UpdatedAt'
       description: The time and date when the finding was last updated.
@@ -1180,10 +1180,10 @@ script:
       description: Details about the Kubernetes user and workload involved in a Kubernetes finding.
       type: string
     - contextPath: 'AWS.GuardDuty.Findings.Resource.EbsVolumeDetails'
-      description: Contains list of scanned and skipped EBS volumes with details.
+      description: Contains a list of scanned and skipped EBS volumes with details.
       type: string
     - contextPath: 'AWS.GuardDuty.Findings.Resource.EcsClusterDetails'
-      description: Contains information about the details of the ECS Cluster.
+      description: Contains information about the details of the ECS cluster.
       type: string
     - contextPath: 'AWS.GuardDuty.Findings.Resource.ContainerDetails'
       description: Details of a container.
@@ -1383,7 +1383,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Number of total results to query. Default is "50".
+      description: Number of total results to query. 
       isArray: false
       name: limit
       required: false
