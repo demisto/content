@@ -191,6 +191,10 @@ class Build(ABC):
     #  END CHANGE ON LOCAL RUN  #
     @staticmethod
     def get_secret_service_account_config() -> str:
+        print('##################################')
+        print('##################################')
+        print('##################################')
+        print(os.environ['GSM_SERVICE_ACCOUNT'])
         with open(os.environ['GSM_SERVICE_ACCOUNT']) as f:
             creds = json.load(f)
             return json.dumps(creds)
