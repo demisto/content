@@ -1,0 +1,2 @@
+[INGEST:vendor="dropbox", product="dropbox", target_dataset="dropbox_dropbox_raw", no_hit=keep]
+ alter _time = timestamp;
