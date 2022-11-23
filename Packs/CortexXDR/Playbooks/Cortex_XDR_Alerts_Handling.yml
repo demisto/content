@@ -411,7 +411,7 @@ tasks:
       - "5"
     scriptarguments:
       SOCEmailAddress:
-        simple: analyst@xsoartemp.com
+        simple:
       alert_id:
         complex:
           root: PaloAltoNetworksXDR.Incident.alerts

@@ -7,8 +7,10 @@ Supported alert categories:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Cortex XDR - Port Scan - Adjusted
 * Cortex XDR - Malware Investigation
+* GenericPolling
+* Cloud Cryptomining
+* Cortex XDR - Port Scan - Adjusted
 
 ### Integrations
 * Cortex XDR - IR
@@ -73,4 +75,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Cortex XDR Alerts Handling](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexXDR/doc_files/Cortex_XDR_Alerts_Handling.png)
+![Cortex XDR Alerts Handling](../doc_files/Cortex_XDR_Alerts_Handling.png)
