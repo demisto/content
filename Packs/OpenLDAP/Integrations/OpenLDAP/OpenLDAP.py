@@ -32,8 +32,6 @@ class LdapClient:
                      'ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'  # Allowed ciphers for SSL/TLS
     SSL_VERSIONS = {
         'SSLv23': ssl.PROTOCOL_SSLv23,
-        # 'SSLv2': ssl.PROTOCOL_SSLv2,
-        # 'SSLv3': ssl.PROTOCOL_SSLv3,
         'TLSv1': ssl.PROTOCOL_TLSv1,
         'TLSv1_1': ssl.PROTOCOL_TLSv1_1,
         'TLSv1_2': ssl.PROTOCOL_TLSv1_2,
@@ -122,7 +120,7 @@ class LdapClient:
 
         else:  # By default we don't set a specific version
             version = None
-            demisto.info("SSL/TLS protocol version is None (default).")
+            demisto.info("SSL/TLS protocol version is None (default value).")
 
         return version
 
