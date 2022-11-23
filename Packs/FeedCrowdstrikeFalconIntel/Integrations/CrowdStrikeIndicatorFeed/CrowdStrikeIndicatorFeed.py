@@ -156,8 +156,8 @@ class Client(CrowdStrikeClient):
         timestamp = self.set_last_run()
 
         demisto.info(f' response: {response}')
-
-        if fetch_command and response.get('resources', [])[-1].get('last_updated') == demisto.getIntegrationContext().get('last_modified_time'):
+        last_modified_time = demisto.getIntegrationContext().get('last_modified_time')
+        if fetch_command and response.get('resources', [])[-1].get('last_updated') == last_modified_time:
             offset = demisto.getIntegrationContext().get('offset', 0) + limit
         else:
             offset = 0

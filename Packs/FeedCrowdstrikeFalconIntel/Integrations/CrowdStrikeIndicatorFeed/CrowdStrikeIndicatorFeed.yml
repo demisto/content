@@ -181,7 +181,7 @@ script:
       name: offset
       required: false
       secret: false
-    - default: 0
+    - default: false
       description: The minimum timestamp to fetch indicators by
       isArray: false
       name: last_run
