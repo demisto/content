@@ -884,8 +884,6 @@ def test_xsoar_comments__csv(comment_value: str | list[str], expected_comment: s
     custom_comments_field = 'custom_comments_field'
 
     Client.xsoar_comments_field = custom_comments_field
-    dummy_demisto_ioc = {'value': '1.1.1.1', 'indicator_type': 'FILE', custom_comments_field: comment_value}
-
     # default behavior
-    xdr_ioc = demisto_ioc_to_xdr(dummy_demisto_ioc)
+    xdr_ioc = demisto_ioc_to_xdr({'value': '1.1.1.1', 'indicator_type': 'FILE', custom_comments_field: comment_value})
     assert xdr_ioc.get('comment') == expected_comment, xdr_ioc
