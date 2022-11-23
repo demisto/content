@@ -91,3 +91,12 @@ def test_empty_first_fetch(mocker, requests_mock):
     from CrowdStrikeIndicatorFeed import main
     main()
     assert True
+
+
+def test_reset_last_run(mocker):
+    from CrowdStrikeIndicatorFeed import reset_last_run
+    demisto_set_context_mocker = mocker.patch.object(demisto, 'setContext')
+    reset_last_run()
+    print(demisto_set_context_mocker)
+    assert demisto_set_context_mocker.called
+    assert False
