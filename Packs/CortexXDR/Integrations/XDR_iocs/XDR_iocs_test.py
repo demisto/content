@@ -877,7 +877,7 @@ def test_severity_validate(value: str):
      ))
 def test_xsoar_comments__csv(comment_value: str | list[str], expected_comment: str | None):
     """
-    Given   a custom field name, and comma-separated comments in it 
+    Given   a custom field name, and comma-separated comments in it
     When    converting an XSOAR IOC to XDR
     Then    check the output values
     """
