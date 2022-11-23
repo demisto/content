@@ -1,6 +1,6 @@
 Use AWS GuardDuty to detect and manage threats to your AWS environment by fetching newly created GuardDuty security findings. Each GuardDuty finding is a data set containing details relating to a unique security issue. 
 Each integration instance fetches findings from a single AWS Region.
-You can set whether findings that are fetched will be moved to the GuardDuty archive using the ״***Archive findings After Fetch***״ parameter.
+You can set whether findings that are fetched will be moved to the GuardDuty archive using the *Archive findings After Fetch* parameter.
 Create a separate instance for each AWS Region used in your AWS environment. 
 
 We recommend that you use roles that have the following built-in AWS policies:
