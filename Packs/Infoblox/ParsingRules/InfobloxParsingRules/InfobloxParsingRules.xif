@@ -1,0 +1,5 @@
+[INGEST:vendor="infoblox", product="infoblox", target_dataset="infoblox_infoblox_raw", no_hit=drop]
+alter time_without_year = arraystring(regextract( _raw_log, "\<\d+\>(\w{3}\s\d{2}\s\d{2}\:\d{2}\:\d{2})\s"), ""), 
+    year = to_string(format_timestamp("%Y",current_time()))
+| alter time_format = arraystring(arraycreate(year, time_without_year), " ")
+| alter _time = parse_timestamp("%Y %b %d %H:%M:%S", time_format);
