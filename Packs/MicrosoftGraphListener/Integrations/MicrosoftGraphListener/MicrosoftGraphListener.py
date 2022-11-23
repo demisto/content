@@ -655,7 +655,7 @@ class MsGraphClient:
             'comment': comment
         }
 
-    def _get_attachment_mime(self, message_id, attachment_id):
+    def _get_attachment_mime(self, message_id, attachment_id, overwrite_rate_limit_retry=False):
         """
         Gets attachment mime.
 
@@ -666,11 +666,12 @@ class MsGraphClient:
         :rtype: ``str``
         """
         suffix_endpoint = f'users/{self._mailbox_to_fetch}/messages/{message_id}/attachments/{attachment_id}/$value'
-        mime_content = self.ms_client.http_request('GET', suffix_endpoint, resp_type='text')
+        mime_content = self.ms_client.http_request('GET', suffix_endpoint, resp_type='text',
+                                                   overwrite_rate_limit_retry=overwrite_rate_limit_retry)
 
         return mime_content
 
-    def _get_email_attachments(self, message_id, user_id=None):
+    def _get_email_attachments(self, message_id, user_id=None, overwrite_rate_limit_retry=False):
         """
         Get email attachments  and upload to War Room.
 
@@ -684,7 +685,8 @@ class MsGraphClient:
             user_id = self._mailbox_to_fetch
         attachment_results = []  # type: ignore
         suffix_endpoint = f'users/{user_id}/messages/{message_id}/attachments'
-        attachments = self.ms_client.http_request('Get', suffix_endpoint).get('value', [])
+        attachments = self.ms_client.http_request('Get', suffix_endpoint,
+                                                  overwrite_rate_limit_retry=overwrite_rate_limit_retry).get('value', [])
 
         for attachment in attachments:
             attachment_type = attachment.get('@odata.type', '')
@@ -697,7 +699,7 @@ class MsGraphClient:
                     continue
             elif attachment_type == self.ITEM_ATTACHMENT:
                 attachment_id = attachment.get('id', '')
-                attachment_content = self._get_attachment_mime(message_id, attachment_id)
+                attachment_content = self._get_attachment_mime(message_id, attachment_id, overwrite_rate_limit_retry)
                 attachment_name = f'{attachment_name}.eml'
             else:
                 # skip attachments that are not of the previous types (type referenceAttachment)
@@ -707,7 +709,7 @@ class MsGraphClient:
 
         return attachment_results
 
-    def _parse_email_as_incident(self, email):
+    def _parse_email_as_incident(self, email, overwrite_rate_limit_retry=False):
         """
         Parses fetched emails as incidents.
 
@@ -720,7 +722,8 @@ class MsGraphClient:
         parsed_email = MsGraphClient._parse_item_as_dict(email)
 
         # handling attachments of fetched email
-        attachments = self._get_email_attachments(message_id=email.get('id', ''))
+        attachments = self._get_email_attachments(message_id=email.get('id', ''),
+                                                  overwrite_rate_limit_retry=overwrite_rate_limit_retry)
         if attachments:
             parsed_email['Attachments'] = attachments
 
@@ -770,7 +773,7 @@ class MsGraphClient:
 
         fetched_emails, fetched_emails_ids = self._fetch_last_emails(folder_id=folder_id, last_fetch=last_fetch,
                                                                      exclude_ids=exclude_ids)
-        incidents = list(map(self._parse_email_as_incident, fetched_emails))
+        incidents = list(map(lambda email: self._parse_email_as_incident(email, True), fetched_emails))
         next_run_time = MsGraphClient._get_next_run_time(fetched_emails, last_fetch)
         next_run = {
             'LAST_RUN_TIME': next_run_time,
