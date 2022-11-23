@@ -123,18 +123,18 @@ configuration:
   required: false
   type: 0
   defaultvalue: 'sourceoriginalseverity'
-- additionalinfo: The XSOAR field where comments are stored. Default is `comments`, expecting an XSOAR IOC format of a comment (nested dictionary). Specifying a different field name assumes the field has a list of strings to be used as comments, or a comma-separated string.
+- defaultvalue: 'comments'
+  additionalinfo: The XSOAR field where comments are stored. Default is `comments`, expecting an XSOAR IOC format of a comment (nested dictionary). Specifying a different field name assumes the field has a list of strings to be used as comments, or a comma-separated string.
   display: XSOAR Comment Field
   name: xsoar_comments_field
   required: false
   type: 0
-  defaultvalue: 'comments'
-- defaultvalue: 'true'
-  additionalinfo: When enabled, the severity value will be taken from the `severity` parameter, regardless of the IOC severity value. Otherwise, the severity value will be taken according to the `xsoar_severity_field` parameter.
+- additionalinfo: When enabled, the severity value will be taken from the `severity` parameter, regardless of the IOC severity value. Otherwise, the severity value will be taken according to the `xsoar_severity_field` parameter.
   display: Override severity
   name: override_severity
   required: false
   type: 8
+  defaultvalue: 'true'
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
@@ -211,7 +211,7 @@ script:
     description: Disables IOCs in the XDR server.
     execution: false
     name: xdr-iocs-disable
-  dockerimage: demisto/python3:3.10.8.36650
+  dockerimage: demisto/python3:3.10.8.37233
   feed: true
   isfetch: false
   longRunning: false
