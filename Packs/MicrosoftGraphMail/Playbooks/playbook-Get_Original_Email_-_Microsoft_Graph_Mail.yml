@@ -112,7 +112,7 @@ tasks:
     task:
       id: 6670eef7-27ab-4c5d-8e8c-635b8618136c
       version: -1
-      name: Search for messages by  encoded MessageID
+      name: Search for messages by encoded MessageID
       description: Gets the properties of returned emails. Typically shows partial results. Use the "page_size" and "pages_to_pull" arguments to get all results.
       script: MicrosoftGraphMail|||msgraph-mail-list-emails
       type: regular
