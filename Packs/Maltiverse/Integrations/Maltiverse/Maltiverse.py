@@ -5,11 +5,11 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 from typing import Tuple, Dict, Any
 from _collections import defaultdict
-import requests
+import urllib3
 import hashlib
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 SERVER_URL = 'https://api.maltiverse.com'
@@ -387,14 +387,6 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
                       'Score': calculate_score(positive_detections, report.get('classification', ''), threshold),
                       'Reliability': client.reliability}
 
-        resolvedIP_info = {
-            'ResolvedIP':
-                {
-                    'IP': [report['resolved_ip'][i]['ip_addr'] for i in range(len(report['resolved_ip']))],
-                    'Timestamp': [report['resolved_ip'][i]['timestamp'] for i in range(len(report['resolved_ip']))]
-                }
-        }
-
         maltiverse_domain = {string_to_context_key(field): report.get(field, '') for field in
                              ['creation_time', 'modification_time', 'classification']
                              }
@@ -402,7 +394,6 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
         maltiverse_domain['Tags'] = create_tags(report.get('tag', ''))
         maltiverse_domain['Address'] = report.get('hostname', '')
         maltiverse_domain = {**maltiverse_domain, **blacklist_context}
-        maltiverse_domain = {**maltiverse_domain, **resolvedIP_info}
 
         context[outputPaths['domain']].append(outputs)
         context[DBOT_SCORE_KEY].append(dbot_score)
@@ -413,7 +404,6 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
         markdown += f'Domain Creation Time: **{report.get("creation_time", "")}**\n'
         markdown += f'Domain Modification Time: **{report.get("modification_time", "")}**\n'
         markdown += f'Maltiverse Classification: **{report.get("classification", "")}**\n'
-        markdown += f'Domain Resolved IP: {[report["resolved_ip"][i]["ip_addr"] for i in range(len(report["resolved_ip"]))]}'
 
         reports.append(report)
 
