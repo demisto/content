@@ -1,6 +1,11 @@
 # Configure an API account on Google Workspace Admin
 Configure a Service Account and retrieve its key in JSON format by following the steps mentioned here: [https://developers.google.com/identity/protocols/oauth2/service-account#creatinganaccount](https://developers.google.com/identity/protocols/oauth2/service-account#creatinganaccount) or in the integration README.
 
+In order to retrieve the Customer ID, do the following:
+1. In the Admin console, go to Menu => Account => Account settings => Profile.
+2. Under Customer ID, you will find your organization's unique ID.
+
+
 ### Commands and its scopes
 * google-mobiledevice-action
 	* https://www.googleapis.com/auth/admin.directory.device.mobile.action  
@@ -8,7 +13,7 @@ Configure a Service Account and retrieve its key in JSON format by following the
 	* https://www.googleapis.com/auth/admin.directory.device.mobile.readonly
 * google-chromeosdevice-action
 	* https://www.googleapis.com/auth/admin.directory.device.chromeos
-* google_chromeosdevice_listt 
+* google-chromeosdevice-list 
 	* https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly
 
 To execute the commands with the help of the service account, perform the following steps:

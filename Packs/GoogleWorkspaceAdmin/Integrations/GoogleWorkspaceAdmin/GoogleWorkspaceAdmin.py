@@ -497,7 +497,7 @@ def main() -> None:  # pragma: no cover
         'google-mobiledevice-action': google_mobile_device_action_command,
         'google-mobiledevice-list': google_mobile_device_list_command,
         'google-chromeosdevice-action': google_chromeos_device_action_command,
-        'google_chromeosdevice_list': google_chromeos_device_list_command
+        'google-chromeosdevice-list': google_chromeos_device_list_command
     }
     demisto.debug(f'Command being called is {command}')
     try:

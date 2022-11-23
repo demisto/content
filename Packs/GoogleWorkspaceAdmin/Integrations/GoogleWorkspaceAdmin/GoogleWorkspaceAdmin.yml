@@ -4,7 +4,7 @@ commonfields:
 name: GoogleWorkspaceAdmin
 display: Google Workspace Admin
 category: Utilities
-description: Generated description - REPLACE THIS
+description: Google Workspace Mobile Management includes Android, Google Sync, iOS devices, and Google Chrome devices that run on ChromeOS.
 configuration:
   - display: Customer ID
     name: customer_id
@@ -27,7 +27,7 @@ configuration:
 script:
   commands:
     - name: google-mobiledevice-action
-      description: ""
+      description: "Takes an action that affects a mobile device. For example, remotely wiping a device."
       arguments:
         - name: resource_id
           description: "The unique ID the API service uses to identify the mobile device."
@@ -52,7 +52,7 @@ script:
           contextPath: Google.mobileAction.Reason
           description: "The reason the command failed."
     - name: google-mobiledevice-list
-      description: ""
+      description: "Retrieves a paginated list that includes company-owned devices."
       arguments:
         - name: projection
           description: "Whether to show all metadata fields, or only the basic metadata fields (e.g., deviceId, model, type, and status)"
@@ -234,7 +234,7 @@ script:
           contextPath: Google.mobileEvent.mobileListObjects.applications.permission
           description: "The list of permissions of this application."
     - name: google-chromeosdevice-list
-      description: ""
+      description: "Retrieves a paginated list of company-owned ChromeOS devices."
       arguments:
         - name: projection
           description: "Whether to show all metadata fields, or only the basic metadata fields (e.g., deviceId, serialNumber, status, and user)"
@@ -289,7 +289,7 @@ script:
           required: false
           isArray: false
     - name: google-chromeosdevice-action
-      description: ""
+      description: "Takes an action that affects a ChromeOS Device. This includes deprovisioning, disabling, and re-enabling devices."
       arguments:
         - name: resource_id
           description: "The unique ID of the device."
