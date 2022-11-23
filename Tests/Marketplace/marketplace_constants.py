@@ -161,6 +161,7 @@ class Metadata(object):
     USE_CASES = 'useCases'
     KEY_WORDS = 'keywords'
     DEPENDENCIES = 'dependencies'
+    EXCLUDED_DEPENDENCIES = 'excludedDependencies'
     ALL_LEVELS_DEPENDENCIES = 'allLevelDependencies'
     PREMIUM = 'premium'
     VENDOR_ID = 'vendorId'
