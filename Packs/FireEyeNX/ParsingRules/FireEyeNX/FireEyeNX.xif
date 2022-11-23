@@ -1,4 +1,5 @@
-[INGEST:vendor="fireeye", product="mps", target_dataset="fireeye_mps_raw", no_hit = keep]
+[INGEST:vendor="fireeye", product="mps", target_dataset="fireeye_mps1_raw", no_hit = keep]
 alter year_number = format_timestamp("%Y", _insert_time)
-    ,time_extract = arrayindex(regextract(_raw_log ,"\>\s*([a-zA-Z]+\s*\d+\s*\d+\:\d+\:\d+)"),0)
-| alter _time = parse_timestamp("%b %d %H:%M:%S %Y",concat(time_extract , " " ,year_number ));
+    ,time_extract = arrayindex(regextract(_raw_log ,"\>\s*([a-zA-Z]+\s+\d+\s+\d+\:\d+\:\d+)"),0)
+| alter _time = parse_timestamp("%b %d %H:%M:%S %Y",concat(time_extract , " " ,year_number ))
+| fields - time_extract , year_number;
