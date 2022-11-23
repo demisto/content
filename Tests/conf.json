@@ -5156,6 +5156,11 @@
             "playbookID": "VerifyCIDR-Test"
         },
         {
+            "integrations": "CiscoESA",
+            "playbookID": "CiscoESA",
+            "fromversion": "6.2.0"
+        },
+        {
             "integrations": "JoeSecurityV2",
             "fromversion": "6.2.0",
             "playbookID": "testplaybook- JoeSecuirtyV2"
