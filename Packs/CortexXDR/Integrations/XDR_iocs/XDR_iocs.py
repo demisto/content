@@ -221,8 +221,9 @@ def demisto_types_to_xdr(_type: str) -> str:
         return xdr_type
 
 
-def _parse_ioc_comment(ioc: dict, comment_field_name: str) -> str | None:
-    values = ioc.get(comment_field_name, ())
+def _parse_ioc_comment(custom_fields: dict, comment_field_name: str) -> str | None:
+    values = custom_fields.get(comment_field_name, ())
+
     if comment_field_name == 'comments':
         # default behavior, take last comment's content value where type==IndicatorCommentRegular
         last_comment: dict = next(
@@ -245,9 +246,6 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
             'reputation': demisto_score_to_xdr.get(ioc.get('score', 0), 'UNKNOWN'),
             'expiration_date': demisto_expiration_to_xdr(ioc.get('expiration'))
         }
-        if (comment := _parse_ioc_comment(ioc, comment_field_name=Client.xsoar_comments_field)):
-            demisto.debug(f'parsed comment value {comment}')
-            xdr_ioc['comment'] = comment
         if aggregated_reliability := ioc.get('aggregatedReliability'):
             xdr_ioc['reliability'] = aggregated_reliability[0]
         if vendors := demisto_vendors_to_xdr(ioc.get('moduleToFeedMap', {})):
@@ -270,6 +268,9 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
             xdr_ioc['severity'] = custom_severity  # NOTE: these do NOT need translation to XDR's 0x0_xxxx_xxxx format
 
         xdr_ioc['severity'] = validate_fix_severity_value(xdr_ioc['severity'], ioc['value'])
+
+        if (comment := _parse_ioc_comment(custom_fields, comment_field_name=Client.xsoar_comments_field)):
+            xdr_ioc['comment'] = comment
 
         demisto.debug(f'Processed outgoing IOC: {xdr_ioc}')
         return xdr_ioc
