@@ -869,7 +869,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Delete a shared credential.
+    description: "Beta Command\n\n
+      Delete a shared credential."
     execution: false
     name: nexpose-delete-shared-credential
   - arguments:
@@ -892,7 +893,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Delete a site scan credential.
+    description: "Beta Command\n\n
+      Delete a site scan credential."
     execution: false
     name: nexpose-delete-site-scan-credential
   - arguments:
@@ -1409,7 +1411,8 @@ script:
       name: username
       required: false
     deprecated: false
-    description: "Create a new site scan credential. For detailed explanation of all parameters of this command,
+    description: "Beta Command\n\n
+      Create a new site scan credential. For detailed explanation of all parameters of this command,
       please see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createSiteCredential"
     execution: false
     name: nexpose-create-site-scan-credential
@@ -1618,7 +1621,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Create a new site scan schedule.
+    description: "Beta Command\n\n
+      Create a new site scan schedule."
     execution: false
     name: nexpose-create-scan-schedule
     outputs:
@@ -1852,7 +1856,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieve information about scan schedules for a specific site or a specific scan schedule.
+    description: "Beta Command\n\n
+      Retrieve information about scan schedules for a specific site or a specific scan schedule."
     execution: false
     name: nexpose-list-scan-schedule
     outputs:
@@ -2035,7 +2040,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieve information about all or a specific sca credential.
+    description: "Beta Command\n\n
+      Retrieve information about all or a specific sca credential."
     execution: false
     name: nexpose-list-site-scan-credential
     outputs:
@@ -2433,7 +2439,8 @@ script:
       required: true
       secret: false
     name: nexpose-disable-shared-credential
-    description: Disable an assigned shared credential.
+    description: "Beta Command\n\n
+      Disable an assigned shared credential."
   - arguments:
     - name: report_id
       required: true
@@ -2496,7 +2503,8 @@ script:
       required: true
       secret: false
     name: nexpose-enable-shared-credential
-    description: Enable an assigned shared credential.
+    description: "Beta Command\n\n
+      Enable an assigned shared credential."
   - arguments:
     - name: report_id
       required: true
@@ -2651,7 +2659,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Update an existing site scan schedule.
+    description: "Beta Command\n\n
+      Update an existing site scan schedule."
     execution: false
     name: nexpose-update-scan-schedule
   - arguments:
@@ -2869,7 +2878,8 @@ script:
       name: username
       required: false
     deprecated: false
-    description: "Update an existing site scan credential. For detailed explanation of all parameters of this command,
+    description: "Beta Command\n\n
+      Update an existing site scan credential. For detailed explanation of all parameters of this command,
       please see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/setSiteCredentials"
     execution: false
     name: nexpose-update-site-scan-credential

@@ -1911,6 +1911,9 @@ Delete a scheduled scan.
 
 ### nexpose-delete-shared-credential
 ***
+> **Note:**
+> This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
+
 Delete a shared credential.
 
 
@@ -1926,6 +1929,9 @@ Delete a shared credential.
 
 ### nexpose-delete-site-scan-credential
 ***
+> **Note:**
+> This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
+
 Delete a site scan credential.
 
 
@@ -2318,6 +2324,9 @@ Generates a new report on given sites according to a template and arguments.
 
 ### nexpose-create-site-scan-credential
 ***
+> **Note:**
+> This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
+
 Create a new site scan credential. For detailed explanation of all parameters of this command, please see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createSiteCredential
 
 
@@ -2423,6 +2432,9 @@ Generates a new report for a specified scan.
 
 ### nexpose-create-scan-schedule
 ***
+> **Note:**
+> This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
+
 Create a new site scan schedule.
 
 
@@ -2774,6 +2786,9 @@ Retrieve information about all or a specific vulnerability.
 
 ### nexpose-list-scan-schedule
 ***
+> **Note:**
+> This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
+
 Retrieve information about scan schedules for a specific site or a specific scan schedule.
 
 
@@ -2931,6 +2946,9 @@ Retrieve information about all or a specific shared credential.
 
 ### nexpose-list-site-scan-credential
 ***
+> **Note:**
+> This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
+
 Retrieve information about all or a specific sca credential.
 
 
@@ -3462,6 +3480,9 @@ Return a list of scans. Returns only active scans by default (active=true).
 
 ### nexpose-disable-shared-credential
 ***
+> **Note:**
+> This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
+
 Disable an assigned shared credential.
 
 
@@ -3528,6 +3549,9 @@ Returns the generated report.
 
 ### nexpose-enable-shared-credential
 ***
+> **Note:**
+> This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
+
 Enable an assigned shared credential.
 
 
@@ -3592,6 +3616,9 @@ Returns the status of a report generation process.
 
 ### nexpose-update-scan-schedule
 ***
+> **Note:**
+> This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
+
 Update an existing site scan schedule.
 
 
@@ -3624,6 +3651,9 @@ Update an existing site scan schedule.
 
 ### nexpose-update-site-scan-credential
 ***
+> **Note:**
+> This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
+
 Update an existing site scan credential. For detailed explanation of all parameters of this command, please see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/setSiteCredentials
 
 
