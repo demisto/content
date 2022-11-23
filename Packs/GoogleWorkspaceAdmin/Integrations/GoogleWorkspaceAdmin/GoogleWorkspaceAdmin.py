@@ -421,7 +421,7 @@ def google_chromeos_device_list_command(client: Client, **kwargs) -> CommandResu
     cd_devices_list_key = 'chromeosListObjects'
     pagination_args = prepare_pagination_arguments(args=kwargs)
     if 'limit' in pagination_args:
-        return device_list_automatic_pagination(api_request=client.google_mobile_device_list_request,
+        return device_list_automatic_pagination(api_request=client.google_chromeos_device_list_request,
                                                 to_human_readable=chromeos_device_list_to_human_readable,
                                                 table_headers=table_headers,
                                                 table_title=table_title,
