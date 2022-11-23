@@ -221,7 +221,7 @@ def demisto_types_to_xdr(_type: str) -> str:
         return xdr_type
 
 
-def _parse_ioc_comment(custom_fields: dict, comment_field_name: str) -> str | None:
+def _parse_demisto_comments(custom_fields: dict, comment_field_name: str) -> str | None:
     values = custom_fields.get(comment_field_name, ())
 
     if comment_field_name == 'comments':
@@ -233,7 +233,7 @@ def _parse_ioc_comment(custom_fields: dict, comment_field_name: str) -> str | No
 
     else:
         # custom comments field
-        return ', '.join(argToList(values)) or None
+        return ','.join(argToList(values)) or None
 
 
 def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
@@ -269,7 +269,7 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
 
         xdr_ioc['severity'] = validate_fix_severity_value(xdr_ioc['severity'], ioc['value'])
 
-        if (comment := _parse_ioc_comment(custom_fields, comment_field_name=Client.xsoar_comments_field)):
+        if (comment := _parse_demisto_comments(custom_fields, comment_field_name=Client.xsoar_comments_field)):
             xdr_ioc['comment'] = comment
 
         demisto.debug(f'Processed outgoing IOC: {xdr_ioc}')
@@ -392,6 +392,15 @@ def xdr_expiration_to_demisto(expiration) -> Union[str, None]:
     return None
 
 
+def _parse_xdr_comments(raw_comment: str | None) -> list[str]:
+    if not raw_comment:
+        return []
+
+    if ',' in raw_comment:
+        return raw_comment.split(',')
+    return [raw_comment]
+
+
 def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
     demisto.debug(f'Raw incoming IOC: {ioc}')
     indicator = ioc.get('RULE_INDICATOR', '')
@@ -399,12 +408,15 @@ def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
     score = get_indicator_xdr_score(indicator, xdr_server_score)
     severity = Client.severity if Client.override_severity else xdr_severity_to_demisto[ioc['RULE_SEVERITY']]
 
-    extra_fields = {
-        "tags": list(set(filter(None, (ioc.get('COMMENT'), Client.tag)))),
-    } if Client.xsoar_comments_field == 'tags' else {
-        "tags": [Client.tag],
-        Client.xsoar_comments_field: ioc.get('COMMENT', '')
-    }
+    comments = _parse_xdr_comments(ioc.get('RULE_COMMENT'))
+
+    if Client.xsoar_comments_field == 'tags':
+        extra_fields = {"tags": list(set(filter(None, comments + [Client.tag])))}
+    else:
+        extra_fields = {
+            "tags": [Client.tag],
+            Client.xsoar_comments_field: comments
+        }
 
     entry: Dict = {
         "value": indicator,

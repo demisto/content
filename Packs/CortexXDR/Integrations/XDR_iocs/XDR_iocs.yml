@@ -175,6 +175,11 @@ script:
     execution: false
     name: xdr-iocs-push
   - arguments:
+    deprecated: false
+    description: Push modified IOCs to Cortex XDR.
+    execution: false
+    name: testing
+  - arguments:
     - default: false
       description: The time of the file creation (use UTC time zone).
       isArray: false
