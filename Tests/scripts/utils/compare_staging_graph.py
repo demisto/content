@@ -173,9 +173,7 @@ def compare(
     shutil.make_archive(str(output_path / f"diff-{marketplace}"), "zip", output_path)
 
     if not diff_found:
-        message.insert(2, "No difference were found!")
-    else:
-        message.insert(2, f"Difference for {output_path}")
+        message.append("No difference were found!")
     return message
 
 
@@ -205,13 +203,11 @@ def main():
         f"Diff report for {marketplace}",
         f'Job URL: {os.getenv("CI_JOB_URL")}',
     ]
-    if not (graph_exists := collected_packs_id_set.exists()) or not (id_set_exists := collected_packs_graph.exists()):
-        message.extend(
-            [
-                f"Graph exists: {graph_exists}",
-                f"id-set exists: {id_set_exists}",
-            ]
-        )
+    if not zip_graph.exists():
+        message.append("No packs were uploaded for id_set")
+    if not zip_id_set.exists():
+        message.append("No packs were uploaded for graph")
+
     else:
         message = compare(
             marketplace,
@@ -226,7 +222,7 @@ def main():
         )
     if slack_token:
         slack_client = WebClient(token=slack_token)
-        slack_client.files_upload_v2(
+        slack_client.files_upload(
             file=str(output_path / f"diff-{marketplace}.zip"),
             channels="dmst-graph-tests",
             initial_comment="\n".join(message),
