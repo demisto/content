@@ -1,0 +1,26 @@
+commonfields:
+  id: b369c754-dc40-40bf-8958-98480b419a22
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: d89de890-ff95-4059-88f7-9a7c6be366fb
+    packName: master-test-to-existing
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.10.8.37233
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: New-omer-automation
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
