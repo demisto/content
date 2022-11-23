@@ -158,9 +158,6 @@ tasks:
       MessageID:
         complex:
           root: inputs.MessageID
-      ThreadTopic:
-        complex:
-          root: inputs.EmailSubject
       UserID:
         complex:
           root: inputs.UserID
