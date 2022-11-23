@@ -9519,7 +9519,7 @@ script:
     - contextPath: GoogleCloudCompute.ProjectMetadata.kind
       description: Type of the resource. Always compute#operation.
       type: String
-  dockerimage: devdemisto/py3-primary:8.1.0.37716
+  dockerimage: devdemisto/py3-primary:8.1.0.37717
   feed: false
   isfetch: false
   longRunning: false
