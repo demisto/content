@@ -18,7 +18,6 @@ configuration:
   required: false
   type: 4
   section: Connect
-  description: test
 - display: Key or Client Secret
   additionalinfo: See the Help tab.
   name: enc_key
