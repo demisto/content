@@ -14,14 +14,12 @@ configuration:
   type: 9
   section: Connect
 - display: Events search query
-  additionalinfo: For example, "from:example@demisto.com"
   name: query
   required: false
   type: 0
   additionalinfo: Used for searching emails in the inbox. The query language follows the Gmail query specification. For example, "from:example@demisto.com is:unread".
   section: Collect
 - display: Events user key
-  additionalinfo: For example, example@demisto.com
   name: queryUserKey
   required: false
   type: 0
