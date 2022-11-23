@@ -107,10 +107,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 6670eef7-27ab-4c5d-8e8c-635b8618136c
+    taskid: 8e468b02-e02c-4aeb-804c-0b73dfa0b1c8
     type: regular
     task:
-      id: 6670eef7-27ab-4c5d-8e8c-635b8618136c
+      id: 8e468b02-e02c-4aeb-804c-0b73dfa0b1c8
       version: -1
       name: Search for messages by encoded MessageID
       description: Gets the properties of returned emails. Typically shows partial results. Use the "page_size" and "pages_to_pull" arguments to get all results.
@@ -259,10 +259,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 015f4932-563b-458f-8009-e7daafc60547
+    taskid: 43134294-3804-4b55-8591-9845b146370f
     type: condition
     task:
-      id: 015f4932-563b-458f-8009-e7daafc60547
+      id: 43134294-3804-4b55-8591-9845b146370f
       version: -1
       name: Verify required inputs
       description: Verifies that the required input values exist for retrieving the original email.
@@ -284,17 +284,13 @@ tasks:
               complex:
                 root: inputs.UserID
             iscontext: true
+          right:
+            value: {}
       - - operator: isExists
           left:
             value:
               complex:
                 root: inputs.MessageID
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.ThreadTopic
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -313,10 +309,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: d64994a8-f4d9-4b4b-890f-add670ef7e10
+    taskid: 062e413e-5f77-48bf-8f26-fffdaf91b333
     type: regular
     task:
-      id: d64994a8-f4d9-4b4b-890f-add670ef7e10
+      id: 062e413e-5f77-48bf-8f26-fffdaf91b333
       version: -1
       name: Set EncodedMessageID
       description: Set a value in context under the key you entered.
@@ -380,11 +376,6 @@ inputs:
   value: {}
   required: false
   description: The InReplyTo header in the forwarded email.
-  playbookInputQuery:
-- key: ThreadTopic
-  value: {}
-  required: false
-  description: The ThreadTopic header in the forwarded email.
   playbookInputQuery:
 - key: PagesToPull
   value:
