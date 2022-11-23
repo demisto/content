@@ -81,10 +81,10 @@ def get_detector(client: boto3.client, args: dict) -> CommandResults:
     response = client.get_detector(DetectorId=args.get('detectorId'))
     data = ({
         'DetectorId': args.get('detectorId'),
-        'CreatedAt': response['CreatedAt'],
-        'ServiceRole': response['ServiceRole'],
-        'Status': response['Status'],
-        'UpdatedAt': response['UpdatedAt'],
+        'CreatedAt': response.get('CreatedAt'),
+        'ServiceRole': response.get('ServiceRole'),
+        'Status': response.get('Status'),
+        'UpdatedAt': response.get('UpdatedAt'),
         'CloudTrailStatus': demisto.get(response, 'DataSources.CloudTrail.Status'),
         'DNSLogsStatus': demisto.get(response, 'DataSources.DNSLogs.Status'),
         'FlowLogsStatus': demisto.get(response, 'DataSources.FlowLogs.Status'),
@@ -380,17 +380,17 @@ def severity_mapping(severity: Optional[float]) -> Optional[int]:
     return demisto_severity
 
 
-def gd_severity_mapping(severity: str):
-    if severity == 'Low':
-        gdSevirity = 1
-    elif severity == 'Medium':
-        gdSevirity = 4
-    elif severity == 'High':
-        gdSevirity = 7
+def gd_severity_mapping(severity_list: List[str]) -> int:
+    if 'Low' in severity_list:
+        gd_severity = 1
+    elif 'Medium' in severity_list:
+        gd_severity = 4
+    elif 'High' in severity_list:
+        gd_severity = 7
     else:
-        gdSevirity = 1
+        gd_severity = 1
 
-    return gdSevirity
+    return gd_severity
 
 
 def list_findings(client: boto3.client, args: dict) -> CommandResults:
@@ -470,29 +470,9 @@ def parse_finding(finding: dict) -> Dict:
     parsed_finding['Service'] = json.dumps(finding.get('Service'), cls=DatetimeEncoder)
     parsed_finding['ResourceType'] = demisto.get(finding, 'Resource.ResourceType')
 
-    get_resource = dict()
-    get_resource.update({'AccessKeyDetails': json.dumps(demisto.get(finding, 'Resource.AccessKeyDetails'))})
-    get_resource['KubernetesDetails'] = {'KubernetesUserDetails': json.dumps(  # type: ignore
-        demisto.get(finding, 'Resource.KubernetesDetails.KubernetesUserDetails'))}
-    get_resource['KubernetesDetails'].update(  # type: ignore
-        {'KubernetesWorkloadDetails': json.dumps(
-            demisto.get(finding, 'Resource.KubernetesDetails.KubernetesWorkloadDetails'))})
-
-    get_resource.update({'EbsVolumeDetails': json.dumps(demisto.get(finding, 'Resource.EbsVolumeDetails'))})
-    get_resource.update({'ContainerDetails': json.dumps(demisto.get(finding, 'Resource.ContainerDetails'))})
-
-    instance_details = demisto.get(finding, 'Resource.InstanceDetails')
-    if instance_details:
-        get_resource['InstanceDetails'] = {k: json.dumps(instance_details[k]) for k in instance_details}  # type: ignore
-
-    get_resource.update(
-        {'EksClusterDetails': json.dumps(demisto.get(finding, 'Resource.EksClusterDetails'), cls=DatetimeEncoder)})
-    get_resource.update(
-        {'EcsClusterDetails': json.dumps(demisto.get(finding, 'Resource.EcsClusterDetails'), cls=DatetimeEncoder)})
-    get_resource.update(
-        {'S3BucketDetails': json.dumps(demisto.get(finding, 'Resource.S3BucketDetails'), cls=DatetimeEncoder)})
-
-    parsed_finding['Resource'] = get_resource
+    get_resource = finding.get('Resource')
+    parsed_finding['Resource'] = {k: json.dumps(v, cls=DatetimeEncoder) for k, v in get_resource.items()
+                                  if k != 'ResourceType'}
     return parsed_finding
 
 
@@ -528,7 +508,7 @@ def parse_incident_from_finding(finding: dict):
     return incident
 
 
-def time_to_unix_epoch(date_time: datetime):
+def time_to_unix_epoch(date_time: datetime) -> int:
     """
     :param date_time: The time and date in '%Y-%m-%dT%H:%M:%S.%fZ' format
     :return: Timestamp in Unix Epoch millisecond format
@@ -537,14 +517,14 @@ def time_to_unix_epoch(date_time: datetime):
     return int(date_time.timestamp() * 1000)
 
 
-def fetch_incidents(client: boto3.client, aws_gd_severity: str, last_run: dict, fetch_limit: int,
+def fetch_incidents(client: boto3.client, aws_gd_severity: List[str], last_run: dict, fetch_limit: int,
                     first_fetch_time: str, is_archive: bool) -> Tuple[Dict[str, Any], List[dict]]:
     """
     This function will execute each interval (default is 1 minute).
 
     Args:
         client (Client): boto3.client client
-        aws_gd_severity: Guard Duty Severity level
+        aws_gd_severity (List[str]): Guard Duty Severity level
         last_run (dict): {'latest_created_time' (string): The greatest incident created_time we fetched from last fetch,
                           'latest_updated_time' (string): The greatest incident updated_time we fetched from last fetch,
                           'last_incidents_ids' (list): The last incidents ids of the latest_created_time,
@@ -577,6 +557,7 @@ def fetch_incidents(client: boto3.client, aws_gd_severity: str, last_run: dict, 
 
     criterion_conditions = dict()  # Represents the criteria to be used in the filter for querying findings.
     criterion_conditions['severity'] = {'Gte': gd_severity_mapping(aws_gd_severity)}
+    demisto.debug('severity = ', criterion_conditions['severity'])
     if is_archive:
         demisto.debug('Fetching Amazon GuardDuty with Archive')
         criterion_conditions['service.archived'] = {'Eq': ['false']}
@@ -762,7 +743,7 @@ def main():  # pragma: no cover
     aws_role_policy = None
     aws_access_key_id = params.get('access_key')
     aws_secret_access_key = params.get('secret_key')
-    aws_gd_severity = params.get('gs_severity', '')
+    aws_gd_severity = params.get('gs_severity', [])
     verify_certificate = not params.get('insecure', True)
     timeout = params.get('timeout') or 1
     retries = params.get('retries') or 5
@@ -859,7 +840,8 @@ def main():  # pragma: no cover
             result = get_members(client, demisto.args())
 
         elif demisto.command() == 'fetch-incidents':
-            next_run, incidents = fetch_incidents(client, aws_gd_severity, last_run=demisto.getLastRun(),
+            next_run, incidents = fetch_incidents(client=client, aws_gd_severity=aws_gd_severity,
+                                                  last_run=demisto.getLastRun(),
                                                   fetch_limit=fetch_limit,  # type: ignore
                                                   first_fetch_time=first_fetch_time, is_archive=is_archive)
             demisto.setLastRun(next_run)

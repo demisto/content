@@ -679,12 +679,9 @@ Action: _guardduty:GetFindings_
 | AWS.GuardDuty.Findings.SchemaVersion | string | The version of the schema used for the finding. | 
 | AWS.GuardDuty.Findings.Service | string | Contains additional information about the generated finding. | 
 | AWS.GuardDuty.Findings.Resource.AccessKeyDetails | string | The IAM access key details \(IAM user information\) of a user that engaged in the activity that prompted GuardDuty to generate a finding. | 
-| AWS.GuardDuty.Findings.Resource.InstanceDetails.IamInstanceProfile | string | The profile information of the EC2 instance. | 
-| AWS.GuardDuty.Findings.Resource.InstanceDetails.NetworkInterfaces | string | The elastic network interface information of the EC2 instance. | 
 | AWS.GuardDuty.Findings.Resource.InstanceDetails | string | The information about the EC2 instance associated with the activity that prompted GuardDuty to generate a finding. | 
 | AWS.GuardDuty.Findings.Resource.EksClusterDetails | string | Details about the EKS cluster involved in a Kubernetes finding. | 
-| AWS.GuardDuty.Findings.Resource.KubernetesDetails.KubernetesUserDetails | string | Details about the Kubernetes user involved in a Kubernetes finding. | 
-| AWS.GuardDuty.Findings.Resource.KubernetesDetails.KubernetesWorkloadDetails | string | Details about the Kubernetes workload involved in a Kubernetes finding. | 
+| AWS.GuardDuty.Findings.Resource.KubernetesDetails | string | Details about the Kubernetes user and workload involved in a Kubernetes finding. | 
 | AWS.GuardDuty.Findings.Resource.EbsVolumeDetails | string | Contains list of scanned and skipped EBS volumes with details. | 
 | AWS.GuardDuty.Findings.Resource.EcsClusterDetails | string | Contains information about the details of the ECS Cluster. | 
 | AWS.GuardDuty.Findings.Resource.ContainerDetails | string | Details of a container. | 

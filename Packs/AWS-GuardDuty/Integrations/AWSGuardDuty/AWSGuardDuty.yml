@@ -108,10 +108,6 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
 description: Amazon Web Services Guard Duty Service (gd)
 display: AWS - GuardDuty
 name: AWS - GuardDuty
@@ -1174,23 +1170,14 @@ script:
     - contextPath: 'AWS.GuardDuty.Findings.Resource.AccessKeyDetails'
       description: The IAM access key details (IAM user information) of a user that engaged in the activity that prompted GuardDuty to generate a finding.
       type: string
-    - contextPath: 'AWS.GuardDuty.Findings.Resource.InstanceDetails.IamInstanceProfile'
-      description: The profile information of the EC2 instance.
-      type: string
-    - contextPath: 'AWS.GuardDuty.Findings.Resource.InstanceDetails.NetworkInterfaces'
-      description: The elastic network interface information of the EC2 instance.
-      type: string
     - contextPath: 'AWS.GuardDuty.Findings.Resource.InstanceDetails'
       description: The information about the EC2 instance associated with the activity that prompted GuardDuty to generate a finding.
       type: string
     - contextPath: 'AWS.GuardDuty.Findings.Resource.EksClusterDetails'
       description: Details about the EKS cluster involved in a Kubernetes finding.
       type: string
-    - contextPath: 'AWS.GuardDuty.Findings.Resource.KubernetesDetails.KubernetesUserDetails'
-      description: Details about the Kubernetes user involved in a Kubernetes finding.
-      type: string
-    - contextPath: 'AWS.GuardDuty.Findings.Resource.KubernetesDetails.KubernetesWorkloadDetails'
-      description: Details about the Kubernetes workload involved in a Kubernetes finding.
+    - contextPath: 'AWS.GuardDuty.Findings.Resource.KubernetesDetails'
+      description: Details about the Kubernetes user and workload involved in a Kubernetes finding.
       type: string
     - contextPath: 'AWS.GuardDuty.Findings.Resource.EbsVolumeDetails'
       description: Contains list of scanned and skipped EBS volumes with details.
