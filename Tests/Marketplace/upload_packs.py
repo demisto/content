@@ -221,8 +221,14 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
             os.environ.get('CI_COMMIT_BRANCH') != 'master' and storage_bucket.name == GCPConfig.PRODUCTION_BUCKET) or (
             os.environ.get('CI_COMMIT_BRANCH') == 'master' and storage_bucket.name not in
             (GCPConfig.PRODUCTION_BUCKET, GCPConfig.CI_BUILD_BUCKET)):
+        logging.info(f"[TEST] is CI not in os.environ: {'CI' not in os.environ}")
+        logging.info(f"[TEST] CI_COMMIT_BRANCH: {os.environ.get('CI_COMMIT_BRANCH')}")
+        logging.info(f"[TEST] storage_bucket.name: {storage_bucket.name}")
+        logging.info(f"[TEST] GCPConfig.PRODUCTION_BUCKET: {GCPConfig.PRODUCTION_BUCKET}")
         logging.info("Skipping cleanup of packs in gcs.")  # skipping execution of cleanup in gcs bucket
         return True
+
+    logging.info("Start cleaning non existing packs in index.")
     valid_pack_names = {p.name for p in content_packs}
     if marketplace == 'xsoar':
         private_packs_names = {p.get('id', '') for p in private_packs}
