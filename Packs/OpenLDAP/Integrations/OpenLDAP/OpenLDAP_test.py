@@ -139,3 +139,36 @@ class TestsOpenLDAP:
     """
        Contains unit tests for functions that deal with OpenLDAP server.
     """
+
+
+@pytest.mark.parametrize('ssl_version, expected_ssl_version', [
+    ('SSLv23', 2), ('TLSv1', 3), ('TLSv1_1', 4), ('TLSv1_2', 5), ('TLS', 2), ('TLS_CLIENT', 16), (None, None)
+])
+def test_get_ssl_version(ssl_version, expected_ssl_version):
+    """
+        Given:
+            - An ssl protocol version:
+                1. SSLv23
+                2. TLSv1
+                3. TLSv1_1
+                4. TLSv1_2
+                5. TLS
+                6. TLS_CLIENT
+                7. None
+        When:
+            - Running the '_get_ssl_version()' function.
+        Then:
+            - Verify that the returned ssl version value is as expected:
+                1. 'SSLv23' - 2
+                2. TLSv1 - 3
+                3. TLSv1_1 - 4
+                4. TLSv1_2 - 5
+                5. TLS - 2
+                6. TLS_CLIENT - 16
+                7. None - None
+    """
+    client = LdapClient({'ldap_server_vendor': 'OpenLDAP', 'host': 'server_ip',
+                         'connection_type': 'SSL', 'ssl_version': ssl_version})
+
+    ssl_version_value = client._get_ssl_version()
+    assert ssl_version_value == expected_ssl_version
