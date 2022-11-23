@@ -498,7 +498,7 @@ script:
     name: aws-gd-delete-ip-set
   - arguments:
     - default: false
-      description: Number of total results to query. 
+      description: Number of total results to query.
       isArray: false
       name: limit
       required: false
@@ -702,7 +702,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Number of total results to query. 
+      description: Number of total results to query.
       isArray: false
       name: limit
       required: false
@@ -935,7 +935,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Number of total results to query. 
+      description: Number of total results to query.
       isArray: false
       name: limit
       required: false
@@ -1057,7 +1057,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Number of total results to query. 
+      description: Number of total results to query.
       isArray: false
       name: limit
       required: false
@@ -1383,7 +1383,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Number of total results to query. 
+      description: Number of total results to query.
       isArray: false
       name: limit
       required: false
@@ -1490,7 +1490,7 @@ script:
     - contextPath: AWS.GuardDuty.Members.UpdatedAt
       description: The time a member was last updated.
       type: string
-  dockerimage: demisto/boto3py3:1.0.0.37643
+  dockerimage: demisto/boto3py3:1.0.0.37755
   feed: false
   isfetch: true
   longRunning: false
