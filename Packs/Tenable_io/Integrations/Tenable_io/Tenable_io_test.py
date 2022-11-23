@@ -153,16 +153,16 @@ def test_get_asset_details_command(requests_mock):
     from Tenable_io import get_asset_details_command
     mock_demisto(mocker, {'ip': '1.3.2.1'})
     requests_mock.get(MOCK_PARAMS['url'] + 'workbenches/assets', json={'assets': [{'id': 'fake_asset_id'}]})
-    #TODO Change for send_asset_details_request and get mock data
-    requests_mock.get(MOCK_PARAMS['url'] + 'workbenches/assets/fake_asset_id/vulnerabilities/',
-                      json=MOCK_RAW_VULN_BY_ASSET)
-    #TODO Change for send_asset_attributes_request and get mock data
-    requests_mock.get(MOCK_PARAMS['url'] + 'workbenches/assets/fake_asset_id/vulnerabilities/',
-                      json=MOCK_RAW_VULN_BY_ASSET)
+    #TODO get mock data
+    requests_mock.get(MOCK_PARAMS['url'] + 'workbenches/assets/fake_asset_id/info',
+                      json=MOCK_RAW_ASSET_BY_IP)
+    #TODO get mock data
+    requests_mock.get(MOCK_PARAMS['url'] + 'api/v3/assets/fake_asset_id',
+                      json=MOCK_RAW_ASSET_ATTRIBUTES)
 
     response = get_asset_details_command()
 
     #TODO MOCK DATA, CHANGE OUTPTS
-    assert response.outputs == EXTERNAL_SERVICES_RESULTS
-    assert response.outputs_prefix == 'ASM.ExternalService'
-    assert response.outputs_key_field == 'service_id'
+    assert response.outputs == EXPECTED_ASSET_INFO_RESULTS
+    assert response.outputs_prefix == 'TenableIO.AssetDetails'
+    assert response.outputs_key_field == 'id'
