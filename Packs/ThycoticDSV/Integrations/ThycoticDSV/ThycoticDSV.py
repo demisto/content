@@ -1,10 +1,11 @@
+import urllib3
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 #   from typing import Dict
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 class Client(BaseClient):

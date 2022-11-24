@@ -13,4 +13,6 @@ alter
     xdm.target.resource.value = json_extract_scalar(details, "$.to"),
     xdm.event.operation = json_extract_scalar(details, "$.action"),
     xdm.event.type = json_extract_scalar(details, "$.action_type"),
-    xdm.event.operation_sub_type = json_extract_scalar(details, "$.action_category");
+    xdm.event.operation_sub_type = json_extract_scalar(details, "$.action_category"),
+    xdm.observer.vendor = _vendor,
+    xdm.observer.product = _product;
