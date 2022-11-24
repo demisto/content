@@ -14,7 +14,6 @@ Please login to your Zoom admin user account, and follow these steps:
     Client secret
 
 ### For the JWT method (deprecated)
-To get the credentials, login to your Zoom account, click [here](https://marketplace.zoom.us/develop/create) and choose JWT.
 - Create an JWT app
 - Use the following account credentials to get an access token:
     API Key
