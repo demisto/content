@@ -152,7 +152,7 @@ def test_get_oauth_token___old_token_is_unreachable(mocker, return_val):
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
     assert generate_token_mock.called
-    #assert client.access_token != "old token"
+    assert client.access_token != "old token"
 
 
 def test_disable_user_command__allow_disable(mocker):
