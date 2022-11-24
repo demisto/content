@@ -2,14 +2,14 @@ import collections
 import json
 from datetime import timedelta
 import ast
-import requests
+import urllib3
 from CommonServerPython import *  # noqa: F401
 from armorblox.client import Client as AbxBaseClient
 
 import demistomock as demisto  # noqa: F401
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ARMORBLOX_INCIDENT_API_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 MAX_INCIDENTS_TO_FETCH = demisto.params().get('max_fetch')
