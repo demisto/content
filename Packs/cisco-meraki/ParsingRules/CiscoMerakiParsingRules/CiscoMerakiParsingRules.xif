@@ -1,3 +1,4 @@
-[INGEST:vendor="cisco", product="meraki", target_dataset="cisco_meraki_raw", no_hit=drop]
+[INGEST:vendor="cisco", product="meraki6", target_dataset="cisco_meraki6_raw", no_hit=drop]
 alter epoch_extract = to_integer(arraystring(regextract(_raw_log, "\s(\d{9,10})\."), ""))
-| alter _time = timestamp_seconds(epoch_extract);
+| alter _time = timestamp_seconds(epoch_extract)
+| fields -epoch_extract;
