@@ -2,7 +2,7 @@ id: Microsoft 365 Defender - Threat Hunting Generic
 version: -1
 name: Microsoft 365 Defender - Threat Hunting Generic
 description: |
-  This playbook retrieves email data based on the `URLDomain`, `SHA256`, `IPAddress` and `MessageID` inputs. The output will be a unified object with all of the retrieved emails based on the sub-playbooks outputs:
+  This playbook retrieves email data based on the `URLDomain`, `SHA256`, `IPAddress`. and `MessageID` inputs. The output is a unified object with all of the retrieved emails based on the following sub-playbooks outputs:
 
   - **Microsoft 365 Defender - Get Email URL clicks**:
           Retrieves data based on URL click events.
@@ -11,7 +11,7 @@ description: |
   - **Microsoft 365 Defender - Emails Indicators Hunt**:
           Retrieves data based on several different email events.
 
-  Please read the playbooks descriptions in order to get the full details.
+  Read the playbook's descriptions in order to get the full details.
 starttaskid: "0"
 tasks:
   "0":
@@ -171,7 +171,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-9/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -226,7 +226,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-9/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -275,7 +275,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-9/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -351,7 +351,7 @@ inputs:
 - key: URLDomain
   value: {}
   required: false
-  description: Domain or URL to search within emails. Can be a single domain or URL or an array of domains or URLs to search.
+  description: Domain or URL to search within emails. Can be a single domain or URL, or an array of domains or URLs to search.
   playbookInputQuery:
 - key: SHA256
   value: {}
@@ -367,9 +367,9 @@ inputs:
   value: {}
   required: false
   description: |-
-    MessageID of the email from which the URL was clicked. Please note that this can be either of the following 2 values:
+    MessageID of the email from which the URL was clicked. Note that this can be either of the following 2 values:
     - The value of the header "Message-ID".
-    - The internal ID of the message within Microsoft's products (e.g NetworkMessageId).
+    - The internal ID of the message within Microsoft's products (e.g., NetworkMessageId).
 
     Can be a single MessageID or an array of NMessageIDs to search.
   playbookInputQuery:
@@ -383,7 +383,7 @@ inputs:
   value:
     simple: "7"
   required: false
-  description: Number of days past to search. Default is 7.
+  description: Number of previous dayse to search. Default is 7.
   playbookInputQuery:
 - key: ResultsLimit
   value:
@@ -393,7 +393,7 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: Microsoft365Defender.RetrievedEmails
-  description: Email objects containing relevant fields related to url clicks events.
+  description: Email objects containing relevant fields related to URL click events.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.InternetMessageId
   description: Public-facing identifier for the email that is set by the sending email system. This will be the value of the "Message-ID" header.
@@ -426,7 +426,7 @@ outputs:
   description: Email address of the recipient, or email address of the recipient after distribution list expansion.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.EmailAction
-  description: 'Final action taken on the email based on filter verdict, policies, and user actions: Move message to junk mail folder, Add X-header, Modify subject, Redirect message, Delete message, send to quarantine, No action taken, Bcc message.'
+  description: 'Final action taken on the email based on filter verdict, policies, and user actions: Move message to junk mail folder, Add X-header, Modify subject, Redirect message, Delete message, Send to quarantine, No action taken, Bcc message.'
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.EmailLanguage
   description: Email language.
@@ -468,7 +468,7 @@ outputs:
   description: Indicates whether the user was able to click through to the original URL or not.
   type: number
 - contextPath: Microsoft365Defender.RetrievedEmails.BulkComplaintLevel
-  description: Threshold assigned to email from bulk mailers, a high bulk complain level (BCL) means the email is more likely to generate complaints, and thus more likely to be spam.
+  description: Threshold assigned to email from bulk mailers. A high bulk complain level (BCL) means the email is more likely to generate complaints, and therefore more likely to be spam.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.IPAddress
   description: IP address assigned to the device during communication.
@@ -495,7 +495,7 @@ outputs:
   description: Sender email address in the MAIL FROM header, also known as the envelope sender or the Return-Path address.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.ClickTimestamp
-  description: Date and time when the record was generated (url click).
+  description: Date and time when the record was generated (URL click).
   type: unknown
 tests:
 - No tests (auto formatted)
