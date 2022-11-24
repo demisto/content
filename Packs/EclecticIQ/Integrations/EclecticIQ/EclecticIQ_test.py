@@ -300,7 +300,7 @@ def fetch_entity_mock_response(*args, **kwargs):
                 "data": {
                     "maliciousness": "medium",
                     "type": "ipv4",
-                    "value": "114.112.105.198"
+                    "value": "001.001.001.001"
                 }},
             "outgoing_feeds": [],
             "relevancy": 0.39634678110477484,
@@ -529,7 +529,7 @@ def test_prepare_entity_data(mocker):
             "data": {
                 "maliciousness": "medium",
                 "type": "ipv4",
-                "value": "114.112.105.198"
+                "value": "001.001.001.001"
             }}})
     assert isinstance(response, dict)
 
@@ -566,7 +566,7 @@ def test_prepare_entity_data_scenario(mocker):
             "data": {
                 "maliciousness": "medium",
                 "type": "ipv4",
-                "value": "114.112.105.198"
+                "value": "001.001.001.001"
             }}})
     assert isinstance(response, dict)
 # Mock function for validate_type
@@ -779,7 +779,7 @@ def test_get_entity_data(mocker):
             "data": {
                 "maliciousness": "medium",
                 "type": "ipv4",
-                "value": "114.112.105.198"
+                "value": "001.001.001.001"
             }}})
     assert isinstance(response, list)
 
@@ -977,7 +977,7 @@ def test_main_scenario(mocker):
                 "data": {
                     "maliciousness": "medium",
                     "type": "ipv4",
-                    "value": "114.112.105.198"
+                    "value": "001.001.001.001"
                 }},
             "outgoing_feeds": [],
             "relevancy": 0.39634678110477484,
@@ -1097,7 +1097,7 @@ def test_main_scenario_2(mocker):
         "offset": 0,
         "total_count": 1
     })
-    mocker.patch.object(demisto, 'args', return_value={"type": "ipv4", "value": "203.175.124.161", "maliciousness": "safe"})
+    mocker.patch.object(demisto, 'args', return_value={"type": "ipv4", "value": "001.001.001.001", "maliciousness": "safe"})
     mocker.patch.object(demisto, 'results')
     main()
     assert demisto.results.call_count == 1
