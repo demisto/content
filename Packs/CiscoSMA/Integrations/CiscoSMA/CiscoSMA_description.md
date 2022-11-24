@@ -10,7 +10,7 @@
 ## Time Zone
 The time zone should be configured to GMT +00:00.
 
-- In time zone configuration settings set the following:
+- In time zone configuration settings, set the following:
     - Region: GMT offset
     - Country: GMT
     - Time zone: GMT (GMT)
