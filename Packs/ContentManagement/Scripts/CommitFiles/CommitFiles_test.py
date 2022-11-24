@@ -76,3 +76,67 @@ def test_get_file_sha(mocker):
     file_sha = get_file_sha(branch_name, content_file, 'Github-list-files')
     expected_sha = list_files[0].get('sha')
     assert expected_sha == file_sha
+
+
+files = [
+    {
+        "Size": 2504,
+        "SHA1": "fe3c5c440d9a8297c1c6dfdb316bcbbb1c8ded3e",
+        "SHA256": "f0820c96cd19894a2a21404d202d87c926e2ff2da9386729d66a6d1ff5b40aad",
+        "SHA512": "3b44b3a48b64d3b069a965e00692e80fe0eb69fbd60e574e8aa3a747e33d1a76508a47992e560fbb17ce40ddbbaf2e45fdb4f8b0a6c1dc2deb8a1d7cc417193f",
+        "Name": "automation-NewBranchName.yml",
+        "SSDeep": "48:onZUdy98RuUQrJ0re9MV3YSxdidyJlwWkWriI21e+JC0x4w6:v7eJkeGlYSZlA60Xx4F",
+        "EntryID": "8@47",
+        "Info": "yml",
+        "Type": "Python script text executable, ASCII text",
+        "MD5": "345686298376c84fbf59edfd3da3fda2",
+        "Extension": "yml"
+    }
+]
+
+user = {
+        "email": "admintest@demisto.com",
+        "isAway": False,
+        "name": "Admin Dude",
+        "phone": "+650-123456",
+        "roles": ["demisto: [Administrator]"],
+        "username": "admin"
+    }
+
+
+def test_main(mocker):
+    """
+    Given:
+        - A list of files, a branch name, a pack name, a user, a git integration, a comment (optional) and a template to
+            a message (optional).
+    When:
+        - Committing new files to the git integration.
+    Then:
+        - Returns A CommandResult object with a success message with information about the committed files.
+    """
+    from CommitFiles import main
+    branch_name = "branch"
+    pack_name = "BranchNameScript"
+    gitIntegration = "Bitbucket"
+    incident_url = demisto.demistoUrls().get('investigation')
+    expected_pr_body = f'### Pull Request created in Cortex XSOAR\n**Created by:** {user.get("username")} ({user.get("email")})\n\n**Pack:** {pack_name}\n\n**Branch:** {branch_name}\n\n**Link to incident in Cortex XSOAR:** {incident_url}\n\n\n\n\n\n---\n\n### New files\n- NewBranchName.yml\n- NewBranchName.py'
+    mocker.patch.object(
+        demisto, 'args', return_value={
+            'files': files,
+            'branch': branch_name,
+            'pack': pack_name,
+            'user': user,
+            'git_integration': gitIntegration
+        }
+    )
+    mock_file = {
+        'id': '7@47',
+        'path': 'test_data/automation-NewBranchName.yml',
+        'name': 'automation-NewBranchName.yml',
+    }
+    mocker.patch.object(demisto, 'getFilePath', return_value=mock_file)
+    mocker.patch.object(demisto, 'executeCommand')
+    moc = mocker.patch.object(demisto, 'results')
+    main()
+    pr_body = moc.call_args.args[0].get('HumanReadable')
+    assert expected_pr_body == pr_body
