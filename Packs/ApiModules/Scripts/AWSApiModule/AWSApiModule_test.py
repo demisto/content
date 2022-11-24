@@ -184,7 +184,9 @@ def test_AWSClient_without_session_token():
                              ('test1', None, ('test1', None)),
                              ('test1', 'test2', ('test1', 'test2')),
                              ('test1@@@test2', 'test3', ('test1@@@test2', 'test3')),
-                             ('', None, ('', None))
+                             ('', None, ('', None)),
+                             (None, '', (None, '')),
+                             (None, None, (None, None))
                          ])
 def test_extract_session_from_access(access_key, session_token, expected):
     result = extract_session_from_access(access_key, session_token)
