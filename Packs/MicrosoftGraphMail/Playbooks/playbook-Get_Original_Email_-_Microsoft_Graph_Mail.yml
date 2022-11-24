@@ -315,7 +315,7 @@ tasks:
       id: 062e413e-5f77-48bf-8f26-fffdaf91b333
       version: -1
       name: Set EncodedMessageID
-      description: Set a value in context under the key you entered.
+      description: Since the MessageID may contain special characters, it should be URL encoded in order to use it in the next task.
       scriptName: Set
       type: regular
       iscommand: false
