@@ -41,7 +41,11 @@ ignore=BA101
 ignore=IM111
 
 [known_words]
+GCP
 SSH
+TCP
+VPC
+CloudTrail
 Misconfiguration
 replyOptions
 nexttasks
