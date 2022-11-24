@@ -4536,36 +4536,46 @@ script:
       description: The given CVE IDs related to this machine.
       type: Unknown
     polling: true
-  - arguments: []
+  - arguments: 
+    - default: false
+      description: Software ID.
+      isArray: false
+      name: id
+      secret: false
     deprecated: false
-    description: Gets an indicator by its ID.
+    description: Retrieve a list of device references that has this software installed.
     name: microsoft-atp-list-machines-by-software
     outputs:
     - contextPath: MicrosoftATP.SoftwareMachine.id
-      description: ''
+      description: Machine identity.
       type: String
     - contextPath: MicrosoftATP.SoftwareMachine.computerDnsName
-      description: ''
+      description: Machine fully qualified name.
       type: String
     - contextPath: MicrosoftATP.SoftwareMachine.osPlatform
-      description: ''
+      description: Operating system platform.
       type: String
     - contextPath: MicrosoftATP.SoftwareMachine.rbacGroupName
-      description: ''
+      description: Machine group Name.
       type: String
     - contextPath: MicrosoftATP.SoftwareMachine.rbacGroupId
-      description: ''
+      description: Machine group ID.
       type: Number
-  - arguments: []
+  - arguments:
+    - default: false
+      description: Software ID.
+      isArray: false
+      name: id
+      secret: false
     deprecated: false
-    description: Gets an indicator by its ID.
+    description: Retrieves missing KBs (security updates) by software ID.
     name: microsoft-atp-list-missing-kb-by-software
     outputs:
     - contextPath: MicMicrosoftATP.SoftwareKB.id
-      description: ''
+      description: Software ID.
       type: String
     - contextPath: MicMicrosoftATP.SoftwareKB.name
-      description: ''
+      description: Software name.
       type: String
     - contextPath: MicMicrosoftATP.SoftwareKB.productsNames
       description: ''
@@ -4579,53 +4589,312 @@ script:
     - contextPath: MicMicrosoftATP.SoftwareKB.cveAddressed
       description: ''
       type: Number
-  - arguments: []
+  - arguments:
+    - default: false
+      description: Software ID.
+      isArray: false
+      name: id
+      secret: false
     deprecated: false
-    description: Gets an indicator by its ID.
+    description: Retrieves a list of all the vulnerabilities affecting the organization per software.
     name: microsoft-atp-list-vulnerabilities-by-software
     outputs:
     - contextPath: MicrosoftATP.SoftwareCVE.id
-      description: ''
+      description: Vulnerability ID.
       type: String
     - contextPath: MicrosoftATP.SoftwareCVE.name
-      description: ''
+      description: Vulnerability title.
       type: String
     - contextPath: MicrosoftATP.SoftwareCVE.description
-      description: ''
+      description: Vulnerability description.
       type: String
     - contextPath: MicrosoftATP.SoftwareCVE.severity
-      description: ''
+      description: 'Vulnerability Severity. Possible values are: "Low", "Medium", "High", "Critical"'
       type: String
     - contextPath: MicrosoftATP.SoftwareCVE.cvssV3
-      description: ''
+      description: CVSS v3 score.
       type: Number
     - contextPath: MicrosoftATP.SoftwareCVE.exposedMachines
-      description: ''
+      description: Number of exposed devices.
       type: Number
     - contextPath: MicrosoftATP.SoftwareCVE.publishedOn
-      description: ''
+      description: Date when vulnerability was published.
       type: Date
     - contextPath: MicrosoftATP.SoftwareCVE.updatedOn
-      description: ''
+      description: Date when vulnerability was updated.
       type: Date
     - contextPath: MicrosoftATP.SoftwareCVE.publicExploit
-      description: ''
+      description: Public exploit exists for some of the vulnerabilities.
       type: Boolean
     - contextPath: MicrosoftATP.SoftwareCVE.exploitVerified
-      description: ''
+      description: Public exploit exists.
       type: Boolean
     - contextPath: MicrosoftATP.SoftwareCVE.exploitInKit
-      description: ''
+      description: Exploit is part of an exploit kit.
       type: Boolean
     - contextPath: MicrosoftATP.SoftwareCVE.exploitTypes
-      description: ''
+      description: 'Exploit impact. Possible values are: "Local privilege escalation", "Denial of service", "Local"'
       type: String
     - contextPath: MicrosoftATP.SoftwareCVE.exploitUris
+      description: 'Exploit source URLs'
+      type: String
+  - arguments:
+    - default: false
+      description: ''
+      isArray: true
+      name: id
+    - default: false
+      description: ''
+      isArray: true
+      name: name
+    - default: false
+      description: ''
+      isArray: true
+      name: vendor
+    - default: false
+      description: Maximum number of results to retrieve. Default is 50.
+      isArray: false
+      name: limit
+    - default: false
+      description: The page number from which to start a search.
+      isArray: false
+      name: page
+    - default: false
+      description: Specifies the page size of the result set. Default is 25.
+      isArray: false
+      name: page_size
+    deprecated: false
+    description: Retrieves the organization software inventory.
+    name: microsoft-atp-list-software
+    outputs:
+    - contextPath: MicrosoftATP.Software.id
+      description: Software ID.
+      type: String
+    - contextPath: MicrosoftATP.Software.name
+      description: Software name.
+      type: String
+    - contextPath: MicrosoftATP.Software.vendor
+      description: Software publisher name.
+      type: String
+    - contextPath: MicrosoftATP.Software.weaknesses
+      description: Number of discovered vulnerabilities.
+      type: Number
+    - contextPath: MicrosoftATP.Software.publicExploit
+      description: Public exploit exists for some of the vulnerabilities.
+      type: Boolean
+    - contextPath: MicrosoftATP.Software.activeAlert
+      description: Active alert is associated with this software.
+      type: Boolean
+    - contextPath: MicrosoftATP.Software.exposedMachines
+      description: Number of exposed devices.
+      type: Number
+    - contextPath: MicrosoftATP.Software.installedMachines
+      description: ''
+      type: Number
+    - contextPath: MicrosoftATP.Software.impactScore
+      description: Exposure score impact of this software.
+      type: Number
+    - contextPath: MicrosoftATP.Software.isNormalized
+      description: ''
+      type: Boolean
+    - contextPath: MicrosoftATP.Software.category
       description: ''
       type: String
-  - arguments: []
+    - contextPath: MicrosoftATP.Software.distributions
+      description: ''
+      type: String
+  - arguments:
+    - default: false
+      description: ''
+      isArray: true
+      name: machine_id
+      secret: false
+    - default: false
+      description: A comma-separated list of machine IDs used for getting the machines.
+      isArray: true
+      name: software_id
+      secret: false
+    - default: false
+      description: A comma-separated list of CVE IDs used for getting the machines.
+      isArray: true
+      name: cve_id
+      secret: false
+    - default: false
+      description: ''
+      isArray: true
+      name: fixing_kb_id
+      secret: false
+    - default: false
+      description: ''
+      isArray: true
+      name: product_name
+      secret: false
+    - default: false
+      description: ''
+      isArray: true
+      name: product_version
+      secret: false
+    - default: false
+      description: 'Vulnerability Severity. Possible values are: "Low", "Medium", "High", "Critical".'
+      isArray: true
+      name: severity
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - Low
+      - Medium
+      - High
+      - Critical
+    - default: false
+      description: ''
+      isArray: true
+      name: product_vendor
+      secret: false
+    - default: false
+      description: Maximum number of results to retrieve. Default is 50.
+      isArray: false
+      name: limit
+      secret: false
+    - default: false
+      description: The page number from which to start a search.
+      isArray: false
+      name: page
+      secret: false
+    - default: false
+      description: Specifies the page size of the result set. Default is 25.
+      isArray: false
+      name: page_size
+      secret: false
     deprecated: false
-    description: Gets an indicator by its ID.
+    description: Retrieves a list of all the vulnerabilities affecting the organization per machine.
+    name: microsoft-atp-list-vulnerabilities-by-machine
+    outputs:
+    - contextPath: MicrosoftATP.CVEMachine.id
+      description: ''
+      type: String
+    - contextPath: MicrosoftATP.CVEMachine.cveId
+      description: ''
+      type: String
+    - contextPath: MicrosoftATP.CVEMachine.machineId
+      description: ''
+      type: String
+    - contextPath: MicrosoftATP.CVEMachine.fixingKbId
+      description: ''
+      type: Unknown
+    - contextPath: MicrosoftATP.CVEMachine.productName
+      description: ''
+      type: String
+    - contextPath: MicrosoftATP.CVEMachine.productVendor
+      description: ''
+      type: String
+    - contextPath: MicrosoftATP.CVEMachine.productVersion
+      description: ''
+      type: String
+    - contextPath: MicrosoftATP.CVEMachine.severity
+      description: 'Vulnerability Severity. Possible values are: "Low", "Medium", "High", "Critical".'
+      type: String
+  - arguments:
+    - default: false
+      description: Vulnerability ID.
+      isArray: true
+      name: id
+      secret: false
+    - default: false
+      description: Vulnerability title.
+      isArray: false
+      name: name
+      secret: false
+    - default: false
+      description: Vulnerability description.
+      isArray: false
+      name: description
+      secret: false
+    - default: false
+      description: Date when vulnerability was published.
+      isArray: false
+      name: published_on
+      secret: false
+    - default: false
+      description: CVSS v3 score.
+      isArray: false
+      name: cvss
+      secret: false
+    - default: false
+      description: 'Vulnerability Severity. Possible values are: "Low", "Medium", "High", "Critical".'
+      isArray: true
+      name: severity
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - Low
+      - Medium
+      - High
+      - Critical
+    - default: false
+      description: Date when vulnerability was updated.
+      isArray: false
+      name: updated_on
+      secret: false
+    - default: false
+      description: Maximum number of results to retrieve. Default is 50.
+      isArray: false
+      name: limit
+      secret: false
+    - default: false
+      description: The page number from which to start a search.
+      isArray: false
+      name: page
+      secret: false
+    - default: false
+      description: Specifies the page size of the result set. Default is 25.
+      isArray: false
+      name: page_size
+      secret: false
+    deprecated: false
+    description: Retrieves a list of all vulnerabilities.
+    name: microsoft-atp-list-vulnerabilities
+    outputs:
+    - contextPath: MicrosoftATP.Vulnerability.id
+      description: Vulnerability ID.
+      type: String
+    - contextPath: MicrosoftATP.Vulnerability.name
+      description: Vulnerability title.
+      type: String
+    - contextPath: MicrosoftATP.Vulnerability.description
+      description: Vulnerability description.
+      type: String
+    - contextPath: MicrosoftATP.Vulnerability.severity
+      description: 'Vulnerability Severity. Possible values are: "Low", "Medium", "High", "Critical".'
+      type: String
+    - contextPath: MicrosoftATP.Vulnerability.cvssV3
+      description: CVSS v3 score.
+      type: Number
+    - contextPath: MicrosoftATP.Vulnerability.exposedMachines
+      description: Number of exposed devices.
+      type: Number
+    - contextPath: MicrosoftATP.Vulnerability.publishedOn
+      description: Date when vulnerability was published.
+      type: Date
+    - contextPath: MicrosoftATP.Vulnerability.updatedOn
+      description: Date when vulnerability was updated.
+      type: Date
+    - contextPath: MicrosoftATP.Vulnerability.publicExploit
+      description: Public exploit exists.
+      type: Boolean
+    - contextPath: MicrosoftATP.Vulnerability.exploitVerified
+      description: Exploit is verified to work.
+      type: Boolean
+    - contextPath: MicrosoftATP.Vulnerability.exploitInKit
+      description: Exploit is part of an exploit kit.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: Software ID.
+      isArray: false
+      name: id
+      secret: false
+    deprecated: false
+    description: Retrieves a list of your organization's software version distribution.
     name: microsoft-atp-list-software-version-distribution
     outputs:
     - contextPath: MicrosoftATP.SoftwareVersion.version

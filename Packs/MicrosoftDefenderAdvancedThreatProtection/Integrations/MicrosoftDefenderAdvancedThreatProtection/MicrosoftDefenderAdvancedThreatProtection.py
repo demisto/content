@@ -1984,6 +1984,94 @@ class MsClient:
             raise Exception(f"Machine {machine_id} not found")
         return response
 
+    def get_list_machines_by_software(self, software_id):
+        """Retrieve a list of device references that has this software installed.
+            https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-machines-by-software?view=o365-worldwide
+            Args:
+                software_id (str): Software ID
+            Returns:
+                dict. Machines list
+        """
+        cmd_url = f'/Software/{software_id}/machineReferences'
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+
+    def get_list_software_version_distribution(self, software_id):
+        """Retrieve a list of device references that has this software installed.
+            https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-software-ver-distribution?view=o365-worldwide
+            Args:
+                software_id (str): Software ID.
+            Returns:
+                dict. Version distribution list.
+        """
+        cmd_url = f'/Software/{software_id}/distributions'
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+
+    def get_list_missing_kb_by_software(self, software_id):
+        """Retrieves missing KBs (security updates) by software ID.
+            https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-missing-kbs-software?view=o365-worldwide
+            Args:
+                software_id (str): Software ID.
+            Returns:
+                dict. Missing kb by software list.
+        """
+        cmd_url = f'/Software/{software_id}/getmissingkbs'
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+
+    def get_list_vulnerabilities_by_software(self, software_id):
+        """Retrieve a list of vulnerabilities in the installed software.
+            https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-vuln-by-software?view=o365-worldwide
+            Args:
+                software_id (str): Software ID.
+            Returns:
+                dict.list vulnerabilities by software.
+        """
+        cmd_url = f'/Software/{software_id}/vulnerabilities'
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+
+    def get_list_software(self, filter_req, limit, page, page_size):
+        """Retrieves the organization software inventory.
+
+        Notes:
+            https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-software?view=o365-worldwide
+
+        Returns:
+            dict. software inventory.
+        """
+        cmd_url = '/Software'
+        params = {'$top': limit, '$skip': page * page_size}
+        if filter_req:
+            params['$filter'] = "vendor+eq+'centos'"
+            print(filter_req)
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
+
+    def get_list_vulnerabilities_by_machine(self, filter_req, limit, page, page_size):
+        """Retrieves a list of all the vulnerabilities affecting the organization per machine.
+
+        Notes:
+            https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-all-vulnerabilities-by-machines?view=o365-worldwide
+        Returns:
+            dict. list of all the vulnerabilities affecting the organization per machine.
+        """
+        cmd_url = '/vulnerabilities/machinesVulnerabilities'
+        params = {'$top': limit, '$skip': ''}
+        if filter_req:
+            params['$filter'] = filter_req
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
+
+    def get_list_vulnerabilities(self, filter_req, limit, page, page_size):
+        """Retrieves a list of all vulnerabilities.
+
+        Notes:
+           https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-all-vulnerabilities?view=o365-worldwide
+        Returns:
+            dict. list of all the vulnerabilities.
+        """
+        cmd_url = '/vulnerabilities'
+        params = {'$top': limit, '$skip': ''}
+        if filter_req:
+            params['$filter'] = filter_req
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
+
 
 ''' Commands '''
 
@@ -4389,6 +4477,201 @@ def get_indicator_dbot_object(indicator):
         return None
 
 
+def list_machines_by_software_command(client: MsClient, args: dict) -> CommandResults:
+    """ Retrieve a list of device references that has the given software installed.
+        Args:
+            client: MsClient.
+            args: dict - arguments from CortexSOAR.
+        Returns:
+            A CommandResults object.
+    """
+    software_id = args.get('id')
+    headers = ['id', 'computerDnsName', 'osPlatform', 'RBACGroupID', 'RBACGroupName']
+    machines_response = client.get_list_machines_by_software(software_id)
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} machines by software: {software_id}',
+                                     machines_response.get("value"), headers=headers, removeNull=True)
+    return CommandResults(
+        outputs_prefix='MicrosoftATP.SoftwareMachine',
+        outputs_key_field='id',
+        outputs=machines_response.get("value"),
+        readable_output=human_readable,
+        raw_response=machines_response)
+
+
+def list_software_version_distribution_command(client: MsClient, args: dict) -> CommandResults:
+    """ Retrieves a list of your organization's software version distribution.
+        Args:
+            client: MsClient.
+            args: dict - arguments from CortexSOAR.
+        Returns:
+            A CommandResults object.
+    """
+    software_id = args.get('id')
+    headers = ['version', 'installations', 'vulnerabilities']
+    machines_response = client.get_list_software_version_distribution(software_id)
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} machines by software: {software_id}',
+                                     machines_response.get("value"), headers=headers, removeNull=True)
+    return CommandResults(
+        outputs_prefix='MicrosoftATP.SoftwareVersion',
+        outputs=machines_response.get("value"),
+        readable_output=human_readable,
+        raw_response=machines_response)
+
+
+def list_missing_kb_by_software_command(client: MsClient, args: dict) -> CommandResults:
+    """ Retrieves missing KBs (security updates) by software ID
+        Args:
+            client: MsClient.
+            args: dict - arguments from CortexSOAR.
+        Returns:
+            A CommandResults object.
+    """
+    software_id = args.get('id')
+    headers = ['id', 'name', 'productsNames', 'url', 'machineMissedOn', 'cveAddressed']
+    machines_response = client.get_list_missing_kb_by_software(software_id)
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} machines by software: {software_id}',
+                                     machines_response.get("value"), headers=headers, removeNull=True)
+    return CommandResults(
+        outputs_prefix='MicrosoftATP.SoftwareKB',
+        outputs_key_field='id',
+        outputs=machines_response.get("value"),
+        readable_output=human_readable,
+        raw_response=machines_response)
+
+
+def list_vulnerabilities_by_software_command(client: MsClient, args: dict) -> CommandResults:
+    """ Retrieves missing KBs (security updates) by software ID
+        Args:
+            client: MsClient.
+            args: dict - arguments from CortexSOAR.
+        Returns:
+            A CommandResults object.
+    """
+    software_id = args.get('id')
+    headers = ['id', 'name', 'productsNames', 'url', 'machineMissedOn', 'cveAddressed']
+    vulnerabilities_response = client.get_list_vulnerabilities_by_software(software_id)
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerabilities by software: {software_id}',
+                                     vulnerabilities_response.get("value"), headers=headers, removeNull=True)
+    return CommandResults(
+        outputs_prefix='MicrosoftATP.SoftwareCVE',
+        outputs_key_field='id',
+        outputs=vulnerabilities_response.get("value"),
+        readable_output=human_readable,
+        raw_response=vulnerabilities_response)
+
+
+def create_filters(filters_arg_list):
+    return ''
+
+
+def microsoft_atp_list_software_command(client: MsClient, args: dict) -> CommandResults:
+    """ Retrieves the organization software inventory.
+        Args:
+            client: MsClient.
+            args: dict - arguments from CortexSOAR.
+        Returns:
+            A CommandResults object.
+    """
+    software_id = argToList(args.get('id'))
+    names = argToList(args.get('name', ''))
+    vendors = argToList(args.get('vendor', ''))
+    limit = args.get('limit', 50)
+    page = args.get('page', 1)
+    page_size = args.get('page_size', 25)
+    if software_id:
+        software_id_filter = 'id+eq+' + ' or id+eq+'.join(f"'{w}'" for w in software_id)
+    if names:
+        names_filter = 'name+eq+' + ' or name+eq+'.join(f"'{w}'" for w in names)
+    if vendors:
+        vendors_filter = 'vendor+eq+' + ' or vendor+eq+'.join(f"'{w}'" for w in vendors)
+    if software_id and names and vendors:
+        filter_req = software_id_filter + ' and ' + names_filter + ' and ' + vendors_filter
+        print(filter_req)
+        print("lala")
+    if software_id and names:
+        filter_req = software_id_filter + ' and ' + names_filter + ' and ' + vendors_filter
+        print(filter_req)
+        print("lala")
+    if software_id and vendors:
+        filter_req = software_id_filter + ' and ' + vendors_filter
+        print(filter_req)
+        print("lala")
+    headers = ['id', 'name', 'vendor', 'weaknesses', 'activeAlert', 'exposedMachines', 'installedMachines', 'publicExploit']
+    list_software_response = client.get_list_software(filter_req, limit, page, page_size)
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerabilities by software: {software_id}',
+                                     list_software_response.get("value"), headers=headers, removeNull=True)
+    return CommandResults(
+        outputs_prefix='MicrosoftATP.Software',
+        outputs_key_field='id',
+        outputs=list_software_response.get("value"),
+        readable_output=human_readable,
+        raw_response=list_software_response)
+
+
+def microsoft_atp_list_vulnerabilities_by_machine_command(client: MsClient, args: dict) -> CommandResults:
+    """ Retrieves a list of all the vulnerabilities affecting the organization per machine.
+        Args:
+            client: MsClient.
+            args: dict - arguments from CortexSOAR.
+        Returns:
+            A CommandResults object.
+    """
+    machine_id = argToList(args.get('machine_id'))
+    software_id = argToList(args.get('software_id', ''))
+    cve_id = argToList(args.get('cve_id', ''))
+    fixing_kb_id = argToList(args.get('fixing_kb_id', ''))
+    product_name = argToList(args.get('product_name', ''))
+    product_version = argToList(args.get('product_version', ''))
+    severity = argToList(args.get('severity', ''))
+    product_vendor = argToList(args.get('product_vendor', ''))
+    limit = args.get('limit')
+    page = args.get('page')
+    page_size = args.get('page_size')
+    filter_req = create_filters([software_id, machine_id, cve_id])
+    headers = ['id', 'cveId', 'machineId”', 'productName', 'productVendor', 'productVersion', 'severity']
+    list_vulnerabilities_response = client.get_list_vulnerabilities_by_machine(filter_req, limit, page, page_size)
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerabilities by software: {software_id}',
+                                     list_vulnerabilities_response.get("value"), headers=headers, removeNull=True)
+    return CommandResults(
+        outputs_prefix='MicrosoftATP.CVEMachine',
+        outputs_key_field='id',
+        outputs=list_vulnerabilities_response.get("value"),
+        readable_output=human_readable,
+        raw_response=list_vulnerabilities_response)
+
+
+def microsoft_atp_list_vulnerabilities_command(client: MsClient, args: dict) -> CommandResults:
+    """ Retrieves a list of all vulnerabilities.
+        Args:
+            client: MsClient.
+            args: dict - arguments from CortexSOAR.
+        Returns:
+            A CommandResults object.
+    """
+    id = argToList(args.get('id'), '')
+    severity = argToList(args.get('severity', ''))
+    name = args.get('name', '')
+    description = args.get('description', '')
+    published_on = args.get('published_on', '')
+    product_version = args.get('product_version', '')
+    cvss = args.get('cvss', '')
+    limit = args.get('limit')
+    page = args.get('page')
+    page_size = args.get('page_size')
+    filter_req = create_filters([id, severity, name])
+    headers = ['id', 'name', 'description', 'severity', 'publishedOn', 'updatedOn', 'exposedMachines', 'exploitVerified' , 'publicExploit', 'cvssV3']
+    list_vulnerabilities_response = client.get_list_vulnerabilities_by_machine(filter_req, limit, page, page_size)
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerabilities by software: {id}',
+                                     list_vulnerabilities_response.get("value"), headers=headers, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix='MicrosoftATP.Vulnerability',
+        outputs_key_field='id',
+        outputs=list_vulnerabilities_response.get("value"),
+        readable_output=human_readable,
+        raw_response=list_vulnerabilities_response)
+
+
 def list_machines_by_vulnerability_command(client: MsClient, args: dict) -> CommandResults:
     """Retrieves a list of devices affected by a vulnerability (by the given CVE ID).
 
@@ -4657,17 +4940,6 @@ def get_machine_alerts_command(client: MsClient, args: dict) -> CommandResults:
         raw_response=alerts_response,
     )
 
-def list_machines_by_software_command(client: MsClient, args: dict) -> CommandResults:
-    return CommandResults()
-
-def list_software_version_distribution_command(client: MsClient, args: dict) -> CommandResults:
-    return CommandResults()
-
-def list_missing_kb_by_software_command(client: MsClient, args: dict) -> CommandResults:
-    return CommandResults()
-
-def list_vulnerabilities_by_software_command(client: MsClient, args: dict) -> CommandResults:
-    return CommandResults()
 
 ''' EXECUTION CODE '''
 ''' LIVE RESPONSE CODE '''
@@ -5147,6 +5419,27 @@ def main():  # pragma: no cover
         elif command == 'microsoft-atp-list-machines-by-vulnerability':
             return_results(list_machines_by_vulnerability_command(client, args))
 
+        elif command == 'microsoft-atp-list-software-version-distribution':
+            return_results(list_software_version_distribution_command(client, args))
+
+        elif command == 'microsoft-atp-list-machines-by-software':
+            return_results(list_machines_by_software_command(client, args))
+
+        elif command == 'microsoft-atp-list-missing-kb-by-software':
+            return_results(list_missing_kb_by_software_command(client, args))
+
+        elif command == 'microsoft-atp-list-vulnerabilities-by-software':
+            return_results(list_vulnerabilities_by_software_command(client, args))
+
+        elif command == 'microsoft-atp-list-software':
+            return_results(microsoft_atp_list_software_command(client, args))
+
+        elif command == 'microsoft-atp-list-vulnerabilities-by-machine':
+            return_results(microsoft_atp_list_vulnerabilities_by_machine_command(client, args))
+
+        elif command == 'microsoft-atp-list-vulnerabilities':
+            return_results(microsoft_atp_list_vulnerabilities_command(client, args))
+
         elif command == 'microsoft-atp-get-file-info':
             demisto.results(get_file_info_command(client, args))
 
@@ -5206,14 +5499,7 @@ def main():  # pragma: no cover
             return_results(get_machine_alerts_command(client, args))
         elif command == 'microsoft-atp-request-and-download-investigation-package':
             return_results(request_download_investigation_package_command(client, args))
-        elif command == 'microsoft-atp-list-software-version-distribution':
-            return_results(list_software_version_distribution_command(client, args))
-        elif command == 'microsoft-atp-list-machines-by-software':
-            return_results(list_machines_by_software_command(client, args))
-        elif command == 'microsoft-atp-list-missing-kb-by-software':
-            return_results(list_missing_kb_by_software_command(client, args))
-        elif command == 'microsoft-atp-list-vulnerabilities-by-software':
-            return_results(list_vulnerabilities_by_software_command(client, args))
+
     except Exception as err:
         return_error(str(err))
 
