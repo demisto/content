@@ -377,13 +377,13 @@ inputs:
   value:
     simple: "180"
   required: false
-  description: The time limit in seconds for the HTTP request to run. Default is 60.
+  description: The time limit in seconds for the HTTP request to run. Default is 180.
   playbookInputQuery:
 - key: SearchTimeframe
   value:
     simple: "7"
   required: false
-  description: Number of previous dayse to search. Default is 7.
+  description: Number of previous days to search. Default is 7.
   playbookInputQuery:
 - key: ResultsLimit
   value:
