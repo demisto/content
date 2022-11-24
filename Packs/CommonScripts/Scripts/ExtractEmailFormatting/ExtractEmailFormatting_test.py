@@ -63,8 +63,8 @@ def test_main(mocker):
     mocker.patch.object(demisto, 'results')
     main()
     assert EXPECTED_RESULTS == demisto.results.call_args[0][0]
-    
-    
+
+
 def test_main_invalid_emails(mocker):
     """Verifies that no input returns an empty string.
        Given
@@ -78,4 +78,3 @@ def test_main_invalid_emails(mocker):
     mocker.patch.object(demisto, 'results')
     main()
     assert '' == demisto.results.call_args[0][0]
-    
