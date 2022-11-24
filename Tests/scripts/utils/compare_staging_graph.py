@@ -203,11 +203,10 @@ def main():
         f"Diff report for {marketplace}",
         f'Job URL: {os.getenv("CI_JOB_URL")}',
     ]
-    if not (graph_exists := zip_graph.exists()) or not (id_set_exists := zip_id_set.exists()):
-        if not id_set_exists:
-            message.append("No packs were uploaded for id_set")
-        if not graph_exists:
-            message.append("No packs were uploaded for graph")
+    if not zip_graph.exists():
+        message.append("No packs were uploaded for id_set")
+    if not zip_id_set.exists():
+        message.append("No packs were uploaded for graph")
 
     else:
         message = compare(
