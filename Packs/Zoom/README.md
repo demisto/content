@@ -1,8 +1,10 @@
 ## Zoom and Zoom IAM Integrations
 In order to use these integrations, you need to enter your Zoom credentials in the relevant integration instance parameters.
 There are two authentication methods available: **OAuth** and **JWT**(deprecated).
-### For the OAuth method:
+
 Please login to your Zoom admin user account, and follow these steps:
+- click [here](https://marketplace.zoom.us/develop/create) to create an app.
+### For the OAuth method:
 - Enable permissions
 - Create an Server-to-Server OAuth app
 - Add relevant scopes
@@ -10,14 +12,16 @@ Please login to your Zoom admin user account, and follow these steps:
     Account ID
     Client ID
     Client secret
-for more information about the setup [click here](https://marketplace.zoom.us/docs/guides/build/server-to-server-oauth-app/).
 
+for more information about creating an OAuth app click [here](https://marketplace.zoom.us/docs/guides/build/server-to-server-oauth-app/).
 
 ### For the JWT method (deprecated)
-To get the credentials, login to your Zoom account, click [here](https://marketplace.zoom.us/develop/create) and choose JWT.
+- Create an JWT app
 - Use the following account credentials to get an access token:
     API Key
     API Secret
+
+for more information about creating an OAuth app click [here](https://marketplace.zoom.us/docs/guides/build/jwt-app/).
 ***
 
 ### Troubleshooting - OAuth
