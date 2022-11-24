@@ -97,6 +97,10 @@ def get_pack_content_dict(pack_path: Path):
 def parse_path(path: Path, item_type: str, item_prefixes: dict):
     path_name = f"{item_prefixes[item_type]}-{path.name}" if not path.name.startswith(item_prefixes[item_type]) else path.name
     original_path_name = path.name
+    if item_type in ['Integrations', 'Scripts']:  # Remove the item parent directory from the path
+        path_list = str(path).split('/')
+        path_list.pop(-2)
+        path = "/".join(path_list)
     return str(path).split('/Packs/')[1].replace(original_path_name, path_name)
 
 @add_changed_pack

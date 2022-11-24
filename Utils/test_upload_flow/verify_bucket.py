@@ -41,7 +41,7 @@ def logger(func):
             print(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} for {pack_id} is {result}') # TODO: remove all prints once logging is present in the gitlab build
         except FileNotFoundError as e:
             #logging.info(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} is False: {e}')
-            print(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} is False: {e}')
+            print(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} is False:\nException: {e}')
             self.is_valid = False
 
     return wrapper
@@ -97,7 +97,7 @@ class GCP:
         metadata_path = os.path.join(self.extracting_destination, 'index', pack_id, 'metadata.json')
         return read_json(metadata_path)
 
-    def is_item_in_pack(self, pack_id, item_type, item_file_paths: list):
+    def is_item_in_pack(self, item_file_paths: list):
         """
         Check if an item is inside the pack.
         """
@@ -153,8 +153,8 @@ class BucketVerifier:
         Verify the pack is in the index, verify version 1.0.0 zip exists under the pack's path
         """
         version_exists = [self.gcp.is_in_index(pack_id), self.gcp.download_and_extract_pack(pack_id, '1.0.0')]
-        items_exists = [self.gcp.is_item_in_pack(pack_id, item_type, item_file_paths) for item_type, item_file_paths
-                        in pack_items.items()]
+        items_exists = [self.gcp.is_item_in_pack(item_file_paths) for item_file_paths
+                        in pack_items.values()]
         return all(version_exists) and all(items_exists), pack_id
 
     @logger
@@ -165,8 +165,8 @@ class BucketVerifier:
         """
         pack_path = self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
         version_exists = [self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])]
-        items_exists = [self.gcp.is_item_in_pack(pack_id, item_type, item_file_paths) for item_type, item_file_paths
-                        in pack_items.items()]
+        items_exists = [self.gcp.is_item_in_pack(item_file_paths) for item_file_paths
+                        in pack_items.values()]
         return all(version_exists) and all(items_exists), pack_id
 
     @logger
@@ -209,19 +209,20 @@ class BucketVerifier:
         return self.gcp.get_flow_commit_hash() != self.gcp.get_pack_metadata(pack_id).get('commit'), pack_id
 
     @logger
-    def verify_modified_path(self, item_type, pack_id, item_file_path):
+    def verify_modified_path(self, pack_id, item_file_path):
         """
         Verify the path of the item is modified
         """
 
         self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
-        return self.gcp.is_item_in_pack(pack_id, item_type, item_file_path), pack_id
+        return self.gcp.is_item_in_pack([item_file_path]), pack_id
 
     @logger
     def verify_dependency(self, pack_id, dependency_id):
         """
         Verify the new dependency is in the metadata
         """
+        # TODO: Should verify the dependency in the pack zip metadata as well - after CIAC-4686 is fixed
         return dependency_id in self.gcp.get_pack_metadata(pack_id).get('dependencies', {}).keys(), pack_id
 
     @logger
@@ -275,12 +276,12 @@ class BucketVerifier:
         """
         Runs the XSIAM verifications.
         """
-        self.verify_modified_path('ModelingRule', 'AlibabaActionTrail',
-                                  os.path.join('AlibabaActionTrail', 'ModelingRule', 'Alibaba.yml'))
-        self.verify_modified_path('ModelingRule', 'AlibabaActionTrail',
-                                  os.path.join('AlibabaActionTrail', 'ModelingRule', 'Alibaba.jsom'))
-        self.verify_modified_path('ModelingRule', 'AlibabaActionTrail',
-                                  os.path.join('AlibabaActionTrail', 'ModelingRule', 'Alibaba.xif'))
+        self.verify_modified_path('AlibabaActionTrail',
+                                  os.path.join('AlibabaActionTrail', 'ModelingRules', 'Alibaba.yml'))
+        self.verify_modified_path('AlibabaActionTrail',
+                                  os.path.join('AlibabaActionTrail', 'ModelingRules', 'Alibaba.jsom'))
+        self.verify_modified_path('AlibabaActionTrail',
+                                  os.path.join('AlibabaActionTrail', 'ModelingRules', 'Alibaba.xif'))
 
     def run_validations(self):
         """
