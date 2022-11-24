@@ -27,7 +27,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ### vd-auth-start
 ***
-Obtain Access token from api client. If Client ID and Client Secret were not passed as parameters or arguments, a new Auth Client will be created.
+Obtain an access token from the API client. If Client ID and Client Secret were not passed as parameters or arguments, a new Auth Client will be created.
 
 
 #### Base Command
@@ -37,8 +37,8 @@ Obtain Access token from api client. If Client ID and Client Secret were not pas
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| auth_client_name | Name of Auth Client. If an excising token name will be given as argument, an error might occur. | Optional | 
-| description | Description of access token. | Optional | 
+| auth_client_name | Name of Auth Client. If an excised token name will be given as argument, an error might occur. | Optional | 
+| description | Description of the access token. | Optional | 
 | client_id | Client ID for Token Authentication. If already passed as a parameter it will be prioritized by default. | Optional | 
 | client_secret | Client Secret for Token Authentication. If already passed as a parameter it will be prioritized by default. | Optional | 
 
@@ -74,7 +74,7 @@ Obtain Access token from api client. If Client ID and Client Secret were not pas
 
 ### vd-auth-test
 ***
-Run a connectivity test to verify that the oauth process worked.
+Run a connectivity test to verify that the OAuth process worked.
 
 
 #### Base Command
@@ -106,24 +106,24 @@ List all user predefined application objects.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | family | Group type of application. Possible values are: business-system, collaboration, general-internet, media, networking. | Optional | 
-| risks | Risks threshold - equals and higher than the input. | Optional | 
-| tags | List of tags. | Optional | 
+| risks | Risks threshold. This value must be equal to or higher than the input. | Optional | 
+| tags | A comma-separated list of tags. | Optional | 
 | page | The page number of the results to retrieve. | Optional | 
-| page_size | The maximum number of objects to retrieve per page., therefore default value is 0. | Optional | 
-| limit | Limit number of results. | Optional | 
+| page_size | The maximum number of objects to retrieve per page. Default is 0. | Optional | 
+| limit | The maximum number of results. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VersaDirector.PredefinedApplication.name | string | The Predefined Application's name. | 
-| VersaDirector.PredefinedApplication.family | string | Predefined application family type. | 
-| VersaDirector.PredefinedApplication.subfamily | string | Predefined Sub-Group family application type. | 
-| VersaDirector.PredefinedApplication.description | string | Predefined Application description. | 
-| VersaDirector.PredefinedApplication.risk | string | Predefined application risks threshold, equals or higher than the input. | 
-| VersaDirector.PredefinedApplication.productivity | string | Predefined application productivity. | 
-| VersaDirector.PredefinedApplication.tag | string | Predefined application tag. | 
+| VersaDirector.PredefinedApplication.name | string | A comma-separated list of predefined applications's name. | 
+| VersaDirector.PredefinedApplication.family | string | A comma-separated list of predefined applications family type. | 
+| VersaDirector.PredefinedApplication.subfamily | string | Predefined sub-group family application type. | 
+| VersaDirector.PredefinedApplication.description | string | A comma-separated list of predefined applications description. | 
+| VersaDirector.PredefinedApplication.risk | string | A comma-separated list of predefined applications risks threshold. This value is equal to or higher than the input. | 
+| VersaDirector.PredefinedApplication.productivity | string | A comma-separated list of predefined applications productivity. | 
+| VersaDirector.PredefinedApplication.tag | string | A comma-separated list of predefined applications tag. | 
 
 #### Command example
 ```!vd-predefined-application-list limit=1```
@@ -182,7 +182,7 @@ List all user modified predefined application objects associated with a specific
 | appliance_name | Appliance name. | Required | 
 | page | The page number of the results to retrieve. | Optional | 
 | page_size | The maximum number of objects to retrieve per page. | Optional | 
-| limit | Limit number of results. | Optional | 
+| limit | The maximum number of results. | Optional | 
 
 
 #### Context Output
@@ -201,7 +201,7 @@ List all user modified predefined application objects associated with a specific
 
 >Empty response has returned from vd-appliance-user-modified-application-list command.
 >Message:
->Error in API call [204] - 
+>Error in API call [204] 
 
 
 ### vd-template-user-modified-application-list
@@ -220,7 +220,7 @@ List all user modified predefined application objects associated with a specific
 | template_name | Template name. | Required | 
 | page | The page number of the results to retrieve. | Optional | 
 | page_size | The maximum number of objects to retrieve per page. | Optional | 
-| limit | Limit number of results. | Optional | 
+| limit | The maximum number of results. | Optional | 
 
 
 #### Context Output
@@ -255,7 +255,7 @@ List all user modified predefined application objects associated with a specific
 >### User modified predefined application objects associated with EXAMPLE_CLIENT
 >|App - Name|App - Risk|App - Productivity|App - Timeout|App - Final - With - Endpoint|
 >|---|---|---|---|---|
->| TESTWISE | 3 | 3 | 300 | false |
+>| TEST | 3 | 3 | 300 | false |
 
 
 ### vd-appliance-user-defined-application-list
@@ -274,7 +274,7 @@ List all user defined application objects associated with a specific organizatio
 | appliance_name | Appliance name. | Required | 
 | page | The page number of the results to retrieve. | Optional | 
 | page_size | The maximum number of objects to retrieve per page. | Optional | 
-| limit | Limit number of results. | Optional | 
+| limit | The maximum number of results. | Optional | 
 
 
 #### Context Output
@@ -294,7 +294,7 @@ List all user defined application objects associated with a specific organizatio
 
 >Empty response has returned from vd-appliance-user-defined-application-list command.
 >Message:
->Error in API call [204] - 
+>Error in API call [204] 
 
 
 ### vd-template-user-defined-application-list
@@ -313,7 +313,7 @@ List all user defined application objects associated with a specific organizatio
 | template_name | Template name. | Required | 
 | page | The page number of the results to retrieve. | Optional | 
 | page_size | The maximum number of objects to retrieve per page. | Optional | 
-| limit | Limit number of results. | Optional | 
+| limit | The maximum number of results. | Optional | 
 
 
 #### Context Output
@@ -370,11 +370,11 @@ List all user defined application objects associated with a specific organizatio
 
 #### Human Readable Output
 
->### User defined application objects associated with EXAMPLE_CLIENT
+>### A comma-separated list of user defined applications objects associated with EXAMPLE_CLIENT
 >|App - Name|Description|Precedence|Tag|Risk|Family|
 >|---|---|---|---|---|---|
->| TestApplication | This is a test from UI | 65 | ***values***: aaa, v_cloud, vs_evasive | 3 | collaboration |
->| TestCustomApp | Test custom app creation from API | 95 | aaa | 5 |  |
+>| TestApplication | This is a test from UI | 65 | ***values***: tag2, v_cloud, vs_evasive | 3 | collaboration |
+>| TestCustomApp | Test custom app creation from API | 95 | tag2 | 5 |  |
 
 
 ### vd-appliance-address-object-delete
@@ -419,7 +419,7 @@ Edit an address object associated with a specific organization and appliance (de
 | appliance_name | Appliance name. | Required | 
 | object_name | Address object name. | Required | 
 | description | Address object description. | Optional | 
-| tags | List of tags. | Optional | 
+| tags | A comma-separated list of tags. | Optional | 
 | address_object_type | Address object type. Possible values are: ipv4-prefix, ipv4-range, ipv4-wildcard-mask, ipv6-prefix, fqdn, dynamic-address. | Required | 
 | object_value | Object value. | Required | 
 
@@ -428,15 +428,15 @@ Edit an address object associated with a specific organization and appliance (de
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VersaDirector.TemplateAddressObject.name | string | Template Address object name. | 
+| VersaDirector.TemplateAddressObject.name | string | Template address object name. | 
 | VersaDirector.TemplateAddressObject.tag | string | Template Address object tag. | 
 | VersaDirector.TemplateAddressObject.description | string | Template address object description. | 
-| VersaDirector.TemplateAddressObject.ipv4-prefix | string | Template address object ipv4-prefix. | 
-| VersaDirector.TemplateAddressObject.ipv4-range | string | Template address object ipv4-range. | 
-| VersaDirector.TemplateAddressObject.ipv4-wildcard-mask | string | Template address object ipv4-wildcard-mask. | 
-| VersaDirector.TemplateAddressObject.ipv6-prefix | string | Template address object ipv6-prefix. | 
-| VersaDirector.TemplateAddressObject.fqdn | string | Template address object fqdn. | 
-| VersaDirector.TemplateAddressObject.dynamic-address | string | Template address object dynamic-address. | 
+| VersaDirector.TemplateAddressObject.ipv4-prefix | string | Template address object IPv4 prefix | 
+| VersaDirector.TemplateAddressObject.ipv4-range | string | Template address object IPv4 range. | 
+| VersaDirector.TemplateAddressObject.ipv4-wildcard-mask | string | Template address object IPv4 wildcard mask. | 
+| VersaDirector.TemplateAddressObject.ipv6-prefix | string | Template address object IPv6 prefix. | 
+| VersaDirector.TemplateAddressObject.fqdn | string | Template address object FQDN. | 
+| VersaDirector.TemplateAddressObject.dynamic-address | string | Template address object dynamic address. | 
 
 #### Command example
 ```!vd-appliance-address-object-edit appliance_name=EXAMPLE_BRANCH address_object_type=fqdn object_value=test1.com,test2.com object_name=Bad-Address description="changed"```
@@ -463,7 +463,7 @@ Create an address object associated with a specific organization and appliance (
 | appliance_name | Appliance name. | Required | 
 | object_name | Address object name. | Required | 
 | description | Address object description. | Required | 
-| tags | List of tags. | Optional | 
+| tags | A comma-separated list of tags. | Optional | 
 | address_object_type | Address object type. Possible values are: ipv4-prefix, ipv4-range, ipv4-wildcard-mask, ipv6-prefix, fqdn, dynamic-address. | Required | 
 | object_value | Object value. | Required | 
 
@@ -472,15 +472,15 @@ Create an address object associated with a specific organization and appliance (
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VersaDirector.TemplateAddressObject.name | string | Template Address object name. | 
+| VersaDirector.TemplateAddressObject.name | string | Template address object name. | 
 | VersaDirector.TemplateAddressObject.tag | string | Template Address object tag. | 
 | VersaDirector.TemplateAddressObject.description | string | Template address object description. | 
-| VersaDirector.TemplateAddressObject.ipv4-prefix | string | Template address object ipv4-prefix. | 
-| VersaDirector.TemplateAddressObject.ipv4-range | string | Template address object ipv4-range. | 
-| VersaDirector.TemplateAddressObject.ipv4-wildcard-mask | string | Template address object ipv4-wildcard-mask. | 
-| VersaDirector.TemplateAddressObject.ipv6-prefix | string | Template address object ipv6-prefix. | 
-| VersaDirector.TemplateAddressObject.fqdn | string | Template address object fqdn. | 
-| VersaDirector.TemplateAddressObject.dynamic-address | string | Template address object dynamic-address. | 
+| VersaDirector.TemplateAddressObject.ipv4-prefix | string | Template address object IPv4 prefix | 
+| VersaDirector.TemplateAddressObject.ipv4-range | string | Template address object IPv4 range. | 
+| VersaDirector.TemplateAddressObject.ipv4-wildcard-mask | string | Template address object IPv4 wildcard mask. | 
+| VersaDirector.TemplateAddressObject.ipv6-prefix | string | Template address object IPv6 prefix. | 
+| VersaDirector.TemplateAddressObject.fqdn | string | Template address object FQDN. | 
+| VersaDirector.TemplateAddressObject.dynamic-address | string | Template address object dynamic address. | 
 
 #### Command example
 ```!vd-appliance-address-object-create appliance_name=EXAMPLE_BRANCH address_object_type=fqdn object_value=test1.com,test2.com object_name=Bad-Address description="test"```
@@ -514,11 +514,11 @@ List all address objects associated with a specific organization and appliance (
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VersaDirector.ApplianceAddressObject.name | string | Appliance address object name | 
-| VersaDirector.ApplianceAddressObject.description | string | Appliance address object description | 
-| VersaDirector.ApplianceAddressObject.tag | string | Appliance address object tag | 
-| VersaDirector.ApplianceAddressObject.ipv4-prefix | string | Appliance address object ipv4-prefix | 
-| VersaDirector.ApplianceAddressObject.fqdn | string | Appliance address object fqdn | 
+| VersaDirector.ApplianceAddressObject.name | string | Appliance address object name. | 
+| VersaDirector.ApplianceAddressObject.description | string | Appliance address object description. | 
+| VersaDirector.ApplianceAddressObject.tag | string | Appliance address object tag. | 
+| VersaDirector.ApplianceAddressObject.ipv4-prefix | string | Appliance address object ipv4-prefix. | 
+| VersaDirector.ApplianceAddressObject.fqdn | string | Appliance address object FQDN. | 
 
 #### Command example
 ```!vd-appliance-address-object-list appliance_name=EXAMPLE_BRANCH limit=3```
@@ -597,7 +597,7 @@ Create an address object associated with a specific organization and template.
 | template_name | Template name. | Required | 
 | object_name | Address object name. | Required | 
 | description | Address object description. | Optional | 
-| tags | List of tags. | Optional | 
+| tags | A comma-separated list of tags. | Optional | 
 | address_object_type | Address object type. Possible values are: ipv4-prefix, ipv4-range, ipv4-wildcard-mask, ipv6-prefix, fqdn, dynamic-address. | Required | 
 | object_value | Object value. | Required | 
 | page | The page number of the results to retrieve. | Optional | 
@@ -609,15 +609,15 @@ Create an address object associated with a specific organization and template.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VersaDirector.TemplateAddressObject.name | string | Template Address object name. | 
+| VersaDirector.TemplateAddressObject.name | string | Template address object name. | 
 | VersaDirector.TemplateAddressObject.tag | string | Template Address object tag. | 
 | VersaDirector.TemplateAddressObject.description | string | Template address object description. | 
-| VersaDirector.TemplateAddressObject.ipv4-prefix | string | Template address object ipv4-prefix. | 
-| VersaDirector.TemplateAddressObject.ipv4-range | string | Template address object ipv4-range. | 
-| VersaDirector.TemplateAddressObject.ipv4-wildcard-mask | string | Template address object ipv4-wildcard-mask. | 
-| VersaDirector.TemplateAddressObject.ipv6-prefix | string | Template address object ipv6-prefix. | 
-| VersaDirector.TemplateAddressObject.fqdn | string | Template address object fqdn. | 
-| VersaDirector.TemplateAddressObject.dynamic-address | string | Template address object dynamic-address. | 
+| VersaDirector.TemplateAddressObject.ipv4-prefix | string | Template address object IPv4 prefix | 
+| VersaDirector.TemplateAddressObject.ipv4-range | string | Template address object IPv4 range. | 
+| VersaDirector.TemplateAddressObject.ipv4-wildcard-mask | string | Template address object IPv4 wildcard mask. | 
+| VersaDirector.TemplateAddressObject.ipv6-prefix | string | Template address object IPv6 prefix. | 
+| VersaDirector.TemplateAddressObject.fqdn | string | Template address object FQDN. | 
+| VersaDirector.TemplateAddressObject.dynamic-address | string | Template address object dynamic address. | 
 
 #### Command example
 ```!vd-template-address-object-edit template_name=EXAMPLE_CLIENT-Default-Application address_object_type=fqdn object_value=test.com object_name=Bad-Address description="changed"```
@@ -644,7 +644,7 @@ Create an address object associated with a specific organization and template.
 | template_name | Template name. | Required | 
 | object_name | Address object name. | Required | 
 | description | Address object description. | Optional | 
-| tags | List of tags. | Optional | 
+| tags | A comma-separated list of tags. | Optional | 
 | address_object_type | Address object type. Possible values are: ipv4-prefix, ipv4-range, ipv4-wildcard-mask, ipv6-prefix, fqdn, dynamic-address. | Required | 
 | object_value | Object value. | Required | 
 
@@ -653,15 +653,15 @@ Create an address object associated with a specific organization and template.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VersaDirector.TemplateAddressObject.name | string | Template Address object name. | 
+| VersaDirector.TemplateAddressObject.name | string | Template address object name. | 
 | VersaDirector.TemplateAddressObject.tag | string | Template Address object tag. | 
 | VersaDirector.TemplateAddressObject.description | string | Template address object description. | 
-| VersaDirector.TemplateAddressObject.ipv4-prefix | string | Template address object ipv4-prefix. | 
-| VersaDirector.TemplateAddressObject.ipv4-range | string | Template address object ipv4-range. | 
-| VersaDirector.TemplateAddressObject.ipv4-wildcard-mask | string | Template address object ipv4-wildcard-mask. | 
-| VersaDirector.TemplateAddressObject.ipv6-prefix | string | Template address object ipv6-prefix. | 
-| VersaDirector.TemplateAddressObject.fqdn | string | Template address object fqdn. | 
-| VersaDirector.TemplateAddressObject.dynamic-address | string | Template address object dynamic-address. | 
+| VersaDirector.TemplateAddressObject.ipv4-prefix | string | Template address object IPv4 prefix | 
+| VersaDirector.TemplateAddressObject.ipv4-range | string | Template address object IPv4 range. | 
+| VersaDirector.TemplateAddressObject.ipv4-wildcard-mask | string | Template address object IPv4 wildcard mask. | 
+| VersaDirector.TemplateAddressObject.ipv6-prefix | string | Template address object IPv6 prefix. | 
+| VersaDirector.TemplateAddressObject.fqdn | string | Template address object FQDN. | 
+| VersaDirector.TemplateAddressObject.dynamic-address | string | Template address object dynamic address. | 
 
 #### Command example
 ```!vd-template-address-object-create template_name=EXAMPLE_CLIENT-Default-Application address_object_type=fqdn object_value=test.com object_name=Bad-Address description="test"```
@@ -695,11 +695,11 @@ List all address objects associated with a specific organization and template.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VersaDirector.TemplateAddressObject.name | string | Template Address object name. | 
+| VersaDirector.TemplateAddressObject.name | string | Template address object name. | 
 | VersaDirector.TemplateAddressObject.description | string | Template address object description. | 
 | VersaDirector.TemplateAddressObject.tag | string | Template Address object tag. | 
-| VersaDirector.TemplateAddressObject.ipv4-prefix | string | Template address object ipv4-prefix. | 
-| VersaDirector.TemplateAddressObject.fqdn | string | Template address object fqdn. | 
+| VersaDirector.TemplateAddressObject.ipv4-prefix | string | Template address object IPv4 prefix | 
+| VersaDirector.TemplateAddressObject.fqdn | string | Template address object FQDN. | 
 
 #### Command example
 ```!vd-template-address-object-list template_name=EXAMPLE_CLIENT-Default-Application limit=3```
@@ -743,7 +743,7 @@ List all address objects associated with a specific organization and template.
 
 ### vd-appliance-sdwan-policy-rule-delete
 ***
-Delete an SD-WAN policy rule associated with a specific appliance (device).
+Delete an SDWAN policy rule associated with a specific appliance (device).
 
 
 #### Base Command
@@ -770,7 +770,7 @@ There is no context output for this command.
 
 ### vd-appliance-sdwan-policy-rule-edit
 ***
-Edit an SD-WAN policy rule associated with a specific appliance (device).
+Edit an SDWAN policy rule associated with a specific appliance (device).
 
 
 #### Base Command
@@ -783,20 +783,20 @@ Edit an SD-WAN policy rule associated with a specific appliance (device).
 | organization | Name of the associated organization. | Optional | 
 | appliance_name | Appliance name. | Required | 
 | sdwan_policy_name | Name of the SDWAN policy. | Required | 
-| custom_rule_json | Allows the use of the Custom SD-WAN Rule JSON template. All of the arguments listed below will be overridden. For an example, please see the integration documentation: LINK. | Optional | 
+| custom_rule_json | Allows the use of the Custom SDWAN Rule JSON template. All of the arguments listed below will be overridden. For an example, see the integration documentation. | Optional | 
 | rule_name | Name of the rule. | Required | 
 | description | SDWAN policy description. | Optional | 
-| tags | List of tags. | Optional | 
-| source_address_objects | Source address objects. | Optional | 
-| destination_address_objects | Destination address objects. | Optional | 
-| url_reputation | Url reputation. | Optional | 
-| custom_url_categories | Custom URL categories. | Optional | 
+| tags | A comma-separated list of tags. | Optional | 
+| source_address_objects | A comma-separated list of source address objects. | Optional | 
+| destination_address_objects | A comma-separated list of destination address objects. | Optional | 
+| url_reputation | A comma-separated list of URL reputations. | Optional | 
+| custom_url_categories | A comma-separated list of custom URL categories. | Optional | 
 | forwarding_action | Forwarding action. Possible values are: allow, deny. | Required | 
 | nexthop_ip | Nexthop IP. | Optional | 
 | routing_instance | Routing instance. | Optional | 
 | forwarding_profile | Forwarding profile. | Optional | 
-| predefined_application | Predefined application. | Optional | 
-| user_defined_application | User defined appliaction. | Optional | 
+| predefined_application | A comma-separated list of predefined applications. | Optional | 
+| user_defined_application | A comma-separated list of user defined applications. | Optional | 
 
 
 #### Context Output
@@ -804,7 +804,7 @@ Edit an SD-WAN policy rule associated with a specific appliance (device).
 There is no context output for this command.
 ### vd-appliance-sdwan-policy-rule-create
 ***
-Create an SD-WAN policy rule associated with a specific appliance (device).
+Create an SDWAN policy rule associated with a specific appliance (device).
 
 
 #### Base Command
@@ -817,20 +817,20 @@ Create an SD-WAN policy rule associated with a specific appliance (device).
 | organization | Name of the associated organization. | Optional | 
 | appliance_name | Appliance name. | Required | 
 | sdwan_policy_name | Name of the SDWAN policy. | Required | 
-| custom_rule_json | Allows the use of the Custom SD-WAN Rule JSON template. All of the arguments listed below will be overridden. For an example, please see the integration documentation: LINK. | Optional | 
+| custom_rule_json | Allows the use of the Custom SDWAN Rule JSON template. All of the arguments listed below will be overridden. For an example, see the integration documentation. | Optional | 
 | rule_name | Name of the rule. | Required | 
 | description | SDWAN policy description. | Optional | 
-| tags | List of tags. | Optional | 
-| source_address_objects | Source address objects. | Optional | 
-| destination_address_objects | Destination address objects. | Optional | 
-| url_reputation | Url reputation. | Optional | 
-| custom_url_categories | Custom URL categories. | Optional | 
+| tags | A comma-separated list of tags. | Optional | 
+| source_address_objects | A comma-separated list of source address objects. | Optional | 
+| destination_address_objects | A comma-separated list of destination address objects. | Optional | 
+| url_reputation | A comma-separated list of URL reputations. | Optional | 
+| custom_url_categories | A comma-separated list of custom URL categories. | Optional | 
 | forwarding_action | Forwarding action. Possible values are: allow, deny. | Required | 
 | nexthop_ip | Nexthop IP. | Optional | 
 | routing_instance | Routing instance. | Optional | 
 | forwarding_profile | Forwarding profile. | Optional | 
-| predefined_application | Predefined appliaction. | Optional | 
-| user_defined_application | User defined appliaction. | Optional | 
+| predefined_application | A comma-separated list of predefined applications. | Optional | 
+| user_defined_application | A comma-separated list of user defined applications. | Optional | 
 
 
 #### Context Output
@@ -847,7 +847,7 @@ There is no context output for this command.
 
 ### vd-appliance-sdwan-policy-rule-list
 ***
-List all SD-WAN policy rules associated with a specific appliance (device).
+List all SDWAN policy rules associated with a specific appliance (device).
 
 
 #### Base Command
@@ -951,7 +951,7 @@ List all SD-WAN policy rules associated with a specific appliance (device).
 
 ### vd-appliance-sdwan-policy-list
 ***
-List all SD-WAN policies associated with a specific organization and appliance (device).
+List all SDWAN policies associated with a specific organization and appliance (device).
 
 
 #### Base Command
@@ -972,10 +972,10 @@ List all SD-WAN policies associated with a specific organization and appliance (
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VersaDirector.ApplianceSdwanPolicy.address | string | Appliance SDWAN Policy address | 
-| VersaDirector.ApplianceSdwanPolicy.rule-disable | string | Appliance Sdwan Policy Rule disabled | 
-| VersaDirector.ApplianceSdwanPolicy.match | string | Appliance SDWAN policy set Matching objects | 
-| VersaDirector.ApplianceSdwanPolicy.set | string | Appliance SDWAN policy set | 
+| VersaDirector.ApplianceSdwanPolicy.address | string | Appliance SDWAN policy address. | 
+| VersaDirector.ApplianceSdwanPolicy.rule-disable | string | Appliance Sdwan policy Rule disabled. | 
+| VersaDirector.ApplianceSdwanPolicy.match | string | Appliance SDWAN policy set Matching objects. | 
+| VersaDirector.ApplianceSdwanPolicy.set | string | Appliance SDWAN policy set. | 
 
 #### Command example
 ```!vd-appliance-sdwan-policy-list appliance_name=EXAMPLE_BRANCH limit=3```
@@ -1010,7 +1010,7 @@ List all SD-WAN policies associated with a specific organization and appliance (
 
 ### vd-template-sdwan-policy-rule-delete
 ***
-Delete an SD-WAN policy rule associated with a specific template.
+Delete an SDWAN policy rule associated with a specific template.
 
 
 #### Base Command
@@ -1037,7 +1037,7 @@ There is no context output for this command.
 
 ### vd-template-sdwan-policy-rule-edit
 ***
-Edit an SD-WAN policy rule associated with a specific appliance (device).
+Edit an SDWAN policy rule associated with a specific appliance (device).
 
 
 #### Base Command
@@ -1050,20 +1050,20 @@ Edit an SD-WAN policy rule associated with a specific appliance (device).
 | organization | Name of the associated organization. | Optional | 
 | template_name | Template name. | Required | 
 | sdwan_policy_name | Name of the SDWAN policy. | Required | 
-| custom_rule_json | Allows the use of the Custom SD-WAN Rule JSON template. All of the arguments listed below will be overridden. For an example, please see the integration documentation: LINK. | Optional | 
+| custom_rule_json | Allows the use of the Custom SDWAN Rule JSON template. All of the arguments listed below will be overridden. For an example, see the integration documentation. | Optional | 
 | rule_name | Name of the rule. | Required | 
 | description | SDWAN policy description. | Optional | 
-| tags | List of tags. | Optional | 
-| source_address_objects | Source address objects. | Optional | 
-| destination_address_objects | Destination address objects. | Optional | 
-| url_reputation | Url reputation. | Optional | 
-| custom_url_categories | Custom URL categories. | Optional | 
+| tags | A comma-separated list of tags. | Optional | 
+| source_address_objects | A comma-separated list of source address objects. | Optional | 
+| destination_address_objects | A comma-separated list of destination address objects. | Optional | 
+| url_reputation | A comma-separated list of URL reputations. | Optional | 
+| custom_url_categories | A comma-separated list of custom URL categories. | Optional | 
 | forwarding_action | Forwarding action. Possible values are: allow, deny. | Required | 
 | nexthop_ip | Nexthop IP. | Optional | 
 | routing_instance | Routing instance. | Optional | 
 | forwarding_profile | Forwarding profile. | Optional | 
-| predefined_application | Predefined application. | Optional | 
-| user_defined_application | User defined application. | Optional | 
+| predefined_application | A comma-separated list of predefined applications. | Optional | 
+| user_defined_application | A comma-separated list of user defined applications. | Optional | 
 
 
 #### Context Output
@@ -1071,7 +1071,7 @@ Edit an SD-WAN policy rule associated with a specific appliance (device).
 There is no context output for this command.
 ### vd-template-sdwan-policy-rule-create
 ***
-Create an SD-WAN policy rule associated with a specific template.
+Create an SDWAN policy rule associated with a specific template.
 
 
 #### Base Command
@@ -1084,20 +1084,20 @@ Create an SD-WAN policy rule associated with a specific template.
 | organization | Name of the associated organization. | Optional | 
 | template_name | Template name. | Required | 
 | sdwan_policy_name | Name of the SDWAN policy. | Required | 
-| custom_rule_json | Allows the use of the Custom SD-WAN Rule JSON template. All of the arguments listed below will be overridden. For an example, please see the integration documentation: LINK. | Optional | 
+| custom_rule_json | Allows the use of the Custom SDWAN Rule JSON template. All of the arguments listed below will be overridden. For an example, see the integration documentation. | Optional | 
 | rule_name | Name of the rule. | Required | 
 | description | SDWAN policy description. | Optional | 
-| tags | List of tags. | Optional | 
-| source_address_objects | Source address objects. | Optional | 
-| destination_address_objects | Destination address objects. | Optional | 
-| url_reputation | Url reputation. | Optional | 
-| custom_url_categories | Custom URL categories. | Optional | 
+| tags | A comma-separated list of tags. | Optional | 
+| source_address_objects | A comma-separated list of source address objects. | Optional | 
+| destination_address_objects | A comma-separated list of destination address objects. | Optional | 
+| url_reputation | A comma-separated list of URL reputations. | Optional | 
+| custom_url_categories | A comma-separated list of custom URL categories. | Optional | 
 | forwarding_action | Forwarding action. Possible values are: allow, deny. | Required | 
 | nexthop_ip | Nexthop IP. | Optional | 
 | routing_instance | Routing instance. | Optional | 
 | forwarding_profile | Forwarding profile. | Optional | 
-| predefined_application | Predefined application. | Optional | 
-| user_defined_application | User defined application. | Optional | 
+| predefined_application | A comma-separated list of predefined applications. | Optional | 
+| user_defined_application | A comma-separated list of user defined applications. | Optional | 
 
 
 #### Context Output
@@ -1123,7 +1123,7 @@ There is no context output for this command.
 
 ### vd-template-sdwan-policy-rule-list
 ***
-List all SD-WAN policy rules associated with a specific template.
+List all SDWAN policy rules associated with a specific template.
 
 
 #### Base Command
@@ -1138,7 +1138,7 @@ List all SD-WAN policy rules associated with a specific template.
 | sdwan_policy_name | Name of the SDWAN policy. | Required | 
 | page | The page number of the results to retrieve. | Optional | 
 | page_size | The maximum number of objects to retrieve per page. | Optional | 
-| limit | Limit number of results. | Optional | 
+| limit | The maximum number of results. | Optional | 
 
 
 #### Context Output
@@ -1208,7 +1208,7 @@ List all SD-WAN policy rules associated with a specific template.
 
 ### vd-template-sdwan-policy-list
 ***
-List all SD-WAN policies associated with a specific organization and template.
+List all SDWAN policies associated with a specific organization and template.
 
 
 #### Base Command
@@ -1222,7 +1222,7 @@ List all SD-WAN policies associated with a specific organization and template.
 | template_name | Template name. | Required | 
 | page | The page number of the results to retrieve. | Optional | 
 | page_size | The maximum number of objects to retrieve per page. | Optional | 
-| limit | Limit number of results. | Optional | 
+| limit | The maximum number of results. | Optional | 
 
 
 #### Context Output
@@ -1396,15 +1396,15 @@ Edit access policy configuration (NGFW) rule associated with a specific applianc
 | organization | Name of the associated organization. | Optional | 
 | appliance_name | Appliance name. | Required | 
 | access_policy_name | Access policy name. | Required | 
-| custom_rule_json | Allows the use of the Custom Access policy rule JSON template. All of the arguments listed below will be overridden. For an example, please see the integration documentation: LINK. | Optional | 
+| custom_rule_json | Allows the use of the Custom Access policy rule JSON template. All of the arguments listed below will be overridden. For an example, see the integration documentation. | Optional | 
 | rule_name | Name of the rule. | Required | 
 | description | SDWAN policy description. | Optional | 
-| tags | List of tags. | Optional | 
-| source_address_objects | Source address objects. | Optional | 
-| destination_address_objects | Destination address objects. | Optional | 
-| url_reputation | Url reputation. | Optional | 
-| predefined_application | Predefined appliaction. | Optional | 
-| user_defined_application | User defined appliaction. | Optional | 
+| tags | A comma-separated list of tags. | Optional | 
+| source_address_objects | A comma-separated list of source address objects. | Optional | 
+| destination_address_objects | A comma-separated list of destination address objects. | Optional | 
+| url_reputation | A comma-separated list of URL reputations. | Optional | 
+| predefined_application | A comma-separated list of predefined applications. | Optional | 
+| user_defined_application | A comma-separated list of user defined applications. | Optional | 
 
 
 #### Context Output
@@ -1434,15 +1434,15 @@ Create an access policy configuration (NGFW) rule associated with a specific app
 | organization | Name of the associated organization. | Optional | 
 | appliance_name | Appliance name. | Required | 
 | access_policy_name | Access policy name. | Required | 
-| custom_rule_json | Allows the use of the Custom Access policy rule JSON template. All of the arguments listed below will be overridden. For an example, please see the integration documentation: LINK. | Optional | 
+| custom_rule_json | Allows the use of the Custom Access policy rule JSON template. All of the arguments listed below will be overridden. For an example, see the integration documentation. | Optional | 
 | rule_name | Name of the rule. | Required | 
 | description | SDWAN policy description. | Required | 
-| tags | List of tags. | Optional | 
-| source_address_objects | Source address objects. | Required | 
-| destination_address_objects | Destination address objects. | Required | 
-| url_reputation | Url reputation. | Optional | 
-| predefined_application | Predefined appliaction. | Optional | 
-| user_defined_application | User defined appliaction. | Optional | 
+| tags | A comma-separated list of tags. | Optional | 
+| source_address_objects | A comma-separated list of source address objects. | Required | 
+| destination_address_objects | A comma-separated list of destination address objects. | Required | 
+| url_reputation | A comma-separated list of URL reputations. | Optional | 
+| predefined_application | A comma-separated list of predefined applications. | Optional | 
+| user_defined_application | A comma-separated list of user defined applications. | Optional | 
 
 
 #### Context Output
@@ -1459,7 +1459,7 @@ There is no context output for this command.
 
 ### vd-appliance-access-policy-rule-list
 ***
-List all access policy configuration (NGFW) rules associated with a specific Appliance.
+List all access policy configuration (NGFW) rules associated with a specific appliance.
 
 
 #### Base Command
@@ -1707,15 +1707,15 @@ Edit access policy configuration (NGFW) rule associated with a specific template
 | organization | Name of the associated organization. | Optional | 
 | template_name | Template name. | Required | 
 | access_policy_name | Access policy name. | Required | 
-| custom_rule_json | Allows the use of the Custom Access policy rule JSON template. All of the arguments listed below will be overridden. For an example, please see the integration documentation: LINK. | Optional | 
+| custom_rule_json | Allows the use of the Custom Access policy rule JSON template. All of the arguments listed below will be overridden. For an example, see the integration documentation. | Optional | 
 | rule_name | Name of the rule. | Required | 
 | description | SDWAN policy description. | Optional | 
-| tags | List of tags. | Optional | 
-| source_address_objects | Source address objects. | Optional | 
-| destination_address_objects | Destination address objects. | Optional | 
-| url_reputation | Url reputation. | Optional | 
-| predefined_application | Predefined appliaction. | Optional | 
-| user_defined_application | User defined appliaction. | Optional | 
+| tags | A comma-separated list of tags. | Optional | 
+| source_address_objects | A comma-separated list of source address objects. | Optional | 
+| destination_address_objects | A comma-separated list of destination address objects. | Optional | 
+| url_reputation | A comma-separated list of URL reputations. | Optional | 
+| predefined_application | A comma-separated list of predefined applications. | Optional | 
+| user_defined_application | A comma-separated list of user defined applications. | Optional | 
 
 
 #### Context Output
@@ -1745,15 +1745,15 @@ Create an access policy configuration (NGFW) rule associated with a specific tem
 | organization | Name of the associated organization. | Optional | 
 | template_name | Template name. | Required | 
 | access_policy_name | Access policy name. | Required | 
-| custom_rule_json | Allows the use of the Custom Access policy rule JSON template. All of the arguments listed below will be overridden. For an example, please see the integration documentation: LINK. | Optional | 
+| custom_rule_json | Allows the use of the Custom Access policy rule JSON template. All of the arguments listed below will be overridden. For an example, see the integration documentation. | Optional | 
 | rule_name | Name of the rule. | Required | 
 | description | Access policy description. | Optional | 
-| tags | List of tags. | Optional | 
-| source_address_objects | Source address objects. | Optional | 
-| destination_address_objects | Destination address objects. | Optional | 
-| url_reputation | Url reputation. | Optional | 
-| predefined_application | Predefined appliaction. | Optional | 
-| user_defined_application | User defined appliaction. | Optional | 
+| tags | A comma-separated list of tags. | Optional | 
+| source_address_objects | A comma-separated list of source address objects. | Optional | 
+| destination_address_objects | A comma-separated list of destination address objects. | Optional | 
+| url_reputation | A comma-separated list of URL reputations. | Optional | 
+| predefined_application | A comma-separated list of predefined applications. | Optional | 
+| user_defined_application | A comma-separated list of user defined applications. | Optional | 
 
 
 #### Context Output
@@ -2052,10 +2052,10 @@ Delete a custom URL category associated with a specific appliance (device).
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VersaDirector.ApplianceCustomUrlCategory.category-name | string | Appliance custom url category category name | 
-| VersaDirector.ApplianceCustomUrlCategory.category-description | string | Appliance custom url category description | 
-| VersaDirector.ApplianceCustomUrlCategory.content.confidence | number | Appliance custom url category confidence threshold | 
-| VersaDirector.ApplianceCustomUrlCategory.content.urls | string | Appliance custom url category URLs | 
+| VersaDirector.ApplianceCustomUrlCategory.category-name | string | Appliance custom URL category category name. | 
+| VersaDirector.ApplianceCustomUrlCategory.category-description | string | Appliance custom URL category description. | 
+| VersaDirector.ApplianceCustomUrlCategory.content.confidence | number | Appliance custom URL category confidence threshold. | 
+| VersaDirector.ApplianceCustomUrlCategory.content.urls | string | Appliance custom URL category A comma-separated list of URLs. | 
 
 #### Command example
 ```!vd-appliance-custom-url-category-delete appliance_name=EXAMPLE_BRANCH url_category_name="category_example"```
@@ -2078,22 +2078,22 @@ Edit a custom URL category associated with a specific appliance (device). Import
 | organization | Name of the associated organization. | Optional | 
 | appliance_name | Appliance name. | Required | 
 | url_category_name | URL category name. | Required | 
-| description | Custom url category description. | Required | 
+| description | Custom URL category description. | Required | 
 | confidence | Confidence threshold. | Required | 
-| urls | URLs. | Optional | 
-| url_reputation | Url reputation. | Optional | 
-| patterns | Patterns. | Optional | 
-| pattern_reputation | Pattern reputation. | Optional | 
+| urls | A comma-separated list of URLs. | Optional | 
+| url_reputation | A comma-separated list of URL reputations. | Optional | 
+| patterns | A comma-separated list of patterns. | Optional | 
+| pattern_reputation | A comma-separated list of pattern reputations. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VersaDirector.ApplianceCustomUrlCategory.category-name | string | Appliance custom url category category name | 
-| VersaDirector.ApplianceCustomUrlCategory.category-description | string | Appliance custom url category description | 
-| VersaDirector.ApplianceCustomUrlCategory.content.confidence | number | Appliance custom url category confidence threshold | 
-| VersaDirector.ApplianceCustomUrlCategory.content.urls | string | Appliance custom url category URLs | 
+| VersaDirector.ApplianceCustomUrlCategory.category-name | string | Appliance custom URL category category name. | 
+| VersaDirector.ApplianceCustomUrlCategory.category-description | string | Appliance custom URL category description. | 
+| VersaDirector.ApplianceCustomUrlCategory.content.confidence | number | Appliance custom URL category confidence threshold. | 
+| VersaDirector.ApplianceCustomUrlCategory.content.urls | string | Appliance custom URL category A comma-separated list of URLs. | 
 
 ### vd-appliance-custom-url-category-create
 ***
@@ -2110,12 +2110,12 @@ Create a custom URL category associated with a specific appliance (device).
 | organization | Name of the associated organization. | Optional | 
 | appliance_name | Appliance name. | Required | 
 | url_category_name | URL category name. | Required | 
-| description | Custom url category description. | Required | 
+| description | Custom URL category description. | Required | 
 | confidence | Confidence threshold. | Required | 
-| urls | URLs. | Optional | 
-| url_reputation | Url reputation. | Optional | 
-| patterns | Patterns. | Optional | 
-| pattern_reputation | Pattern reputation. | Optional | 
+| urls | A comma-separated list of URLs. | Optional | 
+| url_reputation | A comma-separated list of URL reputations. | Optional | 
+| patterns | A comma-separated list of patterns. | Optional | 
+| pattern_reputation | A comma-separated list of pattern reputations. | Optional | 
 
 
 #### Context Output
@@ -2123,9 +2123,9 @@ Create a custom URL category associated with a specific appliance (device).
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | VersaDirector.ApplianceCustomUrlCategory.content.category-name | string | Appliance custom url category name. | 
-| VersaDirector.ApplianceCustomUrlCategory.content.category-description | string | Appliance custom url category description. | 
-| VersaDirector.ApplianceCustomUrlCategory.content.confidence | number | Appliance custom url category confidence threshold. | 
-| VersaDirector.ApplianceCustomUrlCategory.content.urls | string | Appliance custom url category URLs. | 
+| VersaDirector.ApplianceCustomUrlCategory.content.category-description | string | Appliance custom URL category description. | 
+| VersaDirector.ApplianceCustomUrlCategory.content.confidence | number | Appliance custom URL category confidence threshold. | 
+| VersaDirector.ApplianceCustomUrlCategory.content.urls | string | Appliance custom URL category A comma-separated list of URLs. | 
 
 #### Command example
 ```!vd-appliance-custom-url-category-create appliance_name=EXAMPLE_BRANCH description="description example" url_category_name="category_example" confidence=80```
@@ -2170,9 +2170,9 @@ List all custom URL categories associated with a specific appliance or get a spe
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | VersaDirector.ApplianceCustomUrlCategory.category-name | string | Appliance custom url category name. | 
-| VersaDirector.ApplianceCustomUrlCategory.content.category-description | string | Appliance custom url category description. | 
-| VersaDirector.ApplianceCustomUrlCategory.content.confidence | number | Appliance custom url category confidence threshold. | 
-| VersaDirector.ApplianceCustomUrlCategory.content.urls | string | Appliance custom url category URLs. | 
+| VersaDirector.ApplianceCustomUrlCategory.content.category-description | string | Appliance custom URL category description. | 
+| VersaDirector.ApplianceCustomUrlCategory.content.confidence | number | Appliance custom URL category confidence threshold. | 
+| VersaDirector.ApplianceCustomUrlCategory.content.urls | string | Appliance custom URL category A comma-separated list of URLs. | 
 
 #### Command example
 ```!vd-appliance-custom-url-category-list appliance_name=EXAMPLE_BRANCH limit=3```
@@ -2230,10 +2230,10 @@ Delete a custom URL category associated with a specific template.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VersaDirector.TemplateCustomUrlCategory.category-name | string | Template custom url category name. | 
-| VersaDirector.TemplateCustomUrlCategory.category-description | string | Template custom url category description. | 
-| VersaDirector.TemplateCustomUrlCategory.content.confidence | number | Template custom url category confidence threshold. | 
-| VersaDirector.TemplateCustomUrlCategory.content.urls | string | Template custom url category URLs. | 
+| VersaDirector.TemplateCustomUrlCategory.category-name | string | Template custom URL category name. | 
+| VersaDirector.TemplateCustomUrlCategory.category-description | string | Template custom URL category description. | 
+| VersaDirector.TemplateCustomUrlCategory.content.confidence | number | Template custom URL category confidence threshold. | 
+| VersaDirector.TemplateCustomUrlCategory.content.urls | string | Template custom URL category A comma-separated list of URLs. | 
 
 #### Command example
 ```!vd-template-custom-url-category-delete template_name=EXAMPLE_CLIENT-Default-Application url_category_name="category_example"```
@@ -2256,22 +2256,22 @@ Edit a custom URL category associated with a specific template. Important note -
 | organization | Name of the associated organization. | Optional | 
 | template_name | Template name. | Required | 
 | url_category_name | URL category name. | Required | 
-| description | Custom url category description. | Required | 
+| description | Custom URL category description. | Required | 
 | confidence | Confidence threshold. | Required | 
-| urls | URLs. | Optional | 
-| url_reputation | Url reputation. | Optional | 
-| patterns | Patterns. | Optional | 
-| pattern_reputation | Pattern reputation. | Optional | 
+| urls | A comma-separated list of URLs. | Optional | 
+| url_reputation | A comma-separated list of URL reputations. | Optional | 
+| patterns | A comma-separated list of patterns. | Optional | 
+| pattern_reputation | A comma-separated list of pattern reputations. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VersaDirector.TemplateCustomUrlCategory.category-name | string | Template custom url category name | 
-| VersaDirector.ApplicationServiceTemplatecontent.category-description | string | Template custom url category description | 
-| VersaDirector.ApplicationServiceTemplate.content.confidence | number | Template custom url category confidence threshold | 
-| VersaDirector.ApplicationServiceTemplate.content.urls | string | Template custom url category URLs | 
+| VersaDirector.TemplateCustomUrlCategory.category-name | string | Template custom URL category name. | 
+| VersaDirector.ApplicationServiceTemplate.content.category-description | string | Template custom URL category description. | 
+| VersaDirector.ApplicationServiceTemplate.content.confidence | number | Template custom URL category confidence threshold. | 
+| VersaDirector.ApplicationServiceTemplate.content.urls | string | Template custom URL category URLs. | 
 
 #### Command example
 ```!vd-template-custom-url-category-edit template_name=EXAMPLE_CLIENT-Default-Application description="description example" url_category_name="category_example" confidence=90```
@@ -2297,22 +2297,22 @@ Create a custom URL category associated with a specific template.
 | organization | Name of the associated organization. | Optional | 
 | template_name | Template name. | Required | 
 | url_category_name | URL category name. | Required | 
-| description | Custom url category description. | Required | 
+| description | Custom URL category description. | Required | 
 | confidence | Confidence threshold. | Required | 
-| urls | URLs. | Optional | 
-| url_reputation | Url reputation. | Optional | 
-| patterns | Patterns. | Optional | 
-| pattern_reputation | Pattern reputation. | Optional | 
+| urls | A comma-separated list of URLs. | Optional | 
+| url_reputation | A comma-separated list of URL reputations. | Optional | 
+| patterns | A comma-separated list of patterns. | Optional | 
+| pattern_reputation | A comma-separated list of pattern reputations. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VersaDirector.TemplateCustomUrlCategory.category-name | string | Template custom url category name | 
-| VersaDirector.ApplicationServiceTemplatecontent.category-description | string | Template custom url category category description | 
-| VersaDirector.ApplicationServiceTemplate.content.confidence | number | Template custom url category confidence threshold | 
-| VersaDirector.ApplicationServiceTemplate.content.urls | string | Template custom url category URLs | 
+| VersaDirector.TemplateCustomUrlCategory.category-name | string | Template custom URL category name. | 
+| VersaDirector.ApplicationServiceTemplatecontent.category-description | string | Template custom url category category description. | 
+| VersaDirector.ApplicationServiceTemplate.content.confidence | number | Template custom URL category confidence threshold. | 
+| VersaDirector.ApplicationServiceTemplate.content.urls | string | Template custom URL category URLs. | 
 
 #### Command example
 ```!vd-template-custom-url-category-create template_name=EXAMPLE_CLIENT-Default-Application description="description example" url_category_name="category_example" confidence=80```
@@ -2345,10 +2345,10 @@ List all custom URL categories associated with a specific template or get a spec
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VersaDirector.TemplateCustomUrlCategory.category-name | string | Template custom url category name | 
-| VersaDirector.ApplicationServiceTemplatecontent.category-description | string | Template custom url category category description | 
-| VersaDirector.ApplicationServiceTemplate.content.confidence | number | Template custom url category confidence threshold | 
-| VersaDirector.ApplicationServiceTemplate.content.urls | string | Template custom url category URLs | 
+| VersaDirector.TemplateCustomUrlCategory.category-name | string | Template custom URL category name. | 
+| VersaDirector.ApplicationServiceTemplatecontent.category-description | string | Template custom url category category description. | 
+| VersaDirector.ApplicationServiceTemplate.content.confidence | number | Template custom URL category confidence threshold. | 
+| VersaDirector.ApplicationServiceTemplate.content.urls | string | Template custom URL category URLs. | 
 
 #### Command example
 ```!vd-template-custom-url-category-list template_name=EXAMPLE_CLIENT-Default-Application limit=3```
@@ -2427,7 +2427,7 @@ List all custom URL categories associated with a specific template or get a spec
 
 ### vd-template-change-commit
 ***
-Commit a specific template change to an appliance/s (devices). This will trigger a task to make the commit, and then it will be polled to retrieve status until complete, and the status will be presented.
+Commit a specific template change to an appliance/s (devices). This will trigger a task to make the commit, and then it will be polled to retrieve the status until complete, and the status will be presented.
 
 
 #### Base Command
@@ -2438,10 +2438,10 @@ Commit a specific template change to an appliance/s (devices). This will trigger
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | template_name | New template name for the device. | Required | 
-| appliances | List of devices the change will be committed to. | Required | 
+| appliances | A comma-separated list of devices the change will be committed to. | Required | 
 | mode | Commit mode to specified devices. Possible values are: overwrite, merge, forced_merge. | Required | 
-| task_id | Task ID hidden polling command. | Optional | 
-| hide_polling_output | whether to hide the polling result (automatically filled by polling). | Optional | 
+| task_id | Task ID. | Optional | 
+| hide_polling_output | Whether to hide the polling result (automatically filled by polling). | Optional | 
 | reboot | Reboot devices after change is committed (true/false). | Required | 
 
 
@@ -2449,11 +2449,11 @@ Commit a specific template change to an appliance/s (devices). This will trigger
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VersaDirector.Commit.versa-tasks.id | string | Task ID | 
-| VersaDirector.Commit.versa-tasks.task-description | string | Task description | 
-| VersaDirector.Commit.versa-tasks.user | string | Task user | 
-| VersaDirector.Commit.task-status | string | Task status | 
-| VersaDirector.Commit.versa-tasks.progressmessage | string | Task progress message | 
+| VersaDirector.Commit.versa-tasks.id | string | Task ID. | 
+| VersaDirector.Commit.versa-tasks.task-description | string | Task description. | 
+| VersaDirector.Commit.versa-tasks.user | string | Task user. | 
+| VersaDirector.Commit.task-status | string | Task status. | 
+| VersaDirector.Commit.versa-tasks.progressmessage | string | Task progress message. | 
 
 #### Command example
 ```!vd-template-change-commit template_name=EXAMPLE_CLIENT-Test-NGFW appliances=EXAMPLE_BRANCH mode=merge reboot=false```
@@ -2474,7 +2474,7 @@ List all application service templates. Can be filtered by organization or a key
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | organization | Name of the associated organization. | Optional | 
-| keyword | Keyword. | Optional | 
+| keyword | Keyword by which to search. | Optional | 
 | page | The page number of the results to retrieve. | Optional | 
 | page_size | The maximum number of objects to retrieve per page. | Optional | 
 | limit | The maximum number of results to retrieve. | Optional | 
@@ -2484,12 +2484,12 @@ List all application service templates. Can be filtered by organization or a key
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VersaDirector.ApplicationServiceTemplate.createDate | string | Application service template create date | 
-| VersaDirector.ApplicationServiceTemplate.createDate | string | Application service template modify date | 
-| VersaDirector.ApplicationServiceTemplate.content.lastUpdatedBy | string | Application service template last updated by | 
-| VersaDirector.ApplicationServiceTemplate.content.name | string | Application service template content name | 
-| VersaDirector.ApplicationServiceTemplate.content.organization | string | Application service template associated organization | 
-| VersaDirector.ApplicationServiceTemplate.content.status | string | Application service template status | 
+| VersaDirector.ApplicationServiceTemplate.createDate | string | Date the application service template was created. | 
+| VersaDirector.ApplicationServiceTemplate.createDate | string | Date the application service template was modified. | 
+| VersaDirector.ApplicationServiceTemplate.content.lastUpdatedBy | string | By whom the application service template was last updated. | 
+| VersaDirector.ApplicationServiceTemplate.content.name | string | Application service template content name. | 
+| VersaDirector.ApplicationServiceTemplate.content.organization | string | Application service template associated organization. | 
+| VersaDirector.ApplicationServiceTemplate.content.status | string | Application service template status. | 
 
 #### Command example
 ```!vd-application-service-template-list limit=3```
@@ -2543,12 +2543,12 @@ List all application service templates. Can be filtered by organization or a key
 >### Application Service Templates associated with EXAMPLE_CLIENT
 >|Create Date|Modify Date|Last Updated By|Name|Organization|Status|
 >|---|---|---|---|---|---|
->| 2021-08-26 18:02:44 | 2021-08-26 18:02:48 | Sunil | EXAMPLE_CLIENT-Default-Application | EXAMPLE_CLIENT | DEPLOYED |
+>| 2021-08-26 18:02:44 | 2021-08-26 18:02:48 | EXAMPLE_USER | EXAMPLE_CLIENT-Default-Application | EXAMPLE_CLIENT | DEPLOYED |
 
 
 ### vd-datastore-template-list
 ***
-List all templates associated with a specific data-store.  As a best practice, it is not recommended to apply rules to datastore templates. Instead use devices/service/application templates.
+List all templates associated with a specific datastore. As a best practice, we do not recommend applying rules to datastore templates. Instead, use devices/service/application templates.
 
 
 #### Base Command
@@ -2569,10 +2569,10 @@ List all templates associated with a specific data-store.  As a best practice, i
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | VersaDirector.DataStoreTemplate.name | string | Template name. | 
-| VersaDirector.DataStoreTemplate.appliance-owner | string | DataStore template appliacne owner | 
-| VersaDirector.DataStoreTemplate.available-routing-instances | string | DataStore template available routing instances | 
-| VersaDirector.DataStoreTemplate.owned-routing-instances | string | DataStore template owned routing instances | 
-| VersaDirector.DataStoreTemplate.available-networks | string | DataStore template available networks | 
+| VersaDirector.DataStoreTemplate.appliance-owner | string | DataStore template appliance owner. | 
+| VersaDirector.DataStoreTemplate.available-routing-instances | string | DataStore template available routing instances. | 
+| VersaDirector.DataStoreTemplate.owned-routing-instances | string | DataStore template owned routing instances. | 
+| VersaDirector.DataStoreTemplate.available-networks | string | DataStore template available networks. | 
 
 #### Command example
 ```!vd-datastore-template-list limit=3```
@@ -2622,10 +2622,10 @@ List all templates associated with a specific organization. Default type argumen
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | organization | Name of the associated organization. | Optional | 
-| type | Type of template. If not specified in request, all types will be fetched. Possible values are: SERVICE, MAIN. | Optional | 
+| type | Type of template. If not specified in the request, all types will be fetched. Possible values are: SERVICE, MAIN. | Optional | 
 | page | The page number of the results to retrieve. | Optional | 
 | page_size | The maximum number of objects to retrieve per page. | Optional | 
-| limit | Limit number of results. | Optional | 
+| limit | The maximum number of results. | Optional | 
 
 
 #### Context Output
@@ -2699,15 +2699,15 @@ List all appliances associated with a specific device-group and associated templ
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VersaDirector.DeviceGroup.createDate | string | Device group create date. | 
-| VersaDirector.DeviceGroup.modifyDate | string | Device group modify date. | 
-| VersaDirector.DeviceGroup.lastUpdatedBy | string | Device group last updated by | 
+| VersaDirector.DeviceGroup.createDate | string | Date the device group was created. | 
+| VersaDirector.DeviceGroup.modifyDate | string | Date the device group was modified. | 
+| VersaDirector.DeviceGroup.lastUpdatedBy | string | By whom the device group was last updated. | 
 | VersaDirector.DeviceGroup.name | string | Device group name. | 
 | VersaDirector.DeviceGroup.poststagingTemplatePriority | string | Device group post staging template priority. | 
 | VersaDirector.DeviceGroup.oneTimePassword | string | Device group one time password. | 
 | VersaDirector.DeviceGroup.poststaging-template | string | Device group post staging template. | 
 | VersaDirector.DeviceGroup.enable-2factor-auth | string | Device group enable two factor authentication. | 
-| VersaDirector.DeviceGroup.enable-staging-url | string | Device group enable staging url. | 
+| VersaDirector.DeviceGroup.enable-staging-url | string | Device group enable staging URL. | 
 
 #### Command example
 ```!vd-appliance-group-template-appliance-list device_group="EXAMPLE_BRANCH" template_name=EXAMPLE_CLIENT-Test-NGFW limit=3```
@@ -2774,17 +2774,17 @@ List all appliance (device) groups associated with an organization (tenant)
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VersaDirector.DeviceGroup.createDate | string | Device group create date. | 
-| VersaDirector.DeviceGroup.modifyDate | string | Device group modify date. | 
-| VersaDirector.DeviceGroup.lastUpdatedBy | string | Last updated by | 
+| VersaDirector.DeviceGroup.createDate | string | Date the device group was created. | 
+| VersaDirector.DeviceGroup.modifyDate | string | Date the device group was modified. | 
+| VersaDirector.DeviceGroup.lastUpdatedBy | string | By whom the device group was last updated. | 
 | VersaDirector.DeviceGroup.name | string | Device group name. | 
-| VersaDirector.DeviceGroup.organization | string | Associated organization | 
-| VersaDirector.DeviceGroup.poststagingTemplatePriority | number | Post staging template priority | 
-| VersaDirector.DeviceGroup.oneTimePassword | string | One time password | 
-| VersaDirector.DeviceGroup.poststaging-template | string | Post staging template | 
-| VersaDirector.DeviceGroup.enable-2factor-auth | string | Enable two factor authentication | 
-| VersaDirector.DeviceGroup.enable-staging-url | string | Enable staging url | 
-| VersaDirector.DeviceGroup.inventory-name | String | Inventory name | 
+| VersaDirector.DeviceGroup.organization | string | Associated organization. | 
+| VersaDirector.DeviceGroup.poststagingTemplatePriority | number | Post staging template priority. | 
+| VersaDirector.DeviceGroup.oneTimePassword | string | One time password. | 
+| VersaDirector.DeviceGroup.poststaging-template | string | Post staging template. | 
+| VersaDirector.DeviceGroup.enable-2factor-auth | string | Enable two factor authentication. | 
+| VersaDirector.DeviceGroup.enable-staging-url | string | Enable staging URL. | 
+| VersaDirector.DeviceGroup.inventory-name | String | Inventory name. | 
 
 #### Command example
 ```!vd-appliance-group-list limit=3```
@@ -2827,7 +2827,7 @@ List all appliance (device) groups associated with an organization (tenant)
 
 ### vd-organization-appliance-list
 ***
-List all devices associated with a specific organization
+List all devices associated with a specific organization.
 
 
 #### Base Command
@@ -2840,7 +2840,7 @@ List all devices associated with a specific organization
 | organization | Name of the associated organization. | Optional | 
 | page | The page number of the results to retrieve. | Optional | 
 | page_size | The maximum number of objects to retrieve per page. default value 0. | Optional | 
-| limit | The maximum number of results to retrieve. default value 50. | Optional | 
+| limit | The maximum number of results to retrieve. Default is 50. | Optional | 
 
 
 #### Context Output
@@ -2848,8 +2848,8 @@ List all devices associated with a specific organization
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | VersaDirector.Appliance.name | string | Appliance name. | 
-| VersaDirector.Appliance.uuid | string | Appliance UUID | 
-| VersaDirector.Appliance.applianceLocation | string | Appliance location | 
+| VersaDirector.Appliance.uuid | string | Appliance UUID. | 
+| VersaDirector.Appliance.applianceLocation | string | Appliance location. | 
 
 #### Command example
 ```!vd-organization-appliance-list limit=3```
@@ -3024,7 +3024,7 @@ List all devices associated with a specific organization
                     },
                     "ipAddress": "EXAMPLE_URL",
                     "last-updated-time": "2022-11-13 10:24:39.0",
-                    "location": "Madrid, Spain",
+                    "location": "LOCATION",
                     "lockDetails": {
                         "lockType": "NONE",
                         "user": "EXAMPLE_USER"
@@ -3082,7 +3082,7 @@ List all devices associated with a specific organization
 
 ### vd-organization-list
 ***
-List all organizations/tenants
+List all organizations/tenants.
 
 
 #### Base Command
@@ -3101,19 +3101,19 @@ List all organizations/tenants
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VersaDirector.Organization.name | String | Organization name | 
-| VersaDirector.Organization.uuid | String | Organization UUID | 
-| VersaDirector.Organization.parent | String | Organization parent | 
-| VersaDirector.Organization.subscriptionPlan | String | Organization subscription plan | 
-| VersaDirector.Organization.id | String | Organization ID | 
-| VersaDirector.Organization.authType | String | Organization auth type | 
-| VersaDirector.Organization.cpeDeploymentType | String | Organization CPE deployment type | 
-| VersaDirector.Organization.appliances | String | Organization appliances | 
-| VersaDirector.Organization.vrfsGroups | String | Organization VRFS groups | 
-| VersaDirector.Organization.wanNetworkGroups | String | Organization WAN network groups | 
-| VersaDirector.Organization.analyticsClusters | String | Organization analytics clusters | 
-| VersaDirector.Organization.sharedControlPlane | String | Organization shared control plane | 
-| VersaDirector.Organization.blockInterRegionRouting | String | Organization blockInter region routing | 
+| VersaDirector.Organization.name | String | Organization name. | 
+| VersaDirector.Organization.uuid | String | Organization UUID. | 
+| VersaDirector.Organization.parent | String | Organization parent. | 
+| VersaDirector.Organization.subscriptionPlan | String | Organization subscription plan. | 
+| VersaDirector.Organization.id | String | Organization ID. | 
+| VersaDirector.Organization.authType | String | Organization auth type. | 
+| VersaDirector.Organization.cpeDeploymentType | String | Organization CPE deployment type. | 
+| VersaDirector.Organization.appliances | String | Organization appliances. | 
+| VersaDirector.Organization.vrfsGroups | String | Organization VRFS groups. | 
+| VersaDirector.Organization.wanNetworkGroups | String | Organization WAN network groups. | 
+| VersaDirector.Organization.analyticsClusters | String | Organization analytics clusters. | 
+| VersaDirector.Organization.sharedControlPlane | String | Organization shared control plane. | 
+| VersaDirector.Organization.blockInterRegionRouting | String | Organization blockInter region routing. | 
 
 #### Command example
 ```!vd-organization-list limit=3```
@@ -3210,7 +3210,7 @@ List all organizations/tenants
 
 ### vd-appliance-list
 ***
-List all available appliances for all organizations/tenants, with a limit of max 25 appliances per organization
+List all available appliances for all organizations/tenants, with a limit of max 25 appliances per organization.
 
 
 #### Base Command
@@ -3222,7 +3222,7 @@ List all available appliances for all organizations/tenants, with a limit of max
 | --- | --- | --- |
 | page | The page number of the results to retrieve. | Optional | 
 | page_size | The maximum number of objects to retrieve per page. | Optional | 
-| limit | Limit number of results. | Optional | 
+| limit | The maximum number of results. | Optional | 
 
 
 #### Context Output
@@ -3230,10 +3230,10 @@ List all available appliances for all organizations/tenants, with a limit of max
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | VersaDirector.Appliance.name | String | Appliance name. | 
-| VersaDirector.Appliance.uuid | String | Appliance UUID | 
-| VersaDirector.Appliance.ipAddress | String | Appliance IP address | 
-| VersaDirector.Appliance.appType | String | Appliance application type | 
-| VersaDirector.Appliance.branchId | Number | Application branch ID | 
+| VersaDirector.Appliance.uuid | String | Appliance UUID. | 
+| VersaDirector.Appliance.ipAddress | String | Appliance IP address. | 
+| VersaDirector.Appliance.appType | String | Appliance application type. | 
+| VersaDirector.Appliance.branchId | Number | Application branch ID. | 
 
 #### Command example
 ```!vd-appliance-list limit=3```
@@ -3245,7 +3245,7 @@ List all available appliances for all organizations/tenants, with a limit of max
             "appliance-list": [
                 {
                     "appType": "branch",
-                    "branchId": 103,
+                    "branchId": "ID",
                     "ipAddress": "EXAMPLE_URL",
                     "name": "EXAMPLE_BRANCH",
                     "uuid": "X"
