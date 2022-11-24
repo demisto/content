@@ -11,7 +11,7 @@
         },
         {
             "domain": "sendgrid.net",
-            "server_ip": "167.89.123.124",
+            "server_ip": "198.51.100.0",
             "bcti_data": {
                 "category": "BUSINESS_AND_ECONOMY",
                 "country": "US",
@@ -41,7 +41,7 @@
                                 "display_name": "John Doe"
                             },
                             "impersonator": {
-                                "impersonated_email": "zoey_russel@fake-odessa.com",
+                                "impersonated_email": "john_doe@patterson.com",
                                 "impersonator_name": "John Doe"
                             },
                             "original": {
@@ -70,8 +70,8 @@
             }
         },
         "user_info": {
-            "name": "brandon romero",
-            "email": "zoey_russel@fake-odessa.com",
+            "name": "John Doe",
+            "email": "john_doe@patterson.com",
             "is_vip": false,
             "in_global": true
         }
