@@ -54,13 +54,13 @@
             "app_name": "MICROSOFT_OUTLOOK",
             "external_users": [
                 {
-                    "name": "Cheryl Durham",
-                    "email": "cheryl_durham@faketest-garcia.com",
+                    "name": "John Doe",
+                    "email": "john_doe@patterson.com",
                     "is_vip": false
                 }
             ],
             "external_senders": [
-                "cheryl_durham@faketest-garcia.com"
+                "john_doe@patterson.com"
             ],
             "folder_categories": [
                 "SPAM"
