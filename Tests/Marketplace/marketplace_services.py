@@ -2608,7 +2608,7 @@ class Pack(object):
                                       if v.get(Metadata.MANDATORY, False) is True
                                       and k not in core_packs
                                       and k not in self._user_metadata[Metadata.DEPENDENCIES].keys()
-                                      and k not in self._user_metadata[Metadata.EXCLUDED_DEPENDENCIES]]
+                                      and k not in self._user_metadata.get(Metadata.EXCLUDED_DEPENDENCIES, [])]
             if mandatory_dependencies:
                 raise Exception(f'New mandatory dependencies {mandatory_dependencies} were '
                                 f'found in the core pack {self._pack_name}')
