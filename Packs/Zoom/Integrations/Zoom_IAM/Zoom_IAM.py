@@ -44,7 +44,7 @@ class Client(BaseClient):
         self.account_id = account_id
         self.client_id = client_id
         self.client_secret = client_secret
-        is_jwt = api_key and api_secret and not (client_id and client_secret and account_id)
+        is_jwt = (api_key and api_secret) and not (client_id and client_secret and account_id)
         if is_jwt:
             # the user has chosen to use the JWT authentication method (deprecated)
             self.access_token = get_jwt_token(api_key, api_secret)  # type: ignore[arg-type]

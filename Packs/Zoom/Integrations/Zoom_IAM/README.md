@@ -1,10 +1,10 @@
 An Identity and Access Management integration template.
-This integration was integrated and tested with version xx of Zoom_IAM Dev
+This integration was integrated and tested with version xx of Zoom_IAM
 
-## Configure Zoom_IAM Dev on Cortex XSOAR
+## Configure Zoom_IAM on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Zoom_IAM Dev.
+2. Search for Zoom_IAM.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter**                      | **Description**                          | **Required** |
@@ -35,9 +35,9 @@ Disable an active user.
 `iam-disable-user`
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                     | **Required** |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| user-profile      | One of the three user profile attributs: "email" or "id" or "username". <br/>For example: `{"email": "john.doe@example.com"}`<br/>. | Required     |
+| **Argument Name** | **Description**                                                                       | **Required** |
+| ----------------- | ------------------------------------------------------------------------------------- | ------------ |
+| user-profile      | A User Profile indicator. <br/>For example: `{"email": "john.doe@example.com"}`<br/>. | Required     |
 
 
 #### Context Output
@@ -69,7 +69,7 @@ Disable an active user.
             {
                 "action": "disable",
                 "active": false,
-                "brand": "Zoom_IAM Dev",
+                "brand": "Zoom_IAM",
                 "details": {
                     "email": "example@example.com",
                     "givenname": "Example"
@@ -78,7 +78,7 @@ Disable an active user.
                 "errorCode": null,
                 "errorMessage": "",
                 "id": "6mIygOyeTT61Wzw_PAo5jw",
-                "instanceName": "Zoom_IAM Dev_instance_1 JWT",
+                "instanceName": "Zoom_IAM_instance_1 JWT",
                 "reason": "",
                 "skipped": false,
                 "success": true,
@@ -87,7 +87,7 @@ Disable an active user.
             {
                 "action": "disable",
                 "active": null,
-                "brand": "Zoom_IAM Dev",
+                "brand": "Zoom_IAM",
                 "details": {
                     "account_id": "aeKD2BFJRASt1QVURWo9CA",
                     "account_number": 1114287,
@@ -105,7 +105,7 @@ Disable an active user.
                     "language": "en-US",
                     "last_client_version": "5.8.7.2058(win)",
                     "last_login_time": "2022-08-24T07:25:49Z",
-                    "last_name": "Rosenberg",
+                    "last_name": "Example",
                     "location": "",
                     "login_types": [
                         1
@@ -128,7 +128,7 @@ Disable an active user.
                 "errorCode": null,
                 "errorMessage": "",
                 "id": null,
-                "instanceName": "Zoom_IAM Dev_instance_2 OAuth",
+                "instanceName": "Zoom_IAM_instance_2 OAuth",
                 "reason": "User is already disabled.",
                 "skipped": true,
                 "success": true,
@@ -141,10 +141,10 @@ Disable an active user.
 
 #### Human Readable Output
 
->### Disable User Results (Zoom_IAM Dev)
+>### Disable User Results (Zoom_IAM)
 >|brand|instanceName|success|active|id|email|details|
 >|---|---|---|---|---|---|---|
->| Zoom_IAM Dev | Zoom_IAM Dev_instance_1 JWT | true | false | 6mIygOyeTT61Wzw_PAo5jw | example@example.com | email: example@example.com<br/>givenname: Example |
+>| Zoom_IAM | Zoom_IAM_instance_1 JWT | true | false | 6mIygOyeTT61Wzw_PAo5jw | example@example.com | email: example@example.com<br/>givenname: Example |
 
 
 ### iam-enable-user
@@ -191,7 +191,7 @@ Enable a deactivated user.
             {
                 "action": "enable",
                 "active": true,
-                "brand": "Zoom_IAM Dev",
+                "brand": "Zoom_IAM",
                 "details": {
                     "email": "example@example.com",
                     "givenname": "Example"
@@ -200,7 +200,7 @@ Enable a deactivated user.
                 "errorCode": null,
                 "errorMessage": "",
                 "id": "6mIygOyeTT61Wzw_PAo5jw",
-                "instanceName": "Zoom_IAM Dev_instance_2 OAuth",
+                "instanceName": "Zoom_IAM_instance_2 OAuth",
                 "reason": "",
                 "skipped": false,
                 "success": true,
@@ -209,7 +209,7 @@ Enable a deactivated user.
             {
                 "action": "enable",
                 "active": true,
-                "brand": "Zoom_IAM Dev",
+                "brand": "Zoom_IAM",
                 "details": {
                     "email": "example@example.com",
                     "givenname": "Example"
@@ -218,7 +218,7 @@ Enable a deactivated user.
                 "errorCode": null,
                 "errorMessage": "",
                 "id": "6mIygOyeTT61Wzw_PAo5jw",
-                "instanceName": "Zoom_IAM Dev_instance_1 JWT",
+                "instanceName": "Zoom_IAM_instance_1 JWT",
                 "reason": "",
                 "skipped": false,
                 "success": true,
@@ -231,10 +231,10 @@ Enable a deactivated user.
 
 #### Human Readable Output
 
->### Enable User Results (Zoom_IAM Dev)
+>### Enable User Results (Zoom_IAM)
 >|brand|instanceName|success|active|id|email|details|
 >|---|---|---|---|---|---|---|
->| Zoom_IAM Dev | Zoom_IAM Dev_instance_2 OAuth | true | true | 6mIygOyeTT61Wzw_PAo5jw | example@example.com | email: example@example.com<br/>givenname: Example |
+>| Zoom_IAM | Zoom_IAM_instance_2 OAuth | true | true | 6mIygOyeTT61Wzw_PAo5jw | example@example.com | email: example@example.com<br/>givenname: Example |
 
 
 ### iam-get-user
@@ -278,7 +278,7 @@ There is no context output for this command.
             "language": "en-US",
             "last_client_version": "5.8.7.2058(win)",
             "last_login_time": "2022-08-24T07:25:49Z",
-            "last_name": "Rosenberg",
+            "last_name": "Example",
             "location": "",
             "login_types": [
                 1
@@ -301,7 +301,7 @@ There is no context output for this command.
             {
                 "action": "get",
                 "active": true,
-                "brand": "Zoom_IAM Dev",
+                "brand": "Zoom_IAM",
                 "details": {
                     "account_id": "aeKD2BFJRASt1QVURWo9CA",
                     "account_number": 1114287,
@@ -319,7 +319,7 @@ There is no context output for this command.
                     "language": "en-US",
                     "last_client_version": "5.8.7.2058(win)",
                     "last_login_time": "2022-08-24T07:25:49Z",
-                    "last_name": "Rosenberg",
+                    "last_name": "Example",
                     "location": "",
                     "login_types": [
                         1
@@ -342,7 +342,7 @@ There is no context output for this command.
                 "errorCode": null,
                 "errorMessage": "",
                 "id": "6mIygOyeTT61Wzw_PAo5jw",
-                "instanceName": "Zoom_IAM Dev_instance_2 OAuth",
+                "instanceName": "Zoom_IAM_instance_2 OAuth",
                 "reason": "",
                 "skipped": false,
                 "success": true,
@@ -351,7 +351,7 @@ There is no context output for this command.
             {
                 "action": "get",
                 "active": true,
-                "brand": "Zoom_IAM Dev",
+                "brand": "Zoom_IAM",
                 "details": {
                     "account_id": "aeKD2BFJRASt1QVURWo9CA",
                     "account_number": 1114287,
@@ -369,7 +369,7 @@ There is no context output for this command.
                     "language": "en-US",
                     "last_client_version": "5.8.7.2058(win)",
                     "last_login_time": "2022-08-24T07:25:49Z",
-                    "last_name": "Rosenberg",
+                    "last_name": "Example",
                     "location": "",
                     "login_types": [
                         1
@@ -392,7 +392,7 @@ There is no context output for this command.
                 "errorCode": null,
                 "errorMessage": "",
                 "id": "6mIygOyeTT61Wzw_PAo5jw",
-                "instanceName": "Zoom_IAM Dev_instance_1 JWT",
+                "instanceName": "Zoom_IAM_instance_1 JWT",
                 "reason": "",
                 "skipped": false,
                 "success": true,
@@ -405,10 +405,10 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->### Get User Results (Zoom_IAM Dev)
+>### Get User Results (Zoom_IAM)
 >|brand|instanceName|success|active|id|email|details|
 >|---|---|---|---|---|---|---|
->| Zoom_IAM Dev | Zoom_IAM Dev_instance_1 JWT | true | true | 6mIygOyeTT61Wzw_PAo5jw | example@example.com | id: 6mIygOyeTT61Wzw_PAo5jw<br/>first_name: Example<br/>last_name: Rosenberg<br/>email: example@example.com<br/>type: 1<br/>role_name: Member<br/>pmi: 3269259758<br/>use_pmi: false<br/>personal_meeting_url: https:<span>//</span>us06web.zoom.us/j/3269259758?pwd=Q2VTN1JsM2J2OCtmS1hWaHBTUmV6QT09<br/>timezone: Asia/Jerusalem<br/>verified: 0<br/>dept: <br/>created_at: 2020-06-16T06:57:23Z<br/>last_login_time: 2022-08-24T07:25:49Z<br/>last_client_version: 5.8.7.2058(win)<br/>pic_url: https:<span>//</span>lh3.googleusercontent.com/a/AItbvmn0GJLCTIkOIatpkUy-PuEf-tFQEnBVOUxcT2oB=s96-c<br/>cms_user_id: <br/>jid: 6miygoyett61wzw_pao5jw@xmpp.zoom.us<br/>group_ids: <br/>im_group_ids: <br/>account_id: aeKD2BFJRASt1QVURWo9CA<br/>language: en-US<br/>phone_country: <br/>phone_number: <br/>status: active<br/>job_title: <br/>location: <br/>login_types: 1<br/>role_id: 2<br/>account_number: 1114287<br/>cluster: us06<br/>user_created_at: 2020-06-16T06:57:23Z |
+>| Zoom_IAM | Zoom_IAM_instance_1 JWT | true | true | 6mIygOyeTT61Wzw_PAo5jw | example@example.com | id: 6mIygOyeTT61Wzw_PAo5jw<br/>first_name: Example<br/>last_name: Example<br/>email: example@example.com<br/>type: 1<br/>role_name: Member<br/>pmi: 3269259758<br/>use_pmi: false<br/>personal_meeting_url: https:<span>//</span>us06web.zoom.us/j/3269259758?pwd=Q2VTN1JsM2J2OCtmS1hWaHBTUmV6QT09<br/>timezone: Asia/Jerusalem<br/>verified: 0<br/>dept: <br/>created_at: 2020-06-16T06:57:23Z<br/>last_login_time: 2022-08-24T07:25:49Z<br/>last_client_version: 5.8.7.2058(win)<br/>pic_url: https:<span>//</span>lh3.googleusercontent.com/a/AItbvmn0GJLCTIkOIatpkUy-PuEf-tFQEnBVOUxcT2oB=s96-c<br/>cms_user_id: <br/>jid: 6miygoyett61wzw_pao5jw@xmpp.zoom.us<br/>group_ids: <br/>im_group_ids: <br/>account_id: aeKD2BFJRASt1QVURWo9CA<br/>language: en-US<br/>phone_country: <br/>phone_number: <br/>status: active<br/>job_title: <br/>location: <br/>login_types: 1<br/>role_id: 2<br/>account_number: 1114287<br/>cluster: us06<br/>user_created_at: 2020-06-16T06:57:23Z |
 
 
 ### get-mapping-fields
@@ -428,9 +428,9 @@ There are no input arguments for this command.
 There is no context output for this command.
 ## Incident Mirroring
 
-You can enable incident mirroring between Cortex XSOAR incidents and Zoom_IAM Dev corresponding events (available from Cortex XSOAR version 6.0.0).
+You can enable incident mirroring between Cortex XSOAR incidents and Zoom_IAM corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
 1. Enable *Fetching incidents* in your instance configuration.
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
-**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Zoom_IAM Dev.
+**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Zoom_IAM.

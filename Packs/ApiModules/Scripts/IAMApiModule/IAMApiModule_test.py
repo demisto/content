@@ -24,10 +24,6 @@ APP_DISABLED_USER_OUTPUT = {
 DISABLED_USER_APP_DATA = IAMUserAppData("mock_id", "mock_user_name", is_active=False, app_data=APP_DISABLED_USER_OUTPUT)
 
 
-def create_user_data(data: dict):
-    return IAMUserAppData()
-
-
 class MockCLient():
     def get_user(self):
         return None
@@ -303,3 +299,30 @@ def test_enable_user_command__with_wrong_and_correct_given_name(mocker, given_na
 
     assert outputs.get('action') == IAMActions.ENABLE_USER
     assert outputs.get('details', {}).get('first_name') == given_name
+
+
+@pytest.mark.parametrize("input", [{'user-profile': {'email': ""}}, {'user-profile': {}}])
+def test_enable_user_command__empty_json_as_argument(input):
+    """
+    Given:
+        - An app client object
+        - A user-profile argument that contains an empty json with no user profile
+    When:
+        - Calling function enable_user_command
+    Then:
+        - Ensure the command will return the correct error
+    """
+    class NewMockClient():
+        @staticmethod
+        def handle_exception(user_profile: IAMUserProfile,
+                             e: Union[DemistoException, Exception],
+                             action: IAMActions):
+            raise e
+
+    client = NewMockClient()
+    iamcommand = IAMCommand(get_user_iam_attrs=['id', 'username', 'email'])
+
+    with pytest.raises(DemistoException) as e:
+        # client.enable_user(args)
+        iamcommand.enable_user(client, input)
+    assert e.value.message == "Your user profile argument must contain at least one attribute that is mapped into one of the following attributes in the outgoing mapper: ['id', 'username', 'email']"
