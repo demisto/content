@@ -148,7 +148,7 @@ class MicrosoftClient(BaseClient):
 
     def is_command_executed_from_integration(self):
         ctx = demisto.callingContext.get('context', {})
-        executed_command = ctx.get('ExecutedCommands', [])[0]
+        executed_command = ctx.get('ExecutedCommands', [{'moduleBrand': 'Scripts'}])[0]
         return executed_command.get('moduleBrand') != 'Scripts'
 
     def http_request(
