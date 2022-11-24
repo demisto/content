@@ -1,5 +1,3 @@
-## LDAP Authentication
-
 ## Overview
 
 This integration enables using your OpenLDAP or Active Directory user authentication settings in Cortex XSOAR. Users can log in to Cortex XSOAR with their OpenLDAP or Active Directory username and passwords, and their permissions in Cortex XSOAR will be set according to the groups and mapping set in AD Roles Mapping.  
