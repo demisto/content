@@ -55,27 +55,52 @@ configuration:
   hidden: true
 - display: Timeout
   name: timeout
+  additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
   defaultvalue: 60,10
-  additionalinfo: "The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used."
   required: false
   type: 0
   section: Connect
   advanced: true
 - display: Retries
   name: retries
+  defaultvalue: 5
   additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
   required: false
   type: 0
   section: Connect
   advanced: true
-  defaultvalue: 5
+- display: How many incidents to fetch each time
+  name: fetch_limit
+  required: false
+  type: 0
+  defaultvalue: '10'
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+  name: first_fetch_time
+  required: false
+  type: 0
+  defaultvalue: 3 days
 - display: Guard Duty Severity level
   name: gs_severity
   required: false
-  type: 0
+  type: 16
   section: Collect
   advanced: true
-  additionalinfo: You can set the severity level of the findings to be fetched. "Low", "Medium", "High". For example, if you set the severity level to "Medium", the integration will only fetch findings with severity level of Medium and higher.
+  additionalinfo: 'You can set the severity level of the findings to be fetched: "Low", "Medium", "High". For example, if you set the severity level to "Medium", the integration will only fetch findings with severity level of Medium and higher.'
+  options:
+  - Low
+  - Medium
+  - High
+- display: Archive findings After Fetch
+  additionalinfo: You can set whether findings that are fetched will be moved to the GuardDuty archive.
+  name: is_archive
+  type: 8
+  defaultvalue: "false"
+  required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+  defaultvalue: '1'
 - display: Trust any certificate (not secure)
   hidden: false
   name: insecure
@@ -107,8 +132,41 @@ script:
       - 'False'
       required: true
       secret: false
+    - description: The status of S3 data event logs as a data source.
+      isArray: false
+      name: enableS3Logs
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - description: The status of Kubernetes audit logs as a data source.
+      isArray: false
+      name: enableKubernetesLogs
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - description: Describes the configuration for scanning EBS volumes as a data source.
+      isArray: false
+      name: ebsVolumesMalwareProtection
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - description: Specifies how frequently updated findings are exported.
+      isArray: false
+      name: findingFrequency
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'Fifteen Minutes'
+      - 'One Hour'
+      - 'Six Hours'
     - default: false
-      description: The AWS Region, if not specified the default region will be used.
+      description: The AWS Region. If not specified the default region will be used.
       isArray: false
       name: region
       required: false
@@ -225,6 +283,30 @@ script:
     - contextPath: AWS.GuardDuty.Detectors.UpdatedAt
       description: The time a resource was last updated.
       type: string
+    - contextPath: AWS.GuardDuty.Detectors.CloudTrailStatus
+      description: Describes whether CloudTrail is enabled as a data source for the detector.
+      type: string
+    - contextPath: AWS.GuardDuty.Detectors.DNSLogsStatus
+      description: Denotes whether DNS logs are enabled as a data source.
+      type: string
+    - contextPath: AWS.GuardDuty.Detectors.FlowLogsStatus
+      description: Denotes whether VPC flow logs are enabled as a data source.
+      type: string
+    - contextPath: AWS.GuardDuty.Detectors.S3LogsStatus
+      description: Describes whether S3 data event logs are automatically enabled for new members of the organization.
+      type: string
+    - contextPath: AWS.GuardDuty.Detectors.KubernetesAuditLogsStatus
+      description: Describes whether Kubernetes audit logs are enabled as a data source.
+      type: string
+    - contextPath: AWS.GuardDuty.Detectors.MalwareProtectionStatus
+      description: Describes whether scanning EBS volumes is enabled as a data source.
+      type: string
+    - contextPath: AWS.GuardDuty.Detectors.MalwareProtectionReason
+      description: The reason why scanning EBS volumes (Malware Protection) was not enabled as a data source.
+      type: string
+    - contextPath: AWS.GuardDuty.Detectors.Tags
+      description: The tags of the detector resource.
+      type: string
   - arguments:
     - default: false
       description: The unique ID of the detector that you want to update.
@@ -243,8 +325,41 @@ script:
       - 'False'
       required: true
       secret: false
+    - description: The status of S3 data event logs as a data source.
+      isArray: false
+      name: enableS3Logs
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - description: The status of Kubernetes audit logs as a data source.
+      isArray: false
+      name: enableKubernetesLogs
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - description: Describes the configuration for scanning EBS volumes as a data source.
+      isArray: false
+      name: ebsVolumesMalwareProtection
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - description: Specifies how frequently updated findings are exported.
+      isArray: false
+      name: findingFrequency
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'Fifteen Minutes'
+      - 'One Hour'
+      - 'Six Hours'
     - default: false
-      description: The AWS Region, if not specified the default region will be used.
+      description: The AWS Region. If not specified the default region will be used.
       isArray: false
       name: region
       required: false
@@ -390,7 +505,27 @@ script:
     name: aws-gd-delete-ip-set
   - arguments:
     - default: false
-      description: The AWS Region, if not specified the default region will be used.
+      description: Number of total results to query.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+      defaultValue: '50'
+    - default: false
+      description: Specific page to query.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Number of total results in each page.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+      defaultValue: '50'
+    - default: false
+      description: The AWS Region. If not specified the default region will be used.
       isArray: false
       name: region
       required: false
@@ -570,6 +705,26 @@ script:
       description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       isArray: false
       name: roleSessionDuration
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of total results to query.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Specific page to query.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of total results in each page.
+      isArray: false
+      name: page_size
       required: false
       secret: false
     deprecated: false
@@ -785,6 +940,26 @@ script:
       name: roleSessionDuration
       required: false
       secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of total results to query.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Specific page to query.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of total results in each page.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
     deprecated: false
     description: Lists the ThreatIntelSets of the GuardDuty service specified by the detector ID.
     execution: false
@@ -887,6 +1062,26 @@ script:
       name: roleSessionDuration
       required: false
       secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of total results to query.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Specific page to query.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of total results in each page.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
     deprecated: false
     description: Lists Amazon GuardDuty findings for the specified detector ID.
     execution: false
@@ -936,6 +1131,76 @@ script:
     description: Describes Amazon GuardDuty findings specified by finding IDs.
     execution: false
     name: aws-gd-get-findings
+    outputs:
+    - contextPath: 'AWS.GuardDuty.Findings.AccountId'
+      description: The ID of the account in which the finding was generated.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.CreatedAt'
+      description: The time and date when the finding was created.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Description'
+      description: The description of the finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Region'
+      description: The region where the finding was generated.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Id'
+      description: The ID of the finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Title'
+      description: The title of the finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Severity'
+      description: The severity of the finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Type'
+      description: The type of the finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.UpdatedAt'
+      description: The time and date when the finding was last updated.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Arn'
+      description: The ARN of the finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Confidence'
+      description: The confidence score for the finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Partition'
+      description: The partition associated with the finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.ResourceType'
+      description: The type of Amazon Web Services resource.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.SchemaVersion'
+      description: The version of the schema used for the finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Resource.AccessKeyDetails'
+      description: The IAM access key details (IAM user information) of a user that engaged in the activity that prompted GuardDuty to generate a finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Resource.InstanceDetails'
+      description: The information about the EC2 instance associated with the activity that prompted GuardDuty to generate a finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Resource.EksClusterDetails'
+      description: Details about the EKS cluster involved in a Kubernetes finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Resource.KubernetesDetails'
+      description: Details about the Kubernetes user and workload involved in a Kubernetes finding.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Resource.EbsVolumeDetails'
+      description: Contains a list of scanned and skipped EBS volumes with details.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Resource.EcsClusterDetails'
+      description: Contains information about the details of the ECS cluster.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Resource.ContainerDetails'
+      description: Details of a container.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Resource.S3BucketDetails'
+      description: Contains information on the S3 bucket.
+      type: string
+    - contextPath: 'AWS.GuardDuty.Findings.Service'
+      description: Contains additional information about the generated finding.
+      type: string
   - arguments:
     - default: false
       description: The ID of the detector to create sample findings for.
@@ -1123,6 +1388,26 @@ script:
       name: roleSessionDuration
       required: false
       secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of total results to query.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Specific page to query.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of total results in each page.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
     deprecated: false
     description: Describes Amazon GuardDuty members for the specified detector ID.
     execution: false
@@ -1212,7 +1497,7 @@ script:
     - contextPath: AWS.GuardDuty.Members.UpdatedAt
       description: The time a member was last updated.
       type: string
-  dockerimage: demisto/boto3py3:1.0.0.37643
+  dockerimage: demisto/boto3py3:1.0.0.37755
   feed: false
   isfetch: true
   longRunning: false
@@ -1224,3 +1509,5 @@ script:
 tests:
 - No tests
 fromversion: 5.0.0
+defaultmapperin: AWSGuardDuty Mapper (incoming)
+defaultclassifier: AWSGuardDuty classifier
