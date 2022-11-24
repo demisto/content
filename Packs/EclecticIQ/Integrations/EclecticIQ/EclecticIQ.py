@@ -182,10 +182,8 @@ class Client(BaseClient):
             url_suffix='permissions',
             params={}
         )
-        data = response.get("data")
-        if data:
-            return data
-        return {}
+        data = response.get("data", {})
+        return data or {}
 
 
 def get_platform_permission_ids(permissions_data: Any) -> List[Any]:
@@ -228,10 +226,10 @@ def authenticate_user(ids_of_user: list, ids_required_for_user: list) -> Tuple[b
     return user_authenticated, value
 
 
-def get_permission_name_from_id(permission_data: dict, permission_ids: list) -> Any:
+def get_permission_name_from_id(permission_data: Dict, permission_ids: list) -> Any:
     """Get permission name from permission ids.
     :param permission_data: permission data
-    :type permission_data: dict
+    :type permission_data: Dict
     :param permission_ids: permission id for authenticate
     :type permission_ids: list
     :return: permissions name
@@ -245,7 +243,7 @@ def get_permission_name_from_id(permission_data: dict, permission_ids: list) -> 
     return permissions_name
 
 
-def test_module(client: Client) -> Any:
+def data_ingestion(client: Client) -> Any:
     """Tests API connectivity and authentication'
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
@@ -314,22 +312,22 @@ def maliciousness_to_dbotscore(maliciousness) -> int:
     number
         Translated DBot Score
     """
-    maliciousness_dictionary = {
+    maliciousness_Dictionary = {
         'unknown': 0,
         'safe': 1,
         'low': 2,
         'medium': 2,
         'high': 3
     }
-    return maliciousness_dictionary[maliciousness]
+    return maliciousness_Dictionary[maliciousness]
 
 
-def prepare_observable_data(data: Any) -> dict:
+def prepare_observable_data(data: Any) -> Dict:
     """Prepare Observable data to show on UI.
     :param data: Observable data
-    :type data: dict
-    :return: Only selected fields dict
-    :rtype: dict
+    :type data: Dict
+    :return: Only selected fields Dict
+    :rtype: Dict
     """
     new_data = {}
     new_data["type"] = data.get("type")
@@ -341,13 +339,13 @@ def prepare_observable_data(data: Any) -> dict:
 def get_entity_data(client, data_item: Any) -> List[Any]:
     """Get entity data to show on UI.
     :param data_item: Data from lookup obsrvables Dict
-    :type data_item: dict
+    :type data_item: Any
     :return: prepared data to show on UI
     :rtype: List
     """
-    entity_data_dict_list = []
+    entity_data_Dict_list = []
     for item in data_item.get("entities"):
-        entity_data_dict = {}
+        entity_data_Dict = {}
         entity_data = client.fetch_entity(
             str(item.split("/")[-1])
         )
@@ -364,20 +362,20 @@ def get_entity_data(client, data_item: Any) -> List[Any]:
 
             obs_data_list.append(append_data)
 
-        entity_data_dict.update(
+        entity_data_Dict.update(
             prepare_entity_data(entity_data, obs_data_list))
-        entity_data_dict_list.append(entity_data_dict)
-    return entity_data_dict_list
+        entity_data_Dict_list.append(entity_data_Dict)
+    return entity_data_Dict_list
 
 
-def prepare_entity_data(data: Any, obs_data: Any) -> dict[Any, Any]:
+def prepare_entity_data(data: Any, obs_data: Any) -> Dict[Any, Any]:
     """Prepare entity data to show on UI.
     :param data: Entity data
     :type data: Any
     :param obs_data: Observable data
     :type data: Any
-    :return: Only selected fields dict
-    :rtype: dict
+    :return: Only selected fields Dict
+    :rtype: Dict
     """
     new_data = {}
     if data.get("data"):
@@ -517,7 +515,7 @@ def lookup_observables(client: Client, args: Any) -> CommandResults:
         }
         context = {
             'DBotScore': dbot_output
-        }  # type: dict
+        }  # type: Dict
         if observable.get("entities"):
             entity_data = get_entity_data(client, observable)
             final_data = entity_data
@@ -615,25 +613,9 @@ def main() -> None:
     :rtype:
     """
     api_key = demisto.params().get('apikey')
-
-    # get the service API url
     base_url = demisto.params().get('url')
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
     verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = demisto.params().get('proxy', False)
-
-    # INTEGRATION DEVELOPER TIP
-    # You can use functions such as ``demisto.debug()``, ``demisto.info()``,
-    # etc. to print information in the XSOAR server log. You can set the log
-    # level on the server configuration
-    # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
-
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         headers = {
@@ -647,8 +629,7 @@ def main() -> None:
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
+            return_results(data_ingestion(client))
 
         elif demisto.command() == 'lookup_observables':
             return_results(lookup_observables(client, demisto.args()))
@@ -660,8 +641,7 @@ def main() -> None:
             return_results(create_observable(client, demisto.args()))
 
         else:
-            demisto.error(f'{demisto.command} command is not implemented.')
-            raise NotImplementedError(f'{demisto.command} command is not implemented.')
+            raise NotImplementedError(f'{demisto.command()} command is not implemented.')
 
     # Log exceptions and return errors
     except Exception as e:
