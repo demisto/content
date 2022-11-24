@@ -126,10 +126,10 @@ script:
     - contextPath: IP.Address
       description: The IP address that was searched.
       type: string
-    - contextPath: IP.ipClassifications
+    - contextPath: Zscaler.IP.ipClassifications
       description: The classification of the IP address. For example, MUSIC or WEB_SEARCH.
       type: string
-    - contextPath: IP.iplClassificationsWithSecurityAlert
+    - contextPath: Zscaler.IP.iplClassificationsWithSecurityAlert
       description: Classifications that have a security alert for the IP address.
       type: string
     - contextPath: IP.Malicious.Vendor
