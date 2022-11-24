@@ -4,9 +4,9 @@ import demistomock as demisto
 
 
 defang_data = [
-    ('xsoar@test[.]com', 'xsoar@test.com'),
-    ('xsoar[@]test[.]com', 'xsoar@test.com'),
-    ('xsoar[@]test.com', 'xsoar@test.com'),
+    ('xsoar@test[.]com', 'xsoar@test.com'),  # disable-secrets-detection
+    ('xsoar[@]test[.]com', 'xsoar@test.com'),  # disable-secrets-detection
+    ('xsoar[@]test.com', 'xsoar@test.com'),  # disable-secrets-detection
 ]
 
 
@@ -16,14 +16,14 @@ def test_check_defanging(address, valid):
 
 
 tld_data = [
-    ('Xsoar@test.org.de', True),
-    ('xsoar@test.net.bla', True),
-    ('Xsoar@test.uk.png', False),
-    ('Xsoar@test.eml', False),
-    ('Xsoar@test.new.docx', False),
-    ('entry@id.com.gif', False),
-    ('randomName@randomDomain.com', True),
-    ('Xsoar@xsoar.xlsx', False),
+    ('Xsoar@test.org.de', True),  # disable-secrets-detection
+    ('xsoar@test.net.bla', True),  # disable-secrets-detection
+    ('Xsoar@test.uk.png', False),  # disable-secrets-detection
+    ('Xsoar@test.eml', False),  # disable-secrets-detection
+    ('Xsoar@test.new.docx', False),  # disable-secrets-detection
+    ('entry@id.com.gif', False),  # disable-secrets-detection
+    ('randomName@randomDomain.com', True),  # disable-secrets-detection
+    ('Xsoar@xsoar.xlsx', False),  # disable-secrets-detection
 ]
 
 
@@ -42,15 +42,17 @@ def test_extract_email(input, output):
 
 
 ARGS = {
-    'input': 'Xsoar@test.org.de,Xsoar@test.eml, Xsoar@test.uk, Xsoar@xsoar.xlsx,Xsoar@xsoar.co.il'
+    'input': 'Xsoar@test.org.de,Xsoar@test.eml, '  # disable-secrets-detection
+             'Xsoar@test.uk, '  # disable-secrets-detection
+             'Xsoar@xsoar.xlsx,Xsoar@xsoar.co.il'  # disable-secrets-detection
 }
 
 EXPECTED_RESULTS = [
-    'xsoar@test.org.de',
+    'xsoar@test.org.de',  # disable-secrets-detection
     '',
-    'xsoar@test.uk',
+    'xsoar@test.uk',  # disable-secrets-detection
     '',
-    'xsoar@xsoar.co.il',
+    'xsoar@xsoar.co.il',  # disable-secrets-detection
 ]
 
 
