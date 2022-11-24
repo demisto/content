@@ -1,4 +1,4 @@
-name: VersaDirector.
+name: VersaDirector
 display: Versa Director
 description: Versa Director is a virtualization and service creation platform that simplifies the design, automation, and delivery of SASE services. Versa Director provides the essential management, monitoring, and orchestration capabilities needed to deliver all of the networking and security capabilities within Versa SASE.
 category: Network Security
@@ -76,7 +76,7 @@ script:
       description: A comma-separated list of tags.
       required: false
       isArray: true
-    - falsename: page
+    - name: page
       description: The page number of the results to retrieve.
       required: false
       isArray: false
@@ -1763,7 +1763,7 @@ script:
     - contextPath: VersaDirector.TemplateCustomUrlCategory.category-name
       description: Template custom URL category name.
       type: string
-    - contextPath: VersaDirector.ApplicationServiceTemplatecontent.category-description
+    - contextPath: VersaDirector.ApplicationServiceTemplate.content.category-description
       description: Template custom URL category description.
       type: string
     - contextPath: VersaDirector.ApplicationServiceTemplate.content.confidence
@@ -1815,7 +1815,7 @@ script:
     - contextPath: VersaDirector.TemplateCustomUrlCategory.category-name
       description: Template custom URL category name.
       type: string
-    - contextPath: VersaDirector.ApplicationServiceTemplatecontent.category-description
+    - contextPath: VersaDirector.ApplicationServiceTemplate.content.category-description
       description: Template custom URL category category description.
       type: string
     - contextPath: VersaDirector.ApplicationServiceTemplate.content.confidence
@@ -1855,7 +1855,7 @@ script:
     - contextPath: VersaDirector.TemplateCustomUrlCategory.category-name
       description: Template custom URL category name.
       type: string
-    - contextPath: VersaDirector.ApplicationServiceTemplatecontent.category-description
+    - contextPath: VersaDirector.ApplicationServiceTemplate.content.category-description
       description: Template custom URL category category description.
       type: string
     - contextPath: VersaDirector.ApplicationServiceTemplate.content.confidence
@@ -2271,7 +2271,7 @@ script:
   runonce: false
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.8.37753
 fromversion: 8.0.0
 tests:
 - No tests (auto formatted)

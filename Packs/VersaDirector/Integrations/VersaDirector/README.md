@@ -2310,7 +2310,7 @@ Create a custom URL category associated with a specific template.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | VersaDirector.TemplateCustomUrlCategory.category-name | string | Template custom URL category name. | 
-| VersaDirector.ApplicationServiceTemplatecontent.category-description | string | Template custom url category category description. | 
+| VersaDirector.ApplicationServiceTemplate.content.category-description | string | Template custom url category category description. |
 | VersaDirector.ApplicationServiceTemplate.content.confidence | number | Template custom URL category confidence threshold. | 
 | VersaDirector.ApplicationServiceTemplate.content.urls | string | Template custom URL category URLs. | 
 
@@ -2346,7 +2346,7 @@ List all custom URL categories associated with a specific template or get a spec
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | VersaDirector.TemplateCustomUrlCategory.category-name | string | Template custom URL category name. | 
-| VersaDirector.ApplicationServiceTemplatecontent.category-description | string | Template custom url category category description. | 
+| VersaDirector.ApplicationServiceTemplate.content.category-description | string | Template custom url category category description. | 
 | VersaDirector.ApplicationServiceTemplate.content.confidence | number | Template custom URL category confidence threshold. | 
 | VersaDirector.ApplicationServiceTemplate.content.urls | string | Template custom URL category URLs. | 
 
@@ -2485,7 +2485,7 @@ List all application service templates. Can be filtered by organization or a key
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | VersaDirector.ApplicationServiceTemplate.createDate | string | Date the application service template was created. | 
-| VersaDirector.ApplicationServiceTemplate.createDate | string | Date the application service template was modified. | 
+| VersaDirector.ApplicationServiceTemplate.modifyDate | string | Date the application service template was modified. | 
 | VersaDirector.ApplicationServiceTemplate.content.lastUpdatedBy | string | By whom the application service template was last updated. | 
 | VersaDirector.ApplicationServiceTemplate.content.name | string | Application service template content name. | 
 | VersaDirector.ApplicationServiceTemplate.content.organization | string | Application service template associated organization. | 
