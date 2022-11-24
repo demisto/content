@@ -7,7 +7,9 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-05-14T08:33:25Z",
-    "categories": ["Utilities"],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [
         "Core"
     ],
@@ -47,6 +49,10 @@
             "display_name": "RemoteAccess v2"
         }
     },
+    "excludedDependencies": [
+        "GoogleMaps",
+        "Slack"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
