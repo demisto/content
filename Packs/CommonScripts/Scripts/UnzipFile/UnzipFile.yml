@@ -60,7 +60,7 @@ tags:
 - file
 timeout: '0'
 type: python
-dockerimage: devdemisto/py3-primary:8.1.0.37717
+dockerimage: devdemisto/py3-primary:8.1.0.38621
 runonce: false
 tests:
 - ZipFile-Test
