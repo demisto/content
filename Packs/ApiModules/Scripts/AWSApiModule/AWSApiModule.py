@@ -18,7 +18,7 @@ def validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws
         raise DemistoException('Role session name is required when using role ARN.')
 
 
-def extract_session_from_access(access_key: str, session_token: str):
+def extract_session_from_access(access_key: str, session_token: str | None):
     """
     Extract the session token from the access_key field.
     """
