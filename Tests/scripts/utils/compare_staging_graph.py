@@ -220,7 +220,7 @@ def main():
             message,
             output_path,
         )
-    if slack_token:
+    if slack_token and (output_diff:=output_path / f"diff-{marketplace}.zip"):
         slack_client = WebClient(token=slack_token)
         slack_client.files_upload(
             file=str(output_path / f"diff-{marketplace}.zip"),
