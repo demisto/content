@@ -84,16 +84,20 @@ def get_pack_content_dict(pack_path: Path):
     prefix_dict['Layouts'] = 'layoutscontainer'
     prefix_dict['IndicatorTypes'] = 'reputation'
 
-    for content_item in sub_dirs:
-        if content_item in ['Integrations', 'Scripts']:
-            content_dict[content_item] = os.path.join('TestUploadFlow', content_item, 'TestUploadFlow',
-                                                      f'{prefix_dict[content_item]}-TestUploadFlow.yml')
-        elif content_item not in ['ReleaseNotes', 'TestPlaybooks']:
-            extension = 'yml' if content_item == 'Playbooks' else 'json'
-            content_dict[content_item] = os.path.join('TestUploadFlow', content_item,
-                                                      f'{prefix_dict[content_item]}-TestUploadFlow.{extension}')
+    for content_item_type in sub_dirs:
+        if content_item_type in ['Integrations', 'Scripts']:
+            content_dict[content_item_type] = [parse_path(p, content_item_type, prefix_dict) for p in Path(os.path.join(str(pack_path), content_item_type)).glob('*/*.yml')]
+
+        elif content_item_type not in ['ReleaseNotes', 'TestPlaybooks']:
+            extension = 'yml' if content_item_type == 'Playbooks' else 'json'
+            content_dict[content_item_type] = [parse_path(p, content_item_type, prefix_dict) for p in Path(os.path.join(str(pack_path), content_item_type)).glob(f'*.{extension}')]
     return content_dict
 
+
+def parse_path(path: Path, item_type: str, item_prefixes: dict):
+    path_name = f"{item_prefixes[item_type]}-{path.name}" if not path.name.startswith(item_prefixes[item_type]) else path.name
+    original_path_name = path.name
+    return str(path).split('/Packs/')[1].replace(original_path_name, path_name)
 
 @add_changed_pack
 def add_dependency(base_pack: Path, new_depndency_pack: Path):
@@ -178,6 +182,7 @@ def create_failing_pack(pack: Path):
     return pack, base_metadata['currentVersion'], None
 
 
+@add_changed_pack
 def modify_pack(pack: Path, integration: str):
     """
     Modify a pack regularly, in order to check if all packs items are uploaded correctly

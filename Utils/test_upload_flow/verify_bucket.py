@@ -97,15 +97,19 @@ class GCP:
         metadata_path = os.path.join(self.extracting_destination, 'index', pack_id, 'metadata.json')
         return read_json(metadata_path)
 
-    def is_item_in_pack(self, pack_id, item_type, item_file_path):
+    def is_item_in_pack(self, pack_id, item_type, item_file_paths: list):
         """
         Check if an item is inside the pack.
         """
-        item_name_with_extension = Path(item_file_path).name
-        extracted_item_path = os.path.join(self.extracting_destination, pack_id, item_type,
-                                               item_name_with_extension)
-        exists = os.path.exists(extracted_item_path)
-        return exists
+        not_exists = []
+        for item_path in item_file_paths:
+        # item_name_with_extension = Path(item_file_paths).name
+            if not os.path.exists(os.path.join(self.extracting_destination, item_path)):
+                not_exists.append(item_path)
+        # exists = os.path.exists(extracted_item_path)
+        if not_exists:
+            raise FileNotFoundError(f"The following files were not found in the bucket: '{not_exists}'")
+        return True
 
     def get_index_json(self):
         index_json_path = os.path.join(self.storage_base_path, 'index.json')
@@ -149,7 +153,7 @@ class BucketVerifier:
         Verify the pack is in the index, verify version 1.0.0 zip exists under the pack's path
         """
         version_exists = [self.gcp.is_in_index(pack_id), self.gcp.download_and_extract_pack(pack_id, '1.0.0')]
-        items_exists = [self.gcp.is_item_in_pack(pack_id, item_type, item_file_path) for item_type, item_file_path
+        items_exists = [self.gcp.is_item_in_pack(pack_id, item_type, item_file_paths) for item_type, item_file_paths
                         in pack_items.items()]
         return all(version_exists) and all(items_exists), pack_id
 
@@ -161,7 +165,8 @@ class BucketVerifier:
         """
         pack_path = self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
         version_exists = [self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])]
-        items_exists = [get_items_dict(pack_path, pack_id) == pack_items]
+        items_exists = [self.gcp.is_item_in_pack(pack_id, item_type, item_file_paths) for item_type, item_file_paths
+                        in pack_items.items()]
         return all(version_exists) and all(items_exists), pack_id
 
     @logger
@@ -294,10 +299,10 @@ class BucketVerifier:
         return self.is_valid
 
 
-def get_items_dict(pack_path, pack_id):
-    pack = Pack(pack_id, pack_path)
-    pack.collect_content_items()
-    return pack._content_items
+# def get_items_dict(pack_path, pack_id):
+#     pack = Pack(pack_id, pack_path)
+#     pack.collect_content_items()
+#     return pack._content_items
 
 
 def validate_bucket(service_account, storage_base_path, bucket_name, versions_dict, items_dict):
@@ -344,8 +349,8 @@ def main():
 
         is_valid = validate_bucket(service_account, storage_base_path, storage_bucket_name, versions_dict, items_dict)
     else:
-        is_valid = validate_bucket(service_account, storage_base_path, XSOAR_BUCKET, versions_dict, items_dict) and \
-            validate_bucket(service_account, storage_base_path, XSIAM_BUCKET, versions_dict, items_dict)
+        is_xsoar_bucket_valid = validate_bucket(service_account, storage_base_path, XSOAR_BUCKET, versions_dict, items_dict)
+        is_valid = validate_bucket(service_account, storage_base_path, XSIAM_BUCKET, versions_dict, items_dict) and is_xsoar_bucket_valid
 
     if not is_valid:
         sys.exit(1)
