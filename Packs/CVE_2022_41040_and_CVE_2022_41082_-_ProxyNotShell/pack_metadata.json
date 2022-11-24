@@ -6,25 +6,19 @@
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "categories": [],
-    "tags": [
-        "Incident Response"
+    "categories": [
+        "Case Management"
     ],
-    "useCases": [
-        "Hunting",
-        "Incident Response",
-        "Rapid Breach Response"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "zero-day",
         "0-day",
-        "zero day",
         "Exchange",
         "Microsoft Exchange",
         "IIS",
         "Microsoft",
         "ProxyNotShell",
-        "CVE",
         "CVE-2022-41040",
         "CVE-2022-41082",
         "41040",

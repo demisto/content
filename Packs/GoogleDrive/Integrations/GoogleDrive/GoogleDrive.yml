@@ -3208,7 +3208,7 @@ script:
         command.
       required: false
       isArray: false
-  dockerimage: demisto/googleapi-python3:1.0.0.34951
+  dockerimage: demisto/googleapi-python3:1.0.0.37534
   feed: false
   isfetch: true
   longRunning: false

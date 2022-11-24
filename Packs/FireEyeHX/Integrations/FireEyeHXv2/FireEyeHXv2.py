@@ -1,11 +1,12 @@
 import urllib.parse
+import urllib3
 from json import JSONDecodeError
 from typing import Tuple, Pattern
 
 from CommonServerPython import *
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
@@ -690,13 +691,34 @@ class Client(BaseClient):
                 resp_type='response'
             )
         except Exception as e:
-            demisto.debug(f'Encountered an error for url {self._base_url}/token: {e}')
-            raise ValueError("Server URL incorrect")
+            exception_str = str(e)
+            demisto.info(f'Encountered an error for url {self._base_url}/token: {exception_str}')
+            if 'Incorrect user id or password' in exception_str:
+                raise DemistoException('Unauthorized - Incorrect user id or password')
+            raise ValueError('Could not get a token')
 
         # successful request
         response_headers = response.headers
         token = response_headers.get('X-FeApi-Token')
+        self._auth = None  # the authentication now is based on the token
         return token
+
+    def token_logout(self):
+        """
+        perform logout for the active session
+        """
+        if self._headers['X-FeApi-Token']:
+            try:
+                self._http_request(
+                    method='DELETE',
+                    url_suffix='token',
+                    resp_type='response'
+                )
+            except Exception as e:
+                demisto.debug(f'Encountered an error when tring to logout: {e}')
+
+            # successful request
+            self._headers['X-FeApi-Token'] = None
 
     """
     POLICIES REQUEST
@@ -964,10 +986,14 @@ class Client(BaseClient):
 
     def file_acquisition_package_request(self, acquisition_id):
 
-        return self._http_request(
+        headers = {'Accept': 'application/octet-stream'}
+        response = self._http_request(
             method='GET',
-            url_suffix=f"acqs/files/{acquisition_id}.zip"
-        )["content"]
+            url_suffix=f'acqs/files/{acquisition_id}.zip',
+            headers=headers,
+            resp_type='content'
+        )
+        return response
 
     def delete_file_acquisition_request(self, acquisition_id):
         """
@@ -1485,7 +1511,7 @@ def get_indicator_command_result(alert: Dict[str, Any]) -> CommandResults:
             readable_output=md_table
         )
 
-    else:
+    elif alert.get("event_type") == 'ipv4NetworkEvent':
         indicator = general_context_from_event(alert)
         event_values = alert.get('event_values', {})
         md_table = tableToMarkdown(
@@ -1497,6 +1523,8 @@ def get_indicator_command_result(alert: Dict[str, Any]) -> CommandResults:
             indicator=indicator,
             readable_output=md_table
         )
+
+    return CommandResults(readable_output=f'Unknown event type: {alert.get("event_type")}')
 
 
 def get_condition_entry(condition: Dict):
@@ -2981,7 +3009,12 @@ def search_result_get_command(client: Client, args: Dict[str, Any]) -> List[Comm
                 message = "The search was deleted successfully"
         except Exception as e:
             demisto.debug(f'{message}\n{e}')
-        commandsResults[0].readable_output += f"\n\n{message}"
+        if len(commandsResults) > 0:
+            commandsResults[0].readable_output += f"\n\n{message}"
+        else:
+            commandsResults.append(CommandResults(
+                readable_output=message
+            ))
 
     return commandsResults if commandsResults else [CommandResults(readable_output="No Results")]
 
@@ -3151,6 +3184,7 @@ def main() -> None:
     proxy = params.get('proxy', False)
     command = demisto.command()
     args = demisto.args()
+    client = None
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -3179,6 +3213,10 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+    finally:
+        # perform logout to avoid open sessions
+        if client:
+            client.token_logout()
 
 
 ''' ENTRY POINT '''

@@ -125,11 +125,12 @@ def main():
     nesting_level_to_return = args.get('nesting_level_to_return', 'All files')
 
     file_type, file_path, file_name = extract_file_info(entry_id)
+    demisto.debug(f'{file_type=}, {file_path=}, {file_name=}')
 
     try:
         email_parser = EmailParser(file_path=file_path, max_depth=max_depth, parse_only_headers=parse_only_headers,
                                    file_info=file_type, forced_encoding=forced_encoding,
-                                   default_encoding=default_encoding)
+                                   default_encoding=default_encoding, file_name=file_name)
         output = email_parser.parse()
 
         results = []

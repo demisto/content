@@ -7,10 +7,11 @@ import json
 import requests
 import socket
 import traceback
+import urllib3
 from typing import Callable, Tuple
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 PARAMS = demisto.params()

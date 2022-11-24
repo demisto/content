@@ -22,7 +22,7 @@ alter
 	xdm.alert.name = cs5,
 	xdm.alert.severity = to_string(cn1),
 	xdm.observer.name = _reporting_device_name,
-	xdm.network.http.user_agent = requestClientApplication,
+	xdm.source.user_agent = requestClientApplication,
 	xdm.target.interface = destinationServiceName,
 	xdm.source.ipv4 = sourceTranslatedAddress,
 	xdm.event.type = ZscalerNSSWeblogURLClass,
