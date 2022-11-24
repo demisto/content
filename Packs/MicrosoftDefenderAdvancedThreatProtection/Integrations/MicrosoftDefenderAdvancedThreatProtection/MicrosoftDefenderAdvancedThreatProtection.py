@@ -2039,9 +2039,13 @@ class MsClient:
         """
         cmd_url = '/Software'
         params = {'$top': limit, '$skip': page * page_size}
-        if filter_req:
-            params['$filter'] = "vendor+eq+'centos'"
-            print(filter_req)
+        # if filter_req:
+        # params['$filter'] = filter_req
+        # params['$filter'] = "((id eq 'centos-_-shim-signed') or (id eq 'centos-_-perl-http-tiny')) and (vendor eq 'centos')"
+        params['$filter'] = "id eq 'centos-_-shim-signed' OR id eq 'centos-_-perl-http-tiny'"
+        # params['$filter'] = "vendor eq 'centos'"
+        print(filter_req)
+        print(params)
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
 
     def get_list_vulnerabilities_by_machine(self, filter_req, limit, page, page_size):
@@ -2053,7 +2057,7 @@ class MsClient:
             dict. list of all the vulnerabilities affecting the organization per machine.
         """
         cmd_url = '/vulnerabilities/machinesVulnerabilities'
-        params = {'$top': limit, '$skip': ''}
+        params = {'$top': limit, '$skip': page * page_size}
         if filter_req:
             params['$filter'] = filter_req
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
@@ -2067,7 +2071,7 @@ class MsClient:
             dict. list of all the vulnerabilities.
         """
         cmd_url = '/vulnerabilities'
-        params = {'$top': limit, '$skip': ''}
+        params = {'$top': limit, '$skip': page * page_size}
         if filter_req:
             params['$filter'] = filter_req
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
@@ -4560,8 +4564,44 @@ def list_vulnerabilities_by_software_command(client: MsClient, args: dict) -> Co
         raw_response=vulnerabilities_response)
 
 
-def create_filters(filters_arg_list):
-    return ''
+def create_filters_conjunction(filters_arg_list, name) -> str:
+    """ Create filter conjunction (added 'or' between args)
+        example output: id eq 'id1' or id eq 'id2'
+        Args:
+            filters_arg_list: list[str].
+            name: str.
+        Returns:
+            A str corresponding to the filter param in a qury.
+    """
+    query = ''
+    list_length = len(filters_arg_list)
+    if filters_arg_list:
+        for index, list_item in enumerate(filters_arg_list):
+            if index == list_length - 1 or list_length == 1:
+                query = f"{query}{name} eq '{list_item}'"
+            else:
+                query = f"{query}{name} eq '{list_item}' or "
+    return query
+
+
+def create_filters_disjunctions(filters_arg_list) -> str:
+    """ Create filter disjunctions (added 'and' between args)
+        example output: id eq 'id1' or vendor eq 'vendor1'
+        Args:
+            filters_arg_list: list[str].
+        Returns:
+            A str corresponding to the filter param in a qury.
+    """
+    query = ''
+    filters_arg_list = list(filter(None, ''))
+    list_length = len(filters_arg_list)
+    if filters_arg_list:
+        for index, list_item in enumerate(filters_arg_list):
+            if index == list_length - 1 or list_length == 1 or list_item == '':
+                query = f"{query}{list_item}"
+            else:
+                query = f"{query}{list_item} and "
+    return query
 
 
 def microsoft_atp_list_software_command(client: MsClient, args: dict) -> CommandResults:
@@ -4572,30 +4612,16 @@ def microsoft_atp_list_software_command(client: MsClient, args: dict) -> Command
         Returns:
             A CommandResults object.
     """
-    software_id = argToList(args.get('id'))
+    software_id = argToList(args.get('id', ''))
     names = argToList(args.get('name', ''))
     vendors = argToList(args.get('vendor', ''))
     limit = args.get('limit', 50)
-    page = args.get('page', 1)
+    page = args.get('page', 0)
     page_size = args.get('page_size', 25)
-    if software_id:
-        software_id_filter = 'id+eq+' + ' or id+eq+'.join(f"'{w}'" for w in software_id)
-    if names:
-        names_filter = 'name+eq+' + ' or name+eq+'.join(f"'{w}'" for w in names)
-    if vendors:
-        vendors_filter = 'vendor+eq+' + ' or vendor+eq+'.join(f"'{w}'" for w in vendors)
-    if software_id and names and vendors:
-        filter_req = software_id_filter + ' and ' + names_filter + ' and ' + vendors_filter
-        print(filter_req)
-        print("lala")
-    if software_id and names:
-        filter_req = software_id_filter + ' and ' + names_filter + ' and ' + vendors_filter
-        print(filter_req)
-        print("lala")
-    if software_id and vendors:
-        filter_req = software_id_filter + ' and ' + vendors_filter
-        print(filter_req)
-        print("lala")
+    filter_req = create_filters_disjunctions([create_filters_conjunction(software_id, 'id'),
+                                              create_filters_conjunction(names, 'name'),
+                                              create_filters_conjunction(vendors, 'vendor')])
+    print(filter_req)
     headers = ['id', 'name', 'vendor', 'weaknesses', 'activeAlert', 'exposedMachines', 'installedMachines', 'publicExploit']
     list_software_response = client.get_list_software(filter_req, limit, page, page_size)
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerabilities by software: {software_id}',
@@ -4624,10 +4650,10 @@ def microsoft_atp_list_vulnerabilities_by_machine_command(client: MsClient, args
     product_version = argToList(args.get('product_version', ''))
     severity = argToList(args.get('severity', ''))
     product_vendor = argToList(args.get('product_vendor', ''))
-    limit = args.get('limit')
-    page = args.get('page')
-    page_size = args.get('page_size')
-    filter_req = create_filters([software_id, machine_id, cve_id])
+    limit = args.get('limit', 50)
+    page = args.get('page', 0)
+    page_size = args.get('page_size', 25)
+    filter_req = ""
     headers = ['id', 'cveId', 'machineId”', 'productName', 'productVendor', 'productVersion', 'severity']
     list_vulnerabilities_response = client.get_list_vulnerabilities_by_machine(filter_req, limit, page, page_size)
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerabilities by software: {software_id}',
@@ -4655,9 +4681,9 @@ def microsoft_atp_list_vulnerabilities_command(client: MsClient, args: dict) -> 
     published_on = args.get('published_on', '')
     product_version = args.get('product_version', '')
     cvss = args.get('cvss', '')
-    limit = args.get('limit')
-    page = args.get('page')
-    page_size = args.get('page_size')
+    limit = args.get('limit', 50)
+    page = args.get('page', 0)
+    page_size = args.get('page_size', 25)
     filter_req = create_filters([id, severity, name])
     headers = ['id', 'name', 'description', 'severity', 'publishedOn', 'updatedOn', 'exposedMachines', 'exploitVerified' , 'publicExploit', 'cvssV3']
     list_vulnerabilities_response = client.get_list_vulnerabilities_by_machine(filter_req, limit, page, page_size)
