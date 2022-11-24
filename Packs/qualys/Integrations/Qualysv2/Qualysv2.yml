@@ -2117,6 +2117,57 @@ script:
       predefined:
       - '0'
       - '1'
+    - auto: PREDEFINED
+      description: (Optional) Specify "assets" (the default) when your scan target will include IP addresses/ranges and/or asset groups. Specify "tags" when your scan target will include asset tags.
+      name: target_from
+      predefined:
+      - assets
+      - tag
+      defaultValue: assets
+    - auto: PREDEFINED
+      description: (Optional) Select "any" (the default) to include hosts that match at least one of the selected tags. Select "all" to include hosts that match all of the selected tags.
+      name: tag_include_selector
+      predefined:
+      - all
+      - any
+      defaultValue: any
+    - auto: PREDEFINED
+      description: (Optional) Select "any" (the default) to exclude hosts that match at least one of the selected tags. Select "all" to exclude hosts that match all of the selected tags.
+      name: tag_exclude_selector
+      predefined:
+      - all
+      - any
+      defaultValue: any
+    - auto: PREDEFINED
+      description: (Optional) Specify "id" (the default) to select a tag set by providing tag IDs. Specify "name" to select a tag set by providing tag names.
+      name: tag_set_by
+      predefined:
+      - id
+      - name
+      defaultValue: id
+    - auto: PREDEFINED
+      description: (Optional) Specify a tag set to include. Hosts that match these tags will be included. You identify the tag set by providing tag name or IDs. Multiple entries are comma separated.
+      name: tag_set_include
+    - auto: PREDEFINED
+      description: (Optional) Specify a tag set to exclude. Hosts that match these tags will be excluded. You identify the tag set by providing tag name or IDs. Multiple entries are comma separated.
+      name: tag_set_exclude
+    - auto: PREDEFINED
+      description: (Optional) Specify “0” (the default) to select from all tags (tags with any tag rule). Specify “1” to scan all IP addresses defined in tag selection. When this is specified, only tags with the dynamic IP address rule called “IP address in Network Range(s)” can be selected.
+      name: use_ip_nt_range_tags_include
+      predefined:
+      - "0"
+      - "1"
+      defaultValue: "0"
+    - auto: PREDEFINED
+      description: (Optional) Specify “0” (the default) to select from all tags (tags with any tag rule). Specify “1” to exclude all IP addresses defined in tag selection. When this is specified, only tags with the dynamic IP address rule called “IP address in Network Range(s)” can be selected.
+      name: use_ip_nt_range_tags_exclude
+      predefined:
+      - "0"
+      - "1"
+      defaultValue: "0"
+
+
+    
     description: Create a scan schedule in the user’s account.
     execution: true
     name: qualys-schedule-scan-create
@@ -2236,6 +2287,54 @@ script:
       name: option_id
     - description: End a scan after some number of hours. A valid value is from 0 to 119.
       name: end_after
+    - auto: PREDEFINED
+      description: (Optional) Specify "assets" (the default) when your scan target will include IP addresses/ranges and/or asset groups. Specify "tags" when your scan target will include asset tags.
+      name: target_from
+      predefined:
+      - assets
+      - tag
+      defaultValue: assets
+    - auto: PREDEFINED
+      description: (Optional) Select "any" (the default) to include hosts that match at least one of the selected tags. Select "all" to include hosts that match all of the selected tags.
+      name: tag_include_selector
+      predefined:
+      - all
+      - any
+      defaultValue: any
+    - auto: PREDEFINED
+      description: (Optional) Select "any" (the default) to exclude hosts that match at least one of the selected tags. Select "all" to exclude hosts that match all of the selected tags.
+      name: tag_exclude_selector
+      predefined:
+      - all
+      - any
+      defaultValue: any
+    - auto: PREDEFINED
+      description: (Optional) Specify "id" (the default) to select a tag set by providing tag IDs. Specify "name" to select a tag set by providing tag names.
+      name: tag_set_by
+      predefined:
+      - id
+      - name
+      defaultValue: id
+    - auto: PREDEFINED
+      description: (Optional) Specify a tag set to include. Hosts that match these tags will be included. You identify the tag set by providing tag name or IDs. Multiple entries are comma separated.
+      name: tag_set_include
+    - auto: PREDEFINED
+      description: (Optional) Specify a tag set to exclude. Hosts that match these tags will be excluded. You identify the tag set by providing tag name or IDs. Multiple entries are comma separated.
+      name: tag_set_exclude
+    - auto: PREDEFINED
+      description: (Optional) Specify “0” (the default) to select from all tags (tags with any tag rule). Specify “1” to scan all IP addresses defined in tag selection. When this is specified, only tags with the dynamic IP address rule called “IP address in Network Range(s)” can be selected.
+      name: use_ip_nt_range_tags_include
+      predefined:
+      - "0"
+      - "1"
+      defaultValue: "0"
+    - auto: PREDEFINED
+      description: (Optional) Specify “0” (the default) to select from all tags (tags with any tag rule). Specify “1” to exclude all IP addresses defined in tag selection. When this is specified, only tags with the dynamic IP address rule called “IP address in Network Range(s)” can be selected.
+      name: use_ip_nt_range_tags_exclude
+      predefined:
+      - "0"
+      - "1"
+      defaultValue: "0"
     description: Updates a scan schedule in the user’s account.
     execution: true
     name: qualys-schedule-scan-update
