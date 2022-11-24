@@ -16,7 +16,8 @@ jobs:
     - name: quote changed Files
       id: quote-changed-files
       run:
-        # "ab acc arr b" -> "'ab' 'acc' 'arr' b'"
+        # We need to surround quotes in the changed files
+        # Example: "ab acc arr b" -> "'ab' 'acc' 'arr' b'"
         echo files=$(echo ${{ steps.changed-files.outputs.all_changed_files }} | sed -e "s/ /' '/g" -e "s/^/'/" -e "s/$/'/") >> $GITHUB_OUTPUT
     - name: Setup python
       uses: actions/setup-python@v4
