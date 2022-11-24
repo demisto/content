@@ -309,23 +309,26 @@ def create_relationships(field: str, indicator: dict, resource: dict) -> list:
         List of relationships objects.
     """
     relationships = []
-
     for relation in resource[field]:
-        related_indicator_type = CROWDSTRIKE_TO_XSOAR_TYPES[field] if field != 'relations' else \
-            CROWDSTRIKE_TO_XSOAR_TYPES[relation['type']]
-        relation_name = INDICATOR_TO_CROWDSTRIKE_RELATION_DICT[related_indicator_type].get(indicator['type'], indicator['type']) \
-            if field != 'relations' else EntityRelationship.Relationships.RELATED_TO
+        try:
+            related_indicator_type = CROWDSTRIKE_TO_XSOAR_TYPES[field] if field != 'relations' else \
+                CROWDSTRIKE_TO_XSOAR_TYPES[relation['type']]
+            relation_name = INDICATOR_TO_CROWDSTRIKE_RELATION_DICT[related_indicator_type].get(indicator['type'],
+                                                                                               indicator['type']) \
+                if field != 'relations' else EntityRelationship.Relationships.RELATED_TO
 
-        indicator_relation = EntityRelationship(
-            name=relation_name,
-            entity_a=indicator['value'],
-            entity_a_type=indicator['type'],
-            entity_b=relation['indicator'] if field == 'relations' else relation,
-            entity_b_type=related_indicator_type,
-            reverse_name=EntityRelationship.Relationships.RELATIONSHIPS_NAMES[relation_name]
-        ).to_indicator()
+            indicator_relation = EntityRelationship(
+                name=relation_name,
+                entity_a=indicator['value'],
+                entity_a_type=indicator['type'],
+                entity_b=relation['indicator'] if field == 'relations' else relation,
+                entity_b_type=related_indicator_type,
+                reverse_name=EntityRelationship.Relationships.RELATIONSHIPS_NAMES[relation_name]
+            ).to_indicator()
 
-        relationships.append(indicator_relation)
+            relationships.append(indicator_relation)
+        except KeyError:
+            continue
 
     return relationships
 

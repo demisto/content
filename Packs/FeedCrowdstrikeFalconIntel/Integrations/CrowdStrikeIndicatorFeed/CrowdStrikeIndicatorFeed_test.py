@@ -95,8 +95,6 @@ def test_empty_first_fetch(mocker, requests_mock):
 
 def test_reset_last_run(mocker):
     from CrowdStrikeIndicatorFeed import reset_last_run
-    demisto_set_context_mocker = mocker.patch.object(demisto, 'setContext')
+    demisto_set_context_mocker = mocker.patch.object(demisto, 'setIntegrationContext')
     reset_last_run()
-    print(demisto_set_context_mocker)
-    assert demisto_set_context_mocker.called
-    assert False
+    assert demisto_set_context_mocker.call_args.args == ({},)
