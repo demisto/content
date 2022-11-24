@@ -3018,7 +3018,7 @@ script:
       name: tag
     description: Removes a tag from specified endpoint_ids.
     name: xdr-endpoint-tag-remove
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.8.37753
   isfetch: true
   runonce: false
   script: ''
