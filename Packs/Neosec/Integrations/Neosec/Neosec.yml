@@ -1,4 +1,4 @@
-category: Utilities
+category: Network Security
 commonfields:
   id: Neosec
   version: -1
@@ -26,7 +26,7 @@ configuration:
   - name: alert_status
     display: Fetch alerts with status
     required: false
-    defaultvalue: null
+    defaultvalue: Open
     type: 15
     additionalinfo: ""
     options:
@@ -44,7 +44,7 @@ configuration:
   - name: severities
     display: Severity of alerts to fetch
     required: false
-    defaultvalue: null
+    defaultvalue: Low,Medium,High,Critical
     type: 16
     additionalinfo: ""
     options:
@@ -52,6 +52,7 @@ configuration:
       - Low
       - Medium
       - High
+      - Critical
   - name: max_fetch
     display: Max incident to fetch
     required: false
@@ -88,7 +89,11 @@ configuration:
     defaultvalue: null
     type: 0
     additionalinfo: ""
-description: "Neosec is an API security platform that applies behavioral analytics to identify vulnerabilities on endpoints and user malicious and suspicious activity."
+description: Neosec is reinventing application security. Its pioneering SaaS
+  platform gives security professionals visibility into behavior across their
+  entire API estate. Built for organizations that expose APIs to partners,
+  suppliers, and users, Neosec discovers all your APIs, analyzes their behavior,
+  and stops threats lurking inside.
 display: Neosec
 name: Neosec
 script:
