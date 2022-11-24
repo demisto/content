@@ -200,7 +200,7 @@
             "folder_category": "UNCATEGORIZED",
             "action_status": "DONE",
             "has_eml": false,
-            "message_id": "SJ0PR02MB7743DAD58C406BA08465CE5DB6239@SJ0PR02MB7743.namprd02.prod.outlook.com",
+            "message_id": "SJ0PR02MB7743DAD58C406BA08465CE5DB6239@SJ0PR02MB7743.test.outlook.com",
             "abuse_match_types": [
                 "SENDER"
             ]
@@ -226,7 +226,7 @@
             "folder_category": "UNCATEGORIZED",
             "action_status": "DONE",
             "has_eml": false,
-            "message_id": "SJ0PR02MB77439B7E79E4193715207B22B6239@SJ0PR02MB7743.namprd02.prod.outlook.com",
+            "message_id": "SJ0PR02MB77439B7E79E4193715207B22B6239@SJ0PR02MB7743.test.outlook.com",
             "abuse_match_types": [
                 "SENDER"
             ]
@@ -252,7 +252,7 @@
             "folder_category": "UNCATEGORIZED",
             "action_status": "DONE",
             "has_eml": false,
-            "message_id": "SJ0PR02MB774350493B8EFB11E4F53715B6239@SJ0PR02MB7743.namprd02.prod.outlook.com",
+            "message_id": "SJ0PR02MB774350493B8EFB11E4F53715B6239@SJ0PR02MB7743.test.outlook.com",
             "abuse_match_types": [
                 "SENDER"
             ]
@@ -596,7 +596,7 @@
             "scl_score": -1,
             "action_status": "DONE",
             "has_eml": false,
-            "message_id": "SJ0PR02MB7743480B3144540040D3FCFAB6F79@SJ0PR02MB7743.namprd02.prod.outlook.com"
+            "message_id": "SJ0PR02MB7743480B3144540040D3FCFAB6F79@SJ0PR02MB7743.test.outlook.com"
         }
     ],
     "abuse_total_count": "1",
