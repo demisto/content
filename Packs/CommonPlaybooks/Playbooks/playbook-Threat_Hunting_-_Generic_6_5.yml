@@ -222,7 +222,7 @@ tasks:
         simple: ${inputs.SHA256}
       TimeFrame:
         complex:
-          root: inputs.InternalHostRegex
+          root: inputs.QRadarTimeFrame
       URLDomain:
         simple: ${inputs.URLDomain}
     separatecontext: true
@@ -335,11 +335,6 @@ inputs:
   value: {}
   required: false
   description: The SHA256 hash file or an array of hashes to search.
-  playbookInputQuery:
-- key: Hostname
-  value: {}
-  required: false
-  description: The hostname of the machine on which the file is located.
   playbookInputQuery:
 - key: SHA1
   value: {}
