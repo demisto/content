@@ -588,6 +588,7 @@ def main():  # pragma: no cover
         Client.xsoar_severity_field = to_cli_name(xsoar_severity_field)
     if xsoar_comment_field := params.get('xsoar_comments_field'):
         Client.xsoar_comments_field = xsoar_comment_field
+
     client = Client(params)
     commands = {
         'test-module': module_test,
