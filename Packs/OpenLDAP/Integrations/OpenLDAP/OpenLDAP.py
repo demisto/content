@@ -31,6 +31,7 @@ class LdapClient:
     CIPHERS_STRING = '@SECLEVEL=1:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:DH+AESGCM:' \
                      'ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'  # Allowed ciphers for SSL/TLS
     SSL_VERSIONS = {
+        'None': None,
         'TLS': ssl.PROTOCOL_TLS,
         'TLSv1': ssl.PROTOCOL_TLSv1,  # guardrails-disable-line
         'TLSv1_1': ssl.PROTOCOL_TLSv1_1,  # guardrails-disable-line
@@ -46,7 +47,7 @@ class LdapClient:
         self._password = kwargs.get('credentials', {}).get('password', '')
         self._base_dn = kwargs.get('base_dn', '').strip()
         self._connection_type = kwargs.get('connection_type', 'none').lower()
-        self._ssl_version = kwargs.get('ssl_version')
+        self._ssl_version = kwargs.get('ssl_version', 'None')
         self._fetch_groups = kwargs.get('fetch_groups', True)
         self._verify = not kwargs.get('insecure', False)
         self._ldap_server = self._initialize_ldap_server()
@@ -112,13 +113,11 @@ class LdapClient:
         """
             Returns the ssl version object according to the user's selection.
         """
-        if self._ssl_version:
-            version = self.SSL_VERSIONS.get(self._ssl_version)
+        version = self.SSL_VERSIONS.get(self._ssl_version)
+        if version:
             demisto.info(f"SSL/TLS protocol version is {self._ssl_version} ({version}).")
-
-        else:  # By default we don't set a specific version
-            version = None
-            demisto.info("SSL/TLS protocol version is None (default value).")
+        else:  # version is None
+            demisto.info(f"SSL/TLS protocol version is None (the default value of the ldap3 Tls object).")
 
         return version
 
