@@ -14,7 +14,6 @@ from dateutil.parser import parse
 # Disable insecure warnings
 import urllib3
 urllib3.disable_warnings()
-
 ''' GLOBALS/PARAMS '''
 
 INTEGRATION_NAME = 'CrowdStrike Falcon'
@@ -38,7 +37,6 @@ HEADERS = {
 TOKEN_LIFE_TIME = 28
 INCIDENTS_PER_FETCH = int(demisto.params().get('incidents_per_fetch', 15))
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-
 # Remove proxy if not set to true in params
 handle_proxy()
 
@@ -3873,63 +3871,67 @@ def get_detection_for_incident_command(incident_id: str) -> CommandResults:
                           raw_response=detection_res)
 
 
-def cs_falcon_spotlight_search_vulnerability_command_try(args: dict):
+def cs_falcon_spotlight_search_vulnerability_command_try(filter_operator='AND'):
     """
         Get a list of vulnerability by spotlight
         : args: filter which include params or filter param.
         : return: a list of vulnerabilities according to the user.
     """
-    endpoint_url = '/spotlight/combined/vulnerabilities/v1?'
-    if len(args) == 0:
-        raise ValueError('Must insert at least one filter param or filter string')
-    else:
-        params = assign_params(
-            filter=args.get('filter'),
-            aid=args.get('aid'),
-            cve_id=args.get('cve_id'),
-            cve_severity=args.get('cve_severity'),
-            tags=args.get('tags'),
-            status=args.get('status'),
-            platform_name=args.get('platform_name'),
-            host_group=args.get('host_group'),
-            host_type=args.get('host_type'),
-            last_seen_within=args.get('last_seen_within'),
-            is_suppressed=args.get('is_suppressed'),
-            display_remediation_info=args.get('display_remediation_info'),
-            display_evaluation_logic_info=args.get('display_evaluation_logic_info'),
-            display_host_info=args.get('display_host_info'),
-            limit=args.get('limit'))
-        for param, val in params:
-            if type(val) == str:
-                endpoint_url = f'{endpoint_url}+'
-                
-                
-                
-    vulnerability_response = http_request('GET', endpoint_url, params=params)
-    headers = ['ID']
+    args = demisto.args()
+    endpoint_url = '/spotlight/combined/vulnerabilities/v1'
+    input_arg_dict = {'facet': 'cve',
+                      'aid': str(args.get('aid', '')).split(','),
+                      'cve_id': str(args.get('cve_id', '')).split(','),
+                      'cve_severity': str(args.get('cve_severity', '')).split(','),
+                      'tags': str(args.get('tags', '')).split(','),
+                      'status': str(args.get('status', '')).split(','),
+                      'platform_name': args.get('platform_name'),
+                      'host_group': str(args.get('host_group', '')).split(','),
+                      'host_type': str(args.get('host_type', '')).split(','),
+                      'last_seen_within': args.get('last_seen_within'),
+                      'is_suppressed': args.get('is_suppressed'),
+                      'display_remediation_info': args.get('display_remediation_info'),
+                      'display_evaluation_logic_info': args.get('display_evaluation_logic_info'),
+                      'display_host_info': args.get('display_host_info'),
+                      'limit': args.get('limit')}
+    url_filter = '{}'.format(str(args.get('filter', '')))
+    op = ',' if filter_operator == 'OR' else '+'
+    # In Falcon Query Language, '+' stands for AND and ',' for OR
+    # (https://falcon.crowdstrike.com/documentation/45/falcon-query-language-fql)
+
+    for k, arg in input_arg_dict.items():
+        if arg:
+            if type(arg) is list:
+                arg_filter = ''
+                for arg_elem in arg:
+                    if arg_elem:
+                        first_arg = '{filter},{inp_arg}'.format(filter=arg_filter, inp_arg=k) if arg_filter else k
+                        arg_filter = "{first}:'{second}'".format(first=first_arg, second=arg_elem)
+                if arg_filter:
+                    url_filter = "{url_filter}{arg_filter}".format(url_filter=url_filter + op if url_filter else '',
+                                                                   arg_filter=arg_filter)
+            else:
+                # All args should be a list. this is a fallback
+                url_filter = "{url_filter}{operator}{inp_arg}:'{arg_val}'".format(url_filter=url_filter, operator=op,
+                                                                                  inp_arg=k, arg_val=arg)
+    print('url_filter:\n' + url_filter)
+    vulnerability_response = http_request('GET', endpoint_url, params={'filter': url_filter})
+    headers = ['CVE ID', 'CVE Severity', 'CVE Base Score', 'CVE Published Date', 'CVE Impact Score',
+               'CVE Exploitability Score', 'CVE Vector']
     outputs = []
     for vulnerability in vulnerability_response.get('resources'):
-        outputs.append({'ID': vulnerability.get('id'),
-                        'cid': vulnerability.get('cid'),
-                        'aid': vulnerability.get('aid'),
-                        'created_timestamp': vulnerability.get('created_timestamp'),
-                        'updated_timestamp': vulnerability.get('updated_timestamp')})
-    human_readable = tableToMarkdown("Name", outputs, headers=headers,)
+        outputs.append({'CVE ID': vulnerability.get('cve', {}).get('id'),
+                        'CVE Severity': vulnerability.get('cve', {}).get('severity'),
+                        'CVE Base Score': vulnerability.get('cve', {}).get('base_score'),
+                        'CVE Published Date': vulnerability.get('cve', {}).get('published_date'),
+                        'CVE Impact Score': vulnerability.get('cve', {}).get('impact_score'),
+                        'CVE Exploitability Score': vulnerability.get('cve', {}).get('exploitability_score'),
+                        'CVE Vector': vulnerability.get('cve', {}).get('vector')
+                        })
+    human_readable = tableToMarkdown('List Vulnerabilities', outputs, removeNull=True, headers=headers)
     return CommandResults(raw_response=vulnerability_response.get('resources'),
-                          readable_output=outputs, outputs=outputs,
-                          outputs_prefix="CrowdStrike.VulnerabilityHost", outputs_key_field="id")
-
-
-'''
-for param, param_value in params:
-    if isinstance(param_value,list):
-        values_with_operator = ''
-        for arg in param_value:
-            values_with_operator = values_with_operator
-             
-        params[param] = 
-
-'''
+                          readable_output=human_readable, outputs=outputs,
+                          outputs_prefix="CrowdStrike.Vulnerability", outputs_key_field="id")
 
 
 def cs_falcon_spotlight_search_vulnerability_command(args: dict):
@@ -3970,9 +3972,8 @@ def cs_falcon_spotlight_search_vulnerability_command(args: dict):
                         'CVE Published Date': vulnerability.get('cve', {}).get('published_date'),
                         'CVE Impact Score': vulnerability.get('cve', {}).get('impact_score'),
                         'CVE Exploitability Score': vulnerability.get('cve', {}).get('exploitability_score'),
-                        'CVE Vector': vulnerability.get('cve', {}).get('vector')
-                        })
-    human_readable = tableToMarkdown( outputs=outputs, headers=headers, removeNull=True)
+                        'CVE Vector': vulnerability.get('cve', {}).get('vector')})
+    human_readable = tableToMarkdown('List Vulnerabilities', outputs, removeNull=True, headers=headers)
     return CommandResults(raw_response=vulnerability_response.get('resources'),
                           readable_output=human_readable, outputs=outputs,
                           outputs_prefix="CrowdStrike.Vulnerability", outputs_key_field="id")
@@ -3992,7 +3993,7 @@ def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict):
             facet='host_info',
             cve_ids=argToList(args.get('cve_ids')),
             limit=args.get('limit'))
-    vulnerability_response = http_request('GET', endpoint_url, params=params)
+    vulnerability_response = http_request('GET', endpoint_url, params={'filter': url_filter)
     headers = ['CVE ID', 'CVE Severity', 'CVE Base Score', 'CVE Published Date', 'CVE Impact Score',
                'CVE Exploitability Score', 'CVE Vector']
     outputs = []
@@ -4004,9 +4005,8 @@ def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict):
                         'Host Info Local IP': vulnerability.get('host_info', {}).get('local_ip'),
                         'Host Info ou': vulnerability.get('host_info', {}).get('ou'),
                         'Host Info Machine Domain': vulnerability.get('host_info', {}).get('machine_domain'),
-                        'Host Info Site Name': vulnerability.get('host_info', {}).get('site_name')
-                        })
-    human_readable = tableToMarkdown(outputs=outputs, headers=headers, removeNull=True)
+                        'Host Info Site Name': vulnerability.get('host_info', {}).get('site_name')})
+    human_readable = tableToMarkdown('List Vulnerabilities', outputs, removeNull=True, headers=headers)
     return CommandResults(raw_response=vulnerability_response.get('resources'),
                           readable_output=human_readable, outputs=outputs,
                           outputs_prefix="CrowdStrike.VulnerabilityHost", outputs_key_field="id")
