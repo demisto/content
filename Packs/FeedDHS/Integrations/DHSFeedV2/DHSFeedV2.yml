@@ -101,7 +101,7 @@ configuration:
   required: false
   type: 0
 - additionalinfo: 'Determines whether the feed will fetch indicators from all time. It is discouraged to use this method, and using it will cause the first fetch to take a long time.'
-  defaultvalue: 24 hours
+  defaultvalue: false
   display: Fetch From Feed Start
   hidden: false
   name: fetch_from_feed_start
@@ -238,7 +238,7 @@ script:
     - contextPath: DHS.Collections.Name
       description: Collection name.
       type: String
-  dockerimage: demisto/taxii2:1.0.0.35879
+  dockerimage: demisto/taxii2:1.0.0.38477
   feed: true
   isfetch: false
   longRunning: false

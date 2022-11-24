@@ -67,7 +67,7 @@ def fetch_one_collection(client: Taxii2FeedClient, limit: int, initial_interval:
 
     if fetch_from_feed_start and not last_fetch_time:
         # first run for fetch from feed start
-        demisto.debug(f'sending without added_after')
+        demisto.debug('sending without added_after')
         indicators = client.build_iterator(limit)
     else:
         demisto.debug(f'sending with {added_after=}')
