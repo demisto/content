@@ -308,7 +308,7 @@ def prepare_virtual_service_output(response: Dict) -> str:
                 HR_DATE_FORMAT) if response.get("updated_at") else None,
             "Name": response.get("name"),
             "Description": response.get("description"),
-            "Service Port": service_port.get("port") if "port" in service_port else "all ports have been selected",
+            "Service Port": service_port.get("port", "all ports have been selected"),
             "Service Protocol": Protocol(service_port.get("proto")).name,
         })
 
@@ -657,11 +657,7 @@ def traffic_analysis_command(client: PolicyComputeEngine, args: Dict[str, Any]) 
     )
 
     response = client.get_traffic_flows_async(query_name=query_name, traffic_query=traffic_query)
-    json_response = []
-
-    for resp in response:
-        resp = resp.to_json()
-        json_response.append(resp)
+    json_response = [resp.to_json() for resp in response]
 
     readable_output = prepare_traffic_analysis_output(json_response)
 
@@ -754,8 +750,9 @@ def service_binding_create_command(client: PolicyComputeEngine, args: Dict[str, 
 
     response = client.service_bindings.create(service_bindings)  # type: ignore
     results = json.loads(json.dumps(response, cls=IllumioEncoder))
-    context_data = {}
-    context_data["hrefs"] = [service.get("href", "") for service in results.get("service_bindings", [])]
+    context_data = {
+        "hrefs": [service.get("href", "") for service in results.get("service_bindings", [])]
+    }
     readable_output = prepare_service_binding_output(results)
 
     return CommandResults(
@@ -851,7 +848,7 @@ def workloads_list_command(client: PolicyComputeEngine, args: Dict[str, Any]) ->
     Returns:
         CommandResult object
     """
-    max_results = arg_to_number(args.get("max_results", "500"), arg_name="max_results")
+    max_results = arg_to_number(args.get("max_results", 500), arg_name="max_results")
     name = args.get("name")
     hostname = args.get("hostname")
     ip_address = args.get("ip_address")
@@ -1034,7 +1031,7 @@ def ip_lists_get_command(client: PolicyComputeEngine, args: Dict[str, Any]) -> C
     description = args.get("description")
     fqdn = args.get("fqdn")
     ip_address = args.get("ip_address")
-    max_results = arg_to_number(args.get("max_results", "500"), arg_name="max_results")
+    max_results = arg_to_number(args.get("max_results", 500), arg_name="max_results")
     name = args.get("name")
 
     validate_ip_lists_get_arguments(max_results, ip_address)
