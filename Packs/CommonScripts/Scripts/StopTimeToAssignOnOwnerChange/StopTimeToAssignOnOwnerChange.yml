@@ -23,4 +23,4 @@ marketplaces:
 - xsoar
 tests:
 - SLA Scripts - Test
-dockerimage: demisto/python3:3.10.8.37233
+dockerimage: demisto/python3:3.10.8.37753
