@@ -117,7 +117,7 @@ class LdapClient:
         if version:
             demisto.info(f"SSL/TLS protocol version is {self._ssl_version} ({version}).")
         else:  # version is None
-            demisto.info(f"SSL/TLS protocol version is None (the default value of the ldap3 Tls object).")
+            demisto.info("SSL/TLS protocol version is None (the default value of the ldap3 Tls object).")
 
         return version
 
