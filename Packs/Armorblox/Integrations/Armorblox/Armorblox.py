@@ -9,7 +9,7 @@ from armorblox.client import Client as AbxBaseClient
 import demistomock as demisto  # noqa: F401
 
 # disable insecure warnings
-urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()
 
 ARMORBLOX_INCIDENT_API_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 MAX_INCIDENTS_TO_FETCH = demisto.params().get('max_fetch')
