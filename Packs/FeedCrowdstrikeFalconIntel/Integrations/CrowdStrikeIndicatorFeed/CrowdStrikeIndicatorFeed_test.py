@@ -109,3 +109,18 @@ def test_create_relationships_unknown_key():
                       'entityAFamily': 'Indicator', 'entityAType': 'hash_md5', 'entityB': 'abc', 'entityBFamily': 'Indicator',
                       'entityBType': 'Account', 'fields': {}}]
     assert len(rs_ls) == 1
+
+
+def test_reset_last_run(mocker):
+    """
+        Given
+            - No inputs.
+        When
+            - Calling `reset_last_run` command.
+        Then
+            - Ensure that the integration context dict was cleared.
+    """
+    from CrowdStrikeIndicatorFeed import reset_last_run
+    demisto_set_context_mocker = mocker.patch.object(demisto, 'setIntegrationContext')
+    reset_last_run()
+    assert demisto_set_context_mocker.call_args.args == ({},)
