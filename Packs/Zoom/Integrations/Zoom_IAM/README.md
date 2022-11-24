@@ -1,5 +1,5 @@
 An Identity and Access Management integration template.
-This integration was integrated and tested with version xx of Zoom_IAM
+This integration was integrated and tested with version 2.0.0 of Zoom_IAM
 
 ## Configure Zoom_IAM on Cortex XSOAR
 
