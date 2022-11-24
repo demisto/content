@@ -1,5 +1,5 @@
 Note: Support for this Pack will be moved to the Partner on NOV, 01, 2022
-# EclecticIQ Cortex XSOAR User Manual
+# EclecticIQ Cortex XSOAR 
 ## Introduction
 ### EclecticIQ Platform
 * EclecticIQ platform is a Threat Intelligence Platform (TIP) that sits at the center of an organization’s Cyber Threat Intelligence practice, collecting intelligence from open sources, commercial suppliers, and industry partnerships into a single workspace.
@@ -17,56 +17,41 @@ Note: Support for this Pack will be moved to the Partner on NOV, 01, 2022
 * EIQ will provide access to APIs 
 
 ### Installation of Cortex XSOAR
-* For downloading the Cortex XSOAR fill up the partner form by using this link  [https://www.google.com/url?q=https://start.paloaltonetworks.com/sign-up-for-community-edition.html&sa=D&source=docs&ust=1661255332217603&usg=AOvVaw0bHAEbEMQbqeJs6EoiMi7I] and submit.
-* In an email (from 	dbot@demisto.work), get an installation script and a free license will be sent by Palo Alto Networks.
-
-##### Follow the below instructions after receiving the email
-1. Run the chmod +x demisto.sh command to convert the .sh file to an executable file
-2. Execute the .sh file, by running the following command-sudo ./demisto.sh 
-3. Accept the EULA and add the information when prompted
-    i. The Server HTTPS port (default is 443)
-    ii. If you want to use Elasticsearch, enter the Elasticsearch details, such as the URL, timeout, etc
-    iii. Type the name of the Admin user (default is admin)
-    iv. Type the password (default is admin)
-4. Confirm that the Cortex XSOAR server status is active, by running the command- systemctl status demisto
-    i. f the server is not active, run the following command to start the server-systemctl start demisto 
-    ii. Confirm that the Docker service status is active, by running the command- systemctl status docker
-    iii. In a web browser, go to the https://serverURL:port to verify that Cortex XSOAR was successfully installed
-5. Add the license when you open Cortex XSOAR for the first time
+* For downloading the Cortex XSOAR follow the documentaion [https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-6/cortex-xsoar-install-guide/system-requirements-intro/cortex-xsoar-system-requirements].
 
 ## Working
 The user needs to perform the following after Cortex XSOAR installation.
 #### Steps to upload the Integration
 1. Login to Cortex XSOAR
-![image](/Packs/EclecticIQ/doc_files/1.png)
+![image](./../../doc_files/1.png)
 2. Go to settings (left-hand side down corner) and click on it
 3. Click on the Upload integration icon (right-hand side up corner) 
-![image](/Packs/EclecticIQ/doc_files/2.png)
+![image](./../../doc_files/2.png)
 4. Select the file and it will be uploaded
 5. Click on the Save icon (beside the Save Version button)
-![image](/Packs/EclecticIQ/doc_files/3.png)
+![image](./../../doc_files/3.png)
 
 #### Steps to Add instance to the Integration
 1. Login to Cortex XSOAR
 2. Go to settings (left-hand side down corner) and click on it
 3. Go to Integrations 
 4. Search for the uploaded integration by entering the integration name in the given search field on the Settings page
-![image](/Packs/EclecticIQ/doc_files/4.png)
+![image](./../../doc_files/4.png)
 5. Click on "Add instance" (right-hand side)
 6. Pass the valid API key
-![image](/Packs/EclecticIQ/doc_files/5.png)
+![image](./../../doc_files/5.png)
 7. Click on the "Test" button and get a success message
 8. Click on the "Save & exit" button
-![image](/Packs/EclecticIQ/doc_files/6.png)
+![image](./../../doc_files/6.png)
 
 #### Steps to create Incident
 1. Login to Cortex XSOAR
 2. Go to "Incidents" (left-hand side down) and click on it
 3. Click on the "New Incident" button (right-hand side)
-![image](/Packs/EclecticIQ/doc_files/7.png)
+![image](./../../doc_files/7.png)
 4. New Incident page will be displayed
 5. Enter the Incident Name and required details
-![image](/Packs/EclecticIQ/doc_files/8.png)
+![image](./../../doc_files/8.png)
 6. Click on the "Create New Incident" button
 
 ##  1. Command Line Interface(CLI)
@@ -84,15 +69,15 @@ The user needs to perform the following after Cortex XSOAR installation.
 1. Login to Cortex XSOAR
 2. Go to "Incidents" (left-hand side down) and click on it
 3. Click on the created Incident from the Table
-![image](/Packs/EclecticIQ/doc_files/9.png)
+![image](./../../doc_files/9.png)
 4. Click on War room
-![image](/Packs/EclecticIQ/doc_files/10.png)
+![image](./../../doc_files/10.png)
 5. Pass the command in CLI and press enter button
-![image](/Packs/EclecticIQ/doc_files/11.png)
+![image](./../../doc_files/11.png)
 6. User gets the success message
 7. Output Data will be stored in Context Data, to view the that click on a button(i.e, right shoulder button) that is beside the "Actions" button 
 8. Click on "Context Data" to view the stored Output Data
-![image](/Packs/EclecticIQ/doc_files/12.png)
+![image](./../../doc_files/12.png)
 
 ## Command
 ```http
@@ -122,13 +107,13 @@ Gets the reputation of an IP address observable.
 
 ### Command example
 ```http
-  ip ipv4=172.168.156.115
+  ip ipv4=001.001.001.001
 ```
 ##### Human Readable Output
-#### EclecticIQ observable reputation - 172.168.156.115 
+#### EclecticIQ observable reputation - 001.001.001.001 
 |confidence	|description|	observables|	source_name|	tags	|threat_start_time|title| 
 |:--------     |:-------     |------|------|---------|--------|------|
-|`low`	|creationofsighting|	{'type': 'ipv4', 'value': '172.168.156.115, 'classification': 'low'}|   |   |	2022-08-25T04:50:56+00:00|sighting|
+|`low`	|creationofsighting|	{'type': 'ipv4', 'value': '001.001.001.001, 'classification': 'low'}|   |   |	2022-08-25T04:50:56+00:00|sighting|
 
 ## 1.2 Get the reputation of an IP address observable
 Gets the reputation of an IP address observable.
@@ -155,13 +140,13 @@ Gets the reputation of an IP address observable.
 
 ### Command example
 ```http
-  ip ipv6=2001:0000:3238:DFE1:0063:0000:0000:FEFB
+  ip ipv6= 2001:0db8:85a3:0000:0000:8a2e:0370:7334
 ```
 ##### Human Readable Output
-#### EclecticIQ observable reputation - 2001:0000:3238:DFE1:0063:0000:0000:FEFB
+#### EclecticIQ observable reputation -  2001:0db8:85a3:0000:0000:8a2e:0370:7334
 |confidence	|description|	observables|	source_name|	tags	|threat_start_time|title| 
 |:--------     |:-------     |------|------|---------|--------|------|
-|`unknown`	|             |{'type': 'ipv6', 'value': '2001:0000:3238:DFE1:0063:0000:0000:FEFB', 'classification': 'low'}|   |   |	2022-08-19T06:56:40.755381+00:00|
+|`unknown`	|             |{'type': 'ipv6', 'value': ' 2001:0db8:85a3:0000:0000:8a2e:0370:7334', 'classification': 'low'}|   |   |	2022-08-19T06:56:40.755381+00:00|
 
 ## 1.3 Get the reputation of an email observable
 Gets the reputation of an email observable.
@@ -188,13 +173,13 @@ Gets the reputation of an email observable.
 
 ### Command example
 ```http
-  email email=abc@gmail.com
+  email email=cchj@gmail.com
 ```
 ##### Human Readable Output
-#### EclecticIQ observable reputation - abc@gmail.com
+#### EclecticIQ observable reputation - cchj@gmail.com
 |confidence	|description|	observables|	source_name|	tags	|threat_start_time|title| 
 |:--------     |:-------     |------|------|---------|--------|------|
-|`medium`	|   Splunk created Sighting.  |{'type': 'email', 'value': 'abc@gmail.com', 'classification': 'unknown'}|   |   |	2022-07-26T18:00:58.623610+00:00| Sighting of : abc@gmail.com|
+|`medium`	|   Splunk created Sighting.  |{'type': 'email', 'value': 'cchj@gmail.com', 'classification': 'unknown'}|   |   |	2022-07-26T18:00:58.623610+00:00| Sighting of : cchj@gmail.com|
 
 ## 1.4 Get the reputation of a domain observable
 Gets the reputation of a domain observable.
@@ -392,14 +377,14 @@ Gets the reputation of uri observable.
 
 ### Command example
 ```http
-  uri uri=https://goo.com
+  uri uri=https://bzxhc.com
 ```
 ##### Human Readable Output
-#### EclecticIQ observable reputation - https://goo.com
+#### EclecticIQ observable reputation - https://bzxhc.com
 
 |confidence	|description|	observables|	source_name|	tags	|threat_start_time|title| 
 |:--------     |:-------     |------|------|---------|--------|------|
-|`unknown`	|    |{'type': 'uri', 'value': 'https://goo.com', 'classification': 'medium'}|   |   |2022-08-29T10:36:18.733576+00:00| |
+|`unknown`	|    |{'type': 'uri', 'value': 'https://bzxhc.com', 'classification': 'medium'}|   |   |2022-08-29T10:36:18.733576+00:00| |
 
 ### Create Observable
 * To create observables, the user has to execute the create observables command in the CLI
@@ -417,11 +402,11 @@ Gets the reputation of uri observable.
 3. Click on the created Incident from the Table
 4. Click on War room
 5. Pass the command in CLI and press enter button
-![image](/Packs/EclecticIQ/doc_files/13.png)
+![image](./../../doc_files/13.png)
 6. User gets the success message
 7. Output Data will be stored in Context Data, to view the that click on a button(i.e, right shoulder button) that is beside the "Actions" button 
 8. Click on "Context Data" to view the stored Output Data
-![image](/Packs/EclecticIQ/doc_files/14.png)
+![image](./../../doc_files/14.png)
 
 ### Base command
 ```http
@@ -447,7 +432,7 @@ Gets the reputation of uri observable.
 
 ### Command example
 ```http
-  ip ipv4=172.168.156.115
+  ip ipv4=001.001.001.001
 ```
 ##### Human Readable Output
 #### Observables created successfully…!!
@@ -455,7 +440,7 @@ Gets the reputation of uri observable.
 | :--------     | :-------     |
 |`maliciousness`	|low|
 |`type`|	ipv4|
-|`value`|	172.168.156.115|
+|`value`|	001.001.001.001|
 
 ### Create Sighting
 * For create sighting, the user has to execute the create sighting command in the CLI 
@@ -476,11 +461,11 @@ Gets the reputation of uri observable.
 3. Click on the created Incident from the Table
 4. Click on War room
 5. Pass the command in CLI and press enter button
-![image](/Packs/EclecticIQ/doc_files/15.png)
+![image](./../../doc_files/15.png)
 6. User gets the success message
 7. Output Data will be stored in Context Data, to view the that click on a button(i.e, right shoulder button) that is beside the "Actions" button 
 8. Click on "Context Data" to view the stored Output Data
-![image](/Packs/EclecticIQ/doc_files/16.png)
+![image](./../../doc_files/16.png)
 
 ### Base command
 ```http
@@ -506,10 +491,10 @@ Gets the reputation of uri observable.
 
 ### Command example
 ```http
-  ip ipv4=172.168.156.115
+  ip ipv4=001.001.001.001
 ```
 ##### Human Readable Output
-#### !sighting created for- 172.168.156.115
+#### !sighting created for- 001.001.001.001
 |confidence	|description|
 | :--------     | :-------     |
 |`Type`	|ipv4  |
@@ -517,7 +502,7 @@ Gets the reputation of uri observable.
 |`description`|	creationofsighting|
 |`tags`|	XSOARsighting|
 |`title`|	sighting|
-|`value`|	172.168.156.115|
+|`value`|	001.001.001.001|
 
 ##  2. Playbook
 ### lookup observables
@@ -525,32 +510,32 @@ Gets the reputation of uri observable.
 1. Login to Cortex XSOAR
 2. Go to Playbook (left-hand side) and click on  it
 3. Click on the New Playbook button (right-hand side up corner)
-![image](/Packs/EclecticIQ/doc_files/17.png)
+![image](./../../doc_files/17.png)
 4. Enter the Playbook Name and click on Save
-![image](/Packs/EclecticIQ/doc_files/18.png)
+![image](./../../doc_files/18.png)
 5. Go to EclecticIQ and expand it (which is displayed under Task Library-Automation)
-![image](/Packs/EclecticIQ/doc_files/19.png)
+![image](./../../doc_files/19.png)
 6. Click on the "Add" button to add the lookup observables command to Playbook
-![image](/Packs/EclecticIQ/doc_files/20.png)
+![image](./../../doc_files/20.png)
 7. Pass the inputs: type and value
-![image](/Packs/EclecticIQ/doc_files/21.png)
+![image](./../../doc_files/21.png)
 8. Click on Ok
 9. Connect "Playbook Triggered" to the "lookup_observables" task
 10. Click on "Save Playbook"
-![image](/Packs/EclecticIQ/doc_files/22.png)
+![image](./../../doc_files/22.png)
 11. Go to "Incidents" (left-hand side) and click on it
 12. Click on the created Incident from the Table
 13. Click on Work Plan
 14. Search the Playbook from the Default dropdown and click on that
-![image](/Packs/EclecticIQ/doc_files/23.png)
+![image](./../../doc_files/23.png)
 15. Click on the "Yes I know what I am doing" button
-![image](/Packs/EclecticIQ/doc_files/24.png)
+![image](./../../doc_files/24.png)
 16. Playbook will Run and user gets a success message
-![image](/Packs/EclecticIQ/doc_files/25.png)
+![image](./../../doc_files/25.png)
 17. Click on a button(i.e, right shoulder button) that is beside the "Actions" button 
-![image](/Packs/EclecticIQ/doc_files/26.png)
+![image](./../../doc_files/26.png)
 18. Click on "Context Data" to view the output of the Playbook
-![image](/Packs/EclecticIQ/doc_files/27.png)
+![image](./../../doc_files/27.png)
 
 ### Create Observable
 #### Steps to create the Playbook for create_observable
@@ -570,11 +555,11 @@ Gets the reputation of uri observable.
 14. Search the Playbook from the Default dropdown
 15. Click on the "Yes I know what I am doing" button
 16. Playbook will Run and get a success message
-![image](/Packs/EclecticIQ/doc_files/28.png)
+![image](./../../doc_files/28.png)
 17. Click on a button(i.e, right shoulder button) that is beside the "Actions" button 
-![image](/Packs/EclecticIQ/doc_files/29.png)
+![image](./../../doc_files/29.png)
 18. Click on "Context Data" to view the output of the Playbook
-![image](/Packs/EclecticIQ/doc_files/30.png)
+![image](./../../doc_files/30.png)
 
 ### Create Sighting
 #### Steps to create the Playbook for create_sighting
@@ -585,18 +570,18 @@ Gets the reputation of uri observable.
 5. Go to EclecticIQ and expand it (which is displayed under Task Library-Automation)
 6. Click on the "Add" button to add the Create Sighting command to Playbook
 7. Pass the inputs:value,description,title,tags,type and confidence_level
-![image](/Packs/EclecticIQ/doc_files/31.png)
+![image](./../../doc_files/31.png)
 8. Click on Ok
 9. Connect "Playbook Triggered" to the "create_sighting" task
 10. Click on "Save Playbook"
-![image](/Packs/EclecticIQ/doc_files/32.png)
+![image](./../../doc_files/32.png)
 11. Go to "Incidents" (left-hand side) and click on it
 12. Click on the created Incident from the Table
 13. Click on Work Plan
 14. Search the Playbook from the Default dropdown
 15. Click on the "Yes I know what I am doing" button
 16. Playbook will Run and get a success message
-![image](/Packs/EclecticIQ/doc_files/33.png)
+![image](./../../doc_files/33.png)
 17. Click on a button(i.e, right shoulder button) that is beside the "Actions" button 
 18. Click on "Context Data" to view the output of the Playbook
-![image](/Packs/EclecticIQ/doc_files/34.png)
+![image](./../../doc_files/34.png)
