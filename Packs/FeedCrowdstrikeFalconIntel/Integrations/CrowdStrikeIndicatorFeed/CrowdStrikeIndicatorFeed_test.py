@@ -93,8 +93,19 @@ def test_empty_first_fetch(mocker, requests_mock):
     assert True
 
 
-def test_reset_last_run(mocker):
-    from CrowdStrikeIndicatorFeed import reset_last_run
-    demisto_set_context_mocker = mocker.patch.object(demisto, 'setIntegrationContext')
-    reset_last_run()
-    assert demisto_set_context_mocker.call_args.args == ({},)
+def test_create_relationships_unknown_key():
+    """Tests build_type_fql function
+        Given
+            - Indicator with an unknown relation type.
+        When
+            - Calling `create_relationships`
+        Then
+            - validate that no Key Error exception was thrown, and that only 1 relationship was created.
+    """
+    from CrowdStrikeIndicatorFeed import create_relationships
+    rs_ls = create_relationships('relations', {"type": "hash_md5", "value": "1234567890"},
+                                 {"relations": [{"type": "password"}, {"type": 'username', 'indicator': 'abc'}]})
+    assert rs_ls == [{'name': 'related-to', 'reverseName': 'related-to', 'type': 'IndicatorToIndicator', 'entityA': '1234567890',
+                      'entityAFamily': 'Indicator', 'entityAType': 'hash_md5', 'entityB': 'abc', 'entityBFamily': 'Indicator',
+                      'entityBType': 'Account', 'fields': {}}]
+    assert len(rs_ls) == 1
