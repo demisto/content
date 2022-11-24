@@ -109,14 +109,14 @@ class Client(CrowdStrikeClient):
         )
         return response
 
-    def fetch_indicators(self, limit: Optional[int], offset: Optional[int] = 0, fetch_command=False, list_last_run=0) -> list:
+    def fetch_indicators(self, limit: Optional[int], offset: Optional[int] = 0, fetch_command=False, manual_last_run=0) -> list:
         """ Get indicators from CrowdStrike API
 
         Args:
             limit(int): number of indicators to return
             offset: indicators offset
             fetch_command: In order not to update last_run time if it is not fetch command
-            list_last_run: The minimum timestamp to fetch indicators by
+            manual_last_run: The minimum timestamp to fetch indicators by
 
         Returns:
             (list): parsed indicators
@@ -135,8 +135,8 @@ class Client(CrowdStrikeClient):
             offset = demisto.getIntegrationContext().get('offset', 0)
             demisto.info(f' current offset: {offset}')
 
-        if list_last_run:
-            filter = f'{filter}+(last_updated:>={list_last_run})' if filter else f'(last_updated:>={list_last_run})'
+        if manual_last_run:
+            filter = f'{filter}+(last_updated:>={manual_last_run})' if filter else f'(last_updated:>={manual_last_run})'
 
         if fetch_command:
             if last_run := self.get_last_run():
@@ -155,7 +155,6 @@ class Client(CrowdStrikeClient):
         response = self.get_indicators(params=params)
         timestamp = self.set_last_run()
 
-        demisto.info(f' response: {response}')
         last_modified_time = demisto.getIntegrationContext().get('last_modified_time')
         if fetch_command and response.get('resources', [])[-1].get('last_updated') == last_modified_time:
             offset = demisto.getIntegrationContext().get('offset', 0) + limit
@@ -368,7 +367,7 @@ def crowdstrike_indicators_list_command(client: Client, args: dict) -> CommandRe
         limit=limit,
         offset=offset,
         fetch_command=False,
-        list_last_run=last_run
+        manual_last_run=last_run
     )
     if outputs := copy.deepcopy(parsed_indicators):
         for indicator in outputs:
