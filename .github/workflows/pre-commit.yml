@@ -17,7 +17,7 @@ jobs:
       id: quote-changed-files
       run:
         # "ab acc arr b" -> "'ab' 'acc' 'arr' b'"
-        echo files=${{ steps.changed-files.outputs.all_changed_files }}") | sed -e "s/ /' '/g" -e "s/^/'/" -e "s/$/'/" >> $GITHUB_OUTPUT
+        echo files=${{ steps.changed-files.outputs.all_changed_files }} | sed -e "s/ /' '/g" -e "s/^/'/" -e "s/$/'/" >> $GITHUB_OUTPUT
     - name: Setup python
       uses: actions/setup-python@v4
       with:
