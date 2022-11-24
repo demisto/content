@@ -301,24 +301,12 @@ COMMANDS_PARSE_AND_OUTPUT_DATA: Dict[str, Dict[Any, Any]] = {
     "qualys-asset-tag-list": {
         "table_name": "Tags identified by the specified filter",
         "json_path": ["ServiceResponse", "data", "Tag"],
-        "table_headers": [
-            "id",
-            "name",
-            "criticalityScore",
-            "ruleText",
-            "ruleType",
-        ],
+        "table_headers": ["ID", "name", "criticalityScore", "ruleText", "ruleType", "Child Tags"],
     },
     "qualys-asset-tag-create": {
         "table_name": "Asset Tags Created",
         "json_path": ["ServiceResponse", "data", "Tag"],
-        "table_headers": [
-            "id",
-            "name",
-            "criticalityScore",
-            "ruleTex",
-            "ruleType",
-        ],
+        "table_headers": ["ID", "name", "criticalityScore", "ruleText", "ruleType", "Child Tags"],
     },
     "qualys-asset-tag-update": {
         "human_readable_massage": "Asset tag updated.",
@@ -2411,16 +2399,24 @@ def build_tag_asset_output(**kwargs) -> Tuple[List[Any], str]:
         readable_output = human_readable_massage
         return handled_result, readable_output
 
-    else:
-        readable_output = tableToMarkdown(
-            name=command_parse_and_output_data.get("table_name"),
-            t=handled_result,
-            headers=command_parse_and_output_data.get("table_headers"),
-            is_auto_json_transform=True,
-            removeNull=True,
-            headerTransform=pascalToSpace,
-        )
-        return handled_result, readable_output
+    if children_list := handled_result.get("children", {}).get("list", {}).get("TagSimple"):
+        for child_tag_dict in children_list:
+            child_tag_dict["ID"] = child_tag_dict.pop("id")
+            child_tag_dict["Name"] = child_tag_dict.pop("name")
+        handled_result["Child Tags"] = children_list
+
+    if handled_result.get("id"):
+        handled_result["ID"] = handled_result.pop("id")
+
+    readable_output = tableToMarkdown(
+        name=command_parse_and_output_data.get("table_name"),
+        t=handled_result,
+        headers=command_parse_and_output_data.get("table_headers"),
+        is_auto_json_transform=True,
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+    return handled_result, readable_output
 
 
 """ COMMAND FUNCTIONS """

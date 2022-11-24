@@ -2524,7 +2524,7 @@ script:
         - OPEN_PORTS
         - VULN_EXIST
         - STATIC
-    - description: Criteria for the rule. Optional for STATIC rule type, required for the rest of rule types.
+    - description: Criteria for the rule. Optional for STATIC rule type, required for the rest of the rule types.
       additionalinfo: By choosing STATIC rule type, a static tag will be created and will not assign automatically to asset.
       name: rule_text
     - description: Criticality score of the asset tag.
@@ -2537,7 +2537,7 @@ script:
         description: Parent asset tag name.
         type: String
       - contextPath: Qualys.AssetTags.criticality_score
-        description: Criticality score assign to the asset tag.
+        description: Criticality score assign to the asset tag. Values between 1 (lowest) and 5 (highest).
         type: Number
       - contextPath: Qualys.AssetTags.chlid_id
         description: Child asset tags ID.
