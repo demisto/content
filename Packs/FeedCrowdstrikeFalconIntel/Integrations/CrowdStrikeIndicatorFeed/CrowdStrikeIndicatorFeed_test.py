@@ -94,11 +94,11 @@ def test_empty_first_fetch(mocker, requests_mock):
 
 
 def test_create_relationships_unknown_key():
-    """Tests build_type_fql function
+    """
         Given
-            - Indicator with an unknown relation type.
+            - Field type, indicator and a resource with an unknown relation type.
         When
-            - Calling `create_relationships`
+            - Calling `create_relationships` command.
         Then
             - validate that no Key Error exception was thrown, and that only 1 relationship was created.
     """
