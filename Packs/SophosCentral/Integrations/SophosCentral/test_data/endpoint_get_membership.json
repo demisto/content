@@ -1,0 +1,45 @@
+{
+    "items": [
+        {
+            "id": "06f4c8b4-e369-4b4b-8266-5dd9235c59b7",
+            "type": "computer",
+            "tenant": {
+                "id": "fb66cdd2-55ea-4927-ba59-529309e264f6"
+            },
+            "hostname": "Lightning-baf3x3hun0",
+            "os": {
+                "isServer": false,
+                "platform": "windows",
+                "name": "Windows 10 Enterprise",
+                "majorVersion": 10,
+                "minorVersion": 0,
+                "build": 19044
+            },
+            "ipv4Addresses": [
+                "8.8.8.8"
+            ],
+            "ipv6Addresses": [
+                "fe80::ad60:91b0:95fb:2c22"
+            ],
+            "macAddresses": [
+                "00:50:56:83:08:E2"
+            ],
+            "group": {
+                "name": "name212",
+                "id": "c990affd-b40a-4297-aebf-7d33cc9edbca"
+            },
+            "associatedPerson": {
+                "name": "Lightning-07m9fy0vzz\\Lightning",
+                "viaLogin": "Lightning-07m9fy0vzz\\Lightning",
+                "id": "c4833c00-3f3b-453d-8f29-f580af7915f4"
+            },
+            "tamperProtectionEnabled": true,
+            "assignedProducts": [],
+            "lastSeenAt": "2022-08-03T05:59:46.223Z"
+        }
+    ],
+    "pages": {
+        "size": 50,
+        "maxSize": 500
+    }
+}

@@ -3,33 +3,37 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-import re
-import json
 import base64
-from datetime import datetime, timedelta
-from typing import *
-import httplib2
-from urllib.parse import urlparse
-from distutils.util import strtobool
+import concurrent.futures
+import itertools as it
+import json
+import mimetypes
+import random
+import re
+import string
 import sys
-from html.parser import HTMLParser
-from html.entities import name2codepoint
+from datetime import datetime, timedelta
+from distutils.util import strtobool
+from email.header import Header
+from email.mime.application import MIMEApplication
 from email.mime.audio import MIMEAudio
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
-from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.header import Header
-import mimetypes
-import random
-import string
+from html.entities import name2codepoint
+from html.parser import HTMLParser
+from typing import *
+from urllib.parse import urlparse
+
+import google_auth_httplib2
+import httplib2
 from apiclient import discovery
-from oauth2client import service_account
-import itertools as it
-import concurrent.futures
+from google.oauth2 import service_account
+from googleapiclient.errors import HttpError
 
 ''' GLOBAL VARS '''
+
 ADMIN_EMAIL = None
 PRIVATE_KEY_CONTENT = None
 GAPPS_ID = None
@@ -135,17 +139,18 @@ def get_credentials(additional_scopes=None, delegated_user=None):
     if additional_scopes is not None:
         scopes += additional_scopes
 
-    cred = service_account.ServiceAccountCredentials. \
-        from_json_keyfile_dict(json.loads(PRIVATE_KEY_CONTENT), scopes=scopes)  # type: ignore
-
-    return cred.create_delegated(delegated_user)
+    json_acct_info = json.loads(PRIVATE_KEY_CONTENT)  # type: ignore
+    credentials = service_account.Credentials.from_service_account_info(json_acct_info)
+    scoped_credentials = credentials.with_scopes(scopes)
+    delegated_credentials = scoped_credentials.with_subject(delegated_user)
+    return delegated_credentials
 
 
 def get_service(serviceName, version, additional_scopes=None, delegated_user=None):
     credentials = get_credentials(additional_scopes=additional_scopes, delegated_user=delegated_user)
     proxies = handle_proxy()
     if PROXY or DISABLE_SSL:
-        http_client = credentials.authorize(get_http_client_with_proxy(proxies))
+        http_client = google_auth_httplib2.AuthorizedHttp(credentials, http=get_http_client_with_proxy(proxies))
         return discovery.build(serviceName, version, cache_discovery=False, http=http_client)
     return discovery.build(serviceName, version, cache_discovery=False, credentials=credentials)
 
@@ -1976,32 +1981,154 @@ def reply_mail_command():
     return sent_mail_to_entry('Email sent:', [result], emailto, emailfrom, cc, bcc, body, subject)
 
 
-def forwarding_address_add_command():
+def forwarding_address_add(user_id: str, forwarding_email: str) -> tuple[dict, bool, Optional[dict]]:
+    """ Creates forwarding address.
+        Args:
+            user_id: str - The user's email address or the user id.
+            forwarding_email: str - The forwarding address to be retrieved.
+        Returns:
+            result: dict - Response body from the API.
+            exception: bool - Indicates whether there is an error.
+            exception_details: dict - The details of the exception.
     """
-    Creates a forwarding address.
-    """
-
-    args = demisto.args()
-    forwarding_email = args.get('forwarding_email', '')
-    user_id = args.get('user_id', '')
+    result = {}
+    exception_details = {}
+    exception = False
     request_body = {'forwardingEmail': forwarding_email}
     service = get_service(
         'gmail',
         'v1',
         ['https://www.googleapis.com/auth/gmail.settings.sharing'],
         delegated_user=user_id)
-    result = service.users().settings().forwardingAddresses().create(userId=user_id, body=request_body).execute()
-    readable_output = f"Added forwarding address {forwarding_email} for {user_id} \
-                        with status {result.get('verificationStatus', '')}."
-    context = dict(result)
-    context['userId'] = user_id
-    return CommandResults(
-        raw_response=result,
-        outputs=context,
-        readable_output=readable_output,
-        outputs_prefix='Gmail.ForwardingAddress',
-        outputs_key_field=['forwardingEmail', 'userId']
-    )
+    try:
+        result = service.users().settings().forwardingAddresses().create(userId=user_id, body=request_body).execute()
+        result['userId'] = user_id
+    except HttpError as e:
+        exception = True
+        exception_details = {'forwardingEmail': forwarding_email, 'errorMessage': e.reason, 'userId': user_id}
+    return result, exception, exception_details
+
+
+def forwarding_address_add_command() -> list[CommandResults]:
+    """ Creates forwarding address.
+        Args:
+            user_id: str - The user's email address or the user id.
+            forwarding_email: str - The forwarding address to be retrieved.
+        Returns:
+            A list of CommandResults.
+    """
+    args = demisto.args()
+    forwarding_email_list = argToList(args.get('forwarding_email'))
+    user_id = args.get('user_id', '')
+    headers = {
+        'success': ['forwardingEmail', 'userId', 'verificationStatus'],
+        'failure': ['forwardingEmail', 'errorMessage']
+    }
+    outputs_list_success = []
+    outputs_list_failure = []
+    results = []
+    for forwarding_email in forwarding_email_list:
+        result_forwarding_add, is_exception, error_details = forwarding_address_add(user_id, forwarding_email)
+        if is_exception:
+            outputs_list_failure.append(error_details)
+            demisto.debug(error_details)
+        else:
+            outputs_list_success.append(result_forwarding_add)
+
+    if outputs_list_success:
+        results.append(CommandResults(raw_response=outputs_list_success,
+                                      outputs=outputs_list_success,
+                                      readable_output=tableToMarkdown(f'Forwarding addresses results for "{user_id}":',
+                                                                      outputs_list_success, headers['success'], removeNull=True),
+                                      outputs_prefix='Gmail.ForwardingAddress',
+                                      outputs_key_field=['forwardingEmail', 'userId']))
+    if outputs_list_failure:
+        results.append(CommandResults(raw_response=outputs_list_failure,
+                                      readable_output=tableToMarkdown(f'Forwarding addresses errors for "{user_id}":',
+                                                                      outputs_list_failure, headers['failure'], removeNull=True),
+                                      outputs_prefix='Gmail.ForwardingAddress',
+                                      outputs_key_field=['forwardingEmail', 'userId']))
+    return results
+
+
+def forwarding_address_update(user_id: str, disposition: str, forwarding_email: str) -> tuple[dict, bool, Optional[dict]]:
+    """ Update forwarding address with disposition.
+        Args:
+            user_id: str - The user's email address or the user id.
+            forwarding_email: str - The forwarding address to be retrieved.
+            disposition: str - The state that a message should be left in after it has been forwarded.
+        Returns:
+            result: dict - Response body from the API.
+            exception: bool - Indicates whether there is an error.
+            exception_details: dict - The details of the exception.
+    """
+    exception = False
+    result = {}
+    exception_details = {}
+    service = get_service(
+        'gmail',
+        'v1',
+        ['https://www.googleapis.com/auth/gmail.settings.sharing'],
+        delegated_user=user_id)
+    request_body = {'emailAddress': forwarding_email,
+                    'enabled': True,
+                    'disposition': disposition
+                    }
+    try:
+        result = service.users().settings().updateAutoForwarding(userId=user_id, body=request_body).execute()
+        result['userId'] = user_id
+    except HttpError as e:
+        exception = True
+        exception_details = {'forwardingEmail': forwarding_email, 'errorMessage': e.reason, 'userId': user_id}
+
+    return result, exception, exception_details
+
+
+def forwarding_address_update_command() -> list[CommandResults]:
+    """ Update forwarding address with disposition.
+        Args:
+            user_id: str - The user's email address or the user id.
+            forwarding_email: list[str] - a forwarding addresses list to be retrieved.
+            disposition: str - The state that a message should be left in after it has been forwarded.
+        Returns:
+           A list of CommandResults.
+    """
+    args = demisto.args()
+    forwarding_email_list = argToList(args.get('forwarding_email'))
+    user_id = args.get('user_id')
+    disposition = args.get('disposition')
+    headers = {
+        'success': ['forwardingEmail', 'userId', 'disposition', 'enabled'],
+        'failure': ['forwardingEmail', 'errorMessage']
+    }
+    outputs_list_success = []
+    outputs_list_failure = []
+    results = []
+    for forwarding_email in forwarding_email_list:
+        result_forwarding_update, is_exception, error_details = forwarding_address_update(user_id, disposition, forwarding_email)
+        if is_exception:
+            outputs_list_failure.append(error_details)
+            demisto.debug(error_details)
+        else:
+            result_forwarding_update['forwardingEmail'] = result_forwarding_update.pop('emailAddress')
+            result_forwarding_update['userId'] = user_id
+            outputs_list_success.append(result_forwarding_update)
+
+    if outputs_list_success:
+        results.append(CommandResults(raw_response=outputs_list_success,
+                                      outputs=outputs_list_success,
+                                      readable_output=tableToMarkdown(f'Forwarding addresses update results for "{user_id}":',
+                                                                      outputs_list_success, headers['success'], removeNull=True),
+                                      outputs_prefix='Gmail.ForwardingAddress',
+                                      outputs_key_field=['forwardingEmail', 'userId']))
+    if outputs_list_failure:
+        results.append(CommandResults(raw_response=outputs_list_failure,
+                                      readable_output=tableToMarkdown(f'Forwarding addresses update errors for "{user_id}":',
+                                                                      outputs_list_failure, headers['failure'], removeNull=True),
+                                      outputs_prefix='Gmail.ForwardingAddress',
+                                      outputs_key_field=['userId', 'forwardingEmail']))
+
+    return results
 
 
 def send_as_add_command():
@@ -2055,6 +2182,130 @@ def send_as_add_command():
         readable_output=readable_output,
         outputs_prefix='Gmail.SendAs',
         outputs_key_field=['sendAsEmail', 'userId']
+    )
+
+
+def forwarding_address_get(user_id: str, forwarding_email: str) -> dict:
+    """ Gets an Existing forwarding address.
+        Args:
+            user_id: str - The user email address or the user id.
+            forwarding_email: str - The forwarding address to be retrieved.
+        Returns:
+            A Dict object - Response body from the API.
+    """
+    service = get_service(
+        'gmail',
+        'v1',
+        ['https://www.googleapis.com/auth/gmail.readonly',
+         'https://www.googleapis.com/auth/gmail.modify',
+         'https://mail.google.com/',
+         'https://www.googleapis.com/auth/gmail.settings.basic'],
+        delegated_user=user_id)
+    result = service.users().settings().forwardingAddresses().get(userId=user_id, forwardingEmail=forwarding_email).execute()
+    return result
+
+
+def forwarding_address_get_command() -> CommandResults:
+    """ Gets an Existing forwarding address.
+        Args:
+            user_id: str - The user's email address or the user id.
+            forwarding_email: str - The forwarding address to be retrieved.
+        Returns:
+            A CommandResults object.
+    """
+    args = demisto.args()
+    forwarding_email = args.get('forwarding_email')
+    headers = ['forwardingEmail', 'verificationStatus']
+    user_id = args.get('user_id')
+    result = forwarding_address_get(user_id, forwarding_email)
+    result['userId'] = user_id
+
+    return CommandResults(
+        raw_response=result,
+        outputs=result,
+        readable_output=tableToMarkdown(f'Get forwarding address for: "{user_id}"', result, headers, removeNull=True),
+        outputs_prefix='Gmail.ForwardingAddress',
+        outputs_key_field=['forwardingEmail', 'userId']
+    )
+
+
+def forwarding_address_remove(user_id: str, forwarding_email: str) -> dict:
+    """ Removes a forwarding address.
+        Args:
+            user_id: str - The user's email address or the user id.
+            forwarding_email: str - The forwarding address to be retrieved.
+        Returns:
+            A Dict object - Response body from the API (empty when successful).
+    """
+    service = get_service(
+        'gmail',
+        'v1',
+        ['https://www.googleapis.com/auth/gmail.settings.sharing'],
+        delegated_user=user_id)
+    result = service.users().settings().forwardingAddresses().delete(userId=user_id, forwardingEmail=forwarding_email).execute()
+    return result
+
+
+def forwarding_address_remove_command() -> CommandResults:
+    """ Removes a forwarding address.
+        Args:
+            user_id: str - The user's email address or the user id.
+            forwarding_email: str - The forwarding address to be retrieved.
+        Returns:
+            A CommandResults object.
+    """
+    args = demisto.args()
+    forwarding_email = args.get('forwarding_email')
+    user_id = args.get('user_id')
+    forwarding_address_remove(user_id, forwarding_email)
+    return CommandResults(
+        readable_output=f'Forwarding address "{forwarding_email}" for "{user_id}" was deleted successfully .'
+    )
+
+
+def forwarding_address_list(user_id: str) -> dict:
+    """ Gets a list of forwarding addresses.
+        Args:
+            user_id: str - The user's email address or the user id.
+        Returns:
+            A Dict object - Response body from the API.
+    """
+    result = {}
+    service = get_service(
+        'gmail',
+        'v1',
+        ['https://www.googleapis.com/auth/gmail.settings.basic',
+         'https://mail.google.com/',
+         'https://www.googleapis.com/auth/gmail.modify',
+         'https://www.googleapis.com/auth/gmail.readonly'],
+        delegated_user=user_id)
+    result = service.users().settings().forwardingAddresses().list(userId=user_id).execute()
+    return result
+
+
+def forwarding_address_list_command() -> CommandResults:
+    """ Gets a list of forwarding addresses.
+        Args:
+            user_id: str - The user's email address or the user id.
+            limit: str - The Limit of the results list. Default is 50.
+        Returns:
+            A CommandResults object.
+    """
+    args = demisto.args()
+    user_id = args.get('user_id')
+    limit = int(args.get('limit', '50'))
+    result = forwarding_address_list(user_id)
+    context = result.get('forwardingAddresses')
+    context = context[:limit] if context else []
+    for msg in context:
+        msg['userId'] = user_id
+    headers = ['forwardingEmail', 'verificationStatus']
+    return CommandResults(
+        raw_response=result,
+        outputs=context,
+        readable_output=tableToMarkdown(f'Forwarding addresses list for: "{user_id}"', context, headers, removeNull=True),
+        outputs_prefix='Gmail.ForwardingAddress',
+        outputs_key_field=['forwardingEmail', 'userId']
     )
 
 
@@ -2146,8 +2397,12 @@ def main():
         'send-mail': send_mail_command,
         'reply-mail': reply_mail_command,
         'gmail-get-role': get_role_command,
-        'gmail-forwarding-address-add': forwarding_address_add_command,
         'gmail-send-as-add': send_as_add_command,
+        'gmail-forwarding-address-get': forwarding_address_get_command,
+        'gmail-forwarding-address-remove': forwarding_address_remove_command,
+        'gmail-forwarding-address-list': forwarding_address_list_command,
+        'gmail-forwarding-address-update': forwarding_address_update_command,
+        'gmail-forwarding-address-add': forwarding_address_add_command,
     }
     command = demisto.command()
     LOG('GMAIL: command is %s' % (command,))
@@ -2160,7 +2415,6 @@ def main():
         if command == 'fetch-incidents':
             demisto.incidents(fetch_incidents())
             sys.exit(0)
-
         cmd_func = COMMANDS.get(command)
         if cmd_func is None:
             raise NotImplementedError(
@@ -2172,7 +2426,6 @@ def main():
                 return_results(cmd_func(receive_only_accounts))  # type: ignore
             else:
                 return_results(cmd_func())  # type: ignore
-
     except Exception as e:
         import traceback
         if command == 'fetch-incidents':

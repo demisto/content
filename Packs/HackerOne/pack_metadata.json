@@ -10,14 +10,9 @@
     "categories": [
         "Vulnerability Management"
     ],
-    "tags": [
-        "Security"
-    ],
-    "useCases": [
-        "Vulnerability Management"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
-        "HackerOne",
         "reports",
         "vulnerability"
     ],

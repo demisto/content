@@ -7,11 +7,13 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-09-22T13:16:00Z",
-    "categories": [],
-    "tags": [],
-    "useCases": [
-        "Health Check"
+    "categories": [
+        "Utilities"
     ],
+    "tags": [
+        "Use Case"
+    ],
+    "useCases": [],
     "keywords": [],
     "dependencies": {
         "Gmail": {

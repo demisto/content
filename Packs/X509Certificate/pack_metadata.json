@@ -8,16 +8,10 @@
     "email": "",
     "created": "2020-12-01T10:38:35Z",
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Utilities"
     ],
-    "tags": [
-        "Threat Intelligence",
-        "Security",
-        "Network"
-    ],
-    "useCases": [
-        "Threat Intelligence Management"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "X509",
         "Certificate"

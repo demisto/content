@@ -1,7 +1,7 @@
 id: Cortex ASM - CMDB Enrichment
 version: -1
 name: Cortex ASM - CMDB Enrichment
-description: This playbook will look up a CI in ServiceNow CMDB by IP.
+description: Deprecated. No available replacement. This playbook will look up a CI in ServiceNow CMDB by IP.
 starttaskid: "0"
 tasks:
   "0":
@@ -552,3 +552,4 @@ outputs: []
 tests:
 - No tests
 fromversion: 6.5.0
+deprecated: true

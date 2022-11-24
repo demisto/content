@@ -519,7 +519,8 @@ class TestXDRIOCToDemisto:
                 'fields': {
                     'expirationdate': 'Never',
                     'tags': 'Cortex XDR',
-                    'xdrstatus': 'disabled'
+                    'xdrstatus': 'disabled',
+                    'sourceoriginalseverity': 'INFO',
                 }
             }
         ),
@@ -539,7 +540,8 @@ class TestXDRIOCToDemisto:
                 'fields': {
                     'expirationdate': 'Never',
                     'tags': 'Cortex XDR',
-                    'xdrstatus': 'disabled'
+                    'xdrstatus': 'disabled',
+                    'sourceoriginalseverity': 'INFO',
                 }
             }
         ),
@@ -561,7 +563,8 @@ class TestXDRIOCToDemisto:
                 'fields': {
                     'expirationdate': 'Never',
                     'tags': 'Cortex XDR',
-                    'xdrstatus': 'enabled'
+                    'xdrstatus': 'enabled',
+                    'sourceoriginalseverity': 'INFO',
                 }
             }
         )
@@ -638,7 +641,7 @@ class TestCommands:
         mocker_reurn_results = mocker.patch('XDR_iocs.return_results')
         mocker_set_context = mocker.patch.object(demisto, 'setIntegrationContext')
         set_sync_time('2021-11-25T00:00:00')
-        mocker_reurn_results.assert_called_once_with('set sync time to 2021-11-25T00:00:00 seccedded.')
+        mocker_reurn_results.assert_called_once_with('set sync time to 2021-11-25T00:00:00 succeeded.')
         call_args = mocker_set_context.call_args[0][0]
         assert call_args['ts'] == 1637798400000
         assert call_args['time'] == '2021-11-25T00:00:00Z'
@@ -778,3 +781,88 @@ data_test_batch = [
 @pytest.mark.parametrize('input_enumerator, batch_size, expected_output', data_test_batch)
 def test_batch_iocs(input_enumerator, batch_size, expected_output):
     assert list(batch_iocs(input_enumerator, batch_size=batch_size)) == expected_output
+
+
+def test_overriding_severity_xsoar():
+    # back up class attributes
+    xsoar_severity_field_backup = Client.xsoar_severity_field
+    severity_value_backup = Client.severity
+
+    # for testing
+    Client.severity = 'LOW'
+
+    # constants
+    custom_severity_field = 'custom_severity_field'
+    dummy_demisto_ioc = {'value': '1.1.1.1', 'indicator_type': 'FILE_123',
+                         'CustomFields': {custom_severity_field: 'critical'}}
+
+    # default behavior
+    assert Client.override_severity is True
+    assert demisto_ioc_to_xdr(dummy_demisto_ioc)['severity'] == 'LOW'
+
+    # behavior when override_severity is False
+    Client.override_severity = False
+    Client.xsoar_severity_field = custom_severity_field
+    assert demisto_ioc_to_xdr(dummy_demisto_ioc)['severity'] == 'CRITICAL'
+
+    # behavior when there is no custom severity value
+    dummy_demisto_ioc['CustomFields'][custom_severity_field] = None
+    assert demisto_ioc_to_xdr(dummy_demisto_ioc)['severity'] == Client.severity
+
+    # behavior when there is no custom severity field
+    del dummy_demisto_ioc['CustomFields'][custom_severity_field]
+    assert demisto_ioc_to_xdr(dummy_demisto_ioc)['severity'] == Client.severity
+
+    # restore class attributes
+    Client.override_severity = True
+    Client.severity = severity_value_backup
+    Client.xsoar_severity_field = xsoar_severity_field_backup
+
+
+def test_overriding_severity_xdr_to_demisto():
+    # back up class attributes
+    xsoar_severity_field_backup = Client.xsoar_severity_field
+    severity_value_backup = Client.severity
+
+    Client.severity = 'some hardcoded severity value'
+    severity_field = 'custom_severity_field'
+
+    Client.xsoar_severity_field = severity_field
+    dummy_xdr_ioc = {'IOC_TYPE': 'IP', 'RULE_EXPIRATION_TIME': -1, 'RULE_SEVERITY': 'SEV_050_CRITICAL'}
+
+    # default behavior
+    assert Client.override_severity is True  # this should always be the default
+    assert xdr_ioc_to_demisto(dummy_xdr_ioc)['fields'][severity_field] == Client.severity
+
+    # behavior when override_severity is False
+    Client.override_severity = False
+    assert xdr_ioc_to_demisto(dummy_xdr_ioc)['fields'][severity_field] == 'CRITICAL'
+
+    # restore class attributes
+    Client.override_severity = True
+    Client.severity = severity_value_backup
+    Client.xsoar_severity_field = xsoar_severity_field_backup
+
+
+@pytest.mark.parametrize('value', (
+    'info',
+    'Info',
+    'informational',
+    'INformationAL'
+))
+def test_severity_fix_info(value: str):
+    """
+    given
+            a severity value that should be fixed to INFO
+    when
+            calling validate_fix_severity_value
+    then
+            make sure the value returned INFO
+    """
+    assert validate_fix_severity_value(value) == 'INFO'
+
+
+@pytest.mark.parametrize('value', ('', 'a', 'foo', 'severity', 'infoo', 'informationall'))
+def test_severity_validate(value: str):
+    with pytest.raises(DemistoException):
+        validate_fix_severity_value(value)
